@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, Clock, Zap } from "lucide-react";
 import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
 import type { OdumInstrument, OdumInstrumentType, Timeframe } from "./types";
-import { MOCK_FIXTURES } from "@/components/trading/sports/mock-data";
-import { ODUM_INSTRUMENTS } from "./mock-data";
+import { MOCK_FIXTURES } from "@/lib/mocks/fixtures/sports-data";
+import { ODUM_INSTRUMENTS } from "@/lib/mocks/fixtures/predictions-data";
 import { fmtVolume, fmtCents, fmtRelativeTime } from "./helpers";
 import { StatusPill, DualStatBar } from "@/components/trading/sports/shared";
 import { VenueChip, DivergenceBadge, DeltaPill, TimeframeBadge, ResolutionCountdown, YesNoButtons } from "./shared";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ─── Filter bar ───────────────────────────────────────────────────────────────
 
@@ -99,7 +100,9 @@ function DualAxisChart({ series, underlyingLabel }: DualAxisChartProps) {
           <Tooltip
             contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 6, fontSize: 10 }}
             formatter={(value: number, name: string) => [
-              name === "price" ? value.toLocaleString("en-US", { maximumFractionDigits: 2 }) : `${value.toFixed(0)}¢`,
+              name === "price"
+                ? value.toLocaleString("en-US", { maximumFractionDigits: 2 })
+                : `${formatNumber(value, 0)}¢`,
               name === "price" ? underlyingLabel : "YES odds",
             ]}
             labelFormatter={() => ""}
@@ -297,7 +300,12 @@ function FootballCard({
         {stats && (
           <div className="space-y-1.5 py-2 border-t border-border/30">
             <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Live Stats</p>
-            <DualStatBar label="xG" homeValue={stats.home.xg} awayValue={stats.away.xg} format={(v) => v.toFixed(1)} />
+            <DualStatBar
+              label="xG"
+              homeValue={stats.home.xg}
+              awayValue={stats.away.xg}
+              format={(v) => formatNumber(v, 1)}
+            />
             <DualStatBar
               label="Possession"
               homeValue={stats.home.possession}

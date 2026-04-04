@@ -1,27 +1,15 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { MonthlyReturn } from "@/lib/backtest-analytics-types";
+import type { MonthlyReturn } from "@/lib/types/backtest-analytics";
+import { formatPercent } from "@/lib/utils/formatters";
 
 interface MonthlyReturnsHeatmapProps {
   monthlyReturns: MonthlyReturn[];
   className?: string;
 }
 
-const MONTH_LABELS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function cellColor(pct: number): string {
   if (pct >= 3) return "bg-emerald-500/90 text-white";
@@ -33,10 +21,7 @@ function cellColor(pct: number): string {
   return "bg-red-500/80 text-white";
 }
 
-export function MonthlyReturnsHeatmap({
-  monthlyReturns,
-  className,
-}: MonthlyReturnsHeatmapProps) {
+export function MonthlyReturnsHeatmap({ monthlyReturns, className }: MonthlyReturnsHeatmapProps) {
   const byYear = new Map<number, Map<number, number>>();
   for (const m of monthlyReturns) {
     if (!byYear.has(m.year)) byYear.set(m.year, new Map());
@@ -45,26 +30,19 @@ export function MonthlyReturnsHeatmap({
   const years = [...byYear.keys()].sort((a, b) => a - b);
 
   if (years.length === 0) {
-    return (
-      <p className="text-xs text-muted-foreground">No monthly returns data.</p>
-    );
+    return <p className="text-xs text-muted-foreground">No monthly returns data.</p>;
   }
 
   return (
     <div className={cn("space-y-2", className)}>
-      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-        Monthly Returns (%)
-      </h4>
+      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Monthly Returns (%)</h4>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse text-[10px] sm:text-xs">
           <thead>
             <tr>
               <th className="p-1 text-left text-muted-foreground font-medium w-10" />
               {MONTH_LABELS.map((label) => (
-                <th
-                  key={label}
-                  className="p-1 text-center text-muted-foreground font-medium min-w-[2.25rem]"
-                >
+                <th key={label} className="p-1 text-center text-muted-foreground font-medium min-w-[2.25rem]">
                   {label}
                 </th>
               ))}
@@ -73,30 +51,19 @@ export function MonthlyReturnsHeatmap({
           <tbody>
             {years.map((year) => (
               <tr key={year}>
-                <td className="p-1 font-mono text-muted-foreground pr-2 whitespace-nowrap">
-                  {year}
-                </td>
+                <td className="p-1 font-mono text-muted-foreground pr-2 whitespace-nowrap">{year}</td>
                 {MONTH_LABELS.map((_, mi) => {
                   const month = mi + 1;
                   const v = byYear.get(year)?.get(month);
-                  const display =
-                    v === undefined
-                      ? "—"
-                      : `${v > 0 ? "+" : ""}${v.toFixed(1)}%`;
+                  const display = v === undefined ? "—" : `${v > 0 ? "+" : ""}${formatPercent(v, 1)}`;
                   return (
                     <td key={month} className="p-0.5">
                       <div
                         className={cn(
                           "rounded px-0.5 py-1 text-center font-mono tabular-nums min-h-[1.75rem] flex items-center justify-center",
-                          v === undefined
-                            ? "bg-muted/10 text-muted-foreground"
-                            : cellColor(v),
+                          v === undefined ? "bg-muted/10 text-muted-foreground" : cellColor(v),
                         )}
-                        title={
-                          v !== undefined
-                            ? `${year}-${String(month).padStart(2, "0")}: ${v}%`
-                            : undefined
-                        }
+                        title={v !== undefined ? `${year}-${String(month).padStart(2, "0")}: ${v}%` : undefined}
                       >
                         {display}
                       </div>

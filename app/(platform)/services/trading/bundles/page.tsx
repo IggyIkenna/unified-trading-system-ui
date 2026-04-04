@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { BundlesDataProvider } from "@/components/widgets/bundles/bundles-data-context";
 
-import "@/components/widgets/bundles/register";
-
 function BundlesPageContent() {
   return (
     <BundlesDataProvider>

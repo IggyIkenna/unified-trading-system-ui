@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
 import { useMarketsData } from "./markets-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
   const { orderFlowData, assetClass } = useMarketsData();
@@ -61,7 +62,7 @@ export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
                       {order.type === "trade" ? "Swap" : "LP"}
                     </Badge>
                   </td>
-                  <td className="p-2 text-right font-mono text-[10px]">{order.size.toFixed(4)} ETH</td>
+                  <td className="p-2 text-right font-mono text-[10px]">{formatNumber(order.size, 4)} ETH</td>
                   <td className="p-2 text-right font-mono text-[10px]">${order.price.toLocaleString()}</td>
                   <td className="p-2 text-right font-mono text-[10px] text-muted-foreground">0.25%</td>
                   <td className="p-2 text-right font-mono text-[10px] text-muted-foreground">35 gwei</td>

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export interface PnLComponent {
   name: string;
@@ -31,20 +32,14 @@ export function PnLAttributionPanel({
 
   const formatPnL = (value: number) => {
     // Guard against NaN, undefined, or infinite values
-    if (
-      value === null ||
-      value === undefined ||
-      !isFinite(value) ||
-      isNaN(value)
-    ) {
+    if (value === null || value === undefined || !isFinite(value) || isNaN(value)) {
       return "$0";
     }
     const absVal = Math.abs(value);
     const prefix = value >= 0 ? "+" : "-";
-    if (absVal >= 1_000_000)
-      return `${prefix}$${(absVal / 1_000_000).toFixed(0)}m`;
-    if (absVal >= 1_000) return `${prefix}$${(absVal / 1_000).toFixed(0)}k`;
-    return `${prefix}$${absVal.toFixed(0)}`;
+    if (absVal >= 1_000_000) return `${prefix}$${formatNumber(absVal / 1_000_000, 0)}m`;
+    if (absVal >= 1_000) return `${prefix}$${formatNumber(absVal / 1_000, 0)}k`;
+    return `${prefix}$${formatNumber(absVal, 0)}`;
   };
 
   return (
@@ -52,8 +47,7 @@ export function PnLAttributionPanel({
       <div className="space-y-2">
         {components.map((component) => {
           const isPositive = component.pnl >= 0;
-          const barWidth =
-            maxAbsPnl > 0 ? (Math.abs(component.pnl) / maxAbsPnl) * 100 : 0;
+          const barWidth = maxAbsPnl > 0 ? (Math.abs(component.pnl) / maxAbsPnl) * 100 : 0;
 
           return (
             <div
@@ -68,9 +62,7 @@ export function PnLAttributionPanel({
                 <span className="text-sm font-medium">{component.name}</span>
                 <div className="flex items-center gap-3">
                   {showExposure && component.exposure && (
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {component.exposure}
-                    </span>
+                    <span className="text-xs text-muted-foreground font-mono">{component.exposure}</span>
                   )}
                   <span
                     className={cn(
@@ -87,9 +79,7 @@ export function PnLAttributionPanel({
                   className="h-full rounded-full transition-all duration-300"
                   style={{
                     width: `${barWidth}%`,
-                    backgroundColor: isPositive
-                      ? "var(--pnl-positive)"
-                      : "var(--pnl-negative)",
+                    backgroundColor: isPositive ? "var(--pnl-positive)" : "var(--pnl-negative)",
                   }}
                 />
               </div>

@@ -1,40 +1,33 @@
 import { cn } from "@/lib/utils";
-import {
-  statusBg,
-  statusColor,
-  StatusIcon,
-  type GateStatus,
-} from "@/components/shared/gate-status";
+import { statusBg, statusColor, StatusIcon, type GateStatus } from "@/components/shared/gate-status";
 import type { CandidateStrategy } from "./types";
 import { STAGE_ORDER } from "./types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export { statusBg, statusColor, StatusIcon, type GateStatus };
 
 export function fmtPct(v: number) {
   const abs = Math.abs(v);
   const sign = v >= 0 ? "+" : "";
-  if (abs < 1) return `${sign}${(v * 100).toFixed(1)}%`;
-  return `${sign}${v.toFixed(1)}%`;
+  if (abs < 1) return `${sign}${formatPercent(v * 100, 1)}`;
+  return `${sign}${formatPercent(v, 1)}`;
 }
 
 export function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals);
+  return formatNumber(v, decimals);
 }
 
 export function fmtUsd(v: number) {
-  if (Math.abs(v) >= 1_000_000) return `$${(v / 1_000_000).toFixed(0)}M`;
-  if (Math.abs(v) >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-  return `$${v.toFixed(0)}`;
+  if (Math.abs(v) >= 1_000_000) return `$${formatNumber(v / 1_000_000, 0)}M`;
+  if (Math.abs(v) >= 1_000) return `$${formatNumber(v / 1_000, 0)}K`;
+  return `$${formatNumber(v, 0)}`;
 }
 
 /** Standard normal CDF (Hart / Abramowitz-style tail approximation). */
 export function normalCdf(z: number): number {
   const t = 1 / (1 + 0.2316419 * Math.abs(z));
   const d = 0.3989423 * Math.exp(-0.5 * z * z);
-  const poly =
-    t *
-    (0.3193815 +
-      t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  const poly = t * (0.3193815 + t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
   const p = d * poly;
   return z >= 0 ? 1 - p : p;
 }

@@ -9,10 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
+import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiSwapWidget(_props: WidgetComponentProps) {
   const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
@@ -22,6 +25,11 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
   const [tokenOut, setTokenOut] = React.useState("USDC");
   const [amountIn, setAmountIn] = React.useState("");
   const [slippage, setSlippage] = React.useState("0.5");
+  const [algoType, setAlgoType] = React.useState<AlgoType>("SOR_DEX");
+
+  const swapAlgos = DEFI_ALGO_TYPES.filter((a) =>
+    (["SOR_DEX", "SOR_TWAP", "SOR_CROSS_CHAIN"] as string[]).includes(a.value),
+  );
 
   // Gas balance check for selected chain
   const chainPortfolio = MOCK_CHAIN_PORTFOLIOS.find((p) => p.chain === selectedChain);
@@ -55,7 +63,8 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs">
           <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
           <span className="text-amber-400">
-            Low {gasSymbol} balance ({gasBalance.toFixed(4)} {gasSymbol}). You may not have enough gas for this swap.
+            Low {gasSymbol} balance ({formatNumber(gasBalance, 4)} {gasSymbol}). You may not have enough gas for this
+            swap.
           </span>
         </div>
       )}
@@ -137,6 +146,22 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <label className="text-xs text-muted-foreground">Routing algo</label>
+        <Select value={algoType} onValueChange={(v) => setAlgoType(v as AlgoType)}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {swapAlgos.map((a) => (
+              <SelectItem key={a.value} value={a.value} className="text-xs">
+                {a.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       {route && (
         <CollapsibleSection title="Route details" defaultOpen={false}>
           <div className="px-2 pb-2 space-y-2">
@@ -156,14 +181,18 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
               <div className="text-[10px] text-muted-foreground">{route.pools.join(" › ")}</div>
               <Separator />
               <div className="grid grid-cols-2 gap-1 text-xs">
+                <span className="text-muted-foreground">Algo</span>
+                <span className="font-mono">
+                  {swapAlgos.find((a) => a.value === algoType)?.label ?? algoType}
+                </span>
                 <span className="text-muted-foreground">Price impact</span>
                 <span className={cn("font-mono", route.priceImpactPct > 0.5 ? "text-rose-400" : "text-emerald-400")}>
-                  {route.priceImpactPct.toFixed(2)}%
+                  {formatPercent(route.priceImpactPct, 2)}
                 </span>
                 <span className="text-muted-foreground">Gas estimate</span>
                 <span className="font-mono">
-                  {route.gasEstimateEth.toFixed(4)} ETH
-                  <span className="text-muted-foreground ml-1">(${route.gasEstimateUsd.toFixed(2)})</span>
+                  {formatNumber(route.gasEstimateEth, 4)} ETH
+                  <span className="text-muted-foreground ml-1">(${formatNumber(route.gasEstimateUsd, 2)})</span>
                 </span>
               </div>
             </div>
@@ -177,12 +206,18 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         onClick={() => {
           executeDeFiOrder({
             client_id: "internal-trader",
+            strategy_id: "BASIS_TRADE",
+            instruction_type: "SWAP",
+            algo_type: algoType,
             instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
-            venue: "Uniswap",
+            venue: "UNISWAPV3-ETHEREUM",
             side: "buy",
             order_type: "market",
             quantity: amountNum,
             price: route?.expectedOutput ?? 0,
+            max_slippage_bps: Number(slippage) * 100,
+            expected_output: route?.expectedOutput ?? 0,
+            benchmark_price: route?.expectedOutput ?? 0,
             asset_class: "DeFi",
             lane: "defi",
           });

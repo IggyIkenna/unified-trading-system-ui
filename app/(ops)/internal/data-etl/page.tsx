@@ -8,25 +8,15 @@
 import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { MetricCard } from "@/components/shared/metric-card";
+import { StatusDot } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Database,
   ArrowLeft,
@@ -57,14 +47,15 @@ import {
   MOCK_VENUE_COVERAGE,
   MOCK_DATA_GAPS,
   ETL_SUMMARY,
-} from "@/lib/data-service-mock-data";
+} from "@/lib/mocks/fixtures/data-service";
 import {
   DATA_CATEGORY_LABELS,
   VENUES_BY_CATEGORY,
   type DataCategory,
   type ETLStatus,
   type ETLStage,
-} from "@/lib/data-service-types";
+} from "@/lib/types/data-service";
+import { formatNumber } from "@/lib/utils/formatters";
 
 const ETL_STAGE_LABELS: Record<ETLStage, string> = {
   ingest: "Ingest",
@@ -76,10 +67,7 @@ const ETL_STAGE_LABELS: Record<ETLStage, string> = {
   index: "Index",
 };
 
-const STATUS_CONFIG: Record<
-  ETLStatus,
-  { color: string; bg: string; icon: React.ElementType }
-> = {
+const STATUS_CONFIG: Record<ETLStatus, { color: string; bg: string; icon: React.ElementType }> = {
   healthy: {
     color: "text-emerald-400",
     bg: "bg-emerald-500/10",
@@ -95,6 +83,14 @@ const STATUS_CONFIG: Record<
   disabled: { color: "text-muted-foreground", bg: "bg-muted", icon: Pause },
 };
 
+function etlStageStatusDotStatus(status: ETLStatus): "live" | "warning" | "failed" | "running" | "idle" {
+  if (status === "healthy") return "live";
+  if (status === "degraded") return "warning";
+  if (status === "failed") return "failed";
+  if (status === "pending") return "running";
+  return "idle";
+}
+
 const CATEGORY_COLORS: Record<DataCategory, string> = {
   cefi: "text-sky-400 border-sky-500/30 bg-sky-500/10",
   tradfi: "text-violet-400 border-violet-500/30 bg-violet-500/10",
@@ -105,27 +101,19 @@ const CATEGORY_COLORS: Record<DataCategory, string> = {
 };
 
 export default function DataETLDashboard() {
-  const [selectedCategory, setSelectedCategory] = React.useState<
-    DataCategory | "all"
-  >("all");
+  const [selectedCategory, setSelectedCategory] = React.useState<DataCategory | "all">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [showOnlyIssues, setShowOnlyIssues] = React.useState(false);
 
   const filteredPipelines = MOCK_ETL_PIPELINES.filter((p) => {
-    if (selectedCategory !== "all" && p.config.category !== selectedCategory)
-      return false;
+    if (selectedCategory !== "all" && p.config.category !== selectedCategory) return false;
     if (showOnlyIssues && p.overallStatus === "healthy") return false;
-    if (
-      searchQuery &&
-      !p.config.venue.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-      return false;
+    if (searchQuery && !p.config.venue.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
   const filteredVenues = MOCK_VENUE_COVERAGE.filter((v) => {
-    if (selectedCategory !== "all" && v.category !== selectedCategory)
-      return false;
+    if (selectedCategory !== "all" && v.category !== selectedCategory) return false;
     if (
       searchQuery &&
       !v.venue.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -184,12 +172,7 @@ export default function DataETLDashboard() {
             icon={Activity}
             color="text-sky-400"
           />
-          <SummaryCard
-            label="Venues"
-            value={ETL_SUMMARY.totalVenues}
-            icon={Server}
-            color="text-violet-400"
-          />
+          <SummaryCard label="Venues" value={ETL_SUMMARY.totalVenues} icon={Server} color="text-violet-400" />
           <SummaryCard
             label="Instruments"
             value={ETL_SUMMARY.totalInstruments.toLocaleString()}
@@ -198,16 +181,11 @@ export default function DataETLDashboard() {
           />
           <SummaryCard
             label="Records Today"
-            value={`${(ETL_SUMMARY.totalDataPointsToday / 1000000).toFixed(0)}M`}
+            value={`${formatNumber(ETL_SUMMARY.totalDataPointsToday / 1000000, 0)}M`}
             icon={BarChart3}
             color="text-amber-400"
           />
-          <SummaryCard
-            label="Avg Latency"
-            value={`${ETL_SUMMARY.avgLatencyMs}ms`}
-            icon={Zap}
-            color="text-cyan-400"
-          />
+          <SummaryCard label="Avg Latency" value={`${ETL_SUMMARY.avgLatencyMs}ms`} icon={Zap} color="text-cyan-400" />
           <SummaryCard
             label="Degraded"
             value={ETL_SUMMARY.degradedPipelines}
@@ -222,12 +200,7 @@ export default function DataETLDashboard() {
             color="text-red-400"
             alert={ETL_SUMMARY.openGaps > 0}
           />
-          <SummaryCard
-            label="Backfilling"
-            value={ETL_SUMMARY.backfillingGaps}
-            icon={RefreshCw}
-            color="text-blue-400"
-          />
+          <SummaryCard label="Backfilling" value={ETL_SUMMARY.backfillingGaps} icon={RefreshCw} color="text-blue-400" />
         </div>
 
         {/* Filters */}
@@ -241,12 +214,7 @@ export default function DataETLDashboard() {
               className="pl-9"
             />
           </div>
-          <Select
-            value={selectedCategory}
-            onValueChange={(v) =>
-              setSelectedCategory(v as DataCategory | "all")
-            }
-          >
+          <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as DataCategory | "all")}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
@@ -298,9 +266,7 @@ export default function DataETLDashboard() {
               <PipelineCard key={pipeline.config.id} pipeline={pipeline} />
             ))}
             {filteredPipelines.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                No pipelines match your filters.
-              </div>
+              <div className="text-center py-12 text-muted-foreground">No pipelines match your filters.</div>
             )}
           </TabsContent>
 
@@ -312,9 +278,7 @@ export default function DataETLDashboard() {
               ))}
             </div>
             {filteredVenues.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                No venues match your filters.
-              </div>
+              <div className="text-center py-12 text-muted-foreground">No venues match your filters.</div>
             )}
           </TabsContent>
 
@@ -337,15 +301,10 @@ export default function DataETLDashboard() {
                     <tr key={gap.id} className="border-b last:border-0">
                       <td className="p-3">
                         <div className="font-medium">{gap.dataType}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {gap.instrument || "All instruments"}
-                        </div>
+                        <div className="text-xs text-muted-foreground">{gap.instrument || "All instruments"}</div>
                       </td>
                       <td className="p-3">
-                        <Badge
-                          variant="outline"
-                          className={CATEGORY_COLORS[gap.category]}
-                        >
+                        <Badge variant="outline" className={CATEGORY_COLORS[gap.category]}>
                           {DATA_CATEGORY_LABELS[gap.category]}
                         </Badge>
                         <span className="ml-2 text-muted-foreground">
@@ -353,25 +312,17 @@ export default function DataETLDashboard() {
                         </span>
                       </td>
                       <td className="p-3 font-mono text-xs">
-                        {gap.gapStart === gap.gapEnd
-                          ? gap.gapStart
-                          : `${gap.gapStart} → ${gap.gapEnd}`}
-                        <div className="text-muted-foreground">
-                          {gap.daysAffected} day(s)
-                        </div>
+                        {gap.gapStart === gap.gapEnd ? gap.gapStart : `${gap.gapStart} → ${gap.gapEnd}`}
+                        <div className="text-muted-foreground">{gap.daysAffected} day(s)</div>
                       </td>
                       <td className="p-3">
                         <Badge
                           variant="outline"
                           className={cn(
-                            gap.severity === "critical" &&
-                              "border-red-500/30 text-red-400",
-                            gap.severity === "high" &&
-                              "border-orange-500/30 text-orange-400",
-                            gap.severity === "medium" &&
-                              "border-amber-500/30 text-amber-400",
-                            gap.severity === "low" &&
-                              "border-muted-foreground/30 text-muted-foreground",
+                            gap.severity === "critical" && "border-red-500/30 text-red-400",
+                            gap.severity === "high" && "border-orange-500/30 text-orange-400",
+                            gap.severity === "medium" && "border-amber-500/30 text-amber-400",
+                            gap.severity === "low" && "border-muted-foreground/30 text-muted-foreground",
                           )}
                         >
                           {gap.severity}
@@ -381,14 +332,10 @@ export default function DataETLDashboard() {
                         <Badge
                           variant="outline"
                           className={cn(
-                            gap.status === "open" &&
-                              "border-red-500/30 text-red-400",
-                            gap.status === "backfilling" &&
-                              "border-blue-500/30 text-blue-400",
-                            gap.status === "resolved" &&
-                              "border-emerald-500/30 text-emerald-400",
-                            gap.status === "wont_fix" &&
-                              "border-muted-foreground/30 text-muted-foreground",
+                            gap.status === "open" && "border-red-500/30 text-red-400",
+                            gap.status === "backfilling" && "border-blue-500/30 text-blue-400",
+                            gap.status === "resolved" && "border-emerald-500/30 text-emerald-400",
+                            gap.status === "wont_fix" && "border-muted-foreground/30 text-muted-foreground",
                           )}
                         >
                           {gap.status}
@@ -417,10 +364,7 @@ export default function DataETLDashboard() {
 
           {/* ─── Instruments Tab ────────────────────────────────────────────── */}
           <TabsContent value="instruments">
-            <InstrumentBrowser
-              selectedCategory={selectedCategory}
-              searchQuery={searchQuery}
-            />
+            <InstrumentBrowser selectedCategory={selectedCategory} searchQuery={searchQuery} />
           </TabsContent>
         </Tabs>
       </div>
@@ -446,30 +390,28 @@ function SummaryCard({
   alert?: boolean;
 }) {
   return (
-    <Card className={cn(alert && "border-amber-500/30")}>
-      <CardContent className="p-3">
-        <div className="flex items-center justify-between">
-          <Icon className={cn("size-4", color)} />
-          {alert && (
-            <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
-          )}
-        </div>
-        <div className="mt-2">
-          <div className="text-xl font-bold font-mono">{value}</div>
-          <div className="text-xs text-muted-foreground">
-            {subValue || label}
+    <MetricCard
+      className={cn(alert && "border-amber-500/30")}
+      tone="grid"
+      density="compact"
+      contentClassName="!items-stretch !p-3 !text-left"
+      body={
+        <>
+          <div className="flex w-full items-center justify-between">
+            <Icon className={cn("size-4", color)} />
+            {alert ? <StatusDot status="warning" className="size-2 animate-pulse" /> : null}
           </div>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="mt-2 w-full">
+            <div className="font-mono text-xl font-bold">{value}</div>
+            <div className="text-xs text-muted-foreground">{subValue || label}</div>
+          </div>
+        </>
+      }
+    />
   );
 }
 
-function PipelineCard({
-  pipeline,
-}: {
-  pipeline: (typeof MOCK_ETL_PIPELINES)[0];
-}) {
+function PipelineCard({ pipeline }: { pipeline: (typeof MOCK_ETL_PIPELINES)[0] }) {
   const { config, stages, overallStatus, dataLagMinutes, alerts } = pipeline;
   const StatusIcon = STATUS_CONFIG[overallStatus].icon;
 
@@ -483,20 +425,13 @@ function PipelineCard({
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
-              className={cn("p-2 rounded-lg", STATUS_CONFIG[overallStatus].bg)}
-            >
-              <StatusIcon
-                className={cn("size-4", STATUS_CONFIG[overallStatus].color)}
-              />
+            <div className={cn("p-2 rounded-lg", STATUS_CONFIG[overallStatus].bg)}>
+              <StatusIcon className={cn("size-4", STATUS_CONFIG[overallStatus].color)} />
             </div>
             <div>
               <CardTitle className="text-base flex items-center gap-2">
                 {config.venue}
-                <Badge
-                  variant="outline"
-                  className={CATEGORY_COLORS[config.category]}
-                >
+                <Badge variant="outline" className={CATEGORY_COLORS[config.category]}>
                   {DATA_CATEGORY_LABELS[config.category]}
                 </Badge>
                 <Badge variant="secondary" className="text-[10px]">
@@ -516,12 +451,7 @@ function PipelineCard({
           <div className="flex items-center gap-2">
             <div className="text-right">
               <div
-                className={cn(
-                  "text-sm font-mono",
-                  dataLagMinutes > 10
-                    ? "text-amber-400"
-                    : "text-muted-foreground",
-                )}
+                className={cn("text-sm font-mono", dataLagMinutes > 10 ? "text-amber-400" : "text-muted-foreground")}
               >
                 {dataLagMinutes < 60
                   ? `${dataLagMinutes}m`
@@ -529,8 +459,7 @@ function PipelineCard({
                 lag
               </div>
               <div className="text-xs text-muted-foreground">
-                Last sync:{" "}
-                {new Date(pipeline.lastFullSync).toLocaleTimeString()}
+                Last sync: {new Date(pipeline.lastFullSync).toLocaleTimeString()}
               </div>
             </div>
             <Button variant="ghost" size="icon">
@@ -558,9 +487,7 @@ function PipelineCard({
                 )}
                 title={`${ETL_STAGE_LABELS[stage.stage]}: ${stage.status}`}
               />
-              {i < stages.length - 1 && (
-                <ChevronRight className="size-3 text-muted-foreground shrink-0" />
-              )}
+              {i < stages.length - 1 && <ChevronRight className="size-3 text-muted-foreground shrink-0" />}
             </React.Fragment>
           ))}
         </div>
@@ -568,21 +495,13 @@ function PipelineCard({
           <div className="flex gap-4">
             {stages.slice(0, 4).map((stage) => (
               <span key={stage.stage} className="flex items-center gap-1">
-                <span
-                  className={cn(
-                    "size-1.5 rounded-full",
-                    stage.status === "healthy" && "bg-emerald-500",
-                    stage.status === "degraded" && "bg-amber-500",
-                    stage.status === "failed" && "bg-red-500",
-                  )}
-                />
+                <StatusDot status={etlStageStatusDotStatus(stage.status)} className="size-1.5" />
                 {ETL_STAGE_LABELS[stage.stage]}
               </span>
             ))}
           </div>
           <div>
-            {stages[0].recordsProcessed?.toLocaleString()} records ·{" "}
-            {stages[0].latencyMs}ms
+            {stages[0].recordsProcessed?.toLocaleString()} records · {stages[0].latencyMs}ms
           </div>
         </div>
 
@@ -595,8 +514,7 @@ function PipelineCard({
                 className={cn(
                   "flex items-center gap-2 rounded-md px-3 py-2 text-sm",
                   alert.severity === "critical" && "bg-red-500/10 text-red-400",
-                  alert.severity === "warning" &&
-                    "bg-amber-500/10 text-amber-400",
+                  alert.severity === "warning" && "bg-amber-500/10 text-amber-400",
                   alert.severity === "info" && "bg-blue-500/10 text-blue-400",
                 )}
               >
@@ -628,9 +546,7 @@ function VenueCard({ venue }: { venue: (typeof MOCK_VENUE_COVERAGE)[0] }) {
         <div className="flex items-center justify-between">
           <CardTitle className="text-base flex items-center gap-2">
             {venue.label}
-            <StatusIcon
-              className={cn("size-4", STATUS_CONFIG[venue.healthStatus].color)}
-            />
+            <StatusIcon className={cn("size-4", STATUS_CONFIG[venue.healthStatus].color)} />
           </CardTitle>
           <Badge variant="outline" className={CATEGORY_COLORS[venue.category]}>
             {DATA_CATEGORY_LABELS[venue.category]}
@@ -644,15 +560,11 @@ function VenueCard({ venue }: { venue: (typeof MOCK_VENUE_COVERAGE)[0] }) {
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div>
             <div className="text-muted-foreground text-xs">Instruments</div>
-            <div className="font-mono font-medium">
-              {venue.instrumentCount.toLocaleString()}
-            </div>
+            <div className="font-mono font-medium">{venue.instrumentCount.toLocaleString()}</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">Daily Volume</div>
-            <div className="font-mono font-medium">
-              {(venue.dailyVolume / 1000000).toFixed(1)}M
-            </div>
+            <div className="font-mono font-medium">{formatNumber(venue.dailyVolume / 1000000, 1)}M</div>
           </div>
           <div>
             <div className="text-muted-foreground text-xs">Oldest Data</div>
@@ -683,9 +595,7 @@ function InstrumentBrowser({
 
   const categories =
     selectedCategory === "all"
-      ? (Object.keys(VENUES_BY_CATEGORY) as DataCategory[]).filter(
-          (c) => c !== "prediction_market",
-        )
+      ? (Object.keys(VENUES_BY_CATEGORY) as DataCategory[]).filter((c) => c !== "prediction_market")
       : [selectedCategory];
 
   return (
@@ -697,42 +607,29 @@ function InstrumentBrowser({
               <Badge variant="outline" className={CATEGORY_COLORS[cat]}>
                 {DATA_CATEGORY_LABELS[cat]}
               </Badge>
-              <span className="text-muted-foreground font-normal">
-                {VENUES_BY_CATEGORY[cat].length} venues
-              </span>
+              <span className="text-muted-foreground font-normal">{VENUES_BY_CATEGORY[cat].length} venues</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
               {VENUES_BY_CATEGORY[cat]
-                .filter(
-                  (v) =>
-                    !searchQuery ||
-                    v.toLowerCase().includes(searchQuery.toLowerCase()),
-                )
+                .filter((v) => !searchQuery || v.toLowerCase().includes(searchQuery.toLowerCase()))
                 .map((venue) => {
-                  const coverage = MOCK_VENUE_COVERAGE.find(
-                    (vc) => vc.venue === venue,
-                  );
+                  const coverage = MOCK_VENUE_COVERAGE.find((vc) => vc.venue === venue);
                   return (
                     <button
                       key={venue}
-                      onClick={() =>
-                        setExpandedVenue(expandedVenue === venue ? null : venue)
-                      }
+                      onClick={() => setExpandedVenue(expandedVenue === venue ? null : venue)}
                       className={cn(
                         "flex items-center justify-between rounded-md border p-3 text-left text-sm transition-colors hover:bg-accent",
                         expandedVenue === venue && "bg-accent border-primary",
                       )}
                     >
                       <div>
-                        <div className="font-medium capitalize">
-                          {venue.replace(/_/g, " ")}
-                        </div>
+                        <div className="font-medium capitalize">{venue.replace(/_/g, " ")}</div>
                         {coverage && (
                           <div className="text-xs text-muted-foreground">
-                            {coverage.instrumentCount.toLocaleString()}{" "}
-                            instruments · Since {coverage.oldestData}
+                            {coverage.instrumentCount.toLocaleString()} instruments · Since {coverage.oldestData}
                           </div>
                         )}
                       </div>

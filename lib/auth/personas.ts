@@ -86,6 +86,22 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "Investor / board member. Sees investor relations presentations only — board deck, disaster recovery, security posture.",
   },
+  {
+    id: "elysium-defi",
+    email: "patrick@bankelysium.com",
+    password: "demo",
+    displayName: "Patrick",
+    role: "client",
+    org: { id: "elysium", name: "Elysium" },
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "defi-trading",
+      "reporting",
+    ],
+    description:
+      "DeFi client demo. DeFi trading tab + general terminal (overview, positions, orders, P&L, risk, alerts, book, accounts, instructions). Strategy families LOCKED. Sports/Predictions/Options LOCKED. Build/Data LOCKED. Strategies: AAVE_LENDING, BASIS_TRADE, STAKED_BASIS, RECURSIVE_STAKED_BASIS (demo only).",
+  },
 ] as const;
 
 export function getPersonaById(id: string): AuthPersona | undefined {

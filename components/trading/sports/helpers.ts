@@ -1,9 +1,5 @@
 import type { FixtureStatus, OddsMovement } from "./types";
-import {
-  KELLY_HALF_FRACTION,
-  KELLY_MAX_STAKE_PCT,
-  TOTAL_BANKROLL,
-} from "./mock-fixtures";
+import { KELLY_HALF_FRACTION, KELLY_MAX_STAKE_PCT, TOTAL_BANKROLL } from "@/lib/mocks/fixtures/sports-fixtures";
 
 // ─── Kelly Criterion ──────────────────────────────────────────────────────────
 
@@ -11,11 +7,7 @@ import {
  * Half-Kelly stake given decimal odds and estimated win probability.
  * Capped at KELLY_MAX_STAKE_PCT of bankroll.
  */
-export function calcKellyStake(
-  decimalOdds: number,
-  estimatedProb: number,
-  bankroll: number = TOTAL_BANKROLL,
-): number {
+export function calcKellyStake(decimalOdds: number, estimatedProb: number, bankroll: number = TOTAL_BANKROLL): number {
   const b = decimalOdds - 1;
   const q = 1 - estimatedProb;
   const fullKelly = (b * estimatedProb - q) / b;
@@ -41,11 +33,7 @@ export function calcArbPct(leg1Odds: number, leg2Odds: number): number {
  * Optimal stake split for a two-leg arb given a total stake budget.
  * Returns [stake1, stake2] ensuring equal return on both legs.
  */
-export function calcArbStakes(
-  leg1Odds: number,
-  leg2Odds: number,
-  totalStake: number,
-): [number, number] {
+export function calcArbStakes(leg1Odds: number, leg2Odds: number, totalStake: number): [number, number] {
   const impliedSum = 1 / leg1Odds + 1 / leg2Odds;
   const stake1 = (totalStake * (1 / leg1Odds)) / impliedSum;
   const stake2 = (totalStake * (1 / leg2Odds)) / impliedSum;
@@ -55,9 +43,7 @@ export function calcArbStakes(
 // ─── Status Helpers ───────────────────────────────────────────────────────────
 
 export function isLive(status: FixtureStatus): boolean {
-  return (
-    status === "LIVE" || status === "1H" || status === "2H" || status === "ET"
-  );
+  return status === "LIVE" || status === "1H" || status === "2H" || status === "ET";
 }
 
 export function isCompleted(status: FixtureStatus): boolean {
@@ -93,9 +79,7 @@ export function getStatusLabel(status: FixtureStatus, minute?: number): string {
   }
 }
 
-export function getStatusVariant(
-  status: FixtureStatus,
-): "default" | "secondary" | "destructive" | "outline" {
+export function getStatusVariant(status: FixtureStatus): "default" | "secondary" | "destructive" | "outline" {
   if (isLive(status)) return "default";
   if (status === "SUSP") return "destructive";
   if (status === "HT") return "secondary";

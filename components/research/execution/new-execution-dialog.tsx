@@ -12,28 +12,15 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import {
-  Award,
-  ChevronDown,
-  ChevronRight,
-  GitBranch,
-  Play,
-  Settings2,
-  TrendingUp,
-  Zap,
-} from "lucide-react";
+import { Award, ChevronDown, ChevronRight, GitBranch, Play, Settings2, TrendingUp, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ExecutionBacktest } from "@/lib/build-mock-data";
+import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
+import { MOCK_STRATEGY_BACKTESTS } from "@/lib/mocks/fixtures/research-execution-backtests";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Collapsible Config Section (matches ML Training pattern)
@@ -60,9 +47,7 @@ function CollapsibleConfigSection({
       >
         <div className="flex items-center gap-2">
           {icon}
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            {title}
-          </h4>
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</h4>
         </div>
         {open ? (
           <ChevronDown className="size-4 text-muted-foreground" />
@@ -70,9 +55,7 @@ function CollapsibleConfigSection({
           <ChevronRight className="size-4 text-muted-foreground" />
         )}
       </button>
-      {open && (
-        <CardContent className="pt-0 pb-4 space-y-4">{children}</CardContent>
-      )}
+      {open && <CardContent className="pt-0 pb-4 space-y-4">{children}</CardContent>}
     </Card>
   );
 }
@@ -100,7 +83,16 @@ type AlgoType =
 
 // Backend-aligned algo sets by instruction type
 const ALGOS_BY_INSTRUCTION_TYPE: Record<string, AlgoType[]> = {
-  TRADE: ["TWAP", "VWAP", "ADAPTIVE_TWAP", "ALMGREN_CHRISS", "POV_DYNAMIC", "HYBRID_OPTIMAL", "PASSIVE_AGGRESSIVE_HYBRID", "BENCHMARK_FILL"],
+  TRADE: [
+    "TWAP",
+    "VWAP",
+    "ADAPTIVE_TWAP",
+    "ALMGREN_CHRISS",
+    "POV_DYNAMIC",
+    "HYBRID_OPTIMAL",
+    "PASSIVE_AGGRESSIVE_HYBRID",
+    "BENCHMARK_FILL",
+  ],
   SWAP: ["SMART_ORDER_ROUTER", "SOR_TWAP", "SWAP_TWAP", "MAX_SLIPPAGE", "BENCHMARK_FILL"],
   LEND: ["BENCHMARK_FILL"],
   STAKE: ["BENCHMARK_FILL"],
@@ -130,61 +122,14 @@ function getAlgosForType(instructionType: string): AlgoType[] {
 // Legacy compat
 const ALL_ALGOS: AlgoType[] = Object.keys(ALGO_DISPLAY_NAMES) as AlgoType[];
 
-const MOCK_STRATEGY_BACKTESTS = [
-  { id: "sbt-001", name: "BTC Momentum v3 — Binance", instructions: [
-    { id: "instr-001", type: "TRADE", instrument: "BTC-USDT", venue: "Binance", defaultAlgo: "VWAP" as AlgoType },
-    { id: "instr-002", type: "TRADE", instrument: "ETH-USDT", venue: "Binance", defaultAlgo: "TWAP" as AlgoType },
-  ]},
-  { id: "sbt-002", name: "ETH Mean-Rev — Hyperliquid", instructions: [
-    { id: "instr-003", type: "TRADE", instrument: "ETH-PERP", venue: "Hyperliquid", defaultAlgo: "ADAPTIVE_TWAP" as AlgoType },
-    { id: "instr-004", type: "TRADE", instrument: "ETH-USDT", venue: "Hyperliquid", defaultAlgo: "VWAP" as AlgoType },
-  ]},
-  { id: "sbt-003", name: "Multi-Asset Trend — OKX", instructions: [
-    { id: "instr-005", type: "TRADE", instrument: "BTC-USDT", venue: "OKX", defaultAlgo: "VWAP" as AlgoType },
-    { id: "instr-006", type: "TRADE", instrument: "SOL-USDT", venue: "OKX", defaultAlgo: "TWAP" as AlgoType },
-    { id: "instr-007", type: "TRADE", instrument: "ETH-USDT", venue: "OKX", defaultAlgo: "POV_DYNAMIC" as AlgoType },
-  ]},
-  { id: "sbt-004", name: "DeFi Basis — Aave/Uniswap", instructions: [
-    { id: "instr-008", type: "LEND", instrument: "USDC", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-    { id: "instr-009", type: "SWAP", instrument: "WETH-USDC", venue: "Uniswap", defaultAlgo: "SMART_ORDER_ROUTER" as AlgoType },
-    { id: "instr-010", type: "FLASH_LOAN", instrument: "USDC", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-  ]},
-  { id: "sbt-005", name: "SOL Breakout — Binance", instructions: [
-    { id: "instr-011", type: "TRADE", instrument: "SOL-USDT", venue: "Binance", defaultAlgo: "ALMGREN_CHRISS" as AlgoType },
-  ]},
-  { id: "sbt-006", name: "Options Vol Surface — Deribit", instructions: [
-    { id: "instr-012", type: "TRADE", instrument: "ETH-28MAR-3500-C", venue: "Deribit", defaultAlgo: "PASSIVE_AGGRESSIVE_HYBRID" as AlgoType },
-    { id: "instr-013", type: "TRADE", instrument: "ETH-28MAR-3500-P", venue: "Deribit", defaultAlgo: "PASSIVE_AGGRESSIVE_HYBRID" as AlgoType },
-  ]},
-  { id: "sbt-007", name: "Staking Yield — Lido/Aave", instructions: [
-    { id: "instr-014", type: "STAKE", instrument: "ETH", venue: "Lido", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-    { id: "instr-015", type: "LEND", instrument: "stETH", venue: "Aave", defaultAlgo: "BENCHMARK_FILL" as AlgoType },
-  ]},
-];
-
-const VENUE_OPTIONS = [
-  "BINANCE",
-  "HYPERLIQUID",
-  "OKX",
-  "DERIBIT",
-  "UNISWAP",
-] as const;
+const VENUE_OPTIONS = ["BINANCE", "HYPERLIQUID", "OKX", "DERIBIT", "UNISWAP"] as const;
 
 // ─── New Execution Backtest Dialog ──────────────────────────────────────────
 
-export function NewExecutionBacktestDialog({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export function NewExecutionBacktestDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   // Section A: Source Config
   const [strategyBt, setStrategyBt] = React.useState("");
-  const [selectedVenues, setSelectedVenues] = React.useState<string[]>([
-    "BINANCE",
-    "OKX",
-  ]);
+  const [selectedVenues, setSelectedVenues] = React.useState<string[]>(["BINANCE", "OKX"]);
 
   // Section B: Per-instruction Algorithm Config
   const selectedBt = MOCK_STRATEGY_BACKTESTS.find((b) => b.id === strategyBt);
@@ -223,8 +168,7 @@ export function NewExecutionBacktestDialog({
   const [acHorizon, setAcHorizon] = React.useState("3600");
 
   // Section C: Market Impact Config
-  const [marketImpactModel, setMarketImpactModel] =
-    React.useState("square_root");
+  const [marketImpactModel, setMarketImpactModel] = React.useState("square_root");
   const [slippageModel, setSlippageModel] = React.useState("orderbook_based");
   const [fixedSlippageBps, setFixedSlippageBps] = React.useState("5");
   const [allowPartialFills, setAllowPartialFills] = React.useState(true);
@@ -233,13 +177,10 @@ export function NewExecutionBacktestDialog({
   // Section D: Smart Routing
   const [smartRouting, setSmartRouting] = React.useState(true);
   const [routingStrategy, setRoutingStrategy] = React.useState("best_price");
-  const [maxVenueConcentration, setMaxVenueConcentration] =
-    React.useState("80");
+  const [maxVenueConcentration, setMaxVenueConcentration] = React.useState("80");
 
   const toggleVenue = (v: string) =>
-    setSelectedVenues((prev) =>
-      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v],
-    );
+    setSelectedVenues((prev) => (prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]));
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
@@ -250,8 +191,8 @@ export function NewExecutionBacktestDialog({
             New Execution Backtest
           </DialogTitle>
           <DialogDescription>
-            Simulate execution of strategy signals using different algorithms.
-            Measures slippage, fill rates, and implementation shortfall.
+            Simulate execution of strategy signals using different algorithms. Measures slippage, fill rates, and
+            implementation shortfall.
           </DialogDescription>
         </DialogHeader>
 
@@ -276,9 +217,7 @@ export function NewExecutionBacktestDialog({
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-[11px] text-muted-foreground">
-                Signals source from a completed strategy backtest
-              </p>
+              <p className="text-[11px] text-muted-foreground">Signals source from a completed strategy backtest</p>
             </div>
 
             <div className="space-y-2">
@@ -291,18 +230,14 @@ export function NewExecutionBacktestDialog({
                     onClick={() => toggleVenue(v)}
                     className={cn(
                       "cursor-pointer text-xs transition-colors",
-                      selectedVenues.includes(v)
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "hover:border-border",
+                      selectedVenues.includes(v) ? "border-primary bg-primary/10 text-primary" : "hover:border-border",
                     )}
                   >
                     {v}
                   </Badge>
                 ))}
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                Select target venues for execution simulation
-              </p>
+              <p className="text-[11px] text-muted-foreground">Select target venues for execution simulation</p>
             </div>
           </CollapsibleConfigSection>
 
@@ -315,7 +250,8 @@ export function NewExecutionBacktestDialog({
             {selectedBt ? (
               <div className="space-y-3">
                 <p className="text-[11px] text-muted-foreground">
-                  Each instruction can use a different execution algorithm. Defaults are auto-suggested based on instruction type.
+                  Each instruction can use a different execution algorithm. Defaults are auto-suggested based on
+                  instruction type.
                 </p>
                 <div className="rounded-lg border border-border/50 overflow-hidden">
                   <table className="w-full text-xs">
@@ -332,7 +268,9 @@ export function NewExecutionBacktestDialog({
                         <tr key={instr.id} className="border-b border-border/30 last:border-0">
                           <td className="px-2 py-1.5 text-muted-foreground font-mono">{instr.id.slice(-3)}</td>
                           <td className="px-2 py-1.5">
-                            <Badge variant="outline" className="text-[10px]">{instr.type}</Badge>
+                            <Badge variant="outline" className="text-[10px]">
+                              {instr.type}
+                            </Badge>
                           </td>
                           <td className="px-2 py-1.5 font-medium">{instr.instrument}</td>
                           <td className="px-2 py-1.5">
@@ -345,7 +283,9 @@ export function NewExecutionBacktestDialog({
                               </SelectTrigger>
                               <SelectContent>
                                 {getAlgosForType(instr.type).map((a) => (
-                                  <SelectItem key={a} value={a}>{ALGO_DISPLAY_NAMES[a]}</SelectItem>
+                                  <SelectItem key={a} value={a}>
+                                    {ALGO_DISPLAY_NAMES[a]}
+                                  </SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
@@ -365,9 +305,7 @@ export function NewExecutionBacktestDialog({
             {/* Dynamic algo params */}
             {algo === "TWAP" && (
               <div className="rounded-lg border border-border/50 p-3 space-y-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  TWAP Parameters
-                </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">TWAP Parameters</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">horizon_secs</Label>
@@ -401,10 +339,7 @@ export function NewExecutionBacktestDialog({
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">Order Type</Label>
-                    <Select
-                      value={twapOrderType}
-                      onValueChange={setTwapOrderType}
-                    >
+                    <Select value={twapOrderType} onValueChange={setTwapOrderType}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -443,9 +378,7 @@ export function NewExecutionBacktestDialog({
 
             {algo === "VWAP" && (
               <div className="rounded-lg border border-border/50 p-3 space-y-3">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                  VWAP Parameters
-                </p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">VWAP Parameters</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">num_intervals</Label>
@@ -459,8 +392,13 @@ export function NewExecutionBacktestDialog({
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">volume_profile</Label>
-                    <Select value={vwapAggressive ? "aggressive" : "standard"} onValueChange={(v) => setVwapAggressive(v === "aggressive")}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={vwapAggressive ? "aggressive" : "standard"}
+                      onValueChange={(v) => setVwapAggressive(v === "aggressive")}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="standard">Standard</SelectItem>
                         <SelectItem value="aggressive">Aggressive</SelectItem>
@@ -471,17 +409,11 @@ export function NewExecutionBacktestDialog({
                   </div>
                 </div>
                 <div className="flex items-center gap-3 pt-1">
-                  <Switch
-                    id="vwap-aggressive"
-                    checked={vwapAggressive}
-                    onCheckedChange={setVwapAggressive}
-                  />
+                  <Switch id="vwap-aggressive" checked={vwapAggressive} onCheckedChange={setVwapAggressive} />
                   <Label htmlFor="vwap-aggressive" className="cursor-pointer text-xs">
                     Aggressive Limit
                   </Label>
-                  <p className="text-[11px] text-muted-foreground">
-                    Cross spread when behind schedule
-                  </p>
+                  <p className="text-[11px] text-muted-foreground">Cross spread when behind schedule</p>
                 </div>
               </div>
             )}
@@ -494,7 +426,13 @@ export function NewExecutionBacktestDialog({
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">target_pov</Label>
-                    <Input type="number" value={povParticipation} onChange={(e) => setPovParticipation(e.target.value)} min={1} max={100} />
+                    <Input
+                      type="number"
+                      value={povParticipation}
+                      onChange={(e) => setPovParticipation(e.target.value)}
+                      min={1}
+                      max={100}
+                    />
                     <p className="text-[10px] text-muted-foreground">Target % of volume</p>
                   </div>
                   <div className="space-y-1">
@@ -519,7 +457,14 @@ export function NewExecutionBacktestDialog({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">risk_aversion</Label>
-                    <Input type="number" step="0.01" value={acRiskAversion} onChange={(e) => setAcRiskAversion(e.target.value)} min={0.01} max={10} />
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={acRiskAversion}
+                      onChange={(e) => setAcRiskAversion(e.target.value)}
+                      min={0.01}
+                      max={10}
+                    />
                     <p className="text-[10px] text-muted-foreground">Higher = more risk-averse (slower)</p>
                   </div>
                   <div className="space-y-1">
@@ -618,8 +563,8 @@ export function NewExecutionBacktestDialog({
 
             {algo === "BENCHMARK_FILL" && (
               <div className="rounded-md bg-muted/30 p-3 text-xs text-muted-foreground italic">
-                Benchmark Fill — zero-alpha execution at best available price.
-                Used for LEND, STAKE, BORROW instructions. No parameters.
+                Benchmark Fill — zero-alpha execution at best available price. Used for LEND, STAKE, BORROW
+                instructions. No parameters.
               </div>
             )}
           </CollapsibleConfigSection>
@@ -633,45 +578,31 @@ export function NewExecutionBacktestDialog({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Market Impact Model</Label>
-                <Select
-                  value={marketImpactModel}
-                  onValueChange={setMarketImpactModel}
-                >
+                <Select value={marketImpactModel} onValueChange={setMarketImpactModel}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="square_root">Square Root</SelectItem>
                     <SelectItem value="linear">Linear</SelectItem>
-                    <SelectItem value="almgren_chriss">
-                      Almgren-Chriss
-                    </SelectItem>
+                    <SelectItem value="almgren_chriss">Almgren-Chriss</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-muted-foreground">
-                  Theoretical model for permanent price impact
-                </p>
+                <p className="text-[11px] text-muted-foreground">Theoretical model for permanent price impact</p>
               </div>
               <div className="space-y-2">
                 <Label>Slippage Model</Label>
-                <Select
-                  value={slippageModel}
-                  onValueChange={setSlippageModel}
-                >
+                <Select value={slippageModel} onValueChange={setSlippageModel}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="orderbook_based">
-                      Orderbook-based
-                    </SelectItem>
+                    <SelectItem value="orderbook_based">Orderbook-based</SelectItem>
                     <SelectItem value="fixed_bps">Fixed BPS</SelectItem>
                     <SelectItem value="empirical">Empirical</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-[11px] text-muted-foreground">
-                  How slippage is estimated during simulation
-                </p>
+                <p className="text-[11px] text-muted-foreground">How slippage is estimated during simulation</p>
               </div>
             </div>
 
@@ -685,29 +616,18 @@ export function NewExecutionBacktestDialog({
                   min={0}
                   max={100}
                 />
-                <p className="text-[11px] text-muted-foreground">
-                  Constant slippage applied to every fill
-                </p>
+                <p className="text-[11px] text-muted-foreground">Constant slippage applied to every fill</p>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-3">
-                <Switch
-                  id="allow-partial-fills"
-                  checked={allowPartialFills}
-                  onCheckedChange={setAllowPartialFills}
-                />
+                <Switch id="allow-partial-fills" checked={allowPartialFills} onCheckedChange={setAllowPartialFills} />
                 <div>
-                  <Label
-                    htmlFor="allow-partial-fills"
-                    className="cursor-pointer"
-                  >
+                  <Label htmlFor="allow-partial-fills" className="cursor-pointer">
                     Allow Partial Fills
                   </Label>
-                  <p className="text-[11px] text-muted-foreground">
-                    Simulate partial order fills
-                  </p>
+                  <p className="text-[11px] text-muted-foreground">Simulate partial order fills</p>
                 </div>
               </div>
               <div className="space-y-2">
@@ -719,9 +639,7 @@ export function NewExecutionBacktestDialog({
                   min={0}
                   max={100}
                 />
-                <p className="text-[11px] text-muted-foreground">
-                  Cancel if fill rate drops below this
-                </p>
+                <p className="text-[11px] text-muted-foreground">Cancel if fill rate drops below this</p>
               </div>
             </div>
           </CollapsibleConfigSection>
@@ -733,11 +651,7 @@ export function NewExecutionBacktestDialog({
             defaultOpen={false}
           >
             <div className="flex items-center gap-3">
-              <Switch
-                id="smart-routing"
-                checked={smartRouting}
-                onCheckedChange={setSmartRouting}
-              />
+              <Switch id="smart-routing" checked={smartRouting} onCheckedChange={setSmartRouting} />
               <div>
                 <Label htmlFor="smart-routing" className="cursor-pointer">
                   Smart Order Routing
@@ -752,40 +666,29 @@ export function NewExecutionBacktestDialog({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Routing Strategy</Label>
-                  <Select
-                    value={routingStrategy}
-                    onValueChange={setRoutingStrategy}
-                  >
+                  <Select value={routingStrategy} onValueChange={setRoutingStrategy}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="best_price">Best Price</SelectItem>
                       <SelectItem value="lowest_fee">Lowest Fee</SelectItem>
-                      <SelectItem value="fastest_fill">
-                        Fastest Fill
-                      </SelectItem>
+                      <SelectItem value="fastest_fill">Fastest Fill</SelectItem>
                       <SelectItem value="balanced">Balanced</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-[11px] text-muted-foreground">
-                    Optimization objective for routing
-                  </p>
+                  <p className="text-[11px] text-muted-foreground">Optimization objective for routing</p>
                 </div>
                 <div className="space-y-2">
                   <Label>Max Venue Concentration %</Label>
                   <Input
                     type="number"
                     value={maxVenueConcentration}
-                    onChange={(e) =>
-                      setMaxVenueConcentration(e.target.value)
-                    }
+                    onChange={(e) => setMaxVenueConcentration(e.target.value)}
                     min={10}
                     max={100}
                   />
-                  <p className="text-[11px] text-muted-foreground">
-                    Cap per-venue allocation
-                  </p>
+                  <p className="text-[11px] text-muted-foreground">Cap per-venue allocation</p>
                 </div>
               </div>
             )}
@@ -827,8 +730,8 @@ export function CandidateDialog({
             Mark as Strategy Candidate
           </DialogTitle>
           <DialogDescription>
-            This backtest will be promoted to a strategy candidate and become
-            available in the Promote tab for formal review.
+            This backtest will be promoted to a strategy candidate and become available in the Promote tab for formal
+            review.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
@@ -847,46 +750,37 @@ export function CandidateDialog({
               },
               {
                 label: "Sharpe Ratio",
-                value: r.sharpe_ratio.toFixed(2),
+                value: formatNumber(r.sharpe_ratio, 2),
                 good: r.sharpe_ratio > 1.5,
               },
               {
                 label: "Max Drawdown",
-                value: `${r.max_drawdown_pct.toFixed(1)}%`,
+                value: `${formatPercent(r.max_drawdown_pct, 1)}`,
                 good: r.max_drawdown_pct < 15,
               },
               {
                 label: "Avg Slippage",
-                value: `${r.avg_slippage_bps.toFixed(1)} bps`,
+                value: `${formatNumber(r.avg_slippage_bps, 1)} bps`,
                 good: r.avg_slippage_bps < 3,
               },
             ].map((m) => (
               <div key={m.label} className="rounded bg-muted/40 p-2">
                 <p className="text-xs text-muted-foreground">{m.label}</p>
-                <p
-                  className={cn(
-                    "text-sm font-bold tabular-nums",
-                    m.good ? "text-emerald-400" : "text-red-400",
-                  )}
-                >
+                <p className={cn("text-sm font-bold tabular-nums", m.good ? "text-emerald-400" : "text-red-400")}>
                   {m.value}
                 </p>
               </div>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            The full lineage (features → model → strategy → execution config)
-            will be captured in the candidate record.
+            The full lineage (features → model → strategy → execution config) will be captured in the candidate record.
           </p>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onClose(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={() => onClose(true)}
-            className="gap-2 bg-amber-500 hover:bg-amber-600 text-black"
-          >
+          <Button onClick={() => onClose(true)} className="gap-2 bg-amber-500 hover:bg-amber-600 text-black">
             <Award className="size-4" />
             Promote to Candidate
           </Button>

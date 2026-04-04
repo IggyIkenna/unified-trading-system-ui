@@ -72,7 +72,7 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const apiStrategies: StrategyRecord[] = React.useMemo(() => {
     if (!perfRaw) return [];
     const raw = perfRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).strategies;
+    const arr = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).strategies);
     let result = Array.isArray(arr) ? (arr as StrategyRecord[]) : [];
     if (globalScope.strategyIds.length > 0) {
       result = result.filter((s) => globalScope.strategyIds.includes(s.id));
@@ -83,14 +83,14 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const apiOrgs: OrgRecord[] = React.useMemo(() => {
     if (!orgsRaw) return [];
     const raw = orgsRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).organizations;
+    const arr = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).organizations);
     return Array.isArray(arr) ? (arr as OrgRecord[]) : [];
   }, [orgsRaw]);
 
   const apiClients: ClientRecord[] = React.useMemo(() => {
     if (!orgsRaw) return [];
     const raw = orgsRaw as Record<string, unknown>;
-    const arr = (raw as Record<string, unknown>).clients;
+    const arr = (raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).clients;
     return Array.isArray(arr) ? (arr as ClientRecord[]) : [];
   }, [orgsRaw]);
 

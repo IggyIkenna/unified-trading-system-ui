@@ -1,48 +1,32 @@
 "use client";
 
-import * as React from "react";
+import { PageHeader } from "@/components/shared/page-header";
+import { MOCK_HISTORY, type DeliveryStatus, type NotificationEntry } from "@/lib/mocks/fixtures/settings-data";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/shared/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/hooks/use-toast";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   Bell,
+  CheckCircle2,
+  Clock,
   Globe,
   Mail,
-  Smartphone,
-  Send,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  Trash2,
-  QrCode,
   Monitor,
+  QrCode,
+  Send,
+  Smartphone,
+  Trash2,
+  XCircle,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import * as React from "react";
 
 // ── Channel State ─────────────────────────────────────────────────────────────
 
@@ -106,38 +90,6 @@ const INITIAL_DEVICES: RegisteredDevice[] = [
   { id: "d2", name: "Pixel 8", platform: "Android", lastActive: "1d ago", status: "Active" },
 ];
 
-// ── Notification History ──────────────────────────────────────────────────────
-
-type DeliveryStatus = "Delivered" | "Failed" | "Pending";
-type Channel = "Web" | "Email" | "Push" | "Telegram";
-
-interface NotificationEntry {
-  id: string;
-  timestamp: string;
-  alertType: string;
-  channel: Channel;
-  status: DeliveryStatus;
-  message: string;
-}
-
-const MOCK_HISTORY: NotificationEntry[] = [
-  { id: "n1", timestamp: "2026-03-28 14:32:01", alertType: "Position Limit Breach", channel: "Web", status: "Delivered", message: "BTC-PERP position exceeded 120% of limit on Binance" },
-  { id: "n2", timestamp: "2026-03-28 14:32:01", alertType: "Position Limit Breach", channel: "Email", status: "Delivered", message: "BTC-PERP position exceeded 120% of limit on Binance" },
-  { id: "n3", timestamp: "2026-03-28 14:32:02", alertType: "Position Limit Breach", channel: "Push", status: "Failed", message: "BTC-PERP position exceeded 120% of limit on Binance" },
-  { id: "n4", timestamp: "2026-03-28 14:15:44", alertType: "Venue Connectivity Lost", channel: "Web", status: "Delivered", message: "Lost WebSocket connection to Deribit (retry 3/5)" },
-  { id: "n5", timestamp: "2026-03-28 14:15:45", alertType: "Venue Connectivity Lost", channel: "Email", status: "Pending", message: "Lost WebSocket connection to Deribit (retry 3/5)" },
-  { id: "n6", timestamp: "2026-03-28 13:50:12", alertType: "New Trade Fill", channel: "Web", status: "Delivered", message: "Filled 0.5 ETH-PERP @ $3,842.10 on OKX" },
-  { id: "n7", timestamp: "2026-03-28 13:22:30", alertType: "Gas Price Spike", channel: "Push", status: "Delivered", message: "Ethereum gas price spiked to 142 gwei (+85% in 5m)" },
-  { id: "n8", timestamp: "2026-03-28 12:00:00", alertType: "Daily P&L Summary", channel: "Email", status: "Delivered", message: "Daily P&L: +$12,450.23 across 8 strategies" },
-  { id: "n9", timestamp: "2026-03-28 11:45:33", alertType: "Model Retrain Complete", channel: "Telegram", status: "Delivered", message: "btc_momentum_v3 retrain complete (AUC: 0.847)" },
-  { id: "n10", timestamp: "2026-03-28 11:45:33", alertType: "Model Retrain Complete", channel: "Web", status: "Delivered", message: "btc_momentum_v3 retrain complete (AUC: 0.847)" },
-  { id: "n11", timestamp: "2026-03-28 10:30:15", alertType: "Drawdown Threshold", channel: "Web", status: "Delivered", message: "Strategy arb_basis_01 drawdown hit -2.1% (threshold: -2%)" },
-  { id: "n12", timestamp: "2026-03-28 10:30:15", alertType: "Drawdown Threshold", channel: "Telegram", status: "Failed", message: "Strategy arb_basis_01 drawdown hit -2.1% (threshold: -2%)" },
-  { id: "n13", timestamp: "2026-03-28 09:15:00", alertType: "Reconciliation Break", channel: "Email", status: "Delivered", message: "Bybit position mismatch: expected 1.2 BTC, found 1.15 BTC" },
-  { id: "n14", timestamp: "2026-03-28 08:00:00", alertType: "Strategy Signal Generated", channel: "Web", status: "Delivered", message: "Long signal on SOL-PERP from mean_reversion_v2" },
-  { id: "n15", timestamp: "2026-03-28 07:30:22", alertType: "Liquidation Risk", channel: "Push", status: "Delivered", message: "Health factor 1.12 on Aave ETH/USDC position (threshold: 1.15)" },
-];
-
 // ── Severity Badge ────────────────────────────────────────────────────────────
 
 function SeverityBadge({ severity }: { severity: Severity }) {
@@ -198,13 +150,9 @@ function ChannelsTab({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm">Web</span>
-                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
-                    Active
-                  </Badge>
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">Active</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Browser push notifications for real-time alerts
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">Browser push notifications for real-time alerts</p>
               </div>
             </div>
             <Switch
@@ -232,9 +180,7 @@ function ChannelsTab({
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Email delivery for alerts, digests, and reports
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">Email delivery for alerts, digests, and reports</p>
               </div>
             </div>
             <Switch
@@ -320,9 +266,7 @@ function ChannelsTab({
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Receive alerts via Telegram bot
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">Receive alerts via Telegram bot</p>
               </div>
             </div>
             <Switch
@@ -372,11 +316,61 @@ function ChannelsTab({
 function AlertRulesTab() {
   const [rules, setRules] = React.useState<AlertRule[]>(INITIAL_ALERT_RULES);
 
-  function toggleRule(index: number, channel: keyof ChannelState) {
-    setRules((prev) =>
-      prev.map((rule, i) => (i === index ? { ...rule, [channel]: !rule[channel] } : rule)),
-    );
+  function toggleRule(ruleName: string, channel: keyof ChannelState) {
+    setRules((prev) => prev.map((rule) => (rule.name === ruleName ? { ...rule, [channel]: !rule[channel] } : rule)));
   }
+
+  const alertColumns = React.useMemo<ColumnDef<AlertRule>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Alert Type",
+        cell: ({ row }) => <span className="text-sm font-medium">{row.original.name}</span>,
+      },
+      {
+        id: "severity",
+        header: "Severity",
+        cell: ({ row }) => <SeverityBadge severity={row.original.severity} />,
+      },
+      {
+        id: "web",
+        header: () => <span className="block w-full text-center">Web</span>,
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <Switch checked={row.original.web} onCheckedChange={() => toggleRule(row.original.name, "web")} />
+          </div>
+        ),
+      },
+      {
+        id: "email",
+        header: () => <span className="block w-full text-center">Email</span>,
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <Switch checked={row.original.email} onCheckedChange={() => toggleRule(row.original.name, "email")} />
+          </div>
+        ),
+      },
+      {
+        id: "push",
+        header: () => <span className="block w-full text-center">Push</span>,
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <Switch checked={row.original.push} onCheckedChange={() => toggleRule(row.original.name, "push")} />
+          </div>
+        ),
+      },
+      {
+        id: "telegram",
+        header: () => <span className="block w-full text-center">Telegram</span>,
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <Switch checked={row.original.telegram} onCheckedChange={() => toggleRule(row.original.name, "telegram")} />
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="space-y-4">
@@ -388,59 +382,17 @@ function AlertRulesTab() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[220px]">Alert Type</TableHead>
-                <TableHead className="w-[90px]">Severity</TableHead>
-                <TableHead className="w-[70px] text-center">Web</TableHead>
-                <TableHead className="w-[70px] text-center">Email</TableHead>
-                <TableHead className="w-[70px] text-center">Push</TableHead>
-                <TableHead className="w-[70px] text-center">Telegram</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rules.map((rule, idx) => (
-                <TableRow key={rule.name}>
-                  <TableCell className="text-sm font-medium">{rule.name}</TableCell>
-                  <TableCell>
-                    <SeverityBadge severity={rule.severity} />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Switch
-                      checked={rule.web}
-                      onCheckedChange={() => toggleRule(idx, "web")}
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Switch
-                      checked={rule.email}
-                      onCheckedChange={() => toggleRule(idx, "email")}
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Switch
-                      checked={rule.push}
-                      onCheckedChange={() => toggleRule(idx, "push")}
-                    />
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Switch
-                      checked={rule.telegram}
-                      onCheckedChange={() => toggleRule(idx, "telegram")}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable
+            columns={alertColumns}
+            data={rules}
+            enableColumnVisibility={false}
+            emptyMessage="No alert rules."
+          />
         </CardContent>
       </Card>
       <div className="flex justify-end">
         <Button
-          onClick={() =>
-            toast({ title: "Rules saved", description: "Alert routing rules updated successfully." })
-          }
+          onClick={() => toast({ title: "Rules saved", description: "Alert routing rules updated successfully." })}
         >
           <CheckCircle2 className="size-4 mr-1" /> Save Rules
         </Button>
@@ -459,64 +411,77 @@ function DevicesTab() {
     toast({ title: "Device removed", description: "Push notifications disabled for this device." });
   }
 
+  const deviceColumns = React.useMemo<ColumnDef<RegisteredDevice>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Device Name",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Smartphone className="size-4 text-muted-foreground" />
+            <span className="text-sm font-medium">{row.original.name}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "platform",
+        header: "Platform",
+        cell: ({ row }) => (
+          <Badge variant="outline" className="text-[10px]">
+            {row.original.platform}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "lastActive",
+        header: "Last Active",
+        cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.lastActive}</span>,
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => (
+          <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
+            {row.original.status}
+          </Badge>
+        ),
+      },
+      {
+        id: "actions",
+        header: () => <span className="block w-full text-right">Actions</span>,
+        cell: ({ row }) => (
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+              onClick={() => removeDevice(row.original.id)}
+            >
+              <Trash2 className="size-4 mr-1" /> Remove
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [],
+  );
+
   return (
     <div className="space-y-6">
       {/* Registered devices */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Registered Devices</CardTitle>
-          <CardDescription>
-            Devices linked to receive mobile push notifications.
-          </CardDescription>
+          <CardDescription>Devices linked to receive mobile push notifications.</CardDescription>
         </CardHeader>
         <CardContent>
           {devices.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Device Name</TableHead>
-                  <TableHead>Platform</TableHead>
-                  <TableHead>Last Active</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {devices.map((device) => (
-                  <TableRow key={device.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Smartphone className="size-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{device.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-[10px]">
-                        {device.platform}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {device.lastActive}
-                    </TableCell>
-                    <TableCell>
-                      <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
-                        {device.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                        onClick={() => removeDevice(device.id)}
-                      >
-                        <Trash2 className="size-4 mr-1" /> Remove
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <DataTable
+              columns={deviceColumns}
+              data={devices}
+              enableColumnVisibility={false}
+              emptyMessage="No devices registered."
+            />
           ) : (
             <div className="py-8 text-center space-y-2">
               <Smartphone className="size-8 text-muted-foreground mx-auto" />
@@ -530,9 +495,7 @@ function DevicesTab() {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Register New Device</CardTitle>
-          <CardDescription>
-            Download the Odum Research app from the App Store or Google Play.
-          </CardDescription>
+          <CardDescription>Download the Odum Research app from the App Store or Google Play.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-center rounded-lg border border-dashed border-border bg-muted/30 p-8">
@@ -540,9 +503,7 @@ function DevicesTab() {
               <div className="mx-auto flex size-32 items-center justify-center rounded-lg bg-muted border border-border">
                 <QrCode className="size-16 text-muted-foreground/40" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                Scan with Odum Research mobile app
-              </p>
+              <p className="text-sm text-muted-foreground">Scan with Odum Research mobile app</p>
             </div>
           </div>
           <p className="text-xs text-muted-foreground text-center">
@@ -592,9 +553,44 @@ function HistoryTab() {
   const [channelFilter, setChannelFilter] = React.useState<string>("all");
 
   const filtered =
-    channelFilter === "all"
-      ? MOCK_HISTORY
-      : MOCK_HISTORY.filter((entry) => entry.channel === channelFilter);
+    channelFilter === "all" ? MOCK_HISTORY : MOCK_HISTORY.filter((entry) => entry.channel === channelFilter);
+
+  const historyColumns = React.useMemo<ColumnDef<NotificationEntry>[]>(
+    () => [
+      {
+        accessorKey: "timestamp",
+        header: "Timestamp",
+        cell: ({ row }) => <span className="text-xs text-muted-foreground font-mono">{row.original.timestamp}</span>,
+      },
+      {
+        accessorKey: "alertType",
+        header: "Alert Type",
+        cell: ({ row }) => <span className="text-sm">{row.original.alertType}</span>,
+      },
+      {
+        accessorKey: "channel",
+        header: "Channel",
+        cell: ({ row }) => (
+          <Badge variant="outline" className="text-[10px]">
+            {row.original.channel}
+          </Badge>
+        ),
+      },
+      {
+        id: "status",
+        header: "Status",
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      },
+      {
+        accessorKey: "message",
+        header: "Message",
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground max-w-[300px] truncate block">{row.original.message}</span>
+        ),
+      },
+    ],
+    [],
+  );
 
   return (
     <div className="space-y-4">
@@ -603,9 +599,7 @@ function HistoryTab() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-base">Delivery Log</CardTitle>
-              <CardDescription>
-                Recent notification delivery attempts across all channels.
-              </CardDescription>
+              <CardDescription>Recent notification delivery attempts across all channels.</CardDescription>
             </div>
             <Select value={channelFilter} onValueChange={setChannelFilter}>
               <SelectTrigger className="w-[140px]">
@@ -622,38 +616,12 @@ function HistoryTab() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[160px]">Timestamp</TableHead>
-                <TableHead className="w-[180px]">Alert Type</TableHead>
-                <TableHead className="w-[90px]">Channel</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
-                <TableHead>Message</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell className="text-xs text-muted-foreground font-mono">
-                    {entry.timestamp}
-                  </TableCell>
-                  <TableCell className="text-sm">{entry.alertType}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-[10px]">
-                      {entry.channel}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={entry.status} />
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground max-w-[300px] truncate">
-                    {entry.message}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <DataTable
+            columns={historyColumns}
+            data={filtered}
+            enableColumnVisibility={false}
+            emptyMessage="No delivery log entries."
+          />
         </CardContent>
       </Card>
     </div>
@@ -666,15 +634,15 @@ export default function NotificationSettingsPage() {
   const [channels, setChannels] = React.useState<ChannelState>(DEFAULT_CHANNELS);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
-          <Bell className="size-6" /> Notification Settings
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Configure alert delivery channels, routing rules, and registered devices.
-        </p>
-      </div>
+    <div className="mx-auto max-w-4xl space-y-6 p-8">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Bell className="size-6" /> Notification Settings
+          </span>
+        }
+        description="Configure alert delivery channels, routing rules, and registered devices."
+      />
 
       <Tabs defaultValue="channels">
         <TabsList>

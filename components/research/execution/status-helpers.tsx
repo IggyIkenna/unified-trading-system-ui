@@ -1,75 +1,4 @@
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { CheckCircle2, Play, XCircle } from "lucide-react";
-import type { ExecutionBacktest, ExecutionTrade } from "@/lib/build-mock-data";
-
-// ─── Status config & badge ──────────────────────────────────────────────────
-
-export const STATUS_CONFIG = {
-  complete: {
-    label: "Complete",
-    badgeClass: "border-emerald-400/30 text-emerald-400",
-    icon: CheckCircle2,
-  },
-  running: {
-    label: "Running",
-    badgeClass: "border-blue-400/30 text-blue-400",
-    icon: Play,
-  },
-  failed: {
-    label: "Failed",
-    badgeClass: "border-red-400/30 text-red-400",
-    icon: XCircle,
-  },
-} as const;
-
-export function StatusBadge({
-  status,
-}: {
-  status: ExecutionBacktest["status"];
-}) {
-  const cfg = STATUS_CONFIG[status];
-  const Icon = cfg.icon;
-  return (
-    <Badge variant="outline" className={cn("text-xs gap-1", cfg.badgeClass)}>
-      <Icon className="size-3" />
-      {cfg.label}
-    </Badge>
-  );
-}
-
-// ─── MetricCard ─────────────────────────────────────────────────────────────
-
-export function MetricCard({
-  label,
-  value,
-  isGood,
-  sub,
-}: {
-  label: string;
-  value: string;
-  isGood?: boolean;
-  sub?: string;
-}) {
-  return (
-    <div className="rounded-lg bg-muted/40 p-3 space-y-0.5">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p
-        className={cn(
-          "text-lg font-bold tabular-nums",
-          isGood === true
-            ? "text-emerald-400"
-            : isGood === false
-              ? "text-red-400"
-              : "",
-        )}
-      >
-        {value}
-      </p>
-      {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
-    </div>
-  );
-}
+import type { ExecutionTrade } from "@/lib/mocks/fixtures/build-data";
 
 // ─── Chart style constants ──────────────────────────────────────────────────
 
@@ -104,10 +33,7 @@ function escapeCsvCell(value: unknown): string {
 }
 
 /** Client-side CSV download for the visible trade log (mock-friendly). */
-export function downloadExecutionTradesCsv(
-  trades: ExecutionTrade[],
-  filenameBase: string,
-) {
+export function downloadExecutionTradesCsv(trades: ExecutionTrade[], filenameBase: string) {
   const headers: (keyof ExecutionTrade)[] = [
     "id",
     "timestamp",
@@ -128,10 +54,7 @@ export function downloadExecutionTradesCsv(
     "cumulative_pnl",
     "model_confidence",
   ];
-  const lines = [
-    headers.join(","),
-    ...trades.map((t) => headers.map((h) => escapeCsvCell(t[h])).join(",")),
-  ];
+  const lines = [headers.join(","), ...trades.map((t) => headers.map((h) => escapeCsvCell(t[h])).join(","))];
   const csv = lines.join("\r\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);

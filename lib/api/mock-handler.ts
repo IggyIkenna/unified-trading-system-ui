@@ -16,7 +16,7 @@ import {
   getAggregatedTimeSeries,
   getLiveBatchDelta,
   getStrategyPerformance,
-} from "@/lib/trading-data";
+} from "@/lib/mocks/fixtures/trading-data";
 import {
   MOCK_EXECUTION_ALGOS,
   MOCK_VENUES,
@@ -24,7 +24,7 @@ import {
   MOCK_ALGO_BACKTESTS,
   MOCK_EXECUTION_METRICS,
   MOCK_EXECUTION_CANDIDATES,
-} from "@/lib/execution-platform-mock-data";
+} from "@/lib/mocks/fixtures/execution-platform";
 import {
   MODEL_FAMILIES,
   EXPERIMENTS,
@@ -41,14 +41,15 @@ import {
   RUN_COMPARISONS,
   ML_ALERTS,
   buildSyntheticRunComparisons,
-} from "@/lib/ml-mock-data";
+} from "@/lib/mocks/fixtures/ml-data";
 import {
   STRATEGY_TEMPLATES,
   BACKTEST_RUNS,
   STRATEGY_CANDIDATES,
   STRATEGY_ALERTS,
-} from "@/lib/strategy-platform-mock-data";
-import { MOCK_CATALOGUE, MOCK_INSTRUMENTS, MOCK_SHARD_AVAILABILITY } from "@/lib/data-service-mock-data";
+} from "@/lib/mocks/fixtures/strategy-platform";
+import { MOCK_CATALOGUE } from "@/lib/mocks/fixtures/data-service";
+import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
 import {
   getState as getProvisioningState,
   addUser,
@@ -71,6 +72,13 @@ import {
 import { getOnboardingState, addApplication, updateApplication, addDocument } from "@/lib/api/mock-onboarding-state";
 import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state";
 import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
+import { getPositions as getLedgerPositions, applyFilledOrder } from "@/lib/api/mock-position-ledger";
+import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
+import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
+import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
+import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
+import { FOOTBALL_LEAGUES, BOOKMAKERS, SUBSCRIBED_BOOKMAKERS, ODDS_MARKETS } from "@/lib/mocks/fixtures/sports-fixtures";
+import { MOCK_FIXTURES, MOCK_ODDS, MOCK_ARB_STREAM, MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
 
 export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
 
@@ -98,6 +106,39 @@ function parseMockJsonBody(opts?: RequestInit): Record<string, unknown> {
   } catch {
     return {};
   }
+}
+
+/**
+ * Standard paginated response matching backend's exact shape.
+ * Backend: unified-trading-api/models/standard.py → paginated_response()
+ */
+function paginatedMockResponse(
+  records: unknown[],
+  opts?: { page?: number; pageSize?: number; mode?: string; asOf?: string | null; extra?: Record<string, unknown> },
+): Record<string, unknown> {
+  const page = opts?.page ?? 1;
+  const pageSize = opts?.pageSize ?? 50;
+  const total = records.length;
+  const start = (page - 1) * pageSize;
+  const sliced = records.slice(start, start + pageSize);
+  return {
+    data: sliced,
+    pagination: { page, page_size: pageSize, total, has_next: start + pageSize < total },
+    mode: opts?.mode ?? "live",
+    as_of: opts?.asOf ?? null,
+    ...(opts?.extra ?? {}),
+  };
+}
+
+/** Parse page/page_size from URL query string */
+function parsePaginationParams(path: string): { page: number; pageSize: number; mode: string; asOf: string | null } {
+  const url = new URL(path, "http://localhost");
+  return {
+    page: parseInt(url.searchParams.get("page") ?? "1", 10),
+    pageSize: Math.min(parseInt(url.searchParams.get("page_size") ?? "50", 10), 200),
+    mode: url.searchParams.get("mode") ?? "live",
+    asOf: url.searchParams.get("as_of") ?? null,
+  };
 }
 
 function jsonStatus(status: number, data: unknown, delay = 50): Promise<Response> {
@@ -146,45 +187,46 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   } {
     const n = name.toLowerCase();
     // Sports strategies
-    if (n.includes("nba")) return { instrument: "NBA:GAME:LAL-GSW", venue: "betfair" };
-    if (n.includes("nfl")) return { instrument: "NFL:GAME:KC-SF", venue: "pinnacle" };
-    if (n.includes("football") && !n.includes("market")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "bet365" };
-    if (n.includes("epl")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "betfair" };
-    if (n.includes("la liga") || n.includes("laliga")) return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "pinnacle" };
+    if (n.includes("nba")) return { instrument: "NBA:GAME:LAL-GSW", venue: "BETFAIR" };
+    if (n.includes("nfl")) return { instrument: "NFL:GAME:KC-SF", venue: "PINNACLE" };
+    if (n.includes("football") && !n.includes("market")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "BET365" };
+    if (n.includes("epl")) return { instrument: "EPL:MATCH:MUN-LIV", venue: "BETFAIR" };
+    if (n.includes("la liga") || n.includes("laliga")) return { instrument: "LALIGA:MATCH:BAR-RMA", venue: "PINNACLE" };
     // Prediction market strategies
     if (n.includes("prediction") && n.includes("cefi"))
       return {
         instrument: "POLYMARKET:BINARY:BTC-100K@YES",
-        venue: "polymarket",
+        venue: "POLYMARKET",
       };
-    if (n.includes("prediction")) return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "kalshi" };
+    if (n.includes("prediction")) return { instrument: "KALSHI:BINARY:FED-RATE-CUT@YES", venue: "KALSHI" };
     // DeFi strategies
-    if (n.includes("morpho")) return { instrument: "MORPHO:SUPPLY:USDC", venue: "morpho" };
+    if (n.includes("morpho")) return { instrument: "MORPHO:SUPPLY:USDC", venue: "MORPHO-ETHEREUM" };
     if (n.includes("uniswap") || n.includes("uni v3") || n.includes("lp"))
-      return { instrument: "UNISWAPV3:LP:ETH-USDC", venue: "uniswap" };
+      return { instrument: "UNISWAPV3:LP:ETH-USDC", venue: "UNISWAPV3-ETHEREUM" };
     if (n.includes("aave") || (n.includes("lending") && n.includes("aave")))
-      return { instrument: "AAVE_V3:SUPPLY:USDT", venue: "aave" };
+      return { instrument: "AAVE_V3:SUPPLY:USDT", venue: "AAVEV3-ETHEREUM" };
     if (n.includes("recursive") || n.includes("staked basis"))
-      return { instrument: "AAVE_V3:SUPPLY:WEETH", venue: "aave" };
-    if (n.includes("eth basis")) return { instrument: "ETH-PERP", venue: "hyperliquid" };
+      return { instrument: "AAVE_V3:SUPPLY:WEETH", venue: "AAVEV3-ETHEREUM" };
+    if (n.includes("eth basis")) return { instrument: "ETH-PERP", venue: "HYPERLIQUID" };
     // CeFi strategies — match by asset name in strategy
-    if (n.includes("btc") && n.includes("basis")) return { instrument: "BTC-PERP", venue: "binance" };
-    if (n.includes("btc") && n.includes("market making")) return { instrument: "BTC-USDT", venue: "binance" };
-    if (n.includes("btc")) return { instrument: "BTC-PERP", venue: "binance" };
-    if (n.includes("eth") && n.includes("options")) return { instrument: "ETH-OPTIONS", venue: "deribit" };
-    if (n.includes("eth") && n.includes("momentum")) return { instrument: "ETH-PERP", venue: "binance" };
-    if (n.includes("eth") && n.includes("mean rev")) return { instrument: "ETH-USDT", venue: "okx" };
-    if (n.includes("eth")) return { instrument: "ETH-PERP", venue: "binance" };
-    if (n.includes("sol")) return { instrument: "SOL-PERP", venue: "binance" };
-    if (n.includes("doge")) return { instrument: "DOGE-USDT", venue: "binance" };
-    if (n.includes("avax")) return { instrument: "AVAX-PERP", venue: "binance" };
-    if (n.includes("link")) return { instrument: "LINK-PERP", venue: "hyperliquid" };
-    if (n.includes("arb") && n.includes("mean")) return { instrument: "ARB-USDT", venue: "okx" };
-    if (n.includes("spy")) return { instrument: "SPY", venue: "ibkr" };
-    if (n.includes("bond")) return { instrument: "TLT", venue: "ibkr" };
-    if (n.includes("multi-venue") || n.includes("arbitrage")) return { instrument: "BTC-USDT", venue: "binance" };
+    if (n.includes("btc") && n.includes("basis")) return { instrument: "BTC-PERP", venue: "BINANCE-FUTURES" };
+    if (n.includes("btc") && n.includes("market making")) return { instrument: "BTC-USDT", venue: "BINANCE-SPOT" };
+    if (n.includes("btc")) return { instrument: "BTC-PERP", venue: "BINANCE-FUTURES" };
+    if (n.includes("eth") && n.includes("options")) return { instrument: "ETH-26JUN26-3000-C", venue: "DERIBIT" };
+    if (n.includes("eth") && n.includes("momentum")) return { instrument: "ETH-PERP", venue: "BINANCE-FUTURES" };
+    if (n.includes("eth") && n.includes("mean rev")) return { instrument: "ETH-USDT", venue: "OKX-SPOT" };
+    if (n.includes("eth")) return { instrument: "ETH-PERP", venue: "BINANCE-FUTURES" };
+    if (n.includes("sol")) return { instrument: "SOL-PERP", venue: "BINANCE-FUTURES" };
+    if (n.includes("doge")) return { instrument: "DOGE-USDT", venue: "BINANCE-SPOT" };
+    if (n.includes("avax")) return { instrument: "AVAX-PERP", venue: "BINANCE-FUTURES" };
+    if (n.includes("link")) return { instrument: "LINK-PERP", venue: "HYPERLIQUID" };
+    if (n.includes("arb") && n.includes("mean")) return { instrument: "ARB-USDT", venue: "OKX-SPOT" };
+    if (n.includes("spy")) return { instrument: "SPY", venue: "NASDAQ" };
+    if (n.includes("bond")) return { instrument: "TLT", venue: "NASDAQ" };
+    if (n.includes("cme") || n.includes("commodity")) return { instrument: "ES-PERP", venue: "CME" };
+    if (n.includes("multi-venue") || n.includes("arbitrage")) return { instrument: "BTC-USDT", venue: "MULTI_VENUE" };
     // Fallback
-    return { instrument: "BTC-PERP", venue: "binance" };
+    return { instrument: "BTC-PERP", venue: "BINANCE-FUTURES" };
   }
 
   const allPositions = perf
@@ -236,7 +278,35 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // --- Positions ---
   if (route === "/api/positions/active") {
-    return json({ positions: allPositions });
+    // Merge strategy-derived positions with trade-ledger positions
+    const tradePositions = getLedgerPositions().map((p) => ({
+      id: p.id,
+      strategy_id: p.strategy_id,
+      strategy_name: p.strategy_id ?? "Manual",
+      instrument: p.instrument_id,
+      side: p.side.toUpperCase() as "LONG" | "SHORT",
+      quantity: p.quantity,
+      entry_price: p.entry_price,
+      current_price: p.current_price,
+      pnl: p.unrealized_pnl + p.realized_pnl,
+      pnl_pct: p.entry_price > 0 ? ((p.current_price - p.entry_price) / p.entry_price) * 100 : 0,
+      unrealized_pnl: p.unrealized_pnl,
+      venue: p.venue,
+      margin: p.quantity * p.current_price * 0.1,
+      leverage: 10,
+      updated_at: p.updated_at,
+      venueLabel: p.venue,
+      used: p.quantity * p.current_price * 0.1,
+      available: 0,
+      total: p.quantity * p.current_price,
+      utilization: 10,
+      trend: (p.unrealized_pnl > 0 ? "up" : p.unrealized_pnl < 0 ? "down" : "stable") as "up" | "down" | "stable",
+      marginCallDistance: 20,
+      lastUpdate: p.updated_at,
+    }));
+    const allPos = [...allPositions, ...tradePositions];
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(allPos, pg));
   }
 
   if (route === "/api/positions/summary") {
@@ -259,28 +329,31 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
 
   if (route === "/api/positions/balances") {
-    return json(
-      ACCOUNTS.map((a) => ({
-        venue: a.venue,
-        account: a.name,
-        free: a.marginAvailable,
-        locked: a.marginUsed,
-        total: a.balanceUSD,
-        currency: "USD",
-      })),
-    );
+    const balances = ACCOUNTS.map((a) => ({
+      venue: a.venue,
+      account: a.name,
+      free: a.marginAvailable,
+      locked: a.marginUsed,
+      total: a.balanceUSD,
+      currency: "USD",
+    }));
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(balances, pg));
   }
 
   if (route === "/api/accounts/transfer-history") {
-    return json({ transfers: MOCK_TRANSFER_HISTORY });
+    const pgTransfers = parsePaginationParams(path);
+    return json(paginatedMockResponse(MOCK_TRANSFER_HISTORY, pgTransfers));
   }
 
   // --- Trading ---
   if (route === "/api/trading/organizations") {
-    return json({ organizations: ORGANIZATIONS, total: ORGANIZATIONS.length });
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(ORGANIZATIONS, pg));
   }
   if (route === "/api/trading/clients") {
-    return json({ clients: CLIENTS, total: CLIENTS.length });
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(CLIENTS, pg));
   }
   if (route === "/api/trading/pnl") {
     return json(getAggregatedPnL(defaultFilter));
@@ -297,7 +370,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       description: `${s.archetype} strategy on ${s.assetClass}`,
       strategyType: s.archetype,
       version: "1.0.0",
-      venues: STRATEGIES[i]?.venues ?? ["Binance"],
+      venues: STRATEGIES[i]?.venues ?? ["BINANCE-SPOT"],
       instructionTypes: ["LIMIT", "MARKET"],
       dataArchitecture: { executionMode: s.executionMode ?? "event_driven" },
       performance: {
@@ -308,7 +381,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       },
       sparklineData: Array.from({ length: 20 }, (_, j) => s.pnl * (0.5 + Math.sin(j * 0.3) * 0.5)),
     }));
-    return json({ strategies: enriched, total: enriched.length });
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(enriched, pg));
   }
   if (route === "/api/trading/live-batch-delta") {
     return json(getLiveBatchDelta(defaultFilter));
@@ -328,7 +402,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       "ADA-USDT",
       "AVAX-USDT",
     ].map((sym, i) => {
-      const venueName = i % 2 === 0 ? "Binance" : "OKX";
+      const venueName = i % 2 === 0 ? "BINANCE-SPOT" : "OKX-SPOT";
       const entitlement = RESTRICTED_SYMBOLS.includes(sym)
         ? ("restricted" as const)
         : DEFI_VENUES.includes(venueName)
@@ -348,7 +422,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         entitlement,
       };
     });
-    return json(tickers);
+    return json({ tickers, venue: "all" });
   }
   if (route === "/api/market-data/candles") {
     const candles = Array.from({ length: 100 }, (_, i) => {
@@ -379,15 +453,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   if (route === "/api/market-data/trades") {
-    return json({
-      trades: Array.from({ length: 50 }, (_, i) => ({
-        id: `t-${i}`,
-        price: 42000 + (Math.random() - 0.5) * 100,
-        size: Math.random() * 5,
-        side: i % 2 === 0 ? "buy" : "sell",
-        timestamp: new Date(Date.now() - i * 30000).toISOString(),
-      })),
-    });
+    const trades = Array.from({ length: 50 }, (_, i) => ({
+      id: `t-${i}`,
+      price: 42000 + (Math.random() - 0.5) * 100,
+      size: Math.random() * 5,
+      side: i % 2 === 0 ? "buy" : "sell",
+      timestamp: new Date(Date.now() - i * 30000).toISOString(),
+    }));
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(trades, pg));
   }
 
   // --- Derivatives ---
@@ -478,7 +552,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         strategy_id: body.strategy_id ?? null,
         client_id: body.client_id ?? "internal-trader",
         instrument_id: body.instrument ?? body.instrument_id ?? "BTC-PERP",
-        venue: body.venue ?? "Binance",
+        venue: body.venue ?? "BINANCE-SPOT",
         side: body.side ?? "buy",
         order_type: body.order_type ?? "market",
         quantity: body.quantity ?? 1,
@@ -487,11 +561,23 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         lane: body.lane ?? "book",
         algo_type: body.algo ?? null,
       });
+      // Position-update-on-trade: if order filled, update position ledger
+      if (result.status === "filled" && result.average_fill_price !== null) {
+        applyFilledOrder({
+          instrument_id: result.instrument_id,
+          venue: result.venue,
+          side: result.side,
+          quantity: result.filled_quantity,
+          price: result.average_fill_price,
+          strategy_id: result.strategy_id,
+          asset_class: result.asset_class,
+        });
+      }
       return json({ order: result });
     }
 
     // GET: merge static TCA orders with stateful ledger orders
-    const tcaVenues = ["binance", "okx", "hyperliquid", "deribit", "aave", "uniswap", "polymarket", "betfair"];
+    const tcaVenues = ["BINANCE-SPOT", "OKX-SPOT", "HYPERLIQUID", "DERIBIT", "AAVEV3-ETHEREUM", "UNISWAPV3-ETHEREUM", "POLYMARKET", "BETFAIR"];
     const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"];
     const tcaInstruments = [
       "BTC-PERP",
@@ -601,8 +687,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       tca: null,
     }));
 
+    const allOrders = [...ledgerOrders, ...tcaOrders];
+    const pgOrders = parsePaginationParams(path);
     return json({
-      data: [...ledgerOrders, ...tcaOrders],
+      ...paginatedMockResponse(allOrders, pgOrders),
       tcaBreakdown: [
         { name: "Spread Cost", value: 12450, color: "#3b82f6" },
         { name: "Market Impact", value: 8320, color: "#8b5cf6" },
@@ -656,6 +744,132 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route.startsWith("/api/execution/handoff")) {
     return json({ handoffs: [], total: 0 });
   }
+
+  // --- Execution fills (Plan 2 p2-3: missing backend mock) ---
+  if (route === "/api/execution/fills") {
+    const orders = getLedgerOrders();
+    const fills = orders
+      .filter((o) => o.status === "filled" || o.status === "partially_filled")
+      .map((o, i) => ({
+        fill_id: `fill-${o.id}-${i}`,
+        order_id: o.id,
+        instrument: o.instrument_id,
+        venue: o.venue,
+        side: o.side,
+        quantity: o.filled_quantity || o.quantity,
+        price: o.average_fill_price ?? o.price,
+        fee: (o.average_fill_price ?? o.price) * (o.filled_quantity || o.quantity) * 0.0005,
+        timestamp: o.updated_at ?? o.created_at,
+        settlement_status: "settled",
+      }));
+    const pgFills = parsePaginationParams(path);
+    return json(paginatedMockResponse(fills, pgFills));
+  }
+
+  // --- Execution grid configs (Plan 2 p2-3) ---
+  if (route === "/api/execution/grid-configs") {
+    return json({
+      data: [
+        { id: "grid-twap-default", name: "TWAP Default", algo: "TWAP", params: { interval_sec: 60, urgency: 0.5 } },
+        { id: "grid-vwap-passive", name: "VWAP Passive", algo: "VWAP", params: { max_participation: 0.1 } },
+        { id: "grid-is-aggressive", name: "IS Aggressive", algo: "IS", params: { aggressiveness: 0.8 } },
+      ],
+      pagination: { page: 1, page_size: 50, total: 3 },
+      mode: "live",
+      as_of: null,
+    });
+  }
+
+  // --- Sports bet placement + listing (Plan 2 p2-3) ---
+  if (route === "/api/execution/sports/bets" && opts?.method === "POST") {
+    const body = parseMockJsonBody(opts);
+    const betInstrument = (body.instrument ?? "SPORTS:FIXTURE:UNKNOWN") as string;
+    const betVenue = (body.venue ?? "MULTI_VENUE") as string;
+    const betStake = (body.stake ?? 100) as number;
+    const betOdds = (body.odds ?? 2.1) as number;
+    // Position-update-on-trade: sports bets create positions
+    applyFilledOrder({
+      instrument_id: betInstrument,
+      venue: betVenue,
+      side: "buy",
+      quantity: betStake,
+      price: betOdds,
+      strategy_id: (body.strategy_id ?? null) as string | null,
+      asset_class: "Sports",
+    });
+    return json({
+      data: {
+        bet_id: `bet-${Date.now()}`,
+        instrument: betInstrument,
+        venue: betVenue,
+        side: body.side ?? "back",
+        stake: betStake,
+        odds: betOdds,
+        status: "pending",
+        placed_at: new Date().toISOString(),
+      },
+    });
+  }
+  if (route === "/api/execution/sports/bets") {
+    return json({
+      data: [
+        { bet_id: "bet-001", instrument: "SPORTS:FIXTURE:EPL:ARSENAL-CHELSEA", venue: "BETFAIR", side: "back", stake: 500, odds: 1.85, status: "open", placed_at: "2026-03-27T14:00:00Z" },
+        { bet_id: "bet-002", instrument: "SPORTS:FIXTURE:LA_LIGA:BARCELONA-REAL_MADRID", venue: "PINNACLE", side: "back", stake: 250, odds: 2.45, status: "settled", placed_at: "2026-03-27T18:00:00Z", pnl: 361.25 },
+        { bet_id: "bet-003", instrument: "SPORTS:FIXTURE:BUNDESLIGA:BAYERN-DORTMUND", venue: "BET365", side: "lay", stake: 300, odds: 1.55, status: "open", placed_at: "2026-03-27T19:30:00Z" },
+      ],
+      pagination: { page: 1, page_size: 50, total: 3 },
+      mode: "live",
+      as_of: null,
+    });
+  }
+
+  // --- DeFi execution (Plan 2 p2-3) ---
+  if (route === "/api/execution/defi/execute" && opts?.method === "POST") {
+    const body = parseMockJsonBody(opts);
+    const opType = (body.operation_type ?? "SWAP") as string;
+    const defiVenue = (body.venue ?? "AAVEV3-ETHEREUM") as string;
+    const defiInstrument = (body.instrument ?? "AAVEV3-ETHEREUM:A_TOKEN:AUSDC") as string;
+    const defiAmount = (body.amount ?? 1) as number;
+    const defiPrice = (body.price ?? 1) as number;
+    // Position-update-on-trade: DeFi executions create positions
+    applyFilledOrder({
+      instrument_id: defiInstrument,
+      venue: defiVenue,
+      side: opType === "WITHDRAW" || opType === "UNSTAKE" ? "sell" : "buy",
+      quantity: defiAmount,
+      price: defiPrice,
+      strategy_id: (body.strategy_id ?? null) as string | null,
+      asset_class: "DeFi",
+    });
+    return json({
+      data: {
+        tx_hash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}`,
+        operation_type: opType,
+        venue: body.venue ?? "AAVEV3-ETHEREUM",
+        instrument: body.instrument ?? "AAVEV3-ETHEREUM:A_TOKEN:AUSDC",
+        amount: body.amount ?? 10000,
+        gas_used: 185000 + Math.floor(Math.random() * 50000),
+        gas_price_gwei: 12.5 + Math.random() * 5,
+        effective_price: opType === "SWAP" ? 1.0002 : undefined,
+        health_factor: opType === "LEND" || opType === "BORROW" ? 1.38 + Math.random() * 0.5 : undefined,
+        status: "confirmed",
+        block_number: 19500000 + Math.floor(Math.random() * 100000),
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+  if (route === "/api/execution/defi/execute") {
+    return json({
+      data: [
+        { tx_hash: "0xabc123", operation_type: "LEND", venue: "AAVEV3-ETHEREUM", instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC", amount: 50000, gas_used: 195000, status: "confirmed", timestamp: "2026-03-27T10:00:00Z" },
+        { tx_hash: "0xdef456", operation_type: "SWAP", venue: "UNISWAPV3-ETHEREUM", instrument: "UNISWAPV3-ETHEREUM:POOL:WETH-USDC-3000", amount: 5, gas_used: 210000, status: "confirmed", timestamp: "2026-03-27T11:30:00Z" },
+        { tx_hash: "0xghi789", operation_type: "STAKE", venue: "LIDO-ETHEREUM", instrument: "LIDO-ETHEREUM:STAKING:STETH", amount: 10, gas_used: 120000, status: "confirmed", timestamp: "2026-03-27T12:15:00Z" },
+      ],
+      pagination: { page: 1, page_size: 50, total: 3 },
+      mode: "live",
+      as_of: null,
+    });
+  }
   if (route === "/api/compliance/pre-trade-check") {
     const body = opts?.body ? JSON.parse(opts.body as string) : {};
     const instrument = (body.instrument ?? "") as string;
@@ -702,7 +916,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const DEFI_CATEGORIES = ["defi"];
     const RESTRICTED_BASES = ["DOGE", "SHIB"];
     const venueMap: Record<string, { venue: string; category: string; instruments: number; coverage: number }> = {};
-    const enrichedInstruments = MOCK_INSTRUMENTS.map((inst) => {
+    const enrichedInstruments = ALL_INSTRUMENTS.map((inst: Instrument) => {
       if (!venueMap[inst.venue])
         venueMap[inst.venue] = {
           venue: inst.venue,
@@ -711,7 +925,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           coverage: 85 + Math.random() * 15,
         };
       venueMap[inst.venue].instruments++;
-      const baseCur = inst.baseCurrency;
+      const baseCur = inst.base_asset;
       const entitlement =
         baseCur && RESTRICTED_BASES.includes(baseCur)
           ? ("restricted" as const)
@@ -720,9 +934,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
             : ("live" as const);
       return { ...inst, entitlement };
     });
+    const pgInst = parsePaginationParams(path);
     return json({
-      instruments: enrichedInstruments,
-      total: enrichedInstruments.length,
+      ...paginatedMockResponse(enrichedInstruments, pgInst),
       persona: "admin",
       venues: Object.values(venueMap),
     });
@@ -776,6 +990,39 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
 
+  // --- Instruments registry (Plan 2 p2-3: full snapshot browse) ---
+  if (route === "/api/instruments/registry") {
+    const params = new URLSearchParams(path.split("?")[1] ?? "");
+    const category = params.get("category");
+    const venue = params.get("venue");
+    const instrumentType = params.get("instrument_type");
+    const search = params.get("search")?.toUpperCase();
+    const status = params.get("status");
+    const page = parseInt(params.get("page") ?? "1", 10);
+    const pageSize = parseInt(params.get("page_size") ?? "100", 10);
+    let filtered: Instrument[] = ALL_INSTRUMENTS;
+    if (category) filtered = filtered.filter((i) => i.category === category);
+    if (venue) filtered = filtered.filter((i) => i.venue === venue);
+    if (instrumentType) filtered = filtered.filter((i) => i.instrument_type === instrumentType);
+    if (status) filtered = filtered.filter((i) => i.status === status);
+    if (search) filtered = filtered.filter((i) => {
+      const key = (i.instrument_key ?? "").toUpperCase();
+      const sym = (i.raw_symbol ?? "").toUpperCase();
+      const base = (i.base_asset ?? "").toUpperCase();
+      return key.includes(search) || sym.includes(search) || base.includes(search);
+    });
+    const total = filtered.length;
+    const start = (page - 1) * pageSize;
+    const paged = filtered.slice(start, start + pageSize);
+    return json({
+      data: paged,
+      pagination: { page, page_size: pageSize, total },
+      mode: "live",
+      as_of: null,
+      summary: SNAPSHOT_META,
+    });
+  }
+
   // --- Alerts ---
   if (route === "/api/alerts/active") {
     // Notification bell uses this — return unacknowledged alerts
@@ -792,22 +1039,22 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   if (route === "/api/alerts/list") {
-    return json({
-      data: STRATEGY_ALERTS.map((a) => ({
-        id: a.id,
-        severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
-        status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",
-        title: a.message,
-        description: a.message,
-        source: "strategy-service",
-        entity: a.configId ?? "unknown",
-        entityType: "strategy" as const,
-        timestamp: a.triggeredAt,
-        value: a.details ? JSON.stringify(a.details) : undefined,
-        threshold: undefined,
-        recommendedAction: "Review strategy configuration",
-      })),
-    });
+    const alertList = STRATEGY_ALERTS.map((a) => ({
+      id: a.id,
+      severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
+      status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",
+      title: a.message,
+      description: a.message,
+      source: "strategy-service",
+      entity: a.configId ?? "unknown",
+      entityType: "strategy" as const,
+      timestamp: a.triggeredAt,
+      value: a.details ? JSON.stringify(a.details) : undefined,
+      threshold: undefined,
+      recommendedAction: "Review strategy configuration",
+    }));
+    const pgAlerts = parsePaginationParams(path);
+    return json(paginatedMockResponse(alertList, pgAlerts));
   }
   if (route === "/api/alerts/summary") {
     // Use same severity mapping as /api/alerts/list (critical→critical, warning→high, info→medium)
@@ -855,6 +1102,30 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const alert = STRATEGY_ALERTS.find((a) => a.id === alertId);
     if (alert) alert.acknowledgedAt = new Date().toISOString();
     return json({ ok: true });
+  }
+
+  // --- Risk exposure (Plan 2 p2-3: missing from mock) ---
+  if (route === "/api/risk/exposure") {
+    return json({
+      data: {
+        total_gross: totalExposure,
+        total_net: totalExposure * 0.35,
+        by_category: {
+          cefi: { gross: totalExposure * 0.45, net: totalExposure * 0.15 },
+          defi: { gross: totalExposure * 0.25, net: totalExposure * 0.12 },
+          tradfi: { gross: totalExposure * 0.20, net: totalExposure * 0.05 },
+          sports: { gross: totalExposure * 0.10, net: totalExposure * 0.03 },
+        },
+        by_venue: [
+          { venue: "BINANCE-SPOT", gross: totalExposure * 0.15, net: totalExposure * 0.05 },
+          { venue: "DERIBIT", gross: totalExposure * 0.12, net: totalExposure * 0.02 },
+          { venue: "AAVEV3-ETHEREUM", gross: totalExposure * 0.10, net: totalExposure * 0.08 },
+          { venue: "HYPERLIQUID", gross: totalExposure * 0.08, net: totalExposure * 0.03 },
+        ],
+      },
+      mode: "live",
+      as_of: null,
+    });
   }
 
   // --- Risk ---
@@ -920,6 +1191,80 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           level: 1,
           parentId: "rl-1",
         },
+        {
+          id: "rl-6",
+          name: "Margin Utilization",
+          value: 79,
+          limit: 90,
+          unit: "%",
+          category: "margin",
+          entity: "IBKR",
+          entityType: "account",
+          level: 1,
+          parentId: "rl-1",
+        },
+      ],
+      // Health Factor time series (7 days with 1.2 emergency threshold)
+      hfTimeSeries: [
+        { day: 1, hf: 1.82 },
+        { day: 2, hf: 1.75 },
+        { day: 3, hf: 1.68 },
+        { day: 4, hf: 1.55 },
+        { day: 5, hf: 1.48 },
+        { day: 6, hf: 1.38 },
+        { day: 7, hf: 1.45 },
+      ],
+      // Distance to liquidation per venue
+      distanceToLiquidation: [
+        { venue: "Aave V3 (Ethereum)", metric: "HF 1.45", distToLiq: 31 },
+        { venue: "Morpho (Ethereum)", metric: "HF 1.72", distToLiq: 42 },
+        { venue: "IBKR (CeFi)", metric: "Margin 79%", distToLiq: 21 },
+        { venue: "Binance Futures", metric: "Margin 55%", distToLiq: 45 },
+      ],
+      // Exposure rows — 23 risk types across 5 categories
+      exposureRows: [
+        // first_order
+        { component: "Delta", category: "first_order", pnl: -12500, exposure: "$2.8M", limit: "$5M", utilization: 56 },
+        { component: "Funding", category: "first_order", pnl: 8400, exposure: "$1.4M", limit: "$3M", utilization: 47 },
+        { component: "Basis", category: "first_order", pnl: 2100, exposure: "$0.6M", limit: "$2M", utilization: 30 },
+        { component: "Spread", category: "first_order", pnl: 1850, exposure: "$0.3M", limit: "$1M", utilization: 30 },
+        // second_order
+        { component: "Gamma", category: "second_order", pnl: -3200, exposure: "$0.8M", limit: "$2M", utilization: 40 },
+        { component: "Vega", category: "second_order", pnl: -1100, exposure: "$0.4M", limit: "$1.5M", utilization: 27 },
+        { component: "Theta", category: "second_order", pnl: 4800, exposure: "$1.1M", limit: "$2M", utilization: 55 },
+        { component: "Volga", category: "second_order", pnl: -900, exposure: "$0.2M", limit: "$0.8M", utilization: 25 },
+        { component: "Vanna", category: "second_order", pnl: -600, exposure: "$0.1M", limit: "$0.5M", utilization: 20 },
+        // structural
+        { component: "Concentration", category: "structural", pnl: 0, exposure: "28%", limit: "30%", utilization: 93 },
+        { component: "Liquidity", category: "structural", pnl: 0, exposure: "35%", limit: "40%", utilization: 88 },
+        { component: "Duration", category: "structural", pnl: 0, exposure: "4.2y", limit: "7y", utilization: 60 },
+        { component: "Correlation", category: "structural", pnl: 0, exposure: "0.72", limit: "0.85", utilization: 85 },
+        // operational
+        { component: "Venue/Protocol", category: "operational", pnl: 0, exposure: "$1.2M", limit: "$3M", utilization: 40 },
+        { component: "Interest Rate", category: "operational", pnl: -400, exposure: "$0.3M", limit: "$1M", utilization: 30 },
+        // domain_specific
+        { component: "Staking/LTV", category: "domain_specific", pnl: 0, exposure: "0.72", limit: "0.85", utilization: 85 },
+        { component: "Protocol Risk", category: "domain_specific", pnl: 0, exposure: "Medium", limit: "High", utilization: 60 },
+        { component: "Impermanent Loss", category: "domain_specific", pnl: -2100, exposure: "$0.5M", limit: "$1.5M", utilization: 33 },
+        { component: "Edge Decay", category: "domain_specific", pnl: 0, exposure: "1.8%/day", limit: "3%/day", utilization: 60 },
+        { component: "Market Suspension", category: "domain_specific", pnl: 0, exposure: "0 events", limit: "2 events", utilization: 0 },
+        { component: "Slide", category: "domain_specific", pnl: -200, exposure: "$0.1M", limit: "$0.5M", utilization: 20 },
+        { component: "Rho", category: "second_order", pnl: 150, exposure: "$0.05M", limit: "$0.3M", utilization: 17 },
+        { component: "Convexity", category: "structural", pnl: 0, exposure: "0.12", limit: "0.5", utilization: 24 },
+      ],
+      // Exposure time series (13 weeks)
+      exposureTimeSeries: Array.from({ length: 90 }, (_, i) => ({
+        day: i + 1,
+        Delta: Math.round(2800000 + (Math.random() - 0.5) * 400000),
+        Funding: Math.round(1400000 + (Math.random() - 0.5) * 200000),
+        Concentration: Math.round(25 + (Math.random() - 0.5) * 6),
+      })),
+      // Strategy risk heatmap
+      heatmap: [
+        { strategy: "ETH Basis Trade", BASIS_TRADE: "high", YIELD: "low", MARKET_MAKING: "low", ARBITRAGE: "low" },
+        { strategy: "Aave Yield", BASIS_TRADE: "low", YIELD: "high", MARKET_MAKING: "low", ARBITRAGE: "low" },
+        { strategy: "BTC Market Making", BASIS_TRADE: "low", YIELD: "low", MARKET_MAKING: "high", ARBITRAGE: "low" },
+        { strategy: "Football Arb", BASIS_TRADE: "low", YIELD: "low", MARKET_MAKING: "low", ARBITRAGE: "high" },
       ],
     });
   }
@@ -1058,7 +1403,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   if (route === "/api/risk/venue-circuit-breakers") {
     return json(
-      ["Binance", "OKX", "Hyperliquid", "Deribit"].map((v) => ({
+      ["BINANCE-SPOT", "OKX-SPOT", "HYPERLIQUID", "DERIBIT"].map((v) => ({
         venue: v,
         status: "armed",
         tripCount: 0,
@@ -1294,6 +1639,184 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
 
+  // --- DeFi domain endpoints (Plan 2 p2-7) ---
+  if (route === "/api/defi/lending") {
+    const pg = parsePaginationParams(path);
+    const chainFilter = new URL(path, "http://localhost").searchParams.get("chain");
+    const filtered = chainFilter
+      ? LENDING_PROTOCOLS.filter((p) => p.chain === chainFilter.toUpperCase())
+      : LENDING_PROTOCOLS;
+    return json(paginatedMockResponse(filtered, pg));
+  }
+  if (route === "/api/defi/pools") {
+    const pg = parsePaginationParams(path);
+    const venueFilter = new URL(path, "http://localhost").searchParams.get("venue");
+    const filtered = venueFilter
+      ? LIQUIDITY_POOLS.filter((p) => p.venue_id === venueFilter.toUpperCase())
+      : LIQUIDITY_POOLS;
+    return json(paginatedMockResponse(filtered, pg));
+  }
+  if (route === "/api/defi/staking") {
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(STAKING_PROTOCOLS, pg));
+  }
+  if (route === "/api/defi/swap/quote") {
+    const url = new URL(path, "http://localhost");
+    const fromToken = url.searchParams.get("from") ?? "ETH";
+    const toToken = url.searchParams.get("to") ?? "USDC";
+    const amount = parseFloat(url.searchParams.get("amount") ?? "1");
+    return json({
+      ...MOCK_SWAP_ROUTE,
+      path: [fromToken.toUpperCase(), toToken.toUpperCase()],
+      pools: [`UNISWAPV3-ETHEREUM ${fromToken}/${toToken} 0.05%`],
+      expectedOutput: MOCK_SWAP_ROUTE.expectedOutput * amount,
+      gasEstimateEth: MOCK_SWAP_ROUTE.gasEstimateEth,
+      gasEstimateUsd: MOCK_SWAP_ROUTE.gasEstimateUsd,
+      availableTokens: [...SWAP_TOKENS],
+    });
+  }
+  if (route === "/api/defi/treasury") {
+    return json({
+      totalValue: 2850000,
+      chains: [
+        { chain: "ETHEREUM", value: 2100000, wallets: 3, pctOfTotal: 73.7 },
+        { chain: "ARBITRUM", value: 450000, wallets: 2, pctOfTotal: 15.8 },
+        { chain: "SOLANA", value: 300000, wallets: 1, pctOfTotal: 10.5 },
+      ],
+      assets: [
+        { asset: "ETH", value: 1200000, chain: "ETHEREUM", wallet: "treasury-main" },
+        { asset: "USDC", value: 850000, chain: "ETHEREUM", wallet: "treasury-main" },
+        { asset: "WBTC", value: 350000, chain: "ETHEREUM", wallet: "treasury-btc" },
+        { asset: "USDC", value: 450000, chain: "ARBITRUM", wallet: "arb-trading" },
+        { asset: "SOL", value: 300000, chain: "SOLANA", wallet: "sol-trading" },
+      ],
+      mode: "live",
+      as_of: null,
+    });
+  }
+  if (route === "/api/defi/funding-rates") {
+    return json({
+      data: [
+        { venue: "HYPERLIQUID", instrument: "ETH-PERP", rate8h: 0.0012, annualized: 5.26, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "HYPERLIQUID", instrument: "BTC-PERP", rate8h: 0.0008, annualized: 3.51, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "BINANCE-FUTURES", instrument: "ETH-PERP", rate8h: 0.001, annualized: 4.38, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "BINANCE-FUTURES", instrument: "BTC-PERP", rate8h: 0.0006, annualized: 2.63, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "BINANCE-FUTURES", instrument: "SOL-PERP", rate8h: 0.0015, annualized: 6.57, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "DERIBIT", instrument: "ETH-PERP", rate8h: 0.0009, annualized: 3.94, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "DERIBIT", instrument: "BTC-PERP", rate8h: 0.0005, annualized: 2.19, timestamp: "2026-03-28T08:00:00Z" },
+        { venue: "OKX-SPOT", instrument: "ETH-PERP", rate8h: 0.0011, annualized: 4.82, timestamp: "2026-03-28T08:00:00Z" },
+      ],
+      mode: "live",
+      as_of: null,
+    });
+  }
+
+  // --- Sports domain endpoints (Plan 2 p2-8) ---
+  if (route === "/api/sports/fixtures") {
+    const pg = parsePaginationParams(path);
+    const url = new URL(path, "http://localhost");
+    const league = url.searchParams.get("league");
+    const status = url.searchParams.get("status");
+    let filtered = MOCK_FIXTURES;
+    if (league) filtered = filtered.filter((f) => f.league === league);
+    if (status) filtered = filtered.filter((f) => f.status === status);
+    return json(paginatedMockResponse(filtered, pg));
+  }
+  if (route === "/api/sports/odds") {
+    const pg = parsePaginationParams(path);
+    const url = new URL(path, "http://localhost");
+    const fixtureId = url.searchParams.get("fixture_id");
+    const market = url.searchParams.get("market");
+    let filtered = MOCK_ODDS;
+    if (fixtureId) filtered = filtered.filter((o) => o.fixtureId === fixtureId);
+    if (market) filtered = filtered.filter((o) => o.market === market);
+    return json(paginatedMockResponse(filtered, pg));
+  }
+  if (route === "/api/sports/arb") {
+    const pg = parsePaginationParams(path);
+    const url = new URL(path, "http://localhost");
+    const minEdge = parseFloat(url.searchParams.get("min_edge") ?? "0");
+    const filtered = minEdge > 0 ? MOCK_ARB_STREAM.filter((a) => a.arbPct >= minEdge) : MOCK_ARB_STREAM;
+    return json(paginatedMockResponse(filtered, pg));
+  }
+  if (route === "/api/sports/bookmakers") {
+    return json({
+      data: BOOKMAKERS.map((bm) => ({
+        id: bm,
+        name: bm.charAt(0).toUpperCase() + bm.slice(1).replace(/_/g, " "),
+        subscribed: SUBSCRIBED_BOOKMAKERS.includes(bm),
+        status: SUBSCRIBED_BOOKMAKERS.includes(bm) ? "active" : "locked",
+      })),
+      mode: "live",
+      as_of: null,
+    });
+  }
+  if (route === "/api/sports/leagues") {
+    return json({
+      data: FOOTBALL_LEAGUES.map((league) => ({
+        id: league.toLowerCase().replace(/\s/g, "-"),
+        name: league,
+        fixtureCount: MOCK_FIXTURES.filter((f) => f.league === league).length,
+      })),
+      mode: "live",
+      as_of: null,
+    });
+  }
+  if (route === "/api/sports/markets") {
+    return json({
+      data: ODDS_MARKETS.map((m) => ({ id: m.toLowerCase().replace(/[\s/]/g, "-"), name: m })),
+      mode: "live",
+      as_of: null,
+    });
+  }
+  if (route === "/api/sports/bets/history") {
+    const pg = parsePaginationParams(path);
+    return json(paginatedMockResponse(MOCK_BETS, pg));
+  }
+
+  // --- Analytics period endpoints (Plan 2 p2-3) ---
+  if (route === "/api/analytics/period-changes") {
+    return json({
+      data: {
+        periods: ["1d", "1w", "1m", "3m", "ytd"],
+        metrics: {
+          pnl: { "1d": 12500, "1w": 87300, "1m": 342100, "3m": 1205000, ytd: 2810000 },
+          sharpe: { "1d": 1.8, "1w": 2.1, "1m": 1.95, "3m": 2.3, ytd: 2.15 },
+          max_drawdown: { "1d": -0.8, "1w": -2.1, "1m": -4.5, "3m": -6.2, ytd: -8.1 },
+          volume: { "1d": 15200000, "1w": 89400000, "1m": 412000000, "3m": 1340000000, ytd: 3150000000 },
+        },
+      },
+      mode: "live",
+      as_of: null,
+    });
+  }
+  if (route === "/api/analytics/period-summary") {
+    return json({
+      data: [
+        { period: "1d", pnl: 12500, return_pct: 0.12, sharpe: 1.8, max_dd: -0.8, trades: 47, win_rate: 0.62 },
+        { period: "1w", pnl: 87300, return_pct: 0.87, sharpe: 2.1, max_dd: -2.1, trades: 312, win_rate: 0.58 },
+        { period: "1m", pnl: 342100, return_pct: 3.42, sharpe: 1.95, max_dd: -4.5, trades: 1420, win_rate: 0.55 },
+        { period: "3m", pnl: 1205000, return_pct: 12.05, sharpe: 2.3, max_dd: -6.2, trades: 4100, win_rate: 0.56 },
+        { period: "ytd", pnl: 2810000, return_pct: 28.1, sharpe: 2.15, max_dd: -8.1, trades: 9800, win_rate: 0.54 },
+      ],
+      pagination: { page: 1, page_size: 50, total: 5 },
+      mode: "live",
+      as_of: null,
+    });
+  }
+  if (route === "/api/analytics/settlements") {
+    return json({
+      data: [
+        { id: "stl-001", date: "2026-03-27", venue: "BINANCE-SPOT", currency: "USDT", amount: 125000, status: "settled", type: "trade" },
+        { id: "stl-002", date: "2026-03-27", venue: "DERIBIT", currency: "BTC", amount: 0.85, status: "pending", type: "expiry" },
+        { id: "stl-003", date: "2026-03-26", venue: "AAVEV3-ETHEREUM", currency: "USDC", amount: 50000, status: "settled", type: "lending_interest" },
+      ],
+      pagination: { page: 1, page_size: 50, total: 3 },
+      mode: "live",
+      as_of: null,
+    });
+  }
+
   // --- Analytics / Strategy ---
   if (route === "/api/analytics/strategy-configs") {
     return json(STRATEGY_TEMPLATES);
@@ -1512,7 +2035,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
             statuses[(ci + i) % statuses.length] === "confirmed"
               ? new Date(Date.now() - i * 86400000).toISOString()
               : null,
-          venue: ["binance", "okx", "deribit"][i % 3],
+          venue: ["BINANCE-SPOT", "OKX-SPOT", "DERIBIT"][i % 3],
         })),
       ),
       accountBalances: ACCOUNTS.map((a) => ({
@@ -1525,8 +2048,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       recentTransfers: [
         {
           time: new Date(Date.now() - 120000).toISOString(),
-          from: "Binance",
-          to: "OKX",
+          from: "BINANCE-SPOT",
+          to: "OKX-SPOT",
           amount: "$250,000",
           status: "confirmed" as const,
           confirmations: "12/12",
@@ -1534,8 +2057,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         },
         {
           time: new Date(Date.now() - 3600000).toISOString(),
-          from: "OKX",
-          to: "Deribit",
+          from: "OKX-SPOT",
+          to: "DERIBIT",
           amount: "$180,000",
           status: "settled" as const,
           confirmations: "6/6",
@@ -1543,8 +2066,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         },
         {
           time: new Date(Date.now() - 600000).toISOString(),
-          from: "Hyperliquid",
-          to: "Binance",
+          from: "HYPERLIQUID",
+          to: "BINANCE-SPOT",
           amount: "$320,000",
           status: "confirming" as const,
           confirmations: "4/12",
@@ -1611,7 +2134,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           id: "BRK-001",
           type: "position",
           instrument: "BTC-PERP",
-          venue: "binance",
+          venue: "BINANCE-SPOT",
           internal_qty: 2.5,
           external_qty: 2.3,
           diff: 0.2,
@@ -1624,7 +2147,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           id: "BRK-002",
           type: "pnl",
           instrument: "ETH-USDT",
-          venue: "hyperliquid",
+          venue: "HYPERLIQUID",
           internal_qty: 15420.5,
           external_qty: 15380.25,
           diff: 40.25,
@@ -1637,7 +2160,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           id: "BRK-003",
           type: "fee",
           instrument: "SOL-PERP",
-          venue: "binance",
+          venue: "BINANCE-SPOT",
           internal_qty: 125.0,
           external_qty: 132.5,
           diff: -7.5,
@@ -1650,7 +2173,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           id: "BRK-004",
           type: "position",
           instrument: "AAVE_V3:SUPPLY:USDT",
-          venue: "aave",
+          venue: "AAVEV3-ETHEREUM",
           internal_qty: 50000,
           external_qty: 49850,
           diff: 150,
@@ -1679,6 +2202,65 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route.startsWith("/api/reporting/reconciliation/")) return json({ ok: true });
   if (route === "/api/reporting/generate") return json({ ok: true, reportId: "rpt-mock-001" });
   if (route === "/api/reporting/schedules") return json([]);
+
+  // --- NAV / IBOR / SAFT (Haruko gap pages) ---
+  if (route === "/api/reporting/nav") {
+    return json({
+      currentNav: 45_200_000,
+      navPerUnit: 1.247,
+      aum: 45_200_000,
+      inceptionDate: "2024-01-15",
+      mtdReturn: 3.2,
+      ytdReturn: 11.8,
+      hourlyTimeSeries: Array.from({ length: 168 }, (_, i) => ({
+        timestamp: new Date(Date.now() - (167 - i) * 3_600_000).toISOString(),
+        nav: 45_200_000 + (Math.sin(i * 0.3) * 800_000) + i * 5_000,
+        aum: 45_200_000 + (Math.sin(i * 0.3) * 800_000) + i * 5_000,
+      })),
+      capitalFlows: [
+        { date: "2026-03-01", type: "subscription", investor: "Vertex Partners", amount: 2_000_000 },
+        { date: "2026-03-15", type: "redemption", investor: "Beta Fund", amount: -500_000 },
+        { date: "2026-03-20", type: "subscription", investor: "Alpha Capital", amount: 1_200_000 },
+        { date: "2026-03-28", type: "subscription", investor: "Elysium", amount: 5_000_000 },
+      ],
+      feeWaterfall: {
+        grossPnl: 1_850_000,
+        managementFee: 90_400,
+        performanceFee: 351_500,
+        adminFee: 18_500,
+        netPnl: 1_389_600,
+      },
+    });
+  }
+  if (route === "/api/reporting/ibor") {
+    return json({
+      positions: [
+        { id: "p1", instrument: "ETH-PERP", venue: "Hyperliquid", strategy: "BASIS_TRADE", quantity: 250, entryPrice: 3_420, markPrice: 3_540, unrealizedPnl: 30_000, positionDate: "2026-03-20", ibor_source: "execution-service" },
+        { id: "p2", instrument: "AUSDC", venue: "AAVEV3-ETHEREUM", strategy: "AAVE_LENDING", quantity: 500_000, entryPrice: 1.0, markPrice: 1.0012, unrealizedPnl: 600, positionDate: "2026-03-18", ibor_source: "execution-service" },
+        { id: "p3", instrument: "WEETH", venue: "MORPHO-ETHEREUM", strategy: "RECURSIVE_STAKED_BASIS", quantity: 300, entryPrice: 3_580, markPrice: 3_610, unrealizedPnl: 9_000, positionDate: "2026-03-15", ibor_source: "execution-service" },
+        { id: "p4", instrument: "BTC-PERP", venue: "Binance-Futures", strategy: "CEFI_BTC_MM", quantity: 15, entryPrice: 68_200, markPrice: 69_400, unrealizedPnl: 18_000, positionDate: "2026-03-22", ibor_source: "execution-service" },
+      ],
+      breaks: [],
+      lastReconciled: new Date(Date.now() - 7_200_000).toISOString(),
+      goldenSource: "execution-service",
+    });
+  }
+  if (route === "/api/reporting/saft") {
+    return json({
+      warrants: [
+        { id: "saft-001", tokenSymbol: "OUM", investor: "Vertex Partners", totalTokens: 500_000, vestedTokens: 125_000, cliffDate: "2025-01-15", vestingEndDate: "2028-01-15", currentPrice: 1.82, npv: 227_500, vestingSchedule: "4yr linear, 1yr cliff" },
+        { id: "saft-002", tokenSymbol: "OUM", investor: "Alpha Capital", totalTokens: 250_000, vestedTokens: 62_500, cliffDate: "2025-06-01", vestingEndDate: "2028-06-01", currentPrice: 1.82, npv: 113_750, vestingSchedule: "4yr linear, 1yr cliff" },
+        { id: "saft-003", tokenSymbol: "OUM", investor: "Beta Fund", totalTokens: 100_000, vestedTokens: 50_000, cliffDate: "2024-12-01", vestingEndDate: "2026-12-01", currentPrice: 1.82, npv: 91_000, vestingSchedule: "2yr linear, immediate" },
+      ],
+      unlockTimeline: Array.from({ length: 12 }, (_, i) => ({
+        month: new Date(Date.now() + i * 30 * 86_400_000).toISOString().slice(0, 7),
+        tokensUnlocking: Math.round(20_000 + Math.sin(i * 0.5) * 5_000),
+      })),
+      totalGranted: 850_000,
+      totalVested: 237_500,
+      totalValue: 432_250,
+    });
+  }
 
   // --- Service Status ---
   if (route === "/api/service-status/health") {

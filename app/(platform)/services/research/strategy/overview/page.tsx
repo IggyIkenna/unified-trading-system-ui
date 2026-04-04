@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,21 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Activity,
   AlertTriangle,
@@ -56,7 +44,9 @@ import type {
   StrategyCandidate,
   StrategyConfig,
   StrategyTemplate,
-} from "@/lib/strategy-platform-types";
+} from "@/lib/types/strategy-platform";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -114,11 +104,11 @@ function alertSeverityColor(severity: string) {
 }
 
 function fmtPct(v: number) {
-  return `${(v * 100).toFixed(1)}%`;
+  return `${formatPercent(v * 100, 1)}`;
 }
 
 function fmtNum(v: number, decimals = 2) {
-  return v.toFixed(decimals);
+  return formatNumber(v, decimals);
 }
 
 type OverviewSortField = "sharpe" | "return" | "drawdown";
@@ -132,13 +122,8 @@ function StrategyOverviewSortIcon({
   currentField: OverviewSortField;
   dir: "asc" | "desc";
 }) {
-  if (currentField !== field)
-    return <ChevronDown className="size-3 opacity-30" />;
-  return dir === "desc" ? (
-    <ChevronDown className="size-3" />
-  ) : (
-    <ChevronUp className="size-3" />
-  );
+  if (currentField !== field) return <ChevronDown className="size-3 opacity-30" />;
+  return dir === "desc" ? <ChevronDown className="size-3" /> : <ChevronUp className="size-3" />;
 }
 
 // ---------------------------------------------------------------------------
@@ -166,18 +151,31 @@ const INITIAL_FORM: BacktestFormState = {
 // ---------------------------------------------------------------------------
 
 export default function StrategyOverviewPage() {
-  const { data: backtestsData, isLoading: backtestsLoading } =
-    useStrategyBacktests();
-  const { data: templatesData, isLoading: templatesLoading } =
-    useStrategyTemplates();
-  const { data: candidatesData, isLoading: candidatesLoading } =
-    useStrategyCandidates();
+  const {
+    data: backtestsData,
+    isLoading: backtestsLoading,
+    isError: backtestsIsError,
+    error: backtestsError,
+    refetch: refetchBacktests,
+  } = useStrategyBacktests();
+  const {
+    data: templatesData,
+    isLoading: templatesLoading,
+    isError: templatesIsError,
+    error: templatesError,
+    refetch: refetchTemplates,
+  } = useStrategyTemplates();
+  const {
+    data: candidatesData,
+    isLoading: candidatesLoading,
+    isError: candidatesIsError,
+    error: candidatesError,
+    refetch: refetchCandidates,
+  } = useStrategyCandidates();
   const createBacktest = useCreateBacktest();
 
-  const backtestsFromApi: BacktestRun[] =
-    (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
-  const STRATEGY_CONFIGS: StrategyConfig[] =
-    (templatesData as any)?.data ?? (templatesData as any)?.configs ?? [];
+  const backtestsFromApi: BacktestRun[] = (backtestsData as any)?.data ?? (backtestsData as any)?.backtests ?? [];
+  const STRATEGY_CONFIGS: StrategyConfig[] = (templatesData as any)?.data ?? (templatesData as any)?.configs ?? [];
   const STRATEGY_TEMPLATES: StrategyTemplate[] =
     (templatesData as any)?.data ?? (templatesData as any)?.templates ?? [];
   const STRATEGY_CANDIDATES: StrategyCandidate[] =
@@ -185,23 +183,25 @@ export default function StrategyOverviewPage() {
   const STRATEGY_ALERTS: StrategyAlert[] = (templatesData as any)?.alerts ?? [];
 
   const isLoading = backtestsLoading || templatesLoading || candidatesLoading;
+  const overviewError = (backtestsError ?? templatesError ?? candidatesError) as Error | null;
+  const overviewHasError = backtestsIsError || templatesIsError || candidatesIsError;
+
+  const refetchOverview = React.useCallback(() => {
+    void refetchBacktests();
+    void refetchTemplates();
+    void refetchCandidates();
+  }, [refetchBacktests, refetchTemplates, refetchCandidates]);
 
   const [localBacktests, setLocalBacktests] = React.useState<BacktestRun[]>([]);
   const backtests = [...localBacktests, ...backtestsFromApi];
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [form, setForm] = React.useState<BacktestFormState>(INITIAL_FORM);
-  const [sortField, setSortField] = React.useState<
-    "sharpe" | "return" | "drawdown"
-  >("sharpe");
+  const [sortField, setSortField] = React.useState<"sharpe" | "return" | "drawdown">("sharpe");
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
 
   // Derived KPIs
-  const activeStrategies = STRATEGY_CONFIGS.filter(
-    (c) => c.status === "live" || c.status === "shadow",
-  ).length;
-  const runningBacktests = backtests.filter(
-    (b) => b.status === "running",
-  ).length;
+  const activeStrategies = STRATEGY_CONFIGS.filter((c) => c.status === "live" || c.status === "shadow").length;
+  const runningBacktests = backtests.filter((b) => b.status === "running").length;
   const candidatesPending = STRATEGY_CANDIDATES.filter(
     (c) => c.reviewState === "pending" || c.reviewState === "in_review",
   ).length;
@@ -287,9 +287,7 @@ export default function StrategyOverviewPage() {
     setDialogOpen(false);
   }
 
-  const selectedTemplate = STRATEGY_TEMPLATES.find(
-    (t) => t.id === form.templateId,
-  );
+  const selectedTemplate = STRATEGY_TEMPLATES.find((t) => t.id === form.templateId);
 
   if (isLoading) {
     return (
@@ -300,19 +298,23 @@ export default function StrategyOverviewPage() {
     );
   }
 
+  if (overviewHasError && overviewError) {
+    return (
+      <div className="p-6">
+        <ApiError error={overviewError} onRetry={refetchOverview} title="Failed to load strategy overview" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="platform-page-width space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-              Strategy Research Platform
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Backtest, validate, and promote trading strategies
-            </p>
-          </div>
+          <PageHeader
+            title="Strategy Research Platform"
+            description="Backtest, validate, and promote trading strategies"
+          />
           <Button onClick={() => setDialogOpen(true)}>
             <Play className="size-4" />
             New Backtest
@@ -398,21 +400,11 @@ export default function StrategyOverviewPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-border/50 hover:bg-transparent">
-                  <TableHead className="text-xs text-muted-foreground">
-                    Name
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Archetype
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Asset Class
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Status
-                  </TableHead>
-                  <TableHead className="text-xs text-muted-foreground">
-                    Version
-                  </TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Name</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Archetype</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Asset Class</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                  <TableHead className="text-xs text-muted-foreground">Version</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -420,26 +412,17 @@ export default function StrategyOverviewPage() {
                   <TableRow key={cfg.id} className="border-border/30">
                     <TableCell className="font-medium">{cfg.name}</TableCell>
                     <TableCell>
-                      <span className="text-muted-foreground text-xs">
-                        {cfg.archetype.replace(/_/g, " ")}
-                      </span>
+                      <span className="text-muted-foreground text-xs">{cfg.archetype.replace(/_/g, " ")}</span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-muted-foreground text-xs">
-                        {cfg.assetClass.replace(/_/g, " ")}
-                      </span>
+                      <span className="text-muted-foreground text-xs">{cfg.assetClass.replace(/_/g, " ")}</span>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={statusColor(cfg.status)}
-                      >
+                      <Badge variant="outline" className={statusColor(cfg.status)}>
                         {cfg.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-muted-foreground font-mono text-xs">
-                      v{cfg.version}
-                    </TableCell>
+                    <TableCell className="text-muted-foreground font-mono text-xs">v{cfg.version}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -461,26 +444,15 @@ export default function StrategyOverviewPage() {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-border/50 hover:bg-transparent">
-                      <TableHead className="text-xs text-muted-foreground">
-                        Strategy
-                      </TableHead>
-                      <TableHead className="text-xs text-muted-foreground">
-                        Venue
-                      </TableHead>
-                      <TableHead className="text-xs text-muted-foreground">
-                        Status
-                      </TableHead>
+                      <TableHead className="text-xs text-muted-foreground">Strategy</TableHead>
+                      <TableHead className="text-xs text-muted-foreground">Venue</TableHead>
+                      <TableHead className="text-xs text-muted-foreground">Status</TableHead>
                       <TableHead
                         className="text-xs text-muted-foreground cursor-pointer select-none"
                         onClick={() => handleSort("sharpe")}
                       >
                         <span className="flex items-center gap-1">
-                          Sharpe{" "}
-                          <StrategyOverviewSortIcon
-                            field="sharpe"
-                            currentField={sortField}
-                            dir={sortDir}
-                          />
+                          Sharpe <StrategyOverviewSortIcon field="sharpe" currentField={sortField} dir={sortDir} />
                         </span>
                       </TableHead>
                       <TableHead
@@ -488,12 +460,7 @@ export default function StrategyOverviewPage() {
                         onClick={() => handleSort("return")}
                       >
                         <span className="flex items-center gap-1">
-                          Return{" "}
-                          <StrategyOverviewSortIcon
-                            field="return"
-                            currentField={sortField}
-                            dir={sortDir}
-                          />
+                          Return <StrategyOverviewSortIcon field="return" currentField={sortField} dir={sortDir} />
                         </span>
                       </TableHead>
                       <TableHead
@@ -501,12 +468,7 @@ export default function StrategyOverviewPage() {
                         onClick={() => handleSort("drawdown")}
                       >
                         <span className="flex items-center gap-1">
-                          Max DD{" "}
-                          <StrategyOverviewSortIcon
-                            field="drawdown"
-                            currentField={sortField}
-                            dir={sortDir}
-                          />
+                          Max DD <StrategyOverviewSortIcon field="drawdown" currentField={sortField} dir={sortDir} />
                         </span>
                       </TableHead>
                     </TableRow>
@@ -514,26 +476,15 @@ export default function StrategyOverviewPage() {
                   <TableBody>
                     {completedBacktests.map((bt) => (
                       <TableRow key={bt.id} className="border-border/30">
-                        <TableCell className="font-medium text-sm">
-                          {bt.templateName}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground text-xs">
-                          {bt.venue}
-                        </TableCell>
+                        <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
+                        <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={backtestStatusColor(bt.status)}
-                          >
+                          <Badge variant="outline" className={backtestStatusColor(bt.status)}>
                             {bt.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {fmtNum(bt.metrics!.sharpe)}
-                        </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {fmtPct(bt.metrics!.totalReturn)}
-                        </TableCell>
+                        <TableCell className="font-mono text-sm">{fmtNum(bt.metrics!.sharpe)}</TableCell>
+                        <TableCell className="font-mono text-sm">{fmtPct(bt.metrics!.totalReturn)}</TableCell>
                         <TableCell className="font-mono text-sm text-red-400">
                           {fmtPct(bt.metrics!.maxDrawdown)}
                         </TableCell>
@@ -541,36 +492,19 @@ export default function StrategyOverviewPage() {
                     ))}
                     {/* Show running backtests */}
                     {backtests
-                      .filter(
-                        (b) => b.status === "running" || b.status === "queued",
-                      )
+                      .filter((b) => b.status === "running" || b.status === "queued")
                       .map((bt) => (
                         <TableRow key={bt.id} className="border-border/30">
-                          <TableCell className="font-medium text-sm">
-                            {bt.templateName}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground text-xs">
-                            {bt.venue}
-                          </TableCell>
+                          <TableCell className="font-medium text-sm">{bt.templateName}</TableCell>
+                          <TableCell className="text-muted-foreground text-xs">{bt.venue}</TableCell>
                           <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={backtestStatusColor(bt.status)}
-                            >
-                              {bt.status === "running"
-                                ? `running ${bt.progress}%`
-                                : bt.status}
+                            <Badge variant="outline" className={backtestStatusColor(bt.status)}>
+                              {bt.status === "running" ? `running ${bt.progress}%` : bt.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            --
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            --
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            --
-                          </TableCell>
+                          <TableCell className="text-muted-foreground">--</TableCell>
+                          <TableCell className="text-muted-foreground">--</TableCell>
+                          <TableCell className="text-muted-foreground">--</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
@@ -589,15 +523,9 @@ export default function StrategyOverviewPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               {STRATEGY_ALERTS.filter((a) => !a.resolvedAt).map((alert) => (
-                <div
-                  key={alert.id}
-                  className="rounded-lg border border-border/50 p-3 space-y-1.5"
-                >
+                <div key={alert.id} className="rounded-lg border border-border/50 p-3 space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <Badge
-                      variant="outline"
-                      className={alertSeverityColor(alert.severity)}
-                    >
+                    <Badge variant="outline" className={alertSeverityColor(alert.severity)}>
                       {alert.severity}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
@@ -617,9 +545,7 @@ export default function StrategyOverviewPage() {
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Run New Backtest</DialogTitle>
-              <DialogDescription>
-                Select a strategy template and configure backtest parameters.
-              </DialogDescription>
+              <DialogDescription>Select a strategy template and configure backtest parameters.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div className="space-y-2">
@@ -652,12 +578,7 @@ export default function StrategyOverviewPage() {
                 <>
                   <div className="space-y-2">
                     <Label>Instrument</Label>
-                    <Select
-                      value={form.instrument}
-                      onValueChange={(v) =>
-                        setForm((f) => ({ ...f, instrument: v }))
-                      }
-                    >
+                    <Select value={form.instrument} onValueChange={(v) => setForm((f) => ({ ...f, instrument: v }))}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select instrument..." />
                       </SelectTrigger>
@@ -673,12 +594,7 @@ export default function StrategyOverviewPage() {
 
                   <div className="space-y-2">
                     <Label>Venue</Label>
-                    <Select
-                      value={form.venue}
-                      onValueChange={(v) =>
-                        setForm((f) => ({ ...f, venue: v }))
-                      }
-                    >
+                    <Select value={form.venue} onValueChange={(v) => setForm((f) => ({ ...f, venue: v }))}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select venue..." />
                       </SelectTrigger>
@@ -700,9 +616,7 @@ export default function StrategyOverviewPage() {
                   <Input
                     type="date"
                     value={form.dateStart}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, dateStart: e.target.value }))
-                    }
+                    onChange={(e) => setForm((f) => ({ ...f, dateStart: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
@@ -710,9 +624,7 @@ export default function StrategyOverviewPage() {
                   <Input
                     type="date"
                     value={form.dateEnd}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, dateEnd: e.target.value }))
-                    }
+                    onChange={(e) => setForm((f) => ({ ...f, dateEnd: e.target.value }))}
                   />
                 </div>
               </div>
@@ -721,10 +633,7 @@ export default function StrategyOverviewPage() {
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSubmitBacktest}
-                disabled={!form.templateId}
-              >
+              <Button onClick={handleSubmitBacktest} disabled={!form.templateId}>
                 <Play className="size-4" />
                 Run Backtest
               </Button>

@@ -13,6 +13,7 @@ import {
 import { InstructionFillStatusIcon } from "./instruction-fill-status-icon";
 import { InstructionDetailGrid } from "./instruction-detail-grid";
 import { useInstructionsData } from "./instructions-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function InstructionPipelineRows({
   scrollClassName,
@@ -108,7 +109,7 @@ function InstructionPipelineRow({
               {inst.signal.direction}
             </span>
             <span className={cn("text-[10px] font-mono", getInstructionConfidenceColor(inst.signal.confidence))}>
-              {(inst.signal.confidence * 100).toFixed(0)}%
+              {formatPercent(inst.signal.confidence * 100, 0)}
             </span>
           </div>
           <div className="text-[10px] text-muted-foreground font-mono truncate" title={inst.strategyId}>
@@ -163,10 +164,10 @@ function InstructionPipelineRow({
               <div className="flex items-center gap-2">
                 <span className={cn("text-[10px] font-mono", getInstructionSlippageColor(inst.fill.slippageBps))}>
                   {inst.fill.slippageBps > 0 ? "+" : ""}
-                  {inst.fill.slippageBps.toFixed(1)} bps
+                  {formatNumber(inst.fill.slippageBps, 1)} bps
                 </span>
                 {fillQtyPct < 100 && (
-                  <span className="text-[10px] text-amber-400 font-mono">{fillQtyPct.toFixed(0)}% filled</span>
+                  <span className="text-[10px] text-amber-400 font-mono">{formatPercent(fillQtyPct, 0)} filled</span>
                 )}
               </div>
             </>

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { MarketVenue } from "./types";
 import { probColour, fmtCents } from "./helpers";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ─── Venue Chip ───────────────────────────────────────────────────────────────
 
@@ -19,7 +20,7 @@ export function VenueChip({ venue, className }: { venue: MarketVenue | string; c
         isPolymarket && "bg-blue-500/15 text-blue-400 border-blue-500/30",
         isKalshi && "bg-purple-500/15 text-purple-400 border-purple-500/30",
         !isPolymarket && !isKalshi && "bg-zinc-700/50 text-zinc-400 border-zinc-600/40",
-        className
+        className,
       )}
     >
       {isPolymarket ? "Polymarket" : isKalshi ? "Kalshi" : String(venue).replace(/_/g, " ")}
@@ -84,7 +85,7 @@ export function YesNoButtons({
       <button
         className={cn(
           "rounded border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 font-semibold transition-colors",
-          size === "sm" ? "text-xs px-2.5 py-1" : "text-sm px-3 py-1.5"
+          size === "sm" ? "text-xs px-2.5 py-1" : "text-sm px-3 py-1.5",
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -96,7 +97,7 @@ export function YesNoButtons({
       <button
         className={cn(
           "rounded border border-red-500/40 text-red-400 hover:bg-red-500/20 hover:text-red-300 font-semibold transition-colors",
-          size === "sm" ? "text-xs px-2.5 py-1" : "text-sm px-3 py-1.5"
+          size === "sm" ? "text-xs px-2.5 py-1" : "text-sm px-3 py-1.5",
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -126,7 +127,7 @@ export function DivergenceBadge({ className }: { className?: string }) {
 
 export function DeltaPill({ delta }: { delta: number }) {
   const colour = delta > 0.5 ? "text-emerald-400" : delta > 0.3 ? "text-yellow-400" : "text-zinc-400";
-  return <span className={cn("text-[10px] font-mono tabular-nums", colour)}>δ {delta.toFixed(2)}</span>;
+  return <span className={cn("text-[10px] font-mono tabular-nums", colour)}>δ {formatNumber(delta, 2)}</span>;
 }
 
 // ─── Timeframe Badge ─────────────────────────────────────────────────────────

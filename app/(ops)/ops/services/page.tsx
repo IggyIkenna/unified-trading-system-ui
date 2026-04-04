@@ -1,18 +1,12 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import {
   Server,
@@ -33,13 +27,11 @@ import {
 } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { SERVICES, type Service } from "@/lib/reference-data";
 import { useServicesList } from "@/hooks/api/use-service-status";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Extend services with runtime status
 interface ServiceStatus extends Service {
@@ -55,19 +47,24 @@ interface ServiceStatus extends Service {
   version: string;
 }
 
-const serviceStatuses: ServiceStatus[] = SERVICES.map((service) => ({
-  ...service,
-  instances: Math.floor(Math.random() * 3) + 1,
-  healthyInstances: Math.floor(Math.random() * 3) + 1,
-  cpu: Math.random() * 80 + 10,
-  memory: Math.random() * 70 + 20,
-  requestsPerSec: Math.floor(Math.random() * 500) + 50,
-  errorRate: Math.random() * 2,
-  p50Latency: Math.random() * 10 + 1,
-  p99Latency: Math.random() * 50 + 10,
-  lastDeployed: "2h ago",
-  version: `v${Math.floor(Math.random() * 3) + 1}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 20)}`,
-}));
+const serviceStatuses: ServiceStatus[] = SERVICES.map((service, idx) => {
+  const instances = Math.floor(mock01(idx, 1) * 3) + 1;
+  const healthyRaw = Math.floor(mock01(idx, 2) * 3) + 1;
+  const healthyInstances = Math.min(healthyRaw, instances);
+  return {
+    ...service,
+    instances,
+    healthyInstances,
+    cpu: mock01(idx, 3) * 80 + 10,
+    memory: mock01(idx, 4) * 70 + 20,
+    requestsPerSec: Math.floor(mock01(idx, 5) * 500) + 50,
+    errorRate: mock01(idx, 6) * 2,
+    p50Latency: mock01(idx, 7) * 10 + 1,
+    p99Latency: mock01(idx, 8) * 50 + 10,
+    lastDeployed: "2h ago",
+    version: `v${Math.floor(mock01(idx, 9) * 3) + 1}.${Math.floor(mock01(idx, 10) * 10)}.${Math.floor(mock01(idx, 11) * 20)}`,
+  };
+});
 
 // Shard configuration data
 interface ShardInfo {
@@ -207,12 +204,9 @@ const serviceShards: Record<string, ShardConfig> = {
   },
 };
 
-function getServiceHealth(
-  service: ServiceStatus,
-): "healthy" | "degraded" | "unhealthy" {
+function getServiceHealth(service: ServiceStatus): "healthy" | "degraded" | "unhealthy" {
   if (service.healthyInstances === 0) return "unhealthy";
-  if (service.healthyInstances < service.instances || service.errorRate > 1)
-    return "degraded";
+  if (service.healthyInstances < service.instances || service.errorRate > 1) return "degraded";
   return "healthy";
 }
 
@@ -221,21 +215,15 @@ export default function ServicesPage() {
 
   // Use API data if available, fall back to reference-data-derived mock
   const allServices: ServiceStatus[] =
-    ((apiData as Record<string, unknown>)?.services as ServiceStatus[]) ??
-    serviceStatuses;
+    ((apiData as Record<string, unknown>)?.services as ServiceStatus[]) ?? serviceStatuses;
 
   const apiServices = allServices.filter((s) => s.type === "api-service");
-  const coreServices = allServices.filter(
-    (s) => s.type === "service" || s.type === "batch-service",
-  );
+  const coreServices = allServices.filter((s) => s.type === "service" || s.type === "batch-service");
 
   const healthyCounts = {
-    healthy: allServices.filter((s) => getServiceHealth(s) === "healthy")
-      .length,
-    degraded: allServices.filter((s) => getServiceHealth(s) === "degraded")
-      .length,
-    unhealthy: allServices.filter((s) => getServiceHealth(s) === "unhealthy")
-      .length,
+    healthy: allServices.filter((s) => getServiceHealth(s) === "healthy").length,
+    degraded: allServices.filter((s) => getServiceHealth(s) === "degraded").length,
+    unhealthy: allServices.filter((s) => getServiceHealth(s) === "unhealthy").length,
   };
 
   return (
@@ -243,12 +231,7 @@ export default function ServicesPage() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Services</h1>
-            <p className="text-sm text-muted-foreground">
-              Monitor service health, deployments, and resource usage
-            </p>
-          </div>
+          <PageHeader title="Services" description="Monitor service health, deployments, and resource usage" />
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
@@ -274,9 +257,7 @@ export default function ServicesPage() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Total Services
-                  </p>
+                  <p className="text-sm text-muted-foreground">Total Services</p>
                   <p className="text-2xl font-semibold">{allServices.length}</p>
                 </div>
                 <Server className="size-8 text-muted-foreground" />
@@ -288,14 +269,9 @@ export default function ServicesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Healthy</p>
-                  <p className="text-2xl font-semibold pnl-positive">
-                    {healthyCounts.healthy}
-                  </p>
+                  <p className="text-2xl font-semibold pnl-positive">{healthyCounts.healthy}</p>
                 </div>
-                <CheckCircle2
-                  className="size-8"
-                  style={{ color: "var(--pnl-positive)" }}
-                />
+                <CheckCircle2 className="size-8" style={{ color: "var(--pnl-positive)" }} />
               </div>
             </CardContent>
           </Card>
@@ -304,14 +280,9 @@ export default function ServicesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Degraded</p>
-                  <p className="text-2xl font-semibold status-warning">
-                    {healthyCounts.degraded}
-                  </p>
+                  <p className="text-2xl font-semibold status-warning">{healthyCounts.degraded}</p>
                 </div>
-                <AlertTriangle
-                  className="size-8"
-                  style={{ color: "var(--status-warning)" }}
-                />
+                <AlertTriangle className="size-8" style={{ color: "var(--status-warning)" }} />
               </div>
             </CardContent>
           </Card>
@@ -320,14 +291,9 @@ export default function ServicesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Unhealthy</p>
-                  <p className="text-2xl font-semibold pnl-negative">
-                    {healthyCounts.unhealthy}
-                  </p>
+                  <p className="text-2xl font-semibold pnl-negative">{healthyCounts.unhealthy}</p>
                 </div>
-                <XCircle
-                  className="size-8"
-                  style={{ color: "var(--pnl-negative)" }}
-                />
+                <XCircle className="size-8" style={{ color: "var(--pnl-negative)" }} />
               </div>
             </CardContent>
           </Card>
@@ -336,13 +302,9 @@ export default function ServicesPage() {
         {/* Services Tabs */}
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="all">
-              All Services ({allServices.length})
-            </TabsTrigger>
+            <TabsTrigger value="all">All Services ({allServices.length})</TabsTrigger>
             <TabsTrigger value="apis">APIs ({apiServices.length})</TabsTrigger>
-            <TabsTrigger value="core">
-              Core Services ({coreServices.length})
-            </TabsTrigger>
+            <TabsTrigger value="core">Core Services ({coreServices.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
@@ -361,9 +323,7 @@ export default function ServicesPage() {
 }
 
 function ServiceTable({ services }: { services: ServiceStatus[] }) {
-  const [expandedService, setExpandedService] = React.useState<string | null>(
-    null,
-  );
+  const [expandedService, setExpandedService] = React.useState<string | null>(null);
 
   return (
     <Card>
@@ -395,18 +355,11 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
               <React.Fragment key={svcId}>
                 <TableRow
                   className={cn(hasShard && "cursor-pointer hover:bg-muted/50")}
-                  onClick={() =>
-                    hasShard &&
-                    setExpandedService(isExpanded ? null : svcId)
-                  }
+                  onClick={() => hasShard && setExpandedService(isExpanded ? null : svcId)}
                 >
                   <TableCell className="w-8 p-2">
                     {hasShard &&
-                      (isExpanded ? (
-                        <ChevronDown className="size-4" />
-                      ) : (
-                        <ChevronRight className="size-4" />
-                      ))}
+                      (isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />)}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -419,30 +372,19 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{service.name}</p>
                           {hasShard && (
-                            <Badge
-                              variant="outline"
-                              className="text-xs font-normal"
-                            >
+                            <Badge variant="outline" className="text-xs font-normal">
                               <Layers className="size-3 mr-1" />
                               {shardConfig?.totalShards} shards
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {service.domain}
-                        </p>
+                        <p className="text-xs text-muted-foreground">{service.domain}</p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={
-                        health === "healthy"
-                          ? "default"
-                          : health === "degraded"
-                            ? "secondary"
-                            : "destructive"
-                      }
+                      variant={health === "healthy" ? "default" : health === "degraded" ? "secondary" : "destructive"}
                       className={cn(
                         health === "healthy" &&
                           "bg-[var(--pnl-positive)]/10 text-[var(--pnl-positive)] border-[var(--pnl-positive)]/20",
@@ -455,10 +397,7 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                   </TableCell>
                   <TableCell className="text-right font-mono">
                     <span
-                      className={cn(
-                        service.healthyInstances < service.instances &&
-                          "text-[var(--status-warning)]",
-                      )}
+                      className={cn(service.healthyInstances < service.instances && "text-[var(--status-warning)]")}
                     >
                       {service.healthyInstances}
                     </span>
@@ -466,40 +405,24 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="font-mono">
-                        {service.cpu.toFixed(0)}%
-                      </span>
-                      {service.cpu > 70 && (
-                        <ArrowUpRight className="size-3 text-[var(--status-warning)]" />
-                      )}
+                      <span className="font-mono">{formatPercent(service.cpu, 0)}</span>
+                      {service.cpu > 70 && <ArrowUpRight className="size-3 text-[var(--status-warning)]" />}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <span className="font-mono">
-                        {service.memory.toFixed(0)}%
-                      </span>
-                      {service.memory > 80 && (
-                        <ArrowUpRight className="size-3 text-[var(--status-warning)]" />
-                      )}
+                      <span className="font-mono">{formatPercent(service.memory, 0)}</span>
+                      {service.memory > 80 && <ArrowUpRight className="size-3 text-[var(--status-warning)]" />}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-mono">
-                    {service.requestsPerSec}
-                  </TableCell>
+                  <TableCell className="text-right font-mono">{service.requestsPerSec}</TableCell>
                   <TableCell className="text-right">
-                    <span
-                      className={cn(
-                        "font-mono",
-                        service.errorRate > 1 && "text-[var(--pnl-negative)]",
-                      )}
-                    >
-                      {service.errorRate.toFixed(2)}%
+                    <span className={cn("font-mono", service.errorRate > 1 && "text-[var(--pnl-negative)]")}>
+                      {formatPercent(service.errorRate, 2)}
                     </span>
                   </TableCell>
                   <TableCell className="text-right font-mono text-xs">
-                    {service.p50Latency.toFixed(1)}ms /{" "}
-                    {service.p99Latency.toFixed(0)}ms
+                    {formatNumber(service.p50Latency, 1)}ms / {formatNumber(service.p99Latency, 0)}ms
                   </TableCell>
                   <TableCell className="text-right">
                     <Badge variant="outline" className="font-mono text-xs">
@@ -507,12 +430,7 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-8"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <Button variant="ghost" size="icon" className="size-8" onClick={(e) => e.stopPropagation()}>
                       <ExternalLink className="size-4" />
                     </Button>
                   </TableCell>
@@ -524,30 +442,20 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                     <TableCell colSpan={11} className="p-4">
                       <div className="space-y-3">
                         <div className="flex items-center gap-4 text-sm">
-                          <span className="text-muted-foreground">
-                            Dimensions:
-                          </span>
+                          <span className="text-muted-foreground">Dimensions:</span>
                           <code className="bg-background px-2 py-0.5 rounded text-xs font-mono">
                             {shardConfig.dimensions}
                           </code>
-                          <span className="text-muted-foreground">
-                            Total Shards:
-                          </span>
-                          <span className="font-medium">
-                            {shardConfig.totalShards}
-                          </span>
+                          <span className="text-muted-foreground">Total Shards:</span>
+                          <span className="font-medium">{shardConfig.totalShards}</span>
                         </div>
                         <Table>
                           <TableHeader>
                             <TableRow>
                               <TableHead className="w-8">Status</TableHead>
                               <TableHead>Shard Key</TableHead>
-                              <TableHead className="text-right">
-                                Last Update
-                              </TableHead>
-                              <TableHead className="text-right">
-                                Latency
-                              </TableHead>
+                              <TableHead className="text-right">Last Update</TableHead>
+                              <TableHead className="text-right">Latency</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -564,29 +472,20 @@ function ServiceTable({ services }: { services: ServiceStatus[] }) {
                                     <XCircle className="size-4 text-[var(--pnl-negative)]" />
                                   )}
                                 </TableCell>
-                                <TableCell className="font-mono text-sm">
-                                  {shard.key}
-                                </TableCell>
+                                <TableCell className="font-mono text-sm">{shard.key}</TableCell>
                                 <TableCell className="text-right text-sm text-muted-foreground">
                                   {shard.lastUpdate}
                                 </TableCell>
                                 <TableCell className="text-right font-mono text-sm">
                                   {shard.latency ||
-                                    (shard.error ? (
-                                      <span className="text-destructive">
-                                        {shard.error}
-                                      </span>
-                                    ) : (
-                                      "—"
-                                    ))}
+                                    (shard.error ? <span className="text-destructive">{shard.error}</span> : "—")}
                                 </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
                         </Table>
                         <p className="text-xs text-muted-foreground">
-                          Showing {shardConfig.shards.length} of{" "}
-                          {shardConfig.totalShards} shards
+                          Showing {shardConfig.shards.length} of {shardConfig.totalShards} shards
                         </p>
                       </div>
                     </TableCell>

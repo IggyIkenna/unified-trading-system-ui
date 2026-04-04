@@ -1,9 +1,9 @@
 import type { BridgeRouteQuote, ChainPortfolio } from "@/lib/types/defi";
 
 export const DEFI_CHAINS = [
-  "Ethereum", "Arbitrum", "Optimism", "Base", "Polygon",
-  "BSC", "Avalanche", "Scroll", "Linea", "zkSync",
-  "Solana",
+  "ETHEREUM", "ARBITRUM", "OPTIMISM", "BASE", "POLYGON",
+  "BSC", "AVALANCHE", "SCROLL", "LINEA", "ZKSYNC",
+  "SOLANA",
 ] as const;
 
 export const DEFI_TOKENS = ["ETH", "USDC", "USDT", "WETH", "WBTC", "DAI"] as const;
@@ -70,35 +70,35 @@ export function getMockBridgeRoutes(
 /** Mock per-chain portfolio for wallet summary. */
 export const MOCK_CHAIN_PORTFOLIOS: ChainPortfolio[] = [
   {
-    chain: "Ethereum",
+    chain: "ETHEREUM",
     totalUsd: 125_400,
     tokenBreakdown: { ETH: 8.2, USDC: 22_000, WBTC: 0.85, DAI: 12_100 },
     gasTokenBalance: 8.2,
     gasTokenSymbol: "ETH",
   },
   {
-    chain: "Arbitrum",
+    chain: "ARBITRUM",
     totalUsd: 42_300,
     tokenBreakdown: { ETH: 2.5, USDC: 8_500, USDT: 12_000 },
     gasTokenBalance: 2.5,
     gasTokenSymbol: "ETH",
   },
   {
-    chain: "Base",
+    chain: "BASE",
     totalUsd: 18_700,
     tokenBreakdown: { ETH: 1.2, USDC: 4_020, WETH: 3.0 },
     gasTokenBalance: 1.2,
     gasTokenSymbol: "ETH",
   },
   {
-    chain: "Optimism",
+    chain: "OPTIMISM",
     totalUsd: 8_200,
     tokenBreakdown: { ETH: 0.5, USDT: 6_200 },
     gasTokenBalance: 0.5,
     gasTokenSymbol: "ETH",
   },
   {
-    chain: "Polygon",
+    chain: "POLYGON",
     totalUsd: 3_100,
     tokenBreakdown: { USDC: 3_100 },
     gasTokenBalance: 45.2,
@@ -112,7 +112,7 @@ export const MOCK_CHAIN_PORTFOLIOS: ChainPortfolio[] = [
     gasTokenSymbol: "BNB",
   },
   {
-    chain: "Solana",
+    chain: "SOLANA",
     totalUsd: 15_800,
     tokenBreakdown: { SOL: 85.5, USDC: 2_300, mSOL: 12.0 },
     gasTokenBalance: 85.5,

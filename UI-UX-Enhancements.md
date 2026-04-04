@@ -56,3 +56,9 @@ option (A) — **Partially done:**
 option (B)
 
 - need ideas and team reviews
+
+in trading lifecycle page
+-trading button at top navbar does not get highlighted when i click on following tabs in the left side navbar -> alerts, and all of the buttons under strategy families
+
+- in some of them strategy families, when i click on one button, other button in the same family also gets highlighted
+- in the custom workspace, I can add new panel but cannot delete it.

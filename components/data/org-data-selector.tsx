@@ -16,14 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Building2,
-  ChevronDown,
-  Check,
-  FlaskConical,
-  Shield,
-} from "lucide-react";
-import type { DataOrg, OrgMode } from "@/lib/data-service-types";
+import { Building2, ChevronDown, Check, FlaskConical, Shield } from "lucide-react";
+import type { DataOrg, OrgMode } from "@/lib/types/data-service";
 
 interface OrgDataSelectorProps {
   orgs: DataOrg[];
@@ -33,13 +27,7 @@ interface OrgDataSelectorProps {
   className?: string;
 }
 
-export function OrgDataSelector({
-  orgs,
-  currentOrg,
-  orgMode,
-  onOrgChange,
-  className,
-}: OrgDataSelectorProps) {
+export function OrgDataSelector({ orgs, currentOrg, orgMode, onOrgChange, className }: OrgDataSelectorProps) {
   // Demo mode: always locked, show demo badge
   if (orgMode === "demo") {
     return (
@@ -47,10 +35,7 @@ export function OrgDataSelector({
         <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-1.5">
           <FlaskConical className="size-3.5 text-amber-400" />
           <span className="text-sm font-medium text-amber-400">Demo Org</span>
-          <Badge
-            variant="outline"
-            className="h-4 text-[10px] border-amber-500/40 text-amber-500"
-          >
+          <Badge variant="outline" className="h-4 text-[10px] border-amber-500/40 text-amber-500">
             MOCK
           </Badge>
         </div>
@@ -73,20 +58,13 @@ export function OrgDataSelector({
   // Admin mode: full org dropdown
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <Badge
-        variant="outline"
-        className="border-violet-500/30 text-violet-400 text-[10px]"
-      >
+      <Badge variant="outline" className="border-violet-500/30 text-violet-400 text-[10px]">
         <Shield className="mr-1 size-2.5" />
         ADMIN
       </Badge>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 gap-2 px-2 font-semibold hover:bg-secondary"
-          >
+          <Button variant="ghost" size="sm" className="h-7 gap-2 px-2 font-semibold hover:bg-secondary">
             <Building2 className="size-4 text-sky-400" />
             <span>{currentOrg.name}</span>
             <ChevronDown className="size-3 text-muted-foreground" />
@@ -114,9 +92,7 @@ export function OrgDataSelector({
                     </Badge>
                   )}
                 </span>
-                {org.id === currentOrg.id && (
-                  <Check className="size-4 text-sky-400" />
-                )}
+                {org.id === currentOrg.id && <Check className="size-4 text-sky-400" />}
               </DropdownMenuItem>
             ))}
         </DropdownMenuContent>

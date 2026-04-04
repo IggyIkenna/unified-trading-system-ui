@@ -1,8 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import type { ServiceHealth } from "@/components/trading/health-status-grid";
+import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
+import { useValueFormat } from "@/components/trading/value-format-toggle";
+import { OverviewDataProvider, type OverviewData } from "@/components/widgets/overview/overview-data-context";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { useAlerts } from "@/hooks/api/use-alerts";
 import { useOrders } from "@/hooks/api/use-orders";
 import { usePositions } from "@/hooks/api/use-positions";
@@ -14,47 +16,85 @@ import {
   useTradingPerformance,
   useTradingPnl,
   useTradingTimeseries,
+  type StrategyPerformanceRow,
 } from "@/hooks/api/use-trading";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { useValueFormat } from "@/components/trading/value-format-toggle";
-import type { VenueMargin } from "@/components/trading/margin-utilization";
-import type { ServiceHealth } from "@/components/trading/health-status-grid";
-import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
-import type { PnLBreakdown, TimeSeriesPoint, TradingClient, TradingOrganization } from "@/lib/trading-data";
-import { WidgetGrid } from "@/components/widgets/widget-grid";
-import { OverviewDataProvider, type OverviewData } from "@/components/widgets/overview/overview-data-context";
-import { getStrategiesForScope, getAlertsForScope, getAggregatedPnlForScope } from "@/lib/mock-data";
-import { ORGANIZATIONS, CLIENTS } from "@/lib/trading-data";
+import {
+  getAggregatedPnlForScope,
+  getAlertsForScope,
+  getStrategiesForScope,
+} from "@/lib/mocks/fixtures/mock-data-index";
+import { SEED_SERVICES } from "@/lib/mocks/fixtures/trading-pages";
+import type { SeedStrategy } from "@/lib/mocks/fixtures/mock-data-seed";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import type {
+  PnLBreakdown,
+  TimeSeriesPoint,
+  TradingClient,
+  TradingOrganization,
+} from "@/lib/mocks/fixtures/trading-data";
+import { CLIENTS, ORGANIZATIONS } from "@/lib/mocks/fixtures/trading-data";
+import { formatCurrency as formatUsdCompact, formatNumber } from "@/lib/utils/formatters";
+import * as React from "react";
 
-import "@/components/widgets/overview/register";
+import { ApiError } from "@/components/shared/api-error";
+
+function seedToStrategyPerformanceRow(s: SeedStrategy): StrategyPerformanceRow {
+  return {
+    id: s.id,
+    name: s.name,
+    assetClass: "Crypto",
+    archetype: s.archetype,
+    clientName: s.clientId,
+    orgName: s.orgId,
+    orgId: s.orgId,
+    clientId: s.clientId,
+    status: s.status,
+    executionMode: "live",
+    pnl: (s.aum * s.mtdReturn) / 100,
+    pnlChange: 0,
+    sharpe: s.sharpe,
+    maxDrawdown: 0,
+    nav: s.aum,
+    exposure: s.aum * 0.8,
+  };
+}
 
 function getToday(): string {
   return new Date().toISOString().split("T")[0];
 }
 
-function ErrorBanner({ message }: { message: string }) {
-  return (
-    <div className="mx-4 my-4 p-4 rounded-lg border border-destructive/50 bg-destructive/10 flex items-center gap-3">
-      <AlertTriangle className="size-5 text-destructive flex-shrink-0" />
-      <div>
-        <p className="text-sm font-medium text-destructive">Failed to load dashboard data</p>
-        <p className="text-xs text-muted-foreground mt-1">{message}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function OverviewPage() {
-  const { data: orgsData, isLoading: orgsLoading, error: orgsError } = useTradingOrgs();
-  const { data: clientsData, isLoading: clientsLoading, error: clientsError } = useTradingClients();
-  const { data: pnlData, isLoading: pnlLoading, error: pnlError } = useTradingPnl();
-  const { data: timeseriesData, isLoading: timeseriesLoading, error: timeseriesError } = useTradingTimeseries();
-  const { data: performanceData, isLoading: perfLoading, error: perfError } = useTradingPerformance();
-  const { data: liveBatchData, isLoading: liveBatchLoading, error: liveBatchError } = useTradingLiveBatchDelta();
-  const { data: alertsData, isLoading: alertsLoading, error: alertsError } = useAlerts();
-  const { data: ordersData, isLoading: ordersLoading } = useOrders();
-  const { data: positionsData, error: positionsError } = usePositions();
-  const { data: healthData, error: healthError } = useServiceHealth();
+  const { data: orgsData, isLoading: orgsLoading, error: orgsError, refetch: refetchOrgs } = useTradingOrgs();
+  const {
+    data: clientsData,
+    isLoading: clientsLoading,
+    error: clientsError,
+    refetch: refetchClients,
+  } = useTradingClients();
+  const { data: pnlData, isLoading: pnlLoading, error: pnlError, refetch: refetchPnl } = useTradingPnl();
+  const {
+    data: timeseriesData,
+    isLoading: timeseriesLoading,
+    error: timeseriesError,
+    refetch: refetchTimeseries,
+  } = useTradingTimeseries();
+  const {
+    data: performanceData,
+    isLoading: perfLoading,
+    error: perfError,
+    refetch: refetchPerformance,
+  } = useTradingPerformance();
+  const {
+    data: liveBatchData,
+    isLoading: liveBatchLoading,
+    error: liveBatchError,
+    refetch: refetchLiveBatch,
+  } = useTradingLiveBatchDelta();
+  const { data: alertsData, isLoading: alertsLoading, error: alertsError, refetch: refetchAlerts } = useAlerts();
+  const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useOrders();
+  const { data: positionsData, error: positionsError, refetch: refetchPositions } = usePositions();
+  const { data: healthData, error: healthError, refetch: refetchHealth } = useServiceHealth();
 
   const [realtimePnl, setRealtimePnl] = React.useState<Record<string, number>>({});
   const [realtimePnlPoints, setRealtimePnlPoints] = React.useState<TimeSeriesPoint[]>([]);
@@ -86,8 +126,8 @@ export default function OverviewPage() {
 
   useWebSocket({ url: "ws://localhost:8030/ws", enabled: wsScope.mode === "live", onMessage: handleWsMessage });
 
-  const organizations: TradingOrganization[] = orgsData?.organizations ?? ORGANIZATIONS;
-  const clients: TradingClient[] = clientsData?.clients ?? CLIENTS;
+  const organizations: TradingOrganization[] = orgsData?.data ?? orgsData?.organizations ?? ORGANIZATIONS;
+  const clients: TradingClient[] = clientsData?.data ?? clientsData?.clients ?? CLIENTS;
 
   const alertsRaw = alertsData as Record<string, unknown> | undefined;
   const apiAlerts = (alertsRaw?.data ?? alertsRaw?.alerts ?? []) as Array<{
@@ -97,27 +137,18 @@ export default function OverviewPage() {
     timestamp: string;
     source: string;
   }>;
-  const mockAlerts = apiAlerts.length > 0 ? apiAlerts : getAlertsForScope(
-    wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds,
-  ).map((a) => ({
-    id: a.id,
-    message: a.message,
-    severity: a.severity,
-    timestamp: a.timestamp,
-    source: a.source,
-  }));
+  const mockAlerts =
+    apiAlerts.length > 0
+      ? apiAlerts
+      : getAlertsForScope(wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds).map((a) => ({
+          id: a.id,
+          message: a.message,
+          severity: a.severity,
+          timestamp: a.timestamp,
+          source: a.source,
+        }));
 
   const healthRaw = healthData as Record<string, unknown> | undefined;
-  const SEED_SERVICES: ServiceHealth[] = [
-    { name: "Market Data", freshness: 2, sla: 10, status: "live" },
-    { name: "Execution", freshness: 1, sla: 5, status: "live" },
-    { name: "Risk Engine", freshness: 5, sla: 15, status: "live" },
-    { name: "P&L Attribution", freshness: 8, sla: 30, status: "live" },
-    { name: "Position Monitor", freshness: 3, sla: 10, status: "live" },
-    { name: "Strategy Service", freshness: 4, sla: 10, status: "live" },
-    { name: "Features Pipeline", freshness: 12, sla: 60, status: "live" },
-    { name: "ML Inference", freshness: 45, sla: 60, status: "warning" },
-  ];
   const allMockServices: ServiceHealth[] = (healthRaw?.data ?? healthRaw?.services ?? SEED_SERVICES) as ServiceHealth[];
 
   // Fall back to seed PnL when API returns nothing
@@ -165,42 +196,32 @@ export default function OverviewPage() {
   }, [wsScope.organizationIds, wsScope.clientIds, wsScope.strategyIds]);
 
   const emptyTs: TimeSeriesPoint[] = [];
-  const liveTimeSeries = timeseriesData?.timeseries ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
+  const liveTimeSeries = timeseriesData?.timeseries ??
+    seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
   const batchTimeSeries = liveBatchData ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
 
-  const apiStrategies = performanceData?.strategies ?? [];
+  const apiStrategies = performanceData?.data ?? performanceData?.strategies ?? [];
   const { scope: context } = useGlobalScope();
 
   // Fall back to seed strategies when API returns nothing
-  const allStrategies = React.useMemo(() => {
+  const allStrategies = React.useMemo((): StrategyPerformanceRow[] => {
     if (apiStrategies.length > 0) return apiStrategies;
     const seed = getStrategiesForScope(context.organizationIds, context.clientIds, context.strategyIds);
-    return seed.map((s) => ({
-      id: s.id,
-      name: s.name,
-      archetype: s.archetype,
-      status: s.status,
-      nav: s.aum,
-      exposure: s.aum * 0.8,
-      pnl: s.aum * s.mtdReturn / 100,
-      sharpe: s.sharpe,
-      orgId: s.orgId,
-      clientId: s.clientId,
-    }));
+    return seed.map(seedToStrategyPerformanceRow);
   }, [apiStrategies, context.organizationIds, context.clientIds, context.strategyIds]);
 
-  const strategyPerformance = React.useMemo(() => {
-    let result = allStrategies;
+  const strategyPerformance = React.useMemo((): StrategyPerformanceRow[] => {
+    let result = [...allStrategies];
     if (context.organizationIds.length > 0) {
       result = result.filter((s) => {
-        const orgHint = (s as unknown as Record<string, unknown>).orgId as string | undefined;
-        return orgHint ? context.organizationIds.includes(orgHint) : true;
+        const oid = s.orgId ?? s.orgName;
+        return oid ? context.organizationIds.includes(oid) : true;
       });
     }
     if (context.clientIds.length > 0) {
       result = result.filter((s) => {
-        const clientHint = (s as unknown as Record<string, unknown>).clientId as string | undefined;
-        return clientHint ? context.clientIds.includes(clientHint) : true;
+        const cid = s.clientId ?? s.clientName;
+        return cid ? context.clientIds.includes(cid) : true;
       });
     }
     if (context.strategyIds.length > 0) {
@@ -222,6 +243,30 @@ export default function OverviewPage() {
     positionsError ??
     healthError ??
     liveBatchError;
+
+  const refetchOverview = React.useCallback(() => {
+    void refetchOrgs();
+    void refetchClients();
+    void refetchPnl();
+    void refetchTimeseries();
+    void refetchPerformance();
+    void refetchLiveBatch();
+    void refetchAlerts();
+    void refetchOrders();
+    void refetchPositions();
+    void refetchHealth();
+  }, [
+    refetchOrgs,
+    refetchClients,
+    refetchPnl,
+    refetchTimeseries,
+    refetchPerformance,
+    refetchLiveBatch,
+    refetchAlerts,
+    refetchOrders,
+    refetchPositions,
+    refetchHealth,
+  ]);
 
   const hasRealtimePnl = Object.keys(realtimePnl).length > 0;
   const totalPnl = hasRealtimePnl ? Object.values(realtimePnl).reduce((sum, v) => sum + v, 0) : aggregatedPnL.total;
@@ -269,19 +314,19 @@ export default function OverviewPage() {
     (v: number) => {
       if (valueFormat === "percent") {
         const pct = totalNav > 0 ? (v / totalNav) * 100 : 0;
-        return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+        return `${pct >= 0 ? "+" : ""}${formatNumber(pct, 2)}%`;
       }
-      if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`;
-      if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-      return `$${v.toFixed(0)}`;
+      if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 2)}M`;
+      if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+      return formatUsdCompact(v, "USD", 0);
     },
     [valueFormat, totalNav],
   );
 
   const formatDollar = React.useCallback((v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`;
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
+    if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 2)}M`;
+    if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+    return formatUsdCompact(v, "USD", 0);
   }, []);
 
   const overviewData: OverviewData = React.useMemo(
@@ -348,7 +393,11 @@ export default function OverviewPage() {
 
   return (
     <div className="h-full bg-background flex flex-col">
-      {firstError && <ErrorBanner message={(firstError as Error).message ?? "Unknown error"} />}
+      {firstError ? (
+        <div className="p-4">
+          <ApiError error={firstError as Error} onRetry={refetchOverview} title="Failed to load dashboard data" />
+        </div>
+      ) : null}
       <div className="flex-1 overflow-auto p-2">
         <OverviewDataProvider value={overviewData}>
           <WidgetGrid tab="overview" />

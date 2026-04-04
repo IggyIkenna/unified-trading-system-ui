@@ -1,31 +1,13 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
 import { useAlgos, useOrders } from "@/hooks/api/use-orders";
@@ -41,6 +23,10 @@ import {
   ChevronRight,
   Info,
 } from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { Spinner } from "@/components/shared/spinner";
 
 // Benchmark definitions (static reference data, not mock)
 const BENCHMARKS = [
@@ -63,7 +49,7 @@ const BENCHMARKS = [
 // Helper to format basis points
 const formatBps = (value: number) => {
   const sign = value >= 0 ? "+" : "";
-  return `${sign}${value.toFixed(1)} bps`;
+  return `${sign}${formatNumber(value, 1)} bps`;
 };
 
 // Helper to get color for performance
@@ -75,8 +61,14 @@ const getPerformanceColor = (value: number) => {
 };
 
 export default function ExecutionBenchmarksPage() {
-  const { data: algosData, isLoading: algosLoading } = useAlgos();
-  const { data: ordersData, isLoading: ordersLoading } = useOrders();
+  const {
+    data: algosData,
+    isLoading: algosLoading,
+    isError: algosIsError,
+    error: algosError,
+    refetch: refetchAlgos,
+  } = useAlgos();
+  const { isLoading: ordersLoading, isError: ordersIsError, error: ordersError, refetch: refetchOrders } = useOrders();
 
   const mockBenchmarkPerformance: Array<any> =
     (algosData as any)?.benchmarkPerformance ??
@@ -93,6 +85,8 @@ export default function ExecutionBenchmarksPage() {
     [];
 
   const isLoading = algosLoading || ordersLoading;
+  const isError = algosIsError || ordersIsError;
+  const queryError = (algosError ?? ordersError) as Error | null;
 
   const [selectedBenchmark, setSelectedBenchmark] = React.useState("arrival");
   const [timeRange, setTimeRange] = React.useState("30d");
@@ -101,26 +95,61 @@ export default function ExecutionBenchmarksPage() {
   // Calculate aggregate stats (guard against empty array)
   const avgSlippage =
     mockBenchmarkPerformance.length > 0
-      ? mockBenchmarkPerformance.reduce((sum, p) => sum + p.arrival, 0) /
-        mockBenchmarkPerformance.length
+      ? mockBenchmarkPerformance.reduce((sum, p) => sum + p.arrival, 0) / mockBenchmarkPerformance.length
       : 0;
   const bestPerformer =
     mockBenchmarkPerformance.length > 0
-      ? mockBenchmarkPerformance.reduce((best, p) =>
-          p.arrival > best.arrival ? p : best,
-        )
+      ? mockBenchmarkPerformance.reduce((best, p) => (p.arrival > best.arrival ? p : best))
       : null;
   const worstPerformer =
     mockBenchmarkPerformance.length > 0
-      ? mockBenchmarkPerformance.reduce((worst, p) =>
-          p.arrival < worst.arrival ? p : worst,
-        )
+      ? mockBenchmarkPerformance.reduce((worst, p) => (p.arrival < worst.arrival ? p : worst))
       : null;
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <div className="p-8 text-center text-muted-foreground">Loading...</div>
+      <div className="flex min-h-[50vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
     );
+  }
+
+  if (isError && queryError) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <ApiError
+            error={queryError}
+            onRetry={() => {
+              void refetchAlgos();
+              void refetchOrders();
+            }}
+            title="Failed to load benchmarks"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (mockBenchmarkPerformance.length === 0) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="border-b">
+          <div className="platform-page-width px-6 py-4">
+            <ExecutionNav />
+          </div>
+        </div>
+        <div className="platform-page-width p-6">
+          <EmptyState title="No benchmark data" description="No algorithm benchmark rows are available yet." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,12 +162,7 @@ export default function ExecutionBenchmarksPage() {
       <div className="platform-page-width p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Benchmark Analysis</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Compare execution quality against standard benchmarks
-            </p>
-          </div>
+          <PageHeader title="Benchmark Analysis" description="Compare execution quality against standard benchmarks" />
           <div className="flex items-center gap-2">
             <Select value={timeRange} onValueChange={setTimeRange}>
               <SelectTrigger className="w-[120px]">
@@ -165,17 +189,10 @@ export default function ExecutionBenchmarksPage() {
                 <Target className="size-4" />
                 Avg vs Arrival
               </div>
-              <div
-                className={cn(
-                  "text-2xl font-bold tabular-nums",
-                  getPerformanceColor(avgSlippage),
-                )}
-              >
+              <div className={cn("text-2xl font-bold tabular-nums", getPerformanceColor(avgSlippage))}>
                 {formatBps(avgSlippage)}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Across all algos
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">Across all algos</p>
             </CardContent>
           </Card>
           <Card>
@@ -187,9 +204,7 @@ export default function ExecutionBenchmarksPage() {
               <div className="text-2xl font-bold tabular-nums text-emerald-500">
                 {bestPerformer ? formatBps(bestPerformer.arrival) : "—"}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {bestPerformer?.algoName ?? "N/A"}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{bestPerformer?.algoName ?? "N/A"}</p>
             </CardContent>
           </Card>
           <Card>
@@ -201,9 +216,7 @@ export default function ExecutionBenchmarksPage() {
               <div className="text-2xl font-bold tabular-nums text-red-500">
                 {worstPerformer ? formatBps(worstPerformer.arrival) : "—"}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {worstPerformer?.algoName ?? "N/A"}
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">{worstPerformer?.algoName ?? "N/A"}</p>
             </CardContent>
           </Card>
           <Card>
@@ -213,9 +226,7 @@ export default function ExecutionBenchmarksPage() {
                 Orders Analyzed
               </div>
               <div className="text-2xl font-bold tabular-nums">12,847</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                In selected period
-              </p>
+              <p className="text-xs text-muted-foreground mt-1">In selected period</p>
             </CardContent>
           </Card>
         </div>
@@ -256,12 +267,8 @@ export default function ExecutionBenchmarksPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-base">
-                  Algo Performance vs Benchmarks (bps)
-                </CardTitle>
-                <CardDescription>
-                  Positive = outperformed benchmark, Negative = underperformed
-                </CardDescription>
+                <CardTitle className="text-base">Algo Performance vs Benchmarks (bps)</CardTitle>
+                <CardDescription>Positive = outperformed benchmark, Negative = underperformed</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -281,76 +288,37 @@ export default function ExecutionBenchmarksPage() {
                 {mockBenchmarkPerformance.map((row) => (
                   <TableRow
                     key={row.algoId}
-                    className={cn(
-                      "cursor-pointer hover:bg-muted/50",
-                      selectedAlgo === row.algoId && "bg-primary/5",
-                    )}
-                    onClick={() =>
-                      setSelectedAlgo(
-                        selectedAlgo === row.algoId ? null : row.algoId,
-                      )
-                    }
+                    className={cn("cursor-pointer hover:bg-muted/50", selectedAlgo === row.algoId && "bg-primary/5")}
+                    onClick={() => setSelectedAlgo(selectedAlgo === row.algoId ? null : row.algoId)}
                   >
-                    <TableCell className="font-medium">
-                      {row.algoName}
-                    </TableCell>
+                    <TableCell className="font-medium">{row.algoName}</TableCell>
                     <TableCell className="text-center">
-                      <span
-                        className={cn(
-                          "font-mono tabular-nums text-sm",
-                          getPerformanceColor(row.arrival),
-                        )}
-                      >
+                      <span className={cn("font-mono tabular-nums text-sm", getPerformanceColor(row.arrival))}>
                         {formatBps(row.arrival)}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span
-                        className={cn(
-                          "font-mono tabular-nums text-sm",
-                          getPerformanceColor(row.vwap),
-                        )}
-                      >
+                      <span className={cn("font-mono tabular-nums text-sm", getPerformanceColor(row.vwap))}>
                         {formatBps(row.vwap)}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span
-                        className={cn(
-                          "font-mono tabular-nums text-sm",
-                          getPerformanceColor(row.twap),
-                        )}
-                      >
+                      <span className={cn("font-mono tabular-nums text-sm", getPerformanceColor(row.twap))}>
                         {formatBps(row.twap)}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span
-                        className={cn(
-                          "font-mono tabular-nums text-sm",
-                          getPerformanceColor(row.close),
-                        )}
-                      >
+                      <span className={cn("font-mono tabular-nums text-sm", getPerformanceColor(row.close))}>
                         {formatBps(row.close)}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span
-                        className={cn(
-                          "font-mono tabular-nums text-sm",
-                          getPerformanceColor(row.open),
-                        )}
-                      >
+                      <span className={cn("font-mono tabular-nums text-sm", getPerformanceColor(row.open))}>
                         {formatBps(row.open)}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span
-                        className={cn(
-                          "font-mono tabular-nums text-sm",
-                          getPerformanceColor(row.midpoint),
-                        )}
-                      >
+                      <span className={cn("font-mono tabular-nums text-sm", getPerformanceColor(row.midpoint))}>
                         {formatBps(row.midpoint)}
                       </span>
                     </TableCell>
@@ -365,20 +333,15 @@ export default function ExecutionBenchmarksPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Slippage Over Time</CardTitle>
-            <CardDescription>
-              Daily average slippage vs selected benchmarks
-            </CardDescription>
+            <CardDescription>Daily average slippage vs selected benchmarks</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[250px] flex items-center justify-center border rounded-lg bg-muted/20">
               <div className="text-center text-muted-foreground">
                 <BarChart3 className="size-12 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">
-                  Time series chart showing daily slippage trends
-                </p>
+                <p className="text-sm">Time series chart showing daily slippage trends</p>
                 <p className="text-xs mt-1">
-                  Arrival: {formatBps(avgSlippage)} avg | VWAP:{" "}
-                  {formatBps(0.15)} avg
+                  Arrival: {formatBps(avgSlippage)} avg | VWAP: {formatBps(0.15)} avg
                 </p>
               </div>
             </div>
@@ -391,18 +354,9 @@ export default function ExecutionBenchmarksPage() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">
-                  {
-                    mockBenchmarkPerformance.find(
-                      (p) => p.algoId === selectedAlgo,
-                    )?.algoName
-                  }{" "}
-                  - Detailed Analysis
+                  {mockBenchmarkPerformance.find((p) => p.algoId === selectedAlgo)?.algoName} - Detailed Analysis
                 </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedAlgo(null)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => setSelectedAlgo(null)}>
                   Close
                 </Button>
               </div>
@@ -413,23 +367,15 @@ export default function ExecutionBenchmarksPage() {
                   <h4 className="text-sm font-medium mb-2">By Order Size</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Small (&lt;$10K)
-                      </span>
-                      <span className="font-mono text-emerald-500">
-                        +0.8 bps
-                      </span>
+                      <span className="text-muted-foreground">Small (&lt;$10K)</span>
+                      <span className="font-mono text-emerald-500">+0.8 bps</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Medium ($10K-$100K)
-                      </span>
+                      <span className="text-muted-foreground">Medium ($10K-$100K)</span>
                       <span className="font-mono text-amber-500">-0.3 bps</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Large (&gt;$100K)
-                      </span>
+                      <span className="text-muted-foreground">Large (&gt;$100K)</span>
                       <span className="font-mono text-red-500">-1.8 bps</span>
                     </div>
                   </div>
@@ -439,9 +385,7 @@ export default function ExecutionBenchmarksPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Low</span>
-                      <span className="font-mono text-emerald-500">
-                        +0.5 bps
-                      </span>
+                      <span className="font-mono text-emerald-500">+0.5 bps</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Medium</span>
@@ -454,26 +398,18 @@ export default function ExecutionBenchmarksPage() {
                   </div>
                 </div>
                 <div>
-                  <h4 className="text-sm font-medium mb-2">
-                    By Market Condition
-                  </h4>
+                  <h4 className="text-sm font-medium mb-2">By Market Condition</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        Low Volatility
-                      </span>
-                      <span className="font-mono text-emerald-500">
-                        +0.3 bps
-                      </span>
+                      <span className="text-muted-foreground">Low Volatility</span>
+                      <span className="font-mono text-emerald-500">+0.3 bps</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Normal</span>
                       <span className="font-mono text-amber-500">-0.1 bps</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">
-                        High Volatility
-                      </span>
+                      <span className="text-muted-foreground">High Volatility</span>
                       <span className="font-mono text-red-500">-2.1 bps</span>
                     </div>
                   </div>

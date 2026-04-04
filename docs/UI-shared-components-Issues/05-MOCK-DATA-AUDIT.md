@@ -1,352 +1,177 @@
-# 05 — Mock Data Placement Audit
+# E — Mock Data Audit
 
-**Date:** 2026-03-27
-**Scope:** All `.tsx` / `.ts` files in `unified-trading-system-ui`
-**Goal:** All mock data should live in `lib/` (centralized). No page or component should contain inline mock data. When APIs are wired, migration should require changing imports in `lib/`, not hunting through 80+ files.
-
----
-
-## 1. Architecture: Prescribed vs Actual
-
-### What `.cursorrules` Prescribes
-
-```
-lib/
-├── mocks/
-│   ├── handlers/     ← MSW request handlers
-│   └── fixtures/     ← Mock data fixtures matching openapi.json
-│       └── personas.ts
-```
-
-- Mock data via **MSW** (Mock Service Worker) centralized in `lib/mocks/`
-- Fixtures must match `lib/registry/openapi.json` schemas
-- Same endpoint URL, different response per persona (dimensional mocking)
-- No per-component mocks
-- API calls via React Query hooks only (`hooks/api/`)
-
-### What Actually Exists
-
-```
-lib/
-├── api/
-│   ├── mock-handler.ts          ← Central fetch interceptor (replaces MSW)
-│   ├── mock-provisioning-state.ts
-│   ├── mock-trade-ledger.ts
-│   └── mock-onboarding-state.ts
-├── trading-data.ts              ← 1,057 lines — orgs, clients, P&L, time series
-├── strategy-platform-mock-data.ts ← 938 lines — strategy templates, backtests
-├── ml-mock-data.ts              ← 2,907 lines — ML families, experiments, runs
-├── execution-platform-mock-data.ts ← 554 lines — execution algos, venues, orders
-├── data-service-mock-data.ts    ← 2,452 lines — data catalogue, instruments, ETL
-├── build-mock-data.ts           ← 2,591 lines — build overview, features, ETL
-├── backtest-analytics-mock.ts   ← 410 lines — equity curve generators
-├── deterministic-mock.ts        ← 19 lines — seeded PRNG helpers
-├── reference-data.ts            ← 1,370 lines — reference constants
-├── strategy-registry.ts         ← 7,691 lines — strategy catalog (SSOT)
-├── taxonomy.ts                  ← 990 lines — asset classes, venues, enums
-├── demo-ids.ts                  ← 27 lines — ID factories
-├── auth/personas.ts             ← Persona definitions (not in lib/mocks/)
-```
-
-**Key gaps:**
-
-- **No `lib/mocks/` directory** exists (only `__tests__/lib/mocks/`)
-- **No MSW** — `msw` is not in `package.json`
-- **No `lib/mocks/handlers/`** or **`lib/mocks/fixtures/`**
-- Mock interception uses a **custom `mock-handler.ts`** env-gated via `NEXT_PUBLIC_MOCK_API=true`
-- Personas live in `lib/auth/personas.ts`, not `lib/mocks/fixtures/personas.ts`
-
-**What works well:**
-
-- `hooks/api/*.ts` files all use React Query + `apiFetch('/api/...')` — no inline data fetching ✅
-- `mock-handler.ts` acts as a centralized routing layer (functionally similar to MSW) ✅
-- Most `lib/*-mock-data.ts` files have separate `*-types.ts` files ✅
+**Date:** 2026-03-28  
+**Scope:** `app/`, `components/`, `hooks/api/`, `lib/mocks/`, `lib/api/mock-handler.ts`, `lib/*mock*`, policy vs `.cursorrules`  
+**Previous audit:** Prior `05-MOCK-DATA-AUDIT.md` (2026-03-27) is **not present in the tree** (deleted); this run is a **full baseline** against current policy, not a delta vs that file.
 
 ---
 
-## 2. Inline Mock Data in Pages 🔴
+## 1. Current State
 
-These page files contain mock data arrays/objects that should be in `lib/`:
+### Architecture (actual)
 
-### 2a. Large Fixture Arrays (API-shaped data)
+| Item                      | State                                                                                                                                                                                                                                                                                                 |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`lib/mocks/`**          | Exists with `fixtures/` (15 files) and `generators/` (2 files). **No `handlers/` directory.**                                                                                                                                                                                                         |
+| **MSW in `package.json`** | **Not listed** in dependencies or devDependencies.                                                                                                                                                                                                                                                    |
+| **Mock interception**     | `NEXT_PUBLIC_MOCK_API === "true"` → dynamic import in `lib/providers.tsx` calls `installMockHandler()` from `lib/api/mock-handler.ts`, which patches `fetch` for `/api/*` and returns JSON from large in-memory maps importing `lib/trading-data`, `lib/*-mock-data.ts`, `lib/mocks/fixtures/*`, etc. |
+| **Personas**              | Demo users live in `lib/auth/personas.ts`; provisioning / ledger helpers in `lib/api/mock-provisioning-state.ts`, `lib/api/mock-trade-ledger.ts`. Cursorrules cite four personas; `AGENT_PROMPT.md` still mentions five — **doc drift**.                                                              |
+| **Hooks**                 | Most hooks call `apiFetch` / React Query; **some** embed `SEED_*` fallback arrays (`hooks/api/use-strategies.ts`, `hooks/api/use-news.ts`).                                                                                                                                                           |
 
-| File                                                            | Variables                                                                | Lines    | Items       | Domain               |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------ | -------- | ----------- | -------------------- |
-| `app/(platform)/services/reports/settlement/page.tsx`           | `MOCK_SETTLEMENTS`, `MOCK_INVOICES`                                      | 39–243   | 15 + 5      | Settlement/billing   |
-| `app/(platform)/services/reports/reconciliation/page.tsx`       | `FALLBACK_HISTORY`, `DRIFT_METRICS`, `UNRECONCILED_ITEMS`                | 71–270   | 12 + 5 + 7  | Reconciliation       |
-| `app/(platform)/services/manage/compliance/page.tsx`            | `FALLBACK_RULES`, `FALLBACK_VIOLATIONS`, `FALLBACK_AUDIT`                | 64–246   | 10 + 7 + 6  | Compliance           |
-| `app/(platform)/services/manage/mandates/page.tsx`              | `FALLBACK_MANDATES`                                                      | 64–289   | 10 (nested) | Client mandates      |
-| `app/(platform)/services/trading/risk/page.tsx`                 | `MOCK_STRATEGIES`                                                        | 235–278  | 7           | Risk filters         |
-| `app/(platform)/services/trading/strategies/grid/page.tsx`      | `DEFAULT_BACKTEST_RESULTS`                                               | 16–129   | 8           | Backtest grid        |
-| `app/(platform)/services/trading/terminal/page.tsx`             | `DEFAULT_INSTRUMENTS`                                                    | 125–168  | 6           | Terminal instruments |
-| `app/(platform)/services/trading/accounts/page.tsx`             | `MOCK_TRANSFER_HISTORY`, `MOCK_VENUE_BALANCES`                           | 99–158   | 5 + 5       | Treasury             |
-| `app/(platform)/settings/api-keys/page.tsx`                     | `SUPPORTED_VENUES`                                                       | 35–44    | 8           | Venue list           |
-| `app/(platform)/investor-relations/board-presentation/page.tsx` | `VENUE_LIST`, `slides`                                                   | 28–1900+ | 38 + large  | IR deck              |
-| `app/(public)/demo/preview/page.tsx`                            | `heatmapData`, `backtestResults`, `livePositions`                        | 37–129   | 6 + 4 + 3   | Demo preview         |
-| `app/(ops)/ops/page.tsx`                                        | `batchJobs`, `services`, `dataCompleteness`, `recentDeploys`, `auditLog` | 30–188   | 4+6+5+4+4   | Ops dashboard        |
-| `app/(ops)/config/page.tsx`                                     | `strategySchemas`, `clients`, `strategyConfigs`, `venues`, `riskLimits`  | 87–382   | 1+4+4+10+4  | Config editor        |
+### Policy (`.cursorrules` + `AGENT-AUDIT-INSTRUCTIONS.md`)
 
-### 2b. Data Generation Functions in Pages
+- Mocks: **MSW** in `lib/mocks/handlers/`, fixtures in `lib/mocks/fixtures/`, dimensional mocking by persona, **no per-component mocks**.
 
-| File                                                         | Functions                                                                                                                                                                           | Lines    | Domain                 |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------- |
-| `app/(platform)/services/trading/pnl/page.tsx`               | `generateTimeSeriesData`, `generatePnLComponents`, `generateStrategyBreakdown`, `generateFactorTimeSeries`, `generateClientPnL`, `generateLiveBookUpdates`, `generateOrderFlowData` | 108–850+ | P&L charts, order book |
-| `app/(platform)/services/trading/markets/page.tsx`           | Same family — `generateTimeSeriesData`, `generatePnLComponents`, etc.                                                                                                               | 78–430+  | Markets charts         |
-| `app/(platform)/services/trading/terminal/page.tsx`          | `generateCandleData`                                                                                                                                                                | 172–223  | Price chart            |
-| `app/(platform)/services/research/strategy/results/page.tsx` | `generateTimeSeriesData`, `generateRegimeData`, `generateAttributionData`                                                                                                           | 52–136   | Backtest results       |
-| `app/(platform)/services/research/ml/training/page.tsx`      | `generateResourceData`                                                                                                                                                              | 161–175  | GPU/memory sparkline   |
+### Gap
 
-**Impact:** The P&L and Markets pages each have **700+ lines** of data generation code that is **duplicated** between them.
+Implementation is **fetch interception + scattered lib root mock modules**, not MSW handlers. Many pages/components still hold **large inline fixtures**. Internal docs (`AGENT_PROMPT.md`, `START_HERE.md`, `SERVICE_COMPLETION_STATUS.md`) **overstate** `lib/mocks/handlers/` and MSW.
+
+**Severity:** 🔴 Critical (policy vs reality + fragmentation).
 
 ---
 
-## 3. Inline Mock Data in Components 🔴
+## 2. Findings
 
-### 3a. Dedicated Mock Files Next to Components (Should Be in `lib/`)
+### 2.1 E1 — Mock data placement (inline / wrong layer)
 
-| File                                          | Lines  | Domain              | Exports                                                                                      |
-| --------------------------------------------- | ------ | ------------------- | -------------------------------------------------------------------------------------------- |
-| `components/trading/sports/mock-data.ts`      | ~1,500 | Sports betting      | `MOCK_FIXTURES`, `MOCK_ODDS`, `MOCK_ARB_STREAM`, `MOCK_BETS`, helpers                        |
-| `components/trading/predictions/mock-data.ts` | ~600   | Prediction markets  | `MOCK_MARKETS`, positions, arbs                                                              |
-| `components/promote/mock-fixtures.ts`         | ~674   | Promotion lifecycle | `SR_11_7_ITEMS`, `STANDARD_REGIMES`, champion, drift, compliance, `HISTORICAL_APPROVALS_30D` |
-| `components/trading/sports/mock-fixtures.ts`  | ~46    | Sports config       | Leagues, bookmakers, odds markets                                                            |
+**Rule violated:** No page or component should define mock data inline; fixtures belong under `lib/mocks/fixtures/` (and generators under `lib/mocks/generators/`), with API-shaped data feeding handlers — per `.cursorrules` target architecture.
 
-**Total: ~2,820 lines** of mock data living next to components instead of in `lib/`.
+**Scale (indicative):**
 
-### 3b. Inline Mock Arrays in Component Files
+- **~83** lines matching `const (MOCK_|SEED_|FALLBACK_|…)` in `app/` + `components/` (ripgrep count).
+- **≥39** files in `app/` + `components/` with `MOCK_*` / `SEED_*` / `FALLBACK_*` / exported `MOCK_*`.
+- **+9** additional files using `const mock…` (e.g. `mockStrategies`, `mockBenchmarkPerformance`).
 
-| File                                                 | Variables                                                                                                                                                                                                    | Lines   | Domain           |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- | ---------------- |
-| `components/trading/defi-ops-panel.tsx`              | `LENDING_PROTOCOLS`, `SWAP_TOKENS`, `MOCK_SWAP_ROUTE`, `LIQUIDITY_POOLS`, `STAKING_PROTOCOLS`, `FEE_TIERS`, `FLASH_OPERATION_TYPES`, `DEFI_CHAINS`, `DEFI_TOKENS`, `BRIDGE_PROTOCOLS`, `MOCK_TOKEN_BALANCES` | 92–1209 | DeFi operations  |
-| `components/trading/strategy-instruction-viewer.tsx` | `MOCK_INSTRUCTIONS`                                                                                                                                                                                          | 61–289  | Strategy fills   |
-| `components/trading/strategy-audit-trail.tsx`        | `MOCK_DECISIONS`                                                                                                                                                                                             | 61–208  | Audit decisions  |
-| `components/trading/kill-switch-panel.tsx`           | `EXIT_PLAYBOOKS`, `ACTIVE_KILL_SWITCHES`, `MOCK_ENTITIES`                                                                                                                                                    | 41–139  | Kill switch      |
-| `components/ops/event-stream-viewer.tsx`             | `MOCK_EVENTS`                                                                                                                                                                                                | 39–256  | Ops event stream |
-| `components/dashboards/trader-dashboard.tsx`         | `mockStrategies`, `mockAlerts`, `mockPnLComponents`, `mockServices`                                                                                                                                          | 42–151  | Trader dashboard |
-| `components/platform/health-bar.tsx`                 | `MOCK_HEALTH`                                                                                                                                                                                                | 19–30   | Service health   |
-| `components/platform/activity-feed.tsx`              | `MOCK_ACTIVITY`                                                                                                                                                                                              | 31–114  | Activity feed    |
-| `components/ml/loss-curves.tsx`                      | `mockModelStrategyLinks`, `mockExperimentLossCurves`                                                                                                                                                         | 78–158  | ML training      |
-| `components/trading/predictions/odum-focus-tab.tsx`  | `FOOTBALL_MARKETS`                                                                                                                                                                                           | 322–351 | Football markets |
+**Representative inline / adjacent violations**
 
-### 3c. Data Generator Functions in Components
+| File                                                           | Lines (approx.) | Name / pattern                                   | Domain           | Notes                                                                                              |
+| -------------------------------------------------------------- | --------------- | ------------------------------------------------ | ---------------- | -------------------------------------------------------------------------------------------------- |
+| `components/trading/sports/mock-data.ts`                       | 93–~1550        | `MOCK_FIXTURES`, `MOCK_ODDS`, `MOCK_BETS`, …     | Sports           | **~1.5k lines**; correct _folder_ is wrong — should be `lib/mocks/fixtures/` (+ typed re-exports). |
+| `components/trading/predictions/mock-data.ts`                  | 11–~800         | `MOCK_MARKETS`, `MOCK_POSITIONS`, …              | Predictions      | Same.                                                                                              |
+| `components/promote/mock-data.ts`                              | 52+             | `MOCK_CANDIDATES`                                | Promote          | Same; `mock-fixtures.ts` also under `components/promote/`.                                         |
+| `app/(platform)/services/reports/ibor/page.tsx`                | 85–336          | `MOCK_POSITIONS`, `MOCK_JOURNAL`, …              | Reports / IBOR   | Large page-local arrays.                                                                           |
+| `app/(platform)/services/reports/settlement/page.tsx`          | 39+             | `MOCK_SETTLEMENTS`, `MOCK_INVOICES`              | Reports          | Inline.                                                                                            |
+| `app/(platform)/services/data/valuation/page.tsx`              | 78–138          | `MOCK_PRICING`, `MOCK_WATERFALL`, …              | Data / valuation | Inline.                                                                                            |
+| `app/(platform)/services/trading/sports/accumulators/page.tsx` | 50+             | Local `Fixture` + `MOCK_FIXTURES`                | Sports           | **Duplicates ID space** with sports `mock-data.ts` (see E4).                                       |
+| `components/dashboards/trader-dashboard.tsx`                   | 43–144          | `mockStrategies`, `mockAlerts`, …                | Dashboard        | Inline.                                                                                            |
+| `components/trading/options-chain.tsx`                         | 95–192          | `generateMockExpiry`, `generateMockOptionsChain` | Options          | Heavy generation + `Math.random` in component.                                                     |
+| `components/trading/order-book.tsx`                            | 33+             | `generateMockOrderBook`                          | Order book       | Exported from trading barrel.                                                                      |
+| `components/widgets/book/book-data-context.tsx`                | 136–187         | `generateMockTrades`, `MOCK_TRADES`              | Widget           | Inline generation.                                                                                 |
+| `app/(ops)/ops/services/page.tsx`                              | 60–69           | Synthetic metrics                                | Ops              | **`Math.random`** per row.                                                                         |
+| `components/marketing/arbitrage-galaxy.tsx`                    | 91–95           | Particle positions                               | Marketing        | `Math.random` (acceptable for viz-only if isolated; still off-SSOT for “domain” mocks).            |
 
-| File                                              | Function                                         | Domain              |
-| ------------------------------------------------- | ------------------------------------------------ | ------------------- |
-| `components/trading/vol-surface-chart.tsx`        | `generateMockVolSurface`                         | Options vol surface |
-| `components/trading/order-book.tsx`               | `generateMockOrderBook`                          | Order book          |
-| `components/trading/options-chain.tsx`            | `generateMockExpiry`, `generateMockOptionsChain` | Options chain       |
-| `components/trading/time-series-panel.tsx`        | `generateTimeSeriesData`                         | P&L/NAV charts      |
-| `components/marketing/data-services-showcase.tsx` | `generateMockHeatmap`                            | Marketing heatmap   |
-| `components/ml/loss-curves.tsx`                   | `generateLossCurve`                              | ML loss curves      |
+**`mock-data.ts` / `mock-fixtures.ts` adjacent to components (policy: should be `lib/mocks/`)**
 
----
+- `components/trading/sports/mock-data.ts`, `mock-fixtures.ts`
+- `components/trading/predictions/mock-data.ts`
+- `components/promote/mock-data.ts`, `mock-fixtures.ts`
 
-## 4. Inline Mock Data in Hooks 🟡
+**`lib/` root mock modules (not under `lib/mocks/fixtures/`)**
 
-| File                            | Variable                | Lines    | Items     | Domain                            |
-| ------------------------------- | ----------------------- | -------- | --------- | --------------------------------- |
-| `hooks/api/use-strategies.ts`   | `SEED_STRATEGIES`       | 152–321  | 12        | Strategy health (placeholderData) |
-| `hooks/api/use-news.ts`         | `SEED_NEWS`             | 17–168   | 15        | News feed (placeholderData)       |
-| `hooks/deployment/_api-stub.ts` | Multiple stub functions | 387–806+ | ~20 stubs | Deployment UI stubs               |
+- `lib/trading-data.ts`, `lib/execution-platform-mock-data.ts`, `lib/ml-mock-data.ts`, `lib/strategy-platform-mock-data.ts`, `lib/data-service-mock-data.ts`, `lib/build-mock-data.ts`, `lib/backtest-analytics-mock.ts`, `lib/deterministic-mock.ts`, `lib/mock-data/` (`index.ts`, `seed.ts`)
 
----
+These are **centralized relative to pages** but **split** from `lib/mocks/fixtures/` SSOT named in rules.
 
-## 5. Consumer Map — Who Imports What from `lib/`
+**Hooks (`hooks/api/`)**
 
-### Well-Centralized (imported from `lib/` — good pattern)
+| File                          | Finding                                                   |
+| ----------------------------- | --------------------------------------------------------- |
+| `hooks/api/use-strategies.ts` | `SEED_STRATEGIES` (~164+) — fallback domain data in hook. |
+| `hooks/api/use-news.ts`       | `SEED_NEWS` (~17+) — same.                                |
 
-| `lib/` Module                        | Consumer Count | Primary Consumers                                |
-| ------------------------------------ | -------------- | ------------------------------------------------ |
-| `@/lib/data-service-mock-data`       | 18 files       | Data pages, finder configs, marketing, ops admin |
-| `@/lib/build-mock-data`              | 10 files       | Research features, execution components          |
-| `@/lib/reference-data`               | 11 files       | Trading pages, ops config/jobs                   |
-| `@/lib/trading-data`                 | 8 files        | Reports, trading overview/markets, context bar   |
-| `@/lib/strategy-platform-mock-data`  | 3 files        | Research strategies, mock-handler                |
-| `@/lib/ml-mock-data`                 | 1 file         | mock-handler only                                |
-| `@/lib/execution-platform-mock-data` | 1 file         | mock-handler only                                |
-| `@/lib/deterministic-mock`           | 7 files        | Sidebar, order book, terminal, archive           |
-
-### Not Centralized (inline — should be moved to `lib/`)
-
-| Domain                | Current Location                               | Inline Lines | Should Be                                              |
-| --------------------- | ---------------------------------------------- | ------------ | ------------------------------------------------------ |
-| Settlement/billing    | `settlement/page.tsx`                          | ~205         | `lib/reports-mock-data.ts`                             |
-| Reconciliation        | `reconciliation/page.tsx`                      | ~200         | `lib/reports-mock-data.ts`                             |
-| Compliance            | `compliance/page.tsx`                          | ~183         | `lib/manage-mock-data.ts`                              |
-| Mandates              | `mandates/page.tsx`                            | ~226         | `lib/manage-mock-data.ts`                              |
-| Sports betting        | `components/trading/sports/mock-data.ts`       | ~1,500       | `lib/sports-mock-data.ts`                              |
-| Predictions           | `components/trading/predictions/mock-data.ts`  | ~600         | `lib/predictions-mock-data.ts`                         |
-| Promote fixtures      | `components/promote/mock-fixtures.ts`          | ~674         | `lib/promote-mock-data.ts`                             |
-| DeFi operations       | `components/trading/defi-ops-panel.tsx` inline | ~300         | `lib/defi-mock-data.ts`                                |
-| Strategy instructions | `strategy-instruction-viewer.tsx`              | ~228         | `lib/trading-mock-data.ts`                             |
-| Audit decisions       | `strategy-audit-trail.tsx`                     | ~147         | `lib/trading-mock-data.ts`                             |
-| Kill switch           | `kill-switch-panel.tsx`                        | ~100         | `lib/trading-mock-data.ts`                             |
-| Ops events            | `event-stream-viewer.tsx`                      | ~217         | `lib/ops-mock-data.ts`                                 |
-| Trader dashboard      | `trader-dashboard.tsx`                         | ~110         | `lib/dashboard-mock-data.ts`                           |
-| Health/activity       | `health-bar.tsx`, `activity-feed.tsx`          | ~95          | `lib/platform-mock-data.ts`                            |
-| ML loss curves        | `loss-curves.tsx`                              | ~80          | `lib/ml-mock-data.ts` (extend existing)                |
-| P&L generators        | `pnl/page.tsx`                                 | ~700+        | `lib/generators/pnl-generators.ts`                     |
-| Markets generators    | `markets/page.tsx`                             | ~350+        | `lib/generators/market-generators.ts` (share with P&L) |
-| Options chain         | `options-chain.tsx`                            | ~100         | `lib/generators/options-generators.ts`                 |
-| Vol surface           | `vol-surface-chart.tsx`                        | ~50          | `lib/generators/vol-generators.ts`                     |
-| Order book            | `order-book.tsx`                               | ~60          | `lib/generators/book-generators.ts`                    |
-| News seed             | `use-news.ts`                                  | ~152         | `lib/news-mock-data.ts`                                |
-| Strategy seed         | `use-strategies.ts`                            | ~170         | `lib/strategy-health-mock-data.ts`                     |
-| Config editor         | `config/page.tsx`                              | ~296         | `lib/ops-mock-data.ts`                                 |
-| Ops dashboard         | `ops/page.tsx`                                 | ~158         | `lib/ops-mock-data.ts`                                 |
-| Board presentation    | `board-presentation/page.tsx`                  | ~1,900       | `lib/ir-mock-data.ts`                                  |
-
-**Estimated total inline mock data:** ~7,500+ lines across pages and components that should be in `lib/`.
+**What to use instead:** Move fixtures to `lib/mocks/fixtures/<domain>.ts` (or merge into existing fixture files), import from hooks/pages; long term align with **one** interception layer (see migration plan).
 
 ---
 
-## 6. Duplication Between Pages
+### 2.2 E2 — Duplication
 
-The most critical duplication:
-
-### P&L ↔ Markets Generator Functions
-
-`pnl/page.tsx` and `markets/page.tsx` both define **identical** functions:
-
-- `generateTimeSeriesData` (both files)
-- `generatePnLComponents` (both files)
-- `generateStrategyBreakdown` (both files)
-- `generateFactorTimeSeries` (both files)
-- `generateClientPnL` (both files)
-- `generateLiveBookUpdates` (both files)
-- `generateOrderFlowData` (both files)
-- `structuralPnL` / `residualPnL` constants (both files)
-- `CRYPTO_VENUES` / `TRADFI_VENUES` / `DEFI_VENUES` (both files)
-
-**This is ~700 lines duplicated** between two page files. A single `lib/generators/trading-generators.ts` would eliminate this.
-
-### KpiTile ↔ Sports Mock Data
-
-`components/trading/sports/shared.tsx` defines `KpiTile` + `EmptyState` alongside mock helpers. The mock helpers should separate from the UI components.
+| Topic                      | Locations                                                                                                                                                                                                                              | Estimate                                    | Proposed SSOT                                                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Sports fixtures**        | `components/trading/sports/mock-data.ts` (`fix-001` = MCI vs LIV, rich `Fixture`) vs `app/.../sports/accumulators/page.tsx` (`fix-001` = Arsenal vs Man City, flat shape) vs `app/.../sports/bet/page.tsx` (`MOCK_FIXTURES_WITH_ODDS`) | Tens–hundreds of lines overlapping concept  | `lib/mocks/fixtures/sports-fixtures.ts` + single `Fixture` type from `components/trading/sports/types` or `lib/types` |
+| **Prediction markets**     | `components/trading/predictions/mock-data.ts` vs `app/.../predictions/aggregators/page.tsx` (`MOCK_MARKETS`)                                                                                                                           | Duplicate market lists                      | One fixture module                                                                                                    |
+| **Execution seeds**        | `lib/execution-platform-mock-data.ts` (imported by `mock-handler.ts`) vs `app/.../execution/overview/page.tsx` (`SEED_VENUES`, `SEED_ALGOS`, `SEED_RECENT_ORDERS`)                                                                     | Parallel seed data                          | Import SSOT from `lib/execution-platform-mock-data.ts` only                                                           |
+| **Reports overview seeds** | `app/.../reports/overview/page.tsx` (`SEED_REPORTS`, `SEED_SETTLEMENTS`, …)                                                                                                                                                            | Likely overlaps mock-handler / lib mocks    | Consolidate under `lib/mocks/fixtures/reports-overview.ts`                                                            |
+| **Promote vs research**    | `components/promote/mock-data.ts` vs `components/research/execution/new-execution-dialog.tsx` (`MOCK_STRATEGY_BACKTESTS`)                                                                                                              | Overlapping “strategy / backtest” demo rows | `lib/mocks/fixtures/promote-execution.ts`                                                                             |
 
 ---
 
-## 7. Types Mixed with Mock Data 🟡
+### 2.3 E3 — Schema consistency (mock vs TypeScript / API)
 
-| File                                    | Issue                                                                                                                              |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `lib/build-mock-data.ts` (~2,591 lines) | Defines many `interface` / `export interface` types **inline** alongside mock data arrays. Types should be in `lib/build-types.ts` |
-| `lib/trading-data.ts` (~1,057 lines)    | Interfaces co-located with data generators                                                                                         |
+| Issue                          | Examples                                                                                                                                                                     | Severity                                                         |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **`Array<any>` in pages**      | `execution/benchmarks/page.tsx` (`mockBenchmarkPerformance`), `execution/algos/page.tsx`, `venues/page.tsx`, `candidates/page.tsx`, `overview/page.tsx` (`MOCK_VENUES` etc.) | 🟡 High — breaks contract alignment with OpenAPI-generated types |
+| **Duplicate local interfaces** | `accumulators/page.tsx` defines its own `Fixture` vs `components/trading/sports/types`                                                                                       | 🟡 High — drift guaranteed                                       |
+| **Mixed naming**               | API / ledger mocks often `snake_case` (`client_id`); UI entities often `camelCase` — acceptable if boundary is explicit; **inline pages** mix both ad hoc                    | 🟢 Medium                                                        |
+| **Enum / status casing**       | Must be checked per screen; several mocks use display strings vs strict unions                                                                                               | 🟢 Medium (spot-check during moves)                              |
+| **Date types**                 | Mix of ISO strings vs `new Date()` in sports mocks                                                                                                                           | 🟢 Medium — serialize consistently for JSON                      |
 
-Other files have proper separation: `ml-mock-data.ts` → `ml-types.ts`, `execution-platform-mock-data.ts` → `execution-platform-types.ts`, etc.
-
----
-
-## 8. Recommended Target Architecture
-
-```
-lib/
-├── mocks/
-│   ├── fixtures/
-│   │   ├── trading.ts          ← Strategies, orders, positions, P&L
-│   │   ├── reports.ts          ← Settlement, reconciliation
-│   │   ├── manage.ts           ← Compliance, mandates
-│   │   ├── sports.ts           ← Move from components/trading/sports/mock-data.ts
-│   │   ├── predictions.ts      ← Move from components/trading/predictions/mock-data.ts
-│   │   ├── promote.ts          ← Move from components/promote/mock-fixtures.ts
-│   │   ├── defi.ts             ← DeFi lending, swap, staking data
-│   │   ├── ops.ts              ← Ops dashboard, config, events
-│   │   ├── platform.ts         ← Health, activity feed, news
-│   │   ├── research.ts         ← ML, features, execution
-│   │   ├── ir.ts               ← Board presentation slides
-│   │   └── personas.ts         ← Move from lib/auth/personas.ts
-│   ├── generators/
-│   │   ├── trading-generators.ts  ← P&L, time series, book, order flow
-│   │   ├── options-generators.ts  ← Vol surface, options chain
-│   │   ├── ml-generators.ts       ← Loss curves, resource data
-│   │   └── chart-generators.ts    ← Candle data, heatmaps
-│   └── handler.ts              ← Move from lib/api/mock-handler.ts
-├── types/                      ← Already partially exists
-│   ├── trading.ts
-│   ├── reports.ts
-│   └── ...
-```
-
-### Migration Rules
-
-1. **Pages import from `lib/mocks/fixtures/` or `lib/mocks/generators/`** — never define mock data inline
-2. **Components never import mock data directly** — they receive data via props from pages, or pages use hooks that route through `mock-handler`
-3. **Hooks use `placeholderData` from `lib/mocks/fixtures/`** — not inline seed arrays
-4. **Generator functions live in `lib/mocks/generators/`** — shared across all pages that need them
-5. **Types live in `lib/types/`** — never co-located with mock data
-6. **`mock-handler.ts` is the single routing layer** — all mock API responses flow through it
+**Cross-reference:** `lib/types/*.ts`, `lib/registry/openapi.json` → `lib/types/api-generated.ts`, and `hooks/api/*.ts` response types should be the **lint target** when moving mocks.
 
 ---
 
-## 9. Remediation Priority
+### 2.4 E4 — Cross-domain integrity & realism
 
-### Phase 1 — Eliminate Duplication (Days 1–2)
-
-1. Extract P&L/Markets shared generators into `lib/mocks/generators/trading-generators.ts`
-2. Both pages import from the shared module
-3. **Impact:** Removes ~700 lines of duplication immediately
-
-### Phase 2 — Move Component-Adjacent Mock Files (Days 3–4)
-
-1. Move `components/trading/sports/mock-data.ts` → `lib/mocks/fixtures/sports.ts`
-2. Move `components/trading/predictions/mock-data.ts` → `lib/mocks/fixtures/predictions.ts`
-3. Move `components/promote/mock-fixtures.ts` → `lib/mocks/fixtures/promote.ts`
-4. Move `components/trading/sports/mock-fixtures.ts` → merge into `lib/mocks/fixtures/sports.ts`
-5. Update all import paths
-6. **Impact:** ~2,820 lines moved to centralized location
-
-### Phase 3 — Extract Page Inline Mocks (Days 5–8)
-
-1. Settlement + Reconciliation → `lib/mocks/fixtures/reports.ts`
-2. Compliance + Mandates → `lib/mocks/fixtures/manage.ts`
-3. Ops dashboard + Config → `lib/mocks/fixtures/ops.ts`
-4. Terminal instruments, risk strategies, grid backtests → `lib/mocks/fixtures/trading.ts`
-5. Board presentation → `lib/mocks/fixtures/ir.ts`
-6. DeFi panel inline data → `lib/mocks/fixtures/defi.ts`
-7. **Impact:** ~3,000+ lines extracted from pages
-
-### Phase 4 — Extract Component Inline Mocks (Days 9–11)
-
-1. Strategy instruction viewer, audit trail, kill switch → `lib/mocks/fixtures/trading.ts`
-2. Event stream viewer → `lib/mocks/fixtures/ops.ts`
-3. Trader dashboard → `lib/mocks/fixtures/dashboard.ts`
-4. Health bar, activity feed → `lib/mocks/fixtures/platform.ts`
-5. ML loss curves → extend `lib/ml-mock-data.ts`
-6. Options chain, vol surface, order book generators → `lib/mocks/generators/`
-7. **Impact:** ~1,500+ lines extracted from components
-
-### Phase 5 — Extract Hook Inline Data (Day 12)
-
-1. `SEED_STRATEGIES` from `use-strategies.ts` → `lib/mocks/fixtures/trading.ts`
-2. `SEED_NEWS` from `use-news.ts` → `lib/mocks/fixtures/platform.ts`
-3. **Impact:** ~320 lines extracted from hooks
-
-### Phase 6 — Separate Types from Mock Data (Day 13)
-
-1. Extract interfaces from `lib/build-mock-data.ts` → `lib/build-types.ts` (or `lib/types/build.ts`)
-2. Extract interfaces from `lib/trading-data.ts` → consolidate into `lib/types/trading.ts`
-3. **Impact:** Cleaner separation of concerns
+| Check                  | Result                                                                                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sports `fix-001`**   | **Broken:** accumulators page = Arsenal–Man City; `mock-data.ts` = Man City–Liverpool. Same ID, different truth.                                          |
+| **Strategy / org IDs** | `mock-handler.ts` pulls `STRATEGIES`, `ORGANIZATIONS`, etc. from `lib/trading-data` — generally coherent; **page-only seeds** may not match hook/API IDs. |
+| **Persona scoping**    | Ledger / provisioning reference `internal-trader`, `client-full`; many **inline page mocks** do not vary by persona → filters demo poorly.                |
+| **P&L / prices**       | `lib/trading-data` + widgets use plausible ranges; **randomized** ops/training charts are non-deterministic (harder to test).                             |
+| **Sharpe / Greeks**    | Options pricing page uses static `MOCK_GREEKS` rows — spot-check vs instrument (manual QA).                                                               |
 
 ---
 
-## 10. Migration Readiness Scorecard
+## 3. Worst Offenders (by impact)
 
-When backend APIs are ready, the migration effort depends on where mock data lives:
+1. **`components/trading/sports/mock-data.ts`** — size + `Math.random`-style progressive generation embedded with fixtures.
+2. **`components/trading/predictions/mock-data.ts`** — same pattern.
+3. **`app/(platform)/services/reports/ibor/page.tsx`** — multiple large inline datasets.
+4. **`app/(platform)/services/trading/sports/accumulators/page.tsx`** — duplicate ID space / shape vs SSOT sports fixtures.
+5. **`lib/api/mock-handler.ts`** — monolithic interceptor (correct role) but **imports many non–`lib/mocks`** sources → encourages parallel mock universes.
+6. **`components/trading/options-chain.tsx`**, **`order-book.tsx`**, **`vol-surface-chart.tsx`** — exported generators + randomness in UI layer.
+7. **`app/(ops)/ops/services/page.tsx`** — random metrics (non-reproducible).
+8. **Docs claiming MSW + `lib/mocks/handlers/`** — mislead implementers.
 
-| Current State                                                   | API Wiring Effort                                                      | Risk      |
-| --------------------------------------------------------------- | ---------------------------------------------------------------------- | --------- |
-| Mock in `lib/mocks/fixtures/` + `mock-handler` routing          | **Low** — update `mock-handler` routes or switch to real API in hooks  | Minimal   |
-| Mock in `lib/*-mock-data.ts` (current pattern for some domains) | **Medium** — update imports in pages/components to use hooks instead   | Moderate  |
-| Mock **inline in page/component**                               | **High** — must refactor each file, extract types, create hooks        | High      |
-| Mock **duplicated across multiple pages**                       | **Very High** — must find all copies, ensure consistency, then migrate | Very High |
+---
 
-**Current distribution:**
+## 4. Recommended Fixes
 
-- ✅ Centralized in `lib/`: ~10,000 lines (trading, data-service, ML, execution, build, strategy-platform)
-- ❌ Inline in pages: ~4,000+ lines across ~15 pages
-- ❌ Inline in components: ~3,000+ lines across ~15 components
-- ❌ Adjacent to components: ~2,820 lines in 4 mock files
-- ❌ Inline in hooks: ~320 lines in 2 hooks
-- ❌ Duplicated between pages: ~700 lines (P&L ↔ Markets)
+1. **Declare SSOT:** Either adopt **real MSW** (add dependency, add `lib/mocks/handlers/`, register in tests + dev) **or** formally document **`installMockHandler`** as the canonical approach and **delete** MSW references from internal docs — pick one; rules should match.
+2. **Move** `components/**/mock-data.ts` (sports, predictions, promote) → `lib/mocks/fixtures/` with thin re-exports if needed.
+3. **Delete** page-local `MOCK_*` / `SEED_*` where `mock-handler` or shared fixtures already provide the same domain; pages should consume hooks only.
+4. **Resolve** sports `fix-001` conflict: one ID graph for all sports UIs.
+5. **Relocate** `generateMockOrderBook`, `generateMockOptionsChain`, `generateMockVolSurface` to `lib/mocks/generators/` (or keep deterministic seeds). Replace `Math.random` in ops/training demos with **seeded** generators (`lib/deterministic-mock.ts` exists — reuse).
+6. **Remove `Array<any>`** from execution/report pages; type against `api-generated` or domain types.
+7. **Align persona story:** ensure four vs five persona docs match `lib/auth/personas.ts`.
 
-**Bottom line:** ~40% of mock data is properly centralized. ~60% needs to be extracted to `lib/` before API wiring can proceed efficiently.
+---
+
+## 5. Remediation Priority (migration plan)
+
+| Phase  | Action                                                                                                    | Effort |
+| ------ | --------------------------------------------------------------------------------------------------------- | ------ |
+| **P0** | Fix **sports ID / shape** conflict (accumulators + bet page → import shared types + fixtures).            | ~0.5 d |
+| **P1** | Move **sports + predictions** mock files to `lib/mocks/fixtures/`; update imports.                        | ~1–2 d |
+| **P1** | Move **promote** mocks to `lib/mocks/fixtures/`; keep components UI-only.                                 | ~1 d   |
+| **P2** | Strip **inline MOCK\_** from reports/data pages; wire to hooks or fixture imports.                        | ~3–5 d |
+| **P2** | Consolidate **`lib/*-mock-data.ts`** into `lib/mocks/fixtures/` namespaces (re-export to avoid big-bang). | ~2–4 d |
+| **P3** | **MSW vs mock-handler** decision + doc + dependency cleanup.                                              | ~2–5 d |
+| **P3** | Generators out of `components/trading/*`; seeded ops/training metrics.                                    | ~2 d   |
+
+**Total rough order:** ~2–3 weeks calendar time for P0–P2 with testing across `NEXT_PUBLIC_MOCK_API=true` and two personas.
+
+---
+
+## 6. Severity & Effort Summary
+
+| Category                                    | Severity    | Fix effort                                        |
+| ------------------------------------------- | ----------- | ------------------------------------------------- |
+| Policy vs actual (no MSW / no handlers dir) | 🔴 Critical | Doc + arch decision: 0.5–2 d + optional MSW build |
+| Inline / component mock data                | 🔴 Critical | Multi-day (see plan)                              |
+| Duplication & ID collisions                 | 🟡 High     | 1–3 d                                             |
+| Schema / `any` / local interfaces           | 🟡 High     | 2–4 d                                             |
+| Persona-scoped data gaps                    | 🟢 Medium   | Ongoing                                           |
+
+---
+
+_End of Module E audit._

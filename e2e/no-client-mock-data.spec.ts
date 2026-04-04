@@ -6,9 +6,9 @@ import { execSync } from "child_process";
 /**
  * NO CLIENT-SIDE MOCK DATA E2E TESTS
  *
- * Verifies that client-side mock data is minimized:
- * 1. lib/mocks/ directory does NOT exist
- * 2. execution-platform-mock-data.ts is not imported by any app page
+ * Verifies that client-side mock data stays structured:
+ * 1. lib/mocks/fixtures/ exists (SSOT for committed fixtures)
+ * 2. Legacy lib/ root mock filenames are not imported by app pages
  * 3. No page has inline `const mockData = [` arrays in critical paths
  *
  * These are static checks run via the Playwright runner for convenience.
@@ -23,22 +23,19 @@ test.beforeAll(async ({ request }) => {
 });
 
 test.describe("No Client-Side Mock Data in Production Paths", () => {
-  test("lib/mocks/ directory does NOT exist", () => {
-    const mocksDir = join(PROJECT_ROOT, "lib", "mocks");
-    expect(
-      existsSync(mocksDir),
-      "lib/mocks/ directory should not exist - mock data belongs in the API",
-    ).toBe(false);
+  test("lib/mocks/fixtures/ directory exists", () => {
+    const fixturesDir = join(PROJECT_ROOT, "lib", "mocks", "fixtures");
+    expect(existsSync(fixturesDir), "lib/mocks/fixtures/ should exist for centralized fixtures").toBe(true);
   });
 
   test("execution-platform-mock-data.ts is not imported by app pages", () => {
     // Search app/ directory for imports of execution-platform-mock-data
     let output = "";
     try {
-      output = execSync(
-        'grep -r "execution-platform-mock-data" --include="*.tsx" --include="*.ts" -l app/',
-        { cwd: PROJECT_ROOT, encoding: "utf-8" },
-      );
+      output = execSync('grep -r "execution-platform-mock-data" --include="*.tsx" --include="*.ts" -l app/', {
+        cwd: PROJECT_ROOT,
+        encoding: "utf-8",
+      });
     } catch {
       // grep returns exit code 1 when no matches found — that is the desired outcome
       output = "";
@@ -59,10 +56,10 @@ test.describe("No Client-Side Mock Data in Production Paths", () => {
     // Search app/ for inline mock data arrays
     let output = "";
     try {
-      output = execSync(
-        'grep -rn "const mockData = \\[" --include="*.tsx" --include="*.ts" app/',
-        { cwd: PROJECT_ROOT, encoding: "utf-8" },
-      );
+      output = execSync('grep -rn "const mockData = \\[" --include="*.tsx" --include="*.ts" app/', {
+        cwd: PROJECT_ROOT,
+        encoding: "utf-8",
+      });
     } catch {
       // grep returns exit code 1 when no matches — desired outcome
       output = "";
@@ -73,19 +70,16 @@ test.describe("No Client-Side Mock Data in Production Paths", () => {
       .split("\n")
       .filter((line) => line.length > 0);
 
-    expect(
-      matches,
-      `Found inline mockData arrays in app pages:\n${matches.join("\n")}`,
-    ).toHaveLength(0);
+    expect(matches, `Found inline mockData arrays in app pages:\n${matches.join("\n")}`).toHaveLength(0);
   });
 
   test("strategy-platform-mock-data.ts is not imported by app pages", () => {
     let output = "";
     try {
-      output = execSync(
-        'grep -r "strategy-platform-mock-data" --include="*.tsx" --include="*.ts" -l app/',
-        { cwd: PROJECT_ROOT, encoding: "utf-8" },
-      );
+      output = execSync('grep -r "strategy-platform-mock-data" --include="*.tsx" --include="*.ts" -l app/', {
+        cwd: PROJECT_ROOT,
+        encoding: "utf-8",
+      });
     } catch {
       output = "";
     }

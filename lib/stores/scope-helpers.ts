@@ -9,7 +9,7 @@
  * selected organisations" without duplicating the lookup logic.
  */
 
-import { CLIENTS } from "@/lib/trading-data";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { STRATEGIES } from "@/lib/strategy-registry";
 import type { GlobalScopeState } from "./global-scope-store";
 
@@ -26,7 +26,9 @@ export function getStrategyIdsForClients(clientIds: string[]): string[] {
 }
 
 /** Return strategy IDs that match the full scope cascade: org -> client -> strategy. */
-export function getStrategyIdsForScope(scope: Pick<GlobalScopeState, "organizationIds" | "clientIds" | "strategyIds">): string[] {
+export function getStrategyIdsForScope(
+  scope: Pick<GlobalScopeState, "organizationIds" | "clientIds" | "strategyIds">,
+): string[] {
   // If explicit strategy IDs are set, those take highest precedence.
   if (scope.strategyIds.length > 0) return scope.strategyIds;
 

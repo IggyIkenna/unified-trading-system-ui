@@ -5,8 +5,8 @@ import {
 } from "@/lib/auth/personas";
 
 describe("PERSONAS", () => {
-  it("has 6 demo personas", () => {
-    expect(PERSONAS).toHaveLength(6);
+  it("has 7 demo personas", () => {
+    expect(PERSONAS).toHaveLength(7);
   });
 
   it("every persona has required fields", () => {

@@ -4,12 +4,11 @@ import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { EXECUTION_BACKTESTS } from "@/lib/build-mock-data";
-import type { ExecutionBacktest } from "@/lib/build-mock-data";
-import {
-  StatusBadge,
-  ALGO_COLORS,
-} from "@/components/research/execution/status-helpers";
+import { EXECUTION_BACKTESTS } from "@/lib/mocks/fixtures/build-data";
+import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { ALGO_COLORS } from "@/components/research/execution/status-helpers";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Execution List Panel ───────────────────────────────────────────────────
 
@@ -43,9 +42,7 @@ export function ExecutionListPanel({
             key={bt.id}
             className={cn(
               "rounded-lg border p-3 cursor-pointer transition-colors space-y-2",
-              isSelected
-                ? "border-primary/50 bg-primary/5"
-                : "border-border/50 hover:border-border",
+              isSelected ? "border-primary/50 bg-primary/5" : "border-border/50 hover:border-border",
             )}
             onClick={() => onSelect(bt)}
           >
@@ -59,9 +56,7 @@ export function ExecutionListPanel({
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {bt.strategy_name}
-                </p>
+                <p className="text-xs text-muted-foreground">{bt.strategy_name}</p>
               </div>
               <StatusBadge status={bt.status} />
             </div>
@@ -82,25 +77,13 @@ export function ExecutionListPanel({
             </div>
             {bt.results && (
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <span
-                  className={cn(
-                    "font-medium",
-                    bt.results.sharpe_ratio > 1.5 ? "text-emerald-400" : "",
-                  )}
-                >
-                  Sharpe {bt.results.sharpe_ratio.toFixed(2)}
+                <span className={cn("font-medium", bt.results.sharpe_ratio > 1.5 ? "text-emerald-400" : "")}>
+                  Sharpe {formatNumber(bt.results.sharpe_ratio, 2)}
                 </span>
-                <span
-                  className={cn(
-                    "font-medium",
-                    bt.results.net_profit > 0
-                      ? "text-emerald-400"
-                      : "text-red-400",
-                  )}
-                >
-                  {bt.results.net_profit_pct.toFixed(1)}%
+                <span className={cn("font-medium", bt.results.net_profit > 0 ? "text-emerald-400" : "text-red-400")}>
+                  {formatPercent(bt.results.net_profit_pct, 1)}
                 </span>
-                <span>DD {bt.results.max_drawdown_pct.toFixed(1)}%</span>
+                <span>DD {formatPercent(bt.results.max_drawdown_pct, 1)}</span>
               </div>
             )}
             {bt.status === "running" && (

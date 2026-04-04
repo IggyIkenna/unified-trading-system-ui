@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { FilterBar } from "@/components/platform/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";

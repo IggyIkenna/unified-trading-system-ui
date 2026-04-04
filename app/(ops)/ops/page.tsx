@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -195,12 +196,7 @@ export default function OpsPage() {
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Operations Hub</h1>
-            <p className="text-sm text-muted-foreground">
-              Deploy, monitor jobs, view logs, check compliance
-            </p>
-          </div>
+          <PageHeader title="Operations Hub" description="Deploy, monitor jobs, view logs, check compliance" />
           <div className="flex items-center gap-3">
             {/* Live/Batch Mode Toggle */}
             <div className="flex items-center gap-1 p-1 bg-muted rounded-lg">
@@ -228,11 +224,7 @@ export default function OpsPage() {
               <RefreshCw className="size-4" />
               Refresh
             </Button>
-            <Button
-              size="sm"
-              className="gap-2"
-              style={{ backgroundColor: "var(--surface-ops)" }}
-            >
+            <Button size="sm" className="gap-2" style={{ backgroundColor: "var(--surface-ops)" }}>
               <Rocket className="size-4" />
               Deploy Service
             </Button>
@@ -245,10 +237,7 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-live)]/10">
-                  <CheckCircle2
-                    className="size-5"
-                    style={{ color: "var(--status-live)" }}
-                  />
+                  <CheckCircle2 className="size-5" style={{ color: "var(--status-live)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">47</p>
@@ -261,10 +250,7 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-running)]/10">
-                  <Activity
-                    className="size-5"
-                    style={{ color: "var(--status-running)" }}
-                  />
+                  <Activity className="size-5" style={{ color: "var(--status-running)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">12</p>
@@ -277,10 +263,7 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-critical)]/10">
-                  <XCircle
-                    className="size-5"
-                    style={{ color: "var(--status-critical)" }}
-                  />
+                  <XCircle className="size-5" style={{ color: "var(--status-critical)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">3</p>
@@ -293,10 +276,7 @@ export default function OpsPage() {
             <CardContent className="pt-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                  <AlertTriangle
-                    className="size-5"
-                    style={{ color: "var(--status-warning)" }}
-                  />
+                  <AlertTriangle className="size-5" style={{ color: "var(--status-warning)" }} />
                 </div>
                 <div>
                   <p className="text-2xl font-semibold">1</p>
@@ -360,20 +340,14 @@ export default function OpsPage() {
                               className="font-mono text-sm"
                             />
                             <div className="flex items-center gap-2 mt-0.5">
-                              <span className="text-xs text-muted-foreground">
-                                {service.env}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                Deployed {service.lastDeploy}
-                              </span>
+                              <span className="text-xs text-muted-foreground">{service.env}</span>
+                              <span className="text-xs text-muted-foreground">Deployed {service.lastDeploy}</span>
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <div className="font-mono text-sm">
-                              {service.version}
-                            </div>
+                            <div className="font-mono text-sm">{service.version}</div>
                             {service.version !== service.expectedVersion && (
                               <div className="text-xs text-[var(--status-warning)]">
                                 Expected: {service.expectedVersion}
@@ -402,10 +376,7 @@ export default function OpsPage() {
                       className="flex items-center justify-between p-2 rounded-md hover:bg-muted/30 transition-colors"
                     >
                       <div className="flex items-center gap-2">
-                        <CheckCircle2
-                          className="size-4"
-                          style={{ color: "var(--status-live)" }}
-                        />
+                        <CheckCircle2 className="size-4" style={{ color: "var(--status-live)" }} />
                         <div>
                           <p className="text-sm font-mono">{deploy.service}</p>
                           <p className="text-xs text-muted-foreground">
@@ -413,9 +384,7 @@ export default function OpsPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {deploy.time}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{deploy.time}</span>
                     </div>
                   ))}
                 </CardContent>
@@ -442,12 +411,8 @@ export default function OpsPage() {
                           {job.status === "running" && (
                             <RefreshCw className="size-4 animate-spin text-[var(--status-running)]" />
                           )}
-                          {job.status === "complete" && (
-                            <CheckCircle2 className="size-4 text-[var(--status-live)]" />
-                          )}
-                          {job.status === "failed" && (
-                            <XCircle className="size-4 text-[var(--status-critical)]" />
-                          )}
+                          {job.status === "complete" && <CheckCircle2 className="size-4 text-[var(--status-live)]" />}
+                          {job.status === "failed" && <XCircle className="size-4 text-[var(--status-critical)]" />}
                           <span className="font-medium">{job.name}</span>
                         </div>
                         <Badge
@@ -466,14 +431,8 @@ export default function OpsPage() {
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <span>Started: {job.startedAt}</span>
                         {job.eta && <span>{job.eta}</span>}
-                        {job.completedAt && (
-                          <span>Completed: {job.completedAt}</span>
-                        )}
-                        {job.error && (
-                          <span className="text-[var(--status-critical)]">
-                            {job.error}
-                          </span>
-                        )}
+                        {job.completedAt && <span>Completed: {job.completedAt}</span>}
+                        {job.error && <span className="text-[var(--status-critical)]">{job.error}</span>}
                       </div>
                     </div>
                   ))}
@@ -497,13 +456,8 @@ export default function OpsPage() {
                       </span>
                     </div>
                     {dataCompleteness.map((row) => (
-                      <div
-                        key={row.service}
-                        className="flex items-center gap-4"
-                      >
-                        <span className="w-36 text-sm font-mono truncate">
-                          {row.service}
-                        </span>
+                      <div key={row.service} className="flex items-center gap-4">
+                        <span className="w-36 text-sm font-mono truncate">{row.service}</span>
                         <div className="flex-1 grid grid-cols-4 gap-2">
                           {row.days.map((pct, i) => (
                             <div
@@ -549,15 +503,11 @@ export default function OpsPage() {
                       className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-muted/30 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        {entry.type === "config" && (
-                          <Server className="size-4 text-[var(--surface-config)]" />
-                        )}
+                        {entry.type === "config" && <Server className="size-4 text-[var(--surface-config)]" />}
                         {entry.type === "intervention" && (
                           <AlertTriangle className="size-4 text-[var(--status-warning)]" />
                         )}
-                        {entry.type === "deploy" && (
-                          <GitBranch className="size-4 text-[var(--surface-ops)]" />
-                        )}
+                        {entry.type === "deploy" && <GitBranch className="size-4 text-[var(--surface-ops)]" />}
                         <div>
                           <p className="font-medium">{entry.action}</p>
                           <p className="text-xs text-muted-foreground">
@@ -565,9 +515,7 @@ export default function OpsPage() {
                           </p>
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {entry.time}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{entry.time}</span>
                     </div>
                   ))}
                 </CardContent>
@@ -580,24 +528,15 @@ export default function OpsPage() {
                     <CardTitle className="text-lg">Compliance</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
-                    >
+                    <Button variant="ghost" className="w-full justify-start gap-2">
                       <Shield className="size-4" />
                       MiFID II Reporting
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
-                    >
+                    <Button variant="ghost" className="w-full justify-start gap-2">
                       <FileText className="size-4" />
                       FCA Transaction Reports
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
-                    >
+                    <Button variant="ghost" className="w-full justify-start gap-2">
                       <CheckCircle2 className="size-4" />
                       Best Execution Checks
                     </Button>
@@ -609,17 +548,11 @@ export default function OpsPage() {
                     <CardTitle className="text-lg">CI/CD</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
-                    >
+                    <Button variant="ghost" className="w-full justify-start gap-2">
                       <GitBranch className="size-4" />
                       Pipeline Status
                     </Button>
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start gap-2"
-                    >
+                    <Button variant="ghost" className="w-full justify-start gap-2">
                       <CheckCircle2 className="size-4" />
                       Quality Gates
                     </Button>

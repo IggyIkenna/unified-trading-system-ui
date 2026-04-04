@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,28 +16,16 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
-import { Users, Plus, Search, Shield, Clock, UserPlus } from "lucide-react";
-import {
-  useOrganizationsList,
-  useOrgMembers,
-} from "@/hooks/api/use-organizations";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { Users, Plus, Search, Shield, Clock, UserPlus, ArrowRight } from "lucide-react";
+import { useOrganizationsList, useOrgMembers } from "@/hooks/api/use-organizations";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
+import { useAuth } from "@/hooks/use-auth";
+import Link from "next/link";
 
 interface User {
   id: string;
@@ -51,10 +40,22 @@ interface User {
 const ROLES = ["admin", "internal", "client", "viewer"];
 
 export default function UsersManagementPage() {
-  const { data: orgsData, isLoading: orgsLoading } = useOrganizationsList();
-  const orgs: Array<{ id: string; name: string }> =
-    (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? [];
-  const { data: membersData, isLoading: membersLoading } = useOrgMembers("all");
+  const { isAdmin } = useAuth();
+  const {
+    data: orgsData,
+    isLoading: orgsLoading,
+    isError: orgsIsError,
+    error: orgsError,
+    refetch: refetchOrgs,
+  } = useOrganizationsList();
+  const orgs: Array<{ id: string; name: string }> = (orgsData as any)?.data ?? (orgsData as any)?.organizations ?? [];
+  const {
+    data: membersData,
+    isLoading: membersLoading,
+    isError: membersIsError,
+    error: membersError,
+    refetch: refetchMembers,
+  } = useOrgMembers("all");
 
   const apiUsers: User[] = ((membersData as any)?.data ?? []).map((m: any) => ({
     id: m.id ?? "",
@@ -124,9 +125,7 @@ export default function UsersManagementPage() {
   }
 
   function handleRoleChange(userId: string, newRole: string) {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)),
-    );
+    setUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
     const user = users.find((u) => u.id === userId);
     toast.success("Role updated", {
       description: `${user?.name} is now ${newRole}`,
@@ -136,11 +135,7 @@ export default function UsersManagementPage() {
 
   function handleStatusToggle(userId: string) {
     setUsers((prev) =>
-      prev.map((u) =>
-        u.id === userId
-          ? { ...u, status: u.status === "active" ? "suspended" : "active" }
-          : u,
-      ),
+      prev.map((u) => (u.id === userId ? { ...u, status: u.status === "active" ? "suspended" : "active" } : u)),
     );
     const user = users.find((u) => u.id === userId);
     const newStatus = user?.status === "active" ? "suspended" : "active";
@@ -174,19 +169,40 @@ export default function UsersManagementPage() {
       </main>
     );
 
+  const listError = (orgsError ?? membersError) as Error | null;
+  if ((orgsIsError || membersIsError) && listError) {
+    return (
+      <div className="p-6">
+        <ApiError
+          error={listError}
+          onRetry={() => {
+            void refetchOrgs();
+            void refetchMembers();
+          }}
+          title="Failed to load users"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      {isAdmin() && (
+        <div className="bg-primary/5 border-b border-primary/10 px-6 py-2 flex items-center gap-2 text-sm">
+          <Shield className="size-4 text-primary" />
+          <span>Admin — full provisioning management available</span>
+          <Link href="/admin/users" className="ml-auto flex items-center gap-1 text-primary hover:underline text-xs font-medium">
+            Open Admin Console <ArrowRight className="size-3" />
+          </Link>
+        </div>
+      )}
       <div className="border-b border-border">
         <div className="container px-4 py-6 md:px-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight">
-                User Management
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Manage users, roles, and access across all organizations
-              </p>
-            </div>
+            <PageHeader
+              title="User Management"
+              description={isAdmin() ? "Read-only directory — use the Admin Console for full management." : "Manage users, roles, and access across all organizations"}
+            />
             <div className="flex items-center gap-2">
               <ExportDropdown
                 data={filteredUsers.map((u) => ({
@@ -252,18 +268,13 @@ export default function UsersManagementPage() {
               <DialogHeader>
                 <DialogTitle>Invite User</DialogTitle>
                 <DialogDescription>
-                  Send an invitation to a new user. They will receive access to
-                  the selected organization.
+                  Send an invitation to a new user. They will receive access to the selected organization.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Name</label>
-                  <Input
-                    placeholder="Full name"
-                    value={inviteName}
-                    onChange={(e) => setInviteName(e.target.value)}
-                  />
+                  <Input placeholder="Full name" value={inviteName} onChange={(e) => setInviteName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
@@ -340,9 +351,7 @@ export default function UsersManagementPage() {
                 {filteredUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell className="font-medium">{user.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {user.email}
-                    </TableCell>
+                    <TableCell className="text-muted-foreground">{user.email}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {user.org}
@@ -350,22 +359,13 @@ export default function UsersManagementPage() {
                     </TableCell>
                     <TableCell>
                       {editingRoleId === user.id ? (
-                        <Select
-                          value={user.role}
-                          onValueChange={(val) =>
-                            handleRoleChange(user.id, val)
-                          }
-                        >
+                        <Select value={user.role} onValueChange={(val) => handleRoleChange(user.id, val)}>
                           <SelectTrigger className="w-[120px] h-7 text-xs">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
                             {ROLES.map((r) => (
-                              <SelectItem
-                                key={r}
-                                value={r}
-                                className="capitalize text-xs"
-                              >
+                              <SelectItem key={r} value={r} className="capitalize text-xs">
                                 {r}
                               </SelectItem>
                             ))}
@@ -400,12 +400,7 @@ export default function UsersManagementPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleStatusToggle(user.id)}
-                        className="text-xs"
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => handleStatusToggle(user.id)} className="text-xs">
                         {user.status === "active" ? "Suspend" : "Activate"}
                       </Button>
                     </TableCell>
@@ -413,29 +408,21 @@ export default function UsersManagementPage() {
                 ))}
                 {filteredUsers.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-12">
-                      <div className="flex flex-col items-center gap-3">
-                        <UserPlus className="size-8 text-muted-foreground/50" />
-                        <div>
-                          <p className="text-sm font-medium text-muted-foreground">
-                            No users found
-                          </p>
-                          <p className="text-xs text-muted-foreground/70 mt-1">
-                            {searchQuery || orgFilter !== "all"
-                              ? "Try adjusting your filters"
-                              : "Add your first team member to get started"}
-                          </p>
-                        </div>
-                        {!searchQuery && orgFilter === "all" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setInviteOpen(true)}
-                          >
-                            <Plus className="mr-1 size-3" /> Add User
-                          </Button>
-                        )}
-                      </div>
+                    <TableCell colSpan={7} className="p-6">
+                      <EmptyState
+                        icon={UserPlus}
+                        title="No users found"
+                        description={
+                          searchQuery || orgFilter !== "all"
+                            ? "Try adjusting your filters."
+                            : "Add your first team member to get started."
+                        }
+                        action={
+                          !searchQuery && orgFilter === "all"
+                            ? { label: "Add user", onClick: () => setInviteOpen(true) }
+                            : undefined
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 )}

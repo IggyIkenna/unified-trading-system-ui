@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DataTableWidget, type DataTableColumn } from "../shared";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 interface StressRow {
   name: string;
@@ -35,28 +36,30 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
     {
       key: "multiplier",
       label: "Multiplier",
-      accessor: (row) => `${row.multiplier}x`,
+      accessor: (row: StressRow) => `${row.multiplier}x`,
       align: "right",
       sortable: true,
     },
     {
       key: "pnlImpact",
       label: "P&L Impact",
-      accessor: (row) => <span className="text-rose-400 font-semibold">{formatCurrency(row.pnlImpact)}</span>,
+      accessor: (row: StressRow) => (
+        <span className="text-rose-400 font-semibold">{formatCurrency(row.pnlImpact)}</span>
+      ),
       align: "right",
       sortable: true,
     },
     {
       key: "varImpact",
       label: "VaR Impact",
-      accessor: (row) => formatCurrency(row.varImpact),
+      accessor: (row: StressRow) => formatCurrency(row.varImpact),
       align: "right",
       sortable: true,
     },
     {
       key: "positionsBreaching",
       label: "Breaches",
-      accessor: (row) => (
+      accessor: (row: StressRow) => (
         <Badge
           variant={row.positionsBreaching > 10 ? "destructive" : row.positionsBreaching > 5 ? "secondary" : "outline"}
         >
@@ -85,7 +88,7 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
         )}
         <div className="flex items-center gap-1.5 ml-auto">
           <span className="text-[10px] text-muted-foreground">Stress</span>
-          <span className="text-[10px] font-mono font-bold">{regimeMultiplier.toFixed(1)}x</span>
+          <span className="text-[10px] font-mono font-bold">{formatNumber(regimeMultiplier, 1)}x</span>
           <input
             type="range"
             min={0.5}
@@ -130,7 +133,7 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
               <div className="p-2 rounded bg-muted/30 text-center">
                 <div className="text-[10px] text-muted-foreground">Portfolio Impact</div>
                 <div className="text-sm font-bold font-mono text-rose-400">
-                  {stressTestResult.portfolio_impact_pct.toFixed(1)}%
+                  {formatPercent(stressTestResult.portfolio_impact_pct, 1)}
                 </div>
               </div>
               <div className="p-2 rounded bg-muted/30 text-center">
@@ -147,7 +150,12 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
       )}
 
       <div className="flex-1 min-h-0">
-        <DataTableWidget columns={columns} data={stressScenarios as unknown as StressRow[]} rowKey={(row) => row.name} compact />
+        <DataTableWidget
+          columns={columns}
+          data={stressScenarios as unknown as StressRow[]}
+          rowKey={(row: StressRow) => row.name}
+          compact
+        />
       </div>
     </div>
   );

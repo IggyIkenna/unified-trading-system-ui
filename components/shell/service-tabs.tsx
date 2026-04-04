@@ -11,32 +11,32 @@ import type { ReactNode } from "react";
 import { TabSectionHelp } from "@/components/shell/tab-section-help";
 import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
 import { cn } from "@/lib/utils";
+import { isServiceTabActive } from "@/lib/utils/nav-helpers";
+import type { LucideIcon } from "lucide-react";
 import {
-  Lock,
-  LayoutDashboard,
-  MonitorDot,
-  BookOpen,
-  ClipboardList,
+  BarChart3,
   Bell,
   BookMarked,
-  Wallet,
-  BarChart3,
-  ShieldAlert,
-  LineChart,
-  Layers,
-  GitFork,
-  TrendingUp,
-  Trophy,
-  Lightbulb,
-  Settings2,
+  BookOpen,
+  Building2,
+  ClipboardList,
   Cpu,
   Database,
   DollarSign,
-  Building2,
-  FileText,
+  GitFork,
+  Layers,
+  LayoutDashboard,
+  Lightbulb,
+  LineChart,
+  Lock,
+  MonitorDot,
+  ScrollText,
+  ShieldAlert,
+  TrendingUp,
+  Trophy,
+  Wallet,
   Zap,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -132,7 +132,7 @@ export function ServiceTabs({
     <div className={cn("border-b border-border bg-card/30", className)}>
       <div
         className={cn(
-          "flex items-center gap-2 px-4 sm:px-6",
+          "flex flex-wrap items-center gap-2 px-4 sm:px-6",
           alignEnd && !rightSlot && "justify-end",
           (!alignEnd || rightSlot) && !tabsSpread && "justify-between",
           tabsSpread && !rightSlot && "min-w-0",
@@ -140,17 +140,14 @@ export function ServiceTabs({
       >
         <nav
           className={cn(
-            "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch]",
+            "flex gap-1 pt-3 pb-0 -mb-px overflow-x-auto [-webkit-overflow-scrolling:touch] scrollbar-none",
             alignEnd && "justify-end",
             tabsSpread && "min-w-0 w-full flex-1 justify-stretch gap-0.5 sm:gap-1",
           )}
           aria-label="Service sections"
         >
           {tabs.map((tab) => {
-            const matchPath = tab.matchPrefix || tab.href;
-            const isActive = tab.exact
-              ? pathname === tab.href || pathname === `${tab.href}/`
-              : pathname === tab.href || pathname.startsWith(matchPath + "/");
+            const isActive = isServiceTabActive(pathname, tab);
             const isLocked =
               tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
 
@@ -199,7 +196,7 @@ export function ServiceTabs({
           })}
         </nav>
 
-        {rightSlot && <div className="flex items-center gap-2 pl-4 py-2 shrink-0">{rightSlot}</div>}
+        {rightSlot && <div className="flex items-center gap-2 py-2 shrink-0 ml-auto">{rightSlot}</div>}
       </div>
     </div>
   );
@@ -295,15 +292,16 @@ export const TRADING_TABS: ServiceTab[] = [
     href: "/services/trading/overview",
     icon: LayoutDashboard,
   },
-  { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
-  { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
-  { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
-  { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
-  { label: "Book", href: "/services/trading/book", icon: BookMarked },
-  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet, exact: true },
-  { label: "SAFT", href: "/services/trading/accounts/saft", icon: FileText },
-  { label: "Strategies", href: "/services/trading/strategies", icon: Layers },
   { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
+  { label: "Book", href: "/services/trading/book", icon: BookMarked },
+  { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
+  { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
+  { label: "Alerts", href: "/services/trading/alerts", icon: Bell },
+  { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
+  { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
+  { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
+  { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
+  { label: "Instructions", href: "/services/trading/instructions", icon: ScrollText },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
     label: "DeFi",
@@ -312,6 +310,8 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "DeFi",
     familyGroup: "DeFi",
     familyIcon: "Layers",
+    exact: true,
+    requiredEntitlement: "defi-trading",
   },
   {
     label: "Bundles",
@@ -335,6 +335,8 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Sports",
     familyGroup: "Sports",
     familyIcon: "Trophy",
+    exact: true,
+    requiredEntitlement: "sports-trading",
   },
   {
     label: "Place Bets",
@@ -358,6 +360,8 @@ export const TRADING_TABS: ServiceTab[] = [
     group: "Options & Futures",
     familyGroup: "Options & Futures",
     familyIcon: "BarChart3",
+    exact: true,
+    requiredEntitlement: "options-trading",
   },
   {
     label: "Combo Builder",
@@ -379,9 +383,11 @@ export const TRADING_TABS: ServiceTab[] = [
     label: "Predictions",
     href: "/services/trading/predictions",
     icon: Lightbulb,
+    requiredEntitlement: "predictions-trading",
     group: "Predictions",
     familyGroup: "Predictions",
     familyIcon: "TrendingUp",
+    exact: true,
   },
   {
     label: "Aggregators",
@@ -428,9 +434,12 @@ export const REPORTS_TABS: ServiceTab[] = [
 // Grouped: User Management | Operations | Configuration
 export const ADMIN_TABS: ServiceTab[] = [
   // ── User Management ─────────────────────────────────────────────────────
-  { label: "Users", href: "/admin/users" },
+  { label: "Users", href: "/admin/users", exact: true },
   { label: "Access Requests", href: "/admin/users/requests" },
   { label: "Onboard", href: "/admin/users/onboard" },
+  { label: "Templates", href: "/admin/users/templates", requiredEntitlement: "admin" },
+  { label: "Firebase Users", href: "/admin/users/firebase", requiredEntitlement: "admin" },
+  { label: "Health Checks", href: "/admin/users/health-checks", requiredEntitlement: "admin" },
   { label: "Organisations", href: "/admin/organizations", matchPrefix: "/admin/organizations" },
   // ── Operations ──────────────────────────────────────────────────────────
   { label: "Services", href: "/ops/services", group: "Operations" },

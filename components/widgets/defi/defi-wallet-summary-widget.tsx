@@ -2,12 +2,16 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, MOCK_CHAIN_PORTFOLIOS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/mocks/fixtures/defi-transfer";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 function truncateAddr(addr: string): string {
   if (addr.length < 12) return addr;
@@ -28,9 +32,11 @@ function mockPortfolioUsd(balances: Record<string, number>): number {
 }
 
 export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
-  const { connectedWallet, selectedChain, setSelectedChain, tokenBalances } = useDeFiData();
+  const { connectedWallet, selectedChain, setSelectedChain, tokenBalances, treasury, deltaComposite, triggerRebalance, rebalancePreview } = useDeFiData();
 
   const portfolio = React.useMemo(() => mockPortfolioUsd(tokenBalances), [tokenBalances]);
+
+  const treasuryStatusColor = treasury.status === "normal" ? "text-emerald-400" : treasury.status === "low" ? "text-rose-400" : "text-amber-400";
 
   const metrics: KpiMetric[] = React.useMemo(
     () => [
@@ -41,7 +47,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
       },
       {
         label: "Portfolio (mock USD)",
-        value: `$${(portfolio / 1000).toFixed(1)}K`,
+        value: `$${formatNumber(portfolio / 1000, 1)}K`,
         sentiment: "neutral",
       },
       {
@@ -53,10 +59,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     [connectedWallet, portfolio, tokenBalances],
   );
 
-  const sortedPortfolios = React.useMemo(
-    () => [...MOCK_CHAIN_PORTFOLIOS].sort((a, b) => b.totalUsd - a.totalUsd),
-    [],
-  );
+  const sortedPortfolios = React.useMemo(() => [...MOCK_CHAIN_PORTFOLIOS].sort((a, b) => b.totalUsd - a.totalUsd), []);
 
   const totalPortfolioUsd = React.useMemo(
     () => sortedPortfolios.reduce((sum, cp) => sum + cp.totalUsd, 0),
@@ -81,6 +84,43 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
         </Select>
       </div>
       <KpiStrip metrics={metrics} columns={3} />
+
+      <div className="flex flex-wrap items-center gap-2 px-1">
+        <div className="flex items-center gap-1.5 text-xs">
+          <span className="text-muted-foreground">Treasury</span>
+          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 font-mono", treasuryStatusColor)}>
+            {treasury.status.toUpperCase()}
+          </Badge>
+          <span className="font-mono text-muted-foreground">${formatNumber(treasury.treasury_balance_usd, 0)}</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs">
+          <span className="text-muted-foreground">Net Delta</span>
+          <span className={cn("font-mono", deltaComposite.total_delta_usd !== 0 ? "text-amber-400" : "text-emerald-400")}>
+            ${formatNumber(deltaComposite.total_delta_usd, 0)}
+          </span>
+        </div>
+        {treasury.status !== "normal" && (
+          <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 ml-auto" onClick={triggerRebalance}>
+            <RefreshCw className="size-3 mr-1" />
+            Rebalance
+          </Button>
+        )}
+      </div>
+
+      {rebalancePreview && (
+        <div className="p-2 rounded-lg border border-amber-500/30 bg-amber-500/5 text-xs space-y-1 mx-1">
+          <div className="flex items-center gap-1.5 font-medium">
+            <RefreshCw className="size-3 text-amber-400" />
+            Rebalance preview: {rebalancePreview.action}
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-muted-foreground font-mono">
+            <span>Treasury {rebalancePreview.treasury_current_pct}%</span>
+            <span>Target {rebalancePreview.treasury_target_pct}%</span>
+            <span>{rebalancePreview.total_instructions} instructions</span>
+            <span>~${formatNumber(rebalancePreview.estimated_gas_usd, 2)} gas</span>
+          </div>
+        </div>
+      )}
 
       <CollapsibleSection title="Portfolio by chain" defaultOpen={true} count={sortedPortfolios.length}>
         <div className="px-1 pb-1">
@@ -107,7 +147,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
                     <td className="py-1 text-right">
                       <span className="inline-flex items-center gap-1 justify-end">
                         <span className={cn("font-mono tabular-nums", gasLow ? "text-amber-500" : "text-foreground")}>
-                          {cp.gasTokenBalance.toFixed(4)}
+                          {formatNumber(cp.gasTokenBalance, 4)}
                         </span>
                         {gasLow && <AlertTriangle className="size-3 text-amber-500 shrink-0" />}
                       </span>

@@ -1,22 +1,23 @@
 "use client";
 
-import * as React from "react";
-import {
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  AlertTriangle,
-  RefreshCw,
-  Clock,
-  Server,
-  Database,
-  Shield,
-  Globe,
-  Terminal,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  Database,
+  Globe,
+  RefreshCw,
+  Server,
+  Shield,
+  Terminal,
+  XCircle,
+} from "lucide-react";
+import * as React from "react";
 
 type Status = "checking" | "ok" | "degraded" | "down" | "skipped";
 
@@ -33,13 +34,11 @@ interface HealthCheck {
 type DetectedTier = 0 | 1 | 2;
 
 const STATUS_ICON: Record<Status, React.ReactNode> = {
-  checking: <Loader2 className="size-4 animate-spin text-muted-foreground" />,
+  checking: <Spinner className="size-4 text-muted-foreground" />,
   ok: <CheckCircle2 className="size-4 text-emerald-500" />,
   degraded: <AlertTriangle className="size-4 text-amber-500" />,
   down: <XCircle className="size-4 text-red-500" />,
-  skipped: (
-    <span className="size-4 rounded-full border border-muted-foreground/30 inline-block" />
-  ),
+  skipped: <span className="size-4 rounded-full border border-muted-foreground/30 inline-block" />,
 };
 
 const STATUS_COLOR: Record<Status, string> = {
@@ -57,24 +56,18 @@ const GROUP_ICONS: Record<string, React.ReactNode> = {
   WebSocket: <Globe className="size-4" />,
 };
 
-const TIER_DESCRIPTIONS: Record<
-  DetectedTier,
-  { label: string; description: string }
-> = {
+const TIER_DESCRIPTIONS: Record<DetectedTier, { label: string; description: string }> = {
   0: {
     label: "Tier 0 — UI Only",
-    description:
-      "No API gateway detected. UI running with in-browser mock store.",
+    description: "No API gateway detected. UI running with in-browser mock store.",
   },
   1: {
     label: "Tier 1 — UI + API Gateways",
-    description:
-      "API gateway serving mock data via MockStateStore. No downstream service fleet.",
+    description: "API gateway serving mock data via MockStateStore. No downstream service fleet.",
   },
   2: {
     label: "Tier 2 — Full Fleet",
-    description:
-      "API gateway + downstream services. Full engine parity with production topology.",
+    description: "API gateway + downstream services. Full engine parity with production topology.",
   },
 };
 
@@ -145,148 +138,145 @@ function useHealthChecks() {
   const [running, setRunning] = React.useState(false);
   const [lastRun, setLastRun] = React.useState<Date | null>(null);
   const [detectedTier, setDetectedTier] = React.useState<DetectedTier>(0);
-  const [apiMeta, setApiMeta] = React.useState<Record<string, unknown> | null>(
-    null,
-  );
+  const [apiMeta, setApiMeta] = React.useState<Record<string, unknown> | null>(null);
 
   const runChecks = React.useCallback(async () => {
     setRunning(true);
 
-    const definitions: Omit<HealthCheck, "status" | "latencyMs" | "detail">[] =
-      [
-        {
-          name: "unified-trading-api",
-          description: "Trading system gateway (port 8030)",
-          group: "API Gateways",
-          required: true,
-        },
-        {
-          name: "auth-api",
-          description: "SSO & token issuance (port 8200)",
-          group: "Auth & Security",
-          required: false,
-        },
-        {
-          name: "client-reporting-api",
-          description: "Client reports & invoicing (port 8014)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "execution-results-api",
-          description: "Execution results & backtests (port 8006)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "deployment-api",
-          description: "Deployment & infra management (port 8004)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "config-api",
-          description: "Onboarding & config (port 8005)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "trading-analytics-api",
-          description: "P&L attribution & settlements (port 8012)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "batch-audit-api",
-          description: "Batch jobs & audit trail (port 8013)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "ml-training-api",
-          description: "ML model training & registry (port 8011)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "market-data-api",
-          description: "Market data & candles (port 8007)",
-          group: "API Gateways",
-          required: false,
-        },
-        {
-          name: "GET /positions/active",
-          description: "Positions domain",
-          group: "API Domains",
-          required: true,
-        },
-        {
-          name: "GET /execution/orders",
-          description: "Execution domain",
-          group: "API Domains",
-          required: true,
-        },
-        {
-          name: "GET /analytics/pnl",
-          description: "Analytics domain",
-          group: "API Domains",
-          required: true,
-        },
-        {
-          name: "GET /alerts/list",
-          description: "Alerts domain",
-          group: "API Domains",
-          required: true,
-        },
-        {
-          name: "GET /risk/limits",
-          description: "Risk domain",
-          group: "API Domains",
-          required: true,
-        },
-        {
-          name: "GET /instruments/list",
-          description: "Instruments domain",
-          group: "API Domains",
-          required: true,
-        },
-        {
-          name: "GET /ml/model-families",
-          description: "ML domain",
-          group: "API Domains",
-          required: false,
-        },
-        {
-          name: "GET /service-status/health",
-          description: "Service status domain",
-          group: "API Domains",
-          required: false,
-        },
-        {
-          name: "GET /users/organizations",
-          description: "Users domain",
-          group: "API Domains",
-          required: false,
-        },
-        {
-          name: "GET /market-data/candles",
-          description: "Market data domain",
-          group: "API Domains",
-          required: false,
-        },
-        {
-          name: "GET /reporting/reports",
-          description: "Client reporting domain",
-          group: "API Domains",
-          required: false,
-        },
-        {
-          name: "WebSocket /ws",
-          description: "Real-time data channel",
-          group: "WebSocket",
-          required: false,
-        },
-      ];
+    const definitions: Omit<HealthCheck, "status" | "latencyMs" | "detail">[] = [
+      {
+        name: "unified-trading-api",
+        description: "Trading system gateway (port 8030)",
+        group: "API Gateways",
+        required: true,
+      },
+      {
+        name: "auth-api",
+        description: "SSO & token issuance (port 8200)",
+        group: "Auth & Security",
+        required: false,
+      },
+      {
+        name: "client-reporting-api",
+        description: "Client reports & invoicing (port 8014)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "execution-results-api",
+        description: "Execution results & backtests (port 8006)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "deployment-api",
+        description: "Deployment & infra management (port 8004)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "config-api",
+        description: "Onboarding & config (port 8005)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "trading-analytics-api",
+        description: "P&L attribution & settlements (port 8012)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "batch-audit-api",
+        description: "Batch jobs & audit trail (port 8013)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "ml-training-api",
+        description: "ML model training & registry (port 8011)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "market-data-api",
+        description: "Market data & candles (port 8007)",
+        group: "API Gateways",
+        required: false,
+      },
+      {
+        name: "GET /positions/active",
+        description: "Positions domain",
+        group: "API Domains",
+        required: true,
+      },
+      {
+        name: "GET /execution/orders",
+        description: "Execution domain",
+        group: "API Domains",
+        required: true,
+      },
+      {
+        name: "GET /analytics/pnl",
+        description: "Analytics domain",
+        group: "API Domains",
+        required: true,
+      },
+      {
+        name: "GET /alerts/list",
+        description: "Alerts domain",
+        group: "API Domains",
+        required: true,
+      },
+      {
+        name: "GET /risk/limits",
+        description: "Risk domain",
+        group: "API Domains",
+        required: true,
+      },
+      {
+        name: "GET /instruments/list",
+        description: "Instruments domain",
+        group: "API Domains",
+        required: true,
+      },
+      {
+        name: "GET /ml/model-families",
+        description: "ML domain",
+        group: "API Domains",
+        required: false,
+      },
+      {
+        name: "GET /service-status/health",
+        description: "Service status domain",
+        group: "API Domains",
+        required: false,
+      },
+      {
+        name: "GET /users/organizations",
+        description: "Users domain",
+        group: "API Domains",
+        required: false,
+      },
+      {
+        name: "GET /market-data/candles",
+        description: "Market data domain",
+        group: "API Domains",
+        required: false,
+      },
+      {
+        name: "GET /reporting/reports",
+        description: "Client reporting domain",
+        group: "API Domains",
+        required: false,
+      },
+      {
+        name: "WebSocket /ws",
+        description: "Real-time data channel",
+        group: "WebSocket",
+        required: false,
+      },
+    ];
 
     const initial: HealthCheck[] = definitions.map((d) => ({
       ...d,
@@ -350,9 +340,7 @@ function useHealthChecks() {
       ...results[1],
       status: authCheck.ok ? "ok" : "down",
       latencyMs: authCheck.latencyMs,
-      detail: authCheck.ok
-        ? null
-        : `${authCheck.detail}\n${getStartupHint("auth-api", tier)}`,
+      detail: authCheck.ok ? null : `${authCheck.detail}\n${getStartupHint("auth-api", tier)}`,
     };
     setChecks([...results]);
 
@@ -367,9 +355,7 @@ function useHealthChecks() {
       { idx: 8, url: "/api/ml/health", name: "ml-training-api" },
       { idx: 9, url: "/api/market-data/health", name: "market-data-api" },
     ];
-    const gwResults = await Promise.all(
-      gatewayChecks.map((g) => checkEndpoint(g.url)),
-    );
+    const gwResults = await Promise.all(gatewayChecks.map((g) => checkEndpoint(g.url)));
     for (let i = 0; i < gwResults.length; i++) {
       const gw = gwResults[i];
       const g = gatewayChecks[i];
@@ -398,9 +384,7 @@ function useHealthChecks() {
       "/api/reporting/reports",
     ];
 
-    const domainResults = await Promise.all(
-      domainUrls.map((url) => checkEndpoint(url)),
-    );
+    const domainResults = await Promise.all(domainUrls.map((url) => checkEndpoint(url)));
     for (let i = 0; i < domainResults.length; i++) {
       const dr = domainResults[i];
       const idx = i + gatewayCount;
@@ -480,8 +464,7 @@ function useHealthChecks() {
 }
 
 export default function HealthPage() {
-  const { checks, running, lastRun, runChecks, detectedTier, apiMeta } =
-    useHealthChecks();
+  const { checks, running, lastRun, runChecks, detectedTier, apiMeta } = useHealthChecks();
 
   const env = process.env.NEXT_PUBLIC_APP_ENV || "dev";
   const mockApi = process.env.NEXT_PUBLIC_MOCK_API === "true";
@@ -489,11 +472,8 @@ export default function HealthPage() {
   const isMockMode = apiMeta?.mock_mode === true || mockApi;
 
   const okCount = checks.filter((c) => c.status === "ok").length;
-  const downCount = checks.filter(
-    (c) => c.status === "down" && c.required,
-  ).length;
-  const overallStatus =
-    downCount > 0 ? "unhealthy" : okCount > 0 ? "healthy" : "checking";
+  const downCount = checks.filter((c) => c.status === "down" && c.required).length;
+  const overallStatus = downCount > 0 ? "unhealthy" : okCount > 0 ? "healthy" : "checking";
 
   const groups = [...new Set(checks.map((c) => c.group))];
 
@@ -501,56 +481,33 @@ export default function HealthPage() {
 
   return (
     <div className="min-h-screen bg-background p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">System Health</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Runtime connectivity for all connectors at the detected tier
-          </p>
-        </div>
+      <PageHeader
+        className="mb-6"
+        title="System Health"
+        description="Runtime connectivity for all connectors at the detected tier"
+      >
         <div className="flex items-center gap-3">
           {lastRun && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="size-3" />
               {lastRun.toLocaleTimeString()}
             </span>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={runChecks}
-            disabled={running}
-          >
-            <RefreshCw
-              className={cn("size-3.5 mr-1.5", running && "animate-spin")}
-            />
+          <Button variant="outline" size="sm" onClick={runChecks} disabled={running}>
+            <RefreshCw className={cn("size-3.5 mr-1.5", running && "animate-spin")} />
             {running ? "Checking..." : "Re-check"}
           </Button>
         </div>
-      </div>
+      </PageHeader>
 
       {/* Detected Tier Banner */}
-      <div
-        className={cn(
-          "flex items-center gap-3 mb-4 p-4 rounded-lg border",
-          TIER_COLORS[detectedTier],
-        )}
-      >
-        <Badge
-          variant="outline"
-          className={cn(
-            "text-sm font-bold px-3 py-1",
-            TIER_COLORS[detectedTier],
-          )}
-        >
+      <div className={cn("flex items-center gap-3 mb-4 p-4 rounded-lg border", TIER_COLORS[detectedTier])}>
+        <Badge variant="outline" className={cn("text-sm font-bold px-3 py-1", TIER_COLORS[detectedTier])}>
           T{detectedTier}
         </Badge>
         <div>
           <p className="font-semibold text-sm">{tierInfo.label}</p>
-          <p className="text-xs text-muted-foreground">
-            {tierInfo.description}
-          </p>
+          <p className="text-xs text-muted-foreground">{tierInfo.description}</p>
         </div>
         <div className="ml-auto flex gap-2">
           <Badge variant="outline" className="text-[10px]">
@@ -563,9 +520,7 @@ export default function HealthPage() {
             variant="outline"
             className={cn(
               "text-[10px]",
-              isMockMode
-                ? "border-amber-500/30 text-amber-400"
-                : "border-emerald-500/30 text-emerald-400",
+              isMockMode ? "border-amber-500/30 text-amber-400" : "border-emerald-500/30 text-emerald-400",
             )}
           >
             {isMockMode ? "MOCK" : "REAL"}
@@ -586,8 +541,7 @@ export default function HealthPage() {
         <span className="font-semibold text-sm">
           {overallStatus === "healthy" &&
             `All required services operational (${okCount}/${checks.length} checks passed)`}
-          {overallStatus === "unhealthy" &&
-            `${downCount} required service${downCount > 1 ? "s" : ""} down`}
+          {overallStatus === "unhealthy" && `${downCount} required service${downCount > 1 ? "s" : ""} down`}
           {overallStatus === "checking" && "Running checks..."}
         </span>
       </div>
@@ -598,19 +552,13 @@ export default function HealthPage() {
           <div className="flex items-start gap-2">
             <Terminal className="size-4 text-amber-400 mt-0.5 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-amber-300">
-                No API gateway detected
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Start the full Tier 1 stack with one command:
-              </p>
+              <p className="text-sm font-medium text-amber-300">No API gateway detected</p>
+              <p className="text-xs text-muted-foreground mt-1">Start the full Tier 1 stack with one command:</p>
               <code className="block mt-2 text-[11px] bg-amber-900/30 px-3 py-2 rounded font-mono text-amber-200">
-                cd unified-trading-system-ui && bash scripts/dev-tiers.sh --tier
-                1
+                cd unified-trading-system-ui && bash scripts/dev-tiers.sh --tier 1
               </code>
               <p className="text-[10px] text-muted-foreground mt-2">
-                This starts unified-trading-api (8030) + auth-api (8200) +
-                client-reporting-api (8014) + UI (3000)
+                This starts unified-trading-api (8030) + auth-api (8200) + client-reporting-api (8014) + UI (3000)
               </p>
             </div>
           </div>
@@ -640,17 +588,12 @@ export default function HealthPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">{check.name}</span>
                       {check.required && (
-                        <Badge
-                          variant="outline"
-                          className="text-[9px] px-1 py-0 h-4"
-                        >
+                        <Badge variant="outline" className="text-[9px] px-1 py-0 h-4">
                           required
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {check.description}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{check.description}</p>
                     {check.detail && (
                       <pre
                         className={cn(
@@ -690,46 +633,32 @@ export default function HealthPage() {
       {/* Tier Reference */}
       <div className="mt-8 p-4 rounded-lg border border-border/50 bg-card/50 text-xs text-muted-foreground space-y-4">
         <div>
-          <p className="font-medium mb-2 text-foreground">
-            Local Tiers (dev machine)
-          </p>
+          <p className="font-medium mb-2 text-foreground">Local Tiers (dev machine)</p>
           <div className="space-y-1.5">
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                bash scripts/dev-tiers.sh --tier 0
-              </code>{" "}
-              — UI-only. In-browser mock. No Python.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 0</code> —
+              UI-only. In-browser mock. No Python.
             </p>
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                bash scripts/dev-tiers.sh --tier 1
-              </code>{" "}
-              — UI + API gateways. MockStateStore. Demo-ready.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 1</code> —
+              UI + API gateways. MockStateStore. Demo-ready.
             </p>
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                bash scripts/dev-tiers.sh --tier 2
-              </code>{" "}
-              — UI + APIs + all service processes. Full engine parity.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --tier 2</code> —
+              UI + APIs + all service processes. Full engine parity.
             </p>
           </div>
         </div>
         <div>
-          <p className="font-medium mb-2 text-foreground">
-            Cloud Tiers (deployment-driven)
-          </p>
+          <p className="font-medium mb-2 text-foreground">Cloud Tiers (deployment-driven)</p>
           <div className="space-y-1.5">
             <p>
-              <strong>T3</strong> — UI in cloud, API local. <strong>T4</strong>{" "}
-              — UI + API in cloud. <strong>T5</strong> — Full cloud (mock).{" "}
-              <strong>T6</strong> — Full cloud (real).
+              <strong>T3</strong> — UI in cloud, API local. <strong>T4</strong> — UI + API in cloud. <strong>T5</strong>{" "}
+              — Full cloud (mock). <strong>T6</strong> — Full cloud (real).
             </p>
             <p>
               Cloud tiers driven by Deployment UI or{" "}
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                deploy.py
-              </code>{" "}
-              scripts.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">deploy.py</code> scripts.
             </p>
           </div>
         </div>
@@ -737,23 +666,16 @@ export default function HealthPage() {
           <p className="font-medium mb-1 text-foreground">Other commands</p>
           <div className="space-y-1.5">
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                bash scripts/dev-tiers.sh --stop
-              </code>{" "}
-              — Stop all processes.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --stop</code> —
+              Stop all processes.
             </p>
             <p>
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                bash scripts/dev-tiers.sh --status
-              </code>{" "}
-              — Show running processes and ports.
+              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">bash scripts/dev-tiers.sh --status</code> —
+              Show running processes and ports.
             </p>
             <p>
-              Add{" "}
-              <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">
-                --real
-              </code>{" "}
-              to any tier for <code>CLOUD_MOCK_MODE=false</code>.
+              Add <code className="bg-muted px-1.5 py-0.5 rounded text-[10px]">--real</code> to any tier for{" "}
+              <code>CLOUD_MOCK_MODE=false</code>.
             </p>
           </div>
         </div>

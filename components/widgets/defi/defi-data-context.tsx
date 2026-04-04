@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { CLIENTS } from "@/lib/trading-data";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
@@ -21,12 +21,40 @@ import type {
   ChainPortfolio,
   DeFiFlashPnl,
   DeFiOrderParams,
+  DeFiReconciliationRecord,
+  EmergencyExitEstimate,
   FlashLoanStep,
+  FundingRateMatrix,
+  HealthFactorDashboard,
   LendingProtocol,
   LiquidityPool,
+  PortfolioDeltaComposite,
+  RebalancePreview,
+  RewardPnLBreakdown,
   StakingProtocol,
+  StakingReward,
+  StrategyRiskProfile,
   SwapRoute,
+  TradeHistoryRow,
+  TreasurySnapshot,
+  WaterfallWeights,
 } from "@/lib/types/defi";
+import {
+  STRATEGY_RISK_PROFILES,
+  MOCK_PORTFOLIO_DELTA,
+  MOCK_TREASURY,
+  MOCK_REBALANCE_PREVIEW,
+  DEFI_RECONCILIATION_RECORDS,
+  MOCK_TRADE_HISTORY,
+} from "@/lib/mocks/fixtures/defi-risk";
+import {
+  MOCK_STAKING_REWARDS,
+  MOCK_FUNDING_RATES,
+  MOCK_WATERFALL_WEIGHTS_PATRICK,
+  MOCK_HEALTH_FACTOR,
+  MOCK_EMERGENCY_EXIT,
+  MOCK_REWARD_PNL,
+} from "@/lib/mocks/fixtures/defi-walkthrough";
 
 const MOCK_WALLET = "0x7a23c0ffeebee4f91deadbeef1234567890abcd";
 
@@ -34,16 +62,20 @@ const INITIAL_FLASH_STEPS: FlashLoanStep[] = [
   {
     id: "step-1",
     operationType: "SWAP",
+    algo_type: "SOR_DEX",
     asset: "ETH",
     amount: "100",
-    venue: "Uniswap",
+    venue: "UNISWAPV3-ETHEREUM",
+    max_slippage_bps: 50,
   },
   {
     id: "step-2",
     operationType: "SWAP",
+    algo_type: "SOR_DEX",
     asset: "USDC",
     amount: "345600",
-    venue: "Curve",
+    venue: "CURVE-ETHEREUM",
+    max_slippage_bps: 50,
   },
 ];
 
@@ -80,6 +112,24 @@ export interface DeFiDataContextValue {
   executeDeFiOrder: (params: DeFiOrderParams) => void;
   readOnly?: boolean;
   mode?: string;
+
+  riskProfiles: StrategyRiskProfile[];
+  deltaComposite: PortfolioDeltaComposite;
+  treasury: TreasurySnapshot;
+  tradeHistory: TradeHistoryRow[];
+  reconciliationRecords: DeFiReconciliationRecord[];
+  rebalancePreview: RebalancePreview | null;
+  triggerRebalance: () => void;
+
+  // Walkthrough enhancements
+  stakingRewards: StakingReward[];
+  claimReward: (token: string) => void;
+  claimAndSellReward: (token: string) => void;
+  fundingRates: FundingRateMatrix;
+  waterfallWeights: WaterfallWeights;
+  healthFactorDashboard: HealthFactorDashboard;
+  emergencyExit: EmergencyExitEstimate;
+  rewardPnl: RewardPnLBreakdown;
 }
 
 const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
@@ -91,9 +141,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   // Check if selected org has a DeFi desk
   const hasDefiDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
-    return CLIENTS.some(
-      (c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk",
-    );
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk");
   }, [globalScope.organizationIds]);
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
@@ -116,15 +164,70 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const [stakingRewards, setStakingRewards] = React.useState<StakingReward[]>(MOCK_STAKING_REWARDS);
+  const [rewardPnl, setRewardPnl] = React.useState<RewardPnLBreakdown>(MOCK_REWARD_PNL);
+
+  const claimReward = React.useCallback((token: string) => {
+    setStakingRewards((prev) =>
+      prev.map((r) =>
+        r.token === token
+          ? { ...r, claimed_amount: r.claimed_amount + r.accrued_amount, accrued_amount: 0, accrued_value_usd: 0 }
+          : r,
+      ),
+    );
+  }, []);
+
+  const claimAndSellReward = React.useCallback((token: string) => {
+    setStakingRewards((prev) =>
+      prev.map((r) => {
+        if (r.token !== token) return r;
+        const totalSold = r.sold_amount + r.accrued_amount;
+        const totalSoldValue = r.sold_value_usd + r.accrued_value_usd;
+        return {
+          ...r,
+          sold_amount: totalSold,
+          sold_value_usd: totalSoldValue,
+          claimed_amount: r.claimed_amount + r.accrued_amount,
+          accrued_amount: 0,
+          accrued_value_usd: 0,
+        };
+      }),
+    );
+    // Update reward P&L
+    setRewardPnl((prev) => {
+      const reward = stakingRewards.find((r) => r.token === token);
+      if (!reward) return prev;
+      return {
+        ...prev,
+        restaking_reward: {
+          ...prev.restaking_reward,
+          amount: prev.restaking_reward.amount + reward.accrued_value_usd,
+        },
+        reward_unrealised: {
+          ...prev.reward_unrealised,
+          amount: Math.max(0, prev.reward_unrealised.amount - reward.accrued_value_usd),
+        },
+      };
+    });
+  }, [stakingRewards]);
+
+  const [rebalancePreview, setRebalancePreview] = React.useState<RebalancePreview | null>(null);
+
+  const triggerRebalance = React.useCallback(() => {
+    setRebalancePreview(MOCK_REBALANCE_PREVIEW);
+  }, []);
+
   const addFlashStep = React.useCallback(() => {
     setFlashSteps((steps) => [
       ...steps,
       {
         id: `step-${Date.now()}`,
         operationType: "SWAP",
+        algo_type: "SOR_DEX",
         asset: "ETH",
         amount: "",
-        venue: "Uniswap",
+        venue: "UNISWAPV3-ETHEREUM",
+        max_slippage_bps: 50,
       },
     ]);
   }, []);
@@ -202,6 +305,21 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       executeDeFiOrder,
       readOnly: isBatch,
       mode,
+      riskProfiles: STRATEGY_RISK_PROFILES,
+      deltaComposite: MOCK_PORTFOLIO_DELTA,
+      treasury: MOCK_TREASURY,
+      tradeHistory: MOCK_TRADE_HISTORY,
+      reconciliationRecords: DEFI_RECONCILIATION_RECORDS,
+      rebalancePreview,
+      triggerRebalance,
+      stakingRewards,
+      claimReward,
+      claimAndSellReward,
+      fundingRates: MOCK_FUNDING_RATES,
+      waterfallWeights: MOCK_WATERFALL_WEIGHTS_PATRICK,
+      healthFactorDashboard: MOCK_HEALTH_FACTOR,
+      emergencyExit: MOCK_EMERGENCY_EXIT,
+      rewardPnl,
     }),
     [
       selectedChain,
@@ -221,6 +339,12 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       isBatch,
       isPaper,
       mode,
+      rebalancePreview,
+      triggerRebalance,
+      stakingRewards,
+      claimReward,
+      claimAndSellReward,
+      rewardPnl,
     ],
   );
 

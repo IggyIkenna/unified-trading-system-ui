@@ -13,6 +13,7 @@ import type {
 } from "@/components/trading/predictions/types";
 import { fmtRelativeTime, calcArbStakes } from "@/components/trading/predictions/helpers";
 import { VenueChip } from "@/components/trading/predictions/shared";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function PredDecayBar({ detectedAt, maxLifetimeMs = 120_000 }: { detectedAt: string; maxLifetimeMs?: number }) {
   const [pct, setPct] = React.useState(100);
@@ -101,7 +102,7 @@ export function PredActiveArbCard({
             {marketTypeBadge(arb.marketType)}
           </div>
           <div className="text-right shrink-0">
-            <span className="text-xl font-black text-[#4ade80] tabular-nums">+{arb.arbPct.toFixed(2)}%</span>
+            <span className="text-xl font-black text-[#4ade80] tabular-nums">+{formatPercent(arb.arbPct, 2)}</span>
           </div>
         </div>
 
@@ -116,7 +117,7 @@ export function PredActiveArbCard({
               <VenueDisplay venue={leg.venue} />
               <p className="text-sm font-bold tabular-nums text-white">{leg.oddsDisplay}</p>
               <p className="text-[10px] text-zinc-500">
-                Stake: <span className="text-zinc-300 tabular-nums">${(i === 0 ? s1 : s2).toFixed(0)}</span>
+                Stake: <span className="text-zinc-300 tabular-nums">${formatNumber(i === 0 ? s1 : s2, 0)}</span>
               </p>
             </div>
           ))}
@@ -124,7 +125,7 @@ export function PredActiveArbCard({
 
         <div className="flex items-center justify-between text-[11px]">
           <span className="text-zinc-500">Profit on $10K stake:</span>
-          <span className="text-[#4ade80] font-bold tabular-nums">+${profit.toFixed(2)}</span>
+          <span className="text-[#4ade80] font-bold tabular-nums">+${formatNumber(profit, 2)}</span>
         </div>
 
         <div className="flex items-center justify-between text-[10px] text-zinc-600">
@@ -155,7 +156,7 @@ export function PredClosedArbCard({ arb }: { arb: PredictionArbOpportunity }) {
         {marketTypeBadge(arb.marketType)}
       </div>
       <div className="flex items-center gap-3 shrink-0 text-[11px]">
-        <span className="text-zinc-500 tabular-nums">{arb.arbPct.toFixed(2)}%</span>
+        <span className="text-zinc-500 tabular-nums">{formatPercent(arb.arbPct, 2)}</span>
         <span className="text-zinc-600">{arb.decayedAt ? fmtRelativeTime(arb.decayedAt) : "closed"}</span>
       </div>
     </div>

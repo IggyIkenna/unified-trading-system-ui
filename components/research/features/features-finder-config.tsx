@@ -9,8 +9,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Activity } from "lucide-react";
-import type { IndividualFeature, FeatureGroupEntry, FeatureServiceNode } from "@/lib/build-mock-data";
-import { FEATURE_SERVICES, SAMPLE_FEATURES_BY_GROUP } from "@/lib/build-mock-data";
+import type { IndividualFeature, FeatureGroupEntry, FeatureServiceNode } from "@/lib/mocks/fixtures/build-data";
+import { FEATURE_SERVICES, SAMPLE_FEATURES_BY_GROUP } from "@/lib/mocks/fixtures/build-data";
 import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,

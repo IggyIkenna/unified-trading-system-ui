@@ -7,6 +7,7 @@ export interface TerminalInstrument {
   name: string;
   venue: string;
   category: string;
+  instrumentKey: string;
   midPrice: number;
   change: number;
 }

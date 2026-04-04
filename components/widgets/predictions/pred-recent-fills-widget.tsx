@@ -6,6 +6,7 @@ import { fmtRelativeTime } from "@/components/trading/predictions/helpers";
 import { VenueChip } from "@/components/trading/predictions/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { usePredictionsData } from "./predictions-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function PredRecentFillsWidget(_props: WidgetComponentProps) {
   const { recentFills } = usePredictionsData();
@@ -31,7 +32,7 @@ export function PredRecentFillsWidget(_props: WidgetComponentProps) {
               </div>
             </div>
             <div className="text-right shrink-0 ml-2">
-              <p className="tabular-nums font-semibold">${fill.total.toFixed(0)}</p>
+              <p className="tabular-nums font-semibold">${formatNumber(fill.total, 0)}</p>
               <p className="text-[10px] text-muted-foreground tabular-nums">
                 {fill.pricePerShare}¢ · {fill.shares.toLocaleString()} sh
               </p>

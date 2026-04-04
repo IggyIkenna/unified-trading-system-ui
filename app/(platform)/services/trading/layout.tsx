@@ -1,10 +1,11 @@
 "use client";
 
+import "@/components/widgets/register-all";
 import { TRADING_TABS } from "@/components/shell/service-tabs";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,6 +37,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { formatNumber } from "@/lib/utils/formatters";
 
 const SEVERITY_DOT: Record<NewsSeverity, string> = {
   breaking: "bg-rose-500",
@@ -75,9 +77,9 @@ function TradingSidebar() {
 
   const fmt = (v: unknown) => {
     const n = Number(v) || 0;
-    if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
-    if (Math.abs(n) >= 1e3) return `$${(n / 1e3).toFixed(0)}K`;
-    return `$${n.toFixed(0)}`;
+    if (Math.abs(n) >= 1e6) return `$${formatNumber(n / 1e6, 1)}M`;
+    if (Math.abs(n) >= 1e3) return `$${formatNumber(n / 1e3, 0)}K`;
+    return `$${formatNumber(n, 0)}`;
   };
 
   const services = (health?.services ?? []) as Array<Record<string, unknown>>;
@@ -258,7 +260,6 @@ const STANDALONE_PAGES = new Set([
   "/services/trading/predictions/aggregators",
   "/services/trading/defi/staking",
   "/services/trading/strategies/model-portfolios",
-  "/services/trading/accounts/saft",
 ]);
 
 function useWidgetTab(): string | null {

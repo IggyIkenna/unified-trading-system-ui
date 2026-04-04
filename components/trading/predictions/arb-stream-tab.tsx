@@ -7,12 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Zap, Clock, TrendingDown, Info } from "lucide-react";
 import type { PredictionArbOpportunity, PredictionArbMarketType, ArbVenue } from "./types";
-import { MOCK_PREDICTION_ARBS } from "./mock-data";
-import { ARB_THRESHOLD_OPTIONS } from "@/components/trading/sports/mock-fixtures";
+import { MOCK_PREDICTION_ARBS } from "@/lib/mocks/fixtures/predictions-data";
+import { ARB_THRESHOLD_OPTIONS } from "@/lib/mocks/fixtures/sports-fixtures";
 import { fmtRelativeTime, calcArbStakes } from "./helpers";
 import { VenueChip } from "./shared";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Decay Bar ────────────────────────────────────────────────────────────────
 
@@ -95,7 +97,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
     });
     toast({
       title: "Arb executed",
-      description: `${arb.question} — ${arb.arbPct.toFixed(2)}% locked in`,
+      description: `${arb.question} — ${formatPercent(arb.arbPct, 2)} locked in`,
     });
   }
 
@@ -104,7 +106,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
       className={cn(
         "relative rounded-xl border overflow-hidden flex flex-col gap-0 transition-all",
         "border-[#4ade80]/30 bg-[#0d140d]",
-        isNew && "animate-in slide-in-from-top-3 duration-400"
+        isNew && "animate-in slide-in-from-top-3 duration-400",
       )}
     >
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4ade80]/60 to-transparent" />
@@ -122,7 +124,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
             {marketTypeBadge(arb.marketType)}
           </div>
           <div className="text-right shrink-0">
-            <span className="text-xl font-black text-[#4ade80] tabular-nums">+{arb.arbPct.toFixed(2)}%</span>
+            <span className="text-xl font-black text-[#4ade80] tabular-nums">+{formatPercent(arb.arbPct, 2)}</span>
           </div>
         </div>
 
@@ -138,7 +140,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
               <VenueDisplay venue={leg.venue} />
               <p className="text-sm font-bold tabular-nums text-white">{leg.oddsDisplay}</p>
               <p className="text-[10px] text-zinc-500">
-                Stake: <span className="text-zinc-300 tabular-nums">${(i === 0 ? s1 : s2).toFixed(0)}</span>
+                Stake: <span className="text-zinc-300 tabular-nums">${formatNumber(i === 0 ? s1 : s2, 0)}</span>
               </p>
             </div>
           ))}
@@ -147,7 +149,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
         {/* Profit calc */}
         <div className="flex items-center justify-between text-[11px]">
           <span className="text-zinc-500">Profit on $10K stake:</span>
-          <span className="text-[#4ade80] font-bold tabular-nums">+${profit.toFixed(2)}</span>
+          <span className="text-[#4ade80] font-bold tabular-nums">+${formatNumber(profit, 2)}</span>
         </div>
 
         <div className="flex items-center justify-between text-[10px] text-zinc-600">
@@ -180,7 +182,7 @@ function ClosedArbCard({ arb }: { arb: PredictionArbOpportunity }) {
         {marketTypeBadge(arb.marketType)}
       </div>
       <div className="flex items-center gap-3 shrink-0 text-[11px]">
-        <span className="text-zinc-500 tabular-nums">{arb.arbPct.toFixed(2)}%</span>
+        <span className="text-zinc-500 tabular-nums">{formatPercent(arb.arbPct, 2)}</span>
         <span className="text-zinc-600">{arb.decayedAt ? fmtRelativeTime(arb.decayedAt) : "closed"}</span>
       </div>
     </div>
@@ -192,16 +194,19 @@ function ClosedArbCard({ arb }: { arb: PredictionArbOpportunity }) {
 function usePredictionArbStream(threshold: number) {
   const [arbs, setArbs] = React.useState<PredictionArbOpportunity[]>(MOCK_PREDICTION_ARBS);
   const [newIds, setNewIds] = React.useState<Set<string>>(new Set());
+  const streamTickRef = React.useRef(0);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
+      streamTickRef.current += 1;
+      const t = streamTickRef.current;
       setArbs((prev) => {
         // Age out active ones probabilistically
         const updated = prev.map((a) =>
-          a.isActive && Math.random() < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a
+          a.isActive && mock01(t, 301) < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
         );
         // Occasionally inject a new one
-        if (Math.random() < 0.15) {
+        if (mock01(t, 302) < 0.15) {
           const templates: PredictionArbOpportunity[] = [
             {
               id: `parb-live-${Date.now()}`,
@@ -226,7 +231,7 @@ function usePredictionArbStream(threshold: number) {
                 next.delete(newArb.id);
                 return next;
               }),
-            5000
+            5000,
           );
           return [...updated, newArb];
         }
@@ -270,7 +275,7 @@ export function ArbStreamTab() {
                 onClick={() => setThreshold(t)}
                 className={cn(
                   "px-2 py-1 text-[10px] font-bold rounded transition-colors tabular-nums",
-                  threshold === t ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
+                  threshold === t ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300",
                 )}
               >
                 {t}%
@@ -287,7 +292,7 @@ export function ArbStreamTab() {
               onClick={() => setMarketTypeFilter(type)}
               className={cn(
                 "px-2.5 py-1 text-[10px] font-bold rounded transition-colors capitalize",
-                marketTypeFilter === type ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300"
+                marketTypeFilter === type ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300",
               )}
             >
               {type === "all" ? "All" : type === "tradfi" ? "TradFi" : type.charAt(0).toUpperCase() + type.slice(1)}

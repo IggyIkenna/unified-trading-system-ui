@@ -8,7 +8,7 @@ import { MOCK_STRATEGY_INSTRUCTIONS } from "@/lib/mocks/fixtures/strategy-instru
 import { INSTRUCTION_STRATEGY_TYPES } from "@/lib/config/services/instructions.config";
 import { TRADING_OPERATION_TYPES } from "@/lib/config/services/trading.config";
 import type { StrategyInstruction, InstructionsSummary } from "@/lib/types/instructions";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
 
 const strategyTypesForFilter: readonly string[] = INSTRUCTION_STRATEGY_TYPES as unknown as string[];
 const operationTypesForFilter: readonly string[] = TRADING_OPERATION_TYPES as unknown as string[];
@@ -45,7 +45,15 @@ const InstructionsDataContext = React.createContext<InstructionsDataContextValue
 export function InstructionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
   const { scope: globalScope } = useGlobalScope();
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
   const [strategyFilter, setStrategyFilter] = React.useState("ALL");
   const [opTypeFilter, setOpTypeFilter] = React.useState("ALL");
   const [selectedInstructionId, setSelectedInstructionId] = React.useState<string | null>(null);

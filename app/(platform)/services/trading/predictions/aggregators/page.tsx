@@ -1,154 +1,17 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ExecutionModeIndicator } from "@/components/trading/execution-mode-toggle";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  TrendingUp,
-  Search,
-  Plus,
-  Trash2,
-  AlertTriangle,
-  BarChart3,
-  Zap,
-} from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TrendingUp, Search, Plus, Trash2, AlertTriangle, BarChart3, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface PredictionMarket {
-  id: string;
-  question: string;
-  category: string;
-  source: string;
-  probabilityYes: number;
-  volume24h: number;
-  liquidity: number;
-  expiresAt: string;
-}
-
-interface AggregatorEntry {
-  marketId: string;
-  market: PredictionMarket;
-  position: "yes" | "no";
-  costPerShare: number;
-}
-
-// ── Mock data ────────────────────────────────────────────────────────────────
-
-const MOCK_MARKETS: PredictionMarket[] = [
-  {
-    id: "mkt-001",
-    question: "Will BTC exceed $150,000 by June 2026?",
-    category: "Crypto",
-    source: "Polymarket",
-    probabilityYes: 0.34,
-    volume24h: 2_840_000,
-    liquidity: 8_200_000,
-    expiresAt: "2026-06-30",
-  },
-  {
-    id: "mkt-002",
-    question: "Will ETH flip BTC in market cap by 2027?",
-    category: "Crypto",
-    source: "Polymarket",
-    probabilityYes: 0.08,
-    volume24h: 1_120_000,
-    liquidity: 4_500_000,
-    expiresAt: "2027-12-31",
-  },
-  {
-    id: "mkt-003",
-    question: "Will the Fed cut rates below 3% by December 2026?",
-    category: "Macro",
-    source: "Kalshi",
-    probabilityYes: 0.42,
-    volume24h: 5_600_000,
-    liquidity: 12_000_000,
-    expiresAt: "2026-12-31",
-  },
-  {
-    id: "mkt-004",
-    question: "Will Arsenal win the 2025/26 Premier League?",
-    category: "Sports",
-    source: "Polymarket",
-    probabilityYes: 0.28,
-    volume24h: 890_000,
-    liquidity: 3_200_000,
-    expiresAt: "2026-05-25",
-  },
-  {
-    id: "mkt-005",
-    question: "Will SOL reach $500 by Q2 2026?",
-    category: "Crypto",
-    source: "Polymarket",
-    probabilityYes: 0.18,
-    volume24h: 1_560_000,
-    liquidity: 5_100_000,
-    expiresAt: "2026-06-30",
-  },
-  {
-    id: "mkt-006",
-    question: "Will EU impose crypto capital gains harmonization by 2027?",
-    category: "Regulation",
-    source: "Kalshi",
-    probabilityYes: 0.55,
-    volume24h: 340_000,
-    liquidity: 1_800_000,
-    expiresAt: "2027-01-01",
-  },
-  {
-    id: "mkt-007",
-    question: "Will a major bank launch a stablecoin in 2026?",
-    category: "Crypto",
-    source: "Polymarket",
-    probabilityYes: 0.67,
-    volume24h: 2_100_000,
-    liquidity: 6_400_000,
-    expiresAt: "2026-12-31",
-  },
-  {
-    id: "mkt-008",
-    question: "Will Real Madrid win Champions League 2025/26?",
-    category: "Sports",
-    source: "Polymarket",
-    probabilityYes: 0.22,
-    volume24h: 1_230_000,
-    liquidity: 4_100_000,
-    expiresAt: "2026-05-31",
-  },
-  {
-    id: "mkt-009",
-    question: "Will US approve a spot ETH ETF with staking by 2026?",
-    category: "Regulation",
-    source: "Kalshi",
-    probabilityYes: 0.61,
-    volume24h: 3_400_000,
-    liquidity: 9_800_000,
-    expiresAt: "2026-12-31",
-  },
-  {
-    id: "mkt-010",
-    question: "Will global AI regulation treaty be signed by 2027?",
-    category: "Politics",
-    source: "Metaculus",
-    probabilityYes: 0.15,
-    volume24h: 180_000,
-    liquidity: 950_000,
-    expiresAt: "2027-12-31",
-  },
-];
+import { formatCurrency, formatNumber, formatPercent, formatPnl } from "@/lib/utils/formatters";
+import { MOCK_MARKETS, type AggregatorEntry, type PredictionMarket } from "@/lib/mocks/fixtures/trading-pages";
 
 const CATEGORY_COLORS: Record<string, string> = {
   Crypto: "text-amber-400 bg-amber-400/10 border-amber-400/30",
@@ -161,12 +24,12 @@ const CATEGORY_COLORS: Record<string, string> = {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const fmtVolume = (v: number): string => {
-  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-  if (v >= 1_000) return `$${(v / 1_000).toFixed(0)}K`;
-  return `$${v.toFixed(0)}`;
+  if (v >= 1_000_000) return `$${formatNumber(v / 1_000_000, 1)}M`;
+  if (v >= 1_000) return `$${formatNumber(v / 1_000, 0)}K`;
+  return formatCurrency(v, "USD", 0);
 };
 
-const fmtPct = (p: number): string => `${(p * 100).toFixed(1)}%`;
+const fmtPct = (p: number): string => formatPercent(p * 100, 1);
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -212,10 +75,7 @@ export default function AggregatorBuilderPage() {
         return {
           ...e,
           position: newPos,
-          costPerShare:
-            newPos === "yes"
-              ? e.market.probabilityYes
-              : 1 - e.market.probabilityYes,
+          costPerShare: newPos === "yes" ? e.market.probabilityYes : 1 - e.market.probabilityYes,
         };
       }),
     );
@@ -230,10 +90,7 @@ export default function AggregatorBuilderPage() {
   const combinedProbability = useMemo(() => {
     if (entries.length === 0) return 0;
     return entries.reduce((acc, e) => {
-      const p =
-        e.position === "yes"
-          ? e.market.probabilityYes
-          : 1 - e.market.probabilityYes;
+      const p = e.position === "yes" ? e.market.probabilityYes : 1 - e.market.probabilityYes;
       return acc * p;
     }, 1);
   }, [entries]);
@@ -256,25 +113,20 @@ export default function AggregatorBuilderPage() {
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="shrink-0 border-b border-border px-4 py-3 bg-background/95">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
+        <PageHeader
+          title={
+            <span className="flex flex-wrap items-center gap-2">
               <TrendingUp className="size-5 text-violet-400" />
-              <h1 className="text-xl font-semibold tracking-tight">
-                Aggregator Builder
-              </h1>
+              Aggregator Builder
               <ExecutionModeIndicator />
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Combine positions across prediction markets for correlated exposure
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px]">
-              {entries.length} market{entries.length !== 1 ? "s" : ""} selected
-            </Badge>
-          </div>
-        </div>
+            </span>
+          }
+          description="Combine positions across prediction markets for correlated exposure"
+        >
+          <Badge variant="outline" className="text-[10px]">
+            {entries.length} market{entries.length !== 1 ? "s" : ""} selected
+          </Badge>
+        </PageHeader>
       </div>
 
       {/* Main content: two-panel layout */}
@@ -310,10 +162,7 @@ export default function AggregatorBuilderPage() {
                   <CardContent className="p-3">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <Badge
-                          variant="outline"
-                          className={cn("text-[10px] px-1.5 py-0", catColor)}
-                        >
+                        <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", catColor)}>
                           {market.category}
                         </Badge>
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0">
@@ -338,16 +187,12 @@ export default function AggregatorBuilderPage() {
                       )}
                     </div>
 
-                    <p className="text-sm font-medium leading-snug mb-2">
-                      {market.question}
-                    </p>
+                    <p className="text-sm font-medium leading-snug mb-2">{market.question}</p>
 
                     <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <span>Prob:</span>
-                        <span className="font-mono font-semibold text-foreground">
-                          {fmtPct(market.probabilityYes)}
-                        </span>
+                        <span className="font-mono font-semibold text-foreground">{fmtPct(market.probabilityYes)}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <span>Vol 24h:</span>
@@ -372,9 +217,7 @@ export default function AggregatorBuilderPage() {
             })}
 
             {filteredMarkets.length === 0 && (
-              <div className="text-center text-sm text-muted-foreground py-12">
-                No markets match your search
-              </div>
+              <div className="text-center text-sm text-muted-foreground py-12">No markets match your search</div>
             )}
           </div>
         </div>
@@ -395,35 +238,23 @@ export default function AggregatorBuilderPage() {
               <div className="text-center text-sm text-muted-foreground py-8 space-y-2">
                 <Zap className="size-8 mx-auto opacity-30" />
                 <p>No positions yet</p>
-                <p className="text-[10px]">
-                  Click on prediction markets to add them to your aggregator
-                </p>
+                <p className="text-[10px]">Click on prediction markets to add them to your aggregator</p>
               </div>
             )}
 
             {entries.map((entry) => (
-              <div
-                key={entry.marketId}
-                className="p-3 rounded-md border border-border bg-card/50 space-y-2"
-              >
+              <div key={entry.marketId} className="p-3 rounded-md border border-border bg-card/50 space-y-2">
                 <div className="flex items-start gap-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium leading-snug line-clamp-2">
-                      {entry.market.question}
-                    </p>
+                    <p className="text-xs font-medium leading-snug line-clamp-2">{entry.market.question}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <Badge
                         variant="outline"
-                        className={cn(
-                          "text-[10px] px-1 py-0",
-                          CATEGORY_COLORS[entry.market.category] ?? "",
-                        )}
+                        className={cn("text-[10px] px-1 py-0", CATEGORY_COLORS[entry.market.category] ?? "")}
                       >
                         {entry.market.category}
                       </Badge>
-                      <span className="text-[10px] text-muted-foreground">
-                        {entry.market.source}
-                      </span>
+                      <span className="text-[10px] text-muted-foreground">{entry.market.source}</span>
                     </div>
                   </div>
                   <button
@@ -464,18 +295,14 @@ export default function AggregatorBuilderPage() {
                     </button>
                   </div>
                   <span className="text-xs font-mono ml-auto">
-                    {fmtPct(
-                      entry.position === "yes"
-                        ? entry.market.probabilityYes
-                        : 1 - entry.market.probabilityYes,
-                    )}
+                    {fmtPct(entry.position === "yes" ? entry.market.probabilityYes : 1 - entry.market.probabilityYes)}
                   </span>
                 </div>
 
                 {/* Cost */}
                 <div className="flex items-center justify-between text-[10px]">
                   <span className="text-muted-foreground">Cost per share</span>
-                  <span className="font-mono">${entry.costPerShare.toFixed(2)}</span>
+                  <span className="font-mono">{formatCurrency(entry.costPerShare, "USD", 2)}</span>
                 </div>
               </div>
             ))}
@@ -487,16 +314,13 @@ export default function AggregatorBuilderPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Combined Probability</span>
-                  <span className="font-mono font-semibold">
-                    {fmtPct(combinedProbability)}
-                  </span>
+                  <span className="font-mono font-semibold">{fmtPct(combinedProbability)}</span>
                 </div>
 
                 {hasCorrelationRisk && (
                   <div className="flex items-center gap-1.5 text-[10px] text-amber-400 bg-amber-400/10 rounded-md px-2 py-1.5">
                     <AlertTriangle className="size-3 shrink-0" />
-                    Markets in the same category may be correlated. Combined
-                    probability assumes independence.
+                    Markets in the same category may be correlated. Combined probability assumes independence.
                   </div>
                 )}
 
@@ -504,28 +328,21 @@ export default function AggregatorBuilderPage() {
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Total Cost</span>
-                  <span className="font-mono font-semibold">
-                    ${totalCost.toFixed(2)}
-                  </span>
+                  <span className="font-mono font-semibold">{formatCurrency(totalCost, "USD", 2)}</span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Expected Value</span>
                   <span
-                    className={cn(
-                      "font-mono font-semibold",
-                      expectedValue >= 0 ? "text-emerald-400" : "text-rose-400",
-                    )}
+                    className={cn("font-mono font-semibold", expectedValue >= 0 ? "text-emerald-400" : "text-rose-400")}
                   >
-                    {expectedValue >= 0 ? "+" : ""}${expectedValue.toFixed(2)}
+                    {formatPnl(expectedValue, "USD", 2)}
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Max Payout</span>
-                  <span className="font-mono font-semibold text-emerald-400">
-                    ${entries.length.toFixed(2)}
-                  </span>
+                  <span className="font-mono font-semibold text-emerald-400">{formatNumber(entries.length, 2)}</span>
                 </div>
               </div>
             )}
@@ -539,8 +356,8 @@ export default function AggregatorBuilderPage() {
               <div className="flex items-start gap-1.5 text-[10px] text-muted-foreground">
                 <BarChart3 className="size-3 shrink-0 mt-0.5" />
                 <span>
-                  Each position costs its implied probability. All positions
-                  settle independently at $1 (win) or $0 (lose).
+                  Each position costs its implied probability. All positions settle independently at $1 (win) or $0
+                  (lose).
                 </span>
               </div>
             )}

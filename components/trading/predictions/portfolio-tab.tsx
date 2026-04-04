@@ -7,9 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight, TrendingUp, TrendingDown, DollarSign, Target } from "lucide-react";
 import type { PredictionPosition, SettlementOutcome } from "./types";
-import { MOCK_POSITIONS } from "./mock-data";
+import { MOCK_POSITIONS } from "@/lib/mocks/fixtures/predictions-data";
 import { fmtUsdPrecise, fmtRelativeTime } from "./helpers";
 import { VenueChip } from "./shared";
+import { formatPercent } from "@/lib/utils/formatters";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -55,7 +56,7 @@ function KpiCard({ label, value, sub, positive }: { label: string; value: string
           className={cn(
             "text-xl font-bold tabular-nums",
             positive === true && "text-emerald-400",
-            positive === false && "text-red-400"
+            positive === false && "text-red-400",
           )}
         >
           {value}
@@ -86,7 +87,7 @@ function OpenPositionRow({ pos }: { pos: PredictionPosition }) {
           variant="outline"
           className={cn(
             "font-bold text-[10px]",
-            pos.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400"
+            pos.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
           )}
         >
           {pos.side.toUpperCase()} — {pos.outcome}
@@ -99,7 +100,7 @@ function OpenPositionRow({ pos }: { pos: PredictionPosition }) {
           <span
             className={cn(
               "text-[10px]",
-              priceChange > 0 ? "text-emerald-400" : priceChange < 0 ? "text-red-400" : "text-zinc-500"
+              priceChange > 0 ? "text-emerald-400" : priceChange < 0 ? "text-red-400" : "text-zinc-500",
             )}
           >
             now {pos.currentPricePerShare}¢
@@ -139,7 +140,7 @@ function SettledPositionRow({ pos }: { pos: PredictionPosition }) {
           variant="outline"
           className={cn(
             "font-bold text-[10px]",
-            pos.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400"
+            pos.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
           )}
         >
           {pos.side.toUpperCase()} — {pos.outcome}
@@ -190,7 +191,7 @@ export function PortfolioTab() {
         />
         <KpiCard
           label="Win Rate"
-          value={`${winRate.toFixed(0)}%`}
+          value={`${formatPercent(winRate, 0)}`}
           sub={`${winCount}/${settledPositions.length} settled · ${fmtUsdPrecise(totalRealisedPnl)} realised`}
           positive={totalRealisedPnl >= 0 ? true : false}
         />

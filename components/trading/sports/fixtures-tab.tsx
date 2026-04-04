@@ -1,13 +1,14 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import type { Fixture } from "./types";
-import { isLive, isCompleted, isUpcoming } from "./helpers";
-import { SectionHeader, EmptyState } from "./shared";
-import { FixturesMatchCard } from "./fixtures-match-card";
-import { FixtureDetailPanel } from "./fixtures-detail-panel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { EmptyState } from "@/components/shared/empty-state";
+import { cn } from "@/lib/utils";
+import * as React from "react";
+import { FixtureDetailPanel } from "./fixtures-detail-panel";
+import { FixturesMatchCard } from "./fixtures-match-card";
+import { isCompleted, isLive, isUpcoming } from "./helpers";
+import { SectionHeader } from "./shared";
+import type { Fixture } from "./types";
 
 // ─── Fixture grouping ─────────────────────────────────────────────────────────
 
@@ -141,7 +142,7 @@ export function FixturesTab({ fixtures, onViewArb }: FixturesTabProps) {
       {/* Fixture list — primary column */}
       <div className="flex-1 min-w-0 min-h-0 overflow-auto p-3 lg:pr-2">
         {totalCount === 0 ? (
-          <EmptyState message="No fixtures match the current filters" />
+          <EmptyState variant="inline" title="No fixtures match the current filters" />
         ) : (
           <div className="flex flex-col gap-4 max-w-4xl">
             <FixtureSection

@@ -6,17 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import {
-  BarChart3,
-  Grid3X3,
-  Activity,
-  Database,
-  Play,
-  Lock,
-  ArrowRight,
-  Eye,
-  AlertCircle,
-} from "lucide-react";
+import { BarChart3, Grid3X3, Activity, Database, Play, Lock, ArrowRight, Eye, AlertCircle } from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // Demo banner component
 function DemoBanner() {
@@ -25,8 +16,7 @@ function DemoBanner() {
       <div className="container mx-auto flex items-center justify-center gap-3 text-sm font-medium">
         <AlertCircle className="size-4 flex-shrink-0" />
         <span className="text-center">
-          Platform Preview — Static demonstration only. Full interactive demo
-          available during scheduled presentation.
+          Platform Preview — Static demonstration only. Full interactive demo available during scheduled presentation.
         </span>
       </div>
     </div>
@@ -132,29 +122,19 @@ const livePositions = [
 function HeatmapCell({ value, max }: { value: number; max: number }) {
   if (value === 0) return <div className="w-full h-8 bg-muted/20 rounded" />;
   const intensity = value / max;
-  const color =
-    intensity > 0.7
-      ? "bg-emerald-500"
-      : intensity > 0.4
-        ? "bg-amber-500"
-        : "bg-rose-500";
+  const color = intensity > 0.7 ? "bg-emerald-500" : intensity > 0.4 ? "bg-amber-500" : "bg-rose-500";
   return (
     <div
-      className={cn(
-        "w-full h-8 rounded flex items-center justify-center text-xs font-medium text-white",
-        color,
-      )}
+      className={cn("w-full h-8 rounded flex items-center justify-center text-xs font-medium text-white", color)}
       style={{ opacity: 0.4 + intensity * 0.6 }}
     >
-      {value.toFixed(1)}
+      {formatNumber(value, 1)}
     </div>
   );
 }
 
 export default function DemoPreview() {
-  const [activeView, setActiveView] = React.useState<
-    "heatmap" | "backtests" | "live" | "data"
-  >("heatmap");
+  const [activeView, setActiveView] = React.useState<"heatmap" | "backtests" | "live" | "data">("heatmap");
 
   return (
     <div className="min-h-screen bg-background">
@@ -166,9 +146,7 @@ export default function DemoPreview() {
           <div className="flex items-center gap-4">
             <Link href="/" className="text-xl font-bold tracking-tight">
               <span className="text-primary">Olympus</span>
-              <span className="text-muted-foreground ml-1 text-sm font-normal">
-                Platform Preview
-              </span>
+              <span className="text-muted-foreground ml-1 text-sm font-normal">Platform Preview</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
@@ -215,12 +193,8 @@ export default function DemoPreview() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold">
-                  Strategy Performance Heatmap
-                </h1>
-                <p className="text-muted-foreground mt-1">
-                  Cross-asset strategy performance by Sharpe ratio
-                </p>
+                <h1 className="text-2xl font-bold">Strategy Performance Heatmap</h1>
+                <p className="text-muted-foreground mt-1">Cross-asset strategy performance by Sharpe ratio</p>
               </div>
               <div className="flex gap-2">
                 <Badge variant="secondary">6 Strategies</Badge>
@@ -231,9 +205,7 @@ export default function DemoPreview() {
             <Card>
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">
-                    Performance Matrix
-                  </CardTitle>
+                  <CardTitle className="text-base">Performance Matrix</CardTitle>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-3 bg-emerald-500 rounded" />
@@ -255,32 +227,18 @@ export default function DemoPreview() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
-                        <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">
-                          Strategy
-                        </th>
-                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">
-                          Crypto
-                        </th>
-                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">
-                          TradFi
-                        </th>
-                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">
-                          DeFi
-                        </th>
-                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">
-                          Sports
-                        </th>
-                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">
-                          Perps
-                        </th>
+                        <th className="text-left py-2 px-3 text-sm font-medium text-muted-foreground">Strategy</th>
+                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">Crypto</th>
+                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">TradFi</th>
+                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">DeFi</th>
+                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">Sports</th>
+                        <th className="text-center py-2 px-3 text-sm font-medium text-muted-foreground">Perps</th>
                       </tr>
                     </thead>
                     <tbody>
                       {heatmapData.map((row, i) => (
                         <tr key={i} className="border-b border-border/50">
-                          <td className="py-2 px-3 text-sm font-medium">
-                            {row.strategy}
-                          </td>
+                          <td className="py-2 px-3 text-sm font-medium">{row.strategy}</td>
                           <td className="py-2 px-3">
                             <HeatmapCell value={row.crypto} max={4.1} />
                           </td>
@@ -312,9 +270,7 @@ export default function DemoPreview() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold">Backtest Results</h1>
-                <p className="text-muted-foreground mt-1">
-                  Historical strategy simulation results
-                </p>
+                <p className="text-muted-foreground mt-1">Historical strategy simulation results</p>
               </div>
               <Badge variant="secondary">4 Recent Runs</Badge>
             </div>
@@ -326,19 +282,11 @@ export default function DemoPreview() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div>
-                          <div className="font-mono text-sm text-muted-foreground">
-                            {bt.id}
-                          </div>
+                          <div className="font-mono text-sm text-muted-foreground">{bt.id}</div>
                           <div className="font-semibold">{bt.strategy}</div>
                         </div>
-                        <Badge
-                          variant={
-                            bt.status === "completed" ? "secondary" : "outline"
-                          }
-                        >
-                          {bt.status === "running" && (
-                            <Play className="size-3 mr-1 animate-pulse" />
-                          )}
+                        <Badge variant={bt.status === "completed" ? "secondary" : "outline"}>
+                          {bt.status === "running" && <Play className="size-3 mr-1 animate-pulse" />}
                           {bt.status}
                         </Badge>
                       </div>
@@ -347,20 +295,16 @@ export default function DemoPreview() {
                           <div className="text-center">
                             <div className="text-muted-foreground">Sharpe</div>
                             <div className="font-semibold text-emerald-500">
-                              {bt.sharpe?.toFixed(2)}
+                              {bt.sharpe != null ? formatNumber(bt.sharpe, 2) : "—"}
                             </div>
                           </div>
                           <div className="text-center">
                             <div className="text-muted-foreground">Max DD</div>
-                            <div className="font-semibold text-rose-500">
-                              {bt.drawdown}%
-                            </div>
+                            <div className="font-semibold text-rose-500">{bt.drawdown}%</div>
                           </div>
                           <div className="text-center">
                             <div className="text-muted-foreground">Trades</div>
-                            <div className="font-semibold">
-                              {bt.trades?.toLocaleString()}
-                            </div>
+                            <div className="font-semibold">{bt.trades?.toLocaleString()}</div>
                           </div>
                         </div>
                       )}
@@ -378,9 +322,7 @@ export default function DemoPreview() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold">Live Trading Monitor</h1>
-                <p className="text-muted-foreground mt-1">
-                  Real-time position and P&L tracking
-                </p>
+                <p className="text-muted-foreground mt-1">Real-time position and P&L tracking</p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2 text-sm">
@@ -393,28 +335,20 @@ export default function DemoPreview() {
             <div className="grid grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-emerald-500">
-                    $1,796.59
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Total Unrealised P&L
-                  </div>
+                  <div className="text-2xl font-bold text-emerald-500">$1,796.59</div>
+                  <div className="text-sm text-muted-foreground">Total Unrealised P&L</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold">3</div>
-                  <div className="text-sm text-muted-foreground">
-                    Active Positions
-                  </div>
+                  <div className="text-sm text-muted-foreground">Active Positions</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-4 text-center">
                   <div className="text-2xl font-bold">$847.2K</div>
-                  <div className="text-sm text-muted-foreground">
-                    Notional Exposure
-                  </div>
+                  <div className="text-sm text-muted-foreground">Notional Exposure</div>
                 </CardContent>
               </Card>
             </div>
@@ -437,25 +371,14 @@ export default function DemoPreview() {
                   <tbody>
                     {livePositions.map((pos, i) => (
                       <tr key={i} className="border-b border-border/50">
-                        <td className="py-3 font-mono font-medium">
-                          {pos.symbol}
-                        </td>
+                        <td className="py-3 font-mono font-medium">{pos.symbol}</td>
                         <td className="py-3">
-                          <Badge
-                            variant={
-                              pos.side === "LONG" ? "default" : "destructive"
-                            }
-                            className="text-xs"
-                          >
+                          <Badge variant={pos.side === "LONG" ? "default" : "destructive"} className="text-xs">
                             {pos.side}
                           </Badge>
                         </td>
-                        <td className="py-3 text-right font-mono">
-                          {pos.size}
-                        </td>
-                        <td className="py-3 text-right font-mono">
-                          ${pos.entry.toLocaleString()}
-                        </td>
+                        <td className="py-3 text-right font-mono">{pos.size}</td>
+                        <td className="py-3 text-right font-mono">${pos.entry.toLocaleString()}</td>
                         <td
                           className={cn(
                             "py-3 text-right font-mono font-semibold",
@@ -479,9 +402,7 @@ export default function DemoPreview() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-2xl font-bold">Data Coverage</h1>
-                <p className="text-muted-foreground mt-1">
-                  Unified schema across 5 asset classes
-                </p>
+                <p className="text-muted-foreground mt-1">Unified schema across 5 asset classes</p>
               </div>
             </div>
 
@@ -520,19 +441,11 @@ export default function DemoPreview() {
               ].map((asset) => (
                 <Card key={asset.name}>
                   <CardContent className="p-4 text-center">
-                    <div className={cn("text-lg font-bold", asset.color)}>
-                      {asset.name}
-                    </div>
-                    <div className="mt-2 text-2xl font-bold">
-                      {asset.venues}
-                    </div>
+                    <div className={cn("text-lg font-bold", asset.color)}>{asset.name}</div>
+                    <div className="mt-2 text-2xl font-bold">{asset.venues}</div>
                     <div className="text-xs text-muted-foreground">Venues</div>
-                    <div className="mt-2 text-sm font-medium">
-                      {asset.instruments}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      Instruments
-                    </div>
+                    <div className="mt-2 text-sm font-medium">{asset.instruments}</div>
+                    <div className="text-xs text-muted-foreground">Instruments</div>
                   </CardContent>
                 </Card>
               ))}
@@ -540,9 +453,7 @@ export default function DemoPreview() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">
-                  Sample Venues by Asset Class
-                </CardTitle>
+                <CardTitle className="text-base">Sample Venues by Asset Class</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-5 gap-4 text-sm">
@@ -556,9 +467,7 @@ export default function DemoPreview() {
                     </div>
                   </div>
                   <div>
-                    <div className="font-medium text-orange-500 mb-2">
-                      Crypto
-                    </div>
+                    <div className="font-medium text-orange-500 mb-2">Crypto</div>
                     <div className="space-y-1 text-muted-foreground">
                       <div>Binance</div>
                       <div>OKX</div>
@@ -576,9 +485,7 @@ export default function DemoPreview() {
                     </div>
                   </div>
                   <div>
-                    <div className="font-medium text-emerald-500 mb-2">
-                      Sports
-                    </div>
+                    <div className="font-medium text-emerald-500 mb-2">Sports</div>
                     <div className="space-y-1 text-muted-foreground">
                       <div>Pinnacle</div>
                       <div>Betfair</div>
@@ -610,8 +517,7 @@ export default function DemoPreview() {
             <div className="text-sm">
               <span className="font-medium">Preview Mode</span>
               <span className="text-muted-foreground ml-2">
-                Interactive features disabled. Schedule a presentation for full
-                access.
+                Interactive features disabled. Schedule a presentation for full access.
               </span>
             </div>
             <Button size="sm" variant="outline" asChild>

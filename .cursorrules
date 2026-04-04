@@ -26,12 +26,13 @@ app/
 └── (ops)/           ← Internal-only: admin, ops, devops, manage, compliance, config (role=internal required)
 
 components/
-├── ui/              ← Radix primitives
-├── trading/         ← Domain components
+├── ui/              ← Radix/shadcn primitives ONLY (Button, Card, Dialog, Table building blocks, etc.)
+├── shared/          ← ALL custom cross-domain shared components (MetricCard, StatusBadge, Spinner, PageHeader, FilterBar, DataTable, etc.)
+├── trading/         ← Trading domain components only (not cross-cutting shared UI)
 ├── promote/         ← Promotion lifecycle (tabs + workflow; modal for strategy shortcuts)
 ├── shell/           ← Shell infrastructure
 ├── dashboards/      ← Dashboard layouts
-├── platform/        ← Filter-bar, context-bar
+├── platform/        ← Platform infrastructure (context-bar, guided-tour, entitlement-gate — not shared primitives)
 └── marketing/       ← Public page components
 
 lib/

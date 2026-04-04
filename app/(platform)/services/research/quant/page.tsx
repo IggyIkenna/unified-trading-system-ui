@@ -1,49 +1,34 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/shared/data-table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  BookOpen,
-  Play,
-  Trash2,
-  Search,
-  Download,
-  FlaskConical,
-  Zap,
   Activity,
-  BarChart3,
-  SlidersHorizontal,
   ArrowRight,
+  BarChart3,
+  BookOpen,
   Code2,
   Database,
+  Download,
+  FlaskConical,
+  Play,
+  Search,
+  SlidersHorizontal,
   TestTube,
+  Trash2,
   Waves,
+  Zap,
 } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { MOCK_INSTRUMENTS } from "@/lib/mocks/fixtures/research-pages";
 
 // ---------------------------------------------------------------------------
 // Mock Data
@@ -111,6 +96,7 @@ print(f"Max Sharpe Portfolio: Return={results[1,max_sharpe_idx]:.2%}, "
     type: "chart" as const,
     source: `# Plot efficient frontier
 import matplotlib.pyplot as plt
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 plt.figure(figsize=(12, 6))
 plt.scatter(results[0,:], results[1,:], c=results[2,:],
@@ -136,19 +122,6 @@ const CORRELATION_DATA = [
   { asset: "MATIC-USD", btc: "0.623", eth: "0.694", sol: "0.756", avax: "0.834", matic: "1.000" },
 ];
 
-const MOCK_INSTRUMENTS = [
-  { symbol: "BTC-USD", venue: "BINANCE", date: "2026-03-28", open: "84521.30", high: "85102.40", low: "83980.10", close: "84890.50", volume: "24,312" },
-  { symbol: "ETH-USD", venue: "BINANCE", date: "2026-03-28", open: "2041.80", high: "2078.20", low: "2028.40", close: "2065.90", volume: "182,401" },
-  { symbol: "SOL-USD", venue: "BINANCE", date: "2026-03-28", open: "138.42", high: "141.10", low: "137.20", close: "140.30", volume: "98,214" },
-  { symbol: "AVAX-USD", venue: "COINBASE", date: "2026-03-28", open: "24.12", high: "24.80", low: "23.94", close: "24.65", volume: "312,105" },
-  { symbol: "MATIC-USD", venue: "COINBASE", date: "2026-03-28", open: "0.5812", high: "0.5940", low: "0.5780", close: "0.5901", volume: "1,204,510" },
-  { symbol: "BTC-USD", venue: "BINANCE", date: "2026-03-27", open: "83812.20", high: "84680.10", low: "83420.30", close: "84521.30", volume: "21,892" },
-  { symbol: "ETH-USD", venue: "BINANCE", date: "2026-03-27", open: "2018.40", high: "2052.80", low: "2010.20", close: "2041.80", volume: "168,320" },
-  { symbol: "SOL-USD", venue: "BINANCE", date: "2026-03-27", open: "135.80", high: "139.20", low: "135.10", close: "138.42", volume: "87,412" },
-  { symbol: "AVAX-USD", venue: "COINBASE", date: "2026-03-27", open: "23.84", high: "24.30", low: "23.62", close: "24.12", volume: "298,410" },
-  { symbol: "MATIC-USD", venue: "COINBASE", date: "2026-03-27", open: "0.5724", high: "0.5830", low: "0.5698", close: "0.5812", volume: "1,102,840" },
-];
-
 const BACKTEST_STRATEGIES = [
   "ETH Basis Trade v3",
   "BTC Momentum Breakout v2",
@@ -159,10 +132,79 @@ const BACKTEST_STRATEGIES = [
 ];
 
 const SIGNAL_BLOCKS = [
-  { name: "RSI(14)", params: "Period: 14, Overbought: 70, Oversold: 30", weight: 0.35, color: "text-blue-400 border-blue-500/30 bg-blue-500/10" },
-  { name: "MACD(12,26,9)", params: "Fast: 12, Slow: 26, Signal: 9", weight: 0.30, color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10" },
-  { name: "Bollinger(20,2)", params: "Period: 20, StdDev: 2.0", weight: 0.20, color: "text-purple-400 border-purple-500/30 bg-purple-500/10" },
-  { name: "Volume Profile", params: "Lookback: 50, Bins: 24", weight: 0.15, color: "text-amber-400 border-amber-500/30 bg-amber-500/10" },
+  {
+    name: "RSI(14)",
+    params: "Period: 14, Overbought: 70, Oversold: 30",
+    weight: 0.35,
+    color: "text-blue-400 border-blue-500/30 bg-blue-500/10",
+  },
+  {
+    name: "MACD(12,26,9)",
+    params: "Fast: 12, Slow: 26, Signal: 9",
+    weight: 0.3,
+    color: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
+  },
+  {
+    name: "Bollinger(20,2)",
+    params: "Period: 20, StdDev: 2.0",
+    weight: 0.2,
+    color: "text-purple-400 border-purple-500/30 bg-purple-500/10",
+  },
+  {
+    name: "Volume Profile",
+    params: "Lookback: 50, Bins: 24",
+    weight: 0.15,
+    color: "text-amber-400 border-amber-500/30 bg-amber-500/10",
+  },
+];
+
+type OhlcvRow = (typeof MOCK_INSTRUMENTS)[number];
+
+const ohlcvColumns: ColumnDef<OhlcvRow>[] = [
+  {
+    accessorKey: "symbol",
+    header: "Symbol",
+    cell: ({ row }) => <span className="font-medium font-mono text-sm">{row.original.symbol}</span>,
+  },
+  {
+    accessorKey: "venue",
+    header: "Venue",
+    cell: ({ row }) => (
+      <Badge variant="outline" className="text-[10px]">
+        {row.original.venue}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.date}</span>,
+  },
+  {
+    accessorKey: "open",
+    header: () => <span className="block text-right">Open</span>,
+    cell: ({ row }) => <span className="block text-right font-mono text-sm">{row.original.open}</span>,
+  },
+  {
+    accessorKey: "high",
+    header: () => <span className="block text-right">High</span>,
+    cell: ({ row }) => <span className="block text-right font-mono text-sm">{row.original.high}</span>,
+  },
+  {
+    accessorKey: "low",
+    header: () => <span className="block text-right">Low</span>,
+    cell: ({ row }) => <span className="block text-right font-mono text-sm">{row.original.low}</span>,
+  },
+  {
+    accessorKey: "close",
+    header: () => <span className="block text-right">Close</span>,
+    cell: ({ row }) => <span className="block text-right font-mono text-sm">{row.original.close}</span>,
+  },
+  {
+    accessorKey: "volume",
+    header: () => <span className="block text-right">Volume</span>,
+    cell: ({ row }) => <span className="block text-right font-mono text-sm">{row.original.volume}</span>,
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -199,26 +241,24 @@ export default function QuantWorkspacePage() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Quant Workspace</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Interactive research environment for quant analysis, data exploration, and signal design
-          </p>
-        </div>
-        <Badge
-          variant="outline"
-          className={
-            executionMode === "live"
-              ? "border-emerald-500/30 text-emerald-400 cursor-pointer"
-              : "border-blue-500/30 text-blue-400 cursor-pointer"
-          }
-          onClick={() => setExecutionMode((m) => (m === "batch" ? "live" : "batch"))}
+      <div className="border-b px-6 py-4">
+        <PageHeader
+          title="Quant Workspace"
+          description="Interactive research environment for quant analysis, data exploration, and signal design"
         >
-          <Activity className="size-3 mr-1" />
-          {executionMode === "batch" ? "Batch Mode" : "Live Mode"}
-        </Badge>
+          <Badge
+            variant="outline"
+            className={
+              executionMode === "live"
+                ? "border-emerald-500/30 text-emerald-400 cursor-pointer"
+                : "border-blue-500/30 text-blue-400 cursor-pointer"
+            }
+            onClick={() => setExecutionMode((m) => (m === "batch" ? "live" : "batch"))}
+          >
+            <Activity className="size-3 mr-1" />
+            {executionMode === "batch" ? "Batch Mode" : "Live Mode"}
+          </Badge>
+        </PageHeader>
       </div>
 
       {/* Tabs */}
@@ -270,7 +310,8 @@ export default function QuantWorkspacePage() {
                 Clear Output
               </Button>
               <div className="ml-auto text-xs text-muted-foreground">
-                Kernel: Python 3.13 | {Object.values(cellOutputs).filter(Boolean).length} / {NOTEBOOK_CELLS.length} cells executed
+                Kernel: Python 3.13 | {Object.values(cellOutputs).filter(Boolean).length} / {NOTEBOOK_CELLS.length}{" "}
+                cells executed
               </div>
             </div>
 
@@ -279,18 +320,11 @@ export default function QuantWorkspacePage() {
               <div key={cell.id} className="border rounded-lg overflow-hidden">
                 {/* Cell header */}
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/30 border-b">
-                  <span className="text-[10px] font-mono text-muted-foreground">
-                    [{cell.id}]
-                  </span>
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] h-4 px-1.5 border-muted-foreground/30"
-                  >
+                  <span className="text-[10px] font-mono text-muted-foreground">[{cell.id}]</span>
+                  <Badge variant="outline" className="text-[10px] h-4 px-1.5 border-muted-foreground/30">
                     {cell.type === "chart" ? "code" : cell.type}
                   </Badge>
-                  {cellOutputs[cell.id] && (
-                    <span className="text-[10px] text-emerald-400 ml-auto">executed</span>
-                  )}
+                  {cellOutputs[cell.id] && <span className="text-[10px] text-emerald-400 ml-auto">executed</span>}
                 </div>
 
                 {/* Cell source */}
@@ -347,7 +381,9 @@ export default function QuantWorkspacePage() {
                       <div className="text-center space-y-2">
                         <BarChart3 className="size-8 text-muted-foreground/50 mx-auto" />
                         <p className="text-sm text-muted-foreground">{cell.output}</p>
-                        <p className="text-[10px] text-muted-foreground/50">5,000 portfolio simulations | 5 assets | Sharpe-coloured scatter</p>
+                        <p className="text-[10px] text-muted-foreground/50">
+                          5,000 portfolio simulations | 5 assets | Sharpe-coloured scatter
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -400,58 +436,18 @@ export default function QuantWorkspacePage() {
                   OHLCV Data
                 </CardTitle>
                 <CardDescription>
-                  {filteredInstruments.length} records across {new Set(filteredInstruments.map((i) => i.symbol)).size} instruments
+                  {filteredInstruments.length} records across {new Set(filteredInstruments.map((i) => i.symbol)).size}{" "}
+                  instruments
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="border rounded-lg overflow-hidden">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Symbol</TableHead>
-                        <TableHead>Venue</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead className="text-right">Open</TableHead>
-                        <TableHead className="text-right">High</TableHead>
-                        <TableHead className="text-right">Low</TableHead>
-                        <TableHead className="text-right">Close</TableHead>
-                        <TableHead className="text-right">Volume</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredInstruments.map((inst, idx) => (
-                        <TableRow key={`${inst.symbol}-${inst.date}-${idx}`}>
-                          <TableCell className="font-medium font-mono text-sm">
-                            {inst.symbol}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-[10px]">
-                              {inst.venue}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-sm text-muted-foreground">
-                            {inst.date}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {inst.open}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {inst.high}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {inst.low}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {inst.close}
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm">
-                            {inst.volume}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                <DataTable
+                  columns={ohlcvColumns}
+                  data={filteredInstruments}
+                  enableColumnVisibility={false}
+                  emptyMessage="No instruments match your search."
+                  className="rounded-lg border p-2"
+                />
               </CardContent>
             </Card>
           </div>
@@ -468,9 +464,7 @@ export default function QuantWorkspacePage() {
                     <FlaskConical className="size-4" />
                     Quick Backtest
                   </CardTitle>
-                  <CardDescription>
-                    Configure and launch a strategy backtest
-                  </CardDescription>
+                  <CardDescription>Configure and launch a strategy backtest</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
@@ -556,9 +550,7 @@ export default function QuantWorkspacePage() {
                     <BarChart3 className="size-4" />
                     Results
                   </CardTitle>
-                  <CardDescription>
-                    {selectedStrategy} on BTC-USD
-                  </CardDescription>
+                  <CardDescription>{selectedStrategy} on BTC-USD</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -613,20 +605,21 @@ export default function QuantWorkspacePage() {
                   Composite Signal
                 </CardTitle>
                 <CardDescription>
-                  Drag indicator blocks to build a weighted signal. Total weight: {SIGNAL_BLOCKS.reduce((s, b) => s + b.weight, 0).toFixed(2)}
+                  Drag indicator blocks to build a weighted signal. Total weight:{" "}
+                  {formatNumber(
+                    SIGNAL_BLOCKS.reduce((s, b) => s + b.weight, 0),
+                    2,
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {SIGNAL_BLOCKS.map((block) => (
-                  <div
-                    key={block.name}
-                    className={`flex items-center gap-4 p-4 rounded-lg border ${block.color}`}
-                  >
+                  <div key={block.name} className={`flex items-center gap-4 p-4 rounded-lg border ${block.color}`}>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{block.name}</span>
                         <Badge variant="outline" className="text-[10px] font-mono">
-                          w={block.weight.toFixed(2)}
+                          w={formatNumber(block.weight, 2)}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-0.5">{block.params}</p>
@@ -639,7 +632,7 @@ export default function QuantWorkspacePage() {
                         />
                       </div>
                       <p className="text-[10px] text-muted-foreground text-right mt-0.5">
-                        {(block.weight * 100).toFixed(0)}%
+                        {formatPercent(block.weight * 100, 0)}
                       </p>
                     </div>
                   </div>
@@ -682,10 +675,7 @@ export default function QuantWorkspacePage() {
                       </Select>
                     </div>
                   </div>
-                  <Button
-                    className="w-full gap-1.5"
-                    onClick={() => setSignalTested(true)}
-                  >
+                  <Button className="w-full gap-1.5" onClick={() => setSignalTested(true)}>
                     <Zap className="size-3.5" />
                     Test Signal
                   </Button>
@@ -709,9 +699,7 @@ export default function QuantWorkspacePage() {
                       <div className="h-40 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
                         <div className="text-center space-y-1">
                           <Waves className="size-6 text-muted-foreground/50 mx-auto" />
-                          <p className="text-xs text-muted-foreground">
-                            Composite Signal vs BTC-USD Price (30d)
-                          </p>
+                          <p className="text-xs text-muted-foreground">Composite Signal vs BTC-USD Price (30d)</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-3">

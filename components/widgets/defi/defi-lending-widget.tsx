@@ -2,12 +2,14 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, ArrowDown, Shield } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
 import { useDeFiData } from "./defi-data-context";
 
 export function DeFiLendingWidget(_props: WidgetComponentProps) {
@@ -22,6 +24,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   const [operation, setOperation] = React.useState<"LEND" | "BORROW" | "WITHDRAW" | "REPAY">("LEND");
   const [asset, setAsset] = React.useState("ETH");
   const [amount, setAmount] = React.useState("");
+  const [maxSlippageBps, setMaxSlippageBps] = React.useState(50);
 
   const selectedProtocol = lendingProtocols.find((p) => p.name === selectedLendingProtocol) ?? lendingProtocols[0];
   const supplyApy = selectedProtocol ? (selectedProtocol.supplyApy[asset] ?? 0) : 0;
@@ -52,7 +55,8 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
           <SelectContent>
             {lendingProtocols.map((p) => (
               <SelectItem key={p.name} value={p.name}>
-                {p.name}
+                <span>{p.name}</span>
+                <span className="text-[10px] text-muted-foreground ml-1.5 font-mono">{p.venue_id}</span>
               </SelectItem>
             ))}
           </SelectContent>
@@ -91,8 +95,8 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
               <SelectItem key={a} value={a}>
                 <span className="font-mono">{a}</span>
                 <span className="text-[10px] text-muted-foreground ml-2">
-                  Supply {selectedProtocol.supplyApy[a]?.toFixed(1)}% / Borrow{" "}
-                  {selectedProtocol.borrowApy[a]?.toFixed(1)}%
+                  Supply {formatPercent(selectedProtocol.supplyApy[a] ?? 0, 1)} / Borrow{" "}
+                  {formatPercent(selectedProtocol.borrowApy[a] ?? 0, 1)}
                 </span>
               </SelectItem>
             ))}
@@ -111,14 +115,39 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         />
       </div>
 
+      <div className="space-y-1.5">
+        <label className="text-xs text-muted-foreground">Max slippage</label>
+        <Select value={String(maxSlippageBps)} onValueChange={(v) => setMaxSlippageBps(Number(v))}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SLIPPAGE_OPTIONS.map((s) => (
+              <SelectItem key={s.value} value={String(s.value)} className="text-xs">
+                {s.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {amountNum > 0 && (
+        <div className="flex items-center justify-between text-xs px-1">
+          <span className="text-muted-foreground">Expected output</span>
+          <span className="font-mono">
+            {formatNumber(amountNum * (1 - maxSlippageBps / 10000), 4)} {asset}
+          </span>
+        </div>
+      )}
+
       <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Supply APY</span>
-          <span className="font-mono text-emerald-400">{supplyApy.toFixed(2)}%</span>
+          <span className="font-mono text-emerald-400">{formatPercent(supplyApy, 2)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Borrow APY</span>
-          <span className="font-mono text-rose-400">{borrowApy.toFixed(2)}%</span>
+          <span className="font-mono text-rose-400">{formatPercent(borrowApy, 2)}</span>
         </div>
       </div>
 
@@ -136,7 +165,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 currentHf >= 1.5 ? "text-emerald-400" : currentHf >= 1.1 ? "text-amber-400" : "text-rose-400",
               )}
             >
-              {currentHf.toFixed(2)}
+              {formatNumber(currentHf, 2)}
             </p>
           </div>
           <ArrowDown className="size-4 text-muted-foreground rotate-[-90deg]" />
@@ -148,7 +177,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
                 newHf >= 1.5 ? "text-emerald-400" : newHf >= 1.1 ? "text-amber-400" : "text-rose-400",
               )}
             >
-              {amountNum > 0 ? newHf.toFixed(2) : "—"}
+              {amountNum > 0 ? formatNumber(newHf, 2) : "—"}
             </p>
           </div>
         </div>
@@ -160,7 +189,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         )}
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Collateral ratio (mock)</span>
-          <span className="font-mono">{(currentHf * 75).toFixed(0)}%</span>
+          <span className="font-mono">{formatPercent(currentHf * 75, 0)}</span>
         </div>
       </div>
 
@@ -170,12 +199,18 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         onClick={() => {
           executeDeFiOrder({
             client_id: "internal-trader",
-            instrument_id: `${selectedLendingProtocol.replace(/ /g, "_")}:${operation}:${asset}`,
-            venue: selectedLendingProtocol,
+            strategy_id: "AAVE_LENDING",
+            instruction_type: operation,
+            algo_type: "BENCHMARK_FILL",
+            instrument_id: `${selectedProtocol.venue_id}:${operation}:${asset}`,
+            venue: selectedProtocol.venue_id,
             side: operation === "LEND" || operation === "REPAY" ? "buy" : "sell",
             order_type: "market",
             quantity: amountNum,
             price: operation === "LEND" ? supplyApy : borrowApy,
+            max_slippage_bps: maxSlippageBps,
+            expected_output: amountNum * (1 - maxSlippageBps / 10000),
+            benchmark_price: operation === "LEND" ? supplyApy : borrowApy,
             asset_class: "DeFi",
             lane: "defi",
           });

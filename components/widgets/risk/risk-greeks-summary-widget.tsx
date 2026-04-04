@@ -2,8 +2,7 @@
 
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData } from "./risk-data-context";
-import { CollapsibleSection } from "../shared";
-import { KpiStrip, type KpiMetric } from "../shared";
+import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/shared";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ResponsiveContainer,
@@ -16,6 +15,7 @@ import {
   Legend,
 } from "recharts";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
   const { portfolioGreeks, positionGreeks, greeksTimeSeries, secondOrderRisks, portfolioGreeksData } = useRiskData();
@@ -23,8 +23,8 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
   const greeks = portfolioGreeksData?.portfolio ?? portfolioGreeks;
 
   const greekMetrics: KpiMetric[] = [
-    { label: "Delta", value: greeks.delta.toFixed(2), sentiment: "neutral" },
-    { label: "Gamma", value: greeks.gamma.toFixed(3), sentiment: "neutral" },
+    { label: "Delta", value: formatNumber(greeks.delta, 2), sentiment: "neutral" },
+    { label: "Gamma", value: formatNumber(greeks.gamma, 3), sentiment: "neutral" },
     { label: "Vega", value: `$${greeks.vega.toLocaleString()}`, sentiment: "neutral" },
     { label: "Theta", value: `$${greeks.theta.toLocaleString()}/d`, sentiment: "negative" },
     { label: "Rho", value: `$${greeks.rho.toLocaleString()}`, sentiment: "neutral" },
@@ -54,8 +54,12 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                   <TableCell className="text-[11px] font-medium">{pos.instrument as string}</TableCell>
                   <TableCell className="text-[11px] text-muted-foreground">{pos.venue as string}</TableCell>
                   <TableCell className="text-[11px] text-right font-mono">{pos.qty as number}</TableCell>
-                  <TableCell className="text-[11px] text-right font-mono">{(pos.delta as number).toFixed(2)}</TableCell>
-                  <TableCell className="text-[11px] text-right font-mono">{(pos.gamma as number).toFixed(3)}</TableCell>
+                  <TableCell className="text-[11px] text-right font-mono">
+                    {formatNumber(pos.delta as number, 2)}
+                  </TableCell>
+                  <TableCell className="text-[11px] text-right font-mono">
+                    {formatNumber(pos.gamma as number, 3)}
+                  </TableCell>
                   <TableCell className="text-[11px] text-right font-mono">
                     ${(pos.vega as number).toLocaleString()}
                   </TableCell>
@@ -68,8 +72,8 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                 <TableCell className="text-[11px]">Portfolio Total</TableCell>
                 <TableCell />
                 <TableCell />
-                <TableCell className="text-[11px] text-right font-mono">{greeks.delta.toFixed(2)}</TableCell>
-                <TableCell className="text-[11px] text-right font-mono">{greeks.gamma.toFixed(3)}</TableCell>
+                <TableCell className="text-[11px] text-right font-mono">{formatNumber(greeks.delta, 2)}</TableCell>
+                <TableCell className="text-[11px] text-right font-mono">{formatNumber(greeks.gamma, 3)}</TableCell>
                 <TableCell className="text-[11px] text-right font-mono">${greeks.vega.toLocaleString()}</TableCell>
                 <TableCell className="text-[11px] text-right font-mono text-rose-400">
                   ${greeks.theta.toLocaleString()}
@@ -91,7 +95,7 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                   orientation="right"
                   stroke="var(--muted-foreground)"
                   fontSize={9}
-                  tickFormatter={(v) => `$${((v as number) / 1000).toFixed(0)}K`}
+                  tickFormatter={(v) => `$${formatNumber((v as number) / 1000, 0)}K`}
                 />
                 <RechartsTooltip
                   contentStyle={{
@@ -174,8 +178,8 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                 {portfolioGreeksData.per_underlying.map((row) => (
                   <TableRow key={row.underlying}>
                     <TableCell className="text-[11px] font-medium">{row.underlying}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono">{row.delta.toFixed(2)}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono">{row.gamma.toFixed(4)}</TableCell>
+                    <TableCell className="text-[11px] text-right font-mono">{formatNumber(row.delta, 2)}</TableCell>
+                    <TableCell className="text-[11px] text-right font-mono">{formatNumber(row.gamma, 4)}</TableCell>
                     <TableCell className="text-[11px] text-right font-mono">${row.vega.toLocaleString()}</TableCell>
                     <TableCell className="text-[11px] text-right font-mono text-rose-400">
                       ${row.theta.toLocaleString()}

@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { getOperationBadgeClass } from "@/lib/utils/bundles";
 import { ArrowRight, FileText } from "lucide-react";
 import { useBundlesData } from "./bundles-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function BundleTemplatesWidget(_props: WidgetComponentProps) {
   const { templates, loadTemplate, showTemplates, setShowTemplates, steps } = useBundlesData();
@@ -49,9 +50,9 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
                 </Badge>
               </div>
               <div className="flex items-center gap-2 text-[10px] shrink-0">
-                <span className="text-rose-400 font-mono">-${template.estimatedCost.toFixed(0)}</span>
+                <span className="text-rose-400 font-mono">-${formatNumber(template.estimatedCost, 0)}</span>
                 {template.estimatedProfit > 0 && (
-                  <span className="text-emerald-400 font-mono">+${template.estimatedProfit.toFixed(0)}</span>
+                  <span className="text-emerald-400 font-mono">+${formatNumber(template.estimatedProfit, 0)}</span>
                 )}
               </div>
             </div>

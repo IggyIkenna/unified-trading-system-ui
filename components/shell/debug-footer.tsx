@@ -72,6 +72,7 @@ export function DebugFooter() {
       "client-full": "pm@alphacapital.com",
       "client-premium": "cio@vertex.com",
       "client-data-only": "analyst@betafund.com",
+      "elysium-defi": "patrick@bankelysium.com",
     };
     const email = emails[personaId];
     if (email) {
@@ -94,6 +95,7 @@ export function DebugFooter() {
       desc: "Vertex Partners",
     },
     { id: "client-data-only", label: "Client (Basic)", desc: "Beta Fund" },
+    { id: "elysium-defi", label: "DeFi Client", desc: "Elysium (Patrick)" },
   ];
 
   return (
@@ -111,9 +113,10 @@ export function DebugFooter() {
         </Badge>
 
         {user && (
-          <span className="text-amber-300/70">
-            <User className="inline size-3 mr-1" />
-            {user.displayName} ({user.role})
+          <span className="text-amber-300/70 hidden sm:flex items-center gap-1">
+            <User className="inline size-3" />
+            <span className="truncate max-w-[8rem]">{user.displayName}</span>
+            <span className="hidden md:inline">({user.role})</span>
           </span>
         )}
       </div>

@@ -6,20 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { PageHeader } from "@/components/shared/page-header";
 import { ArrowLeft, Save } from "lucide-react";
-import {
-  useProvisionedUser,
-  useModifyUser,
-  useAccessTemplates,
-} from "@/hooks/api/use-user-management";
+import { useProvisionedUser, useModifyUser, useAccessTemplates } from "@/hooks/api/use-user-management";
 import type { ProvisioningRole } from "@/lib/types/user-management";
 
 const ROLES: ProvisioningRole[] = [
@@ -114,9 +105,7 @@ export default function ModifyUserPage() {
   }, [user]);
 
   const toggleSlug = (key: string) => {
-    setProductSlugs((prev) =>
-      prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key],
-    );
+    setProductSlugs((prev) => (prev.includes(key) ? prev.filter((s) => s !== key) : [...prev, key]));
   };
 
   if (!user) return <div className="p-6 text-muted-foreground">Loading...</div>;
@@ -137,15 +126,16 @@ export default function ModifyUserPage() {
 
   return (
     <div className="p-6 max-w-2xl space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-2">
         <Button
           variant="ghost"
           size="icon"
+          className="mt-1 shrink-0"
           onClick={() => router.push(`/admin/users/${params.id}`)}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-2xl font-bold">Modify — {user.name}</h1>
+        <PageHeader className="min-w-0 flex-1 space-y-0" title={`Modify — ${user.name}`} />
       </div>
 
       <Card>
@@ -156,10 +146,7 @@ export default function ModifyUserPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label>Role</Label>
-              <Select
-                value={role}
-                onValueChange={(v) => setRole(v as ProvisioningRole)}
-              >
+              <Select value={role} onValueChange={(v) => setRole(v as ProvisioningRole)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -174,11 +161,7 @@ export default function ModifyUserPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="github">GitHub Handle</Label>
-              <Input
-                id="github"
-                value={githubHandle}
-                onChange={(e) => setGithubHandle(e.target.value)}
-              />
+              <Input id="github" value={githubHandle} onChange={(e) => setGithubHandle(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Access Template</Label>
@@ -199,9 +182,7 @@ export default function ModifyUserPage() {
               <Label className="text-base font-semibold">Entitlements</Label>
               {SERVICE_ACCESS.map((cat) => (
                 <div key={cat.category} className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {cat.category}
-                  </p>
+                  <p className="text-sm font-medium text-muted-foreground">{cat.category}</p>
                   {cat.items.map((item) => (
                     <label
                       key={item.key}
@@ -213,12 +194,8 @@ export default function ModifyUserPage() {
                         className="mt-0.5"
                       />
                       <div>
-                        <span className="text-sm font-medium">
-                          {item.label}
-                        </span>
-                        <p className="text-xs text-muted-foreground">
-                          {item.desc}
-                        </p>
+                        <span className="text-sm font-medium">{item.label}</span>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
                       </div>
                     </label>
                   ))}
