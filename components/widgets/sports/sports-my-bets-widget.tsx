@@ -1,15 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { KpiStrip } from "@/components/widgets/shared";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { KpiStrip } from "@/components/shared/kpi-strip";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { Bet } from "@/components/trading/sports/types";
 import { fmtCurrency, fmtOdds, fmtRelativeTime } from "@/components/trading/sports/helpers";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useSportsData } from "./sports-data-context";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 function openSingles(bets: Bet[]) {
   return bets.filter((b) => b.status === "open" && !b.isAccumulator);
@@ -51,7 +52,7 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
     const settled = allBets.filter((b) => b.pnl != null);
     const totalPnl = settled.reduce((s, b) => s + (b.pnl ?? 0), 0);
     const wins = settled.filter((b) => (b.pnl ?? 0) > 0).length;
-    const winRate = settled.length > 0 ? ((wins / settled.length) * 100).toFixed(0) : "—";
+    const winRate = settled.length > 0 ? formatNumber((wins / settled.length) * 100, 0) : "—";
     const openExposure = allBets.filter((b) => b.status === "open").reduce((s, b) => s + b.stake, 0);
     const openCount = openSingles(allBets).length;
 

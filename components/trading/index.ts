@@ -23,26 +23,16 @@ export {
 
 // Data Visualization Components
 export { KPICard, SparklineCell } from "./kpi-card";
-export { StatusBadge, StatusDot } from "./status-badge";
+export { StatusBadge, StatusDot } from "@/components/shared/status-badge";
 export { PnLValue, PnLChange } from "./pnl-value";
 export { LimitBar, LimitCell } from "./limit-bar";
 export { AsOfDatetimePicker } from "./as-of-datetime-picker";
-export {
-  DimensionalGrid,
-  type DimensionDef,
-  type MetricDef,
-} from "./dimensional-grid";
+export { DimensionalGrid, type DimensionDef, type MetricDef } from "./dimensional-grid";
 
 // Trading Components
-export {
-  StrategyPerformanceTable,
-  type StrategyPerformance,
-} from "./strategy-performance-table";
+export { StrategyPerformanceTable, type StrategyPerformance } from "./strategy-performance-table";
 export { AlertsFeed, type Alert } from "./alerts-feed";
-export {
-  PnLAttributionPanel,
-  type PnLComponent,
-} from "./pnl-attribution-panel";
+export { PnLAttributionPanel, type PnLComponent } from "./pnl-attribution-panel";
 export { HealthStatusGrid, type ServiceHealth } from "./health-status-grid";
 export {
   TimeSeriesPanel,

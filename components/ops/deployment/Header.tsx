@@ -1,18 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Activity,
-  Server,
-  AlertCircle,
-  Trash2,
-  Loader2,
-  CheckCircle2,
-} from "lucide-react";
-import { useHealth } from "@/hooks/deployment/useHealth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/shared/spinner";
 import * as api from "@/hooks/deployment/_api-stub";
+import { useHealth } from "@/hooks/deployment/useHealth";
+import { Activity, AlertCircle, CheckCircle2, Server, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 export function Header() {
   const { health, isHealthy, error } = useHealth();
@@ -45,9 +39,7 @@ export function Header() {
             <h1 className="text-lg font-semibold text-[var(--color-text-primary)] tracking-tight">
               Unified Trading Deployment
             </h1>
-            <p className="text-xs text-[var(--color-text-tertiary)] font-mono">
-              deployment monitoring & orchestration
-            </p>
+            <p className="text-xs text-[var(--color-text-tertiary)] font-mono">deployment monitoring & orchestration</p>
           </div>
         </div>
 
@@ -62,7 +54,7 @@ export function Header() {
             title="Clear all caches - forces fresh data on next request"
           >
             {clearingCache ? (
-              <Loader2 className="h-4 w-4 animate-spin mr-1" />
+              <Spinner className="h-4 w-4 mr-1" />
             ) : cacheCleared ? (
               <CheckCircle2 className="h-4 w-4 mr-1 text-[var(--color-accent-green)]" />
             ) : (
@@ -76,25 +68,19 @@ export function Header() {
             {isHealthy ? (
               <>
                 <Activity className="h-4 w-4 text-[var(--color-accent-green)] animate-pulse" />
-                <span className="text-sm text-[var(--color-text-secondary)]">
-                  API
-                </span>
+                <span className="text-sm text-[var(--color-text-secondary)]">API</span>
                 <Badge variant="success">Connected</Badge>
               </>
             ) : error ? (
               <>
                 <AlertCircle className="h-4 w-4 text-[var(--color-accent-red)]" />
-                <span className="text-sm text-[var(--color-text-secondary)]">
-                  API
-                </span>
+                <span className="text-sm text-[var(--color-text-secondary)]">API</span>
                 <Badge variant="error">Disconnected</Badge>
               </>
             ) : (
               <>
                 <Activity className="h-4 w-4 text-[var(--color-text-tertiary)] animate-pulse" />
-                <span className="text-sm text-[var(--color-text-secondary)]">
-                  API
-                </span>
+                <span className="text-sm text-[var(--color-text-secondary)]">API</span>
                 <Badge variant="pending">Checking...</Badge>
               </>
             )}
@@ -142,17 +128,12 @@ export function Header() {
 
           {/* GCS FUSE Status */}
           {health?.gcs_fuse && (
-            <div
-              className="flex items-center gap-1"
-              title={health.gcs_fuse.reason}
-            >
+            <div className="flex items-center gap-1" title={health.gcs_fuse.reason}>
               <Badge
                 variant="outline"
                 className="text-xs"
                 style={{
-                  color: health.gcs_fuse.active
-                    ? "var(--color-accent-green)"
-                    : "var(--color-accent-red)",
+                  color: health.gcs_fuse.active ? "var(--color-accent-green)" : "var(--color-accent-red)",
                 }}
               >
                 {health.gcs_fuse.active ? "GCS Fuse" : "GCS API"}

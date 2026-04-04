@@ -2,39 +2,16 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ArrowLeft,
-  UserPlus,
-  Mail,
-  Shield,
-  Briefcase,
-  ChevronRight,
-  ChevronDown,
-  Lock,
-} from "lucide-react";
-import {
-  useOnboardUser,
-  usePermissionCatalogue,
-} from "@/hooks/api/use-user-management";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, UserPlus, Mail, Shield, Briefcase, ChevronRight, ChevronDown, Lock } from "lucide-react";
+import { PageHeader } from "@/components/shared/page-header";
+import { useOnboardUser, usePermissionCatalogue } from "@/hooks/api/use-user-management";
 import type { ProvisioningRole } from "@/lib/types/user-management";
 
 const INTERNAL_ROLES: { value: ProvisioningRole; label: string }[] = [
@@ -63,15 +40,12 @@ const INTERNAL_SERVICES = [
 export default function OnboardUserPage() {
   const router = useRouter();
   const onboard = useOnboardUser();
-  const { data: catalogueData, isLoading: catalogueLoading } =
-    usePermissionCatalogue();
+  const { data: catalogueData, isLoading: catalogueLoading } = usePermissionCatalogue();
 
   // Step 1: Identity
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
-  const [userType, setUserType] = React.useState<"internal" | "external">(
-    "internal",
-  );
+  const [userType, setUserType] = React.useState<"internal" | "external">("internal");
   const [role, setRole] = React.useState<ProvisioningRole>("collaborator");
 
   // Step 2: Auth email (internal only)
@@ -80,17 +54,11 @@ export default function OnboardUserPage() {
 
   // Step 3: Service access (granular) — driven by catalogue
   const [selectedAccess, setSelectedAccess] = React.useState<string[]>([]);
-  const [expandedDomains, setExpandedDomains] = React.useState<Set<string>>(
-    new Set(),
-  );
-  const [expandedCategories, setExpandedCategories] = React.useState<
-    Set<string>
-  >(new Set());
+  const [expandedDomains, setExpandedDomains] = React.useState<Set<string>>(new Set());
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set());
 
   // Step 4: Internal provisioning
-  const [selectedServices, setSelectedServices] = React.useState<string[]>(
-    INTERNAL_SERVICES.map((s) => s.key),
-  );
+  const [selectedServices, setSelectedServices] = React.useState<string[]>(INTERNAL_SERVICES.map((s) => s.key));
 
   const roles = userType === "internal" ? INTERNAL_ROLES : EXTERNAL_ROLES;
 
@@ -100,15 +68,11 @@ export default function OnboardUserPage() {
   }, [userType]);
 
   const toggleAccess = (key: string) => {
-    setSelectedAccess((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+    setSelectedAccess((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
   };
 
   const toggleService = (key: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+    setSelectedServices((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
   };
 
   const toggleDomain = (key: string) => {
@@ -132,9 +96,7 @@ export default function OnboardUserPage() {
 
   // Filter domains: hide internal-services for external users
   const domains = (catalogueData?.domains ?? []).filter(
-    (d) =>
-      userType === "internal" ||
-      !d.categories.every((c) => c.permissions.every((p) => p.internal_only)),
+    (d) => userType === "internal" || !d.categories.every((c) => c.permissions.every((p) => p.internal_only)),
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -153,17 +115,18 @@ export default function OnboardUserPage() {
 
   return (
     <div className="px-6 py-6 max-w-3xl space-y-6">
-      <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.push("/admin/users")}
-        >
+      <div className="flex items-start gap-2">
+        <Button variant="ghost" size="icon" className="mt-1 shrink-0" onClick={() => router.push("/admin/users")}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-semibold flex items-center gap-2">
-          <UserPlus className="h-5 w-5" /> Onboard User
-        </h1>
+        <PageHeader
+          className="min-w-0 flex-1 space-y-1"
+          title={
+            <span className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5" /> Onboard User
+            </span>
+          }
+        />
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -174,8 +137,8 @@ export default function OnboardUserPage() {
               <Mail className="h-4 w-4" /> Identity
             </CardTitle>
             <CardDescription>
-              Set up the user&apos;s email. This email propagates to all
-              services (Slack, GitHub, GCP, AWS) for internal users.
+              Set up the user&apos;s email. This email propagates to all services (Slack, GitHub, GCP, AWS) for internal
+              users.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -227,10 +190,7 @@ export default function OnboardUserPage() {
 
             <div className="space-y-2">
               <Label>Role</Label>
-              <Select
-                value={role}
-                onValueChange={(v) => setRole(v as ProvisioningRole)}
-              >
+              <Select value={role} onValueChange={(v) => setRole(v as ProvisioningRole)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -252,12 +212,8 @@ export default function OnboardUserPage() {
                     checked={createAuthEmail}
                     onCheckedChange={(v) => setCreateAuthEmail(v === true)}
                   />
-                  <Label
-                    htmlFor="auth-email"
-                    className="text-sm cursor-pointer"
-                  >
-                    Create auth email (M365) — use this email for all service
-                    provisioning
+                  <Label htmlFor="auth-email" className="text-sm cursor-pointer">
+                    Create auth email (M365) — use this email for all service provisioning
                   </Label>
                 </div>
                 <div className="space-y-2">
@@ -274,8 +230,7 @@ export default function OnboardUserPage() {
 
             {userType === "external" && (
               <p className="text-xs text-muted-foreground">
-                External users use their existing email for all access. No auth
-                email is created.
+                External users use their existing email for all access. No auth email is created.
               </p>
             )}
           </CardContent>
@@ -288,25 +243,19 @@ export default function OnboardUserPage() {
               <Briefcase className="h-4 w-4" /> Service Access
             </CardTitle>
             <CardDescription>
-              Select which apps and services this user can access. Expand
-              domains and categories to pick individual permissions.
+              Select which apps and services this user can access. Expand domains and categories to pick individual
+              permissions.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {catalogueLoading ? (
-              <p className="text-sm text-muted-foreground">
-                Loading catalogue...
-              </p>
+              <p className="text-sm text-muted-foreground">Loading catalogue...</p>
             ) : (
               domains.map((domain) => {
                 const isDomainExpanded = expandedDomains.has(domain.key);
                 // Count selected permissions in this domain
                 const domainSelectedCount = domain.categories.reduce(
-                  (sum, cat) =>
-                    sum +
-                    cat.permissions.filter((p) =>
-                      selectedAccess.includes(p.key),
-                    ).length,
+                  (sum, cat) => sum + cat.permissions.filter((p) => selectedAccess.includes(p.key)).length,
                   0,
                 );
                 return (
@@ -322,12 +271,8 @@ export default function OnboardUserPage() {
                         ) : (
                           <ChevronRight className="h-3.5 w-3.5" />
                         )}
-                        <span className="text-sm font-medium">
-                          {domain.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {domain.description}
-                        </span>
+                        <span className="text-sm font-medium">{domain.label}</span>
+                        <span className="text-xs text-muted-foreground">{domain.description}</span>
                       </div>
                       {domainSelectedCount > 0 && (
                         <Badge variant="default" className="text-xs">
@@ -339,21 +284,16 @@ export default function OnboardUserPage() {
                       <div className="px-3 pb-3 space-y-2">
                         {domain.categories.map((cat) => {
                           const compositeKey = `${domain.key}:${cat.key}`;
-                          const isCatExpanded =
-                            expandedCategories.has(compositeKey);
+                          const isCatExpanded = expandedCategories.has(compositeKey);
                           // Filter out internal_only permissions for external users
                           const visiblePerms =
-                            userType === "internal"
-                              ? cat.permissions
-                              : cat.permissions.filter((p) => !p.internal_only);
+                            userType === "internal" ? cat.permissions : cat.permissions.filter((p) => !p.internal_only);
                           if (visiblePerms.length === 0) return null;
                           return (
                             <div key={cat.key} className="ml-4">
                               <button
                                 type="button"
-                                onClick={() =>
-                                  toggleCategory(domain.key, cat.key)
-                                }
+                                onClick={() => toggleCategory(domain.key, cat.key)}
                                 className="w-full flex items-center gap-2 py-1 text-sm hover:bg-muted/30 rounded px-2 transition-colors text-left"
                               >
                                 {isCatExpanded ? (
@@ -362,25 +302,16 @@ export default function OnboardUserPage() {
                                   <ChevronRight className="h-3 w-3" />
                                 )}
                                 <span className="font-medium">{cat.label}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  ({visiblePerms.length})
-                                </span>
+                                <span className="text-xs text-muted-foreground">({visiblePerms.length})</span>
                               </button>
                               {isCatExpanded && (
                                 <div className="ml-5 space-y-1 pb-1">
                                   {visiblePerms.map((perm) => (
-                                    <div
-                                      key={perm.key}
-                                      className="flex items-start gap-3 py-1"
-                                    >
+                                    <div key={perm.key} className="flex items-start gap-3 py-1">
                                       <Checkbox
                                         id={`access-${domain.key}-${cat.key}-${perm.key}`}
-                                        checked={selectedAccess.includes(
-                                          perm.key,
-                                        )}
-                                        onCheckedChange={() =>
-                                          toggleAccess(perm.key)
-                                        }
+                                        checked={selectedAccess.includes(perm.key)}
+                                        onCheckedChange={() => toggleAccess(perm.key)}
                                       />
                                       <div>
                                         <Label
@@ -388,13 +319,9 @@ export default function OnboardUserPage() {
                                           className="text-sm cursor-pointer font-medium flex items-center gap-1"
                                         >
                                           {perm.label}
-                                          {perm.internal_only && (
-                                            <Lock className="h-3 w-3 text-muted-foreground" />
-                                          )}
+                                          {perm.internal_only && <Lock className="h-3 w-3 text-muted-foreground" />}
                                         </Label>
-                                        <p className="text-xs text-muted-foreground">
-                                          {perm.description}
-                                        </p>
+                                        <p className="text-xs text-muted-foreground">{perm.description}</p>
                                       </div>
                                     </div>
                                   ))}
@@ -420,8 +347,7 @@ export default function OnboardUserPage() {
                 <Shield className="h-4 w-4" /> Internal Provisioning
               </CardTitle>
               <CardDescription>
-                Which internal services to provision. The email above is used
-                for all services.
+                Which internal services to provision. The email above is used for all services.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -432,10 +358,7 @@ export default function OnboardUserPage() {
                     checked={selectedServices.includes(svc.key)}
                     onCheckedChange={() => toggleService(svc.key)}
                   />
-                  <Label
-                    htmlFor={`svc-${svc.key}`}
-                    className="text-sm cursor-pointer"
-                  >
+                  <Label htmlFor={`svc-${svc.key}`} className="text-sm cursor-pointer">
                     {svc.label}
                   </Label>
                 </div>
@@ -451,17 +374,11 @@ export default function OnboardUserPage() {
               <div className="space-y-1">
                 <div className="text-sm">
                   <span className="font-medium">{name || "—"}</span>
-                  <span className="text-muted-foreground ml-2">
-                    {email || "—"}
-                  </span>
+                  <span className="text-muted-foreground ml-2">{email || "—"}</span>
                 </div>
                 <div className="flex gap-1 flex-wrap">
                   <Badge variant="outline">{role}</Badge>
-                  <Badge
-                    variant={userType === "internal" ? "default" : "outline"}
-                  >
-                    {userType}
-                  </Badge>
+                  <Badge variant={userType === "internal" ? "default" : "outline"}>{userType}</Badge>
                   {selectedAccess.map((a) => (
                     <Badge key={a} variant="secondary" className="text-xs">
                       {a}
@@ -469,28 +386,12 @@ export default function OnboardUserPage() {
                   ))}
                 </div>
               </div>
-              <Button
-                type="submit"
-                disabled={
-                  onboard.isPending ||
-                  !name ||
-                  !email ||
-                  selectedAccess.length === 0
-                }
-              >
+              <Button type="submit" disabled={onboard.isPending || !name || !email || selectedAccess.length === 0}>
                 {onboard.isPending ? "Provisioning..." : "Onboard User"}
               </Button>
             </div>
-            {onboard.isError && (
-              <p className="text-sm text-destructive mt-2">
-                Error: {String(onboard.error)}
-              </p>
-            )}
-            {onboard.isSuccess && (
-              <p className="text-sm text-green-600 mt-2">
-                User onboarded successfully.
-              </p>
-            )}
+            {onboard.isError && <p className="text-sm text-destructive mt-2">Error: {String(onboard.error)}</p>}
+            {onboard.isSuccess && <p className="text-sm text-green-600 mt-2">User onboarded successfully.</p>}
           </CardContent>
         </Card>
       </form>

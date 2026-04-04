@@ -6,9 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { Database, LayoutGrid, LineChart, Radio } from "lucide-react";
 import { usePnLData } from "./pnl-data-context";
+import { SHARE_CLASSES, SHARE_CLASS_LABELS, type ShareClass } from "@/lib/types/defi";
 
 export function PnlControlsWidget(_props: WidgetComponentProps) {
-  const { viewMode, setViewMode, dataMode, setDataMode, dateRange, setDateRange, groupBy, setGroupBy } = usePnLData();
+  const { viewMode, setViewMode, dataMode, setDataMode, dateRange, setDateRange, groupBy, setGroupBy, shareClass, setShareClass } = usePnLData();
 
   return (
     <div className="flex flex-col gap-2 h-full min-h-0 p-2">
@@ -85,6 +86,23 @@ export function PnlControlsWidget(_props: WidgetComponentProps) {
           ))}
         </div>
         <div className="ml-auto flex items-center gap-2">
+          {/* Share class selector — denominated currency for P&L display */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-muted-foreground">Currency:</span>
+            <Select value={shareClass} onValueChange={(v) => setShareClass(v as ShareClass | "all")}>
+              <SelectTrigger className="h-7 w-[120px] text-[10px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="text-[10px]">All (USD)</SelectItem>
+                {SHARE_CLASSES.map((sc) => (
+                  <SelectItem key={sc} value={sc} className="text-[10px] font-mono">
+                    {sc} — {SHARE_CLASS_LABELS[sc]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Badge variant={dataMode === "live" ? "default" : "secondary"} className="gap-1 text-[10px]">
             {dataMode === "live" ? <Radio className="size-3" /> : <Database className="size-3" />}
             {dataMode === "live" ? "Live Data" : "Batch Snapshot"}

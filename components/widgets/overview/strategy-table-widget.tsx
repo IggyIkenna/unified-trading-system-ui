@@ -1,15 +1,60 @@
 "use client";
 
-import * as React from "react";
-import type { WidgetComponentProps } from "../widget-registry";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Spinner } from "@/components/shared/spinner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
+import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+
+// ---------------------------------------------------------------------------
+// Latency class badge — derived from archetype
+// ---------------------------------------------------------------------------
+
+type LatencyClass = "Hourly" | "Event-driven" | "Sub-second";
+
+const ARCHETYPE_LATENCY: Record<string, LatencyClass> = {
+  BASIS_TRADE: "Hourly",
+  YIELD: "Hourly",
+  MOMENTUM: "Hourly",
+  MEAN_REVERSION: "Hourly",
+  DIRECTIONAL: "Hourly",
+  ARBITRAGE: "Event-driven",
+  MARKET_MAKING: "Sub-second",
+  OPTIONS: "Sub-second",
+  STATISTICAL_ARB: "Event-driven",
+};
+
+const LATENCY_COLORS: Record<LatencyClass, string> = {
+  Hourly: "bg-blue-500/10 text-blue-400 border-blue-400/20",
+  "Event-driven": "bg-amber-500/10 text-amber-400 border-amber-400/20",
+  "Sub-second": "bg-rose-500/10 text-rose-400 border-rose-400/20",
+};
+
+function LatencyBadge({ archetype }: { archetype: string }) {
+  const cls = ARCHETYPE_LATENCY[archetype] ?? "Hourly";
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className={cn("text-[9px] h-4 px-1 font-normal", LATENCY_COLORS[cls])}>
+            {cls}
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          <span className="text-[10px]">Latency class: {cls}</span>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export function StrategyTableWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
@@ -20,17 +65,14 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
   const [showAll, setShowAll] = React.useState(false);
   const [collapsedGroups, setCollapsedGroups] = React.useState<Set<string> | null>(null);
 
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
-  const {
-    strategyPerformance,
-    filteredSortedStrategies: allFiltered,
-    realtimePnl,
-    perfLoading,
-    formatDollar,
-  } = ctx;
+  const strategiesFromCtx = ctx?.filteredSortedStrategies;
+  const allFiltered = React.useMemo(
+    () => (Array.isArray(strategiesFromCtx) ? strategiesFromCtx : []) as Array<Record<string, unknown>>,
+    [strategiesFromCtx],
+  );
 
   const filtered = React.useMemo(() => {
-    let result = [...(allFiltered as Array<Record<string, unknown>>)];
+    let result = [...allFiltered];
     if (strategySearch) {
       const q = strategySearch.toLowerCase();
       result = result.filter(
@@ -76,6 +118,16 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
     }
   }, [grouped, collapsedGroups]);
 
+  if (!ctx) {
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
+  }
+
+  const { strategyPerformance, realtimePnl, perfLoading, formatDollar } = ctx;
+
   const toggleGroup = (g: string) => {
     setCollapsedGroups((prev) => {
       const s = new Set(prev ?? Object.keys(grouped));
@@ -93,7 +145,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
         <CardHeader className="pb-2 pt-2 px-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 flex-wrap">
-              {perfLoading && <Loader2 className="size-3.5 animate-spin text-muted-foreground" />}
+              {perfLoading && <Spinner size="sm" className="size-3.5 text-muted-foreground" />}
               <input
                 type="text"
                 placeholder="Search..."
@@ -133,7 +185,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="px-3 pb-2">
+        <CardContent className="px-3 pb-2 overflow-x-auto">
           <div className="flex items-center gap-6 mb-3 pb-3 border-b border-border text-xs">
             <span className="text-muted-foreground">{filtered.length} strategies</span>
             <span className="font-mono">
@@ -219,12 +271,15 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                         return (
                           <TableRow key={String(s.id)} className="text-xs">
                             <TableCell className="pl-8">
-                              <Link
-                                href={`/services/trading/strategies/${s.id}`}
-                                className="font-medium hover:underline"
-                              >
-                                {String(s.name)}
-                              </Link>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <Link
+                                  href={`/services/trading/strategies/${s.id}`}
+                                  className="font-medium hover:underline"
+                                >
+                                  {String(s.name)}
+                                </Link>
+                                <LatencyBadge archetype={String(s.archetype ?? "")} />
+                              </div>
                             </TableCell>
                             <TableCell
                               className={cn(
@@ -235,10 +290,10 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                               {formatDollar(livePnl)}
                             </TableCell>
                             <TableCell className="text-right font-mono tabular-nums">
-                              {(Number(s.sharpe) || 0).toFixed(2)}
+                              {formatNumber(Number(s.sharpe) || 0, 2)}
                             </TableCell>
                             <TableCell className="text-right font-mono tabular-nums text-rose-400">
-                              {(Number(s.maxDrawdown) || 0).toFixed(1)}%
+                              {formatPercent(Number(s.maxDrawdown) || 0, 1)}
                             </TableCell>
                             <TableCell className="text-right font-mono tabular-nums">
                               {formatDollar(Number(s.exposure) || 0)}

@@ -1,12 +1,10 @@
 "use client";
 
-import { Suspense } from "react";
-import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import { AccountsDataProvider, useAccountsData } from "@/components/widgets/accounts/accounts-data-context";
-
-import "@/components/widgets/accounts/register";
+import { WidgetGrid } from "@/components/widgets/widget-grid";
+import { Suspense } from "react";
 
 function AccountsWorkspaceBody() {
   const { isLoading, error, refetch } = useAccountsData();
@@ -14,7 +12,7 @@ function AccountsWorkspaceBody() {
   if (isLoading) {
     return (
       <div className="p-6 flex items-center justify-center h-64 gap-2 text-muted-foreground">
-        <Loader2 className="size-5 animate-spin" />
+        <Spinner className="size-5" />
         <span>Loading accounts...</span>
       </div>
     );
@@ -22,13 +20,8 @@ function AccountsWorkspaceBody() {
 
   if (error) {
     return (
-      <div className="p-6 flex flex-col items-center justify-center h-64 gap-3 text-muted-foreground">
-        <AlertCircle className="size-8 text-destructive" />
-        <p>Failed to load account data</p>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
-          <RefreshCw className="size-3.5 mr-1.5" />
-          Retry
-        </Button>
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load account data" />
       </div>
     );
   }

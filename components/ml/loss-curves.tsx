@@ -5,20 +5,8 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Activity,
-  TrendingDown,
-  ArrowRight,
-  ExternalLink,
-  Layers,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Activity, TrendingDown, ArrowRight, ExternalLink, Layers } from "lucide-react";
 import { EntityLink } from "@/components/trading/entity-link";
 import {
   LineChart,
@@ -31,6 +19,8 @@ import {
   Legend,
   ReferenceLine,
 } from "recharts";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Generate mock loss curve data
 function generateLossCurve(
@@ -43,14 +33,12 @@ function generateLossCurve(
   for (let i = 0; i <= epochs; i++) {
     const progress = i / epochs;
     // Exponential decay for training loss
-    const trainBase =
-      startLoss * Math.exp(-3 * progress) +
-      endLoss * (1 - Math.exp(-3 * progress));
-    const trainLoss = trainBase + (Math.random() - 0.5) * noise * trainBase;
+    const trainBase = startLoss * Math.exp(-3 * progress) + endLoss * (1 - Math.exp(-3 * progress));
+    const trainLoss = trainBase + (mock01(i, 101) - 0.5) * noise * trainBase;
     // Validation loss with potential overfitting
     const overfitFactor = progress > 0.7 ? (progress - 0.7) * 0.5 : 0;
     const valBase = trainBase * (1 + 0.1 + overfitFactor);
-    const valLoss = valBase + (Math.random() - 0.5) * noise * valBase;
+    const valLoss = valBase + (mock01(i, 102) - 0.5) * noise * valBase;
     data.push({
       epoch: i,
       trainLoss: Math.max(endLoss * 0.5, trainLoss),
@@ -148,10 +136,7 @@ const mockModelStrategyLinks: ModelStrategyLink[] = [
 ];
 
 // Mock loss curve data for different experiments
-const mockExperimentLossCurves: Record<
-  string,
-  { epoch: number; trainLoss: number; valLoss: number }[]
-> = {
+const mockExperimentLossCurves: Record<string, { epoch: number; trainLoss: number; valLoss: number }[]> = {
   "exp-342": generateLossCurve(100, 0.8, 0.31, 0.03),
   "exp-341": generateLossCurve(150, 0.75, 0.42, 0.025),
   "exp-340": generateLossCurve(120, 0.7, 0.35, 0.02),
@@ -162,15 +147,9 @@ interface LossCurvesProps {
   className?: string;
 }
 
-export function LossCurves({
-  experimentId = "exp-342",
-  className,
-}: LossCurvesProps) {
-  const [selectedExperiment, setSelectedExperiment] =
-    React.useState(experimentId);
-  const lossData =
-    mockExperimentLossCurves[selectedExperiment] ||
-    generateLossCurve(100, 0.8, 0.3);
+export function LossCurves({ experimentId = "exp-342", className }: LossCurvesProps) {
+  const [selectedExperiment, setSelectedExperiment] = React.useState(experimentId);
+  const lossData = mockExperimentLossCurves[selectedExperiment] || generateLossCurve(100, 0.8, 0.3);
 
   const currentEpoch = lossData.length - 1;
   const latestTrainLoss = lossData[currentEpoch].trainLoss;
@@ -186,10 +165,7 @@ export function LossCurves({
             <TrendingDown className="size-4" />
             Training Loss Curves
           </CardTitle>
-          <Select
-            value={selectedExperiment}
-            onValueChange={setSelectedExperiment}
-          >
+          <Select value={selectedExperiment} onValueChange={setSelectedExperiment}>
             <SelectTrigger className="w-[180px] h-8">
               <SelectValue placeholder="Select experiment" />
             </SelectTrigger>
@@ -210,38 +186,23 @@ export function LossCurves({
           </div>
           <div>
             <span className="text-muted-foreground">Train Loss: </span>
-            <span className="font-mono font-semibold">
-              {latestTrainLoss.toFixed(4)}
-            </span>
+            <span className="font-mono font-semibold">{formatNumber(latestTrainLoss, 4)}</span>
           </div>
           <div>
             <span className="text-muted-foreground">Val Loss: </span>
-            <span className="font-mono font-semibold">
-              {latestValLoss.toFixed(4)}
-            </span>
+            <span className="font-mono font-semibold">{formatNumber(latestValLoss, 4)}</span>
           </div>
           <div>
-            <span className="text-muted-foreground">
-              Best (epoch {bestEpoch}):{" "}
-            </span>
-            <span className="font-mono font-semibold text-[var(--status-live)]">
-              {bestValLoss.toFixed(4)}
-            </span>
+            <span className="text-muted-foreground">Best (epoch {bestEpoch}): </span>
+            <span className="font-mono font-semibold text-[var(--status-live)]">{formatNumber(bestValLoss, 4)}</span>
           </div>
         </div>
 
         {/* Chart */}
         <div className="h-[250px]">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={lossData}
-              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="var(--border)"
-                opacity={0.5}
-              />
+            <LineChart data={lossData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
               <XAxis
                 dataKey="epoch"
                 tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
@@ -299,10 +260,7 @@ export function LossCurves({
         {latestValLoss > bestValLoss * 1.1 && (
           <div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/20 text-sm">
             <Activity className="size-4 text-[var(--status-warning)]" />
-            <span>
-              Potential overfitting detected. Consider early stopping at epoch{" "}
-              {bestEpoch}.
-            </span>
+            <span>Potential overfitting detected. Consider early stopping at epoch {bestEpoch}.</span>
           </div>
         )}
       </CardContent>
@@ -338,26 +296,17 @@ export function ModelStrategyLinkage({ className }: ModelStrategyLinkageProps) {
             key={link.modelId}
             className={cn(
               "p-3 rounded-lg border transition-all",
-              selectedModel === link.modelId
-                ? "border-primary bg-primary/5"
-                : "border-border hover:border-border/80",
+              selectedModel === link.modelId ? "border-primary bg-primary/5" : "border-border hover:border-border/80",
             )}
           >
             {/* Model header */}
             <button
-              onClick={() =>
-                setSelectedModel(
-                  selectedModel === link.modelId ? null : link.modelId,
-                )
-              }
+              onClick={() => setSelectedModel(selectedModel === link.modelId ? null : link.modelId)}
               className="w-full flex items-center justify-between mb-2"
             >
               <div className="flex items-center gap-3">
                 <div className="size-8 rounded-lg bg-[var(--surface-ml)]/10 flex items-center justify-center">
-                  <Activity
-                    className="size-4"
-                    style={{ color: "var(--surface-ml)" }}
-                  />
+                  <Activity className="size-4" style={{ color: "var(--surface-ml)" }} />
                 </div>
                 <div className="text-left">
                   <div className="font-medium flex items-center gap-2">
@@ -366,9 +315,7 @@ export function ModelStrategyLinkage({ className }: ModelStrategyLinkageProps) {
                       v{link.modelVersion}
                     </Badge>
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    {link.strategies.length} strategies connected
-                  </div>
+                  <div className="text-xs text-muted-foreground">{link.strategies.length} strategies connected</div>
                 </div>
               </div>
               <ArrowRight
@@ -391,8 +338,7 @@ export function ModelStrategyLinkage({ className }: ModelStrategyLinkageProps) {
                       <div
                         className="w-1 h-8 rounded-full"
                         style={{
-                          backgroundColor:
-                            signalTypeColors[strategy.signalType],
+                          backgroundColor: signalTypeColors[strategy.signalType],
                         }}
                       />
                       <div>
@@ -403,9 +349,7 @@ export function ModelStrategyLinkage({ className }: ModelStrategyLinkageProps) {
                           className="text-sm font-medium"
                         />
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <code className="px-1 py-0.5 bg-muted rounded">
-                            {strategy.featureUsed}
-                          </code>
+                          <code className="px-1 py-0.5 bg-muted rounded">{strategy.featureUsed}</code>
                           <Badge variant="secondary" className="text-[10px]">
                             {strategy.signalType}
                           </Badge>
@@ -413,12 +357,8 @@ export function ModelStrategyLinkage({ className }: ModelStrategyLinkageProps) {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm font-mono">
-                        {(strategy.accuracy7d * 100).toFixed(1)}%
-                      </div>
-                      <div className="text-[10px] text-muted-foreground">
-                        Last: {strategy.lastPrediction}
-                      </div>
+                      <div className="text-sm font-mono">{formatPercent(strategy.accuracy7d * 100, 1)}</div>
+                      <div className="text-[10px] text-muted-foreground">Last: {strategy.lastPrediction}</div>
                     </div>
                   </div>
                 ))}

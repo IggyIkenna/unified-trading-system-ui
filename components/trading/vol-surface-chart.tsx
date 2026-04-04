@@ -4,17 +4,10 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useVolSurface } from "@/hooks/api/use-market-data";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { formatPercent } from "@/lib/utils/formatters";
 
 // ---------- Types ----------
 
@@ -63,7 +56,9 @@ function generateMockVolSurface(underlying: string): VolSurfaceResponse {
     { label: "90d", days: 90 },
   ];
 
-  const smiles: VolSmileLine[] = expiryBuckets.map(({ label, days }) => {
+  const underlyingSalt = [...underlying].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+
+  const smiles: VolSmileLine[] = expiryBuckets.map(({ label, days }, expIdx) => {
     const roundedSpot = Math.round(spotPrice / tickSize) * tickSize;
     const baseIv = 0.35 + (days / 365) * 0.08;
     const points: VolSmilePoint[] = [];
@@ -75,8 +70,9 @@ function generateMockVolSurface(underlying: string): VolSurfaceResponse {
       const moneyness = Math.log(strike / spotPrice);
       const skewTerm = -0.08 * moneyness; // Put skew
       const convexityTerm = 0.6 * moneyness * moneyness; // Smile curvature
+      const strikeIdx = i + halfRange;
       const iv =
-        baseIv + skewTerm + convexityTerm + (Math.random() - 0.5) * 0.005;
+        baseIv + skewTerm + convexityTerm + (mock01(strikeIdx + expIdx * 20, underlyingSalt + 601) - 0.5) * 0.005;
 
       if (i === 0) atmIv = iv;
       points.push({ strike, iv });
@@ -106,19 +102,11 @@ const LINE_COLORS = [
 
 // ---------- Component ----------
 
-export function VolSurfaceChart({
-  underlying,
-  height = 350,
-  className,
-}: VolSurfaceChartProps) {
+export function VolSurfaceChart({ underlying, height = 350, className }: VolSurfaceChartProps) {
   const { data, isLoading } = useVolSurface(underlying);
 
   const surface: VolSurfaceResponse = React.useMemo(() => {
-    if (
-      data &&
-      typeof data === "object" &&
-      "smiles" in (data as Record<string, unknown>)
-    ) {
+    if (data && typeof data === "object" && "smiles" in (data as Record<string, unknown>)) {
       return data as VolSurfaceResponse;
     }
     return generateMockVolSurface(underlying);
@@ -151,16 +139,10 @@ export function VolSurfaceChart({
   }, [surface]);
 
   const avgAtmIv =
-    surface.smiles.length > 0
-      ? surface.smiles.reduce((sum, s) => sum + s.atmIv, 0) /
-        surface.smiles.length
-      : 0;
+    surface.smiles.length > 0 ? surface.smiles.reduce((sum, s) => sum + s.atmIv, 0) / surface.smiles.length : 0;
 
   const avgSkew =
-    surface.smiles.length > 0
-      ? surface.smiles.reduce((sum, s) => sum + s.skew25Delta, 0) /
-        surface.smiles.length
-      : 0;
+    surface.smiles.length > 0 ? surface.smiles.reduce((sum, s) => sum + s.skew25Delta, 0) / surface.smiles.length : 0;
 
   if (surface.smiles.length === 0) {
     return (
@@ -168,13 +150,8 @@ export function VolSurfaceChart({
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Volatility Surface</CardTitle>
         </CardHeader>
-        <CardContent
-          className="flex items-center justify-center"
-          style={{ height }}
-        >
-          <span className="text-sm text-muted-foreground">
-            No vol surface data available for {underlying}
-          </span>
+        <CardContent className="flex items-center justify-center" style={{ height }}>
+          <span className="text-sm text-muted-foreground">No vol surface data available for {underlying}</span>
         </CardContent>
       </Card>
     );
@@ -192,36 +169,23 @@ export function VolSurfaceChart({
           </CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-[10px]">
-              ATM IV: {(avgAtmIv * 100).toFixed(1)}%
+              ATM IV: {formatPercent(avgAtmIv * 100, 1)}
             </Badge>
             <Badge
               variant="secondary"
-              className={cn(
-                "text-[10px]",
-                avgSkew < 0 ? "text-rose-400" : "text-emerald-400",
-              )}
+              className={cn("text-[10px]", avgSkew < 0 ? "text-rose-400" : "text-emerald-400")}
             >
-              25d Skew: {(avgSkew * 100).toFixed(2)}%
+              25d Skew: {formatPercent(avgSkew * 100, 2)}
             </Badge>
           </div>
         </div>
-        {isLoading && (
-          <div className="text-xs text-muted-foreground mt-1">
-            Loading vol surface...
-          </div>
-        )}
+        {isLoading && <div className="text-xs text-muted-foreground mt-1">Loading vol surface...</div>}
       </CardHeader>
 
       <CardContent className="pt-0">
         <ResponsiveContainer width="100%" height={height}>
-          <LineChart
-            data={chartData}
-            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="rgba(255,255,255,0.1)"
-            />
+          <LineChart data={chartData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
             <XAxis
               dataKey="strike"
               tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
@@ -230,7 +194,7 @@ export function VolSurfaceChart({
             />
             <YAxis
               tick={{ fill: "rgba(255,255,255,0.5)", fontSize: 10 }}
-              tickFormatter={(v: number) => `${v.toFixed(0)}%`}
+              tickFormatter={(v: number) => `${formatPercent(v, 0)}`}
               stroke="rgba(255,255,255,0.2)"
               domain={["auto", "auto"]}
             />
@@ -241,10 +205,8 @@ export function VolSurfaceChart({
                 borderRadius: "6px",
                 fontSize: 11,
               }}
-              formatter={(value: number) => [`${value.toFixed(1)}%`, ""]}
-              labelFormatter={(label: number) =>
-                `Strike: ${label.toLocaleString()}`
-              }
+              formatter={(value: number) => [`${formatPercent(value, 1)}`, ""]}
+              labelFormatter={(label: number) => `Strike: ${label.toLocaleString()}`}
             />
             <Legend wrapperStyle={{ fontSize: 11 }} />
             {surface.smiles.map((smile, idx) => (

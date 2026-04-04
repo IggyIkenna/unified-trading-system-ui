@@ -1,12 +1,10 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type {
-  DirectionPerformance,
-  PnlBucket,
-} from "@/lib/backtest-analytics-types";
+import type { DirectionPerformance, PnlBucket } from "@/lib/types/backtest-analytics";
 import { PnlDistributionHistogram } from "./pnl-distribution-histogram";
 import { WinLossDonut } from "./win-loss-donut";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 interface TradesAnalysisSectionProps {
   all: DirectionPerformance;
@@ -38,26 +36,20 @@ function MetricRow({
       case "usd":
         return `${v >= 0 ? "+" : ""}$${Math.abs(v).toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
       case "pct":
-        return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+        return `${v >= 0 ? "+" : ""}${formatPercent(v, 2)}`;
       case "count":
         return String(Math.round(v));
       default:
-        return v.toFixed(2);
+        return formatNumber(v, 2);
     }
   };
 
   return (
     <tr className="border-t border-border/30">
       <td className="py-1.5 text-xs text-muted-foreground pr-4">{label}</td>
-      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">
-        {f(all)}
-      </td>
-      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">
-        {f(long)}
-      </td>
-      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">
-        {f(short)}
-      </td>
+      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{f(all)}</td>
+      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{f(long)}</td>
+      <td className="py-1.5 text-xs font-mono tabular-nums text-right px-3">{f(short)}</td>
     </tr>
   );
 }
@@ -82,43 +74,27 @@ export function TradesAnalysisSection({
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
             P&L Distribution
           </h4>
-          <PnlDistributionHistogram
-            buckets={pnlBuckets}
-            avgProfitPct={avgProfitPct}
-            avgLossPct={avgLossPct}
-          />
+          <PnlDistributionHistogram buckets={pnlBuckets} avgProfitPct={avgProfitPct} avgLossPct={avgLossPct} />
         </div>
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
             Win / Loss Ratio
           </h4>
-          <WinLossDonut
-            wins={all.winning_trades}
-            losses={all.losing_trades}
-            breakEven={all.break_even_trades}
-          />
+          <WinLossDonut wins={all.winning_trades} losses={all.losing_trades} breakEven={all.break_even_trades} />
         </div>
       </div>
 
       {/* Details Table */}
       <div>
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-          Details
-        </h4>
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Details</h4>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr>
                 <th className="text-left text-[11px] font-medium text-muted-foreground pb-2" />
-                <th className="text-right text-[11px] font-medium text-muted-foreground pb-2 px-3">
-                  All
-                </th>
-                <th className="text-right text-[11px] font-medium text-muted-foreground pb-2 px-3">
-                  Long
-                </th>
-                <th className="text-right text-[11px] font-medium text-muted-foreground pb-2 px-3">
-                  Short
-                </th>
+                <th className="text-right text-[11px] font-medium text-muted-foreground pb-2 px-3">All</th>
+                <th className="text-right text-[11px] font-medium text-muted-foreground pb-2 px-3">Long</th>
+                <th className="text-right text-[11px] font-medium text-muted-foreground pb-2 px-3">Short</th>
               </tr>
             </thead>
             <tbody>
@@ -150,13 +126,7 @@ export function TradesAnalysisSection({
                 short={short.win_rate}
                 format="pct"
               />
-              <MetricRow
-                label="Avg P&L"
-                all={all.avg_pnl}
-                long={long.avg_pnl}
-                short={short.avg_pnl}
-                format="usd"
-              />
+              <MetricRow label="Avg P&L" all={all.avg_pnl} long={long.avg_pnl} short={short.avg_pnl} format="usd" />
               <MetricRow
                 label="Avg winning"
                 all={all.avg_winning_trade}

@@ -4,8 +4,8 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { DataFreshness } from "@/components/ui/data-freshness";
-import { DataTable } from "@/components/ui/data-table";
+import { DataFreshness } from "@/components/shared/data-freshness";
+import { DataTable } from "@/components/shared/data-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,7 +34,7 @@ import {
   RefreshCw,
   XCircle,
 } from "lucide-react";
-import { FilterBar } from "@/components/platform/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
 import type { Alert, AlertSeverity, AlertStatus } from "./alerts-data-context";
 import { useAlertsData } from "./alerts-data-context";
 
@@ -396,7 +396,10 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
   return (
     <div className="flex flex-col gap-3 h-full min-h-0 p-2">
       <div className="flex items-center justify-between shrink-0">
-        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => setShowFilters((f) => !f)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <Filter className="size-3" />
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>

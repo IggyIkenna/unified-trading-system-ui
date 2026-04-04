@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ExecutionModeToggle, ExecutionModeIndicator } from "@/components/trading/execution-mode-toggle";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useStrategiesData } from "./strategies-data-context";
 
 export function StrategiesPageHeader() {
@@ -20,6 +21,16 @@ export function StrategiesPageHeader() {
             <p className="text-xs text-muted-foreground mt-0.5">
               {filteredStrategies.length} strategies across {Object.keys(groupedStrategies).length} asset classes
               {isLive ? " — Live execution" : " — Batch reconstruction"}
+              <span className="block mt-1.5">
+                <span className="text-muted-foreground/80">Multi-widget DeFi verification:</span>{" "}
+                <Link className="text-primary hover:underline" href="/services/trading/strategies/basis-trade">
+                  Basis trade
+                </Link>
+                <span className="mx-1 opacity-50">·</span>
+                <Link className="text-primary hover:underline" href="/services/trading/strategies/staked-basis">
+                  Staked basis
+                </Link>
+              </span>
             </p>
           )}
         </div>

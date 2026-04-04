@@ -6,6 +6,7 @@ import { PnLValue } from "@/components/trading/pnl-value";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { usePnLData } from "./pnl-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const STRATEGY_AREA_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ec4899", "#8b5cf6"];
 
@@ -42,7 +43,7 @@ export function PnlFactorDrilldownWidget(_props: WidgetComponentProps) {
                         <span className="text-xs text-muted-foreground ml-1">({item.client})</span>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs text-muted-foreground">{item.percentage.toFixed(1)}%</span>
+                        <span className="text-xs text-muted-foreground">{formatPercent(item.percentage, 1)}</span>
                         <PnLValue value={item.value} size="sm" showSign />
                       </div>
                     </div>
@@ -66,7 +67,7 @@ export function PnlFactorDrilldownWidget(_props: WidgetComponentProps) {
                     <XAxis dataKey="time" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
                     <YAxis
                       tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
-                      tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                      tickFormatter={(v) => `$${formatNumber(v / 1000, 0)}k`}
                       width={50}
                     />
                     <Tooltip

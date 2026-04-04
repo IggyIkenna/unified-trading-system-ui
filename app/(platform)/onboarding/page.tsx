@@ -4,43 +4,16 @@ import * as React from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  ArrowRight,
-  Building2,
-  CheckCircle2,
-  Key,
-  BarChart3,
-  Shield,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowRight, Building2, CheckCircle2, Key, BarChart3, Shield } from "lucide-react";
+import { PageHeader } from "@/components/shared/page-header";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 
-const SUPPORTED_VENUES = [
-  "Binance",
-  "OKX",
-  "Bybit",
-  "Deribit",
-  "Coinbase",
-  "Kraken",
-  "Hyperliquid",
-  "IBKR",
-];
+const SUPPORTED_VENUES = ["Binance", "OKX", "Bybit", "Deribit", "Coinbase", "Kraken", "Hyperliquid", "IBKR"];
 
 type OnboardingStep = "fund" | "keys" | "complete";
 
@@ -53,9 +26,7 @@ export default function OnboardingCompletionPage() {
   const [venue, setVenue] = React.useState("");
   const [apiKey, setApiKey] = React.useState("");
   const [apiSecret, setApiSecret] = React.useState("");
-  const [addedKeys, setAddedKeys] = React.useState<
-    Array<{ venue: string; masked: string }>
-  >([]);
+  const [addedKeys, setAddedKeys] = React.useState<Array<{ venue: string; masked: string }>>([]);
 
   async function handleCreateFund() {
     if (!fundName || !fundStructure) return;
@@ -105,15 +76,15 @@ export default function OnboardingCompletionPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
+        <div className="mb-8 flex flex-col items-center text-center">
           <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-emerald-500/10">
             <CheckCircle2 className="size-8 text-emerald-400" />
           </div>
-          <h1 className="text-2xl font-bold">Welcome to the Platform</h1>
-          <p className="text-muted-foreground mt-1">
-            Your application has been approved. Complete these steps to unlock
-            your reports.
-          </p>
+          <PageHeader
+            className="w-full max-w-xl [&>div:first-child]:justify-center [&_.min-w-0]:text-center"
+            title="Welcome to the Platform"
+            description="Your application has been approved. Complete these steps to unlock your reports."
+          />
         </div>
 
         {/* Progress */}
@@ -123,20 +94,11 @@ export default function OnboardingCompletionPage() {
             { id: "keys", label: "Add API Keys" },
             { id: "complete", label: "Reports Live" },
           ].map((s, i) => {
-            const done =
-              s.id === "fund"
-                ? step !== "fund"
-                : s.id === "keys"
-                  ? step === "complete"
-                  : false;
+            const done = s.id === "fund" ? step !== "fund" : s.id === "keys" ? step === "complete" : false;
             const active = s.id === step;
             return (
               <React.Fragment key={s.id}>
-                {i > 0 && (
-                  <div
-                    className={`h-px w-8 ${done ? "bg-emerald-500" : "bg-border"}`}
-                  />
-                )}
+                {i > 0 && <div className={`h-px w-8 ${done ? "bg-emerald-500" : "bg-border"}`} />}
                 <div
                   className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${
                     done
@@ -160,8 +122,7 @@ export default function OnboardingCompletionPage() {
               <Building2 className="size-6 text-primary mb-2" />
               <CardTitle className="text-lg">Create Your Fund</CardTitle>
               <CardDescription>
-                Name your fund and choose a structure. This is how your
-                portfolio will appear in reports.
+                Name your fund and choose a structure. This is how your portfolio will appear in reports.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -188,23 +149,13 @@ export default function OnboardingCompletionPage() {
                     <SelectValue placeholder="Select structure" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sma">
-                      Separately Managed Account (SMA)
-                    </SelectItem>
-                    <SelectItem value="fund_crypto">
-                      Crypto Spot Fund (FCA + EU ESMA)
-                    </SelectItem>
-                    <SelectItem value="fund_derivatives">
-                      Derivatives Fund (EU ESMA)
-                    </SelectItem>
+                    <SelectItem value="sma">Separately Managed Account (SMA)</SelectItem>
+                    <SelectItem value="fund_crypto">Crypto Spot Fund (FCA + EU ESMA)</SelectItem>
+                    <SelectItem value="fund_derivatives">Derivatives Fund (EU ESMA)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <Button
-                onClick={handleCreateFund}
-                disabled={!fundName || !fundStructure}
-                className="w-full"
-              >
+              <Button onClick={handleCreateFund} disabled={!fundName || !fundStructure} className="w-full">
                 Create Fund <ArrowRight className="ml-2 size-4" />
               </Button>
             </CardContent>
@@ -215,12 +166,10 @@ export default function OnboardingCompletionPage() {
           <Card>
             <CardHeader>
               <Key className="size-6 text-primary mb-2" />
-              <CardTitle className="text-lg">
-                Add Venue API Keys
-              </CardTitle>
+              <CardTitle className="text-lg">Add Venue API Keys</CardTitle>
               <CardDescription>
-                Connect your exchange accounts with read-only API keys. This is
-                what populates your reports with live trading data.
+                Connect your exchange accounts with read-only API keys. This is what populates your reports with live
+                trading data.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -228,9 +177,8 @@ export default function OnboardingCompletionPage() {
                 <div className="flex items-start gap-2">
                   <Shield className="size-4 text-amber-400 mt-0.5 shrink-0" />
                   <p className="text-xs text-muted-foreground">
-                    We only need <strong>read-only</strong> permissions. Never
-                    share withdrawal keys. You can revoke access at any time from
-                    Settings.
+                    We only need <strong>read-only</strong> permissions. Never share withdrawal keys. You can revoke
+                    access at any time from Settings.
                   </p>
                 </div>
               </div>
@@ -238,17 +186,12 @@ export default function OnboardingCompletionPage() {
               {addedKeys.length > 0 && (
                 <div className="space-y-2">
                   {addedKeys.map((k, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between p-2 rounded-lg border"
-                    >
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg border">
                       <div className="flex items-center gap-2">
                         <Key className="size-4 text-emerald-400" />
                         <span className="text-sm font-medium">{k.venue}</span>
                       </div>
-                      <Badge className="bg-emerald-500/10 text-emerald-400 text-[10px]">
-                        Connected
-                      </Badge>
+                      <Badge className="bg-emerald-500/10 text-emerald-400 text-[10px]">Connected</Badge>
                     </div>
                   ))}
                 </div>
@@ -291,20 +234,11 @@ export default function OnboardingCompletionPage() {
                 />
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={handleAddKey}
-                  disabled={!venue || !apiKey || !apiSecret}
-                >
+                <Button variant="outline" onClick={handleAddKey} disabled={!venue || !apiKey || !apiSecret}>
                   Add Key
                 </Button>
-                <Button
-                  onClick={handleComplete}
-                  disabled={addedKeys.length === 0}
-                  className="flex-1"
-                >
-                  Continue to Reports{" "}
-                  <ArrowRight className="ml-2 size-4" />
+                <Button onClick={handleComplete} disabled={addedKeys.length === 0} className="flex-1">
+                  Continue to Reports <ArrowRight className="ml-2 size-4" />
                 </Button>
               </div>
             </CardContent>
@@ -316,14 +250,10 @@ export default function OnboardingCompletionPage() {
             <Card className="border-emerald-500/20 bg-emerald-500/5">
               <CardContent className="py-8">
                 <BarChart3 className="size-12 text-emerald-400 mx-auto mb-4" />
-                <h2 className="text-xl font-bold mb-2">
-                  Your Reports Are Live
-                </h2>
+                <h2 className="text-xl font-bold mb-2">Your Reports Are Live</h2>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  We&apos;re pulling data from{" "}
-                  {addedKeys.map((k) => k.venue).join(", ")}. Your portfolio
-                  performance, P&amp;L attribution, and settlement tracking will
-                  populate as trading data flows in.
+                  We&apos;re pulling data from {addedKeys.map((k) => k.venue).join(", ")}. Your portfolio performance,
+                  P&amp;L attribution, and settlement tracking will populate as trading data flows in.
                 </p>
               </CardContent>
             </Card>

@@ -401,6 +401,72 @@ export const TURBO_SUB_DIMENSION_SERVICES: Record<string, string> = {
 };
 
 // ---------------------------------------------------------------------------
+// Deploy-missing response type
+// ---------------------------------------------------------------------------
+
+export interface DeployMissingResponse {
+  missing_analysis: {
+    service: string;
+    total_missing: number;
+    missing_by_date: Record<string, number>;
+    missing_by_venue: Record<string, number>;
+    missing_by_category: Record<string, number>;
+    summary: {
+      total_days_checked: number;
+      days_with_missing: number;
+      completion_rate: number;
+    };
+  };
+  deployment?: {
+    deployment_id: string;
+    status: string;
+    total_shards: number;
+    cli_command: string;
+  };
+  dry_run: boolean;
+  mock?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Deploy-missing — calls POST /api/deployments/deploy-missing
+// ---------------------------------------------------------------------------
+
+export async function deployMissing(params: {
+  service: string;
+  start_date: string;
+  end_date: string;
+  region?: string;
+  categories?: string[];
+  venues?: string[];
+  folders?: string[];
+  data_types?: string[];
+  force?: boolean;
+  dry_run?: boolean;
+  skip_existing?: boolean;
+  exclude_dates?: Record<string, string[] | Record<string, string[]>>;
+  date_granularity?: "daily" | "weekly" | "monthly" | "none";
+  deploy_missing_only?: boolean;
+  first_day_of_month_only?: boolean;
+  mode?: "batch" | "live";
+  tag?: string;
+}): Promise<DeployMissingResponse> {
+  const response = await fetch("/api/deployments/deploy-missing", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text().catch(() => "");
+    throw new Error(
+      `Deploy-missing failed (${response.status}): ${errorBody || response.statusText}`,
+    );
+  }
+
+  return response.json() as Promise<DeployMissingResponse>;
+}
+
+// ---------------------------------------------------------------------------
 // Stub functions — all return mock / empty data
 // TODO: Wire to real API
 // ---------------------------------------------------------------------------

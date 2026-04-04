@@ -4,7 +4,9 @@ import { apiFetch } from "@/lib/api/fetch";
 import type { TransferHistoryEntry } from "@/lib/types/accounts";
 
 interface TransferHistoryResponse {
-  transfers: TransferHistoryEntry[];
+  data?: TransferHistoryEntry[];
+  /** @deprecated use `data` — kept for backward compat */
+  transfers?: TransferHistoryEntry[];
 }
 
 export function useTransferHistory() {
@@ -13,8 +15,9 @@ export function useTransferHistory() {
   return useQuery({
     queryKey: ["transfer-history", user?.id],
     queryFn: async () => {
-      const data = (await apiFetch("/api/accounts/transfer-history", token)) as TransferHistoryResponse;
-      return Array.isArray(data?.transfers) ? data.transfers : [];
+      const resp = (await apiFetch("/api/accounts/transfer-history", token)) as TransferHistoryResponse;
+      const arr = resp?.data ?? resp?.transfers;
+      return Array.isArray(arr) ? arr : [];
     },
     enabled: !!user,
   });

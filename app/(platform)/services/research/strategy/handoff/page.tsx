@@ -2,25 +2,13 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { PageHeader } from "@/components/shared/page-header";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import {
-  Send,
-  CheckCircle2,
-  Circle,
-  ArrowRight,
-  Shield,
-  ClipboardCheck,
-} from "lucide-react";
+import { Send, CheckCircle2, Circle, ArrowRight, Shield, ClipboardCheck } from "lucide-react";
 
 // ---------------------------------------------------------------------------
 // Types & Data
@@ -109,17 +97,15 @@ export default function StrategyHandoffPage() {
   return (
     <div className="flex-1 overflow-auto p-6">
       <div className="max-w-[900px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
               <Send className="size-6" />
               Strategy Handoff to Execution
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Complete all checklist items before submitting for promotion review
-            </p>
-          </div>
+            </span>
+          }
+          description="Complete all checklist items before submitting for promotion review"
+        >
           <Badge
             variant="outline"
             className={
@@ -130,7 +116,7 @@ export default function StrategyHandoffPage() {
           >
             {completedCount} / {totalCount} complete
           </Badge>
-        </div>
+        </PageHeader>
 
         {/* Progress */}
         <Card>
@@ -160,9 +146,7 @@ export default function StrategyHandoffPage() {
               <ClipboardCheck className="size-4" />
               Promotion Checklist
             </CardTitle>
-            <CardDescription>
-              Each item must be verified before the strategy can go live
-            </CardDescription>
+            <CardDescription>Each item must be verified before the strategy can go live</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
@@ -172,28 +156,17 @@ export default function StrategyHandoffPage() {
                   <div
                     key={item.id}
                     className={`flex items-start gap-4 p-4 rounded-lg border transition-colors cursor-pointer ${
-                      isChecked
-                        ? "border-emerald-500/30 bg-emerald-500/5"
-                        : "border-border/50 hover:border-border"
+                      isChecked ? "border-emerald-500/30 bg-emerald-500/5" : "border-border/50 hover:border-border"
                     }`}
                     onClick={() => toggleItem(item.id)}
                   >
                     <div className="pt-0.5">
-                      <Checkbox
-                        checked={isChecked}
-                        onCheckedChange={() => toggleItem(item.id)}
-                      />
+                      <Checkbox checked={isChecked} onCheckedChange={() => toggleItem(item.id)} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono">
-                          {idx + 1}.
-                        </span>
-                        <span
-                          className={`font-medium text-sm ${
-                            isChecked ? "text-emerald-400" : "text-foreground"
-                          }`}
-                        >
+                        <span className="text-xs text-muted-foreground font-mono">{idx + 1}.</span>
+                        <span className={`font-medium text-sm ${isChecked ? "text-emerald-400" : "text-foreground"}`}>
                           {item.label}
                         </span>
                         {isChecked ? (
@@ -202,9 +175,7 @@ export default function StrategyHandoffPage() {
                           <Circle className="size-4 text-muted-foreground/40 shrink-0" />
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5 ml-5">
-                        {item.description}
-                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5 ml-5">{item.description}</p>
                     </div>
                   </div>
                 );
@@ -215,11 +186,7 @@ export default function StrategyHandoffPage() {
 
         {/* Actions */}
         <div className="flex items-center gap-3">
-          <Button
-            size="lg"
-            className="flex-1 gap-2"
-            disabled={!allComplete}
-          >
+          <Button size="lg" className="flex-1 gap-2" disabled={!allComplete}>
             <Shield className="size-4" />
             Submit for Review
           </Button>
@@ -233,8 +200,8 @@ export default function StrategyHandoffPage() {
 
         {!allComplete && (
           <p className="text-xs text-muted-foreground text-center">
-            Complete all {totalCount} checklist items to enable submission.{" "}
-            {totalCount - completedCount} item{totalCount - completedCount !== 1 ? "s" : ""} remaining.
+            Complete all {totalCount} checklist items to enable submission. {totalCount - completedCount} item
+            {totalCount - completedCount !== 1 ? "s" : ""} remaining.
           </p>
         )}
       </div>

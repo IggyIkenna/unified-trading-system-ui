@@ -1,3 +1,8 @@
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -6,7 +11,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   turbopack: {
-    root: import.meta.dirname,
+    root: __dirname,
   },
   experimental: {
     turbopackFileSystemCacheForBuild: true,

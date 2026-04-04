@@ -3,6 +3,7 @@
 import { RequireAuth } from "@/components/shell/require-auth";
 import { UnifiedShell } from "@/components/shell/unified-shell";
 import { ServiceTabs, ADMIN_TABS } from "@/components/shell/service-tabs";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -36,9 +37,7 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-3">
           <h1 className="text-2xl font-bold">Access Denied</h1>
-          <p className="text-muted-foreground">
-            This area is restricted to admin users.
-          </p>
+          <p className="text-muted-foreground">This area is restricted to admin users.</p>
         </div>
       </div>
     );
@@ -52,7 +51,7 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
       userRole={user.role ?? "admin"}
     >
       <ServiceTabs tabs={ADMIN_TABS} entitlements={user?.entitlements} />
-      {children}
+      <ErrorBoundary>{children}</ErrorBoundary>
     </UnifiedShell>
   );
 }

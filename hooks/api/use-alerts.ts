@@ -1,14 +1,18 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
-import { typedFetch } from "@/lib/api/typed-fetch";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+
+type AlertsListResponse = GatewayApiResponse<"/api/alerts/list">;
+type AlertsSummaryResponse = GatewayApiResponse<"/api/alerts/summary">;
 
 export function useAlerts() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<AlertsListResponse>({
     queryKey: ["alerts", user?.id],
-    queryFn: () => apiFetch("/api/alerts/list", token),
+    queryFn: () =>
+      typedFetch<AlertsListResponse>("/api/alerts/list", token),
     enabled: !!user,
   });
 }
@@ -16,9 +20,10 @@ export function useAlerts() {
 export function useAlertsSummary() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<AlertsSummaryResponse>({
     queryKey: ["alerts-summary", user?.id],
-    queryFn: () => apiFetch("/api/alerts/summary", token),
+    queryFn: () =>
+      typedFetch<AlertsSummaryResponse>("/api/alerts/summary", token),
     enabled: !!user,
   });
 }

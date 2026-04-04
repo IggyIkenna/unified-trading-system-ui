@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle2, XCircle, AlertTriangle, ShieldCheck, ShieldX } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/shared/spinner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { cn } from "@/lib/utils";
+import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldX, XCircle } from "lucide-react";
 import { useBookTradeData } from "./book-data-context";
 
 export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
@@ -126,7 +126,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
           {executionMode === "execute" && (
             <div className="p-3 rounded-md border space-y-2">
               <p className="text-[10px] font-medium flex items-center gap-1.5">
-                {complianceLoading && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
+                {complianceLoading && <Spinner size="sm" className="size-3 text-muted-foreground" />}
                 {!complianceLoading && complianceResult?.passed && <ShieldCheck className="size-3 text-emerald-500" />}
                 {!complianceLoading && complianceResult && !complianceResult.passed && (
                   <ShieldX className="size-3 text-rose-500" />
@@ -221,7 +221,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
             >
               {complianceLoading ? (
                 <>
-                  <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+                  <Spinner size="sm" className="size-3.5 mr-1.5" />
                   Checking...
                 </>
               ) : executionMode === "execute" ? (
@@ -236,7 +236,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
 
       {orderState === "submitting" && (
         <Button className="w-full h-8" disabled>
-          <Loader2 className="size-3.5 mr-2 animate-spin" />
+          <Spinner size="sm" className="size-3.5 mr-2" />
           {executionMode === "execute" ? "Submitting..." : "Recording..."}
         </Button>
       )}

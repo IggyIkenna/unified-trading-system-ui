@@ -9,11 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Fuel, Plus, Trash2, Zap } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { FLASH_OPERATION_TYPES, FLASH_VENUES } from "@/lib/config/services/defi.config";
+import { FLASH_OPERATION_TYPES, FLASH_VENUES, DEFI_INSTRUCTION_TYPES, DEFI_ALGO_TYPES, SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
+import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
+import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import { SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
   const { flashSteps, addFlashStep, removeFlashStep, updateFlashStep, flashPnl, executeDeFiOrder } = useDeFiData();
@@ -68,14 +71,20 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Select value={step.operationType} onValueChange={(v) => updateFlashStep(step.id, "operationType", v)}>
+              <Select value={step.operationType} onValueChange={(v) => {
+                updateFlashStep(step.id, "operationType", v);
+                const allowed = INSTRUCTION_ALGO_MAP[v as InstructionType];
+                if (allowed && !allowed.includes(step.algo_type as AlgoType)) {
+                  updateFlashStep(step.id, "algo_type", allowed[0]);
+                }
+              }}>
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {FLASH_OPERATION_TYPES.map((op) => (
-                    <SelectItem key={op} value={op}>
-                      {op}
+                  {DEFI_INSTRUCTION_TYPES.map((op) => (
+                    <SelectItem key={op.value} value={op.value}>
+                      {op.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -88,6 +97,41 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
                   {FLASH_VENUES.map((v) => (
                     <SelectItem key={v} value={v}>
                       {v}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Select
+                value={step.algo_type ?? "SOR_DEX"}
+                onValueChange={(v) => updateFlashStep(step.id, "algo_type", v)}
+              >
+                <SelectTrigger className="h-7 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(INSTRUCTION_ALGO_MAP[step.operationType as InstructionType] ?? []).map((a) => {
+                    const cfg = DEFI_ALGO_TYPES.find((t) => t.value === a);
+                    return (
+                      <SelectItem key={a} value={a}>
+                        {cfg?.label ?? a}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+              <Select
+                value={String(step.max_slippage_bps ?? 50)}
+                onValueChange={(v) => updateFlashStep(step.id, "max_slippage_bps", v)}
+              >
+                <SelectTrigger className="h-7 text-xs">
+                  <SelectValue placeholder="Slippage" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SLIPPAGE_OPTIONS.map((s) => (
+                    <SelectItem key={s.value} value={String(s.value)}>
+                      {s.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -141,15 +185,15 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         <p className="text-xs font-medium">P&amp;L preview</p>
         <div className="grid grid-cols-2 gap-1 text-xs">
           <span className="text-muted-foreground">Gross profit</span>
-          <span className="font-mono text-emerald-400">${flashPnl.grossProfit.toFixed(2)}</span>
+          <span className="font-mono text-emerald-400">${formatNumber(flashPnl.grossProfit, 2)}</span>
           <span className="text-muted-foreground">Flash fee</span>
-          <span className="font-mono text-rose-400">-${flashPnl.flashFee.toFixed(2)}</span>
+          <span className="font-mono text-rose-400">-${formatNumber(flashPnl.flashFee, 2)}</span>
           <span className="text-muted-foreground">Gas estimate</span>
-          <span className="font-mono text-rose-400">-${flashPnl.gasEstimate.toFixed(2)}</span>
+          <span className="font-mono text-rose-400">-${formatNumber(flashPnl.gasEstimate, 2)}</span>
           <Separator className="col-span-2 my-1" />
           <span className="font-medium">Net P&amp;L</span>
           <span className={cn("font-mono font-bold", netPnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
-            ${netPnl.toFixed(2)}
+            ${formatNumber(netPnl, 2)}
           </span>
         </div>
       </div>
@@ -165,18 +209,25 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
           onClick={() => {
             executeDeFiOrder({
               client_id: "internal-trader",
+              strategy_id: "AAVE_LENDING",
+              instruction_type: "FLASH_BORROW",
+              algo_type: "FLASH_LOAN_AAVE",
               instrument_id: `FLASH_LOAN:${flashSteps.map((s) => s.operationType).join(">")}`,
-              venue: "Aave",
+              venue: "AAVEV3-ETHEREUM",
               side: "buy",
               order_type: "market",
               quantity: 100,
               price: netPnl,
+              max_slippage_bps: 50,
+              expected_output: netPnl,
+              benchmark_price: netPnl,
               asset_class: "DeFi",
               lane: "defi",
+              is_atomic: true,
             });
             toast({
               title: "Flash loan executed",
-              description: `${flashSteps.length}-step bundle — net P&L $${netPnl.toFixed(2)} (mock ledger)`,
+              description: `${flashSteps.length}-step bundle — net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
             });
           }}
         >

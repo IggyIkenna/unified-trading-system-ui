@@ -1,15 +1,11 @@
 "use client";
 
 import { ServiceTabs, MANAGE_TABS } from "@/components/shell/service-tabs";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function ManageLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ManageLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
   return (

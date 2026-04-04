@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { MarketsDataProvider } from "@/components/widgets/markets/markets-data-context";
 
-import "@/components/widgets/markets/register";
-
 function MarketsPageContent() {
   return (
     <MarketsDataProvider>

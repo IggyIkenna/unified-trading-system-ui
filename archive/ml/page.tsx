@@ -27,13 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import {
   useExperiments,
@@ -43,7 +37,7 @@ import {
   useCreateTrainingJob,
   useMLMonitoring,
 } from "@/hooks/api/use-ml-models";
-import type { Experiment, ModelFamily, TrainingRun } from "@/lib/ml-types";
+import type { Experiment, ModelFamily, TrainingRun } from "@/lib/types/ml";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // ---------------------------------------------------------------------------
@@ -142,32 +136,21 @@ const INITIAL_FORM: TrainFormState = {
 // ---------------------------------------------------------------------------
 
 export default function MLOverviewPage() {
-  const { data: experimentsData, isLoading: experimentsLoading } =
-    useExperiments();
+  const { data: experimentsData, isLoading: experimentsLoading } = useExperiments();
   const { data: familiesData, isLoading: familiesLoading } = useModelFamilies();
   const { data: trainingRunsData, isLoading: runsLoading } = useTrainingRuns();
-  const { data: featureProvenanceData, isLoading: featuresLoading } =
-    useFeatureProvenance();
-  const { data: monitoringData, isLoading: monitoringLoading } =
-    useMLMonitoring();
+  const { data: featureProvenanceData, isLoading: featuresLoading } = useFeatureProvenance();
+  const { data: monitoringData, isLoading: monitoringLoading } = useMLMonitoring();
   const createJob = useCreateTrainingJob();
 
-  const experiments: Experiment[] =
-    (experimentsData as any)?.data ??
-    (experimentsData as any)?.experiments ??
-    [];
-  const modelFamilies: ModelFamily[] =
-    (familiesData as any)?.data ?? (familiesData as any)?.families ?? [];
-  const trainingRuns: TrainingRun[] =
-    (trainingRunsData as any)?.data ?? (trainingRunsData as any)?.runs ?? [];
+  const experiments: Experiment[] = (experimentsData as any)?.data ?? (experimentsData as any)?.experiments ?? [];
+  const modelFamilies: ModelFamily[] = (familiesData as any)?.data ?? (familiesData as any)?.families ?? [];
+  const trainingRuns: TrainingRun[] = (trainingRunsData as any)?.data ?? (trainingRunsData as any)?.runs ?? [];
   const featureProvenance: {
     featureName: string;
     status: string;
     freshness: string;
-  }[] =
-    (featureProvenanceData as any)?.data ??
-    (featureProvenanceData as any)?.features ??
-    [];
+  }[] = (featureProvenanceData as any)?.data ?? (featureProvenanceData as any)?.features ?? [];
   const mlAlerts: {
     id: string;
     severity: string;
@@ -181,12 +164,8 @@ export default function MLOverviewPage() {
 
   // KPIs
   const totalFamilies = modelFamilies.length;
-  const runningExperiments = experiments.filter(
-    (e) => e.status === "running",
-  ).length;
-  const completedExperiments = experiments.filter(
-    (e) => e.status === "completed",
-  ).length;
+  const runningExperiments = experiments.filter((e) => e.status === "running").length;
+  const completedExperiments = experiments.filter((e) => e.status === "completed").length;
   const unresolvedAlerts = mlAlerts.filter((a) => !a.resolvedAt).length;
 
   function handleSubmitTraining() {
@@ -218,12 +197,7 @@ export default function MLOverviewPage() {
     setDialogOpen(false);
   }
 
-  const isLoading =
-    experimentsLoading ||
-    familiesLoading ||
-    runsLoading ||
-    featuresLoading ||
-    monitoringLoading;
+  const isLoading = experimentsLoading || familiesLoading || runsLoading || featuresLoading || monitoringLoading;
 
   if (isLoading) {
     return (
@@ -241,9 +215,7 @@ export default function MLOverviewPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">ML Platform</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Model training, validation, and deployment operations
-            </p>
+            <p className="text-sm text-muted-foreground mt-1">Model training, validation, and deployment operations</p>
           </div>
           <Button onClick={() => setDialogOpen(true)}>
             <Play className="size-4" />
@@ -257,9 +229,7 @@ export default function MLOverviewPage() {
             <CardContent className="pt-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Model Families
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Model Families</p>
                   <p className="text-3xl font-bold mt-1">{totalFamilies}</p>
                 </div>
                 <div className="rounded-lg bg-purple-500/10 p-2.5">
@@ -273,12 +243,8 @@ export default function MLOverviewPage() {
             <CardContent className="pt-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Training Active
-                  </p>
-                  <p className="text-3xl font-bold mt-1">
-                    {runningExperiments}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Training Active</p>
+                  <p className="text-3xl font-bold mt-1">{runningExperiments}</p>
                 </div>
                 <div className="rounded-lg bg-blue-500/10 p-2.5">
                   <Cpu className="size-5 text-blue-400" />
@@ -291,12 +257,8 @@ export default function MLOverviewPage() {
             <CardContent className="pt-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Completed
-                  </p>
-                  <p className="text-3xl font-bold mt-1">
-                    {completedExperiments}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Completed</p>
+                  <p className="text-3xl font-bold mt-1">{completedExperiments}</p>
                 </div>
                 <div className="rounded-lg bg-emerald-500/10 p-2.5">
                   <CheckCircle2 className="size-5 text-emerald-400" />
@@ -309,9 +271,7 @@ export default function MLOverviewPage() {
             <CardContent className="pt-0">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Active Alerts
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Active Alerts</p>
                   <p className="text-3xl font-bold mt-1">{unresolvedAlerts}</p>
                 </div>
                 <div className="rounded-lg bg-red-500/10 p-2.5">
@@ -330,64 +290,41 @@ export default function MLOverviewPage() {
           </h2>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {modelFamilies.map((family) => {
-              const familyExps = experiments.filter(
-                (e) => e.modelFamilyId === family.id,
-              );
-              const runningCount = familyExps.filter(
-                (e) => e.status === "running",
-              ).length;
+              const familyExps = experiments.filter((e) => e.modelFamilyId === family.id);
+              const runningCount = familyExps.filter((e) => e.status === "running").length;
 
               return (
                 <Card key={family.id} className="border-border/50">
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold">
-                        {family.name}
-                      </CardTitle>
-                      <Badge
-                        variant="outline"
-                        className={archetypeColor(family.archetype)}
-                      >
+                      <CardTitle className="text-sm font-semibold">{family.name}</CardTitle>
+                      <Badge variant="outline" className={archetypeColor(family.archetype)}>
                         {family.archetype.replace(/_/g, " ")}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {family.description}
-                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{family.description}</p>
 
                     <div className="grid grid-cols-3 gap-2 text-center">
                       <div className="rounded-md bg-muted/30 p-2">
-                        <p className="text-lg font-bold">
-                          {family.totalVersions}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Versions
-                        </p>
+                        <p className="text-lg font-bold">{family.totalVersions}</p>
+                        <p className="text-[10px] text-muted-foreground">Versions</p>
                       </div>
                       <div className="rounded-md bg-muted/30 p-2">
-                        <p className="text-lg font-bold">
-                          {family.linkedStrategies.length}
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Strategies
-                        </p>
+                        <p className="text-lg font-bold">{family.linkedStrategies.length}</p>
+                        <p className="text-[10px] text-muted-foreground">Strategies</p>
                       </div>
                       <div className="rounded-md bg-muted/30 p-2">
                         <p className="text-lg font-bold">{runningCount}</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          Training
-                        </p>
+                        <p className="text-[10px] text-muted-foreground">Training</p>
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
                       {family.currentChampion && (
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">
-                            Champion
-                          </span>
+                          <span className="text-muted-foreground">Champion</span>
                           <Badge
                             variant="outline"
                             className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 font-mono text-[10px]"
@@ -398,9 +335,7 @@ export default function MLOverviewPage() {
                       )}
                       {family.currentChallenger && (
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">
-                            Challenger
-                          </span>
+                          <span className="text-muted-foreground">Challenger</span>
                           <Badge
                             variant="outline"
                             className="bg-blue-500/15 text-blue-400 border-blue-500/30 font-mono text-[10px]"
@@ -432,21 +367,14 @@ export default function MLOverviewPage() {
                     <div className="flex items-center justify-between">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">
-                            {exp.name}
-                          </span>
-                          <Badge
-                            variant="outline"
-                            className={statusColor(exp.status)}
-                          >
+                          <span className="font-medium text-sm">{exp.name}</span>
+                          <Badge variant="outline" className={statusColor(exp.status)}>
                             {exp.status}
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
                           by {exp.createdBy} &middot;{" "}
-                          {exp.startedAt
-                            ? new Date(exp.startedAt).toLocaleDateString()
-                            : "not started"}
+                          {exp.startedAt ? new Date(exp.startedAt).toLocaleDateString() : "not started"}
                         </p>
                       </div>
                       <div className="text-right">
@@ -461,24 +389,17 @@ export default function MLOverviewPage() {
                                 style={{ width: `${exp.progress}%` }}
                               />
                             </div>
-                            <p className="text-[10px] text-muted-foreground">
-                              ETA: {run.estimatedTimeRemaining}
-                            </p>
+                            <p className="text-[10px] text-muted-foreground">ETA: {run.estimatedTimeRemaining}</p>
                           </div>
                         )}
                         {exp.metrics && (
                           <div className="flex items-center gap-3 text-xs">
                             <span>
                               Acc:{" "}
-                              <span className="font-mono font-medium">
-                                {(exp.metrics.accuracy * 100).toFixed(1)}%
-                              </span>
+                              <span className="font-mono font-medium">{(exp.metrics.accuracy * 100).toFixed(1)}%</span>
                             </span>
                             <span>
-                              Sharpe:{" "}
-                              <span className="font-mono font-medium">
-                                {exp.metrics.sharpe.toFixed(2)}
-                              </span>
+                              Sharpe: <span className="font-mono font-medium">{exp.metrics.sharpe.toFixed(2)}</span>
                             </span>
                           </div>
                         )}
@@ -502,10 +423,7 @@ export default function MLOverviewPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {featureProvenance.map((fp) => (
-                  <div
-                    key={fp.featureName}
-                    className="flex items-center justify-between text-sm"
-                  >
+                  <div key={fp.featureName} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <div
                         className={`size-2 rounded-full ${
@@ -516,15 +434,9 @@ export default function MLOverviewPage() {
                               : "bg-red-400"
                         }`}
                       />
-                      <span className="font-mono text-xs">
-                        {fp.featureName}
-                      </span>
+                      <span className="font-mono text-xs">{fp.featureName}</span>
                     </div>
-                    <span
-                      className={`text-xs font-mono ${freshnessColor(fp.status)}`}
-                    >
-                      {fp.freshness}
-                    </span>
+                    <span className={`text-xs font-mono ${freshnessColor(fp.status)}`}>{fp.freshness}</span>
                   </div>
                 ))}
               </CardContent>
@@ -542,15 +454,9 @@ export default function MLOverviewPage() {
                 {mlAlerts
                   .filter((a) => !a.resolvedAt)
                   .map((alert) => (
-                    <div
-                      key={alert.id}
-                      className="rounded-lg border border-border/50 p-3 space-y-1.5"
-                    >
+                    <div key={alert.id} className="rounded-lg border border-border/50 p-3 space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <Badge
-                          variant="outline"
-                          className={alertSeverityColor(alert.severity)}
-                        >
+                        <Badge variant="outline" className={alertSeverityColor(alert.severity)}>
                           {alert.severity}
                         </Badge>
                         <span className="text-[10px] text-muted-foreground">
@@ -570,17 +476,12 @@ export default function MLOverviewPage() {
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
               <DialogTitle>Train New Model</DialogTitle>
-              <DialogDescription>
-                Configure and launch a new training experiment.
-              </DialogDescription>
+              <DialogDescription>Configure and launch a new training experiment.</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-2">
               <div className="space-y-2">
                 <Label>Model Family</Label>
-                <Select
-                  value={form.familyId}
-                  onValueChange={(v) => setForm((f) => ({ ...f, familyId: v }))}
-                >
+                <Select value={form.familyId} onValueChange={(v) => setForm((f) => ({ ...f, familyId: v }))}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select model family..." />
                   </SelectTrigger>
@@ -599,9 +500,7 @@ export default function MLOverviewPage() {
                 <Input
                   placeholder="e.g., BTC Direction v3.4 - Wider context"
                   value={form.name}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, name: e.target.value }))
-                  }
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 />
               </div>
 
@@ -615,9 +514,7 @@ export default function MLOverviewPage() {
                     <Input
                       type="number"
                       value={form.epochs}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, epochs: e.target.value }))
-                      }
+                      onChange={(e) => setForm((f) => ({ ...f, epochs: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1">
@@ -625,9 +522,7 @@ export default function MLOverviewPage() {
                     <Input
                       type="number"
                       value={form.batchSize}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, batchSize: e.target.value }))
-                      }
+                      onChange={(e) => setForm((f) => ({ ...f, batchSize: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1">
@@ -636,19 +531,12 @@ export default function MLOverviewPage() {
                       type="number"
                       step="0.0001"
                       value={form.learningRate}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, learningRate: e.target.value }))
-                      }
+                      onChange={(e) => setForm((f) => ({ ...f, learningRate: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-1">
                     <Label className="text-xs">Optimizer</Label>
-                    <Select
-                      value={form.optimizer}
-                      onValueChange={(v) =>
-                        setForm((f) => ({ ...f, optimizer: v }))
-                      }
-                    >
+                    <Select value={form.optimizer} onValueChange={(v) => setForm((f) => ({ ...f, optimizer: v }))}>
                       <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
@@ -663,12 +551,7 @@ export default function MLOverviewPage() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">GPU Type</Label>
-                  <Select
-                    value={form.gpuType}
-                    onValueChange={(v) =>
-                      setForm((f) => ({ ...f, gpuType: v }))
-                    }
-                  >
+                  <Select value={form.gpuType} onValueChange={(v) => setForm((f) => ({ ...f, gpuType: v }))}>
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
@@ -685,10 +568,7 @@ export default function MLOverviewPage() {
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSubmitTraining}
-                disabled={!form.familyId || !form.name}
-              >
+              <Button onClick={handleSubmitTraining} disabled={!form.familyId || !form.name}>
                 <Play className="size-4" />
                 Start Training
               </Button>

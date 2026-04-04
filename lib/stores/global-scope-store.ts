@@ -12,6 +12,7 @@ export interface GlobalScopeState {
   organizationIds: string[];
   clientIds: string[];
   strategyIds: string[];
+  strategyFamilyIds: string[];
   underlyingIds: string[];
   mode: "live" | "batch";
   asOfDatetime?: string;
@@ -22,6 +23,7 @@ interface GlobalScopeActions {
   setOrganizationIds: (ids: string[]) => void;
   setClientIds: (ids: string[]) => void;
   setStrategyIds: (ids: string[]) => void;
+  setStrategyFamilyIds: (ids: string[]) => void;
   setUnderlyingIds: (ids: string[]) => void;
   setMode: (mode: "live" | "batch") => void;
   setAsOfDatetime: (dt: string | undefined) => void;
@@ -35,6 +37,7 @@ const INITIAL_SCOPE: GlobalScopeState = {
   organizationIds: [],
   clientIds: [],
   strategyIds: [],
+  strategyFamilyIds: [],
   underlyingIds: [],
   mode: "live",
   asOfDatetime: undefined,
@@ -50,6 +53,8 @@ export const useGlobalScope = create<GlobalScopeActions>()(
         set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
       setStrategyIds: (ids) =>
         set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
+      setStrategyFamilyIds: (ids) =>
+        set((s) => ({ scope: { ...s.scope, strategyFamilyIds: ids } })),
       setUnderlyingIds: (ids) =>
         set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
       setMode: (mode) =>

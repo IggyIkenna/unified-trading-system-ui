@@ -235,7 +235,7 @@ Additionally, the risk page uses custom components:
 
 - `LimitBar` → `components/trading/limit-bar.tsx` — used in utilization + margin widgets
 - `PnLValue` → `components/trading/pnl-value.tsx` — used in exposure table
-- `StatusBadge` → `components/trading/status-badge.tsx` — used throughout
+- `StatusBadge` → `components/shared/status-badge.tsx` — used throughout
 - `CorrelationHeatmap` → `components/risk/correlation-heatmap.tsx` — dynamic import, self-contained widget
 
 ---

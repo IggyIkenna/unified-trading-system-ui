@@ -1,23 +1,26 @@
-import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import type { PaginatedResponse } from "@/lib/api/types";
 import type {
-  TradingOrganization,
-  TradingClient,
   PnLBreakdown,
   TimeSeriesPoint,
-} from "@/lib/trading-data";
+  TradingClient,
+  TradingOrganization,
+} from "@/lib/mocks/fixtures/trading-data";
+import { useQuery } from "@tanstack/react-query";
 
 // ---- Response shapes ----
 
-interface TradingOrgsResponse {
-  organizations: TradingOrganization[];
-  total: number;
+/** Paginated response with backward-compat `organizations` alias */
+interface TradingOrgsResponse extends PaginatedResponse<TradingOrganization> {
+  /** @deprecated use `data` — kept for backward compat */
+  organizations?: TradingOrganization[];
 }
 
-interface TradingClientsResponse {
-  clients: TradingClient[];
-  total: number;
+/** Paginated response with backward-compat `clients` alias */
+interface TradingClientsResponse extends PaginatedResponse<TradingClient> {
+  /** @deprecated use `data` — kept for backward compat */
+  clients?: TradingClient[];
 }
 
 interface TradingTimeseriesResponse {
@@ -28,13 +31,16 @@ interface TradingTimeseriesResponse {
   };
 }
 
-interface StrategyPerformanceRow {
+export interface StrategyPerformanceRow {
   id: string;
   name: string;
   assetClass: string;
   archetype: string;
   clientName: string;
   orgName: string;
+  /** Present on seed / merged rows for scope filtering by id */
+  orgId?: string;
+  clientId?: string;
   status: string;
   executionMode: string;
   pnl: number;
@@ -45,9 +51,10 @@ interface StrategyPerformanceRow {
   exposure: number;
 }
 
-interface TradingPerformanceResponse {
-  strategies: StrategyPerformanceRow[];
-  total: number;
+/** Paginated response with backward-compat `strategies` alias */
+interface TradingPerformanceResponse extends PaginatedResponse<StrategyPerformanceRow> {
+  /** @deprecated use `data` — kept for backward compat */
+  strategies?: StrategyPerformanceRow[];
 }
 
 interface LiveBatchDeltaResponse {
@@ -63,11 +70,7 @@ export function useTradingOrgs() {
 
   return useQuery<TradingOrgsResponse>({
     queryKey: ["trading-organizations", user?.id],
-    queryFn: () =>
-      apiFetch(
-        "/api/trading/organizations",
-        token,
-      ) as Promise<TradingOrgsResponse>,
+    queryFn: () => apiFetch("/api/trading/organizations", token) as Promise<TradingOrgsResponse>,
     enabled: !!user,
   });
 }
@@ -77,11 +80,7 @@ export function useTradingClients() {
 
   return useQuery<TradingClientsResponse>({
     queryKey: ["trading-clients", user?.id],
-    queryFn: () =>
-      apiFetch(
-        "/api/trading/clients",
-        token,
-      ) as Promise<TradingClientsResponse>,
+    queryFn: () => apiFetch("/api/trading/clients", token) as Promise<TradingClientsResponse>,
     enabled: !!user,
   });
 }
@@ -101,11 +100,7 @@ export function useTradingTimeseries() {
 
   return useQuery<TradingTimeseriesResponse>({
     queryKey: ["trading-timeseries", user?.id],
-    queryFn: () =>
-      apiFetch(
-        "/api/trading/timeseries",
-        token,
-      ) as Promise<TradingTimeseriesResponse>,
+    queryFn: () => apiFetch("/api/trading/timeseries", token) as Promise<TradingTimeseriesResponse>,
     enabled: !!user,
   });
 }
@@ -115,11 +110,7 @@ export function useTradingPerformance() {
 
   return useQuery<TradingPerformanceResponse>({
     queryKey: ["trading-performance", user?.id],
-    queryFn: () =>
-      apiFetch(
-        "/api/trading/performance",
-        token,
-      ) as Promise<TradingPerformanceResponse>,
+    queryFn: () => apiFetch("/api/trading/performance", token) as Promise<TradingPerformanceResponse>,
     enabled: !!user,
   });
 }
@@ -129,21 +120,16 @@ export function useTradingLiveBatchDelta() {
 
   return useQuery<LiveBatchDeltaResponse>({
     queryKey: ["trading-live-batch-delta", user?.id],
-    queryFn: () =>
-      apiFetch(
-        "/api/trading/live-batch-delta",
-        token,
-      ) as Promise<LiveBatchDeltaResponse>,
+    queryFn: () => apiFetch("/api/trading/live-batch-delta", token) as Promise<LiveBatchDeltaResponse>,
     enabled: !!user,
   });
 }
 
 // Re-export response types for consumers
 export type {
-  TradingOrgsResponse,
-  TradingClientsResponse,
-  TradingTimeseriesResponse,
-  TradingPerformanceResponse,
   LiveBatchDeltaResponse,
-  StrategyPerformanceRow,
+  TradingClientsResponse,
+  TradingOrgsResponse,
+  TradingPerformanceResponse,
+  TradingTimeseriesResponse,
 };

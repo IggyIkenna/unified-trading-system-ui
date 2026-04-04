@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/components/shared/spinner";
 /**
  * RequireAuth — Auth boundary for the platform and ops route groups.
  *
@@ -10,9 +11,9 @@
  * its own form — it bridges to the canonical sign-in experience.
  */
 
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
-import { useRouter, usePathname } from "next/navigation";
-import { Loader2 } from "lucide-react";
+
 import { useAuth } from "@/hooks/use-auth";
 
 interface RequireAuthProps {
@@ -34,7 +35,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <Spinner size="lg" className="size-8 text-muted-foreground" />
       </div>
     );
   }
@@ -43,7 +44,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
     // Show loading while redirect is pending
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <Spinner size="lg" className="size-8 text-muted-foreground" />
       </div>
     );
   }

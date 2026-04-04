@@ -6,7 +6,7 @@ import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
 import type {
   PredictionMarket,
   MarketCategory,
@@ -26,8 +26,10 @@ import {
   MOCK_PREDICTION_ARBS,
   ODUM_INSTRUMENTS,
   MOCK_RECENT_FILLS,
-} from "@/components/trading/predictions/mock-data";
+} from "@/lib/mocks/fixtures/predictions-data";
 import { calcArbStakes } from "@/components/trading/predictions/helpers";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export interface RecentFill {
   id: string;
@@ -161,7 +163,15 @@ function computeFilteredMarkets(
 export function PredictionsDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
   const { scope: globalScope } = useGlobalScope();
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
   const { toast } = useToast();
 
   const markets = MOCK_MARKETS;
@@ -183,15 +193,19 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
   const [recentFills, setRecentFills] = React.useState<RecentFill[]>(() => MOCK_RECENT_FILLS.map((f) => ({ ...f })));
   const [quickTradeMarketId, setQuickTradeMarketId] = React.useState(() => MOCK_MARKETS[0]?.id ?? "");
 
+  const arbStreamTickRef = React.useRef(0);
+
   // Batch mode: stop the 8-second arb generation interval
   React.useEffect(() => {
     if (isBatch) return;
     const timer = setInterval(() => {
+      arbStreamTickRef.current += 1;
+      const t = arbStreamTickRef.current;
       setArbs((prev) => {
         const updated = prev.map((a) =>
-          a.isActive && Math.random() < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
+          a.isActive && mock01(t, 501) < 0.1 ? { ...a, isActive: false, decayedAt: new Date().toISOString() } : a,
         );
-        if (Math.random() < 0.15) {
+        if (mock01(t, 502) < 0.15) {
           const newArb: PredictionArbOpportunity = {
             id: `parb-live-${Date.now()}`,
             marketType: "crypto",
@@ -378,7 +392,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       setRecentFills((prev) => [fill, ...prev]);
       toast({
         title: "Position opened",
-        description: `${params.side.toUpperCase()} ${outcome.name} — $${stake.toFixed(2)} @ ${(price * 100).toFixed(0)}¢ (${order.id})`,
+        description: `${params.side.toUpperCase()} ${outcome.name} — $${formatNumber(stake, 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
       });
     },
     [markets, toast],
@@ -408,7 +422,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
       );
       toast({
         title: "Arb executed",
-        description: `${arb.question} — ${arb.arbPct.toFixed(2)}% locked in`,
+        description: `${arb.question} — ${formatPercent(arb.arbPct, 2)} locked in`,
       });
     },
     [arbs, toast],

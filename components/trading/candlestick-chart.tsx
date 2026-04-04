@@ -2,20 +2,9 @@
 
 // CandlestickChart v4.0 - supports indicator overlays via LineSeries
 import * as React from "react";
-import {
-  createChart,
-  CandlestickSeries,
-  HistogramSeries,
-  LineSeries,
-  ColorType,
-} from "lightweight-charts";
-import type {
-  IChartApi,
-  ISeriesApi,
-  CandlestickData,
-  Time,
-  LineData,
-} from "lightweight-charts";
+import { createChart, CandlestickSeries, HistogramSeries, LineSeries, ColorType } from "lightweight-charts";
+import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from "lightweight-charts";
+import { cn } from "@/lib/utils";
 
 export interface IndicatorOverlay {
   id: string;
@@ -36,31 +25,55 @@ interface CandlestickChartProps {
     volume?: number;
   }>;
   indicators?: IndicatorOverlay[];
+  /** Fixed height in px. Omit to fill the parent (parent must establish height, e.g. flex-1 min-h-0). */
   height?: number;
   className?: string;
+  /**
+   * Use inside a `relative` flex slot with `className="absolute inset-0"` so the chart gets a real box size
+   * (flex + Lightweight Charts often leave `clientHeight` too small).
+   */
+  absoluteFill?: boolean;
 }
 
 export function CandlestickChart({
   data,
   indicators = [],
-  height = 300,
+  height,
   className,
+  absoluteFill = false,
 }: CandlestickChartProps) {
+  /** Layout box — lightweight-charts sets inline px size on the mount node, which breaks `absolute inset-0` stretch. */
+  const chartOuterRef = React.useRef<HTMLDivElement>(null);
   const chartContainerRef = React.useRef<HTMLDivElement>(null);
   const chartRef = React.useRef<IChartApi | null>(null);
-  const candlestickSeriesRef = React.useRef<ISeriesApi<"Candlestick"> | null>(
-    null,
-  );
+  const candlestickSeriesRef = React.useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volumeSeriesRef = React.useRef<ISeriesApi<"Histogram"> | null>(null);
-  const indicatorSeriesRef = React.useRef<Map<string, ISeriesApi<"Line">>>(
-    new Map(),
-  );
+  const indicatorSeriesRef = React.useRef<Map<string, ISeriesApi<"Line">>>(new Map());
 
-  // Initialize chart once
-  React.useEffect(() => {
-    if (!chartContainerRef.current) return;
+  // Initialize chart + keep size in sync (autoSize breaks inside flex + Radix ScrollArea)
+  React.useLayoutEffect(() => {
+    const inner = chartContainerRef.current;
+    const outer = chartOuterRef.current;
+    if (!inner || !outer) return;
 
-    const chart = createChart(chartContainerRef.current, {
+    const fixedH = height !== undefined ? height : null;
+    const readSize = () => {
+      if (fixedH !== null) {
+        const w = Math.max(1, Math.floor(outer.getBoundingClientRect().width));
+        return { w, h: fixedH };
+      }
+      /* Measure the outer wrapper — the inner node gets explicit px height from the library. */
+      const r = outer.getBoundingClientRect();
+      const w = Math.max(1, Math.floor(r.width));
+      const h = Math.max(120, Math.floor(r.height));
+      return { w, h };
+    };
+
+    const { w: initW, h: initH } = readSize();
+    const chart = createChart(inner, {
+      autoSize: false,
+      width: initW,
+      height: initH,
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
         textColor: "rgba(255, 255, 255, 0.5)",
@@ -76,7 +89,6 @@ export function CandlestickChart({
       },
       rightPriceScale: {
         borderColor: "rgba(255, 255, 255, 0.1)",
-        scaleMargins: { top: 0.1, bottom: 0.2 },
       },
       timeScale: {
         borderColor: "rgba(255, 255, 255, 0.1)",
@@ -95,6 +107,11 @@ export function CandlestickChart({
       wickDownColor: "#ef4444",
     });
 
+    /* Paired with volume overlay — https://tradingview.github.io/lightweight-charts/tutorials/how_to/price-and-volume */
+    candlestickSeries.priceScale().applyOptions({
+      scaleMargins: { top: 0.1, bottom: 0.4 },
+    });
+
     const volumeSeries = chart.addSeries(HistogramSeries, {
       color: "#26a69a",
       priceFormat: { type: "volume" },
@@ -102,35 +119,54 @@ export function CandlestickChart({
     });
 
     volumeSeries.priceScale().applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
+      scaleMargins: { top: 0.7, bottom: 0 },
     });
 
     chartRef.current = chart;
     candlestickSeriesRef.current = candlestickSeries;
     volumeSeriesRef.current = volumeSeries;
 
-    const handleResize = () => {
-      if (chartContainerRef.current) {
-        chart.applyOptions({ width: chartContainerRef.current.clientWidth });
-      }
+    const syncSize = () => {
+      const c = chartRef.current;
+      if (!c) return;
+      const { w, h } = readSize();
+      c.resize(w, h);
     };
 
-    window.addEventListener("resize", handleResize);
+    const ro = new ResizeObserver(() => {
+      syncSize();
+    });
+    ro.observe(outer);
+    ro.observe(inner);
+    syncSize();
+    let rafOuter = 0;
+    let rafInner = 0;
+    rafOuter = requestAnimationFrame(() => {
+      syncSize();
+      rafInner = requestAnimationFrame(() => {
+        syncSize();
+      });
+    });
+    const t50 = window.setTimeout(syncSize, 50);
+    const t200 = window.setTimeout(syncSize, 200);
+
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.clearTimeout(t50);
+      window.clearTimeout(t200);
+      cancelAnimationFrame(rafOuter);
+      cancelAnimationFrame(rafInner);
+      ro.disconnect();
       chart.remove();
       indicatorSeriesRef.current.clear();
     };
-  }, []);
+  }, [height]);
 
   // Update data when it changes
   React.useEffect(() => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
     if (!data || !Array.isArray(data) || data.length === 0) return;
 
-    const validData = data.filter(
-      (d) => typeof d.time === "number" && !isNaN(d.time),
-    );
+    const validData = data.filter((d) => typeof d.time === "number" && !isNaN(d.time));
     if (validData.length === 0) return;
 
     const candlestickData: CandlestickData[] = validData.map((d) => ({
@@ -144,10 +180,7 @@ export function CandlestickChart({
     const volumeData = validData.map((d) => ({
       time: d.time as Time,
       value: d.volume || 0,
-      color:
-        d.close >= d.open
-          ? "rgba(16, 185, 129, 0.5)"
-          : "rgba(239, 68, 68, 0.5)",
+      color: d.close >= d.open ? "rgba(16, 185, 129, 0.5)" : "rgba(239, 68, 68, 0.5)",
     }));
 
     candlestickSeriesRef.current.setData(candlestickData);
@@ -198,11 +231,21 @@ export function CandlestickChart({
     }
   }, [indicators]);
 
+  const fillParent = height === undefined;
+  const pctFill = fillParent && !absoluteFill;
+
   return (
     <div
-      ref={chartContainerRef}
-      className={className}
-      style={{ height, width: "100%" }}
-    />
+      ref={chartOuterRef}
+      className={cn(
+        "min-w-0",
+        absoluteFill && className,
+        pctFill && "h-full w-full min-h-[120px]",
+        !absoluteFill && !pctFill && className,
+      )}
+      style={!fillParent ? { height, width: "100%" } : pctFill ? { width: "100%", height: "100%" } : undefined}
+    >
+      <div ref={chartContainerRef} className="min-h-0 h-full w-full" />
+    </div>
   );
 }

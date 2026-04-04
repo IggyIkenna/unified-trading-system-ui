@@ -1,50 +1,43 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { useAuth } from "@/hooks/use-auth";
-import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services";
-import type { ServiceDefinition } from "@/lib/config/services";
-import {
-  PLATFORM_LIFECYCLE_CONFIG,
-  PLATFORM_LIFECYCLE_STAGES,
-  type PlatformLifecycleStage,
-} from "@/lib/taxonomy";
-import { PLATFORM_STATS } from "@/lib/config/platform-stats";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Lock,
-  Database,
-  FlaskConical,
-  ArrowUpCircle,
-  TrendingUp,
-  Eye,
-  Settings2,
-  FileText,
-  ChevronRight,
-  Activity,
-  Radio,
-  Shield,
-  Zap,
-  BarChart3,
-  Clock,
-  DollarSign,
-  AlertTriangle,
-  Brain,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import type { Entitlement } from "@/lib/config/auth";
+import { ActivityFeed } from "@/components/platform/activity-feed";
 import { HealthBar } from "@/components/platform/health-bar";
 import { QuickActions } from "@/components/platform/quick-actions";
-import { ActivityFeed } from "@/components/platform/activity-feed";
+import { StatusDot } from "@/components/shared/status-badge";
+import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/shared/page-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
+import type { Entitlement } from "@/lib/config/auth";
+import type { ServiceDefinition } from "@/lib/config/services";
+import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services";
+import { useExecutionMode } from "@/lib/execution-mode-context";
+import { PLATFORM_LIFECYCLE_CONFIG, PLATFORM_LIFECYCLE_STAGES, type PlatformLifecycleStage } from "@/lib/taxonomy";
+import { cn } from "@/lib/utils";
+import {
+  Activity,
+  AlertTriangle,
+  ArrowUpCircle,
+  BarChart3,
+  Brain,
+  ChevronRight,
+  Clock,
+  Database,
+  DollarSign,
+  Eye,
+  FileText,
+  FlaskConical,
+  Lock,
+  Radio,
+  Settings2,
+  Shield,
+  TrendingUp,
+} from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Icon map for services ────────────────────────────────────────────────────
 
@@ -73,10 +66,7 @@ interface KPIDef {
   subtle?: boolean;
 }
 
-function useRoleKPIs(
-  hasEntitlement: (e: Entitlement) => boolean,
-  isLive: boolean,
-): KPIDef[] {
+function useRoleKPIs(hasEntitlement: (e: Entitlement) => boolean, isLive: boolean): KPIDef[] {
   return React.useMemo(() => {
     const kpis: KPIDef[] = [];
 
@@ -146,10 +136,7 @@ function useRoleKPIs(
     }
 
     // Reporting KPIs — reporting/IR users (without trading)
-    if (
-      hasEntitlement("reporting") &&
-      !hasEntitlement("execution-basic")
-    ) {
+    if (hasEntitlement("reporting") && !hasEntitlement("execution-basic")) {
       kpis.push({
         label: "AUM",
         value: "$24.8m",
@@ -189,61 +176,53 @@ export default function DashboardPage() {
 
   const visibleServices = React.useMemo(() => {
     if (!user) return [];
-    return getVisibleServices(
-      user.entitlements as readonly string[],
-      user.role,
-    );
+    return getVisibleServices(user.entitlements as readonly string[], user.role);
   }, [user]);
 
   const visibleKeys = new Set(visibleServices.map((s) => s.key));
-
-  if (!user) return null;
 
   const showData = hasEntitlement("data-basic") || hasEntitlement("data-pro");
   const showResearch = hasEntitlement("strategy-full") || hasEntitlement("ml-full");
   const showTrading = hasEntitlement("execution-basic") || hasEntitlement("execution-full");
   const showReporting = hasEntitlement("reporting");
-  // Batch/live toggle is only meaningful for users with real-time data access
   const showBatchLiveToggle = showTrading || showResearch;
 
-  // Which lifecycle stages this user can access — filters breadcrumb + activity
   const visibleStages = React.useMemo(() => {
+    if (!user) return [];
     const stages: PlatformLifecycleStage[] = [];
     if (showData) stages.push("acquire");
     if (showResearch) stages.push("build", "promote");
     if (showTrading) stages.push("run", "observe");
     if (showReporting || isAdmin() || isInternal()) stages.push("manage", "report");
-    // Admin/internal see everything
     if (isAdmin() || isInternal()) return PLATFORM_LIFECYCLE_STAGES.slice();
     return stages;
-  }, [showData, showResearch, showTrading, showReporting, isAdmin, isInternal]);
+  }, [user, showData, showResearch, showTrading, showReporting, isAdmin, isInternal]);
 
-  // Map stages to activity feed labels (canonical from PLATFORM_LIFECYCLE_CONFIG)
   const visibleActivityLabels = React.useMemo(
     () => visibleStages.map((s) => PLATFORM_LIFECYCLE_CONFIG[s].label),
     [visibleStages],
   );
 
+  if (!user) return null;
+
   return (
     <div className="bg-background">
       <main className="platform-page-width p-6 space-y-5">
         {/* ── Row 1: Header + Health ─────────────────────────────────── */}
-        <div className="flex items-start justify-between gap-6">
-          <div className="space-y-1">
-            <h1 className="text-xl font-semibold tracking-tight">
-              {user.org.name}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {user.displayName} &middot;{" "}
-              <span className="capitalize">{user.role}</span> &middot;{" "}
+        <PageHeader
+          title={user.org.name}
+          description={
+            <>
+              {user.displayName} &middot; <span className="capitalize">{user.role}</span> &middot;{" "}
               {visibleServices.length} of {allServices.length} services
-            </p>
-          </div>
+            </>
+          }
+        >
           <div className="flex items-center gap-3">
             <HealthBar />
-            {/* Batch/Live mode indicator — only for users with real-time data */}
             {showBatchLiveToggle && (
               <button
+                type="button"
                 onClick={() => setMode(isLive ? "batch" : "live")}
                 className={cn(
                   "flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
@@ -252,16 +231,12 @@ export default function DashboardPage() {
                     : "border-primary/30 bg-primary/10 text-primary",
                 )}
               >
-                {isLive ? (
-                  <Radio className="size-3" />
-                ) : (
-                  <Database className="size-3" />
-                )}
+                {isLive ? <Radio className="size-3" /> : <Database className="size-3" />}
                 {isLive ? "Live" : "Batch"}
               </button>
             )}
           </div>
-        </div>
+        </PageHeader>
 
         {/* ── Row 2: Role-aware KPIs ────────────────────────────────── */}
         {/* Every user sees KPIs relevant to their entitlements. Data-only users
@@ -301,16 +276,8 @@ export default function DashboardPage() {
             <div className="flex items-center gap-1 text-[10px]">
               {visibleStages.map((stage, i) => (
                 <React.Fragment key={stage}>
-                  {i > 0 && (
-                    <ChevronRight className="size-2.5 text-muted-foreground/30" />
-                  )}
-                  <span
-                    className={cn(
-                      "px-1.5 py-0.5 rounded",
-                      PLATFORM_LIFECYCLE_CONFIG[stage].color,
-                      "bg-current/5",
-                    )}
-                  >
+                  {i > 0 && <ChevronRight className="size-2.5 text-muted-foreground/30" />}
+                  <span className={cn("px-1.5 py-0.5 rounded", PLATFORM_LIFECYCLE_CONFIG[stage].color, "bg-current/5")}>
                     {PLATFORM_LIFECYCLE_CONFIG[stage].label}
                   </span>
                 </React.Fragment>
@@ -320,20 +287,10 @@ export default function DashboardPage() {
             {/* Service cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {allServices
-                .filter((svc) =>
-                  PLATFORM_LIFECYCLE_STAGES.includes(
-                    svc.lifecycleStage as PlatformLifecycleStage,
-                  ),
-                )
+                .filter((svc) => PLATFORM_LIFECYCLE_STAGES.includes(svc.lifecycleStage as PlatformLifecycleStage))
                 .map((svc) => {
                   const isLocked = !visibleKeys.has(svc.key);
-                  return (
-                    <ServiceCard
-                      key={svc.key}
-                      service={svc}
-                      locked={isLocked}
-                    />
-                  );
+                  return <ServiceCard key={svc.key} service={svc} locked={isLocked} />;
                 })}
             </div>
           </div>
@@ -376,24 +333,9 @@ export default function DashboardPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 space-y-2">
-                  <DriftRow
-                    label="Net P&L"
-                    liveValue={142_380}
-                    batchValue={138_920}
-                  />
-                  <DriftRow
-                    label="Positions"
-                    liveValue={47}
-                    batchValue={45}
-                    isCurrency={false}
-                  />
-                  <DriftRow
-                    label="Risk Util."
-                    liveValue={62}
-                    batchValue={58}
-                    isCurrency={false}
-                    suffix="%"
-                  />
+                  <DriftRow label="Net P&L" liveValue={142_380} batchValue={138_920} />
+                  <DriftRow label="Positions" liveValue={47} batchValue={45} isCurrency={false} />
+                  <DriftRow label="Risk Util." liveValue={62} batchValue={58} isCurrency={false} suffix="%" />
                   <Link
                     href="/services/reports/reconciliation"
                     className="block text-[10px] text-primary hover:underline mt-2"
@@ -439,17 +381,11 @@ function KPICard({
       >
         <CardContent className="p-3 space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-              {label}
-            </span>
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">{label}</span>
             <Icon
               className={cn(
                 "size-3.5",
-                alert
-                  ? "text-[var(--status-warning)]"
-                  : subtle
-                    ? "text-muted-foreground/40"
-                    : "text-primary/60",
+                alert ? "text-[var(--status-warning)]" : subtle ? "text-muted-foreground/40" : "text-primary/60",
               )}
             />
           </div>
@@ -465,13 +401,11 @@ function KPICard({
             <span
               className={cn(
                 "text-[10px] font-medium",
-                change >= 0
-                  ? "text-[var(--pnl-positive)]"
-                  : "text-[var(--pnl-negative)]",
+                change >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
               )}
             >
               {change >= 0 ? "+" : ""}
-              {change.toFixed(1)}% today
+              {formatPercent(change, 1)} today
             </span>
           )}
         </CardContent>
@@ -480,30 +414,20 @@ function KPICard({
   );
 }
 
-function ServiceCard({
-  service,
-  locked,
-}: {
-  service: ServiceDefinition;
-  locked: boolean;
-}) {
-  const Icon =
-    ICON_MAP[service.icon] ?? Database;
+function serviceKeySalt(key: string): number {
+  return [...key].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+}
+
+function ServiceCard({ service, locked }: { service: ServiceDefinition; locked: boolean }) {
+  const Icon = ICON_MAP[service.icon] ?? Database;
   const stageConfig =
-    PLATFORM_LIFECYCLE_CONFIG[
-      service.lifecycleStage as PlatformLifecycleStage
-    ] ?? PLATFORM_LIFECYCLE_CONFIG.acquire;
+    PLATFORM_LIFECYCLE_CONFIG[service.lifecycleStage as PlatformLifecycleStage] ?? PLATFORM_LIFECYCLE_CONFIG.acquire;
 
   // Mock health — in production this comes from the API
-  const health = React.useMemo(
-    () =>
-      locked
-        ? "locked"
-        : Math.random() > 0.9
-          ? "degraded"
-          : "healthy",
-    [locked],
-  );
+  const health = React.useMemo(() => {
+    if (locked) return "locked";
+    return mock01(serviceKeySalt(service.key), 701) > 0.9 ? "degraded" : "healthy";
+  }, [locked, service.key]);
 
   if (locked) {
     return (
@@ -514,19 +438,12 @@ function ServiceCard({
           </div>
           <div className="space-y-1 min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                {service.label}
-              </span>
-              <Badge
-                variant="outline"
-                className="text-[8px] px-1 py-0 border-amber-500/30 text-amber-500"
-              >
+              <span className="text-sm font-medium text-muted-foreground">{service.label}</span>
+              <Badge variant="outline" className="text-[8px] px-1 py-0 border-amber-500/30 text-amber-500">
                 Upgrade
               </Badge>
             </div>
-            <p className="text-[11px] text-muted-foreground/60 leading-relaxed line-clamp-2">
-              {service.description}
-            </p>
+            <p className="text-[11px] text-muted-foreground/60 leading-relaxed line-clamp-2">{service.description}</p>
           </div>
         </CardContent>
       </Card>
@@ -542,31 +459,18 @@ function ServiceCard({
           </div>
           <div className="space-y-1 min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium group-hover:text-white transition-colors">
-                {service.label}
-              </span>
-              <span
-                className={cn(
-                  "text-[8px] uppercase tracking-wider",
-                  stageConfig.color,
-                )}
-              >
-                {stageConfig.label}
-              </span>
+              <span className="text-sm font-medium group-hover:text-white transition-colors">{service.label}</span>
+              <span className={cn("text-[8px] uppercase tracking-wider", stageConfig.color)}>{stageConfig.label}</span>
               {/* Health dot */}
               <TooltipProvider delayDuration={0}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span
-                      className={cn(
-                        "size-1.5 rounded-full ml-auto flex-shrink-0",
-                        health === "healthy"
-                          ? "bg-emerald-500"
-                          : health === "degraded"
-                            ? "bg-yellow-500 animate-pulse"
-                            : "bg-muted-foreground/30",
-                      )}
-                    />
+                    <span className="ml-auto inline-flex flex-shrink-0">
+                      <StatusDot
+                        status={health === "healthy" ? "live" : health === "degraded" ? "in_progress" : "idle"}
+                        className={cn("size-1.5", health === "degraded" && "animate-pulse")}
+                      />
+                    </span>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
                     {health === "healthy" ? "All systems operational" : "Degraded performance"}
@@ -574,9 +478,7 @@ function ServiceCard({
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-              {service.description}
-            </p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{service.description}</p>
           </div>
           <ChevronRight className="size-3.5 text-muted-foreground/20 group-hover:text-muted-foreground flex-shrink-0 mt-1 transition-colors" />
         </CardContent>
@@ -603,9 +505,9 @@ function DriftRow({
 
   const fmt = (v: number) => {
     if (isCurrency) {
-      if (Math.abs(v) >= 1_000_000) return `$${(v / 1_000_000).toFixed(1)}M`;
-      if (Math.abs(v) >= 1_000) return `$${(v / 1_000).toFixed(1)}K`;
-      return `$${v.toFixed(0)}`;
+      if (Math.abs(v) >= 1_000_000) return `$${formatNumber(v / 1_000_000, 1)}M`;
+      if (Math.abs(v) >= 1_000) return `$${formatNumber(v / 1_000, 1)}K`;
+      return `$${formatNumber(v, 0)}`;
     }
     return `${v}${suffix}`;
   };
@@ -617,16 +519,9 @@ function DriftRow({
         <span className="text-muted-foreground/60">{fmt(batchValue)}</span>
         <span className="text-muted-foreground/40">&rarr;</span>
         <span>{fmt(liveValue)}</span>
-        <span
-          className={cn(
-            "text-[10px]",
-            delta >= 0
-              ? "text-[var(--pnl-positive)]"
-              : "text-[var(--pnl-negative)]",
-          )}
-        >
+        <span className={cn("text-[10px]", delta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}>
           {delta >= 0 ? "+" : ""}
-          {percent.toFixed(1)}%
+          {formatPercent(percent, 1)}
         </span>
       </div>
     </div>

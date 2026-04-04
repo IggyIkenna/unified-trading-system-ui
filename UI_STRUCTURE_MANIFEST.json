@@ -2,12 +2,12 @@
   "_meta": {
     "description": "SSOT for UI structure. 9-service architecture per CITADEL_VISION_2026_03_22. Agents MUST read this before any structural changes.",
     "version": "4.0.0",
-    "last_updated": "2026-03-22",
+    "last_updated": "2026-04-01",
     "architecture": "9 services, 3 APIs (auth-api, client-reporting-api, unified-trading-api), direct-to-tabs routing, static preview on port 3100",
-    "total_page_files_on_disk": 91,
-    "total_unique_routes": 79,
-    "real_pages": 73,
-    "stub_pages": 4,
+    "total_page_files_on_disk": 142,
+    "total_unique_routes": 139,
+    "real_pages": 130,
+    "stub_pages": 6,
     "delegate_pages": 3,
     "changes_v4": [
       "Dashboard rewritten as service hub (was trading command center)",
@@ -18,6 +18,13 @@
       "BatchLiveRail moved to trading layout (all tabs, not per-page)",
       "Static preview mode: port 3100, mock-handler.ts intercepts all /api/* client-side",
       "Playwright static smoke tests: 79 routes, all pass"
+    ],
+    "changes_task_13_shared_components": [
+      "components/ui/ is shadcn/Radix primitives only; custom shared UI lives in components/shared/",
+      "StatusBadge, PageHeader, FilterBar, AlertRow, KpiStrip, DataTableWidget, Spinner, EmptyState, ErrorBoundary, DataTable, DataFreshness, ApiError, ExportDropdown, CollapsibleSection, FilterBarWidget → components/shared/",
+      "components/widgets/shared/ removed (files moved to components/shared/); import via @/components/shared/<name> or barrel @/components/shared",
+      "lib/utils.ts exports cn() only; date+time display uses formatDate(..., \"long\") from @/lib/utils/formatters",
+      "Dead code removed: data-card.tsx, batch-live-comparison-frame.tsx, service-hub.tsx, research/strategies/status-helpers.tsx, components/ui/empty.tsx (zero importers)"
     ]
   },
   "services": {
@@ -355,8 +362,16 @@
           "route": "/services/trading/positions",
           "file": "app/(platform)/services/trading/positions/page.tsx",
           "state": "REAL",
-          "lines": 642,
-          "api_hooks": ["usePositions", "useBalances", "useWebSocket"]
+          "lines": 23,
+          "api_hooks": ["usePositions", "useWebSocket"]
+        },
+        {
+          "label": "Position trades",
+          "route": "/services/trading/positions/trades",
+          "file": "app/(platform)/services/trading/positions/trades/page.tsx",
+          "state": "REAL",
+          "lines": 157,
+          "api_hooks": []
         },
         {
           "label": "Orders",
@@ -403,6 +418,18 @@
           "file": "app/(platform)/services/trading/strategies/grid/page.tsx",
           "state": "REAL",
           "lines": 270
+        },
+        {
+          "route": "/services/trading/strategies/basis-trade",
+          "file": "app/(platform)/services/trading/strategies/basis-trade/page.tsx",
+          "state": "REAL",
+          "lines": 42
+        },
+        {
+          "route": "/services/trading/strategies/staked-basis",
+          "file": "app/(platform)/services/trading/strategies/staked-basis/page.tsx",
+          "state": "REAL",
+          "lines": 75
         },
         {
           "route": "/services/trading/strategies/[id]",

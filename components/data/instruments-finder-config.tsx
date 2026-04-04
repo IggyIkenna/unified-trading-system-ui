@@ -23,8 +23,8 @@ import {
   type DataCategory,
   type DataFolder,
   type InstrumentEntry,
-} from "@/lib/data-service-types";
-import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/data-service-mock-data";
+} from "@/lib/types/data-service";
+import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/mocks/fixtures/data-service";
 
 const CATEGORY_COLORS: Record<DataCategory, string> = {
   cefi: "border-blue-400/30 text-blue-400",

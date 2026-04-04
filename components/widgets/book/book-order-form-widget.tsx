@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BOOK_VENUES_BY_CATEGORY, type BookCategoryTab } from "@/lib/config/services/trading.config";
+import { DEFI_INSTRUCTION_TYPES, SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
+import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import type { BookExecutionMode } from "./book-data-context";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useBookTradeData } from "./book-data-context";
@@ -36,6 +38,14 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
     handlePreview,
     user,
     categoryLabels,
+    isDefiCategory,
+    defiInstructionType,
+    setDefiInstructionType,
+    defiAlgo,
+    setDefiAlgo,
+    maxSlippageBps,
+    setMaxSlippageBps,
+    availableDefiAlgos,
   } = useBookTradeData();
 
   const categoryEntries = Object.entries(categoryLabels) as Array<[BookCategoryTab, string]>;
@@ -99,31 +109,90 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="text-[10px] text-muted-foreground">Side</label>
-            <div className="grid grid-cols-2 gap-1.5">
-              <Button
-                type="button"
-                size="sm"
-                variant={side === "buy" ? "default" : "outline"}
-                className={cn("h-8 text-xs", side === "buy" && "bg-emerald-600 hover:bg-emerald-700")}
-                onClick={() => setSide("buy")}
-              >
-                <TrendingUp className="size-3.5 mr-1" />
-                Buy
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={side === "sell" ? "default" : "outline"}
-                className={cn("h-8 text-xs", side === "sell" && "bg-rose-600 hover:bg-rose-700")}
-                onClick={() => setSide("sell")}
-              >
-                <TrendingDown className="size-3.5 mr-1" />
-                Sell
-              </Button>
+          {isDefiCategory ? (
+            <>
+              <div className="space-y-1">
+                <label className="text-[10px] text-muted-foreground">Instruction Type</label>
+                <Select
+                  value={defiInstructionType}
+                  onValueChange={(v) => setDefiInstructionType(v as InstructionType)}
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select instruction" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DEFI_INSTRUCTION_TYPES.map((it) => (
+                      <SelectItem key={it.value} value={it.value}>
+                        <span className="font-medium">{it.label}</span>
+                        <span className="ml-1.5 text-muted-foreground text-[10px]">{it.description}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-muted-foreground">Algo</label>
+                <Select value={defiAlgo} onValueChange={(v) => setDefiAlgo(v as AlgoType)}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select algo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDefiAlgos.map((a) => (
+                      <SelectItem key={a} value={a}>
+                        {a.replace(/_/g, " ")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-muted-foreground">Max Slippage</label>
+                <Select
+                  value={String(maxSlippageBps)}
+                  onValueChange={(v) => setMaxSlippageBps(Number(v))}
+                >
+                  <SelectTrigger className="h-8 text-xs font-mono">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SLIPPAGE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={String(opt.value)}>
+                        {opt.label} ({opt.value} bps)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-1">
+              <label className="text-[10px] text-muted-foreground">Side</label>
+              <div className="grid grid-cols-2 gap-1.5">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={side === "buy" ? "default" : "outline"}
+                  className={cn("h-8 text-xs", side === "buy" && "bg-emerald-600 hover:bg-emerald-700")}
+                  onClick={() => setSide("buy")}
+                >
+                  <TrendingUp className="size-3.5 mr-1" />
+                  Buy
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={side === "sell" ? "default" : "outline"}
+                  className={cn("h-8 text-xs", side === "sell" && "bg-rose-600 hover:bg-rose-700")}
+                  onClick={() => setSide("sell")}
+                >
+                  <TrendingDown className="size-3.5 mr-1" />
+                  Sell
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="space-y-1">
             <label className="text-[10px] text-muted-foreground">Quantity</label>

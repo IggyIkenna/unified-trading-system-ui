@@ -6,25 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { usePromoteListFilters } from "@/components/promote/promote-list-filters-context";
 import { MetricCard } from "@/components/shared/metric-card";
-import { HISTORICAL_APPROVALS_30D } from "./mock-fixtures";
-import {
-  fmtNum,
-  fmtPct,
-  getOverallProgress,
-  promoteSlaBadge,
-  statusBg,
-} from "./helpers";
+import { HISTORICAL_APPROVALS_30D } from "@/lib/mocks/fixtures/promote-fixtures";
+import { fmtNum, fmtPct, getOverallProgress, promoteSlaBadge, statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import { STAGE_META } from "./stage-meta";
 import type { CandidateStrategy } from "./types";
@@ -40,39 +27,27 @@ export function PipelineOverview({
 
   const pipelineDerived = React.useMemo(() => {
     const dwells = candidates.map((c) => c.daysInCurrentStage ?? 0);
-    const avgDwell = dwells.length
-      ? dwells.reduce((a, b) => a + b, 0) / dwells.length
-      : 0;
+    const avgDwell = dwells.length ? dwells.reduce((a, b) => a + b, 0) / dwells.length : 0;
     const modelRisk = candidates.filter(
-      (c) =>
-        c.currentStage === "model_assessment" ||
-        c.currentStage === "risk_stress",
+      (c) => c.currentStage === "model_assessment" || c.currentStage === "risk_stress",
     );
     const velocityDays = modelRisk.length
-      ? modelRisk.reduce((s, c) => s + (c.daysInCurrentStage ?? 0), 0) /
-        modelRisk.length
+      ? modelRisk.reduce((s, c) => s + (c.daysInCurrentStage ?? 0), 0) / modelRisk.length
       : avgDwell;
     return { avgDwell, velocityDays };
   }, [candidates]);
 
   const avgMaxDrawdown =
-    filtered.length === 0
-      ? 0
-      : filtered.reduce((s, c) => s + c.metrics.maxDrawdown, 0) /
-        filtered.length;
+    filtered.length === 0 ? 0 : filtered.reduce((s, c) => s + c.metrics.maxDrawdown, 0) / filtered.length;
 
-  const totalPassed = candidates.filter(
-    (c) => c.stages.governance.status === "passed",
-  ).length;
+  const totalPassed = candidates.filter((c) => c.stages.governance.status === "passed").length;
   const slaBreaches = candidates.filter((c) => {
     const d = c.daysInCurrentStage ?? 0;
     const lim = c.slaDaysExpected ?? 999;
     return d > lim;
   }).length;
 
-  const selectedStrategy = selectedId
-    ? candidates.find((c) => c.id === selectedId)
-    : undefined;
+  const selectedStrategy = selectedId ? candidates.find((c) => c.id === selectedId) : undefined;
 
   return (
     <div className="space-y-6">
@@ -81,10 +56,7 @@ export function PipelineOverview({
           variant="pipeline"
           tone="pipeline"
           label="Avg Sharpe"
-          primary={fmtNum(
-            filtered.reduce((s, c) => s + c.metrics.sharpe, 0) /
-              (filtered.length || 1),
-          )}
+          primary={fmtNum(filtered.reduce((s, c) => s + c.metrics.sharpe, 0) / (filtered.length || 1))}
         />
         <MetricCard
           variant="pipeline"
@@ -118,9 +90,7 @@ export function PipelineOverview({
           tone="pipeline"
           label="Past SLA"
           primary={slaBreaches}
-          primaryClassName={
-            slaBreaches > 0 ? "text-rose-400" : "text-muted-foreground"
-          }
+          primaryClassName={slaBreaches > 0 ? "text-rose-400" : "text-muted-foreground"}
         />
       </div>
 
@@ -128,8 +98,8 @@ export function PipelineOverview({
         <div className="flex items-center gap-2 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs">
           <AlertTriangle className="size-4 text-rose-400 shrink-0" />
           <span>
-            <span className="font-mono text-rose-400">{slaBreaches}</span>{" "}
-            candidate(s) past SLA — escalation recommended
+            <span className="font-mono text-rose-400">{slaBreaches}</span> candidate(s) past SLA — escalation
+            recommended
           </span>
         </div>
       )}
@@ -167,65 +137,42 @@ export function PipelineOverview({
                 return (
                   <TableRow
                     key={c.id}
-                    className={cn(
-                      "text-xs cursor-pointer transition-colors",
-                      selectedId === c.id && "bg-primary/5",
-                    )}
+                    className={cn("text-xs cursor-pointer transition-colors", selectedId === c.id && "bg-primary/5")}
                     onClick={() => onSelect(c.id)}
                   >
                     <TableCell>
                       <div>
                         <span className="font-medium">{c.name}</span>
-                        <span className="text-muted-foreground ml-2 font-mono text-xs">
-                          v{c.version}
-                        </span>
+                        <span className="text-muted-foreground ml-2 font-mono text-xs">v{c.version}</span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {c.archetype}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{c.archetype}</span>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-xs">
                         {c.assetClass}
                       </Badge>
                     </TableCell>
-                    <TableCell className="font-mono">
-                      {fmtNum(c.metrics.sharpe)}
-                    </TableCell>
-                    <TableCell className="font-mono text-rose-400">
-                      {fmtPct(c.metrics.maxDrawdown)}
-                    </TableCell>
+                    <TableCell className="font-mono">{fmtNum(c.metrics.sharpe)}</TableCell>
+                    <TableCell className="font-mono text-rose-400">{fmtPct(c.metrics.maxDrawdown)}</TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-xs",
-                          statusBg(c.stages[c.currentStage].status),
-                        )}
-                      >
+                      <Badge variant="outline" className={cn("text-xs", statusBg(c.stages[c.currentStage].status))}>
                         {stageMeta.label}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="space-y-0.5">
-                        <Badge
-                          variant="outline"
-                          className={cn("text-xs", sla.className)}
-                        >
+                        <Badge variant="outline" className={cn("text-xs", sla.className)}>
                           {sla.label}
                         </Badge>
                         <p className="text-xs font-mono text-muted-foreground">
-                          {c.daysInCurrentStage ?? "—"}d /{" "}
-                          {c.slaDaysExpected ?? "—"}d
+                          {c.daysInCurrentStage ?? "—"}d / {c.slaDaysExpected ?? "—"}d
                         </p>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2 min-w-[100px]">
                         <Progress value={progress} className="h-1.5 flex-1" />
-                        <span className="text-xs text-muted-foreground font-mono">
-                          {Math.round(progress)}%
-                        </span>
+                        <span className="text-xs text-muted-foreground font-mono">{Math.round(progress)}%</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">

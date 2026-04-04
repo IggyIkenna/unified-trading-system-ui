@@ -11,7 +11,7 @@ Unified filter bar with search (order ID, instrument, venue), venue select, stat
 ## Data sources
 
 - `useOrdersData()` context (filter state + unique values)
-- `FilterBar` component from `components/platform/filter-bar`
+- `FilterBar` component from `components/shared/filter-bar` (`@/components/shared/filter-bar`)
 
 ## Configuration
 

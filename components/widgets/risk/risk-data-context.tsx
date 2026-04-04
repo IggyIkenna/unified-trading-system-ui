@@ -9,6 +9,7 @@ import type {
   PortfolioGreeksResponse,
   VenueCircuitBreakerStatus,
 } from "@/hooks/api/use-risk";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Types used by the risk widgets (kept local until moved to lib/types/risk.ts)
@@ -149,9 +150,9 @@ export function getStatusFromUtil(util: number): "live" | "warning" | "critical"
 }
 
 export function formatCurrency(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
-  return `$${value.toFixed(0)}`;
+  if (Math.abs(value) >= 1_000_000) return `$${formatNumber(value / 1_000_000, 1)}M`;
+  if (Math.abs(value) >= 1_000) return `$${formatNumber(value / 1_000, 0)}K`;
+  return `$${formatNumber(value, 0)}`;
 }
 
 export function getAssetClassColor(assetClass: string): string {
@@ -169,50 +170,4 @@ export function getAssetClassColor(assetClass: string): string {
   }
 }
 
-export const MOCK_STRATEGIES = [
-  { id: "s1", name: "ETH Basis Trade", archetype: "BASIS_TRADE", strategyIdPattern: "DEFI_ETH_BASIS_SCE_1H" },
-  { id: "s2", name: "BTC Market Making", archetype: "MARKET_MAKING", strategyIdPattern: "CEFI_BTC_MM_EVT_TICK" },
-  { id: "s3", name: "ETH Options MM", archetype: "OPTIONS", strategyIdPattern: "CEFI_ETH_OPT_MM_EVT_TICK" },
-  { id: "s4", name: "SPY Momentum", archetype: "DIRECTIONAL", strategyIdPattern: "TRADFI_SPY_MOM_HUF_1D" },
-  { id: "s5", name: "Football Arb", archetype: "ARBITRAGE", strategyIdPattern: "SPORTS_FOOTBALL_ARB_EVT" },
-  { id: "s6", name: "Aave Yield", archetype: "YIELD", strategyIdPattern: "DEFI_AAVE_YIELD_SCE_1H" },
-  { id: "s7", name: "Statistical Arb", archetype: "STATISTICAL_ARB", strategyIdPattern: "CEFI_STAT_ARB_HUF_5M" },
-] as const;
-
-export const STRATEGY_RISK_MAP: Record<string, string[]> = {
-  BASIS_TRADE: ["delta", "funding", "basis", "protocol_risk"],
-  YIELD: ["protocol_risk", "liquidity", "concentration"],
-  MARKET_MAKING: ["delta", "liquidity", "venue_protocol", "concentration"],
-  OPTIONS: ["delta", "gamma", "vega", "theta", "rho", "volga", "vanna", "slide"],
-  DIRECTIONAL: ["delta", "concentration", "duration"],
-  MOMENTUM: ["delta", "concentration"],
-  MEAN_REVERSION: ["delta", "basis", "concentration"],
-  STATISTICAL_ARB: ["delta", "correlation", "concentration", "edge_decay"],
-  ARBITRAGE: ["delta", "edge_decay", "market_suspension", "concentration"],
-};
-
-export const COMPONENT_TO_RISK_TYPE: Record<string, string> = {
-  Delta: "delta",
-  Gamma: "gamma",
-  Vega: "vega",
-  Theta: "theta",
-  Rho: "rho",
-  Volga: "volga",
-  Vanna: "vanna",
-  Slide: "slide",
-  Funding: "funding",
-  Basis: "basis",
-  Duration: "duration",
-  Convexity: "convexity",
-  Liquidity: "liquidity",
-  Concentration: "concentration",
-  "Venue/Protocol": "venue_protocol",
-  Correlation: "correlation",
-  "Staking/LTV": "staking_ltv",
-  "Protocol Risk": "protocol_risk",
-  "Impermanent Loss": "impermanent_loss",
-  "Edge Decay": "edge_decay",
-  "Market Suspension": "market_suspension",
-  "Interest Rate": "interest_rate",
-  Spread: "spread",
-};
+export { MOCK_STRATEGIES, STRATEGY_RISK_MAP, COMPONENT_TO_RISK_TYPE } from "@/lib/mocks/fixtures/risk-data";

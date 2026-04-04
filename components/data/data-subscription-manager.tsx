@@ -9,37 +9,14 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  CheckCircle2,
-  Lock,
-  ArrowUpRight,
-  Cloud,
-  Zap,
-  Download,
-  Clock,
-  AlertCircle,
-  Plus,
-} from "lucide-react";
-import type {
-  DataSubscription,
-  AccessMode,
-  OrgMode,
-} from "@/lib/data-service-types";
-import { DATA_CATEGORY_LABELS, PRICING_MODELS } from "@/lib/data-service-types";
+import { CheckCircle2, Lock, ArrowUpRight, Cloud, Zap, Download, Clock, AlertCircle, Plus } from "lucide-react";
+import type { DataSubscription, AccessMode, OrgMode } from "@/lib/types/data-service";
+import { DATA_CATEGORY_LABELS, PRICING_MODELS } from "@/lib/types/data-service";
 
 // Access mode badge colours
-const ACCESS_MODE_STYLE: Record<
-  AccessMode,
-  { badge: string; icon: React.ElementType; label: string }
-> = {
+const ACCESS_MODE_STYLE: Record<AccessMode, { badge: string; icon: React.ElementType; label: string }> = {
   in_system: {
     badge: "text-emerald-500 border-emerald-500/30 bg-emerald-500/5",
     icon: Zap,
@@ -67,13 +44,8 @@ export function DataSubscriptionManager({
   onAddShard,
   className,
 }: DataSubscriptionManagerProps) {
-  const active = subscriptions.filter(
-    (s) => s.status === "active" || s.status === "trial",
-  );
-  const totalMonthlyCents = active.reduce(
-    (sum, s) => sum + s.monthlyCostCents,
-    0,
-  );
+  const active = subscriptions.filter((s) => s.status === "active" || s.status === "trial");
+  const totalMonthlyCents = active.reduce((sum, s) => sum + s.monthlyCostCents, 0);
   const totalGbUsed = active.reduce((sum, s) => sum + s.gbUsedThisMonth, 0);
 
   return (
@@ -82,31 +54,21 @@ export function DataSubscriptionManager({
       <div className="grid grid-cols-3 gap-3">
         <Card>
           <CardContent className="pt-4 pb-3">
-            <div className="text-xs text-muted-foreground">
-              Active Subscriptions
-            </div>
-            <div className="mt-1 text-2xl font-bold font-mono">
-              {active.length}
-            </div>
+            <div className="text-xs text-muted-foreground">Active Subscriptions</div>
+            <div className="mt-1 text-2xl font-bold font-mono">{active.length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
-            <div className="text-xs text-muted-foreground">
-              GB Queried (MTD)
-            </div>
-            <div className="mt-1 text-2xl font-bold font-mono">
-              {totalGbUsed.toLocaleString()}
-            </div>
+            <div className="text-xs text-muted-foreground">GB Queried (MTD)</div>
+            <div className="mt-1 text-2xl font-bold font-mono">{totalGbUsed.toLocaleString()}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4 pb-3">
             <div className="text-xs text-muted-foreground">Monthly Cost</div>
             <div className="mt-1 text-2xl font-bold font-mono text-emerald-400">
-              {orgMode === "demo"
-                ? "—"
-                : `$${(totalMonthlyCents / 100).toLocaleString()}`}
+              {orgMode === "demo" ? "—" : `$${(totalMonthlyCents / 100).toLocaleString()}`}
             </div>
           </CardContent>
         </Card>
@@ -116,8 +78,7 @@ export function DataSubscriptionManager({
       {orgMode === "demo" && (
         <div className="flex items-center gap-2 rounded-md border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-sm text-amber-400">
           <AlertCircle className="size-4 shrink-0" />
-          Demo mode — subscriptions are illustrative. Sign in to manage real
-          data access.
+          Demo mode — subscriptions are illustrative. Sign in to manage real data access.
         </div>
       )}
 
@@ -145,40 +106,27 @@ export function DataSubscriptionManager({
             const isNearLimit = usagePct > 80;
 
             return (
-              <Card
-                key={sub.id}
-                className={cn(sub.status === "trial" && "border-amber-500/30")}
-              >
+              <Card key={sub.id} className={cn(sub.status === "trial" && "border-amber-500/30")}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle className="text-base flex items-center gap-2">
                         {sub.label}
                         {sub.status === "trial" && (
-                          <Badge
-                            variant="outline"
-                            className="text-amber-500 border-amber-500/30 text-[10px]"
-                          >
+                          <Badge variant="outline" className="text-amber-500 border-amber-500/30 text-[10px]">
                             TRIAL
                           </Badge>
                         )}
                       </CardTitle>
                       <CardDescription className="mt-1 flex flex-wrap gap-1">
                         {sub.shardFilters.categories.map((cat) => (
-                          <Badge
-                            key={cat}
-                            variant="secondary"
-                            className="text-[10px]"
-                          >
+                          <Badge key={cat} variant="secondary" className="text-[10px]">
                             {DATA_CATEGORY_LABELS[cat]}
                           </Badge>
                         ))}
                       </CardDescription>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={cn("text-xs", accessStyle.badge)}
-                    >
+                    <Badge variant="outline" className={cn("text-xs", accessStyle.badge)}>
                       <AccessIcon className="mr-1 size-3" />
                       {accessStyle.label}
                     </Badge>
@@ -188,22 +136,14 @@ export function DataSubscriptionManager({
                   {/* Venues + data types */}
                   <div className="flex flex-wrap gap-1">
                     {sub.shardFilters.venues.map((v) => (
-                      <Badge
-                        key={v}
-                        variant="outline"
-                        className="text-[10px] font-mono"
-                      >
+                      <Badge key={v} variant="outline" className="text-[10px] font-mono">
                         {v}
                       </Badge>
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {sub.shardFilters.dataTypes.map((dt) => (
-                      <Badge
-                        key={dt}
-                        variant="secondary"
-                        className="text-[10px]"
-                      >
+                      <Badge key={dt} variant="secondary" className="text-[10px]">
                         {dt}
                       </Badge>
                     ))}
@@ -213,8 +153,7 @@ export function DataSubscriptionManager({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-muted-foreground">
-                        {sub.gbUsedThisMonth} GB / {sub.gbLimitThisMonth} GB
-                        used this month
+                        {sub.gbUsedThisMonth} GB / {sub.gbLimitThisMonth} GB used this month
                       </span>
                       {isNearLimit && (
                         <span className="text-amber-400 flex items-center gap-1">
@@ -224,12 +163,7 @@ export function DataSubscriptionManager({
                     </div>
                     <Progress
                       value={usagePct}
-                      className={cn(
-                        "h-1.5",
-                        isNearLimit
-                          ? "[&>div]:bg-amber-500"
-                          : "[&>div]:bg-sky-500",
-                      )}
+                      className={cn("h-1.5", isNearLimit ? "[&>div]:bg-amber-500" : "[&>div]:bg-sky-500")}
                     />
                   </div>
 
@@ -251,9 +185,7 @@ export function DataSubscriptionManager({
                       )}
                     </div>
                     <span className="text-sm font-mono font-semibold">
-                      {orgMode === "demo"
-                        ? "—"
-                        : `$${(sub.monthlyCostCents / 100).toLocaleString()}/mo`}
+                      {orgMode === "demo" ? "—" : `$${(sub.monthlyCostCents / 100).toLocaleString()}/mo`}
                     </span>
                   </div>
                 </CardContent>

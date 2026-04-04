@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { STRATEGIES } from "@/lib/strategy-registry";
 import { useTerminalData } from "./terminal-data-context";
 import * as React from "react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function OrderEntryWidget(_props: WidgetComponentProps) {
   const {
@@ -42,8 +43,8 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
 
   const formatPrice = (v: number) => {
     if (v >= 1000) return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (v >= 1) return v.toFixed(4);
-    return v.toFixed(6);
+    if (v >= 1) return formatNumber(v, 4);
+    return formatNumber(v, 6);
   };
 
   return (

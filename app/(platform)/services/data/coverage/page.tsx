@@ -1,5 +1,7 @@
 "use client";
 
+
+import { PageHeader } from "@/components/shared/page-header";
 /**
  * /services/data/coverage — Cross-stage coverage matrix.
  * User can select row/column dimensions to compare Instruments, Raw, Processed.
@@ -25,11 +27,12 @@ import {
   type DataCategory,
   type CoverageStatus,
   type CoverageRow,
-} from "@/lib/data-service-types";
-import { MOCK_COVERAGE_ROWS } from "@/lib/data-service-mock-data";
+} from "@/lib/types/data-service";
+import { MOCK_COVERAGE_ROWS } from "@/lib/mocks/fixtures/data-service";
 import { useScopedCategories } from "@/hooks/use-scoped-categories";
 import { Lock } from "lucide-react";
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
+import { formatPercent } from "@/lib/utils/formatters";
 
 const STATUS_COLORS: Record<CoverageStatus, string> = {
   complete: "bg-emerald-500/80 text-emerald-900",
@@ -68,7 +71,7 @@ function CoverageCell({
     >
       <span>
         {completionPct != null
-          ? `${completionPct.toFixed(0)}%`
+          ? `${formatPercent(completionPct, 0)}`
           : STATUS_LABELS[status]}
       </span>
       {readOnly && <span className="text-[9px] opacity-70">Build</span>}
@@ -160,13 +163,11 @@ export default function CoveragePage() {
       <div className="container px-4 py-8 md:px-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Coverage</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Cross-stage completeness — Instruments → Raw → Processing →
-              Features
-            </p>
-          </div>
+          <PageHeader
+        title="Coverage"
+        description="Cross-stage completeness — Instruments → Raw → Processing →
+              Features"
+      />
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -184,7 +185,7 @@ export default function CoveragePage() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="pt-4">
               <div className="text-2xl font-bold font-mono text-foreground">
@@ -221,7 +222,7 @@ export default function CoveragePage() {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Group by:</span>
             <Select
@@ -278,7 +279,7 @@ export default function CoveragePage() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground sticky left-0 bg-card z-10">
                     Venue
                   </th>
                   <th className="text-left px-4 py-2 font-medium text-muted-foreground">
@@ -308,7 +309,7 @@ export default function CoveragePage() {
                     key={`${row.venue}-${row.date}-${i}`}
                     className="border-b border-border/50 hover:bg-accent/20 transition-colors"
                   >
-                    <td className="px-4 py-1.5 font-medium capitalize">
+                    <td className="px-4 py-1.5 font-medium capitalize sticky left-0 bg-card z-10">
                       {row.venue.replace(/_/g, " ")}
                     </td>
                     <td className="px-4 py-1.5">

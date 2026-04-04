@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { PredictionPosition } from "@/components/trading/predictions/types";
 import { fmtUsdPrecise } from "@/components/trading/predictions/helpers";

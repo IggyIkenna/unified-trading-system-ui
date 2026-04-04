@@ -4,20 +4,16 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { GripHorizontal, Maximize2, Minimize2, Plus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/shared/spinner";
 import { useAuth } from "@/hooks/use-auth";
 import { UpgradeCard } from "@/components/platform/upgrade-card";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { type WidgetDefinition, type WidgetPlacement, getWidget, getAllWidgets } from "./widget-registry";
 import { useWorkspaceStore, useActiveLayouts } from "@/lib/stores/workspace-store";
 import { WidgetContextGuard } from "./widget-context-guard";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { WidgetHeaderEndSlotContext } from "@/components/widgets/widget-chrome-context";
 
 interface WidgetWrapperProps {
   definition: WidgetDefinition;
@@ -75,14 +71,14 @@ function WidgetBody({
 }) {
   const Component = definition.component;
   return (
-    <WidgetScroll axes="both" className="flex-1 min-h-0">
+    <WidgetScroll axes="both" className="min-h-0 flex-1">
       {hasAccess ? (
         <WidgetContextGuard widgetLabel={definition.label}>
           <WidgetErrorBoundary widgetLabel={definition.label}>
             <React.Suspense
               fallback={
                 <div className="flex h-full items-center justify-center">
-                  <div className="size-4 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+                  <Spinner size="sm" className="text-muted-foreground" />
                 </div>
               }
             >
@@ -101,23 +97,22 @@ function WidgetBody({
   );
 }
 
-
-function AddCoTabButton({
+/** Searchable widget list — used inside PopoverContent (popover is anchored to the widget header in WidgetWrapper). */
+function AddWidgetPickerContent({
   pageTab,
   placement,
   currentAllWidgetIds,
+  available,
+  onClose,
 }: {
   pageTab: string;
   placement: WidgetPlacement;
   currentAllWidgetIds: string[];
+  available: WidgetDefinition[];
+  onClose: () => void;
 }) {
   const mergeWidget = useWorkspaceStore((s) => s.mergeWidget);
   const addWidget = useWorkspaceStore((s) => s.addWidget);
-  const available = getAllWidgets().filter(
-    (w) => w.id !== placement.widgetId && !(placement.coTabs ?? []).includes(w.id),
-  );
-
-  if (available.length === 0) return null;
 
   const grouped = available.reduce<Record<string, WidgetDefinition[]>>((acc, w) => {
     (acc[w.category] ??= []).push(w);
@@ -126,57 +121,44 @@ function AddCoTabButton({
   const categories = Object.keys(grouped).sort();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          onClick={(e) => e.stopPropagation()}
-          className="p-0.5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
-          aria-label="Add widget as tab"
-        >
-          <Plus className="size-3" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-56 max-h-72 overflow-y-auto z-[60]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <DropdownMenuLabel className="text-[10px] uppercase tracking-wider text-muted-foreground pb-1">
-          Add component
-        </DropdownMenuLabel>
+    <Command className="rounded-lg border-0 shadow-none" shouldFilter>
+      <CommandInput placeholder="Search widgets…" className="h-9 text-xs" />
+      <CommandList className="max-h-72">
+        <CommandEmpty className="py-6 text-xs text-muted-foreground">No widgets match your search.</CommandEmpty>
         {categories.map((cat) => (
-          <React.Fragment key={cat}>
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-[9px] uppercase tracking-wider text-muted-foreground/60 py-0.5">
-              {cat}
-            </DropdownMenuLabel>
+          <CommandGroup key={cat} heading={cat} className="overflow-hidden p-1">
             {grouped[cat].map((w) => {
               const alreadyOnScreen = currentAllWidgetIds.includes(w.id);
+              const searchBlob = `${w.id} ${w.label} ${w.description} ${w.category}`;
               return (
-                <DropdownMenuItem
+                <CommandItem
                   key={w.id}
-                  className="gap-2 text-xs cursor-pointer"
+                  value={searchBlob}
+                  className="gap-2 rounded-sm px-2 py-2 text-xs cursor-pointer aria-selected:bg-accent"
                   onSelect={() => {
                     if (alreadyOnScreen) {
                       mergeWidget(pageTab, placement.instanceId, w.id);
                     } else {
                       addWidget(pageTab, w.id);
                     }
+                    onClose();
                   }}
                 >
-                  <w.icon className="size-3 shrink-0 text-muted-foreground" />
+                  <w.icon className="size-3.5 shrink-0 text-muted-foreground" />
                   <div className="flex-1 min-w-0">
-                    <div className="truncate">{w.label}</div>
-                    <div className="text-[9px] text-muted-foreground/60 truncate">{w.description}</div>
+                    <div className="truncate font-medium">{w.label}</div>
+                    <div className="text-[10px] text-muted-foreground/80 truncate leading-snug">{w.description}</div>
                   </div>
-                  {alreadyOnScreen && <span className="text-[9px] text-primary/70 shrink-0 font-medium">merge</span>}
-                </DropdownMenuItem>
+                  {alreadyOnScreen ? (
+                    <span className="text-[9px] text-primary/80 shrink-0 font-medium">merge</span>
+                  ) : null}
+                </CommandItem>
               );
             })}
-          </React.Fragment>
+          </CommandGroup>
         ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </CommandList>
+    </Command>
   );
 }
 
@@ -205,6 +187,14 @@ export function WidgetWrapper({
 
   const currentAllWidgetIds = React.useMemo(() => allLayouts.map((l) => l.widgetId), [allLayouts]);
 
+  const availableAddWidgets = React.useMemo(
+    () => getAllWidgets().filter((w) => w.id !== placement.widgetId && !(placement.coTabs ?? []).includes(w.id)),
+    [placement.widgetId, placement.coTabs],
+  );
+
+  const [addWidgetOpen, setAddWidgetOpen] = React.useState(false);
+  const [headerEndSlot, setHeaderEndSlot] = React.useState<React.ReactNode>(null);
+
   React.useEffect(() => {
     if (!expanded) return;
     const handler = (e: KeyboardEvent) => {
@@ -217,7 +207,11 @@ export function WidgetWrapper({
   // ── Single header row — tab pills inline (Deribit-style) ─────────────────
   // Layout: [grip?] [tab-pill | tab-pill | ...OR... icon+label] [+]  ...  [expand] [X?]
   // The [+], expand, and [×] buttons are hidden until the widget is hovered (group-hover).
-  const header = (
+  // Add-widget popover is anchored to the full header row (PopoverAnchor) so align="start"
+  // lines up with the widget’s left edge instead of the small [+] button (align="end" overlap).
+  const showAddWidgetPlus = !expanded && availableAddWidgets.length > 0;
+
+  const headerRow = (
     <div
       className={cn(
         "widget-drag-handle group/header flex items-center gap-0 px-1 border-b border-border bg-card/80 shrink-0",
@@ -274,15 +268,26 @@ export function WidgetWrapper({
         )}
 
         {/* [+] button sits right next to the title / last tab pill */}
-        {!expanded && (
+        {showAddWidgetPlus && (
           <div className="opacity-0 group-hover/header:opacity-100 transition-opacity shrink-0">
-            <AddCoTabButton pageTab={pageTab} placement={placement} currentAllWidgetIds={currentAllWidgetIds} />
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                onClick={(e) => e.stopPropagation()}
+                className="p-0.5 text-muted-foreground hover:text-foreground transition-colors shrink-0"
+                aria-label="Add widget as tab"
+                aria-expanded={addWidgetOpen}
+              >
+                <Plus className="size-3" />
+              </button>
+            </PopoverTrigger>
           </div>
         )}
       </div>
 
-      {/* Right action buttons — always visible */}
+      {/* Right: optional KPI layout (from widget body) → fullscreen → remove */}
       <div className="flex items-center gap-0.5 shrink-0 ml-1">
+        {headerEndSlot}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -308,6 +313,30 @@ export function WidgetWrapper({
         )}
       </div>
     </div>
+  );
+
+  const header = showAddWidgetPlus ? (
+    <Popover open={addWidgetOpen} onOpenChange={setAddWidgetOpen}>
+      <PopoverAnchor asChild>{headerRow}</PopoverAnchor>
+      <PopoverContent
+        align="start"
+        side="bottom"
+        sideOffset={4}
+        collisionPadding={8}
+        className="p-0 z-[60] w-[min(22rem,calc(100vw-2rem))] max-w-[min(22rem,var(--radix-popper-anchor-width,100%))]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <AddWidgetPickerContent
+          pageTab={pageTab}
+          placement={placement}
+          currentAllWidgetIds={currentAllWidgetIds}
+          available={availableAddWidgets}
+          onClose={() => setAddWidgetOpen(false)}
+        />
+      </PopoverContent>
+    </Popover>
+  ) : (
+    headerRow
   );
 
   const body = (
@@ -337,18 +366,20 @@ export function WidgetWrapper({
       : null;
 
   return (
-    <>
-      <div
-        className={cn(
-          "flex flex-col h-full rounded-lg border border-border bg-card overflow-hidden relative z-[1]",
-          editMode && "hover:border-border/80",
-          expanded && "invisible",
-        )}
-      >
-        {header}
-        {body}
-      </div>
-      {fullscreenOverlay}
-    </>
+    <WidgetHeaderEndSlotContext.Provider value={setHeaderEndSlot}>
+      <>
+        <div
+          className={cn(
+            "flex flex-col h-full rounded-lg border border-border bg-card overflow-hidden relative z-[1]",
+            editMode && "hover:border-border/80",
+            expanded && "invisible",
+          )}
+        >
+          {header}
+          {body}
+        </div>
+        {fullscreenOverlay}
+      </>
+    </WidgetHeaderEndSlotContext.Provider>
   );
 }

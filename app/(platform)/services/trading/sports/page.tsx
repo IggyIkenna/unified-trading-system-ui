@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { SportsDataProvider } from "@/components/widgets/sports/sports-data-context";
 
-import "@/components/widgets/sports/register";
-
 function SportsPageContent() {
   return (
     <SportsDataProvider>

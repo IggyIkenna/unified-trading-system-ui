@@ -11,10 +11,13 @@
  */
 
 import * as React from "react";
+import { PageHeader } from "@/components/shared/page-header";
+import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Calendar,
   TrendingUp,
@@ -31,13 +34,13 @@ import {
   MOCK_MARKET_STRUCTURE_EVENTS,
   MOCK_CALENDAR_HOLIDAYS,
   MOCK_CORPORATE_ACTIONS,
-} from "@/lib/data-service-mock-data";
+} from "@/lib/mocks/fixtures/data-service";
 import type {
   EconomicEventImportance,
   EconomicEventType,
   MarketStructureEventType,
   CorporateActionType,
-} from "@/lib/data-service-types";
+} from "@/lib/types/data-service";
 
 // ─── Shared helpers ────────────────────────────────────────────────────────────
 
@@ -47,11 +50,11 @@ const IMPORTANCE_COLORS: Record<EconomicEventImportance, string> = {
   low: "text-slate-400 border-slate-400/30 bg-slate-400/10",
 };
 
-const IMPORTANCE_DOT: Record<EconomicEventImportance, string> = {
-  high: "bg-red-400",
-  medium: "bg-amber-400",
-  low: "bg-slate-400",
-};
+function importanceStatus(importance: EconomicEventImportance): "critical" | "warning" | "idle" {
+  if (importance === "high") return "critical";
+  if (importance === "medium") return "warning";
+  return "idle";
+}
 
 function isPast(dateStr: string): boolean {
   return new Date(dateStr) < new Date();
@@ -81,12 +84,7 @@ function SectionHeader({
   return (
     <div className="flex items-start justify-between mb-4">
       <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            "p-2 rounded-lg bg-muted/40",
-            iconClass ?? "text-primary",
-          )}
-        >
+        <div className={cn("p-2 rounded-lg bg-muted/40", iconClass ?? "text-primary")}>
           <Icon className="size-4" />
         </div>
         <div>
@@ -136,9 +134,7 @@ function SurpriseBadge({ surprise }: { surprise: number | null | undefined }) {
       variant="outline"
       className={cn(
         "text-[10px] h-4 tabular-nums",
-        positive
-          ? "text-emerald-400 border-emerald-400/30"
-          : "text-red-400 border-red-400/30",
+        positive ? "text-emerald-400 border-emerald-400/30" : "text-red-400 border-red-400/30",
       )}
     >
       {positive ? "+" : ""}
@@ -148,9 +144,7 @@ function SurpriseBadge({ surprise }: { surprise: number | null | undefined }) {
 }
 
 function EconomicEventsTab() {
-  const sorted = [...MOCK_ECONOMIC_EVENTS].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  const sorted = [...MOCK_ECONOMIC_EVENTS].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const upcoming = sorted.filter((e) => !isPast(e.date));
   const past = sorted.filter((e) => isPast(e.date));
@@ -174,62 +168,35 @@ function EconomicEventsTab() {
           <Card className="border-border/50">
             <CardContent className="p-0 divide-y divide-border/30">
               {upcoming.map((ev) => (
-                <div
-                  key={ev.id}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-                >
-                  <div
-                    className={cn(
-                      "size-2 rounded-full flex-shrink-0",
-                      IMPORTANCE_DOT[ev.importance],
-                    )}
-                  />
+                <div key={ev.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
+                  <StatusDot status={importanceStatus(ev.importance)} className="size-2 flex-shrink-0" />
                   <div className="w-24 flex-shrink-0">
-                    <p className="text-xs font-mono text-muted-foreground">
-                      {formatDate(ev.date)}
-                    </p>
-                    {ev.time && (
-                      <p className="text-[10px] text-muted-foreground/60">
-                        {ev.time} UTC
-                      </p>
-                    )}
+                    <p className="text-xs font-mono text-muted-foreground">{formatDate(ev.date)}</p>
+                    {ev.time && <p className="text-[10px] text-muted-foreground/60">{ev.time} UTC</p>}
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "text-[10px] h-5 flex-shrink-0",
-                      ECONOMIC_EVENT_COLORS[ev.eventType],
-                    )}
+                    className={cn("text-[10px] h-5 flex-shrink-0", ECONOMIC_EVENT_COLORS[ev.eventType])}
                   >
                     {ECONOMIC_EVENT_LABELS[ev.eventType]}
                   </Badge>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">{ev.label}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {ev.country}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground">{ev.country}</p>
                   </div>
                   <div className="flex items-center gap-4 flex-shrink-0">
                     {ev.forecast !== undefined && ev.forecast !== null && (
                       <div className="text-right">
-                        <p className="text-[10px] text-muted-foreground">
-                          Forecast
-                        </p>
+                        <p className="text-[10px] text-muted-foreground">Forecast</p>
                         <p className="text-xs font-mono">
                           {ev.forecast}
-                          {ev.unit && (
-                            <span className="text-muted-foreground ml-0.5">
-                              {ev.unit}
-                            </span>
-                          )}
+                          {ev.unit && <span className="text-muted-foreground ml-0.5">{ev.unit}</span>}
                         </p>
                       </div>
                     )}
                     {ev.previous !== undefined && ev.previous !== null && (
                       <div className="text-right">
-                        <p className="text-[10px] text-muted-foreground">
-                          Prev
-                        </p>
+                        <p className="text-[10px] text-muted-foreground">Prev</p>
                         <p className="text-xs font-mono text-muted-foreground">
                           {ev.previous}
                           {ev.unit && <span className="ml-0.5">{ev.unit}</span>}
@@ -239,10 +206,7 @@ function EconomicEventsTab() {
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "text-[10px] h-4 flex-shrink-0",
-                      IMPORTANCE_COLORS[ev.importance],
-                    )}
+                    className={cn("text-[10px] h-4 flex-shrink-0", IMPORTANCE_COLORS[ev.importance])}
                   >
                     {ev.importance}
                   </Badge>
@@ -265,62 +229,37 @@ function EconomicEventsTab() {
                 .slice()
                 .reverse()
                 .map((ev) => (
-                  <div
-                    key={ev.id}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-                  >
-                    <div
-                      className={cn(
-                        "size-2 rounded-full flex-shrink-0 opacity-40",
-                        IMPORTANCE_DOT[ev.importance],
-                      )}
-                    />
+                  <div key={ev.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
+                    <StatusDot status={importanceStatus(ev.importance)} className="size-2 flex-shrink-0 opacity-40" />
                     <div className="w-24 flex-shrink-0">
-                      <p className="text-xs font-mono text-muted-foreground">
-                        {formatDate(ev.date)}
-                      </p>
+                      <p className="text-xs font-mono text-muted-foreground">{formatDate(ev.date)}</p>
                     </div>
                     <Badge
                       variant="outline"
-                      className={cn(
-                        "text-[10px] h-5 flex-shrink-0 opacity-70",
-                        ECONOMIC_EVENT_COLORS[ev.eventType],
-                      )}
+                      className={cn("text-[10px] h-5 flex-shrink-0 opacity-70", ECONOMIC_EVENT_COLORS[ev.eventType])}
                     >
                       {ECONOMIC_EVENT_LABELS[ev.eventType]}
                     </Badge>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium truncate">{ev.label}</p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {ev.country}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">{ev.country}</p>
                     </div>
                     <div className="flex items-center gap-4 flex-shrink-0">
                       {ev.actual !== undefined && ev.actual !== null && (
                         <div className="text-right">
-                          <p className="text-[10px] text-muted-foreground">
-                            Actual
-                          </p>
+                          <p className="text-[10px] text-muted-foreground">Actual</p>
                           <p className="text-xs font-mono font-medium">
                             {ev.actual}
-                            {ev.unit && (
-                              <span className="text-muted-foreground ml-0.5">
-                                {ev.unit}
-                              </span>
-                            )}
+                            {ev.unit && <span className="text-muted-foreground ml-0.5">{ev.unit}</span>}
                           </p>
                         </div>
                       )}
                       {ev.forecast !== undefined && ev.forecast !== null && (
                         <div className="text-right">
-                          <p className="text-[10px] text-muted-foreground">
-                            Forecast
-                          </p>
+                          <p className="text-[10px] text-muted-foreground">Forecast</p>
                           <p className="text-xs font-mono text-muted-foreground">
                             {ev.forecast}
-                            {ev.unit && (
-                              <span className="ml-0.5">{ev.unit}</span>
-                            )}
+                            {ev.unit && <span className="ml-0.5">{ev.unit}</span>}
                           </p>
                         </div>
                       )}
@@ -360,8 +299,7 @@ const CORPORATE_ACTION_COLORS: Record<CorporateActionType, string> = {
 
 function CorporateActionsTab() {
   const sorted = [...MOCK_CORPORATE_ACTIONS].sort(
-    (a, b) =>
-      new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime(),
+    (a, b) => new Date(b.effectiveDate).getTime() - new Date(a.effectiveDate).getTime(),
   );
 
   return (
@@ -379,10 +317,8 @@ function CorporateActionsTab() {
           <div className="flex items-center gap-2 text-xs text-amber-400">
             <AlertTriangle className="size-3 flex-shrink-0" />
             <span>
-              Data source for corporate actions is currently under research.
-              Candidates include Yahoo Finance (free), Polygon.io, and
-              Refinitiv. This data will live in its own ingestion pipeline once
-              a source is confirmed.
+              Data source for corporate actions is currently under research. Candidates include Yahoo Finance (free),
+              Polygon.io, and Refinitiv. This data will live in its own ingestion pipeline once a source is confirmed.
             </span>
           </div>
         </CardContent>
@@ -391,55 +327,32 @@ function CorporateActionsTab() {
       <Card className="border-border/50">
         <CardContent className="p-0 divide-y divide-border/30">
           {sorted.map((action) => (
-            <div
-              key={action.id}
-              className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-            >
+            <div key={action.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
               <div className="w-24 flex-shrink-0">
-                <p className="text-xs font-mono text-muted-foreground">
-                  {formatDate(action.effectiveDate)}
-                </p>
+                <p className="text-xs font-mono text-muted-foreground">{formatDate(action.effectiveDate)}</p>
               </div>
               <Badge
                 variant="outline"
-                className={cn(
-                  "text-[10px] h-5 flex-shrink-0",
-                  CORPORATE_ACTION_COLORS[action.actionType],
-                )}
+                className={cn("text-[10px] h-5 flex-shrink-0", CORPORATE_ACTION_COLORS[action.actionType])}
               >
                 {CORPORATE_ACTION_LABELS[action.actionType]}
               </Badge>
-              <span className="text-xs font-mono font-semibold w-20 flex-shrink-0">
-                {action.symbol}
-              </span>
+              <span className="text-xs font-mono font-semibold w-20 flex-shrink-0">{action.symbol}</span>
               {action.newSymbol && (
-                <span className="text-xs text-muted-foreground flex-shrink-0">
-                  → {action.newSymbol}
-                </span>
+                <span className="text-xs text-muted-foreground flex-shrink-0">→ {action.newSymbol}</span>
               )}
               {action.ratio && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] h-4 font-mono flex-shrink-0"
-                >
+                <Badge variant="secondary" className="text-[10px] h-4 font-mono flex-shrink-0">
                   {action.ratio}:1
                 </Badge>
               )}
-              <span className="flex-1 text-xs text-muted-foreground truncate">
-                {action.description}
-              </span>
+              <span className="flex-1 text-xs text-muted-foreground truncate">{action.description}</span>
               <div className="flex items-center gap-2 flex-shrink-0">
-                <Badge
-                  variant="outline"
-                  className="text-[10px] h-4 text-muted-foreground"
-                >
+                <Badge variant="outline" className="text-[10px] h-4 text-muted-foreground">
                   {action.venue}
                 </Badge>
                 {action.dataAdjusted && (
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] h-4 text-emerald-400 border-emerald-400/30"
-                  >
+                  <Badge variant="outline" className="text-[10px] h-4 text-emerald-400 border-emerald-400/30">
                     Adjusted
                   </Badge>
                 )}
@@ -499,65 +412,34 @@ function MarketStructureTab() {
           <Card className="border-border/50">
             <CardContent className="p-0 divide-y divide-border/30">
               {upcoming.map((ev) => (
-                <div
-                  key={ev.id}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-                >
-                  <div
-                    className={cn(
-                      "size-2 rounded-full flex-shrink-0",
-                      IMPORTANCE_DOT[ev.importance],
-                    )}
-                  />
+                <div key={ev.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
+                  <StatusDot status={importanceStatus(ev.importance)} className="size-2 flex-shrink-0" />
                   <div className="w-24 flex-shrink-0">
-                    <p className="text-xs font-mono text-muted-foreground">
-                      {formatDate(ev.date)}
-                    </p>
-                    {ev.time && (
-                      <p className="text-[10px] text-muted-foreground/60">
-                        {ev.time} UTC
-                      </p>
-                    )}
+                    <p className="text-xs font-mono text-muted-foreground">{formatDate(ev.date)}</p>
+                    {ev.time && <p className="text-[10px] text-muted-foreground/60">{ev.time} UTC</p>}
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "text-[10px] h-5 flex-shrink-0",
-                      MARKET_STRUCTURE_COLORS[ev.eventType],
-                    )}
+                    className={cn("text-[10px] h-5 flex-shrink-0", MARKET_STRUCTURE_COLORS[ev.eventType])}
                   >
                     {MARKET_STRUCTURE_LABELS[ev.eventType]}
                   </Badge>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">{ev.label}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">
-                      {ev.description}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground truncate">{ev.description}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {ev.venue && (
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] h-4 text-muted-foreground"
-                      >
+                      <Badge variant="outline" className="text-[10px] h-4 text-muted-foreground">
                         {ev.venue}
                       </Badge>
                     )}
                     {ev.asset && (
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] h-4 font-mono"
-                      >
+                      <Badge variant="secondary" className="text-[10px] h-4 font-mono">
                         {ev.asset}
                       </Badge>
                     )}
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[10px] h-4",
-                        IMPORTANCE_COLORS[ev.importance],
-                      )}
-                    >
+                    <Badge variant="outline" className={cn("text-[10px] h-4", IMPORTANCE_COLORS[ev.importance])}>
                       {ev.importance}
                     </Badge>
                   </div>
@@ -580,36 +462,23 @@ function MarketStructureTab() {
                 .slice()
                 .reverse()
                 .map((ev) => (
-                  <div
-                    key={ev.id}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-                  >
+                  <div key={ev.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
                     <div className="w-24 flex-shrink-0">
-                      <p className="text-xs font-mono text-muted-foreground">
-                        {formatDate(ev.date)}
-                      </p>
+                      <p className="text-xs font-mono text-muted-foreground">{formatDate(ev.date)}</p>
                     </div>
                     <Badge
                       variant="outline"
-                      className={cn(
-                        "text-[10px] h-5 flex-shrink-0 opacity-70",
-                        MARKET_STRUCTURE_COLORS[ev.eventType],
-                      )}
+                      className={cn("text-[10px] h-5 flex-shrink-0 opacity-70", MARKET_STRUCTURE_COLORS[ev.eventType])}
                     >
                       {MARKET_STRUCTURE_LABELS[ev.eventType]}
                     </Badge>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium truncate">{ev.label}</p>
-                      <p className="text-[10px] text-muted-foreground truncate">
-                        {ev.description}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground truncate">{ev.description}</p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       {ev.asset && (
-                        <Badge
-                          variant="secondary"
-                          className="text-[10px] h-4 font-mono"
-                        >
+                        <Badge variant="secondary" className="text-[10px] h-4 font-mono">
                           {ev.asset}
                         </Badge>
                       )}
@@ -636,9 +505,7 @@ const REGION_COLORS: Record<string, string> = {
 };
 
 function HolidaysTab() {
-  const sorted = [...MOCK_CALENDAR_HOLIDAYS].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  const sorted = [...MOCK_CALENDAR_HOLIDAYS].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const upcoming = sorted.filter((h) => !isPast(h.date));
   const past = sorted.filter((h) => isPast(h.date));
@@ -662,29 +529,19 @@ function HolidaysTab() {
           <Card className="border-border/50">
             <CardContent className="p-0 divide-y divide-border/30">
               {upcoming.map((h) => (
-                <div
-                  key={h.id}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-                >
+                <div key={h.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
                   <div className="w-24 flex-shrink-0">
-                    <p className="text-xs font-mono text-muted-foreground">
-                      {formatDate(h.date)}
-                    </p>
+                    <p className="text-xs font-mono text-muted-foreground">{formatDate(h.date)}</p>
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn(
-                      "text-[10px] h-5 flex-shrink-0",
-                      REGION_COLORS[h.region] ?? REGION_COLORS.global,
-                    )}
+                    className={cn("text-[10px] h-5 flex-shrink-0", REGION_COLORS[h.region] ?? REGION_COLORS.global)}
                   >
                     {h.region}
                   </Badge>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">{h.label}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {h.affectedVenues.join(", ")}
-                    </p>
+                    <p className="text-[10px] text-muted-foreground">{h.affectedVenues.join(", ")}</p>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {h.isPartialClose ? (
@@ -696,10 +553,7 @@ function HolidaysTab() {
                         Early close {h.closeTime}
                       </Badge>
                     ) : (
-                      <Badge
-                        variant="outline"
-                        className="text-[10px] h-4 text-red-400 border-red-400/30"
-                      >
+                      <Badge variant="outline" className="text-[10px] h-4 text-red-400 border-red-400/30">
                         Full close
                       </Badge>
                     )}
@@ -723,14 +577,9 @@ function HolidaysTab() {
                 .slice()
                 .reverse()
                 .map((h) => (
-                  <div
-                    key={h.id}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors"
-                  >
+                  <div key={h.id} className="flex items-center gap-3 px-4 py-3 hover:bg-muted/20 transition-colors">
                     <div className="w-24 flex-shrink-0">
-                      <p className="text-xs font-mono text-muted-foreground">
-                        {formatDate(h.date)}
-                      </p>
+                      <p className="text-xs font-mono text-muted-foreground">{formatDate(h.date)}</p>
                     </div>
                     <Badge
                       variant="outline"
@@ -743,9 +592,7 @@ function HolidaysTab() {
                     </Badge>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-medium truncate">{h.label}</p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {h.affectedVenues.join(", ")}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">{h.affectedVenues.join(", ")}</p>
                     </div>
                   </div>
                 ))}
@@ -777,9 +624,7 @@ function KpiCard({
           <Icon className="size-3.5" />
         </div>
         <div>
-          <div className="text-xl font-bold font-mono tabular-nums">
-            {value}
-          </div>
+          <div className="text-xl font-bold font-mono tabular-nums">{value}</div>
           <div className="text-[10px] text-muted-foreground">{label}</div>
         </div>
       </CardContent>
@@ -790,30 +635,21 @@ function KpiCard({
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EventsPage() {
-  const upcomingEconomic = MOCK_ECONOMIC_EVENTS.filter(
-    (e) => !isPast(e.date),
-  ).length;
-  const upcomingMarket = MOCK_MARKET_STRUCTURE_EVENTS.filter(
-    (e) => !isPast(e.date),
-  ).length;
-  const upcomingHolidays = MOCK_CALENDAR_HOLIDAYS.filter(
-    (h) => !isPast(h.date),
-  ).length;
+  const upcomingEconomic = MOCK_ECONOMIC_EVENTS.filter((e) => !isPast(e.date)).length;
+  const upcomingMarket = MOCK_MARKET_STRUCTURE_EVENTS.filter((e) => !isPast(e.date)).length;
+  const upcomingHolidays = MOCK_CALENDAR_HOLIDAYS.filter((h) => !isPast(h.date)).length;
 
   return (
     <div className="p-6 space-y-6 platform-page-width">
-      {/* Page header */}
-      <div>
-        <h1 className="text-lg font-semibold flex items-center gap-2">
-          <Calendar className="size-5 text-primary" />
-          Events
-        </h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Economic releases, corporate actions, market structure events, and
-          exchange holidays. Equivalent to raw data — pre-processed, no further
-          transformation needed.
-        </p>
-      </div>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Calendar className="size-5 text-primary" />
+            Events
+          </span>
+        }
+        description="Economic releases, corporate actions, market structure events, and exchange holidays. Equivalent to raw data — pre-processed, no further transformation needed."
+      />
 
       {/* KPI bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -829,12 +665,7 @@ export default function EventsPage() {
           icon={GitBranch}
           iconClass="text-sky-400"
         />
-        <KpiCard
-          label="Market structure events"
-          value={upcomingMarket}
-          icon={Building2}
-          iconClass="text-orange-400"
-        />
+        <KpiCard label="Market structure events" value={upcomingMarket} icon={Building2} iconClass="text-orange-400" />
         <KpiCard
           label="Upcoming exchange closures"
           value={upcomingHolidays}
@@ -846,18 +677,46 @@ export default function EventsPage() {
       {/* Sub-tabs */}
       <Tabs defaultValue="economic">
         <TabsList className="grid grid-cols-4 w-full max-w-lg">
-          <TabsTrigger value="economic" className="text-xs">
-            Economic
-          </TabsTrigger>
-          <TabsTrigger value="corporate" className="text-xs">
-            Corporate
-          </TabsTrigger>
-          <TabsTrigger value="market" className="text-xs">
-            Market Structure
-          </TabsTrigger>
-          <TabsTrigger value="holidays" className="text-xs">
-            Holidays
-          </TabsTrigger>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <TabsTrigger value="economic" className="text-xs">
+                Economic
+              </TabsTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              FOMC, NFP, CPI, GDP and other macro releases (FRED + Fed calendar).
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <TabsTrigger value="corporate" className="text-xs">
+                Corporate
+              </TabsTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              Stock splits, symbol changes, delistings, and other TradFi corporate events.
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <TabsTrigger value="market" className="text-xs">
+                Market Structure
+              </TabsTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              Options and futures expiries, halvings, network upgrades, and structural events.
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <TabsTrigger value="holidays" className="text-xs">
+                Holidays
+              </TabsTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              Exchange holidays, full closes, and early closes by region.
+            </TooltipContent>
+          </Tooltip>
         </TabsList>
 
         <div className="mt-6">

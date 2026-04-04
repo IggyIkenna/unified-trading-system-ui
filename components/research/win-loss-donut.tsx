@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { cn } from "@/lib/utils";
+import { formatPercent } from "@/lib/utils/formatters";
 
 interface WinLossDonutProps {
   wins: number;
@@ -16,19 +17,12 @@ const COLORS = {
   breakEven: "#6b7280",
 };
 
-export function WinLossDonut({
-  wins,
-  losses,
-  breakEven,
-  className,
-}: WinLossDonutProps) {
+export function WinLossDonut({ wins, losses, breakEven, className }: WinLossDonutProps) {
   const total = wins + losses + breakEven;
   const data = [
     { name: "Wins", value: wins, color: COLORS.wins },
     { name: "Losses", value: losses, color: COLORS.losses },
-    ...(breakEven > 0
-      ? [{ name: "Break Even", value: breakEven, color: COLORS.breakEven }]
-      : []),
+    ...(breakEven > 0 ? [{ name: "Break Even", value: breakEven, color: COLORS.breakEven }] : []),
   ];
 
   return (
@@ -61,16 +55,11 @@ export function WinLossDonut({
       <div className="space-y-1.5 text-xs">
         {data.map((d) => (
           <div key={d.name} className="flex items-center gap-2">
-            <span
-              className="size-2.5 rounded-full"
-              style={{ backgroundColor: d.color }}
-            />
+            <span className="size-2.5 rounded-full" style={{ backgroundColor: d.color }} />
             <span className="text-muted-foreground w-16">{d.name}</span>
-            <span className="font-mono tabular-nums font-medium">
-              {d.value}
-            </span>
+            <span className="font-mono tabular-nums font-medium">{d.value}</span>
             <span className="text-muted-foreground">
-              ({total > 0 ? ((d.value / total) * 100).toFixed(1) : 0}%)
+              ({total > 0 ? formatPercent((d.value / total) * 100, 1) : "0%"})
             </span>
           </div>
         ))}

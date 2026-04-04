@@ -1,21 +1,27 @@
 "use client";
 
-import * as React from "react";
-import { useOrders, useCancelOrder, useAmendOrder } from "@/hooks/api/use-orders";
-import { getOrdersForScope } from "@/lib/mock-data";
-import { SEED_STRATEGIES } from "@/lib/mock-data/seed";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react";
+import { Spinner } from "@/components/shared/spinner";
+import { useAmendOrder, useCancelOrder, useOrders } from "@/hooks/api/use-orders";
+import { useExecutionMode } from "@/lib/execution-mode-context";
+import { getOrdersForScope } from "@/lib/mocks/fixtures/mock-data-index";
+import { SEED_STRATEGIES } from "@/lib/mocks/fixtures/mock-data-seed";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
+import * as React from "react";
 
-type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
+export type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
 
-interface OrderRecord {
+export type AssetClassFilter = Exclude<InstrumentType, "All">;
+
+const ASSET_CLASS_OPTIONS: AssetClassFilter[] = ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
+
+export interface OrderRecord {
   order_id: string;
   instrument: string;
   side: "BUY" | "SELL";
@@ -51,6 +57,8 @@ interface OrdersDataContextShape {
     open: number;
     filled: number;
     partial: number;
+    rejected: number;
+    failed: number;
   };
 
   searchQuery: string;
@@ -59,12 +67,25 @@ interface OrdersDataContextShape {
   setVenueFilter: (v: string) => void;
   statusFilter: string;
   setStatusFilter: (s: string) => void;
-  instrumentTypeFilter: InstrumentType;
-  setInstrumentTypeFilter: (t: InstrumentType) => void;
+  strategyFilter: string;
+  setStrategyFilter: (s: string) => void;
+  sideFilter: "all" | "BUY" | "SELL";
+  setSideFilter: (s: "all" | "BUY" | "SELL") => void;
+  instrumentTypeFilters: AssetClassFilter[];
+  setInstrumentTypeFilters: React.Dispatch<React.SetStateAction<AssetClassFilter[]>>;
+  toggleInstrumentTypeFilter: (t: AssetClassFilter) => void;
   resetFilters: () => void;
 
   uniqueVenues: string[];
   uniqueStatuses: string[];
+  uniqueStrategies: [string, string][];
+
+  filterDefs: FilterDefinition[];
+  filterValues: Record<string, unknown>;
+  handleFilterChange: (key: string, value: unknown) => void;
+
+  assetClassOptions: AssetClassFilter[];
+  classifyInstrument: (instrument: string) => AssetClassFilter;
 
   amendTarget: OrderRecord | null;
   setAmendTarget: (order: OrderRecord | null) => void;
@@ -78,7 +99,7 @@ export function useOrdersData(): OrdersDataContextShape {
   return ctx;
 }
 
-function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> {
+function classifyInstrument(instrument: string): AssetClassFilter {
   const upper = instrument.toUpperCase();
   if (/\d+-[CP]$/.test(upper) || upper.includes("OPTIONS")) return "Options";
   if (upper.includes("PERPETUAL") || upper.includes("PERP")) return "Perp";
@@ -104,7 +125,7 @@ function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> 
   return "Spot";
 }
 
-export { type OrderRecord, type InstrumentType, classifyInstrument };
+export { classifyInstrument, ASSET_CLASS_OPTIONS };
 
 export function OrdersDataProvider({ children }: { children: React.ReactNode }) {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders();
@@ -120,9 +141,19 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [venueFilter, setVenueFilter] = React.useState("all");
   const [statusFilter, setStatusFilter] = React.useState("all");
-  const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All");
+  const [strategyFilter, setStrategyFilter] = React.useState("all");
+  const [sideFilter, setSideFilter] = React.useState<"all" | "BUY" | "SELL">("all");
+  const [instrumentTypeFilters, setInstrumentTypeFilters] = React.useState<AssetClassFilter[]>([]);
 
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
 
   const orders: OrderRecord[] = React.useMemo(() => {
     const raw = ordersRaw as Record<string, unknown> | undefined;
@@ -132,7 +163,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
 
     // Fall back to seed data
     const seed = getOrdersForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
-    return seed.map((s) => {
+    return seed.map((s, idx) => {
       const strat = SEED_STRATEGIES.find((st) => st.id === s.strategyId);
       return {
         order_id: s.id,
@@ -140,15 +171,15 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
         side: s.side.toUpperCase() as "BUY" | "SELL",
         type: s.type,
         price: s.price,
-        mark_price: s.price * (1 + (Math.random() - 0.5) * 0.002),
+        mark_price: s.price * (1 + (mock01(idx, 701) - 0.5) * 0.002),
         quantity: s.quantity,
         filled: s.filledQty,
         status: s.status,
         venue: s.venue,
         strategy_id: s.strategyId,
         strategy_name: strat?.name ?? s.strategyId,
-        edge_bps: Math.round((Math.random() * 20 - 5) * 10) / 10,
-        instant_pnl: Math.round((Math.random() * 200 - 50) * 100) / 100,
+        edge_bps: Math.round((mock01(idx, 702) * 20 - 5) * 10) / 10,
+        instant_pnl: Math.round((mock01(idx, 703) * 200 - 50) * 100) / 100,
         created_at: s.timestamp,
       };
     });
@@ -191,15 +222,27 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     if (statusFilter !== "all") {
       result = result.filter((o) => o.status.toUpperCase() === statusFilter);
     }
-    if (instrumentTypeFilter !== "All") {
-      result = result.filter((o) => classifyInstrument(o.instrument) === instrumentTypeFilter);
+    if (strategyFilter !== "all") {
+      result = result.filter((o) => o.strategy_id === strategyFilter);
+    }
+    if (sideFilter !== "all") {
+      result = result.filter((o) => o.side === sideFilter);
+    }
+    if (instrumentTypeFilters.length > 0) {
+      result = result.filter((o) => instrumentTypeFilters.includes(classifyInstrument(o.instrument)));
     }
     return result;
-  }, [scopedOrders, searchQuery, venueFilter, statusFilter, instrumentTypeFilter]);
+  }, [scopedOrders, searchQuery, venueFilter, statusFilter, strategyFilter, sideFilter, instrumentTypeFilters]);
 
   const uniqueVenues = React.useMemo(() => [...new Set(orders.map((o) => o.venue))].sort(), [orders]);
 
   const uniqueStatuses = React.useMemo(() => [...new Set(orders.map((o) => o.status.toUpperCase()))].sort(), [orders]);
+
+  const uniqueStrategies = React.useMemo(() => {
+    const map = new Map<string, string>();
+    orders.forEach((o) => map.set(o.strategy_id, o.strategy_name || o.strategy_id));
+    return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1])) as [string, string][];
+  }, [orders]);
 
   const summary = React.useMemo(
     () => ({
@@ -207,6 +250,8 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
       open: filteredOrders.filter((o) => o.status.toUpperCase().includes("OPEN")).length,
       filled: filteredOrders.filter((o) => o.status.toUpperCase().includes("FILLED")).length,
       partial: filteredOrders.filter((o) => o.status.toUpperCase().includes("PARTIAL")).length,
+      rejected: filteredOrders.filter((o) => o.status.toUpperCase().includes("REJECTED")).length,
+      failed: filteredOrders.filter((o) => o.status.toUpperCase().includes("FAILED")).length,
     }),
     [filteredOrders],
   );
@@ -230,7 +275,83 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     setSearchQuery("");
     setVenueFilter("all");
     setStatusFilter("all");
-    setInstrumentTypeFilter("All");
+    setStrategyFilter("all");
+    setSideFilter("all");
+    setInstrumentTypeFilters([]);
+  }, []);
+
+  const toggleInstrumentTypeFilter = React.useCallback((t: AssetClassFilter) => {
+    setInstrumentTypeFilters((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  }, []);
+
+  const filterDefs: FilterDefinition[] = React.useMemo(
+    () => [
+      {
+        key: "search",
+        label: "Search",
+        type: "search" as const,
+        placeholder: "Search by order ID, instrument, venue...",
+      },
+      {
+        key: "strategy",
+        label: "Strategy",
+        type: "select" as const,
+        options: uniqueStrategies.map(([id, name]) => ({ value: id, label: name })),
+      },
+      {
+        key: "venue",
+        label: "Venue",
+        type: "select" as const,
+        options: uniqueVenues.map((v) => ({ value: v, label: v })),
+      },
+      {
+        key: "status",
+        label: "Status",
+        type: "select" as const,
+        options: uniqueStatuses.map((s) => ({ value: s, label: s })),
+      },
+      {
+        key: "side",
+        label: "Side",
+        type: "select" as const,
+        options: [
+          { value: "BUY", label: "Buy" },
+          { value: "SELL", label: "Sell" },
+        ],
+      },
+    ],
+    [uniqueVenues, uniqueStatuses, uniqueStrategies],
+  );
+
+  const filterValues = React.useMemo(
+    () => ({
+      search: searchQuery || undefined,
+      strategy: strategyFilter !== "all" ? strategyFilter : undefined,
+      venue: venueFilter !== "all" ? venueFilter : undefined,
+      status: statusFilter !== "all" ? statusFilter : undefined,
+      side: sideFilter !== "all" ? sideFilter : undefined,
+    }),
+    [searchQuery, strategyFilter, venueFilter, statusFilter, sideFilter],
+  );
+
+  const handleFilterChange = React.useCallback((key: string, value: unknown) => {
+    switch (key) {
+      case "search":
+        setSearchQuery((value as string) || "");
+        break;
+      case "strategy":
+        setStrategyFilter((value as string) || "all");
+        break;
+      case "venue":
+        setVenueFilter((value as string) || "all");
+        break;
+      case "status":
+        setStatusFilter((value as string) || "all");
+        break;
+      case "side":
+        setSideFilter(((value as string) || "all") as "all" | "BUY" | "SELL");
+        break;
+    }
   }, []);
 
   const value: OrdersDataContextShape = React.useMemo(
@@ -252,11 +373,22 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
       setVenueFilter,
       statusFilter,
       setStatusFilter,
-      instrumentTypeFilter,
-      setInstrumentTypeFilter,
+      strategyFilter,
+      setStrategyFilter,
+      sideFilter,
+      setSideFilter,
+      instrumentTypeFilters,
+      setInstrumentTypeFilters,
+      toggleInstrumentTypeFilter,
       resetFilters,
       uniqueVenues,
       uniqueStatuses,
+      uniqueStrategies,
+      filterDefs,
+      filterValues,
+      handleFilterChange,
+      assetClassOptions: ASSET_CLASS_OPTIONS,
+      classifyInstrument,
       amendTarget,
       setAmendTarget,
     }),
@@ -275,10 +407,17 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
       searchQuery,
       venueFilter,
       statusFilter,
-      instrumentTypeFilter,
+      strategyFilter,
+      sideFilter,
+      instrumentTypeFilters,
+      toggleInstrumentTypeFilter,
       resetFilters,
       uniqueVenues,
       uniqueStatuses,
+      uniqueStrategies,
+      filterDefs,
+      filterValues,
+      handleFilterChange,
       amendTarget,
     ],
   );
@@ -338,7 +477,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
               Cancel
             </Button>
             <Button onClick={handleDialogSubmit} disabled={amendMutation.isPending}>
-              {amendMutation.isPending ? <Loader2 className="size-3.5 mr-1.5 animate-spin" /> : null}
+              {amendMutation.isPending ? <Spinner size="sm" className="size-3.5 mr-1.5" /> : null}
               Confirm Amend
             </Button>
           </DialogFooter>

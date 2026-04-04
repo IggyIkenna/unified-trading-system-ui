@@ -5,10 +5,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { cn } from "@/lib/utils";
 import { useRegulatoryReports } from "@/hooks/api/use-reports";
 import {
@@ -22,37 +22,13 @@ import {
   Calendar,
   RefreshCw,
 } from "lucide-react";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type ReportStatus = "submitted" | "pending" | "overdue" | "draft";
-type ReportType =
-  | "MIFID_II_ART26"
-  | "MIFID_II_ART27"
-  | "FCA_BEST_EXEC"
-  | "EMIR_DERIVATIVE"
-  | "FCA_TRANSACTION";
-type Jurisdiction = "EU" | "UK";
-
-interface RegulatoryReport {
-  id: string;
-  reportType: ReportType;
-  jurisdiction: Jurisdiction;
-  period: string;
-  filingDate: string | null;
-  nextDueDate: string;
-  status: ReportStatus;
-  filingReference: string | null;
-  instrumentsCovered: string[];
-  bestExecutionMetrics: {
-    avgSlippage: string;
-    fillRate: string;
-    priceImprovement: string;
-    venueScore: string;
-  } | null;
-}
+import {
+  MOCK_REPORTS,
+  type Jurisdiction,
+  type RegulatoryReport,
+  type ReportStatus,
+  type ReportType,
+} from "@/lib/mocks/fixtures/reports-regulatory";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -74,10 +50,7 @@ const REPORT_TYPE_SHORT: Record<ReportType, string> = {
   FCA_TRANSACTION: "FCA",
 };
 
-const STATUS_CONFIG: Record<
-  ReportStatus,
-  { label: string; className: string; icon: React.ElementType }
-> = {
+const STATUS_CONFIG: Record<ReportStatus, { label: string; className: string; icon: React.ElementType }> = {
   submitted: {
     label: "Submitted",
     className: "bg-emerald-500/15 text-emerald-400 border-transparent",
@@ -99,166 +72,6 @@ const STATUS_CONFIG: Record<
     icon: FileText,
   },
 };
-
-// ---------------------------------------------------------------------------
-// Mock data (fallback when API is unavailable)
-// ---------------------------------------------------------------------------
-
-const MOCK_REPORTS: RegulatoryReport[] = [
-  {
-    id: "reg-001",
-    reportType: "MIFID_II_ART26",
-    jurisdiction: "EU",
-    period: "2026 Q1",
-    filingDate: "2026-03-15",
-    nextDueDate: "2026-06-30",
-    status: "submitted",
-    filingReference: "EU-ART26-2026Q1-00147",
-    instrumentsCovered: ["BTC-USD", "ETH-USD", "SOL-USD", "AVAX-USD"],
-    bestExecutionMetrics: null,
-  },
-  {
-    id: "reg-002",
-    reportType: "MIFID_II_ART27",
-    jurisdiction: "EU",
-    period: "2026 Q1",
-    filingDate: null,
-    nextDueDate: "2026-04-30",
-    status: "pending",
-    filingReference: null,
-    instrumentsCovered: ["BTC-USD", "ETH-USD", "SOL-USD"],
-    bestExecutionMetrics: {
-      avgSlippage: "1.2 bps",
-      fillRate: "98.4%",
-      priceImprovement: "0.8 bps",
-      venueScore: "A",
-    },
-  },
-  {
-    id: "reg-003",
-    reportType: "FCA_BEST_EXEC",
-    jurisdiction: "UK",
-    period: "2025 Annual",
-    filingDate: null,
-    nextDueDate: "2026-03-20",
-    status: "overdue",
-    filingReference: null,
-    instrumentsCovered: [
-      "BTC-GBP",
-      "ETH-GBP",
-      "BTC-USD",
-      "ETH-USD",
-      "SOL-USD",
-      "AVAX-USD",
-    ],
-    bestExecutionMetrics: {
-      avgSlippage: "1.5 bps",
-      fillRate: "97.1%",
-      priceImprovement: "0.5 bps",
-      venueScore: "B+",
-    },
-  },
-  {
-    id: "reg-004",
-    reportType: "EMIR_DERIVATIVE",
-    jurisdiction: "EU",
-    period: "2026 Q1",
-    filingDate: "2026-03-10",
-    nextDueDate: "2026-06-30",
-    status: "submitted",
-    filingReference: "EU-EMIR-2026Q1-00893",
-    instrumentsCovered: ["BTC-PERP", "ETH-PERP", "SOL-PERP"],
-    bestExecutionMetrics: null,
-  },
-  {
-    id: "reg-005",
-    reportType: "FCA_TRANSACTION",
-    jurisdiction: "UK",
-    period: "2026 W11",
-    filingDate: "2026-03-17",
-    nextDueDate: "2026-03-24",
-    status: "submitted",
-    filingReference: "UK-FCA-TXN-2026W11-02341",
-    instrumentsCovered: ["BTC-GBP", "ETH-GBP"],
-    bestExecutionMetrics: null,
-  },
-  {
-    id: "reg-006",
-    reportType: "MIFID_II_ART26",
-    jurisdiction: "EU",
-    period: "2025 Q4",
-    filingDate: "2025-12-28",
-    nextDueDate: "2026-03-31",
-    status: "submitted",
-    filingReference: "EU-ART26-2025Q4-00098",
-    instrumentsCovered: ["BTC-USD", "ETH-USD"],
-    bestExecutionMetrics: null,
-  },
-  {
-    id: "reg-007",
-    reportType: "FCA_BEST_EXEC",
-    jurisdiction: "UK",
-    period: "2026 Q1",
-    filingDate: null,
-    nextDueDate: "2026-06-30",
-    status: "draft",
-    filingReference: null,
-    instrumentsCovered: ["BTC-GBP", "ETH-GBP", "SOL-GBP"],
-    bestExecutionMetrics: {
-      avgSlippage: "1.1 bps",
-      fillRate: "98.8%",
-      priceImprovement: "0.9 bps",
-      venueScore: "A-",
-    },
-  },
-  {
-    id: "reg-008",
-    reportType: "EMIR_DERIVATIVE",
-    jurisdiction: "EU",
-    period: "2025 Q4",
-    filingDate: "2025-12-30",
-    nextDueDate: "2026-03-31",
-    status: "submitted",
-    filingReference: "EU-EMIR-2025Q4-00654",
-    instrumentsCovered: ["BTC-PERP", "ETH-PERP"],
-    bestExecutionMetrics: null,
-  },
-  {
-    id: "reg-009",
-    reportType: "FCA_TRANSACTION",
-    jurisdiction: "UK",
-    period: "2026 W12",
-    filingDate: null,
-    nextDueDate: "2026-03-31",
-    status: "pending",
-    filingReference: null,
-    instrumentsCovered: ["BTC-GBP", "ETH-GBP", "SOL-GBP", "AVAX-GBP"],
-    bestExecutionMetrics: null,
-  },
-  {
-    id: "reg-010",
-    reportType: "MIFID_II_ART27",
-    jurisdiction: "EU",
-    period: "2025 Annual",
-    filingDate: "2026-02-28",
-    nextDueDate: "2027-03-31",
-    status: "submitted",
-    filingReference: "EU-ART27-2025-ANN-00012",
-    instrumentsCovered: [
-      "BTC-USD",
-      "ETH-USD",
-      "SOL-USD",
-      "AVAX-USD",
-      "LINK-USD",
-    ],
-    bestExecutionMetrics: {
-      avgSlippage: "1.3 bps",
-      fillRate: "97.9%",
-      priceImprovement: "0.7 bps",
-      venueScore: "A-",
-    },
-  },
-];
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -311,9 +124,7 @@ function JurisdictionBadge({ jurisdiction }: { jurisdiction: Jurisdiction }) {
       variant="outline"
       className={cn(
         "text-xs",
-        jurisdiction === "EU"
-          ? "border-blue-500/40 text-blue-400"
-          : "border-violet-500/40 text-violet-400",
+        jurisdiction === "EU" ? "border-blue-500/40 text-blue-400" : "border-violet-500/40 text-violet-400",
       )}
     >
       {jurisdiction}
@@ -327,21 +138,15 @@ function DetailPanel({ report }: { report: RegulatoryReport }) {
       <div className="grid grid-cols-3 gap-6">
         {/* Filing info */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Filing Details
-          </h4>
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filing Details</h4>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Report</span>
-              <span className="font-medium">
-                {REPORT_TYPE_LABELS[report.reportType]}
-              </span>
+              <span className="font-medium">{REPORT_TYPE_LABELS[report.reportType]}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Reference</span>
-              <span className="font-mono text-xs">
-                {report.filingReference ?? "Not yet assigned"}
-              </span>
+              <span className="font-mono text-xs">{report.filingReference ?? "Not yet assigned"}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Period</span>
@@ -366,44 +171,28 @@ function DetailPanel({ report }: { report: RegulatoryReport }) {
 
         {/* Best execution metrics */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Best Execution Metrics
-          </h4>
+          <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Best Execution Metrics</h4>
           {report.bestExecutionMetrics ? (
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-md border px-3 py-2">
-                <div className="text-xs text-muted-foreground">
-                  Avg Slippage
-                </div>
-                <div className="text-sm font-mono font-medium">
-                  {report.bestExecutionMetrics.avgSlippage}
-                </div>
+                <div className="text-xs text-muted-foreground">Avg Slippage</div>
+                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.avgSlippage}</div>
               </div>
               <div className="rounded-md border px-3 py-2">
                 <div className="text-xs text-muted-foreground">Fill Rate</div>
-                <div className="text-sm font-mono font-medium">
-                  {report.bestExecutionMetrics.fillRate}
-                </div>
+                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.fillRate}</div>
               </div>
               <div className="rounded-md border px-3 py-2">
-                <div className="text-xs text-muted-foreground">
-                  Price Improvement
-                </div>
-                <div className="text-sm font-mono font-medium">
-                  {report.bestExecutionMetrics.priceImprovement}
-                </div>
+                <div className="text-xs text-muted-foreground">Price Improvement</div>
+                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.priceImprovement}</div>
               </div>
               <div className="rounded-md border px-3 py-2">
                 <div className="text-xs text-muted-foreground">Venue Score</div>
-                <div className="text-sm font-mono font-medium">
-                  {report.bestExecutionMetrics.venueScore}
-                </div>
+                <div className="text-sm font-mono font-medium">{report.bestExecutionMetrics.venueScore}</div>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground italic">
-              Not applicable for this report type
-            </p>
+            <p className="text-sm text-muted-foreground italic">Not applicable for this report type</p>
           )}
         </div>
       </div>
@@ -450,18 +239,14 @@ function makeColumns(
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <ReportTypeBadge reportType={row.original.reportType} />
-          <span className="text-sm">
-            {REPORT_TYPE_LABELS[row.original.reportType]}
-          </span>
+          <span className="text-sm">{REPORT_TYPE_LABELS[row.original.reportType]}</span>
         </div>
       ),
     },
     {
       accessorKey: "jurisdiction",
       header: "Jurisdiction",
-      cell: ({ row }) => (
-        <JurisdictionBadge jurisdiction={row.original.jurisdiction} />
-      ),
+      cell: ({ row }) => <JurisdictionBadge jurisdiction={row.original.jurisdiction} />,
     },
     {
       accessorKey: "period",
@@ -471,11 +256,7 @@ function makeColumns(
     {
       accessorKey: "filingDate",
       header: "Filed",
-      cell: ({ row }) => (
-        <span className="text-sm font-mono">
-          {formatDate(row.original.filingDate)}
-        </span>
-      ),
+      cell: ({ row }) => <span className="text-sm font-mono">{formatDate(row.original.filingDate)}</span>,
     },
     {
       accessorKey: "nextDueDate",
@@ -485,15 +266,11 @@ function makeColumns(
         const dueDays = daysUntil(report.nextDueDate);
         return (
           <div className="flex items-center gap-2">
-            <span className="text-sm font-mono">
-              {formatDate(report.nextDueDate)}
-            </span>
+            <span className="text-sm font-mono">{formatDate(report.nextDueDate)}</span>
             {report.status !== "submitted" && dueDays <= 14 && dueDays > 0 && (
               <span className="text-xs text-amber-400">({dueDays}d)</span>
             )}
-            {report.status !== "submitted" && dueDays <= 0 && (
-              <span className="text-xs text-rose-400">(past due)</span>
-            )}
+            {report.status !== "submitted" && dueDays <= 0 && <span className="text-xs text-rose-400">(past due)</span>}
           </div>
         );
       },
@@ -517,8 +294,7 @@ export default function RegulatoryPage() {
 
   // Resolve API data or fall back to mock
   const reports: RegulatoryReport[] = React.useMemo(() => {
-    const apiReports = (rawData as { data?: RegulatoryReport[] } | undefined)
-      ?.data;
+    const apiReports = (rawData as { data?: RegulatoryReport[] } | undefined)?.data;
     if (Array.isArray(apiReports) && apiReports.length > 0) return apiReports;
     return MOCK_REPORTS;
   }, [rawData]);
@@ -546,10 +322,7 @@ export default function RegulatoryPage() {
   const upcomingDeadlines = React.useMemo(() => {
     return [...reports]
       .filter((r) => r.status !== "submitted")
-      .sort(
-        (a, b) =>
-          new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime(),
-      )
+      .sort((a, b) => new Date(a.nextDueDate).getTime() - new Date(b.nextDueDate).getTime())
       .slice(0, 5);
   }, [reports]);
 
@@ -559,15 +332,11 @@ export default function RegulatoryPage() {
   }, []);
 
   // Column definitions (depend on expandedId for chevron state)
-  const columns = React.useMemo(
-    () => makeColumns(expandedId, handleToggleExpand),
-    [expandedId, handleToggleExpand],
-  );
+  const columns = React.useMemo(() => makeColumns(expandedId, handleToggleExpand), [expandedId, handleToggleExpand]);
 
   // Currently expanded report
   const expandedReport = React.useMemo(
-    () =>
-      expandedId ? (filtered.find((r) => r.id === expandedId) ?? null) : null,
+    () => (expandedId ? (filtered.find((r) => r.id === expandedId) ?? null) : null),
     [expandedId, filtered],
   );
 
@@ -595,9 +364,7 @@ export default function RegulatoryPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
             <AlertTriangle className="size-10 text-rose-400" />
-            <p className="text-sm text-muted-foreground">
-              Failed to load regulatory reports
-            </p>
+            <p className="text-sm text-muted-foreground">Failed to load regulatory reports</p>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw className="size-4 mr-2" />
               Retry
@@ -615,9 +382,7 @@ export default function RegulatoryPage() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 space-y-3">
             <Shield className="size-10 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">
-              No regulatory reports found
-            </p>
+            <p className="text-sm text-muted-foreground">No regulatory reports found</p>
             <p className="text-xs text-muted-foreground/70">
               Reports will appear here once compliance filings are generated
             </p>
@@ -635,9 +400,7 @@ export default function RegulatoryPage() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold font-mono text-emerald-400">
-                  {counts.submitted}
-                </div>
+                <div className="text-2xl font-bold font-mono text-emerald-400">{counts.submitted}</div>
                 <div className="text-xs text-muted-foreground">Submitted</div>
               </div>
               <CheckCircle className="size-8 text-emerald-500/40" />
@@ -648,9 +411,7 @@ export default function RegulatoryPage() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold font-mono text-amber-400">
-                  {counts.pending}
-                </div>
+                <div className="text-2xl font-bold font-mono text-amber-400">{counts.pending}</div>
                 <div className="text-xs text-muted-foreground">Pending</div>
               </div>
               <Clock className="size-8 text-amber-500/40" />
@@ -661,9 +422,7 @@ export default function RegulatoryPage() {
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold font-mono text-rose-400">
-                  {counts.overdue}
-                </div>
+                <div className="text-2xl font-bold font-mono text-rose-400">{counts.overdue}</div>
                 <div className="text-xs text-muted-foreground">Overdue</div>
               </div>
               <AlertTriangle className="size-8 text-rose-500/40" />
@@ -735,9 +494,7 @@ export default function RegulatoryPage() {
             </CardHeader>
             <CardContent>
               {upcomingDeadlines.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  All filings up to date
-                </p>
+                <p className="text-sm text-muted-foreground text-center py-4">All filings up to date</p>
               ) : (
                 <div className="space-y-3">
                   {upcomingDeadlines.map((report) => {
@@ -749,27 +506,19 @@ export default function RegulatoryPage() {
                         className={cn(
                           "flex items-start gap-3 rounded-md border p-3",
                           isOverdue && "border-rose-500/30 bg-rose-500/5",
-                          !isOverdue &&
-                            dueDays <= 7 &&
-                            "border-amber-500/30 bg-amber-500/5",
+                          !isOverdue && dueDays <= 7 && "border-amber-500/30 bg-amber-500/5",
                         )}
                       >
                         <div
                           className={cn(
                             "mt-0.5 size-2 rounded-full shrink-0",
-                            isOverdue
-                              ? "bg-rose-400"
-                              : dueDays <= 7
-                                ? "bg-amber-400"
-                                : "bg-muted-foreground/50",
+                            isOverdue ? "bg-rose-400" : dueDays <= 7 ? "bg-amber-400" : "bg-muted-foreground/50",
                           )}
                         />
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
                             <ReportTypeBadge reportType={report.reportType} />
-                            <JurisdictionBadge
-                              jurisdiction={report.jurisdiction}
-                            />
+                            <JurisdictionBadge jurisdiction={report.jurisdiction} />
                           </div>
                           <p className="text-xs text-muted-foreground mt-1 truncate">
                             {REPORT_TYPE_LABELS[report.reportType]}
@@ -781,16 +530,10 @@ export default function RegulatoryPage() {
                             <span
                               className={cn(
                                 "text-xs font-medium",
-                                isOverdue
-                                  ? "text-rose-400"
-                                  : dueDays <= 7
-                                    ? "text-amber-400"
-                                    : "text-muted-foreground",
+                                isOverdue ? "text-rose-400" : dueDays <= 7 ? "text-amber-400" : "text-muted-foreground",
                               )}
                             >
-                              {isOverdue
-                                ? `${Math.abs(dueDays)}d overdue`
-                                : `${dueDays}d left`}
+                              {isOverdue ? `${Math.abs(dueDays)}d overdue` : `${dueDays}d left`}
                             </span>
                           </div>
                         </div>
@@ -812,16 +555,10 @@ export default function RegulatoryPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {(
-                  Object.entries(REPORT_TYPE_LABELS) as Array<
-                    [ReportType, string]
-                  >
-                ).map(([key, label]) => (
+                {(Object.entries(REPORT_TYPE_LABELS) as Array<[ReportType, string]>).map(([key, label]) => (
                   <div key={key} className="flex items-center gap-2">
                     <ReportTypeBadge reportType={key} />
-                    <span className="text-xs text-muted-foreground">
-                      {label}
-                    </span>
+                    <span className="text-xs text-muted-foreground">{label}</span>
                   </div>
                 ))}
               </div>

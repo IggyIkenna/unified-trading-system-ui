@@ -15,6 +15,11 @@ export const ENTITLEMENTS = [
   "execution-full",
   "ml-full",
   "strategy-full",
+  "strategy-families",
+  "defi-trading",
+  "sports-trading",
+  "predictions-trading",
+  "options-trading",
   "reporting",
   "investor-relations",
 ] as const;
@@ -123,3 +128,55 @@ export const SUBSCRIPTION_TIERS = [
     analytics: "P&L, settlement, attribution",
   },
 ] as const;
+
+// ---------------------------------------------------------------------------
+// Client Persona Tier (derived from entitlements)
+// ---------------------------------------------------------------------------
+
+/**
+ * CLIENT_TIERS map the set of entitlements a client user has onto a named tier
+ * used for display ("Client Full", "Client Premium", "Data Only", etc.).
+ *
+ * Rule:
+ *  - Client Full     = data-pro + execution-full + ml-full + strategy-full + reporting (all 5)
+ *  - Client Premium  = data-pro + execution-full + strategy-full (no ml, no reporting)
+ *  - DeFi Client     = defi-trading (main entitlement)
+ *  - Data Pro        = data-pro only
+ *  - Data Basic      = data-basic only
+ *  - Custom          = anything else
+ */
+export type ClientTier =
+  | "Client Full"
+  | "Client Premium"
+  | "DeFi Client"
+  | "Data Pro"
+  | "Data Basic"
+  | "Custom";
+
+export function deriveClientTier(entitlements: readonly EntitlementOrWildcard[]): ClientTier {
+  const set = new Set(entitlements);
+  if (set.has("*")) return "Client Full"; // internal/admin — treat as full
+  if (set.has("defi-trading")) return "DeFi Client";
+  const hasMl = set.has("ml-full");
+  const hasReporting = set.has("reporting");
+  const hasExecutionFull = set.has("execution-full");
+  const hasStrategyFull = set.has("strategy-full");
+  const hasDataPro = set.has("data-pro");
+  if (hasDataPro && hasExecutionFull && hasMl && hasStrategyFull && hasReporting) return "Client Full";
+  if (hasDataPro && hasExecutionFull && hasStrategyFull && !hasMl) return "Client Premium";
+  if (hasDataPro) return "Data Pro";
+  if (set.has("data-basic")) return "Data Basic";
+  return "Custom";
+}
+
+/**
+ * What each tier unlocks (for display in tier badge tooltips / settings pages).
+ */
+export const CLIENT_TIER_FEATURES: Record<ClientTier, string[]> = {
+  "Client Full": ["Data (all classes)", "Execution (full SOR + algos)", "ML Research", "Strategy Families", "Reporting & Attribution"],
+  "Client Premium": ["Data (all classes)", "Execution (full SOR + algos)", "Strategy Families"],
+  "DeFi Client": ["DeFi Trading (lending, basis, staking)", "Data Pro", "Execution Full", "Reports"],
+  "Data Pro": ["Data (2400+ instruments, all classes)", "Features & signals (read-only)"],
+  "Data Basic": ["Data (180 instruments, CEFI only)"],
+  "Custom": ["Custom entitlement bundle — contact support"],
+};
