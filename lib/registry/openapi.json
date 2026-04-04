@@ -3503,7 +3503,7 @@
           "cloud-builds"
         ],
         "summary": "Trigger Build",
-        "description": "Manually trigger a Cloud Build for a service.\n\nThis runs the build trigger as if code was pushed to the specified branch.\n\nRequires: roles/cloudbuild.builds.editor on the service account.",
+        "description": "Manually trigger a Cloud Build / CodeBuild for a service.\n\nDispatches to GCP Cloud Build or AWS CodeBuild based on CLOUD_PROVIDER.",
         "operationId": "trigger_build_api_cloud_builds_trigger_post",
         "requestBody": {
           "content": {
@@ -5096,7 +5096,7 @@
         ],
         "summary": "Health",
         "description": "Standard Cloud Run liveness probe.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5121,7 +5121,7 @@
         ],
         "summary": "Readiness",
         "description": "Runtime readiness with tier detection.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5146,7 +5146,7 @@
         ],
         "summary": "Version",
         "description": "Return service version information.",
-        "operationId": "version_version_get",
+        "operationId": "version_version_get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -6042,6 +6042,120 @@
         }
       }
     },
+    "/unified-trading-api/execution/orders/{order_id}/cancel": {
+      "put": {
+        "tags": [
+          "unified-trading-api",
+          "execution"
+        ],
+        "summary": "Cancel Order",
+        "description": "Cancel an open order.\n\nMock mode: marks the order as cancelled in the store.\nReal mode: routes to execution-service /manual/cancel.",
+        "operationId": "cancel_order_execution_orders__order_id__cancel_put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Cancel Order Execution Orders  Order Id  Cancel Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/execution/orders/{order_id}/amend": {
+      "put": {
+        "tags": [
+          "unified-trading-api",
+          "execution"
+        ],
+        "summary": "Amend Order",
+        "description": "Amend quantity and/or price on an open order.\n\nMock mode: updates the order fields in the store.\nReal mode: routes to execution-service /manual/amend.\n\nBody: {quantity?: number, price?: number}",
+        "operationId": "amend_order_execution_orders__order_id__amend_put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Order Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Amend Order Execution Orders  Order Id  Amend Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/unified-trading-api/execution/sports/bets": {
       "post": {
         "tags": [
@@ -6169,14 +6283,14 @@
       }
     },
     "/unified-trading-api/execution/sports/bets/{bet_id}/cancel": {
-      "post": {
+      "delete": {
         "tags": [
           "unified-trading-api",
           "execution"
         ],
         "summary": "Cancel Sports Bet",
         "description": "Cancel an unmatched sports bet.",
-        "operationId": "cancel_sports_bet_execution_sports_bets__bet_id__cancel_post",
+        "operationId": "cancel_sports_bet_execution_sports_bets__bet_id__cancel_delete",
         "security": [
           {
             "APIKeyHeader": []
@@ -6201,7 +6315,7 @@
                 "schema": {
                   "type": "object",
                   "additionalProperties": true,
-                  "title": "Response Cancel Sports Bet Execution Sports Bets  Bet Id  Cancel Post"
+                  "title": "Response Cancel Sports Bet Execution Sports Bets  Bet Id  Cancel Delete"
                 }
               }
             }
@@ -7056,6 +7170,168 @@
         }
       }
     },
+    "/unified-trading-api/analytics/period-changes": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "analytics"
+        ],
+        "summary": "Get Period Changes",
+        "description": "Compute period-over-period changes for a metric from daily snapshots.\n\nReturns absolute and percentage changes between period start and the as_of date.\nAll dates are UTC midnight boundaries.",
+        "operationId": "get_period_changes_analytics_period_changes_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(live|batch)$",
+              "default": "live",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "1d, wtd, mtd, qtd, ytd, 7d, 30d, 90d, 365d",
+              "default": "1d",
+              "title": "Period"
+            },
+            "description": "1d, wtd, mtd, qtd, ytd, 7d, 30d, 90d, 365d"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "pnl, equity, risk, exposure",
+              "default": "pnl",
+              "title": "Metric"
+            },
+            "description": "pnl, equity, risk, exposure"
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Reference date (YYYY-MM-DD UTC). Defaults to today.",
+              "title": "As Of"
+            },
+            "description": "Reference date (YYYY-MM-DD UTC). Defaults to today."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Period Changes Analytics Period Changes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/analytics/period-summary": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "analytics"
+        ],
+        "summary": "Get Period Summary",
+        "description": "Compute changes across all standard periods (1d, wtd, mtd, qtd, ytd).\n\nReturns a dict of period \u2192 changes for the UI dashboard cards.",
+        "operationId": "get_period_summary_analytics_period_summary_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(live|batch)$",
+              "default": "live",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "pnl",
+              "title": "Metric"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Reference date (YYYY-MM-DD UTC). Defaults to today.",
+              "title": "As Of"
+            },
+            "description": "Reference date (YYYY-MM-DD UTC). Defaults to today."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Period Summary Analytics Period Summary Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/unified-trading-api/analytics/strategies": {
       "get": {
         "tags": [
@@ -7326,6 +7602,71 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Scale Strategy Analytics Strategies  Strategy Id  Scale Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/analytics/live-batch-delta": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "analytics"
+        ],
+        "summary": "Get Live Batch Delta",
+        "description": "Reconciliation view comparing live vs batch values for a metric.\n\nReturns per-field deltas (live_value, batch_value, absolute_diff, pct_diff)\nso ops can spot divergence between real-time and T+1 numbers.",
+        "operationId": "get_live_batch_delta_analytics_live_batch_delta_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "metric",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "pnl, equity, exposure",
+              "default": "pnl",
+              "title": "Metric"
+            },
+            "description": "pnl, equity, exposure"
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Reference date (YYYY-MM-DD UTC). Defaults to today.",
+              "title": "As Of"
+            },
+            "description": "Reference date (YYYY-MM-DD UTC). Defaults to today."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Live Batch Delta Analytics Live Batch Delta Get"
                 }
               }
             }
@@ -7899,6 +8240,164 @@
             }
           }
         }
+      }
+    },
+    "/unified-trading-api/ml/monitoring": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Get Ml Monitoring",
+        "description": "Get ML model monitoring data \u2014 drift metrics, accuracy, prediction distribution.\n\nReturns per-model monitoring snapshots including feature drift scores,\nprediction accuracy over time, and distribution statistics.",
+        "operationId": "get_ml_monitoring_ml_monitoring_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by model ID",
+              "title": "Model Id"
+            },
+            "description": "Filter by model ID"
+          },
+          {
+            "name": "family",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by model family",
+              "title": "Family"
+            },
+            "description": "Filter by model family"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Ml Monitoring Ml Monitoring Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/ml/governance": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Get Ml Governance",
+        "description": "Get ML governance data \u2014 approval status, audit trail.\n\nReturns model approval records with reviewer, timestamp, and decision rationale.",
+        "operationId": "get_ml_governance_ml_governance_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "model_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by model ID",
+              "title": "Model Id"
+            },
+            "description": "Filter by model ID"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by approval status",
+              "title": "Status"
+            },
+            "description": "Filter by approval status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Ml Governance Ml Governance Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/ml/config": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Get Ml Config",
+        "description": "Get ML pipeline configuration \u2014 feature sets, training schedules, thresholds.\n\nReturns the current ML pipeline configuration used by training and inference services.",
+        "operationId": "get_ml_config_ml_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Ml Config Ml Config Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
       }
     },
     "/unified-trading-api/ml/models/{model_id}/promote": {
@@ -8889,6 +9388,286 @@
         ]
       }
     },
+    "/unified-trading-api/config/mandates": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "config"
+        ],
+        "summary": "Get Mandates",
+        "description": "Get client mandate definitions \u2014 investment constraints, limits, allowed instruments.",
+        "operationId": "get_mandates_config_mandates_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by client ID",
+              "title": "Client Id"
+            },
+            "description": "Filter by client ID"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Mandates Config Mandates Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/config/fee-schedules": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "config"
+        ],
+        "summary": "Get Fee Schedules",
+        "description": "Get fee schedules per venue/instrument type.",
+        "operationId": "get_fee_schedules_config_fee_schedules_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by venue",
+              "title": "Venue"
+            },
+            "description": "Filter by venue"
+          },
+          {
+            "name": "instrument_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by instrument type",
+              "title": "Instrument Type"
+            },
+            "description": "Filter by instrument type"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Fee Schedules Config Fee Schedules Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/config/reload": {
+      "post": {
+        "tags": [
+          "unified-trading-api",
+          "config"
+        ],
+        "summary": "Reload Config",
+        "description": "Trigger config hot-reload across all config domains.\n\nIn mock mode: clears cached config and returns success.\nIn real mode: would trigger config reloader on each service via Pub/Sub.",
+        "operationId": "reload_config_config_reload_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Reload Config Config Reload Post"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/unified-trading-api/config/strategies": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "config"
+        ],
+        "summary": "Get Strategy Config",
+        "description": "Get strategy configuration \u2014 parameters, limits, schedules.\n\nDifferent from /analytics/strategies which returns strategy performance.\nThis returns the raw config used by strategy-service.",
+        "operationId": "get_strategy_config_config_strategies_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by status: active, paused, staging",
+              "title": "Status"
+            },
+            "description": "Filter by status: active, paused, staging"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: cefi, defi, tradfi, sports",
+              "title": "Category"
+            },
+            "description": "Filter by category: cefi, defi, tradfi, sports"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Strategy Config Config Strategies Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/unified-trading-api/alerts/list": {
       "get": {
         "tags": [
@@ -9330,6 +10109,17 @@
             }
           },
           {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: cefi, defi, tradfi, sports",
+              "title": "Category"
+            },
+            "description": "Filter by category: cefi, defi, tradfi, sports"
+          },
+          {
             "name": "as_of",
             "in": "query",
             "required": false,
@@ -9678,6 +10468,134 @@
         ]
       }
     },
+    "/unified-trading-api/risk/exposure-types": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "risk"
+        ],
+        "summary": "Get Exposure Types",
+        "description": "Get available exposure type definitions for the risk dashboard.\n\nReturns exposure categories (gross, net, delta, vega, etc.) with their\ndescriptions and aggregation rules so the frontend can render dynamic\nexposure breakdown widgets.",
+        "operationId": "get_exposure_types_risk_exposure_types_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: cefi, defi, tradfi, sports",
+              "title": "Category"
+            },
+            "description": "Filter by category: cefi, defi, tradfi, sports"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Exposure Types Risk Exposure Types Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/risk/defi-health": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "risk"
+        ],
+        "summary": "Get Defi Health",
+        "description": "Get DeFi health metrics \u2014 health factors, LTV ratios, liquidation distances.\n\nAggregates across all DeFi positions: per-protocol health factor,\ncollateral vs. debt, liquidation thresholds, and real-time health status.",
+        "operationId": "get_defi_health_risk_defi_health_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by chain (e.g. ethereum, arbitrum)",
+              "title": "Chain"
+            },
+            "description": "Filter by chain (e.g. ethereum, arbitrum)"
+          },
+          {
+            "name": "protocol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by protocol (e.g. aave_v3)",
+              "title": "Protocol"
+            },
+            "description": "Filter by protocol (e.g. aave_v3)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: cefi, defi, tradfi, sports",
+              "title": "Category"
+            },
+            "description": "Filter by category: cefi, defi, tradfi, sports"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Defi Health Risk Defi Health Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/unified-trading-api/risk/var-summary": {
       "get": {
         "tags": [
@@ -9731,6 +10649,17 @@
               "type": "string",
               "title": "Scenario"
             }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: cefi, defi, tradfi, sports",
+              "title": "Category"
+            },
+            "description": "Filter by category: cefi, defi, tradfi, sports"
           }
         ],
         "responses": {
@@ -9939,27 +10868,106 @@
           "instruments"
         ],
         "summary": "Get Registry",
-        "description": "Get instrument registry \u2014 canonical mapping across venues.",
+        "description": "Get instrument registry \u2014 canonical mapping across venues.\n\nSupports filtering by venue, category, instrument_type, and status.\nResponse includes trading_hours, tick_size, lot_size, fee_structure,\nand available_since where available.",
         "operationId": "get_registry_instruments_registry_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "venue",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by venue (e.g. binance, deribit)",
+              "title": "Venue"
+            },
+            "description": "Filter by venue (e.g. binance, deribit)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: cefi, defi, tradfi, sports",
+              "title": "Category"
+            },
+            "description": "Filter by category: cefi, defi, tradfi, sports"
+          },
+          {
+            "name": "instrument_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by type: spot, future, option, perp, lp_pool",
+              "title": "Instrument Type"
+            },
+            "description": "Filter by type: spot, future, option, perp, lp_pool"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by status: active, delisted, expired",
+              "title": "Status"
+            },
+            "description": "Filter by status: active, delisted, expired"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
                   "type": "object",
+                  "additionalProperties": true,
                   "title": "Response Get Registry Instruments Registry Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
+        }
       }
     },
     "/unified-trading-api/instruments/mock/create": {
@@ -11220,7 +12228,7 @@
     "/client-reporting-api/health": {
       "get": {
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__3",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -13512,7 +14520,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__4",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -13532,7 +14540,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__3",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14046,7 +15054,7 @@
       "get": {
         "summary": "Health",
         "description": "Liveness probe \u2014 returns 200 when the process is running.",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__5",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14099,7 +15107,7 @@
       "get": {
         "summary": "Readiness",
         "description": "Readiness probe \u2014 verifies critical subsystems are initialised.\n\nChecks:\n- Auth and limiter are wired (startup event has completed).\nRaises 503 if the service is not ready to handle requests.",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__4",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14342,7 +15350,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__6",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14362,7 +15370,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__5",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14379,7 +15387,7 @@
       "get": {
         "summary": "Root",
         "description": "Service info.",
-        "operationId": "root__get",
+        "operationId": "root__get__2",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14766,7 +15774,7 @@
       "get": {
         "summary": "Get Var",
         "description": "Compute VaR, CVaR, and optional Stress VaR for a returns series.\n\nPhase 1: caller supplies `returns[]` in query params.\nPhase 2: fetch from position-monitor returns history.\n\nArgs:\n    client_id: Client identifier (logged with event).\n    confidence: Confidence level in (0, 1). Default 0.99.\n    horizon_days: Holding period. Default 1-day.\n    scenario: Optional stress scenario name.\n    returns: Daily P&L returns as decimals (e.g. -0.02 for -2%).\n\nReturns:\n    VaRResponse with var, cvar, stress_var, confidence, horizon_days, scenario.",
-        "operationId": "get_var_risk_var_get",
+        "operationId": "get_var_risk_var_get__2",
         "parameters": [
           {
             "name": "client_id",
@@ -14866,6 +15874,107 @@
         ]
       }
     },
+    "/risk-and-exposure-service/risk/strategy-status": {
+      "post": {
+        "summary": "Strategy Risk Status",
+        "description": "Evaluate a client's current risk metrics against a strategy risk profile.\n\nAccepts a StrategyRiskProfile (from UAC internal) declaring which risk types\nthe strategy subscribes to. Returns the status (OK/WARNING/CRITICAL) for\neach subscribed risk type based on the client's current positions.\n\nReturns:\n    Dict with strategy_type and per-risk-type statuses.",
+        "operationId": "strategy_risk_status_risk_strategy_status_post",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          },
+          {
+            "name": "X-Service-Token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyRiskProfile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "title": "Response Strategy Risk Status Risk Strategy Status Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "risk-and-exposure-service"
+        ]
+      }
+    },
     "/position-balance-monitor-service/health": {
       "get": {
         "tags": [
@@ -14873,7 +15982,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__7",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -14893,7 +16002,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__6",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -15374,6 +16483,102 @@
         }
       }
     },
+    "/position-balance-monitor-service/risk/summary": {
+      "get": {
+        "tags": [
+          "position-balance-monitor-service",
+          "risk"
+        ],
+        "summary": "Get Risk Summary",
+        "description": "Return current risk metrics: leverage, health_factor, concentration, drawdown.\n\nComputes risk from the latest aggregated positions. Includes DeFi health\nfactor when lending positions are available. For full risk metrics (VaR,\nstress testing, pre-trade checks), query risk-and-exposure-service.",
+        "operationId": "get_risk_summary_risk_summary_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Client ID to compute risk for",
+              "default": "default",
+              "title": "Client Id"
+            },
+            "description": "Client ID to compute risk for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Risk Summary Risk Summary Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/position-balance-monitor-service/risk/defi-health": {
+      "get": {
+        "tags": [
+          "position-balance-monitor-service",
+          "risk"
+        ],
+        "summary": "Get Defi Health",
+        "description": "Return DeFi health aggregation: combined_hf, per-protocol breakdown.\n\nComputes from cached lending positions. Returns 404 if no lending\npositions are available for the client.",
+        "operationId": "get_defi_health_risk_defi_health_get__2",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Client ID",
+              "default": "default",
+              "title": "Client Id"
+            },
+            "description": "Client ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeFiAggregatedHealth"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/position-balance-monitor-service/trades": {
       "get": {
         "tags": [
@@ -15757,6 +16962,187 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Get Trade Trades  Fill Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/position-balance-monitor-service/treasury/balance": {
+      "get": {
+        "tags": [
+          "position-balance-monitor-service",
+          "treasury"
+        ],
+        "summary": "Get Treasury Balance",
+        "description": "Get current treasury balance and status.\n\nReturns the latest treasury snapshot with:\n- treasury_balance_usd: USD value in treasury wallet\n- total_trading_balance_usd: USD value across all trading wallets\n- total_aum_usd: total AUM (treasury + trading)\n- treasury_pct: treasury as % of AUM\n- status: \"normal\", \"low\", or \"high\"\n- per_strategy_balance: {strategy_id: usd_balance}",
+        "operationId": "get_treasury_balance_treasury_balance_get",
+        "parameters": [
+          {
+            "name": "share_class",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Share class to query treasury for",
+              "default": "USDC",
+              "title": "Share Class"
+            },
+            "description": "Share class to query treasury for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Treasury Balance Treasury Balance Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/position-balance-monitor-service/treasury/balance/history": {
+      "get": {
+        "tags": [
+          "position-balance-monitor-service",
+          "treasury"
+        ],
+        "summary": "Get Treasury History",
+        "description": "Get historical treasury snapshots.\n\nReturns most recent N snapshots for charting treasury balance over time.",
+        "operationId": "get_treasury_history_treasury_balance_history_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "description": "Max snapshots to return",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "Max snapshots to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Treasury History Treasury Balance History Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/position-balance-monitor-service/treasury/config": {
+      "get": {
+        "tags": [
+          "position-balance-monitor-service",
+          "treasury"
+        ],
+        "summary": "Get Treasury Config",
+        "description": "Get current treasury monitoring configuration.",
+        "operationId": "get_treasury_config_treasury_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Treasury Config Treasury Config Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/position-balance-monitor-service/treasury/evaluate": {
+      "post": {
+        "tags": [
+          "position-balance-monitor-service",
+          "treasury"
+        ],
+        "summary": "Evaluate Treasury",
+        "description": "Manually trigger treasury evaluation with provided balance.\n\nUseful for demo/testing \u2014 in production, balances come from custodian API polling.",
+        "operationId": "evaluate_treasury_treasury_evaluate_post",
+        "parameters": [
+          {
+            "name": "treasury_balance_usd",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+                }
+              ],
+              "description": "Current treasury balance in USD",
+              "title": "Treasury Balance Usd"
+            },
+            "description": "Current treasury balance in USD"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Evaluate Treasury Treasury Evaluate Post"
                 }
               }
             }
@@ -17409,7 +18795,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__8",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17429,7 +18815,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__7",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17449,7 +18835,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__9",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17469,7 +18855,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__8",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17489,7 +18875,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__10",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17509,7 +18895,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__9",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17529,7 +18915,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__11",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17549,7 +18935,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__10",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17569,7 +18955,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__12",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17589,7 +18975,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__11",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17609,7 +18995,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__13",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17629,7 +19015,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__12",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17649,7 +19035,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__14",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17669,7 +19055,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__13",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17689,7 +19075,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__15",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17709,7 +19095,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__14",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17729,7 +19115,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__16",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17749,7 +19135,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__15",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17769,7 +19155,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__17",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17789,7 +19175,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__16",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17809,7 +19195,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__18",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17829,7 +19215,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__17",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17849,7 +19235,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__19",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17869,7 +19255,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__18",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17889,7 +19275,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__20",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17909,7 +19295,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__19",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17929,7 +19315,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__21",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17949,7 +19335,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__20",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17969,7 +19355,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__22",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17989,7 +19375,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__21",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18009,7 +19395,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__23",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18029,7 +19415,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__22",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18049,7 +19435,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get",
+        "operationId": "health_health_get__24",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -18069,7 +19455,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get",
+        "operationId": "readiness_readiness_get__23",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20856,6 +22242,37 @@
         "title": "RiskLimits",
         "description": "Risk limits configuration for a client."
       },
+      "StrategyRiskProfile": {
+        "properties": {
+          "strategy_type": {
+            "type": "string",
+            "title": "Strategy Type"
+          },
+          "subscribed_risks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Subscribed Risks",
+            "description": "RiskType.value strings from UAC risk_taxonomy"
+          },
+          "custom_risk_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Custom Risk Ids",
+            "description": "user-defined custom risk IDs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "strategy_type",
+          "subscribed_risks"
+        ],
+        "title": "StrategyRiskProfile",
+        "description": "Which risk types a strategy subscribes to. Unsubscribed = zero in matrix."
+      },
       "VaRResponse": {
         "properties": {
           "var": {
@@ -20955,6 +22372,90 @@
         ],
         "title": "AssetBalanceSummary",
         "description": "Per-asset balance across all venues for a fund."
+      },
+      "DeFiAggregatedHealth": {
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "title": "Client Id",
+            "pii": true
+          },
+          "protocols": {
+            "items": {
+              "$ref": "#/components/schemas/ProtocolHealthBreakdown"
+            },
+            "type": "array",
+            "title": "Protocols"
+          },
+          "combined_collateral_usd": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Combined Collateral Usd",
+            "default": "0"
+          },
+          "combined_debt_usd": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Combined Debt Usd",
+            "default": "0"
+          },
+          "combined_health_factor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Combined Health Factor"
+          },
+          "weighted_net_apy": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Weighted Net Apy",
+            "default": "0"
+          },
+          "riskiest_protocol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Riskiest Protocol"
+          },
+          "per_chain_health": {
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+            },
+            "type": "object",
+            "title": "Per Chain Health"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "client_id"
+        ],
+        "title": "DeFiAggregatedHealth",
+        "description": "Combined DeFi lending health factor across protocols and chains."
       },
       "DeFiHealthSummary": {
         "properties": {
@@ -21247,6 +22748,68 @@
         ],
         "title": "PositionSummary",
         "description": "Aggregated position statistics for the fund."
+      },
+      "ProtocolHealthBreakdown": {
+        "properties": {
+          "protocol": {
+            "type": "string",
+            "title": "Protocol"
+          },
+          "chain": {
+            "type": "string",
+            "title": "Chain"
+          },
+          "collateral_usd": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Collateral Usd",
+            "default": "0"
+          },
+          "debt_usd": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Debt Usd",
+            "default": "0"
+          },
+          "health_factor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Health Factor"
+          },
+          "ltv_ratio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ltv Ratio"
+          },
+          "net_apy": {
+            "type": "string",
+            "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+            "title": "Net Apy",
+            "default": "0"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "protocol",
+          "chain"
+        ],
+        "title": "ProtocolHealthBreakdown",
+        "description": "Per-protocol DeFi lending health metrics."
       },
       "ReconciliationAction": {
         "type": "string",

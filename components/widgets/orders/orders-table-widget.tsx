@@ -395,7 +395,7 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
       </div>
       <div className="flex-1 overflow-auto min-h-0">
         <Card className="border-0 rounded-none h-full">
-          <CardContent className="p-0">
+          <CardContent className="p-0 overflow-x-auto">
             <DataTable
               columns={columns}
               data={filteredOrders}

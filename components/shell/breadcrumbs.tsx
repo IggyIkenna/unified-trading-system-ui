@@ -60,12 +60,12 @@ export function Breadcrumbs() {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex items-center justify-between flex-wrap gap-y-1 px-4 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border"
+      className="flex items-center justify-between flex-wrap gap-y-1.5 gap-x-2 px-4 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border"
     >
-      <div className="flex items-center gap-1.5">
-        <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1">
+      <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+        <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1 shrink-0">
           <Home className="size-3" />
-          Services
+          <span className="hidden sm:inline">Services</span>
         </Link>
         {serviceName && (
           <>
@@ -82,7 +82,7 @@ export function Breadcrumbs() {
               {mlHubLabel}
             </Link>
             <ChevronRight className="size-3" />
-            <span className="text-foreground font-medium">
+            <span className="text-foreground font-medium truncate max-w-[12rem]">
               {mapping?.label || formatLabel(segments[segments.length - 1] ?? "")}
             </span>
           </>

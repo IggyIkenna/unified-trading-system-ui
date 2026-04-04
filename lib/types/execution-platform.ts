@@ -14,7 +14,13 @@ export type ExecutionAlgoType =
   | "CLOSE"
   | "ICEBERG"
   | "SNIPER"
-  | "ADAPTIVE";
+  | "ADAPTIVE"
+  | "ADAPTIVE_TWAP"
+  | "ALMGREN_CHRISS"
+  | "POV_DYNAMIC"
+  | "HYBRID_OPTIMAL"
+  | "PASSIVE_AGGRESSIVE"
+  | "SOR";
 
 export type VenueType =
   | "CEX" // Centralized Exchange

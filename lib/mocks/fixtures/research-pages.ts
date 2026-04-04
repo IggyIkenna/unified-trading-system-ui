@@ -3,7 +3,7 @@
 export const MOCK_INSTRUMENTS = [
   {
     symbol: "BTC-USD",
-    venue: "BINANCE",
+    venue: "BINANCE-SPOT",
     date: "2026-03-28",
     open: "84521.30",
     high: "85102.40",
@@ -13,7 +13,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "ETH-USD",
-    venue: "BINANCE",
+    venue: "BINANCE-SPOT",
     date: "2026-03-28",
     open: "2041.80",
     high: "2078.20",
@@ -23,7 +23,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "SOL-USD",
-    venue: "BINANCE",
+    venue: "BINANCE-SPOT",
     date: "2026-03-28",
     open: "138.42",
     high: "141.10",
@@ -33,7 +33,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "AVAX-USD",
-    venue: "COINBASE",
+    venue: "COINBASE-SPOT",
     date: "2026-03-28",
     open: "24.12",
     high: "24.80",
@@ -43,7 +43,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "MATIC-USD",
-    venue: "COINBASE",
+    venue: "COINBASE-SPOT",
     date: "2026-03-28",
     open: "0.5812",
     high: "0.5940",
@@ -53,7 +53,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "BTC-USD",
-    venue: "BINANCE",
+    venue: "BINANCE-SPOT",
     date: "2026-03-27",
     open: "83812.20",
     high: "84680.10",
@@ -63,7 +63,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "ETH-USD",
-    venue: "BINANCE",
+    venue: "BINANCE-SPOT",
     date: "2026-03-27",
     open: "2018.40",
     high: "2052.80",
@@ -73,7 +73,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "SOL-USD",
-    venue: "BINANCE",
+    venue: "BINANCE-SPOT",
     date: "2026-03-27",
     open: "135.80",
     high: "139.20",
@@ -83,7 +83,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "AVAX-USD",
-    venue: "COINBASE",
+    venue: "COINBASE-SPOT",
     date: "2026-03-27",
     open: "23.84",
     high: "24.30",
@@ -93,7 +93,7 @@ export const MOCK_INSTRUMENTS = [
   },
   {
     symbol: "MATIC-USD",
-    venue: "COINBASE",
+    venue: "COINBASE-SPOT",
     date: "2026-03-27",
     open: "0.5724",
     high: "0.5830",

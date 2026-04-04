@@ -13,6 +13,21 @@
  */
 
 // ---------------------------------------------------------------------------
+// Share Class (base currency denomination — matches UAC ShareClass enum)
+// ---------------------------------------------------------------------------
+
+/** Base currency in which strategy P&L and risk is denominated. */
+export const SHARE_CLASSES = ["USDT", "ETH", "BTC"] as const;
+export type ShareClass = (typeof SHARE_CLASSES)[number];
+
+/** Human-readable labels for share class display. */
+export const SHARE_CLASS_LABELS: Record<ShareClass, string> = {
+  USDT: "USDT (Stablecoin)",
+  ETH: "ETH (Ethereum)",
+  BTC: "BTC (Bitcoin)",
+};
+
+// ---------------------------------------------------------------------------
 // Strategy IDs (match strategy-service factory keys)
 // ---------------------------------------------------------------------------
 
@@ -334,6 +349,20 @@ export interface RebalanceAllocation {
 // Treasury
 // ---------------------------------------------------------------------------
 
+export interface ShareClassBreakdown {
+  share_class: ShareClass;
+  nav_usd: number;
+  /** NAV denominated in the share class asset (e.g. ETH units for ETH share class) */
+  nav_denominated: number;
+  pct_of_total: number;
+  strategies: string[];
+  /** Target delta in share class terms (1.0 for fully crypto-denominated, 0 for stablecoin) */
+  target_delta: number;
+  actual_delta: number;
+  unrealised_pnl_usd: number;
+  unrealised_pnl_denominated: number;
+}
+
 export interface TreasurySnapshot {
   timestamp: string;
   chain: string;
@@ -345,6 +374,7 @@ export interface TreasurySnapshot {
   status: "normal" | "low" | "high";
   per_strategy_balance: Record<DeFiStrategyId, number>;
   per_token_balance: Record<string, number>;
+  share_class_breakdown?: ShareClassBreakdown[];
 }
 
 // ---------------------------------------------------------------------------
@@ -457,4 +487,85 @@ export interface DeFiRatesRow {
   detail: string;
   apyPct: number;
   tvlUsd: number;
+}
+
+// ---------------------------------------------------------------------------
+// Staking Rewards (reward lifecycle tracking)
+// ---------------------------------------------------------------------------
+
+export interface StakingReward {
+  token: string;
+  accrued_amount: number;
+  accrued_value_usd: number;
+  claimed_amount: number;
+  sold_amount: number;
+  sold_value_usd: number;
+  next_payout: string;
+  frequency: "WEEKLY" | "MONTHLY" | "QUARTERLY";
+}
+
+// ---------------------------------------------------------------------------
+// Funding Rate Matrix (per-coin-per-venue)
+// ---------------------------------------------------------------------------
+
+export type FundingRateMatrix = Record<string, Record<string, number | null>>;
+
+// ---------------------------------------------------------------------------
+// Two-Waterfall Allocation Weights
+// ---------------------------------------------------------------------------
+
+export interface WaterfallWeights {
+  coin_weights: Record<string, number>;
+  venue_weights: Record<string, Record<string, number>>;
+  restricted_venues: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Health Factor Dashboard
+// ---------------------------------------------------------------------------
+
+export interface HealthFactorDashboard {
+  current_hf: number;
+  liquidation_at: number;
+  warning_at: number;
+  buffer_pct: number;
+  weeth_oracle_rate: number;
+  weeth_market_rate: number;
+  oracle_market_gap_pct: number;
+  borrow_rate_pct: number;
+  staking_rate_pct: number;
+  net_spread_pct: number;
+  leverage: number;
+  leveraged_spread_pct: number;
+  monitoring_interval: string;
+}
+
+// ---------------------------------------------------------------------------
+// Emergency Exit
+// ---------------------------------------------------------------------------
+
+export interface EmergencyExitEstimate {
+  estimated_gas_usd: number;
+  estimated_slippage_usd: number;
+  estimated_exchange_fees_usd: number;
+  total_cost_usd: number;
+  total_as_pct_of_nav: number;
+  estimated_time_minutes: number;
+  steps: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Reward P&L Breakdown
+// ---------------------------------------------------------------------------
+
+export interface RewardPnLFactor {
+  amount: number;
+  label: string;
+}
+
+export interface RewardPnLBreakdown {
+  staking_yield: RewardPnLFactor;
+  restaking_reward: RewardPnLFactor;
+  seasonal_reward: RewardPnLFactor;
+  reward_unrealised: RewardPnLFactor;
 }

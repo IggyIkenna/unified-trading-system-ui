@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { STRATEGY_DISPLAY_NAMES, type DeFiStrategyId } from "@/lib/types/defi";
+import { STRATEGY_DISPLAY_NAMES, SHARE_CLASSES, SHARE_CLASS_LABELS, type DeFiStrategyId, type ShareClass } from "@/lib/types/defi";
 
 // ---------------------------------------------------------------------------
 // Demo strategy subset
@@ -400,8 +400,16 @@ function RecursiveStakedBasisForm({
 // Main widget
 // ---------------------------------------------------------------------------
 
+// Share class colour indicator
+const SHARE_CLASS_COLORS: Record<ShareClass, string> = {
+  USDT: "text-emerald-400",
+  ETH: "text-blue-400",
+  BTC: "text-amber-400",
+};
+
 export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
   const [selectedStrategy, setSelectedStrategy] = React.useState<DeFiStrategyId>("AAVE_LENDING");
+  const [shareClass, setShareClass] = React.useState<ShareClass>("USDT");
   const [mode] = React.useState<"Active" | "Paper">("Paper");
   const [configs, setConfigs] = React.useState<Record<string, StrategyConfig>>(() => {
     const init: Record<string, StrategyConfig> = {};
@@ -419,7 +427,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="space-y-3 p-1">
-      {/* Header row: strategy selector + mode badge */}
+      {/* Header row: strategy selector + share class + mode badge */}
       <div className="flex items-center gap-2">
         <div className="flex-1 space-y-1">
           <label className="text-xs text-muted-foreground">Strategy</label>
@@ -436,9 +444,30 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
             </SelectContent>
           </Select>
         </div>
+        <div className="space-y-1 w-28">
+          <label className="text-xs text-muted-foreground">Share Class</label>
+          <Select value={shareClass} onValueChange={(v) => setShareClass(v as ShareClass)}>
+            <SelectTrigger className="h-9 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SHARE_CLASSES.map((sc) => (
+                <SelectItem key={sc} value={sc} className={`text-xs font-mono ${SHARE_CLASS_COLORS[sc]}`}>
+                  {sc}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
         <div className="pt-5">
           <Badge variant={mode === "Active" ? "success" : "warning"}>{mode}</Badge>
         </div>
+      </div>
+      {/* Share class info banner */}
+      <div className={`rounded-md border px-3 py-1.5 text-xs flex items-center gap-1.5 ${shareClass === "ETH" ? "border-blue-500/30 bg-blue-500/5 text-blue-400" : shareClass === "BTC" ? "border-amber-500/30 bg-amber-500/5 text-amber-400" : "border-emerald-500/30 bg-emerald-500/5 text-emerald-400"}`}>
+        <span className="font-mono font-medium">{shareClass}</span>
+        <span className="text-muted-foreground">— {SHARE_CLASS_LABELS[shareClass]}</span>
+        <span className="ml-auto text-muted-foreground text-[10px]">P&L denominated in {shareClass}</span>
       </div>
 
       {/* Locked banner for recursive staked basis */}
@@ -474,6 +503,55 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
             onChange={(c) => updateConfig({ type: "RECURSIVE_STAKED_BASIS", config: c })}
           />
         )}
+      </div>
+
+      {/* Client restrictions panel (Patrick demo: ETH-only, no HyperLiquid) */}
+      <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Client Config</span>
+          <Badge variant="outline" className="text-[9px] h-4 px-1">DeFi Client</Badge>
+        </div>
+        <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
+            <span className="text-muted-foreground">OKX, Bybit, Binance</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-rose-400 flex-shrink-0" />
+            <span className="text-muted-foreground line-through">HyperLiquid</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
+            <span className="text-muted-foreground font-mono">ETH only</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+            <span className="text-muted-foreground">Multi-coin: Locked</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Enhanced risk indicators */}
+      <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
+        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Risk Indicators</span>
+        <div className="space-y-1.5">
+          {[
+            { label: "Oracle Depeg (weETH/ETH)", value: "0.12%", status: "green" },
+            { label: "Borrow-Staking Spread", value: "+1.4% net (4.2x levered)", status: "green" },
+            { label: "USDT Peg", value: "$1.0002", status: "green" },
+            { label: "Withdrawal Delay (ether.fi)", value: "7d queue", status: "amber" },
+            { label: "Est. Rebalance Cost", value: "$420 (0.014% NAV)", status: "green" },
+            { label: "Est. Full Close Cost", value: "$2,800 (0.093% NAV, ~35min)", status: "green" },
+          ].map(({ label, value, status }) => (
+            <div key={label} className="flex items-center justify-between text-[11px]">
+              <span className="text-muted-foreground">{label}</span>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status === "green" ? "bg-emerald-400" : status === "amber" ? "bg-amber-400" : "bg-rose-400"}`} />
+                <span className="font-mono tabular-nums">{value}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Action buttons */}

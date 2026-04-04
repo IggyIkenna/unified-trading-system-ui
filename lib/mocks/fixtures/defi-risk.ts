@@ -3,6 +3,7 @@ import type {
   DeltaExposure,
   PortfolioDeltaComposite,
   RebalancePreview,
+  ShareClassBreakdown,
   StrategyRiskProfile,
   TradeHistoryRow,
   TreasurySnapshot,
@@ -21,7 +22,7 @@ export const STRATEGY_RISK_PROFILES: StrategyRiskProfile[] = [
     basis_risk: "low",
     funding_rate_risk: "low",
     liquidity_risk_pct: 0.05,
-    risk_notes: "Pure lending. No leverage, no perp. Risk = AAVE smart contract + stablecoin depeg.",
+    risk_notes: "Pure lending. No leverage, no perp. Risk = AAVEV3-ETHEREUM smart contract + stablecoin depeg.",
   },
   {
     strategy_id: "BASIS_TRADE",
@@ -211,6 +212,41 @@ export const MOCK_TREASURY: TreasurySnapshot = {
     ETH: 15, // ~$45K
     DAI: 5000,
   },
+  share_class_breakdown: [
+    {
+      share_class: "USDT" as const,
+      nav_usd: 900000,
+      nav_denominated: 900000,
+      pct_of_total: 45.0,
+      strategies: ["AAVE_LENDING", "BASIS_TRADE"],
+      target_delta: 0,
+      actual_delta: 0.0003,
+      unrealised_pnl_usd: 8200,
+      unrealised_pnl_denominated: 8200,
+    },
+    {
+      share_class: "ETH" as const,
+      nav_usd: 735000,
+      nav_denominated: 210.0,
+      pct_of_total: 36.75,
+      strategies: ["STAKED_BASIS", "RECURSIVE_STAKED_BASIS"],
+      target_delta: 1.0,
+      actual_delta: 1.02,
+      unrealised_pnl_usd: 6100,
+      unrealised_pnl_denominated: 1.74,
+    },
+    {
+      share_class: "BTC" as const,
+      nav_usd: 365000,
+      nav_denominated: 5.21,
+      pct_of_total: 18.25,
+      strategies: ["BASIS_TRADE"],
+      target_delta: 1.0,
+      actual_delta: 0.97,
+      unrealised_pnl_usd: 2400,
+      unrealised_pnl_denominated: 0.034,
+    },
+  ],
 };
 
 // ---------------------------------------------------------------------------

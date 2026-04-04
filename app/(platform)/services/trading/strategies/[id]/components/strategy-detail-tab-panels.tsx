@@ -23,8 +23,37 @@ import {
   AlertTriangle,
   XCircle,
 } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceLine,
+  ResponsiveContainer,
+} from "recharts";
 import { cn } from "@/lib/utils";
 import type { PnLBreakdownData, Strategy } from "@/lib/strategy-registry";
+
+// Mock 7-day health factor time series for recursive DeFi strategies
+const MOCK_HF_SERIES = [
+  { day: "Mar 25", hf: 1.82 },
+  { day: "Mar 26", hf: 1.79 },
+  { day: "Mar 27", hf: 1.74 },
+  { day: "Mar 28", hf: 1.71 },
+  { day: "Mar 29", hf: 1.68 },
+  { day: "Mar 30", hf: 1.64 },
+  { day: "Mar 31", hf: 1.61 },
+];
+
+const CURRENT_HF = 1.61;
+
+function hfStatus(hf: number): { label: string; variant: "default" | "secondary" | "destructive" | "outline" } {
+  if (hf >= 1.5) return { label: "Healthy", variant: "default" };
+  if (hf >= 1.2) return { label: "Warning", variant: "outline" };
+  return { label: "Critical", variant: "destructive" };
+}
 
 export type StrategyDetailRiskLimit = {
   label: string;
@@ -366,6 +395,124 @@ export function StrategyDetailTabPanels({
               ))}
             </CardContent>
           </Card>
+
+          {/* DeFi Health Factor — only shown for DeFi recursive strategies */}
+          {strategy.assetClass === "DeFi" && (
+            <Card className="col-span-2">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base">Health Factor / Liquidation Proximity</CardTitle>
+                    <CardDescription>7-day HF trend for AAVE recursive positions. Liquidation at HF &lt; 1.0.</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground font-mono">Current HF</span>
+                    <span className={cn(
+                      "text-xl font-semibold font-mono",
+                      CURRENT_HF >= 1.5 ? "text-emerald-400" : CURRENT_HF >= 1.2 ? "text-amber-400" : "text-rose-500"
+                    )}>
+                      {CURRENT_HF.toFixed(2)}
+                    </span>
+                    <Badge
+                      variant={hfStatus(CURRENT_HF).variant}
+                      className={cn(
+                        "text-[10px]",
+                        CURRENT_HF >= 1.5 ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10" : ""
+                      )}
+                    >
+                      {hfStatus(CURRENT_HF).label}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-6">
+                  {/* HF time series chart */}
+                  <div className="col-span-2">
+                    <div className="h-[180px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={MOCK_HF_SERIES} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
+                          <defs>
+                            <linearGradient id="hfGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="5%" stopColor="#34d399" stopOpacity={0.25} />
+                              <stop offset="95%" stopColor="#34d399" stopOpacity={0.02} />
+                            </linearGradient>
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.4} />
+                          <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} />
+                          <YAxis domain={[0.9, 2.0]} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} axisLine={false} tickLine={false} width={32} />
+                          <Tooltip
+                            contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 11 }}
+                            formatter={(val: number) => [val.toFixed(2), "Health Factor"]}
+                          />
+                          {/* Threshold lines */}
+                          <ReferenceLine y={1.5} stroke="#f59e0b" strokeDasharray="4 3" strokeWidth={1.5} label={{ value: "Deleverage 1.5", position: "insideTopRight", fontSize: 9, fill: "#f59e0b" }} />
+                          <ReferenceLine y={1.2} stroke="#f97316" strokeDasharray="4 3" strokeWidth={1.5} label={{ value: "Emergency 1.2", position: "insideTopRight", fontSize: 9, fill: "#f97316" }} />
+                          <ReferenceLine y={1.0} stroke="#f43f5e" strokeDasharray="4 3" strokeWidth={1.5} label={{ value: "Liquidation 1.0", position: "insideTopRight", fontSize: 9, fill: "#f43f5e" }} />
+                          <Area
+                            type="monotone"
+                            dataKey="hf"
+                            stroke="#34d399"
+                            strokeWidth={2}
+                            fill="url(#hfGrad)"
+                            dot={false}
+                            activeDot={{ r: 4, strokeWidth: 0 }}
+                          />
+                        </AreaChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Collateral / Debt / Leverage breakdown */}
+                  <div className="space-y-3 pl-2 border-l border-border">
+                    <div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Collateral</div>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">weETH</span>
+                          <span className="text-xs font-mono">$1,220,000</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">LTV</span>
+                          <span className="text-xs font-mono text-amber-400">68.8%</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Debt</div>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">USDC borrowed</span>
+                          <span className="text-xs font-mono">$840,000</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Borrow rate</span>
+                          <span className="text-xs font-mono">4.2% APY</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wide mb-2">Leverage</div>
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Current</span>
+                          <span className="text-xs font-mono font-semibold">3.2x</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Target</span>
+                          <span className="text-xs font-mono text-muted-foreground">3.0x</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">Max allowed</span>
+                          <span className="text-xs font-mono text-muted-foreground">4.5x</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </TabsContent>
 

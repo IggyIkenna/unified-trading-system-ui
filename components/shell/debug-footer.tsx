@@ -109,9 +109,10 @@ export function DebugFooter() {
         </Badge>
 
         {user && (
-          <span className="text-amber-300/70">
-            <User className="inline size-3 mr-1" />
-            {user.displayName} ({user.role})
+          <span className="text-amber-300/70 hidden sm:flex items-center gap-1">
+            <User className="inline size-3" />
+            <span className="truncate max-w-[8rem]">{user.displayName}</span>
+            <span className="hidden md:inline">({user.role})</span>
           </span>
         )}
       </div>

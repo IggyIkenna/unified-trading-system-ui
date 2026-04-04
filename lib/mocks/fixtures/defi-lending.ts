@@ -2,7 +2,7 @@ import type { LendingProtocol } from "@/lib/types/defi";
 
 export const LENDING_PROTOCOLS: LendingProtocol[] = [
   {
-    name: "Aave V3",
+    name: "AAVEV3-ETHEREUM",
     venue_id: "AAVEV3-ETHEREUM",
     chain: "ETHEREUM",
     assets: ["ETH", "USDC", "USDT", "DAI", "WBTC", "LINK", "WETH", "WEETH"],
@@ -28,7 +28,7 @@ export const LENDING_PROTOCOLS: LendingProtocol[] = [
     },
   },
   {
-    name: "Morpho",
+    name: "MORPHO-ETHEREUM",
     venue_id: "MORPHO-ETHEREUM",
     chain: "ETHEREUM",
     assets: ["ETH", "USDC", "DAI", "WBTC", "WETH"],
@@ -36,7 +36,7 @@ export const LENDING_PROTOCOLS: LendingProtocol[] = [
     borrowApy: { ETH: 3.5, USDC: 6.8, DAI: 6.2, WBTC: 1.9, WETH: 3.5 },
   },
   {
-    name: "Compound V3",
+    name: "COMPOUNDV3-ETHEREUM",
     venue_id: "COMPOUNDV3-ETHEREUM",
     chain: "ETHEREUM",
     assets: ["ETH", "USDC", "WBTC"],
@@ -44,7 +44,7 @@ export const LENDING_PROTOCOLS: LendingProtocol[] = [
     borrowApy: { ETH: 2.8, USDC: 5.8, WBTC: 1.3 },
   },
   {
-    name: "Aave V3 (Arbitrum)",
+    name: "AAVEV3-ARBITRUM",
     venue_id: "AAVEV3-ARBITRUM",
     chain: "ARBITRUM",
     assets: ["ETH", "USDC", "USDT", "WBTC"],
@@ -52,7 +52,7 @@ export const LENDING_PROTOCOLS: LendingProtocol[] = [
     borrowApy: { ETH: 3.2, USDC: 6.5, USDT: 6.1, WBTC: 1.6 },
   },
   {
-    name: "Kamino (Solana)",
+    name: "KAMINO-SOLANA",
     venue_id: "KAMINO-SOLANA",
     chain: "SOLANA",
     assets: ["SOL", "USDC", "USDT", "JITOSOL", "MSOL"],

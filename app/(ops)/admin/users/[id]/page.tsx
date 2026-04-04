@@ -14,6 +14,7 @@ import {
   useReprovisionUser,
   useAccessRequests,
   useReviewRequest,
+  usePermissionCatalogue,
 } from "@/hooks/api/use-user-management";
 import type { ProvisioningStatus, AccessRequest } from "@/lib/types/user-management";
 import { ApiError } from "@/components/shared/api-error";
@@ -38,6 +39,24 @@ const ENTITLEMENT_LABELS: Record<string, string> = {
   "strategy-full": "Strategy Platform",
   reporting: "Reporting & Analytics",
 };
+
+/** Group user's product_slugs by catalogue domain for organized display */
+function useGroupedPermissions(productSlugs: string[]) {
+  const { data: catalogueData } = usePermissionCatalogue();
+  return React.useMemo(() => {
+    if (!catalogueData?.domains || productSlugs.length === 0) return [];
+    const slugSet = new Set(productSlugs);
+    return catalogueData.domains
+      .map((domain) => {
+        const matchedPerms = domain.categories.flatMap((cat) =>
+          cat.permissions.filter((p) => slugSet.has(p.key)).map((p) => ({ ...p, category: cat.label })),
+        );
+        if (matchedPerms.length === 0) return null;
+        return { domain: domain.label, icon: domain.icon, permissions: matchedPerms };
+      })
+      .filter(Boolean) as { domain: string; icon: string; permissions: { key: string; label: string; category: string }[] }[];
+  }, [catalogueData, productSlugs]);
+}
 
 function statusBadge(s: ProvisioningStatus) {
   if (s === "provisioned") return <Badge variant="default">Provisioned</Badge>;
@@ -83,6 +102,7 @@ export default function UserDetailPage() {
   const isInternal = ["admin", "collaborator", "operations", "accounting"].includes(user.role);
   const userRequests = (allRequests.data?.requests ?? []).filter((r) => r.requester_email === user.email);
   const pendingRequests = userRequests.filter((r) => r.status === "pending");
+  const groupedPermissions = useGroupedPermissions(user.product_slugs);
 
   return (
     <div className="px-6 py-6 space-y-6 max-w-4xl">
@@ -148,13 +168,29 @@ export default function UserDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Service Access (what apps/entitlements they have) */}
+        {/* Service Access — organized by catalogue domain */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Service Access</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            {user.product_slugs.length > 0 ? (
+          <CardContent className="space-y-3">
+            {groupedPermissions.length > 0 ? (
+              groupedPermissions.map((group) => (
+                <div key={group.domain} className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">{group.domain}</p>
+                  {group.permissions.map((perm) => (
+                    <div key={perm.key} className="flex items-center justify-between pl-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm">{perm.label}</span>
+                        <span className="text-xs text-muted-foreground">{perm.category}</span>
+                      </div>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                  ))}
+                </div>
+              ))
+            ) : user.product_slugs.length > 0 ? (
+              /* Fallback if catalogue not loaded yet — show flat list */
               user.product_slugs.map((slug) => (
                 <div key={slug} className="flex items-center justify-between">
                   <span className="text-sm">{ENTITLEMENT_LABELS[slug] ?? slug}</span>

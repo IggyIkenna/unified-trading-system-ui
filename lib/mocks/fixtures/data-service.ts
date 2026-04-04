@@ -73,7 +73,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Perpetuals
   {
     instrumentKey: "binance:perpetuals:BTCUSDT",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     folder: "perpetuals",
     symbol: "BTCUSDT",
@@ -84,7 +84,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "binance:perpetuals:ETHUSDT",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     folder: "perpetuals",
     symbol: "ETHUSDT",
@@ -95,7 +95,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "bybit:perpetuals:SOLUSDT",
-    venue: "bybit",
+    venue: "BYBIT",
     category: "cefi",
     folder: "perpetuals",
     symbol: "SOLUSDT",
@@ -106,7 +106,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "bybit:perpetuals:BTCUSDT",
-    venue: "bybit",
+    venue: "BYBIT",
     category: "cefi",
     folder: "perpetuals",
     symbol: "BTCUSDT",
@@ -118,7 +118,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Options
   {
     instrumentKey: "deribit:options:BTC-PERPETUAL",
-    venue: "deribit",
+    venue: "DERIBIT",
     category: "cefi",
     folder: "options",
     symbol: "BTC-PERPETUAL",
@@ -129,7 +129,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "deribit:options:ETH-PERPETUAL",
-    venue: "deribit",
+    venue: "DERIBIT",
     category: "cefi",
     folder: "options",
     symbol: "ETH-PERPETUAL",
@@ -141,7 +141,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Spot
   {
     instrumentKey: "coinbase:spot:BTC-USD",
-    venue: "coinbase",
+    venue: "COINBASE-SPOT",
     category: "cefi",
     folder: "spot",
     symbol: "BTC-USD",
@@ -152,7 +152,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "okx:spot:ETH-USDT",
-    venue: "okx",
+    venue: "OKX-SPOT",
     category: "cefi",
     folder: "spot",
     symbol: "ETH-USDT",
@@ -164,7 +164,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // TradFi
   {
     instrumentKey: "databento:futures:ES.c.0",
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     folder: "futures",
     symbol: "ES.c.0",
@@ -173,7 +173,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "databento:futures:NQ.c.0",
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     folder: "futures",
     symbol: "NQ.c.0",
@@ -182,7 +182,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "ibkr:equity:AAPL",
-    venue: "ibkr",
+    venue: "IBKR",
     category: "tradfi",
     folder: "equity",
     symbol: "AAPL",
@@ -191,7 +191,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "fred:rates:DFF",
-    venue: "fred",
+    venue: "FRED",
     category: "tradfi",
     folder: "rates",
     symbol: "DFF",
@@ -201,7 +201,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // DeFi
   {
     instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05",
-    venue: "uniswap_v3",
+    venue: "UNISWAPV3-ETHEREUM",
     category: "defi",
     folder: "pool_state",
     symbol: "USDC-ETH-0.05",
@@ -210,7 +210,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "aave_v3:lending:USDC",
-    venue: "aave_v3",
+    venue: "AAVEV3-ETHEREUM",
     category: "defi",
     folder: "lending",
     symbol: "USDC",
@@ -219,7 +219,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "lido:staking:ETH",
-    venue: "lido",
+    venue: "LIDO-ETHEREUM",
     category: "defi",
     folder: "staking",
     symbol: "stETH",
@@ -229,7 +229,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // Onchain Perps
   {
     instrumentKey: "hyperliquid:perpetuals:BTC-USD",
-    venue: "hyperliquid",
+    venue: "HYPERLIQUID",
     category: "onchain_perps",
     folder: "perpetuals",
     symbol: "BTC-USD",
@@ -240,7 +240,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "hyperliquid:perpetuals:ETH-USD",
-    venue: "hyperliquid",
+    venue: "HYPERLIQUID",
     category: "onchain_perps",
     folder: "perpetuals",
     symbol: "ETH-USD",
@@ -250,7 +250,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // Prediction Markets
   {
     instrumentKey: "polymarket:predictions:TRUMP_WIN_2024",
-    venue: "polymarket",
+    venue: "POLYMARKET",
     category: "prediction_market",
     folder: "predictions",
     symbol: "TRUMP_WIN_2024",
@@ -260,7 +260,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "kalshi:predictions:FED_RATE_JUL2025",
-    venue: "kalshi",
+    venue: "KALSHI",
     category: "prediction_market",
     folder: "predictions",
     symbol: "FED_RATE_JUL2025",
@@ -270,7 +270,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // Sports
   {
     instrumentKey: "api_football:fixtures:EPL_2025",
-    venue: "api_football",
+    venue: "API-FOOTBALL",
     category: "sports",
     folder: "fixtures",
     symbol: "EPL_2025",
@@ -279,7 +279,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "api_football:fixtures:UCL_2025",
-    venue: "api_football",
+    venue: "API-FOOTBALL",
     category: "sports",
     folder: "fixtures",
     symbol: "UCL_2025",
@@ -288,7 +288,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "footystats:fixtures:EPL_2025",
-    venue: "footystats",
+    venue: "FOOTYSTATS",
     category: "sports",
     folder: "fixtures",
     symbol: "EPL_2025",
@@ -297,7 +297,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "footystats:fixtures:LA_LIGA_2025",
-    venue: "footystats",
+    venue: "FOOTYSTATS",
     category: "sports",
     folder: "fixtures",
     symbol: "LA_LIGA_2025",
@@ -583,7 +583,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     orgId: "arcadia-capital",
     instrumentKey: "binance:perpetuals:BTCUSDT",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "ohlcv",
     dateFrom: "2024-01-01",
@@ -601,7 +601,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     orgId: "arcadia-capital",
     instrumentKey: "databento:futures:ES.c.0",
     category: "tradfi",
-    venue: "databento",
+    venue: "DATABENTO",
     folder: "futures",
     dataType: "book_snapshot_5",
     dateFrom: "2025-01-01",
@@ -619,7 +619,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     orgId: "arcadia-capital",
     instrumentKey: "bybit:perpetuals:SOLUSDT",
     category: "cefi",
-    venue: "bybit",
+    venue: "BYBIT",
     folder: "perpetuals",
     dataType: "trades",
     dateFrom: "2023-01-01",
@@ -636,7 +636,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     orgId: "meridian-quant",
     instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05",
     category: "defi",
-    venue: "uniswap_v3",
+    venue: "UNISWAPV3-ETHEREUM",
     folder: "pool_state",
     dataType: "pool_state",
     dateFrom: "2024-06-01",
@@ -755,7 +755,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-binance-perps",
       category: "cefi",
-      venue: "binance",
+      venue: "BINANCE-SPOT",
       folder: "perpetuals",
       dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates", "liquidations"],
       schedule: "realtime",
@@ -773,7 +773,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-binance-spot",
       category: "cefi",
-      venue: "binance",
+      venue: "BINANCE-SPOT",
       folder: "spot",
       dataTypes: ["ohlcv", "trades"],
       schedule: "1m",
@@ -790,7 +790,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-bybit-perps",
       category: "cefi",
-      venue: "bybit",
+      venue: "BYBIT",
       folder: "perpetuals",
       dataTypes: ["ohlcv", "trades", "funding_rates"],
       schedule: "realtime",
@@ -817,7 +817,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-deribit-options",
       category: "cefi",
-      venue: "deribit",
+      venue: "DERIBIT",
       folder: "options",
       dataTypes: ["ohlcv", "trades", "greeks", "iv_surface"],
       schedule: "1m",
@@ -834,7 +834,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-coinbase-spot",
       category: "cefi",
-      venue: "coinbase",
+      venue: "COINBASE-SPOT",
       folder: "spot",
       dataTypes: ["ohlcv", "trades", "tick"],
       schedule: "realtime",
@@ -852,7 +852,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-databento-futures",
       category: "tradfi",
-      venue: "databento",
+      venue: "DATABENTO",
       folder: "futures",
       dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"],
       schedule: "realtime",
@@ -869,7 +869,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-ibkr-equity",
       category: "tradfi",
-      venue: "ibkr",
+      venue: "IBKR",
       folder: "equity",
       dataTypes: ["ohlcv", "trades"],
       schedule: "15m",
@@ -886,7 +886,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-fred-rates",
       category: "tradfi",
-      venue: "fred",
+      venue: "FRED",
       folder: "rates",
       dataTypes: ["ohlcv"],
       schedule: "daily",
@@ -904,7 +904,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-uniswap-v3",
       category: "defi",
-      venue: "uniswap_v3",
+      venue: "UNISWAPV3-ETHEREUM",
       folder: "pool_state",
       dataTypes: ["pool_state", "swap_events", "price_feeds"],
       schedule: "1m",
@@ -921,7 +921,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-aave-v3",
       category: "defi",
-      venue: "aave_v3",
+      venue: "AAVEV3-ETHEREUM",
       folder: "lending",
       dataTypes: ["lending_rates", "price_feeds"],
       schedule: "5m",
@@ -938,7 +938,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-lido-staking",
       category: "defi",
-      venue: "lido",
+      venue: "LIDO-ETHEREUM",
       folder: "staking",
       dataTypes: ["staking_yields", "price_feeds"],
       schedule: "1h",
@@ -956,7 +956,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
     config: {
       id: "etl-hyperliquid",
       category: "onchain_perps",
-      venue: "hyperliquid",
+      venue: "HYPERLIQUID",
       folder: "perpetuals",
       dataTypes: ["ohlcv", "trades", "funding_rates", "open_interest"],
       schedule: "realtime",
@@ -983,7 +983,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
 
 export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   {
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     label: "Binance",
     dataSource: "exchange_api",
@@ -998,7 +998,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "bybit",
+    venue: "BYBIT",
     category: "cefi",
     label: "Bybit",
     dataSource: "exchange_api",
@@ -1013,7 +1013,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "degraded",
   },
   {
-    venue: "deribit",
+    venue: "DERIBIT",
     category: "cefi",
     label: "Deribit",
     dataSource: "exchange_api",
@@ -1028,7 +1028,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "coinbase",
+    venue: "COINBASE-SPOT",
     category: "cefi",
     label: "Coinbase",
     dataSource: "exchange_api",
@@ -1043,7 +1043,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "okx",
+    venue: "OKX-SPOT",
     category: "cefi",
     label: "OKX",
     dataSource: "exchange_api",
@@ -1058,7 +1058,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     label: "Databento",
     dataSource: "vendor",
@@ -1073,7 +1073,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "ibkr",
+    venue: "IBKR",
     category: "tradfi",
     label: "Interactive Brokers",
     dataSource: "vendor",
@@ -1088,7 +1088,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "fred",
+    venue: "FRED",
     category: "tradfi",
     label: "FRED",
     dataSource: "vendor",
@@ -1103,7 +1103,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "uniswap_v3",
+    venue: "UNISWAPV3-ETHEREUM",
     category: "defi",
     label: "Uniswap V3",
     dataSource: "onchain",
@@ -1118,7 +1118,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "aave_v3",
+    venue: "AAVEV3-ETHEREUM",
     category: "defi",
     label: "Aave V3",
     dataSource: "onchain",
@@ -1133,7 +1133,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "lido",
+    venue: "LIDO-ETHEREUM",
     category: "defi",
     label: "Lido",
     dataSource: "onchain",
@@ -1148,7 +1148,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
     healthStatus: "healthy",
   },
   {
-    venue: "hyperliquid",
+    venue: "HYPERLIQUID",
     category: "onchain_perps",
     label: "Hyperliquid",
     dataSource: "onchain",
@@ -1168,7 +1168,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   {
     id: "gap-1",
     category: "cefi",
-    venue: "bybit",
+    venue: "BYBIT",
     folder: "perpetuals",
     dataType: "trades",
     instrument: "SOLUSDT",
@@ -1183,7 +1183,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   {
     id: "gap-2",
     category: "defi",
-    venue: "uniswap_v3",
+    venue: "UNISWAPV3-ETHEREUM",
     folder: "pool_state",
     dataType: "swap_events",
     gapStart: "2026-03-10",
@@ -1198,7 +1198,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   {
     id: "gap-3",
     category: "tradfi",
-    venue: "databento",
+    venue: "DATABENTO",
     folder: "futures",
     dataType: "book_snapshot_25",
     gapStart: "2026-02-28",
@@ -1212,7 +1212,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   {
     id: "gap-4",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "liquidations",
     gapStart: "2026-01-15",
@@ -1474,7 +1474,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     type: "download",
     status: "running",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     dateRange: { start: "2026-03-18", end: "2026-03-23" },
     shardsTotal: 6,
     shardsCompleted: 4,
@@ -1490,7 +1490,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     type: "download",
     status: "running",
     category: "tradfi",
-    venue: "databento",
+    venue: "DATABENTO",
     dateRange: { start: "2026-03-15", end: "2026-03-23" },
     shardsTotal: 9,
     shardsCompleted: 2,
@@ -1506,7 +1506,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     type: "process",
     status: "running",
     category: "cefi",
-    venue: "bybit",
+    venue: "BYBIT",
     dateRange: { start: "2026-03-20", end: "2026-03-22" },
     shardsTotal: 3,
     shardsCompleted: 2,
@@ -1522,7 +1522,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     type: "backfill",
     status: "queued",
     category: "defi",
-    venue: "aave_v3",
+    venue: "AAVEV3-ETHEREUM",
     dateRange: { start: "2026-02-28", end: "2026-03-05" },
     shardsTotal: 6,
     shardsCompleted: 0,
@@ -1540,7 +1540,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   {
     jobType: "download",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     avgDurationMs: 3_600_000,
     p50DurationMs: 3_200_000,
     p90DurationMs: 5_400_000,
@@ -1551,7 +1551,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   {
     jobType: "download",
     category: "cefi",
-    venue: "bybit",
+    venue: "BYBIT",
     avgDurationMs: 2_800_000,
     p50DurationMs: 2_600_000,
     p90DurationMs: 4_200_000,
@@ -1562,7 +1562,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   {
     jobType: "download",
     category: "tradfi",
-    venue: "databento",
+    venue: "DATABENTO",
     avgDurationMs: 7_200_000,
     p50DurationMs: 6_800_000,
     p90DurationMs: 10_800_000,
@@ -1573,7 +1573,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   {
     jobType: "process",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     avgDurationMs: 1_800_000,
     p50DurationMs: 1_600_000,
     p90DurationMs: 2_800_000,
@@ -1584,7 +1584,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   {
     jobType: "process",
     category: "tradfi",
-    venue: "databento",
+    venue: "DATABENTO",
     avgDurationMs: 2_400_000,
     p50DurationMs: 2_200_000,
     p90DurationMs: 3_600_000,
@@ -1595,7 +1595,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   {
     jobType: "backfill",
     category: "defi",
-    venue: "uniswap_v3",
+    venue: "UNISWAPV3-ETHEREUM",
     avgDurationMs: 10_800_000,
     p50DurationMs: 9_600_000,
     p90DurationMs: 18_000_000,
@@ -1616,7 +1616,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     message: "12 new perpetual contracts were discovered on Binance during the 08:00 cron run.",
     timestamp: "2026-03-23T08:14:00Z",
     read: false,
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     actionHref: "/services/data/instruments",
   },
@@ -1628,7 +1628,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     message: "2 of 9 shards failed during the TradFi Databento download (Mar 21, Mar 22). Retrying.",
     timestamp: "2026-03-23T07:42:00Z",
     read: false,
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     actionHref: "/services/data/raw",
   },
@@ -1640,7 +1640,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     message: "Missing OHLCV data for BTC-PERP on Binance for 2026-03-20. Backfill queued.",
     timestamp: "2026-03-23T06:30:00Z",
     read: false,
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     actionHref: "/services/data/gaps",
   },
@@ -1652,7 +1652,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     message: "All 6 timeframes processed for OKX perpetuals on 2026-03-22.",
     timestamp: "2026-03-23T05:15:00Z",
     read: true,
-    venue: "okx",
+    venue: "OKX-SPOT",
     category: "cefi",
   },
   {
@@ -1663,7 +1663,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     message: "Football match data from api_football has not been updated in 18 hours.",
     timestamp: "2026-03-22T14:00:00Z",
     read: true,
-    venue: "api_football",
+    venue: "API-FOOTBALL",
     category: "sports",
     actionHref: "/services/data/raw",
   },
@@ -1674,7 +1674,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
 export const MOCK_CORPORATE_ACTIONS: import("@/lib/types/data-service").CorporateAction[] = [
   {
     id: "ca-001",
-    venue: "databento",
+    venue: "DATABENTO",
     symbol: "AAPL",
     actionType: "split",
     effectiveDate: "2020-08-31",
@@ -1684,7 +1684,7 @@ export const MOCK_CORPORATE_ACTIONS: import("@/lib/types/data-service").Corporat
   },
   {
     id: "ca-002",
-    venue: "databento",
+    venue: "DATABENTO",
     symbol: "TSLA",
     actionType: "split",
     effectiveDate: "2020-08-31",
@@ -1694,7 +1694,7 @@ export const MOCK_CORPORATE_ACTIONS: import("@/lib/types/data-service").Corporat
   },
   {
     id: "ca-003",
-    venue: "databento",
+    venue: "DATABENTO",
     symbol: "AMZN",
     actionType: "split",
     effectiveDate: "2022-06-06",
@@ -1704,7 +1704,7 @@ export const MOCK_CORPORATE_ACTIONS: import("@/lib/types/data-service").Corporat
   },
   {
     id: "ca-004",
-    venue: "databento",
+    venue: "DATABENTO",
     symbol: "GOOGL",
     actionType: "split",
     effectiveDate: "2022-07-15",
@@ -1714,7 +1714,7 @@ export const MOCK_CORPORATE_ACTIONS: import("@/lib/types/data-service").Corporat
   },
   {
     id: "ca-005",
-    venue: "databento",
+    venue: "DATABENTO",
     symbol: "NVDA",
     actionType: "split",
     effectiveDate: "2024-06-10",
@@ -1724,7 +1724,7 @@ export const MOCK_CORPORATE_ACTIONS: import("@/lib/types/data-service").Corporat
   },
   {
     id: "ca-006",
-    venue: "ibkr",
+    venue: "IBKR",
     symbol: "FB",
     newSymbol: "META",
     actionType: "symbol_change",
@@ -1772,7 +1772,7 @@ export const MOCK_INSTRUMENT_COUNTS: Record<
 
 export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[] = [
   {
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
@@ -1781,7 +1781,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "complete", completionPct: 89 },
   },
   {
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     date: "2026-03-21",
     instruments: { status: "complete", completionPct: 100 },
@@ -1790,7 +1790,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "complete", completionPct: 92 },
   },
   {
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     date: "2026-03-20",
     instruments: { status: "complete", completionPct: 100 },
@@ -1799,7 +1799,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "partial", completionPct: 71 },
   },
   {
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     date: "2026-03-19",
     instruments: { status: "complete", completionPct: 100 },
@@ -1808,7 +1808,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "missing", completionPct: 0 },
   },
   {
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
@@ -1817,7 +1817,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "missing", completionPct: 0 },
   },
   {
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     date: "2026-03-21",
     instruments: { status: "complete", completionPct: 100 },
@@ -1826,7 +1826,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "complete", completionPct: 95 },
   },
   {
-    venue: "aave_v3",
+    venue: "AAVEV3-ETHEREUM",
     category: "defi",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
@@ -1835,7 +1835,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "missing", completionPct: 0 },
   },
   {
-    venue: "aave_v3",
+    venue: "AAVEV3-ETHEREUM",
     category: "defi",
     date: "2026-03-21",
     instruments: { status: "complete", completionPct: 100 },
@@ -1844,7 +1844,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "missing", completionPct: 0 },
   },
   {
-    venue: "api_football",
+    venue: "API-FOOTBALL",
     category: "sports",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
@@ -1853,7 +1853,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
     features: { status: "missing", completionPct: 0 },
   },
   {
-    venue: "polymarket",
+    venue: "POLYMARKET",
     category: "prediction_market",
     date: "2026-03-22",
     instruments: { status: "partial", completionPct: 44 },
@@ -1868,7 +1868,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
 export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").TimeframeStatus[] = [
   {
     timeframe: "1m",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     completionPct: 98.2,
     totalDays: 2400,
@@ -1878,7 +1878,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "5m",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     completionPct: 97.8,
     totalDays: 2400,
@@ -1888,7 +1888,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "15m",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     completionPct: 97.4,
     totalDays: 2400,
@@ -1898,7 +1898,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "1h",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     completionPct: 99.1,
     totalDays: 2400,
@@ -1908,7 +1908,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "4h",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     completionPct: 99.3,
     totalDays: 2400,
@@ -1918,7 +1918,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "1d",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     category: "cefi",
     completionPct: 99.8,
     totalDays: 2400,
@@ -1928,7 +1928,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "1m",
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     completionPct: 91.2,
     totalDays: 1560,
@@ -1938,7 +1938,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "5m",
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     completionPct: 91.0,
     totalDays: 1560,
@@ -1948,7 +1948,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "1h",
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     completionPct: 93.5,
     totalDays: 1560,
@@ -1958,7 +1958,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   },
   {
     timeframe: "1d",
-    venue: "databento",
+    venue: "DATABENTO",
     category: "tradfi",
     completionPct: 95.8,
     totalDays: 1560,
@@ -1974,7 +1974,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-001",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "ohlcv",
     instrument: "BTC-PERP",
@@ -1989,7 +1989,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-002",
     category: "cefi",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "trades",
     instrument: "ETH-PERP",
@@ -2004,7 +2004,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-003",
     category: "tradfi",
-    venue: "databento",
+    venue: "DATABENTO",
     folder: "equity",
     dataType: "ohlcv",
     instrument: "AAPL",
@@ -2019,7 +2019,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-004",
     category: "defi",
-    venue: "aave_v3",
+    venue: "AAVEV3-ETHEREUM",
     folder: "lending",
     dataType: "lending_rates",
     gapStart: "2026-02-28",
@@ -2033,7 +2033,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-005",
     category: "sports",
-    venue: "api_football",
+    venue: "API-FOOTBALL",
     folder: "game_events",
     dataType: "game_events",
     gapStart: "2026-03-10",
@@ -2048,7 +2048,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-006",
     category: "cefi",
-    venue: "okx",
+    venue: "OKX-SPOT",
     folder: "spot",
     dataType: "ohlcv",
     gapStart: "2026-03-22",
@@ -2062,7 +2062,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-007",
     category: "tradfi",
-    venue: "ibkr",
+    venue: "IBKR",
     folder: "equity",
     dataType: "trades",
     instrument: "TSLA",
@@ -2076,7 +2076,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   {
     id: "gap-008",
     category: "defi",
-    venue: "uniswap_v3",
+    venue: "UNISWAPV3-ETHEREUM",
     folder: "pool_state",
     dataType: "pool_state",
     gapStart: "2026-03-18",
@@ -2232,7 +2232,7 @@ export const MOCK_MARKET_STRUCTURE_EVENTS: import("@/lib/types/data-service").Ma
     label: "CME Monthly Options Expiry",
     date: "2026-03-21",
     time: "21:00",
-    venue: "cme",
+    venue: "CME",
     description: "CME monthly options expiry — 3rd Friday",
     importance: "high",
   },
@@ -2242,7 +2242,7 @@ export const MOCK_MARKET_STRUCTURE_EVENTS: import("@/lib/types/data-service").Ma
     label: "Equity Options Expiry",
     date: "2026-03-21",
     time: "20:00",
-    venue: "cboe",
+    venue: "CBOE",
     description: "US equity options monthly expiry — 3rd Friday 4PM ET",
     importance: "high",
   },
@@ -2270,7 +2270,7 @@ export const MOCK_MARKET_STRUCTURE_EVENTS: import("@/lib/types/data-service").Ma
     label: "CME BTC Futures Expiry",
     date: "2026-03-27",
     time: "16:00",
-    venue: "cme",
+    venue: "CME",
     asset: "BTC",
     description: "CME Bitcoin futures last Friday expiry",
     importance: "medium",
@@ -2281,7 +2281,7 @@ export const MOCK_MARKET_STRUCTURE_EVENTS: import("@/lib/types/data-service").Ma
     label: "CME ETH Futures Expiry",
     date: "2026-03-27",
     time: "16:00",
-    venue: "cme",
+    venue: "CME",
     asset: "ETH",
     description: "CME Ethereum futures last Friday expiry",
     importance: "medium",

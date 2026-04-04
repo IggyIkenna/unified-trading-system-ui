@@ -197,9 +197,9 @@ export default function ExecutionOverviewPage() {
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Venue Status */}
-          <Card className="col-span-1">
+          <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Venue Connectivity</CardTitle>
               <CardDescription>
@@ -236,12 +236,12 @@ export default function ExecutionOverviewPage() {
           </Card>
 
           {/* Recent Orders */}
-          <Card className="col-span-2">
+          <Card className="lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="text-base">Recent Executions</CardTitle>
               <CardDescription>Latest order fills with TCA metrics</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -372,7 +372,7 @@ export default function ExecutionOverviewPage() {
             <CardTitle className="text-base">Live Algorithms</CardTitle>
             <CardDescription>{liveAlgos} algorithms currently in production</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>

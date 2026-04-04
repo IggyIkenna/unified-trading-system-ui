@@ -9,10 +9,14 @@ set -euo pipefail
 #   bash scripts/dev-tiers.sh --tier 1        # UI + API gateways (mock)
 #   bash scripts/dev-tiers.sh --tier 2        # UI + APIs + all services
 #   bash scripts/dev-tiers.sh --tier 1 --real # Tier 1 with real adapters
+#   bash scripts/dev-tiers.sh --tier static   # Serve pre-built static export (port 3100)
 #   bash scripts/dev-tiers.sh --stop          # Stop all processes
 #   bash scripts/dev-tiers.sh --status        # Show what's running
 #
 # Tiers:
+#   T-static = Pre-built Next.js static export on port 3100. No dev server, no APIs.
+#              Zero dependencies. For offline demos and screenshots.
+#              Run `bash scripts/static-mock-server.sh --build-only` first if out/ is stale.
 #   T0 = UI-only. In-browser mock. No Python processes.
 #   T1 = UI + unified-trading-api + auth-api + client-reporting-api.
 #        API uses MockStateStore. No downstream service processes.
@@ -154,10 +158,26 @@ if $DO_STOP; then stop_all; exit 0; fi
 if $DO_STATUS; then show_status; exit 0; fi
 
 if [ -z "$TIER" ]; then
-  echo "Usage: bash scripts/dev-tiers.sh --tier <0|1|2> [--real] [--reset]"
+  echo "Usage: bash scripts/dev-tiers.sh --tier <static|0|1|2> [--real] [--reset]"
   echo "       bash scripts/dev-tiers.sh --stop"
   echo "       bash scripts/dev-tiers.sh --status"
   exit 1
+fi
+
+# ─── Tier static: serve pre-built export ─────────────────────────────────────
+
+if [ "$TIER" = "static" ]; then
+  if [ ! -d "$UI_ROOT/out" ]; then
+    echo ""
+    echo "[static] Building static export first (out/ not found)..."
+    bash "$SCRIPT_DIR/static-mock-server.sh" --build-only
+  fi
+  echo ""
+  echo "[static] Serving pre-built export on :3100 (zero-dependency, no dev server)"
+  echo "         To rebuild: bash scripts/static-mock-server.sh --build-only"
+  echo ""
+  bash "$SCRIPT_DIR/static-mock-server.sh" --serve-only --port 3100
+  exit 0
 fi
 
 # Stop any existing processes first

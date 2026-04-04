@@ -185,7 +185,7 @@ export default function CoveragePage() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="pt-4">
               <div className="text-2xl font-bold font-mono text-foreground">
@@ -222,7 +222,7 @@ export default function CoveragePage() {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Group by:</span>
             <Select
@@ -279,7 +279,7 @@ export default function CoveragePage() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left px-4 py-2 font-medium text-muted-foreground">
+                  <th className="text-left px-4 py-2 font-medium text-muted-foreground sticky left-0 bg-card z-10">
                     Venue
                   </th>
                   <th className="text-left px-4 py-2 font-medium text-muted-foreground">
@@ -309,7 +309,7 @@ export default function CoveragePage() {
                     key={`${row.venue}-${row.date}-${i}`}
                     className="border-b border-border/50 hover:bg-accent/20 transition-colors"
                   >
-                    <td className="px-4 py-1.5 font-medium capitalize">
+                    <td className="px-4 py-1.5 font-medium capitalize sticky left-0 bg-card z-10">
                       {row.venue.replace(/_/g, " ")}
                     </td>
                     <td className="px-4 py-1.5">

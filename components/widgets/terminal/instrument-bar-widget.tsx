@@ -33,9 +33,9 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
   return (
     <div className="flex items-center gap-3 px-3 h-full flex-wrap">
       <Select
-        value={`${selectedInstrument.symbol}@${selectedInstrument.venue}`}
+        value={selectedInstrument.instrumentKey}
         onValueChange={(val) => {
-          const inst = instruments.find((i) => `${i.symbol}@${i.venue}` === val);
+          const inst = instruments.find((i) => i.instrumentKey === val);
           if (inst) setSelectedInstrument(inst);
         }}
       >
@@ -48,8 +48,8 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
               <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase">{cat}</div>
               {insts.map((inst) => (
                 <SelectItem
-                  key={`${inst.symbol}@${inst.venue}`}
-                  value={`${inst.symbol}@${inst.venue}`}
+                  key={inst.instrumentKey}
+                  value={inst.instrumentKey}
                   className="text-xs"
                 >
                   {inst.symbol} <span className="text-muted-foreground ml-1">{inst.venue}</span>

@@ -2,9 +2,13 @@ import {
   ArrowLeftRight,
   BarChart3,
   Coins,
+  DollarSign,
   Droplets,
+  Gift,
+  Heart,
   History,
   Landmark,
+  Layers,
   Send,
   Settings,
   Wallet,
@@ -13,15 +17,20 @@ import {
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { DeFiFlashLoansWidget } from "./defi-flash-loans-widget";
+import { DeFiFundingMatrixWidget } from "./defi-funding-matrix-widget";
+import { DeFiHealthFactorWidget } from "./defi-health-factor-widget";
 import { DeFiLendingWidget } from "./defi-lending-widget";
 import { DeFiLiquidityWidget } from "./defi-liquidity-widget";
 import { DeFiRatesOverviewWidget } from "./defi-rates-overview-widget";
+import { DeFiRewardPnlWidget } from "./defi-reward-pnl-widget";
 import { DeFiStakingWidget } from "./defi-staking-widget";
+import { DeFiStakingRewardsWidget } from "./defi-staking-rewards-widget";
 import { DeFiStrategyConfigWidget } from "./defi-strategy-config-widget";
 import { DeFiSwapWidget } from "./defi-swap-widget";
 import { DeFiTradeHistoryWidget } from "./defi-trade-history-widget";
 import { DeFiTransferWidget } from "./defi-transfer-widget";
 import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
+import { DeFiWaterfallWeightsWidget } from "./defi-waterfall-weights-widget";
 
 registerPresets("defi", [
   {
@@ -54,6 +63,25 @@ registerPresets("defi", [
       { widgetId: "defi-transfer", instanceId: "defi-transfer-adv", x: 0, y: 15, w: 4, h: 5 },
       { widgetId: "defi-trade-history", instanceId: "defi-trade-history-adv", x: 4, y: 15, w: 8, h: 5 },
       { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-adv", x: 0, y: 20, w: 12, h: 5 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "defi-walkthrough",
+    name: "Walkthrough (Patrick)",
+    tab: "defi",
+    isPreset: true,
+    layouts: [
+      { widgetId: "defi-wallet-summary", instanceId: "defi-wallet-wt", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "defi-staking", instanceId: "defi-staking-wt", x: 0, y: 2, w: 4, h: 6 },
+      { widgetId: "defi-staking-rewards", instanceId: "defi-staking-rewards-wt", x: 4, y: 2, w: 4, h: 6 },
+      { widgetId: "defi-health-factor", instanceId: "defi-health-factor-wt", x: 8, y: 2, w: 4, h: 8 },
+      { widgetId: "defi-funding-matrix", instanceId: "defi-funding-matrix-wt", x: 0, y: 8, w: 8, h: 5 },
+      { widgetId: "defi-waterfall-weights", instanceId: "defi-waterfall-weights-wt", x: 0, y: 13, w: 4, h: 6 },
+      { widgetId: "defi-reward-pnl", instanceId: "defi-reward-pnl-wt", x: 4, y: 13, w: 4, h: 6 },
+      { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-wt", x: 8, y: 10, w: 4, h: 6 },
+      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-wt", x: 0, y: 19, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -218,4 +246,84 @@ registerWidget({
   availableOn: ["defi"],
   singleton: true,
   component: DeFiStrategyConfigWidget,
+});
+
+registerWidget({
+  id: "defi-staking-rewards",
+  label: "Staking Rewards",
+  description: "Track, claim, and sell staking rewards (EIGEN, ETHFI). Reward P&L attribution.",
+  icon: Gift,
+  minW: 3,
+  minH: 4,
+  defaultW: 4,
+  defaultH: 6,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiStakingRewardsWidget,
+});
+
+registerWidget({
+  id: "defi-funding-matrix",
+  label: "Funding Rate Matrix",
+  description: "Per-coin-per-venue annualised funding rates with floor highlighting.",
+  icon: DollarSign,
+  minW: 4,
+  minH: 3,
+  defaultW: 8,
+  defaultH: 5,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiFundingMatrixWidget,
+});
+
+registerWidget({
+  id: "defi-waterfall-weights",
+  label: "Allocation Weights",
+  description: "Two-waterfall allocation: coin weights (Pillar 1) and per-coin venue weights (Pillar 2).",
+  icon: Layers,
+  minW: 3,
+  minH: 4,
+  defaultW: 4,
+  defaultH: 6,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiWaterfallWeightsWidget,
+});
+
+registerWidget({
+  id: "defi-health-factor",
+  label: "Health Factor Monitor",
+  description: "Real-time HF monitoring with oracle/market rates, spread analysis, and emergency exit.",
+  icon: Heart,
+  minW: 3,
+  minH: 5,
+  defaultW: 4,
+  defaultH: 8,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiHealthFactorWidget,
+});
+
+registerWidget({
+  id: "defi-reward-pnl",
+  label: "Reward P&L Breakdown",
+  description: "P&L decomposition by reward factor: staking yield, restaking, seasonal, unrealised.",
+  icon: BarChart3,
+  minW: 3,
+  minH: 4,
+  defaultW: 4,
+  defaultH: 6,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiRewardPnlWidget,
 });

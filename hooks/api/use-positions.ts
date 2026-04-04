@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { apiFetch } from "@/lib/api/fetch";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+
+type PositionsResponse = GatewayApiResponse<"/api/positions/active">;
+type PositionsSummaryResponse = GatewayApiResponse<"/api/positions/summary">;
+type BalancesResponse = GatewayApiResponse<"/api/positions/balances">;
 
 export function usePositions(mode?: string, asOf?: string) {
   const { user, token } = useAuth();
@@ -9,10 +13,13 @@ export function usePositions(mode?: string, asOf?: string) {
   if (asOf) params.set("as_of", asOf);
   const qs = params.toString();
 
-  return useQuery({
+  return useQuery<PositionsResponse>({
     queryKey: ["positions", mode, asOf, user?.id],
     queryFn: () =>
-      apiFetch(`/api/positions/active${qs ? `?${qs}` : ""}`, token),
+      typedFetch<PositionsResponse>(
+        `/api/positions/active${qs ? `?${qs}` : ""}`,
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -20,9 +27,10 @@ export function usePositions(mode?: string, asOf?: string) {
 export function usePositionsSummary() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<PositionsSummaryResponse>({
     queryKey: ["positions-summary", user?.id],
-    queryFn: () => apiFetch("/api/positions/summary", token),
+    queryFn: () =>
+      typedFetch<PositionsSummaryResponse>("/api/positions/summary", token),
     enabled: !!user,
   });
 }
@@ -30,9 +38,10 @@ export function usePositionsSummary() {
 export function useBalances() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<BalancesResponse>({
     queryKey: ["balances", user?.id],
-    queryFn: () => apiFetch("/api/positions/balances", token),
+    queryFn: () =>
+      typedFetch<BalancesResponse>("/api/positions/balances", token),
     enabled: !!user,
   });
 }

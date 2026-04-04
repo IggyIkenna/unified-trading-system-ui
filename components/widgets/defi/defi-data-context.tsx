@@ -23,17 +23,31 @@ import type {
   DeFiFlashPnl,
   DeFiOrderParams,
   DeFiReconciliationRecord,
+  EmergencyExitEstimate,
   FlashLoanStep,
+  FundingRateMatrix,
+  HealthFactorDashboard,
   LendingProtocol,
   LiquidityPool,
   PortfolioDeltaComposite,
   RebalancePreview,
+  RewardPnLBreakdown,
   StakingProtocol,
+  StakingReward,
   StrategyRiskProfile,
   SwapRoute,
   TradeHistoryRow,
   TreasurySnapshot,
+  WaterfallWeights,
 } from "@/lib/types/defi";
+import {
+  MOCK_STAKING_REWARDS,
+  MOCK_FUNDING_RATES,
+  MOCK_WATERFALL_WEIGHTS_PATRICK,
+  MOCK_HEALTH_FACTOR,
+  MOCK_EMERGENCY_EXIT,
+  MOCK_REWARD_PNL,
+} from "@/lib/mocks/fixtures/defi-walkthrough";
 import * as React from "react";
 
 const MOCK_WALLET = "0x7a23c0ffeebee4f91deadbeef1234567890abcd";
@@ -102,6 +116,16 @@ export interface DeFiDataContextValue {
   triggerRebalance: () => void;
   confirmRebalance: () => void;
   cancelRebalance: () => void;
+
+  // Walkthrough enhancements
+  stakingRewards: StakingReward[];
+  claimReward: (token: string) => void;
+  claimAndSellReward: (token: string) => void;
+  fundingRates: FundingRateMatrix;
+  waterfallWeights: WaterfallWeights;
+  healthFactorDashboard: HealthFactorDashboard;
+  emergencyExit: EmergencyExitEstimate;
+  rewardPnl: RewardPnLBreakdown;
 }
 
 const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
@@ -138,6 +162,52 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const [treasury, setTreasury] = React.useState<TreasurySnapshot>(MOCK_TREASURY);
+  const [stakingRewards, setStakingRewards] = React.useState<StakingReward[]>(MOCK_STAKING_REWARDS);
+  const [rewardPnl, setRewardPnl] = React.useState<RewardPnLBreakdown>(MOCK_REWARD_PNL);
+
+  const claimReward = React.useCallback((token: string) => {
+    setStakingRewards((prev) =>
+      prev.map((r) =>
+        r.token === token
+          ? { ...r, claimed_amount: r.claimed_amount + r.accrued_amount, accrued_amount: 0, accrued_value_usd: 0 }
+          : r,
+      ),
+    );
+  }, []);
+
+  const claimAndSellReward = React.useCallback((token: string) => {
+    setStakingRewards((prev) =>
+      prev.map((r) => {
+        if (r.token !== token) return r;
+        const totalSold = r.sold_amount + r.accrued_amount;
+        const totalSoldValue = r.sold_value_usd + r.accrued_value_usd;
+        return {
+          ...r,
+          sold_amount: totalSold,
+          sold_value_usd: totalSoldValue,
+          claimed_amount: r.claimed_amount + r.accrued_amount,
+          accrued_amount: 0,
+          accrued_value_usd: 0,
+        };
+      }),
+    );
+    // Update reward P&L
+    setRewardPnl((prev) => {
+      const reward = stakingRewards.find((r) => r.token === token);
+      if (!reward) return prev;
+      return {
+        ...prev,
+        restaking_reward: {
+          ...prev.restaking_reward,
+          amount: prev.restaking_reward.amount + reward.accrued_value_usd,
+        },
+        reward_unrealised: {
+          ...prev.reward_unrealised,
+          amount: Math.max(0, prev.reward_unrealised.amount - reward.accrued_value_usd),
+        },
+      };
+    });
+  }, [stakingRewards]);
   const [rebalancePreview, setRebalancePreview] = React.useState<RebalancePreview | null>(null);
 
   const triggerRebalance = React.useCallback(() => {
@@ -286,6 +356,14 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       triggerRebalance,
       confirmRebalance,
       cancelRebalance,
+      stakingRewards,
+      claimReward,
+      claimAndSellReward,
+      fundingRates: MOCK_FUNDING_RATES,
+      waterfallWeights: MOCK_WATERFALL_WEIGHTS_PATRICK,
+      healthFactorDashboard: MOCK_HEALTH_FACTOR,
+      emergencyExit: MOCK_EMERGENCY_EXIT,
+      rewardPnl,
     }),
     [
       selectedChain,
@@ -311,6 +389,10 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       triggerRebalance,
       confirmRebalance,
       cancelRebalance,
+      stakingRewards,
+      claimReward,
+      claimAndSellReward,
+      rewardPnl,
     ],
   );
 

@@ -70,7 +70,7 @@ export const SEED_RECENT_ORDERS = [
   {
     id: "ORD-4821",
     instrument: "BTC-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     algo: "TWAP",
     side: "buy",
     qty: 0.5,
@@ -82,7 +82,7 @@ export const SEED_RECENT_ORDERS = [
   {
     id: "ORD-4820",
     instrument: "ETH-PERP",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     algo: "VWAP",
     side: "sell",
     qty: 10,
@@ -94,7 +94,7 @@ export const SEED_RECENT_ORDERS = [
   {
     id: "ORD-4819",
     instrument: "SOL-USDT",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     algo: "Aggressive Limit",
     side: "buy",
     qty: 50,
@@ -106,7 +106,7 @@ export const SEED_RECENT_ORDERS = [
   {
     id: "ORD-4818",
     instrument: "BTC-28MAR-68000-C",
-    venue: "Deribit",
+    venue: "DERIBIT",
     algo: "Market",
     side: "buy",
     qty: 2,

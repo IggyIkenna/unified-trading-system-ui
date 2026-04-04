@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import type { PaginatedResponse } from "@/lib/api/types";
 import type {
   PnLBreakdown,
   TimeSeriesPoint,
@@ -10,14 +11,16 @@ import { useQuery } from "@tanstack/react-query";
 
 // ---- Response shapes ----
 
-interface TradingOrgsResponse {
-  organizations: TradingOrganization[];
-  total: number;
+/** Paginated response with backward-compat `organizations` alias */
+interface TradingOrgsResponse extends PaginatedResponse<TradingOrganization> {
+  /** @deprecated use `data` — kept for backward compat */
+  organizations?: TradingOrganization[];
 }
 
-interface TradingClientsResponse {
-  clients: TradingClient[];
-  total: number;
+/** Paginated response with backward-compat `clients` alias */
+interface TradingClientsResponse extends PaginatedResponse<TradingClient> {
+  /** @deprecated use `data` — kept for backward compat */
+  clients?: TradingClient[];
 }
 
 interface TradingTimeseriesResponse {
@@ -48,9 +51,10 @@ export interface StrategyPerformanceRow {
   exposure: number;
 }
 
-interface TradingPerformanceResponse {
-  strategies: StrategyPerformanceRow[];
-  total: number;
+/** Paginated response with backward-compat `strategies` alias */
+interface TradingPerformanceResponse extends PaginatedResponse<StrategyPerformanceRow> {
+  /** @deprecated use `data` — kept for backward compat */
+  strategies?: StrategyPerformanceRow[];
 }
 
 interface LiveBatchDeltaResponse {

@@ -275,6 +275,47 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
           )}
         </div>
       </CollapsibleSection>
+
+      {/* Share class breakdown — shows per-class NAV and delta target */}
+      {treasury.share_class_breakdown && treasury.share_class_breakdown.length > 0 && (
+        <CollapsibleSection title="By share class" defaultOpen={false} count={treasury.share_class_breakdown.length}>
+          <div className="px-1 pb-1">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                  <th className="text-left py-1 font-medium">Class</th>
+                  <th className="text-right py-1 font-medium">NAV (USD)</th>
+                  <th className="text-right py-1 font-medium">NAV (native)</th>
+                  <th className="text-right py-1 font-medium">Δ target</th>
+                  <th className="text-right py-1 font-medium">Δ actual</th>
+                </tr>
+              </thead>
+              <tbody>
+                {treasury.share_class_breakdown.map((sc) => {
+                  const deltaOk = Math.abs(sc.actual_delta - sc.target_delta) < 0.05;
+                  return (
+                    <tr key={sc.share_class} className="border-b border-border/30 last:border-0">
+                      <td className="py-1 font-mono font-medium">{sc.share_class}</td>
+                      <td className="py-1 text-right font-mono tabular-nums">
+                        ${formatNumber(sc.nav_usd, 0)}
+                      </td>
+                      <td className="py-1 text-right font-mono tabular-nums text-muted-foreground">
+                        {formatNumber(sc.nav_denominated, sc.share_class === "USDT" ? 0 : 2)} {sc.share_class}
+                      </td>
+                      <td className="py-1 text-right font-mono tabular-nums text-muted-foreground">
+                        {formatNumber(sc.target_delta, 2)}
+                      </td>
+                      <td className={cn("py-1 text-right font-mono tabular-nums", deltaOk ? "text-emerald-400" : "text-amber-400")}>
+                        {formatNumber(sc.actual_delta, 2)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </CollapsibleSection>
+      )}
     </div>
   );
 }

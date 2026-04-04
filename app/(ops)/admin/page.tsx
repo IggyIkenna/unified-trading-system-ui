@@ -31,6 +31,10 @@ import {
   CheckCircle2,
   Inbox,
   Download,
+  Cloud,
+  RefreshCw,
+  Key,
+  AlertCircle,
 } from "lucide-react";
 import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/utils/export";
 import { AuditDashboard } from "@/components/dashboards/audit-dashboard";
@@ -155,11 +159,11 @@ export default function AdminDashboardPage() {
     memberCount: number;
     subscriptionTier: string;
     monthlyFee?: number;
-  }> = ((orgsData as Record<string, unknown>)?.organizations as typeof orgs) ?? [];
+  }> = ((orgsData as Record<string, unknown>)?.data as typeof orgs) ?? ((orgsData as Record<string, unknown>)?.organizations as typeof orgs) ?? [];
   const events: AuditEvent[] = ((eventsData as Record<string, unknown>)?.events as AuditEvent[]) ?? [];
   const services: ServiceHealthEntry[] =
     ((healthData as Record<string, unknown>)?.services as ServiceHealthEntry[]) ?? [];
-  const strategies: StrategyEntry[] = ((strategyData as Record<string, unknown>)?.strategies as StrategyEntry[]) ?? [];
+  const strategies: StrategyEntry[] = ((strategyData as Record<string, unknown>)?.data as StrategyEntry[]) ?? ((strategyData as Record<string, unknown>)?.strategies as StrategyEntry[]) ?? [];
   const posSummary = positionsData as PositionsSummaryData | undefined;
   const pendingApprovals: PendingApproval[] =
     ((eventsData as Record<string, unknown>)?.pendingApprovals as PendingApproval[]) ?? [];
@@ -581,6 +585,94 @@ export default function AdminDashboardPage() {
                   )}
                 </CardContent>
               </Card>
+            </div>
+
+            {/* Cloud Services / Subscriptions */}
+            <div>
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Cloud className="size-5" /> Cloud Services & Subscriptions
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  {
+                    name: "Google Cloud Platform",
+                    tier: "Business",
+                    status: "healthy",
+                    usage: "84% of quota",
+                    nextBilling: "2026-05-01",
+                    apiKeyStatus: "Valid — rotated 12d ago",
+                    region: "asia-northeast1",
+                  },
+                  {
+                    name: "AWS (IAM/S3)",
+                    tier: "Enterprise",
+                    status: "healthy",
+                    usage: "32% of quota",
+                    nextBilling: "2026-04-15",
+                    apiKeyStatus: "Valid — rotated 5d ago",
+                    region: "ap-northeast-1",
+                  },
+                  {
+                    name: "Microsoft 365",
+                    tier: "E3 (40 seats)",
+                    status: "degraded",
+                    usage: "37/40 seats used",
+                    nextBilling: "2026-04-07",
+                    apiKeyStatus: "Token expiring in 3 days",
+                    region: "Global",
+                  },
+                ].map((svc) => (
+                  <Card key={svc.name}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-medium">{svc.name}</CardTitle>
+                        <Badge
+                          variant="outline"
+                          className={
+                            svc.status === "healthy"
+                              ? "text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-400/30"
+                              : "text-[10px] bg-amber-500/10 text-amber-400 border-amber-400/30"
+                          }
+                        >
+                          {svc.status === "healthy" ? (
+                            <CheckCircle2 className="size-2.5 mr-0.5" />
+                          ) : (
+                            <AlertCircle className="size-2.5 mr-0.5" />
+                          )}
+                          {svc.status}
+                        </Badge>
+                      </div>
+                      <CardDescription className="text-xs">{svc.tier}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-xs space-y-1.5 pb-3">
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Usage</span>
+                        <span className="font-mono">{svc.usage}</span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Next billing</span>
+                        <span className="font-mono">{svc.nextBilling}</span>
+                      </div>
+                      <div className="flex justify-between text-muted-foreground">
+                        <span>Region</span>
+                        <span className="font-mono">{svc.region}</span>
+                      </div>
+                      <div className="flex items-start gap-1 pt-1 border-t">
+                        <Key className="size-3 shrink-0 mt-0.5 text-muted-foreground" />
+                        <span
+                          className={
+                            svc.apiKeyStatus.includes("expiring")
+                              ? "text-amber-400"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {svc.apiKeyStatus}
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
 
             {/* Detailed Audit Dashboard */}

@@ -1,10 +1,17 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
 import { SEED_STRATEGIES, type StrategyHealth } from "@/lib/mocks/fixtures/strategies-seed";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
 export type { PnlDrift, SignalFreshness, ExecutionQuality, StrategyHealth } from "@/lib/mocks/fixtures/strategies-seed";
+
+type BacktestsResponse = GatewayApiResponse<"/api/execution/backtests">;
+type GridConfigsResponse = GatewayApiResponse<"/api/execution/grid-configs">;
+type PerformanceResponse = GatewayApiResponse<"/api/trading/performance">;
+type StrategyConfigsResponse = GatewayApiResponse<"/api/analytics/strategy-configs">;
+type StrategiesResponse = GatewayApiResponse<"/api/analytics/strategies">;
 
 function withMode(base: string, mode: string): string {
   const sep = base.includes("?") ? "&" : "?";
@@ -15,9 +22,13 @@ export function useStrategyBacktests() {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
-  return useQuery({
+  return useQuery<BacktestsResponse>({
     queryKey: ["strategy-backtests", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/execution/backtests", scope.mode), token),
+    queryFn: () =>
+      typedFetch<BacktestsResponse>(
+        withMode("/api/execution/backtests", scope.mode),
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -43,9 +54,13 @@ export function useGridConfigs(domain?: string) {
   const { user, token } = useAuth();
   const domainParam = domain ? `?domain=${domain}` : "";
 
-  return useQuery({
+  return useQuery<GridConfigsResponse>({
     queryKey: ["grid-configs", user?.id, domain],
-    queryFn: () => apiFetch(`/api/execution/grid-configs${domainParam}`, token),
+    queryFn: () =>
+      typedFetch<GridConfigsResponse>(
+        `/api/execution/grid-configs${domainParam}`,
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -54,9 +69,13 @@ export function useStrategyPerformance() {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
-  return useQuery({
+  return useQuery<PerformanceResponse>({
     queryKey: ["strategy-performance", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/trading/performance", scope.mode), token),
+    queryFn: () =>
+      typedFetch<PerformanceResponse>(
+        withMode("/api/trading/performance", scope.mode),
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -65,9 +84,13 @@ export function useStrategyTemplates() {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
-  return useQuery({
+  return useQuery<StrategyConfigsResponse>({
     queryKey: ["strategy-templates", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/analytics/strategy-configs", scope.mode), token),
+    queryFn: () =>
+      typedFetch<StrategyConfigsResponse>(
+        withMode("/api/analytics/strategy-configs", scope.mode),
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -76,9 +99,13 @@ export function useStrategyCandidates() {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
-  return useQuery({
+  return useQuery<StrategiesResponse>({
     queryKey: ["strategy-candidates", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/analytics/strategy-candidates", scope.mode), token),
+    queryFn: () =>
+      typedFetch<StrategiesResponse>(
+        withMode("/api/analytics/strategy-candidates", scope.mode),
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -119,7 +146,11 @@ export function useStrategyHandoffs() {
 
   return useQuery({
     queryKey: ["strategy-handoffs", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/analytics/strategy-handoffs", scope.mode), token),
+    queryFn: () =>
+      apiFetch(
+        withMode("/api/analytics/strategy-handoffs", scope.mode),
+        token,
+      ),
     enabled: !!user,
   });
 }
@@ -130,7 +161,11 @@ export function useBacktestDetail(id: string) {
 
   return useQuery({
     queryKey: ["backtest-detail", id, user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode(`/api/execution/backtests/${id}`, scope.mode), token),
+    queryFn: () =>
+      apiFetch(
+        withMode(`/api/execution/backtests/${id}`, scope.mode),
+        token,
+      ),
     enabled: !!user && !!id,
   });
 }

@@ -1221,11 +1221,9 @@ export interface paths {
         put?: never;
         /**
          * Trigger Build
-         * @description Manually trigger a Cloud Build for a service.
+         * @description Manually trigger a Cloud Build / CodeBuild for a service.
          *
-         *     This runs the build trigger as if code was pushed to the specified branch.
-         *
-         *     Requires: roles/cloudbuild.builds.editor on the service account.
+         *     Dispatches to GCP Cloud Build or AWS CodeBuild based on CLOUD_PROVIDER.
          */
         post: operations["trigger_build_api_cloud_builds_trigger_post"];
         delete?: never;
@@ -1946,7 +1944,7 @@ export interface paths {
          * Health
          * @description Standard Cloud Run liveness probe.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1966,7 +1964,7 @@ export interface paths {
          * Readiness
          * @description Runtime readiness with tier detection.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1986,7 +1984,7 @@ export interface paths {
          * Version
          * @description Return service version information.
          */
-        get: operations["version_version_get"];
+        get: operations["version_version_get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2283,6 +2281,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/execution/orders/{order_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Cancel Order
+         * @description Cancel an open order.
+         *
+         *     Mock mode: marks the order as cancelled in the store.
+         *     Real mode: routes to execution-service /manual/cancel.
+         */
+        put: operations["cancel_order_execution_orders__order_id__cancel_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/execution/orders/{order_id}/amend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Amend Order
+         * @description Amend quantity and/or price on an open order.
+         *
+         *     Mock mode: updates the order fields in the store.
+         *     Real mode: routes to execution-service /manual/amend.
+         *
+         *     Body: {quantity?: number, price?: number}
+         */
+        put: operations["amend_order_execution_orders__order_id__amend_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/execution/sports/bets": {
         parameters: {
             query?: never;
@@ -2325,12 +2371,12 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        post?: never;
         /**
          * Cancel Sports Bet
          * @description Cancel an unmatched sports bet.
          */
-        post: operations["cancel_sports_bet_execution_sports_bets__bet_id__cancel_post"];
-        delete?: never;
+        delete: operations["cancel_sports_bet_execution_sports_bets__bet_id__cancel_delete"];
         options?: never;
         head?: never;
         patch?: never;
@@ -2554,6 +2600,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/analytics/period-changes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Period Changes
+         * @description Compute period-over-period changes for a metric from daily snapshots.
+         *
+         *     Returns absolute and percentage changes between period start and the as_of date.
+         *     All dates are UTC midnight boundaries.
+         */
+        get: operations["get_period_changes_analytics_period_changes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/analytics/period-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Period Summary
+         * @description Compute changes across all standard periods (1d, wtd, mtd, qtd, ytd).
+         *
+         *     Returns a dict of period → changes for the UI dashboard cards.
+         */
+        get: operations["get_period_summary_analytics_period_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/analytics/strategies": {
         parameters: {
             query?: never;
@@ -2648,6 +2739,29 @@ export interface paths {
          * @description Scale a strategy's position size.
          */
         post: operations["scale_strategy_analytics_strategies__strategy_id__scale_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/analytics/live-batch-delta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Live Batch Delta
+         * @description Reconciliation view comparing live vs batch values for a metric.
+         *
+         *     Returns per-field deltas (live_value, batch_value, absolute_diff, pct_diff)
+         *     so ops can spot divergence between real-time and T+1 numbers.
+         */
+        get: operations["get_live_batch_delta_analytics_live_batch_delta_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2850,6 +2964,73 @@ export interface paths {
          * @description Get model validation results.
          */
         get: operations["get_validation_results_ml_validation_results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/ml/monitoring": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Ml Monitoring
+         * @description Get ML model monitoring data — drift metrics, accuracy, prediction distribution.
+         *
+         *     Returns per-model monitoring snapshots including feature drift scores,
+         *     prediction accuracy over time, and distribution statistics.
+         */
+        get: operations["get_ml_monitoring_ml_monitoring_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/ml/governance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Ml Governance
+         * @description Get ML governance data — approval status, audit trail.
+         *
+         *     Returns model approval records with reviewer, timestamp, and decision rationale.
+         */
+        get: operations["get_ml_governance_ml_governance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/ml/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Ml Config
+         * @description Get ML pipeline configuration — feature sets, training schedules, thresholds.
+         *
+         *     Returns the current ML pipeline configuration used by training and inference services.
+         */
+        get: operations["get_ml_config_ml_config_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -3229,6 +3410,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/config/mandates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Mandates
+         * @description Get client mandate definitions — investment constraints, limits, allowed instruments.
+         */
+        get: operations["get_mandates_config_mandates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/config/fee-schedules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fee Schedules
+         * @description Get fee schedules per venue/instrument type.
+         */
+        get: operations["get_fee_schedules_config_fee_schedules_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/config/reload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reload Config
+         * @description Trigger config hot-reload across all config domains.
+         *
+         *     In mock mode: clears cached config and returns success.
+         *     In real mode: would trigger config reloader on each service via Pub/Sub.
+         */
+        post: operations["reload_config_config_reload_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/config/strategies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Strategy Config
+         * @description Get strategy configuration — parameters, limits, schedules.
+         *
+         *     Different from /analytics/strategies which returns strategy performance.
+         *     This returns the raw config used by strategy-service.
+         */
+        get: operations["get_strategy_config_config_strategies_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/alerts/list": {
         parameters: {
             query?: never;
@@ -3489,6 +3756,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/risk/exposure-types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Exposure Types
+         * @description Get available exposure type definitions for the risk dashboard.
+         *
+         *     Returns exposure categories (gross, net, delta, vega, etc.) with their
+         *     descriptions and aggregation rules so the frontend can render dynamic
+         *     exposure breakdown widgets.
+         */
+        get: operations["get_exposure_types_risk_exposure_types_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/risk/defi-health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Defi Health
+         * @description Get DeFi health metrics — health factors, LTV ratios, liquidation distances.
+         *
+         *     Aggregates across all DeFi positions: per-protocol health factor,
+         *     collateral vs. debt, liquidation thresholds, and real-time health status.
+         */
+        get: operations["get_defi_health_risk_defi_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/risk/var-summary": {
         parameters: {
             query?: never;
@@ -3619,6 +3933,10 @@ export interface paths {
         /**
          * Get Registry
          * @description Get instrument registry — canonical mapping across venues.
+         *
+         *     Supports filtering by venue, category, instrument_type, and status.
+         *     Response includes trading_hours, tick_size, lot_size, fee_structure,
+         *     and available_since where available.
          */
         get: operations["get_registry_instruments_registry_get"];
         put?: never;
@@ -4154,7 +4472,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4851,7 +5169,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4868,7 +5186,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5142,7 +5460,7 @@ export interface paths {
          * Health
          * @description Liveness probe — returns 200 when the process is running.
          */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5189,7 +5507,7 @@ export interface paths {
          *     - Auth and limiter are wired (startup event has completed).
          *     Raises 503 if the service is not ready to handle requests.
          */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5292,7 +5610,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5309,7 +5627,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5329,7 +5647,7 @@ export interface paths {
          * Root
          * @description Service info.
          */
-        get: operations["root__get"];
+        get: operations["root__get__2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5486,9 +5804,36 @@ export interface paths {
          *     Returns:
          *         VaRResponse with var, cvar, stress_var, confidence, horizon_days, scenario.
          */
-        get: operations["get_var_risk_var_get"];
+        get: operations["get_var_risk_var_get__2"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/risk-and-exposure-service/risk/strategy-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Strategy Risk Status
+         * @description Evaluate a client's current risk metrics against a strategy risk profile.
+         *
+         *     Accepts a StrategyRiskProfile (from UAC internal) declaring which risk types
+         *     the strategy subscribes to. Returns the status (OK/WARNING/CRITICAL) for
+         *     each subscribed risk type based on the client's current positions.
+         *
+         *     Returns:
+         *         Dict with strategy_type and per-risk-type statuses.
+         */
+        post: operations["strategy_risk_status_risk_strategy_status_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -5503,7 +5848,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5520,7 +5865,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -5716,6 +6061,53 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/position-balance-monitor-service/risk/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Risk Summary
+         * @description Return current risk metrics: leverage, health_factor, concentration, drawdown.
+         *
+         *     Computes risk from the latest aggregated positions. Includes DeFi health
+         *     factor when lending positions are available. For full risk metrics (VaR,
+         *     stress testing, pre-trade checks), query risk-and-exposure-service.
+         */
+        get: operations["get_risk_summary_risk_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/risk/defi-health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Defi Health
+         * @description Return DeFi health aggregation: combined_hf, per-protocol breakdown.
+         *
+         *     Computes from cached lending positions. Returns 404 if no lending
+         *     positions are available for the client.
+         */
+        get: operations["get_defi_health_risk_defi_health_get__2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/position-balance-monitor-service/trades": {
         parameters: {
             query?: never;
@@ -5793,6 +6185,98 @@ export interface paths {
         get: operations["get_trade_trades__fill_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/treasury/balance": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Treasury Balance
+         * @description Get current treasury balance and status.
+         *
+         *     Returns the latest treasury snapshot with:
+         *     - treasury_balance_usd: USD value in treasury wallet
+         *     - total_trading_balance_usd: USD value across all trading wallets
+         *     - total_aum_usd: total AUM (treasury + trading)
+         *     - treasury_pct: treasury as % of AUM
+         *     - status: "normal", "low", or "high"
+         *     - per_strategy_balance: {strategy_id: usd_balance}
+         */
+        get: operations["get_treasury_balance_treasury_balance_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/treasury/balance/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Treasury History
+         * @description Get historical treasury snapshots.
+         *
+         *     Returns most recent N snapshots for charting treasury balance over time.
+         */
+        get: operations["get_treasury_history_treasury_balance_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/treasury/config": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Treasury Config
+         * @description Get current treasury monitoring configuration.
+         */
+        get: operations["get_treasury_config_treasury_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/treasury/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Evaluate Treasury
+         * @description Manually trigger treasury evaluation with provided balance.
+         *
+         *     Useful for demo/testing — in production, balances come from custodian API polling.
+         */
+        post: operations["evaluate_treasury_treasury_evaluate_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -6271,7 +6755,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6288,7 +6772,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__7"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6305,7 +6789,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6322,7 +6806,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__8"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6339,7 +6823,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6356,7 +6840,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__9"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6373,7 +6857,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6390,7 +6874,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__10"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6407,7 +6891,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__12"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6424,7 +6908,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__11"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6441,7 +6925,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__13"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6458,7 +6942,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__12"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6475,7 +6959,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__14"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6492,7 +6976,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__13"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6509,7 +6993,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__15"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6526,7 +7010,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__14"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6543,7 +7027,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__16"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6560,7 +7044,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__15"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6577,7 +7061,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__17"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6594,7 +7078,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__16"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6611,7 +7095,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__18"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6628,7 +7112,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__17"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6645,7 +7129,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__19"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6662,7 +7146,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__18"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6679,7 +7163,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__20"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6696,7 +7180,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__19"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6713,7 +7197,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__21"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6730,7 +7214,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__20"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6747,7 +7231,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__22"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6764,7 +7248,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__21"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6781,7 +7265,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__23"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6798,7 +7282,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__22"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6815,7 +7299,7 @@ export interface paths {
             cookie?: never;
         };
         /** Health */
-        get: operations["health_health_get"];
+        get: operations["health_health_get__24"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6832,7 +7316,7 @@ export interface paths {
             cookie?: never;
         };
         /** Readiness */
-        get: operations["readiness_readiness_get"];
+        get: operations["readiness_readiness_get__23"];
         put?: never;
         post?: never;
         delete?: never;
@@ -8172,6 +8656,24 @@ export interface components {
             var_confidence: string;
         };
         /**
+         * StrategyRiskProfile
+         * @description Which risk types a strategy subscribes to. Unsubscribed = zero in matrix.
+         */
+        StrategyRiskProfile: {
+            /** Strategy Type */
+            strategy_type: string;
+            /**
+             * Subscribed Risks
+             * @description RiskType.value strings from UAC risk_taxonomy
+             */
+            subscribed_risks: string[];
+            /**
+             * Custom Risk Ids
+             * @description user-defined custom risk IDs
+             */
+            custom_risk_ids?: string[];
+        };
+        /**
          * VaRResponse
          * @description Response body for GET /risk/var.
          */
@@ -8237,6 +8739,41 @@ export interface components {
              * @description Total converted to USD at mark price
              */
             usd_value: string;
+        };
+        /**
+         * DeFiAggregatedHealth
+         * @description Combined DeFi lending health factor across protocols and chains.
+         */
+        DeFiAggregatedHealth: {
+            /** Client Id */
+            client_id: string;
+            /** Protocols */
+            protocols?: components["schemas"]["ProtocolHealthBreakdown"][];
+            /**
+             * Combined Collateral Usd
+             * @default 0
+             */
+            combined_collateral_usd: string;
+            /**
+             * Combined Debt Usd
+             * @default 0
+             */
+            combined_debt_usd: string;
+            /** Combined Health Factor */
+            combined_health_factor?: string | null;
+            /**
+             * Weighted Net Apy
+             * @default 0
+             */
+            weighted_net_apy: string;
+            /** Riskiest Protocol */
+            riskiest_protocol?: string | null;
+            /** Per Chain Health */
+            per_chain_health?: {
+                [key: string]: string;
+            };
+            /** Timestamp */
+            timestamp?: string | null;
         };
         /**
          * DeFiHealthSummary
@@ -8435,6 +8972,35 @@ export interface components {
              * @default 0
              */
             short_count: number;
+        };
+        /**
+         * ProtocolHealthBreakdown
+         * @description Per-protocol DeFi lending health metrics.
+         */
+        ProtocolHealthBreakdown: {
+            /** Protocol */
+            protocol: string;
+            /** Chain */
+            chain: string;
+            /**
+             * Collateral Usd
+             * @default 0
+             */
+            collateral_usd: string;
+            /**
+             * Debt Usd
+             * @default 0
+             */
+            debt_usd: string;
+            /** Health Factor */
+            health_factor?: string | null;
+            /** Ltv Ratio */
+            ltv_ratio?: string | null;
+            /**
+             * Net Apy
+             * @default 0
+             */
+            net_apy: string;
         };
         /**
          * ReconciliationAction
@@ -11732,7 +12298,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11754,7 +12320,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -11776,7 +12342,7 @@ export interface operations {
             };
         };
     };
-    version_version_get: {
+    version_version_get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -12268,6 +12834,78 @@ export interface operations {
             };
         };
     };
+    cancel_order_execution_orders__order_id__cancel_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    amend_order_execution_orders__order_id__amend_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_sports_bets_execution_sports_bets_get: {
         parameters: {
             query?: {
@@ -12341,7 +12979,7 @@ export interface operations {
             };
         };
     };
-    cancel_sports_bet_execution_sports_bets__bet_id__cancel_post: {
+    cancel_sports_bet_execution_sports_bets__bet_id__cancel_delete: {
         parameters: {
             query?: never;
             header?: never;
@@ -12809,6 +13447,81 @@ export interface operations {
             };
         };
     };
+    get_period_changes_analytics_period_changes_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                /** @description 1d, wtd, mtd, qtd, ytd, 7d, 30d, 90d, 365d */
+                period?: string;
+                /** @description pnl, equity, risk, exposure */
+                metric?: string;
+                /** @description Reference date (YYYY-MM-DD UTC). Defaults to today. */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_period_summary_analytics_period_summary_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                metric?: string;
+                /** @description Reference date (YYYY-MM-DD UTC). Defaults to today. */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_strategies_analytics_strategies_get: {
         parameters: {
             query?: {
@@ -12951,6 +13664,42 @@ export interface operations {
             path: {
                 strategy_id: string;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_live_batch_delta_analytics_live_batch_delta_get: {
+        parameters: {
+            query?: {
+                /** @description pnl, equity, exposure */
+                metric?: string;
+                /** @description Reference date (YYYY-MM-DD UTC). Defaults to today. */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -13299,6 +14048,100 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ml_monitoring_ml_monitoring_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by model ID */
+                model_id?: string;
+                /** @description Filter by model family */
+                family?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ml_governance_ml_governance_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by model ID */
+                model_id?: string;
+                /** @description Filter by approval status */
+                status?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ml_config_ml_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -13876,6 +14719,140 @@ export interface operations {
             };
         };
     };
+    get_mandates_config_mandates_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by client ID */
+                client_id?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fee_schedules_config_fee_schedules_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by venue */
+                venue?: string;
+                /** @description Filter by instrument type */
+                instrument_type?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reload_config_config_reload_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_strategy_config_config_strategies_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by status: active, paused, staging */
+                status?: string;
+                /** @description Filter by category: cefi, defi, tradfi, sports */
+                category?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_alerts_alerts_list_get: {
         parameters: {
             query?: {
@@ -14079,6 +15056,8 @@ export interface operations {
             query?: {
                 mode?: string;
                 strategy_id?: string;
+                /** @description Filter by category: cefi, defi, tradfi, sports */
+                category?: string;
                 /** @description T+1 reconciliation date for batch mode */
                 as_of?: string;
             };
@@ -14281,6 +15260,78 @@ export interface operations {
             };
         };
     };
+    get_exposure_types_risk_exposure_types_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by category: cefi, defi, tradfi, sports */
+                category?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_defi_health_risk_defi_health_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by chain (e.g. ethereum, arbitrum) */
+                chain?: string;
+                /** @description Filter by protocol (e.g. aave_v3) */
+                protocol?: string;
+                /** @description Filter by category: cefi, defi, tradfi, sports */
+                category?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_var_summary_risk_var_summary_get: {
         parameters: {
             query?: never;
@@ -14307,6 +15358,8 @@ export interface operations {
         parameters: {
             query?: {
                 scenario?: string;
+                /** @description Filter by category: cefi, defi, tradfi, sports */
+                category?: string;
             };
             header?: never;
             path?: never;
@@ -14440,7 +15493,18 @@ export interface operations {
     };
     get_registry_instruments_registry_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter by venue (e.g. binance, deribit) */
+                venue?: string;
+                /** @description Filter by category: cefi, defi, tradfi, sports */
+                category?: string;
+                /** @description Filter by type: spot, future, option, perp, lp_pool */
+                instrument_type?: string;
+                /** @description Filter by status: active, delisted, expired */
+                status?: string;
+                page?: number;
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -14456,6 +15520,15 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -15196,7 +16269,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__3: {
         parameters: {
             query?: never;
             header?: never;
@@ -16299,7 +17372,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__4: {
         parameters: {
             query?: never;
             header?: never;
@@ -16319,7 +17392,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__3: {
         parameters: {
             query?: never;
             header?: never;
@@ -16675,7 +17748,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__5: {
         parameters: {
             query?: never;
             header?: never;
@@ -16717,7 +17790,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__4: {
         parameters: {
             query?: never;
             header?: never;
@@ -16849,7 +17922,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__6: {
         parameters: {
             query?: never;
             header?: never;
@@ -16869,7 +17942,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__5: {
         parameters: {
             query?: never;
             header?: never;
@@ -16889,7 +17962,7 @@ export interface operations {
             };
         };
     };
-    root__get: {
+    root__get__2: {
         parameters: {
             query?: never;
             header?: never;
@@ -17137,7 +18210,7 @@ export interface operations {
             };
         };
     };
-    get_var_risk_var_get: {
+    get_var_risk_var_get__2: {
         parameters: {
             query: {
                 /** @description Client identifier */
@@ -17177,7 +18250,50 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    strategy_risk_status_risk_strategy_status_post: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                "X-Api-Key"?: string | null;
+                "X-Service-Token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StrategyRiskProfile"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string | {
+                            [key: string]: string;
+                        };
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    health_health_get__7: {
         parameters: {
             query?: never;
             header?: never;
@@ -17197,7 +18313,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__6: {
         parameters: {
             query?: never;
             header?: never;
@@ -17479,6 +18595,72 @@ export interface operations {
             };
         };
     };
+    get_risk_summary_risk_summary_get: {
+        parameters: {
+            query?: {
+                /** @description Client ID to compute risk for */
+                client_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_defi_health_risk_defi_health_get__2: {
+        parameters: {
+            query?: {
+                /** @description Client ID */
+                client_id?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeFiAggregatedHealth"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_trades_trades_get: {
         parameters: {
             query?: {
@@ -17606,6 +18788,130 @@ export interface operations {
             path: {
                 fill_id: string;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_treasury_balance_treasury_balance_get: {
+        parameters: {
+            query?: {
+                /** @description Share class to query treasury for */
+                share_class?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_treasury_history_treasury_balance_history_get: {
+        parameters: {
+            query?: {
+                /** @description Max snapshots to return */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_treasury_config_treasury_config_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    evaluate_treasury_treasury_evaluate_post: {
+        parameters: {
+            query: {
+                /** @description Current treasury balance in USD */
+                treasury_balance_usd: number | string;
+            };
+            header?: never;
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -18494,7 +19800,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__8: {
         parameters: {
             query?: never;
             header?: never;
@@ -18514,7 +19820,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__7: {
         parameters: {
             query?: never;
             header?: never;
@@ -18534,7 +19840,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__9: {
         parameters: {
             query?: never;
             header?: never;
@@ -18554,7 +19860,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__8: {
         parameters: {
             query?: never;
             header?: never;
@@ -18574,7 +19880,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__10: {
         parameters: {
             query?: never;
             header?: never;
@@ -18594,7 +19900,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__9: {
         parameters: {
             query?: never;
             header?: never;
@@ -18614,7 +19920,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__11: {
         parameters: {
             query?: never;
             header?: never;
@@ -18634,7 +19940,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__10: {
         parameters: {
             query?: never;
             header?: never;
@@ -18654,7 +19960,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__12: {
         parameters: {
             query?: never;
             header?: never;
@@ -18674,7 +19980,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__11: {
         parameters: {
             query?: never;
             header?: never;
@@ -18694,7 +20000,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__13: {
         parameters: {
             query?: never;
             header?: never;
@@ -18714,7 +20020,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__12: {
         parameters: {
             query?: never;
             header?: never;
@@ -18734,7 +20040,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__14: {
         parameters: {
             query?: never;
             header?: never;
@@ -18754,7 +20060,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__13: {
         parameters: {
             query?: never;
             header?: never;
@@ -18774,7 +20080,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__15: {
         parameters: {
             query?: never;
             header?: never;
@@ -18794,7 +20100,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__14: {
         parameters: {
             query?: never;
             header?: never;
@@ -18814,7 +20120,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__16: {
         parameters: {
             query?: never;
             header?: never;
@@ -18834,7 +20140,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__15: {
         parameters: {
             query?: never;
             header?: never;
@@ -18854,7 +20160,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__17: {
         parameters: {
             query?: never;
             header?: never;
@@ -18874,7 +20180,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__16: {
         parameters: {
             query?: never;
             header?: never;
@@ -18894,7 +20200,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__18: {
         parameters: {
             query?: never;
             header?: never;
@@ -18914,7 +20220,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__17: {
         parameters: {
             query?: never;
             header?: never;
@@ -18934,7 +20240,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__19: {
         parameters: {
             query?: never;
             header?: never;
@@ -18954,7 +20260,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__18: {
         parameters: {
             query?: never;
             header?: never;
@@ -18974,7 +20280,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__20: {
         parameters: {
             query?: never;
             header?: never;
@@ -18994,7 +20300,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__19: {
         parameters: {
             query?: never;
             header?: never;
@@ -19014,7 +20320,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__21: {
         parameters: {
             query?: never;
             header?: never;
@@ -19034,7 +20340,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__20: {
         parameters: {
             query?: never;
             header?: never;
@@ -19054,7 +20360,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__22: {
         parameters: {
             query?: never;
             header?: never;
@@ -19074,7 +20380,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__21: {
         parameters: {
             query?: never;
             header?: never;
@@ -19094,7 +20400,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__23: {
         parameters: {
             query?: never;
             header?: never;
@@ -19114,7 +20420,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__22: {
         parameters: {
             query?: never;
             header?: never;
@@ -19134,7 +20440,7 @@ export interface operations {
             };
         };
     };
-    health_health_get: {
+    health_health_get__24: {
         parameters: {
             query?: never;
             header?: never;
@@ -19154,7 +20460,7 @@ export interface operations {
             };
         };
     };
-    readiness_readiness_get: {
+    readiness_readiness_get__23: {
         parameters: {
             query?: never;
             header?: never;

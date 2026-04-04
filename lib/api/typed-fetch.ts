@@ -47,6 +47,59 @@ export type ApiResponse<P extends keyof paths> = paths[P] extends {
   : never;
 
 /**
+ * Maps UI gateway paths (`/api/...`) to their generated backend paths.
+ *
+ * The UI calls Next.js rewrite paths (e.g. `/api/positions/active`) which
+ * proxy to `/unified-trading-api/positions/active`.  This map lets us write
+ * `GatewayApiResponse<"/api/positions/active">` and get the same type as
+ * `ApiResponse<"/unified-trading-api/positions/active">`.
+ */
+export interface GatewayPathMap {
+  // --- positions ---
+  "/api/positions/active": "/unified-trading-api/positions/active";
+  "/api/positions/summary": "/unified-trading-api/positions/summary";
+  "/api/positions/balances": "/unified-trading-api/positions/balances";
+  // --- execution / orders ---
+  "/api/execution/orders": "/unified-trading-api/execution/orders";
+  "/api/execution/fills": "/unified-trading-api/execution/fills";
+  "/api/execution/venues": "/unified-trading-api/execution/venues";
+  "/api/execution/algos": "/unified-trading-api/execution/algos";
+  "/api/execution/grid-configs": "/unified-trading-api/execution/grid-configs";
+  "/api/execution/backtests": "/unified-trading-api/execution/backtests";
+  // --- market data ---
+  "/api/market-data/candles": "/unified-trading-api/market-data/candles";
+  "/api/market-data/orderbook": "/unified-trading-api/market-data/orderbook";
+  "/api/market-data/trades": "/unified-trading-api/market-data/trades";
+  "/api/market-data/tickers": "/unified-trading-api/market-data/tickers";
+  // --- risk ---
+  "/api/risk/limits": "/unified-trading-api/risk/limits";
+  "/api/risk/var": "/unified-trading-api/risk/var";
+  "/api/risk/greeks": "/unified-trading-api/risk/greeks";
+  "/api/risk/stress": "/unified-trading-api/risk/stress";
+  "/api/risk/var-summary": "/unified-trading-api/risk/var-summary";
+  "/api/risk/stress-test": "/unified-trading-api/risk/stress-test";
+  "/api/risk/correlation-matrix": "/unified-trading-api/risk/correlation-matrix";
+  "/api/risk/regime": "/unified-trading-api/risk/regime";
+  "/api/risk/exposure": "/unified-trading-api/risk/exposure";
+  // --- analytics / strategies ---
+  "/api/analytics/strategies": "/unified-trading-api/analytics/strategies";
+  "/api/analytics/strategy-configs": "/unified-trading-api/analytics/strategy-configs";
+  "/api/trading/performance": "/unified-trading-api/analytics/performance";
+  // --- alerts ---
+  "/api/alerts/list": "/unified-trading-api/alerts/list";
+  "/api/alerts/summary": "/unified-trading-api/alerts/summary";
+  "/api/alerts/active": "/unified-trading-api/alerts/active";
+}
+
+/**
+ * Convenience type: resolve a UI gateway path to the backend 200 response type.
+ *
+ *   type Positions = GatewayApiResponse<"/api/positions/active">
+ */
+export type GatewayApiResponse<G extends keyof GatewayPathMap> =
+  ApiResponse<GatewayPathMap[G]>;
+
+/**
  * Type-safe fetch that delegates to the standard fetch API with auth headers.
  *
  * Identical runtime behaviour to `apiFetch` in `./fetch.ts` — the only

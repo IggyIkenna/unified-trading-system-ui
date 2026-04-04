@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Spinner } from "@/components/shared/spinner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
@@ -12,6 +13,48 @@ import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+
+// ---------------------------------------------------------------------------
+// Latency class badge — derived from archetype
+// ---------------------------------------------------------------------------
+
+type LatencyClass = "Hourly" | "Event-driven" | "Sub-second";
+
+const ARCHETYPE_LATENCY: Record<string, LatencyClass> = {
+  BASIS_TRADE: "Hourly",
+  YIELD: "Hourly",
+  MOMENTUM: "Hourly",
+  MEAN_REVERSION: "Hourly",
+  DIRECTIONAL: "Hourly",
+  ARBITRAGE: "Event-driven",
+  MARKET_MAKING: "Sub-second",
+  OPTIONS: "Sub-second",
+  STATISTICAL_ARB: "Event-driven",
+};
+
+const LATENCY_COLORS: Record<LatencyClass, string> = {
+  Hourly: "bg-blue-500/10 text-blue-400 border-blue-400/20",
+  "Event-driven": "bg-amber-500/10 text-amber-400 border-amber-400/20",
+  "Sub-second": "bg-rose-500/10 text-rose-400 border-rose-400/20",
+};
+
+function LatencyBadge({ archetype }: { archetype: string }) {
+  const cls = ARCHETYPE_LATENCY[archetype] ?? "Hourly";
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className={cn("text-[9px] h-4 px-1 font-normal", LATENCY_COLORS[cls])}>
+            {cls}
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent side="top">
+          <span className="text-[10px]">Latency class: {cls}</span>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
 
 export function StrategyTableWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
@@ -142,7 +185,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="px-3 pb-2">
+        <CardContent className="px-3 pb-2 overflow-x-auto">
           <div className="flex items-center gap-6 mb-3 pb-3 border-b border-border text-xs">
             <span className="text-muted-foreground">{filtered.length} strategies</span>
             <span className="font-mono">
@@ -228,12 +271,15 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                         return (
                           <TableRow key={String(s.id)} className="text-xs">
                             <TableCell className="pl-8">
-                              <Link
-                                href={`/services/trading/strategies/${s.id}`}
-                                className="font-medium hover:underline"
-                              >
-                                {String(s.name)}
-                              </Link>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <Link
+                                  href={`/services/trading/strategies/${s.id}`}
+                                  className="font-medium hover:underline"
+                                >
+                                  {String(s.name)}
+                                </Link>
+                                <LatencyBadge archetype={String(s.archetype ?? "")} />
+                              </div>
                             </TableCell>
                             <TableCell
                               className={cn(

@@ -44,7 +44,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "market-tick-data-service",
     severity: "WARNING",
     details: "venue=deribit, instrument=ETH-PERP, stale_for=47m",
-    venue: "deribit",
+    venue: "DERIBIT",
   },
   {
     id: "e005",
@@ -53,7 +53,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "execution-service",
     severity: "WARNING",
     details: "venue=okx, error_rate=12%, throttle=50%",
-    venue: "okx",
+    venue: "OKX-SPOT",
   },
   {
     id: "e006",
@@ -111,7 +111,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "execution-service",
     severity: "ERROR",
     details: "reason=INSUFFICIENT_MARGIN, venue=hyperliquid, size=50000",
-    venue: "hyperliquid",
+    venue: "HYPERLIQUID",
   },
   {
     id: "e013",
@@ -129,7 +129,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "pnl-attribution-service",
     severity: "INFO",
     details: "venue=hyperliquid, amount=$1,245, direction=receive",
-    venue: "hyperliquid",
+    venue: "HYPERLIQUID",
   },
   {
     id: "e015",
@@ -147,7 +147,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "connectivity-monitor",
     severity: "WARNING",
     details: "venue=binance, p99=85ms (threshold=50ms)",
-    venue: "binance",
+    venue: "BINANCE-SPOT",
   },
   {
     id: "e017",
@@ -173,7 +173,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "risk-and-exposure-service",
     severity: "WARNING",
     details: "venue=hyperliquid, utilization=82%, threshold=85%",
-    venue: "hyperliquid",
+    venue: "HYPERLIQUID",
   },
   {
     id: "e020",
@@ -199,7 +199,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "connectivity-monitor",
     severity: "WARNING",
     details: "venue=okx, endpoint=/v5/market/tickers, retry_after=60s",
-    venue: "okx",
+    venue: "OKX-SPOT",
   },
   {
     id: "e023",
@@ -216,7 +216,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "market-data-service",
     severity: "INFO",
     details: "venue=deribit, reason=connection_timeout, reconnect_attempt=1",
-    venue: "deribit",
+    venue: "DERIBIT",
   },
   {
     id: "e025",

@@ -4,7 +4,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-001",
     date: "2026-03-22",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     breakType: "position",
     liveValue: 1.2045,
     batchValue: 1.2,
@@ -14,7 +14,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-002",
     date: "2026-03-22",
-    venue: "Deribit",
+    venue: "DERIBIT",
     breakType: "pnl",
     liveValue: 34521.8,
     batchValue: 34200.0,
@@ -24,7 +24,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-003",
     date: "2026-03-21",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     breakType: "fee",
     liveValue: 12.45,
     batchValue: 11.9,
@@ -34,7 +34,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-004",
     date: "2026-03-21",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     breakType: "pnl",
     liveValue: -1520.3,
     batchValue: -1480.0,
@@ -44,7 +44,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-005",
     date: "2026-03-21",
-    venue: "Bybit",
+    venue: "BYBIT",
     breakType: "position",
     liveValue: 0.5,
     batchValue: 0.512,
@@ -54,7 +54,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-006",
     date: "2026-03-20",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     breakType: "fee",
     liveValue: 8.32,
     batchValue: 7.8,
@@ -64,7 +64,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-007",
     date: "2026-03-20",
-    venue: "Deribit",
+    venue: "DERIBIT",
     breakType: "position",
     liveValue: 2.0,
     batchValue: 2.05,
@@ -74,7 +74,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-008",
     date: "2026-03-19",
-    venue: "OKX",
+    venue: "OKX-SPOT",
     breakType: "pnl",
     liveValue: 8730.12,
     batchValue: 8730.12,
@@ -84,7 +84,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-009",
     date: "2026-03-19",
-    venue: "Binance",
+    venue: "BINANCE-SPOT",
     breakType: "fee",
     liveValue: 45.6,
     batchValue: 43.2,
@@ -94,7 +94,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-010",
     date: "2026-03-18",
-    venue: "Bybit",
+    venue: "BYBIT",
     breakType: "pnl",
     liveValue: -620.5,
     batchValue: -590.0,
@@ -104,7 +104,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-011",
     date: "2026-03-18",
-    venue: "Hyperliquid",
+    venue: "HYPERLIQUID",
     breakType: "position",
     liveValue: 0.32,
     batchValue: 0.32,
@@ -114,7 +114,7 @@ export const FALLBACK_HISTORY: ReconciliationRecord[] = [
   {
     id: "REC-012",
     date: "2026-03-17",
-    venue: "Deribit",
+    venue: "DERIBIT",
     breakType: "fee",
     liveValue: 19.88,
     batchValue: 18.5,

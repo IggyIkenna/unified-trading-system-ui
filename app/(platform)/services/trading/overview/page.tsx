@@ -126,8 +126,8 @@ export default function OverviewPage() {
 
   useWebSocket({ url: "ws://localhost:8030/ws", enabled: wsScope.mode === "live", onMessage: handleWsMessage });
 
-  const organizations: TradingOrganization[] = orgsData?.organizations ?? ORGANIZATIONS;
-  const clients: TradingClient[] = clientsData?.clients ?? CLIENTS;
+  const organizations: TradingOrganization[] = orgsData?.data ?? orgsData?.organizations ?? ORGANIZATIONS;
+  const clients: TradingClient[] = clientsData?.data ?? clientsData?.clients ?? CLIENTS;
 
   const alertsRaw = alertsData as Record<string, unknown> | undefined;
   const apiAlerts = (alertsRaw?.data ?? alertsRaw?.alerts ?? []) as Array<{
@@ -200,7 +200,7 @@ export default function OverviewPage() {
     seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
   const batchTimeSeries = liveBatchData ?? seedTimeSeries ?? { pnl: emptyTs, nav: emptyTs, exposure: emptyTs };
 
-  const apiStrategies = performanceData?.strategies ?? [];
+  const apiStrategies = performanceData?.data ?? performanceData?.strategies ?? [];
   const { scope: context } = useGlobalScope();
 
   // Fall back to seed strategies when API returns nothing

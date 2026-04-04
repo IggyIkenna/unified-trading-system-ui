@@ -15,7 +15,8 @@ import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
 import type { AssetClassFilter } from "./positions-data-context";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, RefreshCw } from "lucide-react";
+import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, RefreshCw, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
 import * as React from "react";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
@@ -73,6 +74,30 @@ function formatInstrumentId(id: string): string {
   return `${symbol}${suffix}${venueStr}`;
 }
 
+/**
+ * Derive a canonical VENUE:TYPE:ASSET compound key from a PositionRecord.
+ * Format: VENUE:INSTRUMENT_TYPE:ASSET (e.g. HYPERLIQUID:PERPETUAL:ETH-USD)
+ */
+function deriveCanonicalId(row: PositionRecord): string {
+  const venue = row.venue?.toUpperCase().replace(/\s+/g, "_") ?? "UNKNOWN";
+  const instrument = row.instrument?.toUpperCase() ?? "";
+
+  // Infer type from strategy_id + instrument pattern
+  let type = "SPOT";
+  if (row.strategy_id?.includes("BASIS") || row.strategy_id?.includes("PERP") || instrument.endsWith("-PERP") || instrument.endsWith("-USD")) {
+    type = "PERPETUAL";
+  } else if (row.strategy_id?.includes("AAVE") || instrument.startsWith("A_") || instrument.startsWith("AUSDC") || instrument.startsWith("AWETH")) {
+    type = "A_TOKEN";
+  } else if (row.strategy_id?.includes("STAKED") || row.strategy_id?.includes("RECURSIVE") || instrument.startsWith("WEETH") || instrument.startsWith("STETH") || instrument.startsWith("WSTETH")) {
+    type = "LST";
+  } else if (instrument.includes("-") && !instrument.includes("-PERP")) {
+    type = "SPOT";
+  }
+
+  return `${venue}:${type}:${instrument}`;
+}
+}
+
 function PnlCell({ abs, pct }: { abs: number; pct: number }) {
   return (
     <div className="flex flex-col items-end">
@@ -121,17 +146,35 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         key: "instrument",
         label: "Instrument",
         sortable: true,
-        accessor: (row) => (
+        accessor: (row) => {
+          const canonicalId = deriveCanonicalId(row);
+          return (
           <div className="flex flex-col">
-            <Link
-              href={getInstrumentRoute(row.instrument, classifyInstrument(row.instrument))}
-              className="font-mono font-medium text-primary hover:underline cursor-pointer"
-            >
-              {formatInstrumentId(row.instrument)}
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link
+                href={getInstrumentRoute(row.instrument, classifyInstrument(row.instrument))}
+                className="font-mono font-medium text-primary hover:underline cursor-pointer"
+              >
+                {formatInstrumentId(row.instrument)}
+              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="size-2.5 text-muted-foreground cursor-help shrink-0" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[280px]">
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] font-medium text-muted-foreground">Canonical ID</p>
+                      <p className="font-mono text-xs select-all">{canonicalId}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <span className="text-[10px] text-muted-foreground">{row.strategy_name}</span>
           </div>
-        ),
+          );
+        },
         minWidth: 160,
       },
       {
@@ -362,6 +405,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
         data={filteredPositions}
         rowKey={(row) => row.id}
         compact
+        stickyFirstColumn
         emptyMessage="No positions match your filters"
       />
     </div>

@@ -1,10 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-
-import { typedFetch } from "@/lib/api/typed-fetch";
 import { apiFetch } from "@/lib/api/fetch";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
 
-/** Typed response: map of client_id -> string[] from risk-and-exposure-service. */
+// Generated response types for endpoints that exist in api-generated.ts
+type RiskLimitsResponse = GatewayApiResponse<"/api/risk/limits">;
+type VaRResponse = GatewayApiResponse<"/api/risk/var">;
+type GreeksResponse = GatewayApiResponse<"/api/risk/greeks">;
+type StressScenariosResponse = GatewayApiResponse<"/api/risk/stress">;
+
+// Exported aliases consumed by risk-data-context.tsx and other widgets
+export type VarSummaryData = GatewayApiResponse<"/api/risk/var-summary">;
+export type StressTestResult = GatewayApiResponse<"/api/risk/stress-test">;
+export type RegimeData = GatewayApiResponse<"/api/risk/regime">;
+export type CorrelationMatrixResponse = GatewayApiResponse<"/api/risk/correlation-matrix">;
 
 // =============================================================================
 // QUERY HOOKS
@@ -13,9 +22,10 @@ import { apiFetch } from "@/lib/api/fetch";
 export function useRiskLimits() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<RiskLimitsResponse>({
     queryKey: ["risk-limits", user?.id],
-    queryFn: () => apiFetch("/api/risk/limits", token),
+    queryFn: () =>
+      typedFetch<RiskLimitsResponse>("/api/risk/limits", token),
     enabled: !!user,
   });
 }
@@ -23,9 +33,9 @@ export function useRiskLimits() {
 export function useVaR() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<VaRResponse>({
     queryKey: ["var", user?.id],
-    queryFn: () => apiFetch("/api/risk/var", token),
+    queryFn: () => typedFetch<VaRResponse>("/api/risk/var", token),
     enabled: !!user,
   });
 }
@@ -33,9 +43,9 @@ export function useVaR() {
 export function useGreeks() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<GreeksResponse>({
     queryKey: ["greeks", user?.id],
-    queryFn: () => apiFetch("/api/risk/greeks", token),
+    queryFn: () => typedFetch<GreeksResponse>("/api/risk/greeks", token),
     enabled: !!user,
   });
 }
@@ -43,9 +53,10 @@ export function useGreeks() {
 export function useStressScenarios() {
   const { user, token } = useAuth();
 
-  return useQuery({
+  return useQuery<StressScenariosResponse>({
     queryKey: ["stress-scenarios", user?.id],
-    queryFn: () => apiFetch("/api/risk/stress", token),
+    queryFn: () =>
+      typedFetch<StressScenariosResponse>("/api/risk/stress", token),
     enabled: !!user,
   });
 }
@@ -54,20 +65,13 @@ export function useStressScenarios() {
 // VAR SUMMARY
 // =============================================================================
 
-export interface VarSummaryData {
-  historical_var_99: number;
-  parametric_var_99: number;
-  cvar_99: number;
-  monte_carlo_var_99: number;
-}
-
 export function useVarSummary() {
   const { user, token } = useAuth();
 
   return useQuery<VarSummaryData>({
     queryKey: ["var-summary", user?.id],
     queryFn: () =>
-      apiFetch("/api/risk/var-summary", token) as Promise<VarSummaryData>,
+      typedFetch<VarSummaryData>("/api/risk/var-summary", token),
     enabled: !!user,
   });
 }
@@ -76,22 +80,16 @@ export function useVarSummary() {
 // STRESS TEST (on-demand scenario)
 // =============================================================================
 
-export interface StressTestResult {
-  expected_loss_usd: number;
-  portfolio_impact_pct: number;
-  worst_strategy: string;
-}
-
 export function useStressTest(scenario: string | null) {
   const { user, token } = useAuth();
 
   return useQuery<StressTestResult>({
     queryKey: ["stress-test", scenario, user?.id],
     queryFn: () =>
-      apiFetch(
+      typedFetch<StressTestResult>(
         `/api/risk/stress-test?scenario=${scenario}`,
         token,
-      ) as Promise<StressTestResult>,
+      ),
     enabled: !!user && !!scenario,
   });
 }
@@ -100,22 +98,18 @@ export function useStressTest(scenario: string | null) {
 // REGIME INDICATOR
 // =============================================================================
 
-export interface RegimeData {
-  regime: "normal" | "stressed" | "crisis";
-}
-
 export function useRegime() {
   const { user, token } = useAuth();
 
   return useQuery<RegimeData>({
     queryKey: ["risk-regime", user?.id],
-    queryFn: () => apiFetch("/api/risk/regime", token) as Promise<RegimeData>,
+    queryFn: () => typedFetch<RegimeData>("/api/risk/regime", token),
     enabled: !!user,
   });
 }
 
 // =============================================================================
-// PORTFOLIO GREEKS (derivatives)
+// PORTFOLIO GREEKS (derivatives — no generated path, keep local types)
 // =============================================================================
 
 export interface GreekValues {
@@ -146,10 +140,10 @@ export function usePortfolioGreeks() {
   return useQuery<PortfolioGreeksResponse>({
     queryKey: ["portfolio-greeks", user?.id],
     queryFn: () =>
-      apiFetch(
+      typedFetch<PortfolioGreeksResponse>(
         "/api/derivatives/portfolio-greeks",
         token,
-      ) as Promise<PortfolioGreeksResponse>,
+      ),
     enabled: !!user,
   });
 }
@@ -158,27 +152,22 @@ export function usePortfolioGreeks() {
 // CORRELATION MATRIX
 // =============================================================================
 
-export interface CorrelationMatrixResponse {
-  labels: string[];
-  matrix: number[][];
-}
-
 export function useCorrelationMatrix() {
   const { user, token } = useAuth();
 
   return useQuery<CorrelationMatrixResponse>({
     queryKey: ["correlation-matrix", user?.id],
     queryFn: () =>
-      apiFetch(
+      typedFetch<CorrelationMatrixResponse>(
         "/api/risk/correlation-matrix",
         token,
-      ) as Promise<CorrelationMatrixResponse>,
+      ),
     enabled: !!user,
   });
 }
 
 // =============================================================================
-// VENUE CIRCUIT BREAKER STATUS
+// VENUE CIRCUIT BREAKER STATUS (no generated path, keep local type)
 // =============================================================================
 
 export interface VenueCircuitBreakerStatus {
@@ -194,15 +183,16 @@ export function useVenueCircuitBreakers() {
   return useQuery<VenueCircuitBreakerStatus[]>({
     queryKey: ["venue-circuit-breakers", user?.id],
     queryFn: () =>
-      apiFetch("/api/risk/venue-circuit-breakers", token) as Promise<
-        VenueCircuitBreakerStatus[]
-      >,
+      typedFetch<VenueCircuitBreakerStatus[]>(
+        "/api/risk/venue-circuit-breakers",
+        token,
+      ),
     enabled: !!user,
   });
 }
 
 // =============================================================================
-// MUTATION HOOKS
+// MUTATION HOOKS (POST — keep apiFetch, no generated GET type)
 // =============================================================================
 
 export interface CircuitBreakerParams {

@@ -32,6 +32,8 @@ interface DataTableWidgetProps<T> {
   compact?: boolean;
   /** If provided, shown when data is empty */
   emptyMessage?: string;
+  /** When true, the first column is sticky on horizontal scroll */
+  stickyFirstColumn?: boolean;
   className?: string;
 }
 
@@ -45,6 +47,7 @@ export function DataTableWidget<T>({
   onRowClick,
   compact = true,
   emptyMessage = "No data",
+  stickyFirstColumn = false,
   className,
 }: DataTableWidgetProps<T>) {
   const [sortKey, setSortKey] = React.useState<string | null>(null);
@@ -87,7 +90,7 @@ export function DataTableWidget<T>({
       <Table>
         <TableHeader>
           <TableRow className="border-border/50">
-            {columns.map((col) => (
+            {columns.map((col, colIdx) => (
               <TableHead
                 key={col.key}
                 className={cn(
@@ -97,6 +100,7 @@ export function DataTableWidget<T>({
                   col.sortable && "cursor-pointer select-none hover:text-foreground",
                   col.align === "right" && "text-right",
                   col.align === "center" && "text-center",
+                  stickyFirstColumn && colIdx === 0 && "sticky left-0 z-10 bg-card/95 shadow-[1px_0_0_0] shadow-border/50",
                   col.headerClassName,
                 )}
                 style={col.minWidth ? { minWidth: col.minWidth } : undefined}
@@ -129,7 +133,7 @@ export function DataTableWidget<T>({
                 )}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
-                {columns.map((col) => (
+                {columns.map((col, colIdx) => (
                   <TableCell
                     key={col.key}
                     className={cn(
@@ -138,6 +142,7 @@ export function DataTableWidget<T>({
                       "font-mono whitespace-nowrap",
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
+                      stickyFirstColumn && colIdx === 0 && "sticky left-0 z-10 bg-card/95 shadow-[1px_0_0_0] shadow-border/50",
                       col.className,
                     )}
                   >

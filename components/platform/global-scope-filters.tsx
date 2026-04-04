@@ -61,6 +61,20 @@ const strategies: Strategy[] = TRADING_STRATEGIES.map((s) => ({
   status: s.status,
 }));
 
+interface StrategyFamily {
+  id: string;
+  name: string;
+  color: string;
+}
+
+const STRATEGY_FAMILIES: StrategyFamily[] = [
+  { id: "DeFi", name: "DeFi", color: "bg-violet-500" },
+  { id: "CeFi", name: "CeFi", color: "bg-sky-500" },
+  { id: "TradFi", name: "TradFi", color: "bg-amber-500" },
+  { id: "Sports", name: "Sports", color: "bg-emerald-500" },
+  { id: "Prediction", name: "Prediction", color: "bg-rose-500" },
+];
+
 function CompactMultiSelect<T extends { id: string }>({
   icon,
   items,
@@ -296,7 +310,7 @@ function CompactMultiSelect<T extends { id: string }>({
 
 export function GlobalScopeFilters({ className }: { className?: string }) {
   const { isInternal, user } = useAuth();
-  const { scope, setOrganizationIds, setClientIds, setStrategyIds, clearAll } = useGlobalScope();
+  const { scope, setOrganizationIds, setClientIds, setStrategyIds, setStrategyFamilyIds, clearAll } = useGlobalScope();
 
   const internalUser = isInternal();
   const isClientScoped = !internalUser && !!user?.org;
@@ -323,13 +337,17 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     if (scope.clientIds.length > 0) {
       result = result.filter((s) => scope.clientIds.includes(s.clientId));
     }
+    if (scope.strategyFamilyIds.length > 0) {
+      result = result.filter((s) => scope.strategyFamilyIds.includes(s.assetClass));
+    }
     return result;
-  }, [scope.organizationIds, scope.clientIds]);
+  }, [scope.organizationIds, scope.clientIds, scope.strategyFamilyIds]);
 
   const activeFilters = [
     scope.organizationIds.length > 0,
     scope.clientIds.length > 0,
     scope.strategyIds.length > 0,
+    scope.strategyFamilyIds.length > 0,
   ].filter(Boolean).length;
 
   if (isClientScoped && user?.org) {
@@ -384,7 +402,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
   }
 
   return (
-    <div className={cn("flex items-center gap-0.5", className)}>
+    <div className={cn("flex flex-wrap items-center gap-0.5", className)}>
       <CompactMultiSelect
         icon={<Building2 className="size-3 text-primary" />}
         items={organizations}
@@ -403,7 +421,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         )}
         dropdownWidthClass="w-64"
       />
-      <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
+      <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <CompactMultiSelect
         icon={<Users className="size-3" />}
         items={filteredClients}
@@ -428,7 +446,25 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
         )}
         dropdownWidthClass="w-64"
       />
-      <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
+      <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
+      <CompactMultiSelect
+        icon={<Layers className="size-3 text-violet-400" />}
+        items={STRATEGY_FAMILIES}
+        selectedIds={scope.strategyFamilyIds}
+        onSelectionChange={(ids) => {
+          setStrategyFamilyIds(ids);
+          setStrategyIds([]);
+        }}
+        allLabel="All Families"
+        renderItem={(family) => (
+          <span className="flex items-center gap-2 flex-1">
+            <span className={cn("size-2 rounded-full", family.color)} />
+            {family.name}
+          </span>
+        )}
+        dropdownWidthClass="w-44"
+      />
+      <span className="text-muted-foreground/30 text-xs hidden md:inline">/</span>
       <CompactMultiSelect
         icon={<BarChart3 className="size-3" />}
         items={filteredStrategies}

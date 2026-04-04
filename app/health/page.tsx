@@ -271,6 +271,12 @@ function useHealthChecks() {
         required: false,
       },
       {
+        name: "GET /auth/provisioning/health-checks",
+        description: "User provisioning pipeline (auth-api)",
+        group: "Auth & Security",
+        required: false,
+      },
+      {
         name: "WebSocket /ws",
         description: "Real-time data channel",
         group: "WebSocket",
@@ -382,6 +388,7 @@ function useHealthChecks() {
       "/api/users/organizations",
       "/api/market-data/candles?instrument=BTC-USDT&venue=binance&interval=1h&limit=1",
       "/api/reporting/reports",
+      "/api/auth/provisioning/health-checks",
     ];
 
     const domainResults = await Promise.all(domainUrls.map((url) => checkEndpoint(url)));
