@@ -56,8 +56,10 @@ const nextConfig = {
     if (process.env.NEXT_PUBLIC_MOCK_API === "true") return [];
     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8030";
     const authBase = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8200";
+    const reportingBase = process.env.NEXT_PUBLIC_REPORTING_API_URL || "http://localhost:8014";
     return [
       { source: "/api/auth/:path*", destination: `${authBase}/:path*` },
+      { source: "/api/reporting/:path*", destination: `${reportingBase}/api/v1/:path*` },
       { source: "/api/:path*", destination: `${apiBase}/:path*` },
     ];
   },

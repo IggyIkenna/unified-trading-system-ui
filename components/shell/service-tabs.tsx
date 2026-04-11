@@ -30,6 +30,7 @@ import {
   LineChart,
   Lock,
   MonitorDot,
+  Receipt,
   ScrollText,
   ShieldAlert,
   TrendingUp,
@@ -420,13 +421,17 @@ export const MANAGE_TABS: ServiceTab[] = [
 // ── Report (Executive) ───────────────────────────────────────────────────────
 export const REPORTS_TABS: ServiceTab[] = [
   { label: "P&L", href: "/services/reports/overview" },
+  { label: "Performance", href: "/services/reports/performance", icon: TrendingUp },
+  { label: "Trades", href: "/services/reports/trades", icon: ScrollText },
   { label: "Executive", href: "/services/reports/executive" },
   { label: "IBOR", href: "/services/reports/ibor", icon: Database },
   { label: "NAV", href: "/services/reports/nav", icon: DollarSign },
   { label: "Fund Ops", href: "/services/reports/fund-operations", icon: Building2 },
   { label: "Settlement", href: "/services/reports/settlement" },
+  { label: "Analytics", href: "/services/reports/analytics", icon: BarChart3 },
   { label: "Reconciliation", href: "/services/reports/reconciliation" },
   { label: "Regulatory", href: "/services/reports/regulatory" },
+  { label: "Invoices", href: "/services/reports/invoices", icon: Receipt },
 ];
 
 // ── Admin/Ops (Internal Operations) ─────────────────────────────────────────

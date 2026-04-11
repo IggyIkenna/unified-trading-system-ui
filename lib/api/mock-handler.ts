@@ -48,6 +48,14 @@ import {
   STRATEGY_CANDIDATES,
   STRATEGY_ALERTS,
 } from "@/lib/mocks/fixtures/strategy-platform";
+import {
+  MOCK_CLIENTS as PERF_MOCK_CLIENTS,
+  MOCK_POSITIONS as PERF_MOCK_POSITIONS,
+  MOCK_COIN_BREAKDOWN as PERF_MOCK_COINS,
+  MOCK_TRADES as PERF_MOCK_TRADES,
+  MOCK_BALANCE_BREAKDOWN as PERF_MOCK_BALANCES,
+  getMockPerformanceSummary,
+} from "@/lib/mocks/fixtures/client-performance";
 import { MOCK_CATALOGUE } from "@/lib/mocks/fixtures/data-service";
 import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
 import {
@@ -2292,6 +2300,56 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     return json({ ok: true, break_id: body.break_id, status: "resolved" });
   }
+  // --- Client Performance Dashboard ---
+  if (route === "/api/reporting/clients") {
+    return json(PERF_MOCK_CLIENTS);
+  }
+  if (route === "/api/reporting/performance/summary") {
+    const qs = new URLSearchParams(path.split("?")[1] ?? "");
+    return json(getMockPerformanceSummary(qs.get("client_id") ?? "PR"));
+  }
+  if (route === "/api/reporting/performance/positions") {
+    const qs = new URLSearchParams(path.split("?")[1] ?? "");
+    return json({ client_id: qs.get("client_id") ?? "PR", positions: PERF_MOCK_POSITIONS });
+  }
+  if (route === "/api/reporting/performance/coin-breakdown") {
+    const qs = new URLSearchParams(path.split("?")[1] ?? "");
+    return json({ client_id: qs.get("client_id") ?? "PR", coins: PERF_MOCK_COINS });
+  }
+  if (route === "/api/reporting/performance/balances") {
+    const qs = new URLSearchParams(path.split("?")[1] ?? "");
+    return json({ client_id: qs.get("client_id") ?? "PR", ...PERF_MOCK_BALANCES });
+  }
+  if (route === "/api/reporting/trades") {
+    const qs = new URLSearchParams(path.split("?")[1] ?? "");
+    const clientId = qs.get("client_id") ?? "PR";
+    const symbol = qs.get("symbol");
+    const side = qs.get("side");
+    const limit = parseInt(qs.get("limit") ?? "50", 10);
+    const offset = parseInt(qs.get("offset") ?? "0", 10);
+    let trades = [...PERF_MOCK_TRADES];
+    if (symbol) trades = trades.filter((t) => t.symbol === symbol);
+    if (side) trades = trades.filter((t) => t.side === side);
+    const total = trades.length;
+    trades = trades.slice(offset, offset + limit);
+    const totalVolume = PERF_MOCK_TRADES.reduce((s, t) => s + t.notional_usd, 0);
+    const totalFees = PERF_MOCK_TRADES.reduce((s, t) => s + t.fee, 0);
+    const netPnl = PERF_MOCK_TRADES.reduce((s, t) => s + t.realized_pnl, 0);
+    return json({
+      client_id: clientId,
+      trades,
+      total,
+      offset,
+      limit,
+      aggregates: {
+        total_trades: PERF_MOCK_TRADES.length,
+        total_volume_usd: Math.round(totalVolume * 100) / 100,
+        total_fees_usd: Math.round(totalFees * 100) / 100,
+        net_realized_pnl: Math.round(netPnl * 100) / 100,
+      },
+    });
+  }
+
   if (route === "/api/reporting/regulatory") return json([]);
   if (route === "/api/reporting/pnl-attribution") return json({ factors: [], total: 0 });
   if (route === "/api/reporting/executive-summary")
@@ -2301,7 +2359,219 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       sharpe: 2.1,
       strategies: 12,
     });
-  if (route === "/api/reporting/invoices") return json([]);
+  // --- Invoices (fee management) ---
+  if (route === "/api/reporting/invoices") {
+    const url = new URL(path, "http://localhost");
+    const orgFilter = url.searchParams.get("org_id");
+    const mockInvoices = [
+      {
+        invoice_id: "INV-2026-0401",
+        org_id: "org-alpha",
+        type: "performance_fee",
+        period_month: "2026-03",
+        status: "issued",
+        currency: "USD",
+        subtotal: 48750.0,
+        tax: 4875.0,
+        total: 53625.0,
+        description: "Performance fee for March 2026 - Alpha Capital",
+        issued_at: "2026-04-01T09:00:00Z",
+        due_date: "2026-04-15",
+        opening_aum: 12500000,
+        closing_aum: 12987500,
+        pnl: 487500,
+        trader_hwm_before: 12400000,
+        odum_hwm_before: 12300000,
+        trader_fee: 24375.0,
+        odum_fee: 24375.0,
+        is_underwater: false,
+        server_cost: 0,
+        payment_txid: null,
+        notes: "Standard 10% performance fee on profits above HWM",
+      },
+      {
+        invoice_id: "INV-2026-0402",
+        org_id: "org-alpha",
+        type: "management_fee",
+        period_month: "2026-03",
+        status: "paid",
+        currency: "USD",
+        subtotal: 20833.33,
+        tax: 2083.33,
+        total: 22916.66,
+        description: "Management fee for March 2026 - Alpha Capital",
+        issued_at: "2026-04-01T09:00:00Z",
+        due_date: "2026-04-15",
+        opening_aum: 12500000,
+        closing_aum: 12987500,
+        pnl: 487500,
+        trader_hwm_before: 12400000,
+        odum_hwm_before: 12300000,
+        trader_fee: 10416.67,
+        odum_fee: 10416.67,
+        is_underwater: false,
+        server_cost: 0,
+        payment_txid: "0xabc123def456",
+        notes: "2% annual management fee (monthly: 1/12)",
+      },
+      {
+        invoice_id: "INV-2026-0403",
+        org_id: "org-beta",
+        type: "performance_fee",
+        period_month: "2026-03",
+        status: "draft",
+        currency: "USD",
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        description: "Performance fee for March 2026 - Beta Fund (underwater)",
+        issued_at: "2026-04-02T10:30:00Z",
+        due_date: "2026-04-16",
+        opening_aum: 9800000,
+        closing_aum: 9650000,
+        pnl: -150000,
+        trader_hwm_before: 10200000,
+        odum_hwm_before: 10100000,
+        trader_fee: 0,
+        odum_fee: 0,
+        is_underwater: true,
+        server_cost: 1250.0,
+        payment_txid: null,
+        notes: "No performance fee - portfolio below HWM. Server cost applied.",
+      },
+    ];
+    const filtered = orgFilter ? mockInvoices.filter((inv) => inv.org_id === orgFilter) : mockInvoices;
+    return json(filtered);
+  }
+  if (route === "/api/reporting/invoices/generate" && opts?.method === "POST") {
+    const body = parseMockJsonBody(opts);
+    return json({
+      invoice_id: `INV-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      org_id: body.org_id ?? "org-alpha",
+      type: body.invoice_type ?? "performance_fee",
+      period_month: body.period_month ?? "2026-04",
+      status: "draft",
+      currency: body.currency ?? "USD",
+      subtotal: 15000,
+      tax: 1500,
+      total: 16500,
+      description: `Fee invoice for ${String(body.period_month ?? "2026-04")}`,
+      issued_at: new Date().toISOString(),
+      due_date: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
+      opening_aum: 10000000,
+      closing_aum: 10300000,
+      pnl: 300000,
+      trader_hwm_before: 9900000,
+      odum_hwm_before: 9800000,
+      trader_fee: 7500,
+      odum_fee: 7500,
+      is_underwater: false,
+      server_cost: 0,
+      payment_txid: null,
+      notes: "",
+    });
+  }
+  if (route.match(/^\/api\/reporting\/invoices\/[^/]+\/transition$/) && opts?.method === "PUT") {
+    const body = parseMockJsonBody(opts);
+    const statusMap: Record<string, string> = {
+      issue: "issued",
+      accept: "accepted",
+      pay: "paid",
+      dispute: "disputed",
+      void: "voided",
+      reissue: "issued",
+    };
+    return json({
+      ok: true,
+      status: statusMap[String(body.action)] ?? "issued",
+    });
+  }
+  if (route.match(/^\/api\/reporting\/invoices\/[^/]+\/download$/)) {
+    return json({ url: "https://storage.example.com/invoices/mock-invoice.pdf" });
+  }
+  if (route.match(/^\/api\/reporting\/invoices\/[^/]+$/) && !route.includes("/generate")) {
+    // Single invoice detail
+    const invoiceId = route.split("/").pop();
+    const allMock = [
+      {
+        invoice_id: "INV-2026-0401",
+        org_id: "org-alpha",
+        type: "performance_fee",
+        period_month: "2026-03",
+        status: "issued",
+        currency: "USD",
+        subtotal: 48750.0,
+        tax: 4875.0,
+        total: 53625.0,
+        description: "Performance fee for March 2026 - Alpha Capital",
+        issued_at: "2026-04-01T09:00:00Z",
+        due_date: "2026-04-15",
+        opening_aum: 12500000,
+        closing_aum: 12987500,
+        pnl: 487500,
+        trader_hwm_before: 12400000,
+        odum_hwm_before: 12300000,
+        trader_fee: 24375.0,
+        odum_fee: 24375.0,
+        is_underwater: false,
+        server_cost: 0,
+        payment_txid: null,
+        notes: "Standard 10% performance fee on profits above HWM",
+      },
+      {
+        invoice_id: "INV-2026-0402",
+        org_id: "org-alpha",
+        type: "management_fee",
+        period_month: "2026-03",
+        status: "paid",
+        currency: "USD",
+        subtotal: 20833.33,
+        tax: 2083.33,
+        total: 22916.66,
+        description: "Management fee for March 2026 - Alpha Capital",
+        issued_at: "2026-04-01T09:00:00Z",
+        due_date: "2026-04-15",
+        opening_aum: 12500000,
+        closing_aum: 12987500,
+        pnl: 487500,
+        trader_hwm_before: 12400000,
+        odum_hwm_before: 12300000,
+        trader_fee: 10416.67,
+        odum_fee: 10416.67,
+        is_underwater: false,
+        server_cost: 0,
+        payment_txid: "0xabc123def456",
+        notes: "2% annual management fee (monthly: 1/12)",
+      },
+      {
+        invoice_id: "INV-2026-0403",
+        org_id: "org-beta",
+        type: "performance_fee",
+        period_month: "2026-03",
+        status: "draft",
+        currency: "USD",
+        subtotal: 0,
+        tax: 0,
+        total: 0,
+        description: "Performance fee for March 2026 - Beta Fund (underwater)",
+        issued_at: "2026-04-02T10:30:00Z",
+        due_date: "2026-04-16",
+        opening_aum: 9800000,
+        closing_aum: 9650000,
+        pnl: -150000,
+        trader_hwm_before: 10200000,
+        odum_hwm_before: 10100000,
+        trader_fee: 0,
+        odum_fee: 0,
+        is_underwater: true,
+        server_cost: 1250.0,
+        payment_txid: null,
+        notes: "No performance fee - portfolio below HWM. Server cost applied.",
+      },
+    ];
+    const found = allMock.find((inv) => inv.invoice_id === invoiceId);
+    return json(found ?? { error: "Not found" });
+  }
   if (route.startsWith("/api/reporting/reconciliation/")) return json({ ok: true });
   if (route === "/api/reporting/generate") return json({ ok: true, reportId: "rpt-mock-001" });
   if (route === "/api/reporting/schedules") return json([]);

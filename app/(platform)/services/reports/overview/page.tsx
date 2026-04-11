@@ -603,10 +603,10 @@ export default function ReportsPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {accountBalances.map((bal) => {
+                    {accountBalances.map((bal, idx) => {
                       const utilization = bal.total > 0 ? (bal.locked / bal.total) * 100 : 0;
                       return (
-                        <TableRow key={bal.venue}>
+                        <TableRow key={`${bal.venue}-${idx}`}>
                           <TableCell className="font-medium">{bal.venue}</TableCell>
                           <TableCell className="text-right font-mono text-[var(--pnl-positive)]">
                             ${formatNumber(bal.free / 1000, 0)}k
