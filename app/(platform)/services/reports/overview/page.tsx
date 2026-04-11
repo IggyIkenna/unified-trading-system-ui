@@ -1,5 +1,6 @@
 "use client";
 
+import { useTabParam } from "@/hooks/use-tab-param";
 import { GenerateReportModal } from "@/components/reports/generate-report-modal";
 import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
 import { ApiError } from "@/components/shared/api-error";
@@ -49,6 +50,7 @@ import {
 import * as React from "react";
 
 export default function ReportsPage() {
+  const [activeTab, setActiveTab] = useTabParam("portfolio");
   const {
     data: reportsApiData,
     isLoading: reportsLoading,
@@ -314,7 +316,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="portfolio" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="portfolio" className="gap-2">
               <BarChart3 className="size-4" />

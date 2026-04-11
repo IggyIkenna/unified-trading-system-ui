@@ -27,6 +27,7 @@ import { ApiError } from "@/components/shared/api-error";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Cpu, GitCompare } from "lucide-react";
 import * as React from "react";
+import { useTabParam } from "@/hooks/use-tab-param";
 
 type AlgoListRow = {
   id: string;
@@ -103,7 +104,7 @@ export default function ExecutionAlgosPage() {
   const MOCK_ALGO_BACKTESTS: Array<any> = (backtestsData as any)?.data ?? [];
 
   const [selectedAlgos, setSelectedAlgos] = React.useState<string[]>([]);
-  const [activeTab, setActiveTab] = React.useState("algos");
+  const [activeTab, setActiveTab] = useTabParam("algos");
   const [detailAlgoId, setDetailAlgoId] = React.useState<string | null>(null);
 
   const detailAlgo = detailAlgoId ? mockExecutionAlgos.find((a) => a.id === detailAlgoId) : null;

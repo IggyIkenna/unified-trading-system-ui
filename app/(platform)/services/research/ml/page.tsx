@@ -1,5 +1,6 @@
 "use client";
 
+import { useTabParam } from "@/hooks/use-tab-param";
 import { PageHeader } from "@/components/shared/page-header";
 import { ApiError } from "@/components/shared/api-error";
 import { ResearchFamilyShell } from "@/components/platform/research-family-shell";
@@ -59,6 +60,7 @@ function archetypeColor(archetype: string) {
 }
 
 export default function MLOverviewPage() {
+  const [mlTab, setMlTab] = useTabParam("overview");
   const {
     data: pipelineData,
     isLoading: pipelineLoading,
@@ -119,7 +121,7 @@ export default function MLOverviewPage() {
   }
 
   const mlTabs = (
-    <Tabs defaultValue="overview" className="w-full">
+    <Tabs value={mlTab} onValueChange={setMlTab} className="w-full">
       <TabsList className="h-8">
         <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
         <TabsTrigger value="training" className="text-xs">Training</TabsTrigger>

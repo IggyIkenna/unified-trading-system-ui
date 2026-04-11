@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
+import { useTabParam } from "@/hooks/use-tab-param";
 
 import { ApiError } from "@/components/shared/api-error";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -235,7 +236,7 @@ export default function RegistryPage() {
   const [deployDialog, setDeployDialog] = React.useState<string | null>(null);
   const [deployTarget, setDeployTarget] = React.useState<"shadow" | "live">("shadow");
   const [detailVersionId, setDetailVersionId] = React.useState<string | null>(null);
-  const [activeTab, setActiveTab] = React.useState("registry");
+  const [activeTab, setActiveTab] = useTabParam("registry");
 
   const detailVersion = detailVersionId ? versions.find((v) => v.id === detailVersionId) : null;
   const detailFamily = detailVersion

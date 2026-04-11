@@ -355,7 +355,7 @@ function useHealthChecks() {
     const gatewayChecks = [
       { idx: 2, url: "/api/reporting/health", name: "client-reporting-api" },
       { idx: 3, url: "/api/execution/health", name: "execution-results-api" },
-      { idx: 4, url: "/api/deployment/health", name: "deployment-api" },
+      { idx: 4, url: "/api/health", name: "deployment-api" },
       { idx: 5, url: "/api/config/health", name: "config-api" },
       { idx: 6, url: "/api/analytics/health", name: "trading-analytics-api" },
       { idx: 7, url: "/api/audit/health", name: "batch-audit-api" },

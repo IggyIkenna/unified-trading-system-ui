@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+import { withMode } from "@/lib/api/with-mode";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
 // Generated response types for endpoints that exist in api-generated.ts
 type RiskLimitsResponse = GatewayApiResponse<"/api/risk/limits">;
@@ -21,43 +23,51 @@ export type CorrelationMatrixResponse = GatewayApiResponse<"/api/risk/correlatio
 
 export function useRiskLimits() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<RiskLimitsResponse>({
-    queryKey: ["risk-limits", user?.id],
+    queryKey: ["risk-limits", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<RiskLimitsResponse>("/api/risk/limits", token),
+      typedFetch<RiskLimitsResponse>(withMode("/api/risk/limits", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useVaR() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<VaRResponse>({
-    queryKey: ["var", user?.id],
-    queryFn: () => typedFetch<VaRResponse>("/api/risk/var", token),
+    queryKey: ["var", user?.id, scope.mode],
+    queryFn: () => typedFetch<VaRResponse>(withMode("/api/risk/var", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useGreeks() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<GreeksResponse>({
-    queryKey: ["greeks", user?.id],
-    queryFn: () => typedFetch<GreeksResponse>("/api/risk/greeks", token),
+    queryKey: ["greeks", user?.id, scope.mode],
+    queryFn: () => typedFetch<GreeksResponse>(withMode("/api/risk/greeks", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useStressScenarios() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<StressScenariosResponse>({
-    queryKey: ["stress-scenarios", user?.id],
+    queryKey: ["stress-scenarios", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<StressScenariosResponse>("/api/risk/stress", token),
+      typedFetch<StressScenariosResponse>(withMode("/api/risk/stress", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
@@ -67,12 +77,14 @@ export function useStressScenarios() {
 
 export function useVarSummary() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<VarSummaryData>({
-    queryKey: ["var-summary", user?.id],
+    queryKey: ["var-summary", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<VarSummaryData>("/api/risk/var-summary", token),
+      typedFetch<VarSummaryData>(withMode("/api/risk/var-summary", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
@@ -82,15 +94,17 @@ export function useVarSummary() {
 
 export function useStressTest(scenario: string | null) {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<StressTestResult>({
-    queryKey: ["stress-test", scenario, user?.id],
+    queryKey: ["stress-test", scenario, user?.id, scope.mode],
     queryFn: () =>
       typedFetch<StressTestResult>(
-        `/api/risk/stress-test?scenario=${scenario}`,
+        withMode(`/api/risk/stress-test?scenario=${scenario}`, scope.mode, scope.asOfDatetime),
         token,
       ),
     enabled: !!user && !!scenario,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
@@ -100,11 +114,13 @@ export function useStressTest(scenario: string | null) {
 
 export function useRegime() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<RegimeData>({
-    queryKey: ["risk-regime", user?.id],
-    queryFn: () => typedFetch<RegimeData>("/api/risk/regime", token),
+    queryKey: ["risk-regime", user?.id, scope.mode],
+    queryFn: () => typedFetch<RegimeData>(withMode("/api/risk/regime", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
@@ -136,15 +152,17 @@ export interface PortfolioGreeksResponse {
 
 export function usePortfolioGreeks() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<PortfolioGreeksResponse>({
-    queryKey: ["portfolio-greeks", user?.id],
+    queryKey: ["portfolio-greeks", user?.id, scope.mode],
     queryFn: () =>
       typedFetch<PortfolioGreeksResponse>(
-        "/api/derivatives/portfolio-greeks",
+        withMode("/api/derivatives/portfolio-greeks", scope.mode, scope.asOfDatetime),
         token,
       ),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
@@ -154,15 +172,17 @@ export function usePortfolioGreeks() {
 
 export function useCorrelationMatrix() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<CorrelationMatrixResponse>({
-    queryKey: ["correlation-matrix", user?.id],
+    queryKey: ["correlation-matrix", user?.id, scope.mode],
     queryFn: () =>
       typedFetch<CorrelationMatrixResponse>(
-        "/api/risk/correlation-matrix",
+        withMode("/api/risk/correlation-matrix", scope.mode, scope.asOfDatetime),
         token,
       ),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
@@ -179,15 +199,17 @@ export interface VenueCircuitBreakerStatus {
 
 export function useVenueCircuitBreakers() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<VenueCircuitBreakerStatus[]>({
-    queryKey: ["venue-circuit-breakers", user?.id],
+    queryKey: ["venue-circuit-breakers", user?.id, scope.mode],
     queryFn: () =>
       typedFetch<VenueCircuitBreakerStatus[]>(
-        "/api/risk/venue-circuit-breakers",
+        withMode("/api/risk/venue-circuit-breakers", scope.mode, scope.asOfDatetime),
         token,
       ),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 

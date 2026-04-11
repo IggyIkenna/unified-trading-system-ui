@@ -88,6 +88,8 @@ interface PositionRecord {
   margin: number;
   leverage: number;
   updated_at: string;
+  /** USD notional from API (accounts for contract size on derivatives) */
+  notional_usd?: number;
   /** DeFi: per-underlying net delta (ETH-equivalent) */
   net_delta?: number;
   /** DeFi: AAVE health factor (lending/recursive positions) */
@@ -350,6 +352,7 @@ function mapRawRowToPosition(row: Record<string, unknown>): PositionRecord {
     margin: Number(row.margin ?? 0),
     leverage: Number(row.leverage ?? 0),
     updated_at: String(row.updated_at ?? new Date().toISOString()),
+    notional_usd: row.notional_usd != null ? Number(row.notional_usd) : undefined,
   };
 }
 
@@ -523,21 +526,25 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     return result;
   }, [positions, searchQuery, strategyFilter, venueFilter, sideFilter, instrumentTypeFilters]);
 
-  const summary: PositionsSummary = React.useMemo(
-    () => ({
+  const summary: PositionsSummary = React.useMemo(() => {
+    // Use API-provided notional_usd (accounts for contract size on derivatives)
+    // with fallback to quantity * price for mock/seed data
+    const getNotional = (p: PositionRecord) =>
+      p.notional_usd != null ? Math.abs(p.notional_usd) : Math.abs(p.quantity * p.current_price);
+
+    return {
       totalPositions: filteredPositions.length,
-      totalNotional: filteredPositions.reduce((sum, p) => sum + Math.abs(p.quantity * p.current_price), 0),
+      totalNotional: filteredPositions.reduce((sum, p) => sum + getNotional(p), 0),
       unrealizedPnL: filteredPositions.reduce((sum, p) => sum + p.net_pnl, 0),
       totalMargin: filteredPositions.reduce((sum, p) => sum + p.margin, 0),
       longExposure: filteredPositions
         .filter((p) => p.side === "LONG")
-        .reduce((sum, p) => sum + Math.abs(p.quantity * p.current_price), 0),
+        .reduce((sum, p) => sum + getNotional(p), 0),
       shortExposure: filteredPositions
         .filter((p) => p.side === "SHORT")
-        .reduce((sum, p) => sum + Math.abs(p.quantity * p.current_price), 0),
-    }),
-    [filteredPositions],
-  );
+        .reduce((sum, p) => sum + getNotional(p), 0),
+    };
+  }, [filteredPositions]);
 
   const uniqueVenues = React.useMemo(() => [...new Set(positions.map((p) => p.venue))].sort(), [positions]);
 

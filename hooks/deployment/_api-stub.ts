@@ -21,6 +21,7 @@ import type {
   LiveHealthStatus,
   ServiceStatus,
 } from "@/lib/types/deployment";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -468,176 +469,432 @@ export async function deployMissing(params: {
 }
 
 // ---------------------------------------------------------------------------
-// Stub functions — all return mock / empty data
-// TODO: Wire to real API
+// API helpers
 // ---------------------------------------------------------------------------
 
+const DEMO_TOKEN_KEY = "portal_token";
+const DATA_QUERY_SERVICE_ALIASES: Record<string, string> = {
+  "market-tick-data-service": "market-tick-data-handler",
+};
+
+type RawInstrumentAvailabilityResponse = {
+  error?: string;
+  venue?: string;
+  instrument_type?: string;
+  instrument?: string;
+  date_range?: { start?: string; end?: string; total_dates?: number };
+  effective_range?: { start?: string; end?: string };
+  data_types?: string[];
+  daily_availability?: Record<string, Record<string, boolean>>;
+};
+
+function getAuthHeader(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const token = window.localStorage.getItem(DEMO_TOKEN_KEY);
+  if (!token) return {};
+  return { Authorization: `Bearer ${token}` };
+}
+
+function buildQuery(params: Record<string, unknown>): string {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === "") continue;
+    if (Array.isArray(value)) {
+      for (const entry of value) {
+        query.append(key, String(entry));
+      }
+      continue;
+    }
+    query.append(key, String(value));
+  }
+  return query.toString();
+}
+
+function normalizeDataQueryService(service?: string): string | undefined {
+  if (!service) return service;
+  return DATA_QUERY_SERVICE_ALIASES[service] ?? service;
+}
+
+function toUpperValues(values: string[]): string[] {
+  return Array.from(new Set(values.map((value) => value.toUpperCase()))).sort();
+}
+
+function normalizeInstrumentList(
+  payload: InstrumentSearchResponse | { instruments?: string[]; error?: string },
+  params: Record<string, unknown>,
+): InstrumentSearchResponse {
+  const rawInstruments = Array.isArray(payload.instruments) ? payload.instruments : [];
+  const venue = typeof params.venue === "string" ? params.venue : undefined;
+  const instrumentType = typeof params.instrument_type === "string" ? params.instrument_type : undefined;
+  const search = typeof params.search === "string" ? params.search.trim().toLowerCase() : "";
+
+  const instruments = rawInstruments
+    .map((entry) => {
+      if (typeof entry === "string") {
+        return {
+          instrument_key: entry,
+          instrument_id: entry,
+          symbol: entry,
+          venue,
+          instrument_type: instrumentType,
+        } satisfies InstrumentSearchResult;
+      }
+      return entry;
+    })
+    .filter((instrument) => {
+      if (!search) return true;
+      const searchKey = `${instrument.instrument_key ?? ""} ${instrument.symbol ?? ""}`.toLowerCase();
+      return searchKey.includes(search);
+    });
+
+  return {
+    instruments,
+    error: payload.error,
+  };
+}
+
+function normalizeInstrumentAvailability(
+  payload: InstrumentAvailabilityResponse | RawInstrumentAvailabilityResponse,
+): InstrumentAvailabilityResponse {
+  if (payload.error) {
+    return { error: payload.error };
+  }
+
+  if ("overall" in payload || "by_data_type" in payload) {
+    return payload as InstrumentAvailabilityResponse;
+  }
+
+  const typed = payload as RawInstrumentAvailabilityResponse;
+  const dataTypes = typed.data_types ?? [];
+  const dailyAvailability = typed.daily_availability ?? {};
+  const dates = Object.keys(dailyAvailability).sort();
+
+  const byDataType: NonNullable<InstrumentAvailabilityResponse["by_data_type"]> = {};
+  for (const dataType of dataTypes) {
+    const datesFoundList: string[] = [];
+    const datesMissingList: string[] = [];
+    for (const date of dates) {
+      if (dailyAvailability[date]?.[dataType]) {
+        datesFoundList.push(date);
+      } else {
+        datesMissingList.push(date);
+      }
+    }
+    const expected = datesFoundList.length + datesMissingList.length;
+    byDataType[dataType] = {
+      dates_found: datesFoundList.length,
+      dates_missing: datesMissingList.length,
+      completion_pct: expected > 0 ? (datesFoundList.length / expected) * 100 : 0,
+      dates_found_list: datesFoundList,
+      dates_missing_list: datesMissingList,
+    };
+  }
+
+  const overallExpected = Object.values(byDataType).reduce(
+    (sum, stats) => sum + stats.dates_found + stats.dates_missing,
+    0,
+  );
+  const overallFound = Object.values(byDataType).reduce((sum, stats) => sum + stats.dates_found, 0);
+  const effectiveStart = typed.effective_range?.start ?? typed.date_range?.start ?? "";
+  const effectiveEnd = typed.effective_range?.end ?? typed.date_range?.end ?? "";
+
+  return {
+    parsed: {
+      venue: typed.venue ?? "",
+      instrument_type: typed.instrument_type ?? "",
+      symbol: typed.instrument ?? "",
+      category: "",
+      folder: typed.instrument_type ?? "",
+    },
+    date_range: {
+      start: typed.date_range?.start ?? effectiveStart,
+      end: typed.date_range?.end ?? effectiveEnd,
+      total_dates: typed.date_range?.total_dates ?? dates.length,
+    },
+    availability_window: effectiveStart && effectiveEnd ? { effective_start: effectiveStart, effective_end: effectiveEnd, dates_in_window: dates.length } : undefined,
+    overall: {
+      expected: overallExpected,
+      found: overallFound,
+      missing: Math.max(overallExpected - overallFound, 0),
+      completion_pct: overallExpected > 0 ? (overallFound / overallExpected) * 100 : 0,
+    },
+    by_data_type: byDataType,
+  };
+}
+
+async function requestJson<T>(
+  path: string,
+  options?: RequestInit,
+  mockFallback?: () => T,
+): Promise<T> {
+  try {
+    const headers: HeadersInit = {
+      ...getAuthHeader(),
+      ...(options?.headers ?? {}),
+    };
+    if (options?.body && !("Content-Type" in (headers as Record<string, string>))) {
+      (headers as Record<string, string>)["Content-Type"] = "application/json";
+    }
+
+    const response = await fetch(path, {
+      ...options,
+      headers,
+    });
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      throw new Error(`${response.status} ${response.statusText}${body ? `: ${body}` : ""}`);
+    }
+    return (await response.json()) as T;
+  } catch (error) {
+    if (isMockDataMode() && mockFallback) {
+      return mockFallback();
+    }
+    throw error;
+  }
+}
+
 export async function fetchBuilds(
-  _service: string,
-  _env: BuildEnvironment,
+  service: string,
+  env: BuildEnvironment,
 ): Promise<BuildEntry[]> {
-  // TODO: wire to real API
-  return [];
+  return requestJson<{ builds?: BuildEntry[] } | BuildEntry[]>(
+    `/api/builds/${encodeURIComponent(service)}?env=${encodeURIComponent(env)}`,
+    undefined,
+    () => [],
+  ).then((payload) => (Array.isArray(payload) ? payload : (payload.builds ?? [])));
 }
 
 export async function getCloudBuildTriggers(): Promise<{
   triggers: BuildTrigger[];
 }> {
-  // TODO: wire to real API
-  return { triggers: [] };
+  return requestJson<{ triggers: BuildTrigger[] }>("/api/cloud-builds/triggers", undefined, () => ({ triggers: [] }));
 }
 
 export async function triggerCloudBuild(
-  _service: string,
-  _branch: string,
+  service: string,
+  branch: string,
 ): Promise<{ success: boolean; message: string }> {
-  // TODO: wire to real API
-  return { success: false, message: "Not implemented — wire to real API" };
+  return requestJson<{ success: boolean; message: string }>(
+    "/api/cloud-builds/trigger",
+    {
+      method: "POST",
+      body: JSON.stringify({ service, branch }),
+    },
+    () => ({ success: false, message: "Mock mode: trigger endpoint unavailable" }),
+  );
 }
 
 export async function getCloudBuildHistory(
-  _service: string,
+  service: string,
 ): Promise<{ builds: BuildInfo[] }> {
-  // TODO: wire to real API
-  return { builds: [] };
+  return requestJson<{ builds: BuildInfo[] }>(
+    `/api/cloud-builds/history/${encodeURIComponent(service)}`,
+    undefined,
+    () => ({ builds: [] }),
+  );
 }
 
 export async function listDirectories(
-  _service: string,
-  _path: string,
+  service: string,
+  path: string,
 ): Promise<{ directories: string[] }> {
-  // TODO: wire to real API
-  return { directories: [] };
+  return requestJson<{ directories: string[] }>(
+    `/api/services/${encodeURIComponent(service)}/list-directories?path=${encodeURIComponent(path)}`,
+    undefined,
+    () => ({ directories: [] }),
+  );
 }
 
 export async function discoverConfigs(
-  _service: string,
-  _path: string,
+  service: string,
+  path: string,
 ): Promise<{ total_configs: number }> {
-  // TODO: wire to real API
-  return { total_configs: 0 };
+  return requestJson<{ total_configs: number }>(
+    `/api/services/${encodeURIComponent(service)}/discover-configs?path=${encodeURIComponent(path)}`,
+    undefined,
+    () => ({ total_configs: 0 }),
+  );
 }
 
-export async function getConfigBuckets(_service: string): Promise<{
+export async function getConfigBuckets(service: string): Promise<{
   buckets: Array<{ name: string; path: string }>;
   default_bucket?: string;
 }> {
-  // TODO: wire to real API
-  return { buckets: [] };
+  return requestJson<{
+    buckets: Array<{ name: string; path: string }>;
+    default_bucket?: string;
+  }>(
+    `/api/services/${encodeURIComponent(service)}/config-buckets`,
+    undefined,
+    () => ({ buckets: [] }),
+  );
 }
 
 export async function getDeploymentQuotaInfo(
-  _params: unknown,
+  params: Record<string, unknown>,
 ): Promise<QuotaInfoResponse> {
-  // TODO: wire to real API
-  return {
-    service: "",
-    quota_remaining: 100,
-    quota_limit: 100,
-    reset_at: new Date().toISOString(),
-  };
+  const query = buildQuery(params);
+  return requestJson<QuotaInfoResponse>(
+    `/api/deployments/quota-info${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({
+      service: String(params.service ?? ""),
+      quota_remaining: 100,
+      quota_limit: 100,
+      reset_at: new Date().toISOString(),
+    }),
+  );
 }
 
 export async function getExecutionMissingShards(
-  _params: Record<string, string>,
+  params: Record<string, string>,
 ): Promise<ExecutionMissingShardsResponse> {
-  // TODO: wire to real API
-  return { service: "", missing_shards: [], total_missing: 0 };
+  const query = buildQuery(params);
+  return requestJson<ExecutionMissingShardsResponse>(
+    `/api/service-status/execution-services/missing-shards${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ service: params.service ?? "execution-services", missing_shards: [], total_missing: 0 }),
+  );
 }
 
 export async function cancelDeployment(
-  _deploymentId: string,
+  deploymentId: string,
 ): Promise<{ success: boolean; cancelled_shards?: number; message?: string }> {
-  // TODO: wire to real API
-  return { success: false };
+  return requestJson<{ success: boolean; cancelled_shards?: number; message?: string }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/cancel`,
+    { method: "POST" },
+    () => ({ success: false, message: "Mock mode: cancel endpoint unavailable" }),
+  );
 }
 
 export async function resumeDeployment(
-  _deploymentId: string,
+  deploymentId: string,
 ): Promise<{ success: boolean; message?: string }> {
-  // TODO: wire to real API
-  return { success: false };
+  return requestJson<{ success: boolean; message?: string }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/resume`,
+    { method: "POST" },
+    () => ({ success: false, message: "Mock mode: resume endpoint unavailable" }),
+  );
 }
 
 export async function verifyDeploymentCompletion(
-  _deploymentId: string,
-  _options?: { force?: boolean },
+  deploymentId: string,
+  options?: { force?: boolean },
 ): Promise<{ verified: boolean }> {
-  // TODO: wire to real API
-  return { verified: false };
+  const query = buildQuery(options ?? {});
+  return requestJson<{ verified: boolean }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/verify-completion${query ? `?${query}` : ""}`,
+    { method: "POST" },
+    () => ({ verified: false }),
+  );
 }
 
 export async function retryFailedShards(
-  _deploymentId: string,
+  deploymentId: string,
 ): Promise<{ retried: number; message?: string }> {
-  // TODO: wire to real API
-  return { retried: 0 };
+  return requestJson<{ retried: number; message?: string }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/retry-failed`,
+    { method: "POST" },
+    () => ({ retried: 0 }),
+  );
 }
 
 export async function cancelShard(
-  _deploymentId: string,
-  _shardId?: string,
+  deploymentId: string,
+  shardId?: string,
 ): Promise<{ success: boolean; message?: string }> {
-  // TODO: wire to real API
-  return { success: false };
+  if (!shardId) {
+    return { success: false, message: "shardId is required" };
+  }
+  return requestJson<{ success: boolean; message?: string }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/shards/${encodeURIComponent(shardId)}/cancel`,
+    { method: "POST" },
+    () => ({ success: false, message: "Mock mode: shard cancel endpoint unavailable" }),
+  );
 }
 
 export async function updateDeploymentTag(
-  _deploymentId: string,
-  _tag: string | null,
+  deploymentId: string,
+  tag: string | null,
 ): Promise<{ success: boolean; message?: string }> {
-  // TODO: wire to real API
-  return { success: false };
+  return requestJson<{ success: boolean; message?: string }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ tag }),
+    },
+    () => ({ success: false, message: "Mock mode: deployment update endpoint unavailable" }),
+  );
 }
 
 export async function getDeploymentReport(
-  _deploymentId: string,
+  deploymentId: string,
 ): Promise<DeploymentReport> {
-  // TODO: wire to real API
-  return {
-    deployment_id: _deploymentId,
-    service: "",
-    status: "unknown",
-    total_shards: 0,
-    completed_shards: 0,
-    failed_shards: 0,
-    summary: {},
-  };
+  return requestJson<DeploymentReport>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/report`,
+    undefined,
+    () => ({
+      deployment_id: deploymentId,
+      service: "",
+      status: "unknown",
+      total_shards: 0,
+      completed_shards: 0,
+      failed_shards: 0,
+      summary: {},
+    }),
+  );
 }
 
 export async function getRerunCommands(
-  _deploymentId: string,
-  _options?: { failedOnly?: boolean },
+  deploymentId: string,
+  options?: { failedOnly?: boolean },
 ): Promise<RerunCommands> {
-  // TODO: wire to real API
-  return { deployment_id: _deploymentId, commands: [] };
+  const query = buildQuery({ failed_only: options?.failedOnly });
+  return requestJson<RerunCommands>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/rerun-commands${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ deployment_id: deploymentId, commands: [] }),
+  );
 }
 
 export async function getDeploymentEvents(
-  _deploymentId: string,
+  deploymentId: string,
 ): Promise<{ events: ShardEvent[] }> {
-  // TODO: wire to real API
-  return { events: [] };
+  return requestJson<{ events: ShardEvent[] }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/events`,
+    undefined,
+    () => ({ events: [] }),
+  );
 }
 
 export async function rollbackLiveDeployment(
-  _deploymentId: string,
-  _options?: { service: string; region: string },
+  deploymentId: string,
+  options?: { service: string; region: string },
 ): Promise<{ success: boolean }> {
-  // TODO: wire to real API
-  return { success: false };
+  return requestJson<{ success: boolean }>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/rollback`,
+    {
+      method: "POST",
+      body: JSON.stringify(options ?? {}),
+    },
+    () => ({ success: false }),
+  );
 }
 
 export async function getLiveDeploymentHealth(
-  _deploymentId: string,
-  _service?: string,
-  _region?: string,
+  deploymentId: string,
+  service?: string,
+  region?: string,
 ): Promise<LiveHealthStatus | null> {
-  // TODO: wire to real API
-  return null;
+  const query = buildQuery({ service, region });
+  return requestJson<LiveHealthStatus>(
+    `/api/deployments/${encodeURIComponent(deploymentId)}/live-health${query ? `?${query}` : ""}`,
+    undefined,
+    () => null,
+  );
 }
 
-export async function getDeployments(_params: {
+export async function getDeployments(params: {
   service: string;
   limit?: number;
   forceRefresh?: boolean;
@@ -652,15 +909,35 @@ export async function getDeployments(_params: {
     completed_shards: number;
   }>;
 }> {
-  // TODO: wire to real API
-  return { deployments: [] };
+  const query = buildQuery({
+    service: params.service,
+    limit: params.limit,
+    force_refresh: params.forceRefresh,
+  });
+  return requestJson<{
+    deployments: Array<{
+      id: string;
+      service: string;
+      parameters?: Record<string, unknown>;
+      status: string;
+      created_at: string;
+      total_shards: number;
+      completed_shards: number;
+    }>;
+  }>(`/api/deployments${query ? `?${query}` : ""}`, undefined, () => ({ deployments: [] }));
 }
 
 export async function bulkDeleteDeployments(
-  _ids: string[],
+  ids: string[],
 ): Promise<{ deleted: number; failed: number }> {
-  // TODO: wire to real API
-  return { deleted: 0, failed: 0 };
+  return requestJson<{ deleted: number; failed: number }>(
+    "/api/deployments/bulk-delete",
+    {
+      method: "POST",
+      body: JSON.stringify({ deployment_ids: ids }),
+    },
+    () => ({ deleted: 0, failed: 0 }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -668,92 +945,104 @@ export async function bulkDeleteDeployments(
 // ---------------------------------------------------------------------------
 
 export async function getHealth(): Promise<HealthResponse> {
-  // TODO: wire to real API
-  return { status: "healthy", version: "0.0.0-stub", config_dir: "" };
+  return requestJson<HealthResponse>("/api/health", undefined, () => ({
+    status: "healthy",
+    version: "0.0.0-mock",
+    config_dir: "",
+    mock_mode: true,
+  }));
 }
 
 export async function clearCache(): Promise<void> {
-  // TODO: wire to real API
+  await requestJson<{ ok?: boolean }>("/api/cache/clear", { method: "POST" }, () => ({ ok: true }));
 }
 
 export async function getServices(): Promise<{
   services: Service[];
 }> {
-  // TODO: wire to real API
-  return { services: [] };
+  return requestJson<{ services: Service[] }>("/api/services", undefined, () => ({ services: [] }));
 }
 
 export async function getServiceDimensions(
-  _service: string,
+  service: string,
 ): Promise<ServiceDimensionsResponse> {
-  // TODO: wire to real API
-  return { service: _service, dimensions: [], cli_args: {} };
+  return requestJson<ServiceDimensionsResponse>(
+    `/api/services/${encodeURIComponent(service)}/dimensions`,
+    undefined,
+    () => ({ service, dimensions: [], cli_args: {} }),
+  );
 }
 
 export async function getDependencies(
-  _service: string,
+  service: string,
 ): Promise<DependenciesResponse> {
-  // TODO: wire to real API
-  return {
-    service: _service,
-    description: "",
-    upstream: [],
-    downstream_dependents: [],
-    outputs: [],
-    external_dependencies: [],
-  };
+  return requestJson<DependenciesResponse>(
+    `/api/config/dependencies/${encodeURIComponent(service)}`,
+    undefined,
+    () => ({
+      service,
+      description: "",
+      upstream: [],
+      downstream_dependents: [],
+      outputs: [],
+      external_dependencies: [],
+    }),
+  );
 }
 
 export async function getChecklist(
-  _service: string,
+  service: string,
 ): Promise<ChecklistResponse> {
-  // TODO: wire to real API
-  return {
-    service: _service,
-    readiness_percent: 0,
-    completed_items: 0,
-    total_items: 0,
-    partial_items: 0,
-    pending_items: 0,
-    not_applicable_items: 0,
-    last_updated: "",
-    blocking_items: [],
-    categories: [],
-  };
+  return requestJson<ChecklistResponse>(
+    `/api/checklists/${encodeURIComponent(service)}/checklist`,
+    undefined,
+    () => ({
+      service,
+      readiness_percent: 0,
+      completed_items: 0,
+      total_items: 0,
+      partial_items: 0,
+      pending_items: 0,
+      not_applicable_items: 0,
+      last_updated: "",
+      blocking_items: [],
+      categories: [],
+    }),
+  );
 }
 
 export async function validateChecklist(
-  _service: string,
+  service: string,
 ): Promise<ChecklistValidateResponse> {
-  // TODO: wire to real API
-  return {
-    service: _service,
-    ready: true,
-    readiness_percent: 100,
-    total_items: 0,
-    completed_items: 0,
-    blocking_items: [],
-    warnings: [],
-    can_proceed_with_acknowledgment: true,
-  };
+  return requestJson<ChecklistValidateResponse>(
+    `/api/checklists/${encodeURIComponent(service)}/checklist/validate`,
+    undefined,
+    () => ({
+      service,
+      ready: true,
+      readiness_percent: 100,
+      total_items: 0,
+      completed_items: 0,
+      blocking_items: [],
+      warnings: [],
+      can_proceed_with_acknowledgment: true,
+    }),
+  );
 }
 
 export async function listChecklists(): Promise<{
   checklists: ChecklistSummary[];
 }> {
-  // TODO: wire to real API
-  return { checklists: [] };
+  return requestJson<{ checklists: ChecklistSummary[] }>("/api/checklists", undefined, () => ({ checklists: [] }));
 }
 
 export async function getEpics(): Promise<EpicSummary[]> {
-  // TODO: wire to real API
-  return [];
+  return requestJson<EpicSummary[]>("/api/epics", undefined, () => []);
 }
 
-export async function getEpicDetail(_epicId: string): Promise<EpicDetail> {
-  // TODO: wire to real API
-  return {
-    epic_id: _epicId,
+export async function getEpicDetail(epicId: string): Promise<EpicDetail> {
+  return requestJson<EpicDetail>(`/api/epics/${encodeURIComponent(epicId)}`, undefined, () => ({
+    epic_id: epicId,
     display_name: "",
     mvp_priority: 0,
     business_requirement_minimum: "",
@@ -765,36 +1054,49 @@ export async function getEpicDetail(_epicId: string): Promise<EpicDetail> {
     blocking_repos: [],
     completed_repos: [],
     optional_repos_status: [],
-  };
+  }));
 }
 
 export async function getVenuesByCategory(
-  _category: string,
+  category: string,
 ): Promise<CategoryVenuesResponse> {
-  // TODO: wire to real API
-  return { category: _category, venues: [], data_types: [] };
+  const response = await requestJson<CategoryVenuesResponse>(
+    `/api/config/venues/${encodeURIComponent(category.toLowerCase())}`,
+    undefined,
+    () => ({ category, venues: [], data_types: [] }),
+  );
+  return {
+    ...response,
+    venues: toUpperValues(response.venues ?? []),
+  };
 }
 
 export async function getStartDates(
-  _service: string,
+  service: string,
 ): Promise<StartDatesResponse> {
-  // TODO: wire to real API
-  return { service: _service, start_dates: {} };
+  return requestJson<StartDatesResponse>(
+    `/api/config/expected-start-dates/${encodeURIComponent(service)}`,
+    undefined,
+    () => ({ service, start_dates: {} }),
+  );
 }
 
 export async function getServiceStatus(
-  _service: string,
+  service: string,
 ): Promise<ServiceStatus> {
-  // TODO: wire to real API
-  return {
-    service: _service,
-    health: "healthy",
-    last_data_update: null,
-    last_deployment: null,
-    last_build: null,
-    last_code_push: null,
-    anomalies: [],
-  };
+  return requestJson<ServiceStatus>(
+    `/api/service-status/${encodeURIComponent(service)}/status`,
+    undefined,
+    () => ({
+      service,
+      health: "healthy",
+      last_data_update: null,
+      last_deployment: null,
+      last_build: null,
+      last_code_push: null,
+      anomalies: [],
+    }),
+  );
 }
 
 export async function getServicesOverview(): Promise<{
@@ -811,63 +1113,128 @@ export async function getServicesOverview(): Promise<{
     anomaly_count: number;
   }>;
 }> {
-  // TODO: wire to real API
-  return { count: 0, healthy: 0, warnings: 0, errors: 0, services: [] };
+  return requestJson<{
+    count: number;
+    healthy: number;
+    warnings: number;
+    errors: number;
+    services: Array<{
+      service: string;
+      health: string;
+      last_data_update: string | null;
+      last_deployment: string | null;
+      last_build: string | null;
+      anomaly_count: number;
+    }>;
+  }>("/api/service-status/overview", undefined, () => ({ count: 0, healthy: 0, warnings: 0, errors: 0, services: [] }));
 }
 
 export async function getDataStatus(
-  _params: Record<string, unknown>,
+  params: Record<string, unknown>,
 ): Promise<TurboDataStatusResponse> {
-  // TODO: wire to real API
-  return { service: "", status: "unknown", categories: {} };
+  const query = buildQuery({
+    ...params,
+    service: normalizeDataQueryService(typeof params.service === "string" ? params.service : undefined),
+  });
+  return requestJson<TurboDataStatusResponse>(
+    `/api/data-status${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ service: String(params.service ?? ""), status: "unknown", categories: {} }),
+  );
 }
 
 export async function getDataStatusTurbo(
-  _params: Record<string, unknown>,
+  params: Record<string, unknown>,
 ): Promise<TurboDataStatusResponse> {
-  // TODO: wire to real API
-  return { service: "", status: "unknown", categories: {} };
+  const query = buildQuery({
+    ...params,
+    service: normalizeDataQueryService(typeof params.service === "string" ? params.service : undefined),
+  });
+  return requestJson<TurboDataStatusResponse>(
+    `/api/data-status/turbo${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ service: String(params.service ?? ""), status: "unknown", categories: {} }),
+  );
 }
 
 export async function clearDataStatusCache(): Promise<void> {
-  // TODO: wire to real API
+  try {
+    await requestJson<{ ok?: boolean }>("/api/data-status/turbo/cache/clear", { method: "POST" }, () => ({ ok: true }));
+  } catch {
+    await requestJson<{ ok?: boolean }>("/api/data-status/turbo/clear", { method: "POST" }, () => ({ ok: true }));
+  }
 }
 
 export async function listFiles(
-  _params: Record<string, unknown>,
+  params: Record<string, unknown>,
 ): Promise<ListFilesResponse> {
-  // TODO: wire to real API
-  return { files: [], total: 0 };
+  const query = buildQuery({
+    ...params,
+    service: normalizeDataQueryService(typeof params.service === "string" ? params.service : undefined),
+  });
+  return requestJson<ListFilesResponse>(
+    `/api/data-status/list-files${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ files: [], total: 0 }),
+  );
 }
 
 export async function getInstrumentsList(
-  _params: Record<string, unknown>,
+  params: Record<string, unknown>,
 ): Promise<InstrumentSearchResponse> {
-  // TODO: wire to real API
-  return { instruments: [] };
+  const query = buildQuery({
+    category: params.category,
+    venue: params.venue,
+    instrument_type: params.instrument_type,
+    limit: params.limit ?? 500,
+  });
+  const payload = await requestJson<InstrumentSearchResponse | { instruments?: string[]; error?: string }>(
+    `/api/data-status/instruments${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ instruments: [] }),
+  );
+  return normalizeInstrumentList(payload, params);
 }
 
 export async function getInstrumentAvailability(
-  _params: Record<string, unknown>,
+  params: Record<string, unknown>,
 ): Promise<InstrumentAvailabilityResponse> {
-  // TODO: wire to real API
-  return { instrument_id: "", available_dates: [], coverage_pct: 0 };
+  const query = buildQuery({
+    venue: params.venue,
+    instrument_type: params.instrument_type,
+    instrument: params.instrument,
+    start_date: params.start_date,
+    end_date: params.end_date,
+    data_type: params.data_type,
+    available_from: params.available_from,
+    available_to: params.available_to,
+  });
+  const payload = await requestJson<InstrumentAvailabilityResponse | RawInstrumentAvailabilityResponse>(
+    `/api/data-status/instrument-availability${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ venue: String(params.venue ?? ""), instrument_type: String(params.instrument_type ?? ""), instrument: String(params.instrument ?? "") }),
+  );
+  return normalizeInstrumentAvailability(payload);
 }
 
-// Missing stub — added for build
 export async function getServiceCategories(
-  _service: string,
+  service: string,
 ): Promise<{ categories: string[] }> {
-  // TODO: wire to real API
-  return { categories: ["CEFI", "DEFI", "TRADFI"] };
+  return requestJson<{ categories: string[] }>(
+    `/api/capabilities/service-categories/${encodeURIComponent(service)}`,
+    undefined,
+    () => ({ categories: ["CEFI", "DEFI", "TRADFI"] }),
+  );
 }
 
 export async function getVenueFilters(
-  _params: Record<string, string>,
+  params: Record<string, string>,
 ): Promise<{ folders: string[]; data_types: string[] }> {
-  // TODO: wire to real API
-  return {
-    folders: ["spot", "perpetuals", "futures"],
-    data_types: ["ohlcv", "trades", "book_snapshot_5"],
-  };
+  const effectiveService = normalizeDataQueryService(params.service);
+  const query = buildQuery({ ...params, service: effectiveService });
+  return requestJson<{ folders: string[]; data_types: string[] }>(
+    `/api/data-status/venue-filters${query ? `?${query}` : ""}`,
+    undefined,
+    () => ({ folders: [], data_types: [] }),
+  );
 }

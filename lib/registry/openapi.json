@@ -724,6 +724,56 @@
         ]
       }
     },
+    "/deployment-api/api/deployments/deploy-missing": {
+      "post": {
+        "tags": [
+          "deployment-api",
+          "Deployments"
+        ],
+        "summary": "Deploy Missing Shards",
+        "description": "Detect missing data shards and deploy jobs to fill gaps.\n\nCombines missing-shard detection with deployment creation in a single call.\nWhen dry_run=True, returns only the missing analysis without deploying.",
+        "operationId": "deploy_missing_shards_api_deployments_deploy_missing_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeployMissingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Deploy Missing Shards Api Deployments Deploy Missing Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
     "/deployment-api/api/deployments/{deployment_id}/cancel": {
       "post": {
         "tags": [
@@ -2284,6 +2334,166 @@
               "title": "Category"
             },
             "description": "Filter by category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deployment-api/api/data-status/manifest": {
+      "get": {
+        "tags": [
+          "deployment-api",
+          "Data Status"
+        ],
+        "summary": "Get Data Status Manifest",
+        "description": "Get data status from manifest availability indices (fastest path).",
+        "operationId": "get_data_status_manifest_api_data_status_manifest_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "service",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Service name",
+              "title": "Service"
+            },
+            "description": "Service name"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Start date (YYYY-MM-DD)",
+              "title": "Start Date"
+            },
+            "description": "Start date (YYYY-MM-DD)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "End date (YYYY-MM-DD)",
+              "title": "End Date"
+            },
+            "description": "End date (YYYY-MM-DD)"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by category",
+              "title": "Category"
+            },
+            "description": "Filter by category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deployment-api/api/data-status/coverage-summary": {
+      "get": {
+        "tags": [
+          "deployment-api",
+          "Data Status"
+        ],
+        "summary": "Get Coverage Summary",
+        "description": "Get coverage summary with shard counts and latest-day instrument totals.",
+        "operationId": "get_coverage_summary_api_data_status_coverage_summary_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "service",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Service name",
+              "default": "instruments-service",
+              "title": "Service"
+            },
+            "description": "Service name"
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated categories",
+              "title": "Categories"
+            },
+            "description": "Comma-separated categories"
           }
         ],
         "responses": {
@@ -11991,6 +12201,171 @@
         ]
       }
     },
+    "/unified-trading-api/catalogue": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "catalogue"
+        ],
+        "summary": "Get Catalogue",
+        "description": "Return the full permission catalogue tree (all 8 domains).",
+        "operationId": "get_catalogue_catalogue_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Catalogue Catalogue Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/unified-trading-api/catalogue/domains": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "catalogue"
+        ],
+        "summary": "List Domains",
+        "description": "List all permission domains with summary counts.",
+        "operationId": "list_domains_catalogue_domains_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response List Domains Catalogue Domains Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ]
+      }
+    },
+    "/unified-trading-api/catalogue/domain/{domain}": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "catalogue"
+        ],
+        "summary": "Get Domain",
+        "description": "Return a single domain's category and permission tree.",
+        "operationId": "get_domain_catalogue_domain__domain__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Domain"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Domain Catalogue Domain  Domain  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/catalogue/search": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "catalogue"
+        ],
+        "summary": "Search Permissions",
+        "description": "Search permissions by key, label, or description.",
+        "operationId": "search_permissions_catalogue_search_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Search query (case-insensitive substring match)",
+              "title": "Q"
+            },
+            "description": "Search query (case-insensitive substring match)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Search Permissions Catalogue Search Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/unified-trading-api/calendar/economic-results": {
       "get": {
         "tags": [
@@ -13902,6 +14277,1864 @@
         }
       }
     },
+    "/client-reporting-api/api/v1/invoices/{invoice_id}/transition": {
+      "put": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Transition Invoice",
+        "description": "Transition an invoice through the lifecycle state machine.",
+        "operationId": "transition_invoice_api_v1_invoices__invoice_id__transition_put",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceTransitionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Transition Invoice Api V1 Invoices  Invoice Id  Transition Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboard/fees": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Fee Dashboard",
+        "description": "Full fee dashboard: all clients grouped by status with current fees.\n\nUses hardcoded HWM seed from mr_report, overlaid with live equity\nfrom GCS backfill data (the trickle).",
+        "operationId": "fee_dashboard_api_v1_invoices_dashboard_fees_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Fee Dashboard Api V1 Invoices Dashboard Fees Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboard/fees/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Client Fee Detail",
+        "description": "Detailed fee breakdown for a single client.",
+        "operationId": "client_fee_detail_api_v1_invoices_dashboard_fees__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Client Fee Detail Api V1 Invoices Dashboard Fees  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboard/trader-payment": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Trader Payment Summary",
+        "description": "Generate trader payment summary (like TRADER_PAYMENT_MESSAGE_FEB_2026.md).\n\nShows all at-HWM clients with fees due + underwater server costs.",
+        "operationId": "trader_payment_summary_api_v1_invoices_dashboard_trader_payment_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Trader Payment Summary Api V1 Invoices Dashboard Trader Payment Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboard/hwm/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Get Hwm State",
+        "description": "Get current HWM state for a client.",
+        "operationId": "get_hwm_state_api_v1_invoices_dashboard_hwm__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Hwm State Api V1 Invoices Dashboard Hwm  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboard/introducers": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "List Introducers",
+        "description": "List all introducer balances.",
+        "operationId": "list_introducers_api_v1_invoices_dashboard_introducers_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response List Introducers Api V1 Invoices Dashboard Introducers Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/portal/admin": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Portal Admin",
+        "description": "Admin view \u2014 full visibility: all clients, HWM, PnL, fees, recovery.\n\nShows effective HWM (base HWM + deposits), new watermark (the level\nthe next invoice will be based on), and all fee breakdowns.",
+        "operationId": "portal_admin_api_v1_invoices_portal_admin_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Portal Admin Api V1 Invoices Portal Admin Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/portal/trader": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Portal Trader",
+        "description": "Trader view \u2014 sees PnL per client and their fee (10%, becoming 20%).\n\nOnly shows clients above HWM where there's a fee due.\nNo underwater details, no Odum fees, no introducer info.",
+        "operationId": "portal_trader_api_v1_invoices_portal_trader_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Portal Trader Api V1 Invoices Portal Trader Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/portal/introducer/{introducer_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Portal Introducer",
+        "description": "Introducer view \u2014 sees client PnL and their share of the performance fee.\n\nOnly shows clients they introduced. No trader fees, no underwater, no Odum internals.",
+        "operationId": "portal_introducer_api_v1_invoices_portal_introducer__introducer_id__get",
+        "parameters": [
+          {
+            "name": "introducer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Introducer Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Portal Introducer Api V1 Invoices Portal Introducer  Introducer Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/view/{invoice_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "View Invoice Html",
+        "description": "Serve a generated invoice as HTML (viewable in browser, printable to PDF).\n\nGenerates all invoices on first access, then serves from disk cache.",
+        "operationId": "view_invoice_html_api_v1_invoices_view__invoice_id__get",
+        "parameters": [
+          {
+            "name": "invoice_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Invoice Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/all": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "List All Invoices",
+        "description": "List all 2026 invoices with optional filters.\n\nReturns metadata for each invoice (no HTML content).\nFilterable by client_id, type (odum/trader/introducer), status.",
+        "operationId": "list_all_invoices_api_v1_invoices_all_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by client",
+              "title": "Client Id"
+            },
+            "description": "Filter by client"
+          },
+          {
+            "name": "invoice_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter: odum, trader, introducer",
+              "title": "Invoice Type"
+            },
+            "description": "Filter: odum, trader, introducer"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter: ISSUED, PAID, VOIDED",
+              "title": "Status"
+            },
+            "description": "Filter: ISSUED, PAID, VOIDED"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List All Invoices Api V1 Invoices All Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/generate-all": {
+      "post": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Regenerate All Invoices",
+        "description": "Regenerate all invoice HTML files from current data.\n\nCall this after updating invoice status or adding new invoices.",
+        "operationId": "regenerate_all_invoices_api_v1_invoices_generate_all_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Regenerate All Invoices Api V1 Invoices Generate All Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/charts/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "View Pnl Chart",
+        "description": "Serve interactive PnL chart for a client.\n\nShows trading PnL (equity minus transfers), equity curve,\nand transfer log. Chart.js powered \u2014 interactive tooltips.",
+        "operationId": "view_pnl_chart_api_v1_invoices_charts__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/charts": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "List Charts",
+        "description": "List available PnL charts for all clients.",
+        "operationId": "list_charts_api_v1_invoices_charts_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "title": "Response List Charts Api V1 Invoices Charts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboards/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "View Dashboard",
+        "description": "Serve comprehensive performance dashboard for a client.\n\nIncludes: zoomable equity/PnL charts, daily/monthly bars, coin breakdown,\norder browser, volume chart, all stats (Sharpe, Calmar, Sortino, DD, etc.).",
+        "operationId": "view_dashboard_api_v1_invoices_dashboards__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboards": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "List Dashboards",
+        "description": "List available performance dashboards.",
+        "operationId": "list_dashboards_api_v1_invoices_dashboards_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "title": "Response List Dashboards Api V1 Invoices Dashboards Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/dashboards/generate-all": {
+      "post": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Regenerate All Dashboards",
+        "description": "Regenerate all dashboards from latest data.",
+        "operationId": "regenerate_all_dashboards_api_v1_invoices_dashboards_generate_all_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Regenerate All Dashboards Api V1 Invoices Dashboards Generate All Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/analytics/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Get Trade Analytics",
+        "description": "Get coin-level PnL, volume, holding time breakdown for a client.\n\nAll numbers from real exchange data (bills ledger + trades).\nValidated: sum(coin.net_pnl) == total_net_pnl.",
+        "operationId": "get_trade_analytics_api_v1_invoices_analytics__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Trade Analytics Api V1 Invoices Analytics  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/analytics": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Get Aggregated Analytics",
+        "description": "Get aggregated trade analytics across clients.",
+        "operationId": "get_aggregated_analytics_api_v1_invoices_analytics_get",
+        "parameters": [
+          {
+            "name": "client_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated client IDs (empty = all)",
+              "default": "",
+              "title": "Client Ids"
+            },
+            "description": "Comma-separated client IDs (empty = all)"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Aggregated Analytics Api V1 Invoices Analytics Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/performance/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Get Performance Stats",
+        "description": "Get full performance stats for a client.\n\nReturns: simple/compounded/annualized return, Sharpe, Sortino, Calmar,\nmax drawdown (% and duration), win rate, and equity curve metadata.",
+        "operationId": "get_performance_stats_api_v1_invoices_performance__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Performance Stats Api V1 Invoices Performance  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/orders/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "Get Orders",
+        "description": "Browse orders for a client with pagination and filters.",
+        "operationId": "get_orders_api_v1_invoices_orders__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by symbol (partial match)",
+              "default": "",
+              "title": "Symbol"
+            },
+            "description": "Filter by symbol (partial match)"
+          },
+          {
+            "name": "side",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by side (buy/sell)",
+              "default": "",
+              "title": "Side"
+            },
+            "description": "Filter by side (buy/sell)"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by status",
+              "default": "",
+              "title": "Status"
+            },
+            "description": "Filter by status"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Orders Api V1 Invoices Orders  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/reports/{client_id}/{year}/{month}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "View Monthly Report",
+        "description": "Serve monthly PnL report as printable HTML (PDF-ready via browser print).\n\nIncludes: equity curve, daily PnL bars, coin breakdown, transfers.",
+        "operationId": "view_monthly_report_api_v1_invoices_reports__client_id___year___month__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "year",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Year"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Month"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/invoices/reports/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "invoices"
+        ],
+        "summary": "List Monthly Reports",
+        "description": "List available monthly reports for a client.",
+        "operationId": "list_monthly_reports_api_v1_invoices_reports__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "title": "Response List Monthly Reports Api V1 Invoices Reports  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/client-reporting-api/api/v1/compliance/trade-reporting": {
       "get": {
         "tags": [
@@ -14476,6 +16709,2421 @@
                     "type": "string"
                   },
                   "title": "Response Docusign Webhook Api V1 Webhooks Docusign Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/clients": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "clients"
+        ],
+        "summary": "List Clients",
+        "description": "Return all active clients with org/strategy grouping.\n\nInternal users see all; pass organisation_id to filter for a specific org.",
+        "operationId": "list_clients_api_v1_clients_get",
+        "parameters": [
+          {
+            "name": "organisation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by organisation",
+              "title": "Organisation Id"
+            },
+            "description": "Filter by organisation"
+          },
+          {
+            "name": "strategy_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by strategy",
+              "title": "Strategy Id"
+            },
+            "description": "Filter by strategy"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "boolean"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "title": "Response List Clients Api V1 Clients Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/clients/{client_id}": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "clients"
+        ],
+        "summary": "Get Client",
+        "description": "Return config for a single client.",
+        "operationId": "get_client_api_v1_clients__client_id__get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Client Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  },
+                  "title": "Response Get Client Api V1 Clients  Client Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/performance/summary": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "performance"
+        ],
+        "summary": "Get Performance Summary",
+        "description": "Return full performance summary with equity curve, monthly returns, and stats.",
+        "operationId": "get_performance_summary_api_v1_performance_summary_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Performance Summary Api V1 Performance Summary Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/performance/positions": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "performance"
+        ],
+        "summary": "Get Open Positions",
+        "description": "Return current open positions with unrealized P&L.",
+        "operationId": "get_open_positions_api_v1_performance_positions_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Open Positions Api V1 Performance Positions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/performance/balances": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "performance"
+        ],
+        "summary": "Get Balance Breakdown",
+        "description": "Return per-asset balance breakdown with USD values.",
+        "operationId": "get_balance_breakdown_api_v1_performance_balances_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Balance Breakdown Api V1 Performance Balances Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/performance/coin-breakdown": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "performance"
+        ],
+        "summary": "Get Coin Breakdown",
+        "description": "Return per-coin P&L breakdown from real bills ledger + trades.\n\nIncludes: realized PnL, fees, funding, net PnL, volume, trade count,\nbuy/sell split, avg holding time, round trips.\nValidated: sum(coin.net_pnl) == total_net_pnl.",
+        "operationId": "get_coin_breakdown_api_v1_performance_coin_breakdown_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Coin Breakdown Api V1 Performance Coin Breakdown Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/trades": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "trades"
+        ],
+        "summary": "Get Trade History",
+        "description": "Return paginated trade history with fills, fees, and P&L.",
+        "operationId": "get_trade_history_api_v1_trades_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by symbol",
+              "title": "Symbol"
+            },
+            "description": "Filter by symbol"
+          },
+          {
+            "name": "side",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by side (BUY or SELL)",
+              "title": "Side"
+            },
+            "description": "Filter by side (BUY or SELL)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Number of trades",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Number of trades"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Pagination offset",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Pagination offset"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Trade History Api V1 Trades Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/exports/trades": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Trades Csv",
+        "description": "Download full trade history as CSV.",
+        "operationId": "export_trades_csv_api_v1_exports_trades_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/exports/daily-summary": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Daily Summary Csv",
+        "description": "Download daily P&L summary as CSV.",
+        "operationId": "export_daily_summary_csv_api_v1_exports_daily_summary_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/exports/hourly-snapshots": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Hourly Snapshots Csv",
+        "description": "Download hourly equity snapshots as CSV.",
+        "operationId": "export_hourly_snapshots_csv_api_v1_exports_hourly_snapshots_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/exports/coin-breakdown": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Coin Breakdown Csv",
+        "description": "Download per-coin P&L breakdown as CSV.",
+        "operationId": "export_coin_breakdown_csv_api_v1_exports_coin_breakdown_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/tax/annual-summary": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "tax"
+        ],
+        "summary": "Get Annual Tax Summary",
+        "description": "Return FIFO cost-basis tax lots and summary for a tax year.",
+        "operationId": "get_annual_tax_summary_api_v1_tax_annual_summary_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "tax_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Tax year to report on",
+              "default": 2025,
+              "title": "Tax Year"
+            },
+            "description": "Tax year to report on"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnnualTaxSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/tax/annual-summary/csv": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "tax"
+        ],
+        "summary": "Export Annual Tax Csv",
+        "description": "Download FIFO tax lots as CSV for a given tax year.",
+        "operationId": "export_annual_tax_csv_api_v1_tax_annual_summary_csv_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "tax_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Tax year to report on",
+              "default": 2025,
+              "title": "Tax Year"
+            },
+            "description": "Tax year to report on"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/manual-entry/snapshot": {
+      "post": {
+        "tags": [
+          "client-reporting-api",
+          "manual-entry"
+        ],
+        "summary": "Create Manual Snapshot",
+        "description": "Record a manual equity snapshot for a fund-of-fund client.",
+        "operationId": "create_manual_snapshot_api_v1_manual_entry_snapshot_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualSnapshotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Create Manual Snapshot Api V1 Manual Entry Snapshot Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/manual-entry/snapshots": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "manual-entry"
+        ],
+        "summary": "List Manual Snapshots",
+        "description": "List manual equity snapshots for a client.",
+        "operationId": "list_manual_snapshots_api_v1_manual_entry_snapshots_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List Manual Snapshots Api V1 Manual Entry Snapshots Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/manual-entry/return": {
+      "post": {
+        "tags": [
+          "client-reporting-api",
+          "manual-entry"
+        ],
+        "summary": "Create Manual Return",
+        "description": "Record a manual monthly return for a fund-of-fund client.",
+        "operationId": "create_manual_return_api_v1_manual_entry_return_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualReturnRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Create Manual Return Api V1 Manual Entry Return Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/manual-entry/returns": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "manual-entry"
+        ],
+        "summary": "List Manual Returns",
+        "description": "List manual monthly returns for a client.",
+        "operationId": "list_manual_returns_api_v1_manual_entry_returns_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response List Manual Returns Api V1 Manual Entry Returns Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/clients": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Clients",
+        "description": "Return all clients, organisations, and strategies from credentials-registry.\n\nUsed by the UI client selector dropdown.",
+        "operationId": "get_clients_api_reporting_clients_get",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  },
+                  "title": "Response Get Clients Api Reporting Clients Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/performance/summary": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Performance Summary",
+        "description": "Return full performance summary with real equity curve, monthly returns, stats.",
+        "operationId": "get_performance_summary_api_reporting_performance_summary_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client ID",
+              "title": "Client Id"
+            },
+            "description": "Client ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Performance Summary Api Reporting Performance Summary Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/performance/coin-breakdown": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Coin Breakdown",
+        "description": "Return real coin-level PnL breakdown from bills ledger + trades.",
+        "operationId": "get_coin_breakdown_api_reporting_performance_coin_breakdown_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client ID",
+              "title": "Client Id"
+            },
+            "description": "Client ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Coin Breakdown Api Reporting Performance Coin Breakdown Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/performance/positions": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Positions",
+        "description": "Return current open positions from backfill data.",
+        "operationId": "get_positions_api_reporting_performance_positions_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client ID",
+              "title": "Client Id"
+            },
+            "description": "Client ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Positions Api Reporting Performance Positions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/performance/balances": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Balances",
+        "description": "Return balance breakdown from backfill data.",
+        "operationId": "get_balances_api_reporting_performance_balances_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client ID",
+              "title": "Client Id"
+            },
+            "description": "Client ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Balances Api Reporting Performance Balances Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/trades": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Trades",
+        "description": "Return paginated trade history from backfill data.",
+        "operationId": "get_trades_api_reporting_trades_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client ID",
+              "title": "Client Id"
+            },
+            "description": "Client ID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "symbol",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Symbol"
+            }
+          },
+          {
+            "name": "side",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Side"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Trades Api Reporting Trades Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/reports": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Reports Overview",
+        "description": "Return real data for the reports overview page.\n\nAggregates portfolio summary, monthly reports, invoices, account balances,\nand recent transfers for all (or selected) clients.",
+        "operationId": "get_reports_overview_api_reporting_reports_get",
+        "parameters": [
+          {
+            "name": "client_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated client IDs",
+              "default": "",
+              "title": "Client Ids"
+            },
+            "description": "Comma-separated client IDs"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Reports Overview Api Reporting Reports Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/settlements": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Settlements",
+        "description": "Return settlement/reconciliation data from real trade history.\n\nSettlements = matched fills that are confirmed by the exchange.",
+        "operationId": "get_settlements_api_reporting_settlements_get",
+        "parameters": [
+          {
+            "name": "client_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated client IDs",
+              "default": "",
+              "title": "Client Ids"
+            },
+            "description": "Comma-separated client IDs"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Settlements Api Reporting Settlements Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/fund-operations": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Fund Operations",
+        "description": "Return fund operations data \u2014 real investor register, capital accounts.\n\nEach client is an investor. Capital accounts derived from equity curves.",
+        "operationId": "get_fund_operations_api_reporting_fund_operations_get",
+        "parameters": [
+          {
+            "name": "client_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated client IDs",
+              "default": "",
+              "title": "Client Ids"
+            },
+            "description": "Comma-separated client IDs"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Fund Operations Api Reporting Fund Operations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/nav": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Nav",
+        "description": "Return real NAV data aggregated across clients.\n\nNAV = total equity across all clients. Hourly NAV from equity curves.",
+        "operationId": "get_nav_api_reporting_nav_get",
+        "parameters": [
+          {
+            "name": "client_ids",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated client IDs",
+              "default": "",
+              "title": "Client Ids"
+            },
+            "description": "Comma-separated client IDs"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Nav Api Reporting Nav Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/reporting/invoices": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "reporting"
+        ],
+        "summary": "Get Invoices",
+        "description": "Return all invoices matching the UI Invoice type shape.",
+        "operationId": "get_invoices_api_reporting_invoices_get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by org ID",
+              "default": "",
+              "title": "Org Id"
+            },
+            "description": "Filter by org ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Invoices Api Reporting Invoices Get"
                 }
               }
             }
@@ -17908,7 +22556,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/deployment_service__RollbackRequest"
+                "$ref": "#/components/schemas/DeploymentServiceRollbackRequest"
               }
             }
           }
@@ -18001,6 +22649,84 @@
                   "type": "object",
                   "additionalProperties": true,
                   "title": "Response Get Live Health Api V1 Deployments  Deployment Id  Live Health Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "deployment-service"
+        ]
+      }
+    },
+    "/deployment-service/api/v1/data-coverage-summary": {
+      "get": {
+        "summary": "Get Data Coverage Summary",
+        "description": "Return instrument coverage summary for the deployment UI.\n\nFast endpoint: reads manifest parquets (totals) + latest-day parquets\n(unique instrument counts by type).\n\nQuery params:\n    service: service name (default: instruments-service)\n    categories: comma-separated category list (default: CEFI,TRADFI,DEFI,SPORTS)",
+        "operationId": "get_data_coverage_summary_api_v1_data_coverage_summary_get",
+        "parameters": [
+          {
+            "name": "service",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "instruments-service",
+              "title": "Service"
+            }
+          },
+          {
+            "name": "categories",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Categories"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Data Coverage Summary Api V1 Data Coverage Summary Get"
                 }
               }
             }
@@ -19922,6 +24648,130 @@
         "title": "DependencyIssueDict",
         "description": "A dependency issue found during check."
       },
+      "DeployMissingRequest": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "description": "Service name"
+          },
+          "start_date": {
+            "type": "string",
+            "title": "Start Date",
+            "description": "Start date (YYYY-MM-DD)"
+          },
+          "end_date": {
+            "type": "string",
+            "title": "End Date",
+            "description": "End date (YYYY-MM-DD)"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Category filter"
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue",
+            "description": "Venue filter"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region",
+            "description": "GCP region"
+          },
+          "force": {
+            "type": "boolean",
+            "title": "Force",
+            "description": "Force redeploy even if data exists",
+            "default": false
+          },
+          "dry_run": {
+            "type": "boolean",
+            "title": "Dry Run",
+            "description": "Preview only, don't actually deploy",
+            "default": false
+          },
+          "compute": {
+            "type": "string",
+            "title": "Compute",
+            "description": "Compute mode: cloud_run or vm",
+            "default": "cloud_run"
+          },
+          "tag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tag",
+            "description": "Docker image tag",
+            "default": "latest"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "batch or live",
+            "default": "batch"
+          },
+          "date_granularity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Granularity",
+            "description": "Date granularity override"
+          },
+          "deploy_missing_only": {
+            "type": "boolean",
+            "title": "Deploy Missing Only",
+            "description": "Use backend missing-shard calculation",
+            "default": true
+          },
+          "log_level": {
+            "type": "string",
+            "title": "Log Level",
+            "description": "Log level",
+            "default": "INFO"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "start_date",
+          "end_date"
+        ],
+        "title": "DeployMissingRequest",
+        "description": "Request to detect and deploy missing data shards."
+      },
       "DeploymentResult": {
         "properties": {
           "deployment_id": {
@@ -21006,6 +25856,53 @@
         "title": "MockInstrumentCreate",
         "description": "Request body for creating a mock instrument."
       },
+      "AnnualTaxSummary": {
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          },
+          "tax_year": {
+            "type": "integer",
+            "title": "Tax Year"
+          },
+          "total_realized_pnl": {
+            "type": "number",
+            "title": "Total Realized Pnl"
+          },
+          "total_fees": {
+            "type": "number",
+            "title": "Total Fees"
+          },
+          "net_taxable": {
+            "type": "number",
+            "title": "Net Taxable"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "lots": {
+            "items": {
+              "$ref": "#/components/schemas/TaxLot"
+            },
+            "type": "array",
+            "title": "Lots"
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_id",
+          "tax_year",
+          "total_realized_pnl",
+          "total_fees",
+          "net_taxable",
+          "currency",
+          "lots"
+        ],
+        "title": "AnnualTaxSummary",
+        "description": "Aggregated tax summary for a given client and tax year."
+      },
       "GenerateInvoiceRequest": {
         "properties": {
           "org_id": {
@@ -21051,6 +25948,35 @@
           "period_month"
         ],
         "title": "GenerateReportRequest"
+      },
+      "InvoiceTransitionRequest": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": ""
+          },
+          "payment_txid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payment Txid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "InvoiceTransitionRequest"
       },
       "LoginRequest": {
         "properties": {
@@ -21100,6 +26026,87 @@
         "title": "LoginResponse",
         "description": "Login response with JWT token."
       },
+      "ManualReturnRequest": {
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "month": {
+            "type": "integer",
+            "title": "Month"
+          },
+          "return_pct": {
+            "type": "number",
+            "title": "Return Pct"
+          },
+          "pnl_usd": {
+            "type": "number",
+            "title": "Pnl Usd"
+          },
+          "opening_equity": {
+            "type": "number",
+            "title": "Opening Equity"
+          },
+          "closing_equity": {
+            "type": "number",
+            "title": "Closing Equity"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_id",
+          "year",
+          "month",
+          "return_pct",
+          "pnl_usd",
+          "opening_equity",
+          "closing_equity"
+        ],
+        "title": "ManualReturnRequest"
+      },
+      "ManualSnapshotRequest": {
+        "properties": {
+          "client_id": {
+            "type": "string",
+            "title": "Client Id"
+          },
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "equity_btc": {
+            "type": "number",
+            "title": "Equity Btc"
+          },
+          "equity_usd": {
+            "type": "number",
+            "title": "Equity Usd"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "client_id",
+          "date",
+          "equity_btc",
+          "equity_usd"
+        ],
+        "title": "ManualSnapshotRequest"
+      },
       "SendForSignatureRequest": {
         "properties": {
           "signer_email": {
@@ -21127,6 +26134,60 @@
           "signer_name"
         ],
         "title": "SendForSignatureRequest"
+      },
+      "TaxLot": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "quantity": {
+            "type": "number",
+            "title": "Quantity"
+          },
+          "buy_date": {
+            "type": "string",
+            "title": "Buy Date"
+          },
+          "buy_price": {
+            "type": "number",
+            "title": "Buy Price"
+          },
+          "sell_date": {
+            "type": "string",
+            "title": "Sell Date"
+          },
+          "sell_price": {
+            "type": "number",
+            "title": "Sell Price"
+          },
+          "realized_pnl": {
+            "type": "number",
+            "title": "Realized Pnl"
+          },
+          "holding_period_days": {
+            "type": "integer",
+            "title": "Holding Period Days"
+          },
+          "is_long_term": {
+            "type": "boolean",
+            "title": "Is Long Term"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "quantity",
+          "buy_date",
+          "buy_price",
+          "sell_date",
+          "sell_price",
+          "realized_pnl",
+          "holding_period_days",
+          "is_long_term"
+        ],
+        "title": "TaxLot",
+        "description": "A single FIFO-matched tax lot (buy matched to sell)."
       },
       "UploadUrlRequest": {
         "properties": {
@@ -23530,6 +28591,35 @@
         ],
         "title": "CreateDeploymentRequest"
       },
+      "DeploymentServiceRollbackRequest": {
+        "properties": {
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "region": {
+            "type": "string",
+            "title": "Region"
+          },
+          "target_revision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Revision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service",
+          "region"
+        ],
+        "title": "DeploymentServiceRollbackRequest"
+      },
       "QuotaAcquireRequest": {
         "properties": {
           "quota_shape": {
@@ -23567,35 +28657,6 @@
           "batch_size"
         ],
         "title": "QuotaReleaseRequest"
-      },
-      "deployment_service__RollbackRequest": {
-        "properties": {
-          "service": {
-            "type": "string",
-            "title": "Service"
-          },
-          "region": {
-            "type": "string",
-            "title": "Region"
-          },
-          "target_revision": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Target Revision"
-          }
-        },
-        "type": "object",
-        "required": [
-          "service",
-          "region"
-        ],
-        "title": "RollbackRequest"
       },
       "ScheduleCreateRequest": {
         "properties": {

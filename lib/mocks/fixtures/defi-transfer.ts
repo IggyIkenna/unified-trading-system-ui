@@ -2,7 +2,7 @@ import type { BridgeRouteQuote, ChainPortfolio } from "@/lib/types/defi";
 
 export const DEFI_CHAINS = [
   "ETHEREUM", "ARBITRUM", "OPTIMISM", "BASE", "POLYGON",
-  "BSC", "AVALANCHE", "SCROLL", "LINEA", "ZKSYNC",
+  "BSC", "AVALANCHE", "LINEA",
   "SOLANA",
 ] as const;
 

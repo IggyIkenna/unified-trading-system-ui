@@ -1,5 +1,6 @@
 "use client";
 
+import { useTabParam } from "@/hooks/use-tab-param";
 import { PageHeader } from "@/components/shared/page-header";
 /**
  * /devops — Deployment control center.
@@ -55,6 +56,7 @@ const ReadinessTab = dynamic(() => import("@/components/ops/deployment/Readiness
 });
 
 export default function DevOpsPage() {
+  const [devopsTab, setDevopsTab] = useTabParam("overview");
   const [deployMissingResult, setDeployMissingResult] = useState<DeployMissingResponse | null>(null);
   const [deployMissingError, setDeployMissingError] = useState<string | null>(null);
   const [isDeployingMissing, setIsDeployingMissing] = useState(false);
@@ -134,7 +136,7 @@ export default function DevOpsPage() {
           </div>
         )}
 
-        <Tabs defaultValue="overview">
+        <Tabs value={devopsTab} onValueChange={setDevopsTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="overview">
               <Activity className="mr-2 size-4" />

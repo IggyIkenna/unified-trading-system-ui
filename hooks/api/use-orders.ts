@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+import { withMode } from "@/lib/api/with-mode";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
 type OrdersResponse = GatewayApiResponse<"/api/execution/orders">;
 type AlgosResponse = GatewayApiResponse<"/api/execution/algos">;
@@ -10,79 +12,94 @@ type BacktestsResponse = GatewayApiResponse<"/api/execution/backtests">;
 
 export function useOrders() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<OrdersResponse>({
-    queryKey: ["orders", user?.id],
+    queryKey: ["orders", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<OrdersResponse>("/api/execution/orders", token),
+      typedFetch<OrdersResponse>(withMode("/api/execution/orders", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useAlgos() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<AlgosResponse>({
-    queryKey: ["algos", user?.id],
+    queryKey: ["algos", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<AlgosResponse>("/api/execution/algos", token),
+      typedFetch<AlgosResponse>(withMode("/api/execution/algos", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useVenues() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<VenuesResponse>({
-    queryKey: ["execution-venues", user?.id],
+    queryKey: ["execution-venues", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<VenuesResponse>("/api/execution/venues", token),
+      typedFetch<VenuesResponse>(withMode("/api/execution/venues", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useExecutionBacktests() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery<BacktestsResponse>({
-    queryKey: ["execution-backtests", user?.id],
+    queryKey: ["execution-backtests", user?.id, scope.mode],
     queryFn: () =>
-      typedFetch<BacktestsResponse>("/api/execution/backtests", token),
+      typedFetch<BacktestsResponse>(withMode("/api/execution/backtests", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useExecutionMetrics() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery({
-    queryKey: ["execution-metrics", user?.id],
-    queryFn: () => apiFetch("/api/execution/metrics", token),
+    queryKey: ["execution-metrics", user?.id, scope.mode],
+    queryFn: () => apiFetch(withMode("/api/execution/metrics", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useExecutionCandidates() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
   return useQuery({
-    queryKey: ["execution-candidates", user?.id],
-    queryFn: () => apiFetch("/api/execution/candidates", token),
+    queryKey: ["execution-candidates", user?.id, scope.mode],
+    queryFn: () => apiFetch(withMode("/api/execution/candidates", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useExecutionHandoff(algoId?: string) {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
+  const base = `/api/execution/handoff${algoId ? `?algoId=${algoId}` : ""}`;
 
   return useQuery({
-    queryKey: ["execution-handoff", algoId, user?.id],
+    queryKey: ["execution-handoff", algoId, user?.id, scope.mode],
     queryFn: () =>
       apiFetch(
-        `/api/execution/handoff${algoId ? `?algoId=${algoId}` : ""}`,
+        withMode(base, scope.mode, scope.asOfDatetime),
         token,
       ),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 

@@ -35,6 +35,7 @@ import {
   X,
 } from "lucide-react";
 import * as React from "react";
+import { useTabParam } from "@/hooks/use-tab-param";
 import { toast } from "sonner";
 import { clients, riskLimits, strategyConfigs, strategySchemas, venues } from "./config-page-schema";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -42,7 +43,7 @@ import { formatNumber } from "@/lib/utils/formatters";
 export default function ConfigPageClient() {
   const { token } = useAuth();
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [activeTab, setActiveTab] = React.useState("clients");
+  const [activeTab, setActiveTab] = useTabParam("clients");
   const [showNewModal, setShowNewModal] = React.useState(false);
   const [reloading, setReloading] = React.useState(false);
 
@@ -145,7 +146,7 @@ export default function ConfigPageClient() {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="clients" value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
             <TabsTrigger value="clients" className="gap-2">
               <Users className="size-4" />

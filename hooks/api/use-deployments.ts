@@ -7,7 +7,7 @@ export function useDeploymentServices() {
 
   return useQuery({
     queryKey: ["deployment-services", user?.id],
-    queryFn: () => apiFetch("/api/deployment/services", token),
+    queryFn: () => apiFetch("/api/services", token),
     enabled: !!user,
   });
 }
@@ -17,7 +17,7 @@ export function useDeployments() {
 
   return useQuery({
     queryKey: ["deployments", user?.id],
-    queryFn: () => apiFetch("/api/deployment/deployments", token),
+    queryFn: () => apiFetch("/api/deployments", token),
     enabled: !!user,
   });
 }
@@ -27,7 +27,7 @@ export function useBuildTriggers() {
 
   return useQuery({
     queryKey: ["build-triggers", user?.id],
-    queryFn: () => apiFetch("/api/deployment/builds", token),
+    queryFn: () => apiFetch("/api/cloud-builds/triggers", token),
     enabled: !!user,
   });
 }

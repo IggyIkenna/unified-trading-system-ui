@@ -9,6 +9,15 @@ import type { DataStatusTabProps } from "./types";
 import { buildHeatmapDayEntries } from "./build-heatmap-data";
 import { getCategoryCompletion, getMissingCount } from "./category-metrics";
 import { DataStatusTabCtx, type DataStatusTabContextValue } from "./data-status-context";
+
+const DEFAULT_CATEGORY_FALLBACK: Record<string, string[]> = {
+  "features-sports-service": ["SPORTS"],
+  "features-onchain-service": ["DEFI"],
+  "features-delta-one-service": ["TRADFI", "CEFI"],
+  "market-tick-data-service": ["CEFI", "TRADFI", "DEFI", "SPORTS", "PREDICTION"],
+  "market-data-processing-service": ["CEFI", "TRADFI", "DEFI", "SPORTS", "PREDICTION"],
+};
+
 export function DataStatusProvider({ children, ...props }: DataStatusTabProps & { children: ReactNode }) {
   const { serviceName, deploymentResult, isDeploying, onDeployMissing } = props;
   const [startDate, setStartDate] = useState(() => {
@@ -283,12 +292,28 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
     selectedTimeframe,
   ]);
   const searchInstrumentsDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const instrumentSearchCacheRef = useRef<Map<string, api.InstrumentSearchResult[]>>(new Map());
   const fetchInstruments = useCallback(
     async (searchQuery: string) => {
       if (selectedCategories.length !== 1) {
         setInstrumentSearchResults([]);
         return;
       }
+      const normalizedQuery = searchQuery.trim().toLowerCase();
+      const category = selectedCategories[0];
+      const venue = selectedVenues.length === 1 ? selectedVenues[0] : undefined;
+      const instrumentType = selectedFolders.length === 1 ? selectedFolders[0] : undefined;
+      const cacheKey = `${category}|${venue ?? "*"}|${instrumentType ?? "*"}|${normalizedQuery}`;
+
+      const cached = instrumentSearchCacheRef.current.get(cacheKey);
+      if (cached) {
+        setInstrumentSearchResults(cached);
+        if (!selectedInstrument) {
+          setShowInstrumentDropdown(cached.length > 0);
+        }
+        return;
+      }
+
       if (searchInstrumentsDebounceRef.current) {
         clearTimeout(searchInstrumentsDebounceRef.current);
       }
@@ -296,14 +321,17 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
         setInstrumentSearchLoading(true);
         try {
           const result = await api.getInstrumentsList({
-            category: selectedCategories[0],
+            category,
+            venue,
+            instrument_type: instrumentType,
             search: searchQuery || undefined,
-            limit: 50, // Show top 50 matches
+            limit: 500,
           });
           if (result.error) {
             setInstrumentSearchResults([]);
           } else {
             setInstrumentSearchResults(result.instruments);
+            instrumentSearchCacheRef.current.set(cacheKey, result.instruments);
             if (!selectedInstrument) {
               setShowInstrumentDropdown(result.instruments.length > 0);
             }
@@ -315,21 +343,25 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
         }
       }, 300); // 300ms debounce
     },
-    [selectedCategories, selectedInstrument],
+    [selectedCategories, selectedVenues, selectedFolders, selectedInstrument],
   );
   const fetchInstrumentAvailability = useCallback(async () => {
     if (!selectedInstrument) return;
+    if (!selectedInstrument.venue || !selectedInstrument.instrument_type) {
+      setInstrumentAvailabilityError("Selected instrument is missing venue or instrument type");
+      setInstrumentAvailability(null);
+      return;
+    }
     setInstrumentAvailabilityLoading(true);
     setInstrumentAvailabilityError(null);
     try {
       const result = await api.getInstrumentAvailability({
-        instrument_key: selectedInstrument.instrument_key,
+        venue: selectedInstrument.venue,
+        instrument_type: selectedInstrument.instrument_type,
+        instrument: selectedInstrument.instrument_key || selectedInstrument.symbol,
         start_date: startDate,
         end_date: endDate,
         data_type: selectedDataTypes.length === 1 ? selectedDataTypes[0] : undefined,
-        first_day_of_month_only: firstDayOfMonthOnly,
-        service: serviceName,
-        timeframe: serviceName === "market-data-processing-service" ? selectedTimeframe : undefined,
         available_from: selectedInstrument.available_from_datetime || undefined,
         available_to: selectedInstrument.available_to_datetime || undefined,
       });
@@ -353,6 +385,7 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
       setSelectedInstrument(null);
       setInstrumentAvailability(null);
       setInstrumentAvailabilityError(null);
+      instrumentSearchCacheRef.current.clear();
     }
   }, [instrumentSearchMode, selectedCategories]);
   useEffect(() => {
@@ -364,11 +397,11 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
           setAvailableCategories(response.categories);
           setSelectedCategories((prev) => prev.filter((cat) => response.categories.includes(cat)));
         } else {
-          setAvailableCategories(["CEFI", "DEFI", "TRADFI"]);
+          setAvailableCategories(DEFAULT_CATEGORY_FALLBACK[serviceName] ?? ["CEFI", "DEFI", "TRADFI"]);
         }
       })
       .catch(() => {
-        setAvailableCategories(["CEFI", "DEFI", "TRADFI"]);
+        setAvailableCategories(DEFAULT_CATEGORY_FALLBACK[serviceName] ?? ["CEFI", "DEFI", "TRADFI"]);
       })
       .finally(() => {
         setCategoriesLoading(false);
@@ -424,7 +457,7 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
     const venue = selectedVenues[0];
     setVenueFiltersLoading(true);
     api
-      .getVenueFilters({ category, venue })
+      .getVenueFilters({ service: serviceName, category, venue })
       .then((response) => {
         setVenueAvailableFolders(response.folders || []);
         setVenueAvailableDataTypes(response.data_types || []);
@@ -437,6 +470,16 @@ export function DataStatusProvider({ children, ...props }: DataStatusTabProps & 
         setVenueFiltersLoading(false);
       });
   }, [selectedVenues, selectedCategories]);
+
+  useEffect(() => {
+    if (!instrumentSearchMode || selectedCategories.length !== 1 || selectedVenues.length !== 1) {
+      return;
+    }
+    if (instrumentSearchQuery.trim().length > 0) {
+      return;
+    }
+    void fetchInstruments("");
+  }, [instrumentSearchMode, selectedCategories, selectedVenues, instrumentSearchQuery, fetchInstruments]);
   const toggleVenue = (venueKey: string) => {
     setExpandedVenues((prev) => {
       const next = new Set(prev);

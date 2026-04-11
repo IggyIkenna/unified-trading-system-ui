@@ -41,13 +41,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import {
   useCancelUnifiedTrainingRun,
   useCreateUnifiedTrainingRun,
+  useMLGridConfigs,
   useModelFamilies,
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
-import type { UnifiedTrainingRun } from "@/lib/types/ml";
+import type { MLGridConfig, UnifiedTrainingRun } from "@/lib/types/ml";
 import { mockRange } from "@/lib/mocks/generators/deterministic";
 import { cn } from "@/lib/utils";
 
+import { GridConfigEditor } from "./components/grid-config-editor";
 import { RunDetail } from "./components/training-run-detail";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
@@ -151,6 +153,7 @@ export default function TrainingPage() {
     refetch: refetchRuns,
   } = useUnifiedTrainingRuns();
   const { data: familiesData } = useModelFamilies();
+  const { data: gridConfigsData } = useMLGridConfigs();
   const createRun = useCreateUnifiedTrainingRun();
   const cancelRun = useCancelUnifiedTrainingRun();
 
@@ -171,11 +174,19 @@ export default function TrainingPage() {
   const [newFamilyId, setNewFamilyId] = React.useState("");
   const [newGpu, setNewGpu] = React.useState("A100-80GB");
   const [newPriority, setNewPriority] = React.useState<"low" | "normal" | "high">("normal");
+  const [newGridConfig, setNewGridConfig] = React.useState("");
+  const [configEditorOpen, setConfigEditorOpen] = React.useState(false);
+  const [editingConfig, setEditingConfig] = React.useState<MLGridConfig | null>(null);
 
   const families = React.useMemo(() => {
     const raw = (familiesData as { data?: { id: string; name: string }[] })?.data ?? [];
     return raw as { id: string; name: string }[];
   }, [familiesData]);
+
+  const gridConfigs = React.useMemo(() => {
+    const raw = (gridConfigsData as { data?: MLGridConfig[] })?.data ?? [];
+    return raw as MLGridConfig[];
+  }, [gridConfigsData]);
 
   React.useEffect(() => {
     if (runs.length > 0 && selectedId === null) setSelectedId(runs[0].id);
@@ -286,6 +297,62 @@ export default function TrainingPage() {
                   </Select>
                 </div>
               </div>
+              {/* Grid Config selector */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label>Feature grid config</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 text-xs px-2"
+                    onClick={() => {
+                      setEditingConfig(null);
+                      setConfigEditorOpen(true);
+                    }}
+                  >
+                    + New config
+                  </Button>
+                </div>
+                <div className="flex gap-2">
+                  <Select value={newGridConfig} onValueChange={setNewGridConfig}>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Default (all groups)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Default (all groups)</SelectItem>
+                      {gridConfigs.map((gc) => (
+                        <SelectItem key={gc.name} value={gc.name}>
+                          {gc.name} — {gc.category} ({gc.feature_groups.length} groups
+                          {gc.exclude_features.length > 0
+                            ? `, -${gc.exclude_features.length} excl`
+                            : ""}
+                          )
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {newGridConfig && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => {
+                        const cfg = gridConfigs.find(
+                          (gc) => gc.name === newGridConfig,
+                        );
+                        if (cfg) {
+                          setEditingConfig(cfg);
+                          setConfigEditorOpen(true);
+                        }
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  )}
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setNewOpen(false)}>
@@ -300,6 +367,7 @@ export default function TrainingPage() {
                     {
                       name,
                       model_family_id: newFamilyId,
+                      grid_config_name: newGridConfig || undefined,
                       config: {
                         gpu_type: newGpu,
                         priority: newPriority,
@@ -321,6 +389,12 @@ export default function TrainingPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        <GridConfigEditor
+          open={configEditorOpen}
+          onOpenChange={setConfigEditorOpen}
+          config={editingConfig}
+        />
 
         {/* Data freshness */}
         <DataFreshnessStrip sources={dataSources} />

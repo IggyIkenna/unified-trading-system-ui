@@ -39,7 +39,6 @@
       "AERODROME-BASE": "defi",
       "AAVEV3-ETHEREUM": "defi",
       "MORPHO-ETHEREUM": "defi",
-      "EULER-ETHEREUM": "defi",
       "FLUID-ETHEREUM": "defi",
       "LIDO-ETHEREUM": "defi",
       "ETHERFI-ETHEREUM": "defi",
@@ -263,9 +262,6 @@
         "LENDING"
       ],
       "MORPHO-ETHEREUM": [
-        "LENDING"
-      ],
-      "EULER-ETHEREUM": [
         "LENDING"
       ],
       "FLUID-ETHEREUM": [
@@ -668,7 +664,6 @@
       "AAVEV3-ETHEREUM",
       "ETHENA-ETHEREUM",
       "ETHERFI-ETHEREUM",
-      "EULER-ETHEREUM",
       "FLUID-ETHEREUM",
       "LIDO-ETHEREUM",
       "MORPHO-ETHEREUM"

@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type { RunComparison } from "@/lib/types/ml";
+import type { RunComparison, MLGridConfig, FeatureGroupsResponse, GridConfigCategory } from "@/lib/types/ml";
 
 function withMode(base: string, mode: string): string {
   const sep = base.includes("?") ? "&" : "?";
@@ -318,5 +318,109 @@ export function useRegistryModels() {
     queryKey: ["ml-registry-models", user?.id, scope.mode],
     queryFn: () => apiFetch(withMode("/api/ml/registry/models", scope.mode), token),
     enabled: !!user,
+  });
+}
+
+// =============================================================================
+// Grid Config — feature group subscription for training
+// =============================================================================
+
+/** GET /api/ml/grid-configs — list saved grid configs */
+export function useMLGridConfigs(category?: GridConfigCategory) {
+  const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
+  const qs = category ? `?category=${category}` : "";
+
+  return useQuery<{ data: MLGridConfig[]; total: number; page: number; page_size: number }>({
+    queryKey: ["ml-grid-configs", user?.id, scope.mode, category],
+    queryFn: () =>
+      apiFetch(withMode(`/api/ml/grid-configs${qs}`, scope.mode), token) as Promise<{
+        data: MLGridConfig[];
+        total: number;
+        page: number;
+        page_size: number;
+      }>,
+    enabled: !!user,
+  });
+}
+
+/** GET /api/ml/grid-configs/:name — single config */
+export function useMLGridConfig(name: string | null) {
+  const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
+
+  return useQuery<{ data: MLGridConfig }>({
+    queryKey: ["ml-grid-config", name, user?.id, scope.mode],
+    queryFn: () =>
+      apiFetch(withMode(`/api/ml/grid-configs/${name}`, scope.mode), token) as Promise<{
+        data: MLGridConfig;
+      }>,
+    enabled: !!user && !!name,
+  });
+}
+
+/** GET /api/ml/feature-groups?category=X — available feature groups for a category */
+export function useFeatureGroups(category: GridConfigCategory) {
+  const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
+
+  return useQuery<{ data: FeatureGroupsResponse }>({
+    queryKey: ["ml-feature-groups", category, user?.id, scope.mode],
+    queryFn: () =>
+      apiFetch(withMode(`/api/ml/feature-groups?category=${category}`, scope.mode), token) as Promise<{
+        data: FeatureGroupsResponse;
+      }>,
+    enabled: !!user,
+  });
+}
+
+/** POST /api/ml/grid-configs — create new config */
+export function useCreateMLGridConfig() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: Partial<MLGridConfig>) =>
+      apiFetch("/api/ml/grid-configs", token, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ml-grid-configs"] });
+    },
+  });
+}
+
+/** PUT /api/ml/grid-configs/:name — update config */
+export function useUpdateMLGridConfig() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ name, ...body }: MLGridConfig) =>
+      apiFetch(`/api/ml/grid-configs/${name}`, token, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ml-grid-configs"] });
+      queryClient.invalidateQueries({ queryKey: ["ml-grid-config"] });
+    },
+  });
+}
+
+/** DELETE /api/ml/grid-configs/:name */
+export function useDeleteMLGridConfig() {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (name: string) =>
+      apiFetch(`/api/ml/grid-configs/${name}`, token, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["ml-grid-configs"] });
+    },
   });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useTabParam } from "@/hooks/use-tab-param";
 import Link from "next/link";
 import { BatchWorkspaceShell } from "@/components/batch-workspace";
 import { ComparisonPanel, type ComparisonEntity, type MetricDefinition } from "@/components/batch-workspace/comparison-panel";
@@ -117,7 +118,7 @@ function candidateToComparison(c: StrategyCandidate): ComparisonEntity {
 export default function CandidatesPage() {
   const [filters, setFilters] = React.useState<Record<string, string>>({ status: "all" });
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = React.useState("pipeline");
+  const [activeTab, setActiveTab] = useTabParam("pipeline");
   const [detailCandidate, setDetailCandidate] = React.useState<StrategyCandidate | null>(null);
 
   const statusFilter = (filters.status ?? "all") as "all" | CandidateStatus;

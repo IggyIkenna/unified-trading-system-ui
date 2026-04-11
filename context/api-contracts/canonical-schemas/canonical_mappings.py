@@ -292,8 +292,7 @@ DATASET_TO_CANONICAL_VENUE: dict[str, str] = {
     "huobipro": "HUOBI-SPOT",
     "hyperliquid": "HYPERLIQUID",
     "aster": "ASTER",
-    # Tardis: DeFi (Euler, Fluid, ERC20, BTC only)
-    "euler": "EULER-ETHEREUM",
+    # Tardis: DeFi (Fluid, ERC20, BTC only)
     "fluid": "FLUID-ETHEREUM",
 }
 
@@ -312,7 +311,6 @@ DEFI_DATASET_TO_CANONICAL_VENUE: dict[str, str] = {
     "aave-v3": "AAVEV3-ETHEREUM",
     "morpho-ethereum": "MORPHO-ETHEREUM",
     "morpho-org/morpho-blue": "MORPHO-ETHEREUM",
-    "euler-plasma": "EULER-ETHEREUM",
     "fluid-plasma": "FLUID-ETHEREUM",
     "lido-ethereum": "LIDO-ETHEREUM",
     "lido/lido": "LIDO-ETHEREUM",

@@ -252,6 +252,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/deployment-api/api/deployments/deploy-missing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Deploy Missing Shards
+         * @description Detect missing data shards and deploy jobs to fill gaps.
+         *
+         *     Combines missing-shard detection with deployment creation in a single call.
+         *     When dry_run=True, returns only the missing analysis without deploying.
+         */
+        post: operations["deploy_missing_shards_api_deployments_deploy_missing_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/deployment-api/api/deployments/{deployment_id}/cancel": {
         parameters: {
             query?: never;
@@ -849,6 +872,46 @@ export interface paths {
          * @description Get last updated information for a service.
          */
         get: operations["get_last_updated_api_data_status_last_updated_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deployment-api/api/data-status/manifest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Data Status Manifest
+         * @description Get data status from manifest availability indices (fastest path).
+         */
+        get: operations["get_data_status_manifest_api_data_status_manifest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deployment-api/api/data-status/coverage-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Coverage Summary
+         * @description Get coverage summary with shard counts and latest-day instrument totals.
+         */
+        get: operations["get_coverage_summary_api_data_status_coverage_summary_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4360,6 +4423,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/catalogue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Catalogue
+         * @description Return the full permission catalogue tree (all 8 domains).
+         */
+        get: operations["get_catalogue_catalogue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/catalogue/domains": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Domains
+         * @description List all permission domains with summary counts.
+         */
+        get: operations["list_domains_catalogue_domains_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/catalogue/domain/{domain}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Domain
+         * @description Return a single domain's category and permission tree.
+         */
+        get: operations["get_domain_catalogue_domain__domain__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/catalogue/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Search Permissions
+         * @description Search permissions by key, label, or description.
+         */
+        get: operations["search_permissions_catalogue_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/calendar/economic-results": {
         parameters: {
             query?: never;
@@ -4976,6 +5119,500 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/client-reporting-api/api/v1/invoices/{invoice_id}/transition": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Transition Invoice
+         * @description Transition an invoice through the lifecycle state machine.
+         */
+        put: operations["transition_invoice_api_v1_invoices__invoice_id__transition_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboard/fees": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Fee Dashboard
+         * @description Full fee dashboard: all clients grouped by status with current fees.
+         *
+         *     Uses hardcoded HWM seed from mr_report, overlaid with live equity
+         *     from GCS backfill data (the trickle).
+         */
+        get: operations["fee_dashboard_api_v1_invoices_dashboard_fees_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboard/fees/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Client Fee Detail
+         * @description Detailed fee breakdown for a single client.
+         */
+        get: operations["client_fee_detail_api_v1_invoices_dashboard_fees__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboard/trader-payment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Trader Payment Summary
+         * @description Generate trader payment summary (like TRADER_PAYMENT_MESSAGE_FEB_2026.md).
+         *
+         *     Shows all at-HWM clients with fees due + underwater server costs.
+         */
+        get: operations["trader_payment_summary_api_v1_invoices_dashboard_trader_payment_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboard/hwm/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Hwm State
+         * @description Get current HWM state for a client.
+         */
+        get: operations["get_hwm_state_api_v1_invoices_dashboard_hwm__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboard/introducers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Introducers
+         * @description List all introducer balances.
+         */
+        get: operations["list_introducers_api_v1_invoices_dashboard_introducers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/portal/admin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Portal Admin
+         * @description Admin view — full visibility: all clients, HWM, PnL, fees, recovery.
+         *
+         *     Shows effective HWM (base HWM + deposits), new watermark (the level
+         *     the next invoice will be based on), and all fee breakdowns.
+         */
+        get: operations["portal_admin_api_v1_invoices_portal_admin_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/portal/trader": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Portal Trader
+         * @description Trader view — sees PnL per client and their fee (10%, becoming 20%).
+         *
+         *     Only shows clients above HWM where there's a fee due.
+         *     No underwater details, no Odum fees, no introducer info.
+         */
+        get: operations["portal_trader_api_v1_invoices_portal_trader_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/portal/introducer/{introducer_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Portal Introducer
+         * @description Introducer view — sees client PnL and their share of the performance fee.
+         *
+         *     Only shows clients they introduced. No trader fees, no underwater, no Odum internals.
+         */
+        get: operations["portal_introducer_api_v1_invoices_portal_introducer__introducer_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/view/{invoice_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * View Invoice Html
+         * @description Serve a generated invoice as HTML (viewable in browser, printable to PDF).
+         *
+         *     Generates all invoices on first access, then serves from disk cache.
+         */
+        get: operations["view_invoice_html_api_v1_invoices_view__invoice_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List All Invoices
+         * @description List all 2026 invoices with optional filters.
+         *
+         *     Returns metadata for each invoice (no HTML content).
+         *     Filterable by client_id, type (odum/trader/introducer), status.
+         */
+        get: operations["list_all_invoices_api_v1_invoices_all_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/generate-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Regenerate All Invoices
+         * @description Regenerate all invoice HTML files from current data.
+         *
+         *     Call this after updating invoice status or adding new invoices.
+         */
+        post: operations["regenerate_all_invoices_api_v1_invoices_generate_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/charts/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * View Pnl Chart
+         * @description Serve interactive PnL chart for a client.
+         *
+         *     Shows trading PnL (equity minus transfers), equity curve,
+         *     and transfer log. Chart.js powered — interactive tooltips.
+         */
+        get: operations["view_pnl_chart_api_v1_invoices_charts__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/charts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Charts
+         * @description List available PnL charts for all clients.
+         */
+        get: operations["list_charts_api_v1_invoices_charts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboards/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * View Dashboard
+         * @description Serve comprehensive performance dashboard for a client.
+         *
+         *     Includes: zoomable equity/PnL charts, daily/monthly bars, coin breakdown,
+         *     order browser, volume chart, all stats (Sharpe, Calmar, Sortino, DD, etc.).
+         */
+        get: operations["view_dashboard_api_v1_invoices_dashboards__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Dashboards
+         * @description List available performance dashboards.
+         */
+        get: operations["list_dashboards_api_v1_invoices_dashboards_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/dashboards/generate-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Regenerate All Dashboards
+         * @description Regenerate all dashboards from latest data.
+         */
+        post: operations["regenerate_all_dashboards_api_v1_invoices_dashboards_generate_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/analytics/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Trade Analytics
+         * @description Get coin-level PnL, volume, holding time breakdown for a client.
+         *
+         *     All numbers from real exchange data (bills ledger + trades).
+         *     Validated: sum(coin.net_pnl) == total_net_pnl.
+         */
+        get: operations["get_trade_analytics_api_v1_invoices_analytics__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/analytics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Aggregated Analytics
+         * @description Get aggregated trade analytics across clients.
+         */
+        get: operations["get_aggregated_analytics_api_v1_invoices_analytics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/performance/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Performance Stats
+         * @description Get full performance stats for a client.
+         *
+         *     Returns: simple/compounded/annualized return, Sharpe, Sortino, Calmar,
+         *     max drawdown (% and duration), win rate, and equity curve metadata.
+         */
+        get: operations["get_performance_stats_api_v1_invoices_performance__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/orders/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Orders
+         * @description Browse orders for a client with pagination and filters.
+         */
+        get: operations["get_orders_api_v1_invoices_orders__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/reports/{client_id}/{year}/{month}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * View Monthly Report
+         * @description Serve monthly PnL report as printable HTML (PDF-ready via browser print).
+         *
+         *     Includes: equity curve, daily PnL bars, coin breakdown, transfers.
+         */
+        get: operations["view_monthly_report_api_v1_invoices_reports__client_id___year___month__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/invoices/reports/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Monthly Reports
+         * @description List available monthly reports for a client.
+         */
+        get: operations["list_monthly_reports_api_v1_invoices_reports__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/client-reporting-api/api/v1/compliance/trade-reporting": {
         parameters: {
             query?: never;
@@ -5135,6 +5772,583 @@ export interface paths {
          *     In live mode: validates the HMAC signature and processes the event.
          */
         post: operations["docusign_webhook_api_v1_webhooks_docusign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Clients
+         * @description Return all active clients with org/strategy grouping.
+         *
+         *     Internal users see all; pass organisation_id to filter for a specific org.
+         */
+        get: operations["list_clients_api_v1_clients_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/clients/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Client
+         * @description Return config for a single client.
+         */
+        get: operations["get_client_api_v1_clients__client_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/performance/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Performance Summary
+         * @description Return full performance summary with equity curve, monthly returns, and stats.
+         */
+        get: operations["get_performance_summary_api_v1_performance_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/performance/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Open Positions
+         * @description Return current open positions with unrealized P&L.
+         */
+        get: operations["get_open_positions_api_v1_performance_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/performance/balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Balance Breakdown
+         * @description Return per-asset balance breakdown with USD values.
+         */
+        get: operations["get_balance_breakdown_api_v1_performance_balances_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/performance/coin-breakdown": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Coin Breakdown
+         * @description Return per-coin P&L breakdown from real bills ledger + trades.
+         *
+         *     Includes: realized PnL, fees, funding, net PnL, volume, trade count,
+         *     buy/sell split, avg holding time, round trips.
+         *     Validated: sum(coin.net_pnl) == total_net_pnl.
+         */
+        get: operations["get_coin_breakdown_api_v1_performance_coin_breakdown_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/trades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Trade History
+         * @description Return paginated trade history with fills, fees, and P&L.
+         */
+        get: operations["get_trade_history_api_v1_trades_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/exports/trades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Trades Csv
+         * @description Download full trade history as CSV.
+         */
+        get: operations["export_trades_csv_api_v1_exports_trades_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/exports/daily-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Daily Summary Csv
+         * @description Download daily P&L summary as CSV.
+         */
+        get: operations["export_daily_summary_csv_api_v1_exports_daily_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/exports/hourly-snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Hourly Snapshots Csv
+         * @description Download hourly equity snapshots as CSV.
+         */
+        get: operations["export_hourly_snapshots_csv_api_v1_exports_hourly_snapshots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/exports/coin-breakdown": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Coin Breakdown Csv
+         * @description Download per-coin P&L breakdown as CSV.
+         */
+        get: operations["export_coin_breakdown_csv_api_v1_exports_coin_breakdown_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/tax/annual-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Annual Tax Summary
+         * @description Return FIFO cost-basis tax lots and summary for a tax year.
+         */
+        get: operations["get_annual_tax_summary_api_v1_tax_annual_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/tax/annual-summary/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Annual Tax Csv
+         * @description Download FIFO tax lots as CSV for a given tax year.
+         */
+        get: operations["export_annual_tax_csv_api_v1_tax_annual_summary_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/manual-entry/snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Manual Snapshot
+         * @description Record a manual equity snapshot for a fund-of-fund client.
+         */
+        post: operations["create_manual_snapshot_api_v1_manual_entry_snapshot_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/manual-entry/snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Manual Snapshots
+         * @description List manual equity snapshots for a client.
+         */
+        get: operations["list_manual_snapshots_api_v1_manual_entry_snapshots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/manual-entry/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Manual Return
+         * @description Record a manual monthly return for a fund-of-fund client.
+         */
+        post: operations["create_manual_return_api_v1_manual_entry_return_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/manual-entry/returns": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Manual Returns
+         * @description List manual monthly returns for a client.
+         */
+        get: operations["list_manual_returns_api_v1_manual_entry_returns_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Clients
+         * @description Return all clients, organisations, and strategies from credentials-registry.
+         *
+         *     Used by the UI client selector dropdown.
+         */
+        get: operations["get_clients_api_reporting_clients_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/performance/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Performance Summary
+         * @description Return full performance summary with real equity curve, monthly returns, stats.
+         */
+        get: operations["get_performance_summary_api_reporting_performance_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/performance/coin-breakdown": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Coin Breakdown
+         * @description Return real coin-level PnL breakdown from bills ledger + trades.
+         */
+        get: operations["get_coin_breakdown_api_reporting_performance_coin_breakdown_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/performance/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Positions
+         * @description Return current open positions from backfill data.
+         */
+        get: operations["get_positions_api_reporting_performance_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/performance/balances": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Balances
+         * @description Return balance breakdown from backfill data.
+         */
+        get: operations["get_balances_api_reporting_performance_balances_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/trades": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Trades
+         * @description Return paginated trade history from backfill data.
+         */
+        get: operations["get_trades_api_reporting_trades_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Reports Overview
+         * @description Return real data for the reports overview page.
+         *
+         *     Aggregates portfolio summary, monthly reports, invoices, account balances,
+         *     and recent transfers for all (or selected) clients.
+         */
+        get: operations["get_reports_overview_api_reporting_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/settlements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Settlements
+         * @description Return settlement/reconciliation data from real trade history.
+         *
+         *     Settlements = matched fills that are confirmed by the exchange.
+         */
+        get: operations["get_settlements_api_reporting_settlements_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/fund-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fund Operations
+         * @description Return fund operations data — real investor register, capital accounts.
+         *
+         *     Each client is an investor. Capital accounts derived from equity curves.
+         */
+        get: operations["get_fund_operations_api_reporting_fund_operations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/nav": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Nav
+         * @description Return real NAV data aggregated across clients.
+         *
+         *     NAV = total equity across all clients. Hourly NAV from equity curves.
+         */
+        get: operations["get_nav_api_reporting_nav_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/reporting/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Invoices
+         * @description Return all invoices matching the UI Invoice type shape.
+         */
+        get: operations["get_invoices_api_reporting_invoices_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -6523,6 +7737,33 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/deployment-service/api/v1/data-coverage-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Data Coverage Summary
+         * @description Return instrument coverage summary for the deployment UI.
+         *
+         *     Fast endpoint: reads manifest parquets (totals) + latest-day parquets
+         *     (unique instrument counts by type).
+         *
+         *     Query params:
+         *         service: service name (default: instruments-service)
+         *         categories: comma-separated category list (default: CEFI,TRADFI,DEFI,SPORTS)
+         */
+        get: operations["get_data_coverage_summary_api_v1_data_coverage_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/deployment-service/deployment/clusters": {
         parameters: {
             query?: never;
@@ -7558,6 +8799,89 @@ export interface components {
             installed_version?: string;
         };
         /**
+         * DeployMissingRequest
+         * @description Request to detect and deploy missing data shards.
+         */
+        DeployMissingRequest: {
+            /**
+             * Service
+             * @description Service name
+             */
+            service: string;
+            /**
+             * Start Date
+             * @description Start date (YYYY-MM-DD)
+             */
+            start_date: string;
+            /**
+             * End Date
+             * @description End date (YYYY-MM-DD)
+             */
+            end_date: string;
+            /**
+             * Category
+             * @description Category filter
+             */
+            category?: string | null;
+            /**
+             * Venue
+             * @description Venue filter
+             */
+            venue?: string | null;
+            /**
+             * Region
+             * @description GCP region
+             */
+            region?: string | null;
+            /**
+             * Force
+             * @description Force redeploy even if data exists
+             * @default false
+             */
+            force: boolean;
+            /**
+             * Dry Run
+             * @description Preview only, don't actually deploy
+             * @default false
+             */
+            dry_run: boolean;
+            /**
+             * Compute
+             * @description Compute mode: cloud_run or vm
+             * @default cloud_run
+             */
+            compute: string;
+            /**
+             * Tag
+             * @description Docker image tag
+             * @default latest
+             */
+            tag: string | null;
+            /**
+             * Mode
+             * @description batch or live
+             * @default batch
+             */
+            mode: string;
+            /**
+             * Date Granularity
+             * @description Date granularity override
+             */
+            date_granularity?: string | null;
+            /**
+             * Deploy Missing Only
+             * @description Use backend missing-shard calculation
+             * @default true
+             */
+            deploy_missing_only: boolean;
+            /**
+             * Log Level
+             * @description Log level
+             * @default INFO
+             */
+            log_level: string;
+        };
+        /**
          * DeploymentResult
          * @description Result of creating a deployment.
          */
@@ -8039,6 +9363,26 @@ export interface components {
             /** Pool Address */
             pool_address?: string | null;
         };
+        /**
+         * AnnualTaxSummary
+         * @description Aggregated tax summary for a given client and tax year.
+         */
+        AnnualTaxSummary: {
+            /** Client Id */
+            client_id: string;
+            /** Tax Year */
+            tax_year: number;
+            /** Total Realized Pnl */
+            total_realized_pnl: number;
+            /** Total Fees */
+            total_fees: number;
+            /** Net Taxable */
+            net_taxable: number;
+            /** Currency */
+            currency: string;
+            /** Lots */
+            lots: components["schemas"]["TaxLot"][];
+        };
         /** GenerateInvoiceRequest */
         GenerateInvoiceRequest: {
             /** Org Id */
@@ -8059,6 +9403,18 @@ export interface components {
             client_id: string;
             /** Period Month */
             period_month: string;
+        };
+        /** InvoiceTransitionRequest */
+        InvoiceTransitionRequest: {
+            /** Action */
+            action: string;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+            /** Payment Txid */
+            payment_txid?: string | null;
         };
         /**
          * LoginRequest
@@ -8089,6 +9445,44 @@ export interface components {
             expires_in: number;
             user: components["schemas"]["UserInfo"];
         };
+        /** ManualReturnRequest */
+        ManualReturnRequest: {
+            /** Client Id */
+            client_id: string;
+            /** Year */
+            year: number;
+            /** Month */
+            month: number;
+            /** Return Pct */
+            return_pct: number;
+            /** Pnl Usd */
+            pnl_usd: number;
+            /** Opening Equity */
+            opening_equity: number;
+            /** Closing Equity */
+            closing_equity: number;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+        };
+        /** ManualSnapshotRequest */
+        ManualSnapshotRequest: {
+            /** Client Id */
+            client_id: string;
+            /** Date */
+            date: string;
+            /** Equity Btc */
+            equity_btc: number;
+            /** Equity Usd */
+            equity_usd: number;
+            /**
+             * Notes
+             * @default
+             */
+            notes: string;
+        };
         /** SendForSignatureRequest */
         SendForSignatureRequest: {
             /** Signer Email */
@@ -8105,6 +9499,30 @@ export interface components {
              * @default Please review and sign the attached document.
              */
             message: string;
+        };
+        /**
+         * TaxLot
+         * @description A single FIFO-matched tax lot (buy matched to sell).
+         */
+        TaxLot: {
+            /** Symbol */
+            symbol: string;
+            /** Quantity */
+            quantity: number;
+            /** Buy Date */
+            buy_date: string;
+            /** Buy Price */
+            buy_price: number;
+            /** Sell Date */
+            sell_date: string;
+            /** Sell Price */
+            sell_price: number;
+            /** Realized Pnl */
+            realized_pnl: number;
+            /** Holding Period Days */
+            holding_period_days: number;
+            /** Is Long Term */
+            is_long_term: boolean;
         };
         /** UploadUrlRequest */
         UploadUrlRequest: {
@@ -9311,6 +10729,15 @@ export interface components {
             /** Vm Zone */
             vm_zone?: string | null;
         };
+        /** DeploymentServiceRollbackRequest */
+        DeploymentServiceRollbackRequest: {
+            /** Service */
+            service: string;
+            /** Region */
+            region: string;
+            /** Target Revision */
+            target_revision?: string | null;
+        };
         /** QuotaAcquireRequest */
         QuotaAcquireRequest: {
             /** Quota Shape */
@@ -9328,15 +10755,6 @@ export interface components {
             };
             /** Batch Size */
             batch_size: number;
-        };
-        /** RollbackRequest */
-        deployment_service__RollbackRequest: {
-            /** Service */
-            service: string;
-            /** Region */
-            region: string;
-            /** Target Revision */
-            target_revision?: string | null;
         };
         /** ScheduleCreateRequest */
         ScheduleCreateRequest: {
@@ -9820,6 +11238,41 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["deployment_api__routes__deployments__DeployRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    deploy_missing_shards_api_deployments_deploy_missing_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeployMissingRequest"];
             };
         };
         responses: {
@@ -10685,6 +12138,78 @@ export interface operations {
                 service: string;
                 /** @description Filter by category */
                 category?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_data_status_manifest_api_data_status_manifest_get: {
+        parameters: {
+            query: {
+                /** @description Service name */
+                service: string;
+                /** @description Start date (YYYY-MM-DD) */
+                start_date: string;
+                /** @description End date (YYYY-MM-DD) */
+                end_date: string;
+                /** @description Filter by category */
+                category?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_coverage_summary_api_data_status_coverage_summary_get: {
+        parameters: {
+            query?: {
+                /** @description Service name */
+                service?: string;
+                /** @description Comma-separated categories */
+                categories?: string | null;
             };
             header?: never;
             path?: never;
@@ -16140,6 +17665,117 @@ export interface operations {
             };
         };
     };
+    get_catalogue_catalogue_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    list_domains_catalogue_domains_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_domain_catalogue_domain__domain__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                domain: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_permissions_catalogue_search_get: {
+        parameters: {
+            query: {
+                /** @description Search query (case-insensitive substring match) */
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_economic_results_calendar_economic_results_get: {
         parameters: {
             query?: {
@@ -17088,6 +18724,829 @@ export interface operations {
             };
         };
     };
+    transition_invoice_api_v1_invoices__invoice_id__transition_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceTransitionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    fee_dashboard_api_v1_invoices_dashboard_fees_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    client_fee_detail_api_v1_invoices_dashboard_fees__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    trader_payment_summary_api_v1_invoices_dashboard_trader_payment_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_hwm_state_api_v1_invoices_dashboard_hwm__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_introducers_api_v1_invoices_dashboard_introducers_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portal_admin_api_v1_invoices_portal_admin_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portal_trader_api_v1_invoices_portal_trader_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portal_introducer_api_v1_invoices_portal_introducer__introducer_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                introducer_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    view_invoice_html_api_v1_invoices_view__invoice_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                invoice_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_all_invoices_api_v1_invoices_all_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by client */
+                client_id?: string | null;
+                /** @description Filter: odum, trader, introducer */
+                invoice_type?: string | null;
+                /** @description Filter: ISSUED, PAID, VOIDED */
+                status?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    regenerate_all_invoices_api_v1_invoices_generate_all_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    view_pnl_chart_api_v1_invoices_charts__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_charts_api_v1_invoices_charts_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    view_dashboard_api_v1_invoices_dashboards__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_dashboards_api_v1_invoices_dashboards_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    regenerate_all_dashboards_api_v1_invoices_dashboards_generate_all_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trade_analytics_api_v1_invoices_analytics__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_aggregated_analytics_api_v1_invoices_analytics_get: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated client IDs (empty = all) */
+                client_ids?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_performance_stats_api_v1_invoices_performance__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_orders_api_v1_invoices_orders__client_id__get: {
+        parameters: {
+            query?: {
+                /** @description Filter by symbol (partial match) */
+                symbol?: string;
+                /** @description Filter by side (buy/sell) */
+                side?: string;
+                /** @description Filter by status */
+                status?: string;
+                limit?: number;
+                offset?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    view_monthly_report_api_v1_invoices_reports__client_id___year___month__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+                year: number;
+                month: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/html": string;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_monthly_reports_api_v1_invoices_reports__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_trade_reporting_api_v1_compliance_trade_reporting_get: {
         parameters: {
             query: {
@@ -17339,6 +19798,1052 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_clients_api_v1_clients_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by organisation */
+                organisation_id?: string | null;
+                /** @description Filter by strategy */
+                strategy_id?: string | null;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: string | boolean;
+                        }[] | {
+                            [key: string]: string;
+                        }[];
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_client_api_v1_clients__client_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string | boolean;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_performance_summary_api_v1_performance_summary_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_open_positions_api_v1_performance_positions_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_balance_breakdown_api_v1_performance_balances_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_coin_breakdown_api_v1_performance_coin_breakdown_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trade_history_api_v1_trades_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+                /** @description Filter by symbol */
+                symbol?: string | null;
+                /** @description Filter by side (BUY or SELL) */
+                side?: string | null;
+                /** @description Number of trades */
+                limit?: number;
+                /** @description Pagination offset */
+                offset?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_trades_csv_api_v1_exports_trades_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_daily_summary_csv_api_v1_exports_daily_summary_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_hourly_snapshots_csv_api_v1_exports_hourly_snapshots_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_coin_breakdown_csv_api_v1_exports_coin_breakdown_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_annual_tax_summary_api_v1_tax_annual_summary_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+                /** @description Tax year to report on */
+                tax_year?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnnualTaxSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_annual_tax_csv_api_v1_tax_annual_summary_csv_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+                /** @description Tax year to report on */
+                tax_year?: number;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_manual_snapshot_api_v1_manual_entry_snapshot_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualSnapshotRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_manual_snapshots_api_v1_manual_entry_snapshots_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_manual_return_api_v1_manual_entry_return_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualReturnRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_manual_returns_api_v1_manual_entry_returns_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_clients_api_reporting_clients_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: {
+                            [key: string]: unknown;
+                        }[];
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_performance_summary_api_reporting_performance_summary_get: {
+        parameters: {
+            query: {
+                /** @description Client ID */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_coin_breakdown_api_reporting_performance_coin_breakdown_get: {
+        parameters: {
+            query: {
+                /** @description Client ID */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_positions_api_reporting_performance_positions_get: {
+        parameters: {
+            query: {
+                /** @description Client ID */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_balances_api_reporting_performance_balances_get: {
+        parameters: {
+            query: {
+                /** @description Client ID */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_trades_api_reporting_trades_get: {
+        parameters: {
+            query: {
+                /** @description Client ID */
+                client_id: string;
+                limit?: number;
+                offset?: number;
+                symbol?: string;
+                side?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_reports_overview_api_reporting_reports_get: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated client IDs */
+                client_ids?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_settlements_api_reporting_settlements_get: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated client IDs */
+                client_ids?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fund_operations_api_reporting_fund_operations_get: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated client IDs */
+                client_ids?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_nav_api_reporting_nav_get: {
+        parameters: {
+            query?: {
+                /** @description Comma-separated client IDs */
+                client_ids?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_invoices_api_reporting_invoices_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by org ID */
+                org_id?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
                 };
             };
             /** @description Validation Error */
@@ -19325,7 +22830,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["deployment_service__RollbackRequest"];
+                "application/json": components["schemas"]["DeploymentServiceRollbackRequest"];
             };
         };
         responses: {
@@ -19363,6 +22868,42 @@ export interface operations {
             path: {
                 deployment_id: string;
             };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_data_coverage_summary_api_v1_data_coverage_summary_get: {
+        parameters: {
+            query?: {
+                service?: string;
+                categories?: string | null;
+            };
+            header?: {
+                "x-service-token"?: string | null;
+            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
