@@ -299,7 +299,7 @@ export function BatchLiveRail({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 px-4 py-2 border-b bg-muted/30",
+        "flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b bg-muted/30",
         className,
       )}
     >

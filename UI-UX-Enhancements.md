@@ -56,3 +56,30 @@ option (A) — **Partially done:**
 option (B)
 
 - need ideas and team reviews
+
+in trading lifecycle page
+-trading button at top navbar does not get highlighted when i click on following tabs in the left side navbar -> alerts, and all of the buttons under strategy families
+
+- in some of them strategy families, when i click on one button, other button in the same family also gets highlighted
+- in the custom workspace, I can add new panel but cannot delete it.
+
+## Strategy Families (Phase 1A/1B/2A/2B/2C/2D — 2026-03-28 / 2026-04-01)
+
+- [x] DeFi family page + WidgetGrid: wallet summary, strategy config, risk dashboard, recon, PnL, book, alerts. Full DeFi tab set.
+- [x] Sports family page: arb scanner, accumulators builder, live odds, settlement.
+- [x] Options family page: combo builder (spread/straddle/iron condor/butterfly), pricing model selector, vol surface, Greeks.
+- [x] Predictions family page: aggregator builder, Polymarket fixtures, probability analysis.
+- [x] Lock icons on locked family groups (FOMO visibility, entitlement gating).
+- [x] DeFi Atomic Bundle Builder: multi-step atomic ops, gas estimation, simulation preview.
+- [x] Sports Accumulator Builder: multi-leg odds, payout calculation.
+- [x] Strategy Family filter added to global scope filters (top bar) alongside org/client/strategy.
+- [x] Share class selector (USDT/ETH/BTC) added to PnL controls and DeFi strategy config.
+- [x] Health Factor time series card added to strategy detail Risk tab for DeFi recursive strategies.
+- [x] Per-client config display (Patrick demo): venue restrictions, ETH-only, HyperLiquid blocked.
+- [x] Risk indicators panel: oracle depeg, borrow-staking spread, USDT peg, withdrawal delay, rebalance cost.
+- [x] Post-trade pages: IBOR, Shadow NAV, Fund Admin, SAFT management.
+- [x] Valuation: Token Valuation, Derivatives Pricing Engine, What-If / Scenario Analysis.
+- [x] Operations: OTC Trade Capture, Staking Dashboard, Model Portfolio + Drift.
+- [x] Mobile Alert Settings: push toggle per alert type, delivery channel selector.
+- [ ] Trading navbar highlight bug: alerts and strategy family sub-tabs do not highlight the Trading button. **Known — requires active route matching fix in lifecycle nav.**
+- [ ] Multiple strategy family sub-buttons highlighting simultaneously. **Known — requires route group prefix check.**

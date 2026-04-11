@@ -19,13 +19,13 @@ import type {
   BenchmarkComparison,
   MonthlyReturn,
   KpiBarItem,
-} from "./backtest-analytics-types";
+} from "@/lib/types/backtest-analytics";
 import type {
   ExecutionBacktestResults,
   DirectionStats,
   EquityPoint as ExecEquityPoint,
   ExecutionTrade,
-} from "./build-mock-data";
+} from "@/lib/mocks/fixtures/build-data";
 
 function mapDirectionStats(d: DirectionStats): DirectionPerformance {
   return {
@@ -39,32 +39,22 @@ function mapDirectionStats(d: DirectionStats): DirectionPerformance {
     expected_payoff: d.expectancy,
     total_trades: d.total_trades,
     winning_trades: Math.round(d.total_trades * (d.win_rate / 100)),
-    losing_trades:
-      d.total_trades - Math.round(d.total_trades * (d.win_rate / 100)),
+    losing_trades: d.total_trades - Math.round(d.total_trades * (d.win_rate / 100)),
     break_even_trades: 0,
     win_rate: d.win_rate,
     avg_pnl: d.total_trades > 0 ? d.net_profit / d.total_trades : 0,
     avg_pnl_pct: d.total_trades > 0 ? d.net_profit_pct / d.total_trades : 0,
     avg_winning_trade: d.avg_winning_trade,
-    avg_winning_trade_pct:
-      d.avg_winning_trade > 0 ? (d.avg_winning_trade / 100000) * 100 : 0,
+    avg_winning_trade_pct: d.avg_winning_trade > 0 ? (d.avg_winning_trade / 100000) * 100 : 0,
     avg_losing_trade: d.avg_losing_trade,
-    avg_losing_trade_pct:
-      d.avg_losing_trade !== 0 ? (d.avg_losing_trade / 100000) * 100 : 0,
-    ratio_avg_win_loss:
-      d.avg_losing_trade !== 0
-        ? Math.abs(d.avg_winning_trade / d.avg_losing_trade)
-        : 0,
+    avg_losing_trade_pct: d.avg_losing_trade !== 0 ? (d.avg_losing_trade / 100000) * 100 : 0,
+    ratio_avg_win_loss: d.avg_losing_trade !== 0 ? Math.abs(d.avg_winning_trade / d.avg_losing_trade) : 0,
     largest_win: d.largest_winner,
     largest_win_pct: (d.largest_winner / 100000) * 100,
-    largest_win_as_pct_of_gross:
-      d.gross_profit > 0 ? (d.largest_winner / d.gross_profit) * 100 : 0,
+    largest_win_as_pct_of_gross: d.gross_profit > 0 ? (d.largest_winner / d.gross_profit) * 100 : 0,
     largest_loss: d.largest_loser,
     largest_loss_pct: (Math.abs(d.largest_loser) / 100000) * 100,
-    largest_loss_as_pct_of_gross:
-      d.gross_loss !== 0
-        ? (Math.abs(d.largest_loser) / Math.abs(d.gross_loss)) * 100
-        : 0,
+    largest_loss_as_pct_of_gross: d.gross_loss !== 0 ? (Math.abs(d.largest_loser) / Math.abs(d.gross_loss)) * 100 : 0,
     avg_bars_in_trades: Math.round(d.avg_trade_duration_hours / 4),
     avg_bars_in_winning: Math.round((d.avg_trade_duration_hours / 4) * 0.8),
     avg_bars_in_losing: Math.round((d.avg_trade_duration_hours / 4) * 1.3),
@@ -75,10 +65,7 @@ function mapDirectionStats(d: DirectionStats): DirectionPerformance {
   };
 }
 
-function convertEquityCurve(
-  points: ExecEquityPoint[],
-  buyHoldReturnPct: number,
-): SharedEquityPoint[] {
+function convertEquityCurve(points: ExecEquityPoint[], buyHoldReturnPct: number): SharedEquityPoint[] {
   if (!points.length) return [];
   const startEquity = points[0].equity;
   const buyHoldStart = startEquity;
@@ -98,11 +85,7 @@ function extractTradeMarkers(trades: ExecutionTrade[]): TradeMarker[] {
     .map((t) => ({
       time: new Date(t.timestamp).getTime() / 1000,
       direction:
-        t.signal === "EXIT"
-          ? ("close" as const)
-          : t.signal === "LONG"
-            ? ("long" as const)
-            : ("short" as const),
+        t.signal === "EXIT" ? ("close" as const) : t.signal === "LONG" ? ("long" as const) : ("short" as const),
       pnl: t.pnl ?? 0,
       pnl_pct: t.pnl !== null ? (t.pnl / 100000) * 100 : 0,
     }));
@@ -183,12 +166,7 @@ export function executionResultsToAnalytics(
     {
       label: "Sharpe",
       value: r.sharpe_ratio.toFixed(2),
-      color:
-        r.sharpe_ratio > 1.5
-          ? "green"
-          : r.sharpe_ratio < 0.5
-            ? "red"
-            : "default",
+      color: r.sharpe_ratio > 1.5 ? "green" : r.sharpe_ratio < 0.5 ? "red" : "default",
     },
     {
       label: "Max DD",
@@ -221,17 +199,11 @@ export function executionResultsToAnalytics(
   const losingTrades = r.trades.filter((t) => t.pnl !== null && t.pnl < 0);
   const avgProfitPct =
     winningTrades.length > 0
-      ? (winningTrades.reduce((s, t) => s + (t.pnl ?? 0), 0) /
-          winningTrades.length /
-          100000) *
-        100
+      ? (winningTrades.reduce((s, t) => s + (t.pnl ?? 0), 0) / winningTrades.length / 100000) * 100
       : 0;
   const avgLossPct =
     losingTrades.length > 0
-      ? (losingTrades.reduce((s, t) => s + (t.pnl ?? 0), 0) /
-          losingTrades.length /
-          100000) *
-        100
+      ? (losingTrades.reduce((s, t) => s + (t.pnl ?? 0), 0) / losingTrades.length / 100000) * 100
       : 0;
 
   const startEq = equityCurve[0]?.equity ?? 100000;
@@ -245,14 +217,10 @@ export function executionResultsToAnalytics(
     cagr_long: cagr * 0.65,
     cagr_short: cagr * 0.35,
     return_on_initial_capital: r.net_profit_pct,
-    account_size_required: Math.round(
-      startEq * (1 + r.max_drawdown_pct / 100) * 1.2,
-    ),
+    account_size_required: Math.round(startEq * (1 + r.max_drawdown_pct / 100) * 1.2),
     return_on_account_size: r.net_profit_pct * 0.85,
     net_profit_pct_of_largest_loss:
-      r.by_direction.all.largest_loser !== 0
-        ? Math.abs(r.net_profit / r.by_direction.all.largest_loser)
-        : 0,
+      r.by_direction.all.largest_loser !== 0 ? Math.abs(r.net_profit / r.by_direction.all.largest_loser) : 0,
   };
 
   const runupDrawdown: RunupDrawdownStats = {

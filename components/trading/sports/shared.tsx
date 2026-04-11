@@ -5,16 +5,12 @@
  * Centralised here so layout and style changes propagate everywhere automatically.
  */
 
-import * as React from "react";
 import { cn } from "@/lib/utils";
-import type {
-  FixtureStatus,
-  OddsMovement,
-  FootballLeague,
-  TeamStats,
-} from "./types";
-import { getStatusLabel, isLive, formResultColour } from "./helpers";
-import { TrendingUp, TrendingDown, Minus, Lock, Zap } from "lucide-react";
+import { Lock, Minus, TrendingDown, TrendingUp, Zap } from "lucide-react";
+import * as React from "react";
+import { formResultColour, getStatusLabel, isLive } from "./helpers";
+import type { FixtureStatus, FootballLeague, OddsMovement, TeamStats } from "./types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Status Pill ──────────────────────────────────────────────────────────────
 
@@ -35,15 +31,10 @@ export function StatusPill({ status, minute, className }: StatusPillProps) {
       className={cn(
         "inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs font-black uppercase tracking-wider",
         live && "bg-[#4ade80]/15 text-[#4ade80] border border-[#4ade80]/30",
-        susp &&
-          "bg-red-500/15 text-red-400 border border-red-500/30 animate-pulse",
+        susp && "bg-red-500/15 text-red-400 border border-red-500/30 animate-pulse",
         ht && "bg-amber-400/15 text-amber-400 border border-amber-400/30",
         ft && "bg-zinc-700/60 text-zinc-400 border border-zinc-600/40",
-        !live &&
-          !susp &&
-          !ht &&
-          !ft &&
-          "bg-zinc-800/60 text-zinc-400 border border-zinc-700/40",
+        !live && !susp && !ht && !ft && "bg-zinc-800/60 text-zinc-400 border border-zinc-700/40",
         className,
       )}
     >
@@ -84,26 +75,12 @@ export function DualStatBar({
   const total = homeValue + awayValue;
   const homePct = total === 0 ? 50 : (homeValue / total) * 100;
   const awayPct = 100 - homePct;
-  const homeDom = invertDominance
-    ? homeValue < awayValue
-    : homeValue > awayValue;
-  const awayDom = invertDominance
-    ? awayValue < homeValue
-    : awayValue > homeValue;
+  const homeDom = invertDominance ? homeValue < awayValue : homeValue > awayValue;
+  const awayDom = invertDominance ? awayValue < homeValue : awayValue > homeValue;
 
   return (
-    <div
-      className={cn(
-        "grid grid-cols-[1fr_96px_1fr] items-center gap-2",
-        className,
-      )}
-    >
-      <span
-        className={cn(
-          "text-right tabular-nums text-sm",
-          homeDom ? "font-bold text-white" : "text-zinc-400",
-        )}
-      >
+    <div className={cn("grid grid-cols-[1fr_96px_1fr] items-center gap-2", className)}>
+      <span className={cn("text-right tabular-nums text-sm", homeDom ? "font-bold text-white" : "text-zinc-400")}>
         {format(homeValue)}
       </span>
       <div className="flex flex-col items-center gap-1">
@@ -127,12 +104,7 @@ export function DualStatBar({
           />
         </div>
       </div>
-      <span
-        className={cn(
-          "text-left tabular-nums text-sm",
-          awayDom ? "font-bold text-white" : "text-zinc-400",
-        )}
-      >
+      <span className={cn("text-left tabular-nums text-sm", awayDom ? "font-bold text-white" : "text-zinc-400")}>
         {format(awayValue)}
       </span>
     </div>
@@ -148,12 +120,7 @@ interface MatchStatsPanelProps {
   className?: string;
 }
 
-export function MatchStatsPanel({
-  home,
-  away,
-  compact = false,
-  className,
-}: MatchStatsPanelProps) {
+export function MatchStatsPanel({ home, away, compact = false, className }: MatchStatsPanelProps) {
   const stats: Array<{
     label: string;
     homeVal: number | undefined;
@@ -165,7 +132,7 @@ export function MatchStatsPanel({
       label: "xG",
       homeVal: home.xg,
       awayVal: away.xg,
-      format: (v) => v.toFixed(1),
+      format: (v) => formatNumber(v, 1),
     },
     {
       label: "Shots OT",
@@ -226,10 +193,8 @@ export function MatchStatsPanel({
 // ─── Odds Movement Icon ───────────────────────────────────────────────────────
 
 export function OddsMovementIcon({ movement }: { movement: OddsMovement }) {
-  if (movement === "UP")
-    return <TrendingUp className="size-3 text-[#4ade80]" />;
-  if (movement === "DOWN")
-    return <TrendingDown className="size-3 text-red-400" />;
+  if (movement === "UP") return <TrendingUp className="size-3 text-[#4ade80]" />;
+  if (movement === "DOWN") return <TrendingDown className="size-3 text-red-400" />;
   return <Minus className="size-3 text-zinc-600" />;
 }
 
@@ -237,12 +202,7 @@ export function OddsMovementIcon({ movement }: { movement: OddsMovement }) {
 
 export function LockedCell({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "flex items-center justify-center gap-1 text-zinc-700",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center justify-center gap-1 text-zinc-700", className)}>
       <Lock className="size-3" />
     </div>
   );
@@ -270,10 +230,7 @@ export function FormDots({ form }: { form: ("W" | "D" | "L")[] }) {
 
 // ─── League Badge ─────────────────────────────────────────────────────────────
 
-const LEAGUE_COLOURS: Record<
-  string,
-  { bg: string; text: string; border: string }
-> = {
+const LEAGUE_COLOURS: Record<string, { bg: string; text: string; border: string }> = {
   EPL: { bg: "#7c3aed22", text: "#a78bfa", border: "#7c3aed44" },
   "La Liga": { bg: "#ea580c22", text: "#fb923c", border: "#ea580c44" },
   Bundesliga: { bg: "#dc262622", text: "#f87171", border: "#dc262644" },
@@ -283,13 +240,7 @@ const LEAGUE_COLOURS: Record<
   UEL: { bg: "#92400e22", text: "#fbbf24", border: "#92400e44" },
 };
 
-export function LeagueBadge({
-  league,
-  className,
-}: {
-  league: FootballLeague;
-  className?: string;
-}) {
+export function LeagueBadge({ league, className }: { league: FootballLeague; className?: string }) {
   const c = LEAGUE_COLOURS[league] ?? {
     bg: "#27272a",
     text: "#a1a1aa",
@@ -310,13 +261,7 @@ export function LeagueBadge({
 
 // ─── Arb Pct Badge ───────────────────────────────────────────────────────────
 
-export function ArbBadge({
-  pct,
-  className,
-}: {
-  pct: number;
-  className?: string;
-}) {
+export function ArbBadge({ pct, className }: { pct: number; className?: string }) {
   const strong = pct >= 2;
   const medium = pct >= 1;
   return (
@@ -331,7 +276,7 @@ export function ArbBadge({
         className,
       )}
     >
-      <Zap className="size-2.5" />+{pct.toFixed(2)}%
+      <Zap className="size-2.5" />+{formatPercent(pct, 2)}
     </span>
   );
 }
@@ -351,36 +296,13 @@ export function SectionHeader({
 }) {
   return (
     <div className={cn("flex items-center gap-2 px-1 py-1", className)}>
-      <span className="text-xs font-black uppercase tracking-widest text-zinc-500">
-        {title}
-      </span>
+      <span className="text-xs font-black uppercase tracking-widest text-zinc-500">{title}</span>
       {count != null && (
         <span className="inline-flex items-center justify-center min-w-[20px] h-5 rounded-sm bg-zinc-800 text-xs font-bold text-zinc-400 px-1">
           {count}
         </span>
       )}
       {action && <div className="ml-auto">{action}</div>}
-    </div>
-  );
-}
-
-// ─── Empty State ──────────────────────────────────────────────────────────────
-
-export function EmptyState({
-  message,
-  className,
-}: {
-  message: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex items-center justify-center py-16 text-base text-zinc-500",
-        className,
-      )}
-    >
-      {message}
     </div>
   );
 }
@@ -402,17 +324,10 @@ export function KpiTile({
 }) {
   return (
     <div
-      className={cn(
-        "flex flex-col gap-0.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2.5",
-        className,
-      )}
+      className={cn("flex flex-col gap-0.5 rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2.5", className)}
     >
-      <span className="text-xs uppercase tracking-widest font-semibold text-zinc-500">
-        {label}
-      </span>
-      <span className={cn("text-lg font-black tabular-nums", valueClassName)}>
-        {value}
-      </span>
+      <span className="text-xs uppercase tracking-widest font-semibold text-zinc-500">{label}</span>
+      <span className={cn("text-lg font-black tabular-nums", valueClassName)}>{value}</span>
       {subtext && <span className="text-sm text-zinc-600">{subtext}</span>}
     </div>
   );
@@ -441,14 +356,7 @@ interface OddsChipProps {
   className?: string;
 }
 
-export function OddsChip({
-  label,
-  odds,
-  movement,
-  active,
-  onClick,
-  className,
-}: OddsChipProps) {
+export function OddsChip({ label, odds, movement, active, onClick, className }: OddsChipProps) {
   return (
     <button
       onClick={onClick}
@@ -460,19 +368,10 @@ export function OddsChip({
         className,
       )}
     >
-      <span className="text-xs text-zinc-500 uppercase tracking-wide font-medium leading-none">
-        {label}
-      </span>
-      <span className="text-lg font-black tabular-nums leading-tight">
-        {odds.toFixed(2)}
-      </span>
+      <span className="text-xs text-zinc-500 uppercase tracking-wide font-medium leading-none">{label}</span>
+      <span className="text-lg font-black tabular-nums leading-tight">{formatNumber(odds, 2)}</span>
       {movement && movement !== "STABLE" && (
-        <span
-          className={cn(
-            "text-xs font-bold",
-            movement === "UP" ? "text-[#4ade80]" : "text-red-400",
-          )}
-        >
+        <span className={cn("text-xs font-bold", movement === "UP" ? "text-[#4ade80]" : "text-red-400")}>
           {movement === "UP" ? "▲" : "▼"}
         </span>
       )}

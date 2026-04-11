@@ -1,47 +1,18 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Key,
-  Plus,
-  Shield,
-  Trash2,
-  Eye,
-  EyeOff,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertTriangle, CheckCircle2, Key, Plus, Shield, Trash2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 
-const SUPPORTED_VENUES = [
-  "Binance",
-  "OKX",
-  "Bybit",
-  "Deribit",
-  "Coinbase",
-  "Kraken",
-  "Hyperliquid",
-  "IBKR",
-];
+const SUPPORTED_VENUES = ["Binance", "OKX", "Bybit", "Deribit", "Coinbase", "Kraken", "Hyperliquid", "IBKR"];
 
 interface VenueApiKey {
   id: string;
@@ -90,19 +61,16 @@ export default function ApiKeysSettingsPage() {
   async function handleAddKey() {
     if (!newVenue || !newApiKey || !org) return;
     try {
-      const res = await fetch(
-        `/api/auth/provisioning/organizations/${org.id}/api-keys`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            venue: newVenue,
-            label: newLabel || `${newVenue} Key`,
-            api_key: newApiKey,
-            api_secret: newApiSecret,
-          }),
-        },
-      );
+      const res = await fetch(`/api/auth/provisioning/organizations/${org.id}/api-keys`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          venue: newVenue,
+          label: newLabel || `${newVenue} Key`,
+          api_key: newApiKey,
+          api_secret: newApiSecret,
+        }),
+      });
       if (res.ok) {
         const data = await res.json();
         setOrg(data.organization);
@@ -128,12 +96,9 @@ export default function ApiKeysSettingsPage() {
   async function handleRevokeKey(keyId: string) {
     if (!org) return;
     try {
-      const res = await fetch(
-        `/api/auth/provisioning/organizations/${org.id}/api-keys/${keyId}`,
-        {
-          method: "DELETE",
-        },
-      );
+      const res = await fetch(`/api/auth/provisioning/organizations/${org.id}/api-keys/${keyId}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
         const data = await res.json();
         setOrg(data.organization);
@@ -158,22 +123,24 @@ export default function ApiKeysSettingsPage() {
 
   if (!org) {
     return (
-      <div className="p-8 max-w-3xl mx-auto space-y-4">
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
-          <Key className="size-6" /> Venue API Keys
-        </h1>
+      <div className="mx-auto max-w-3xl space-y-4 p-8">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
+              <Key className="size-6" /> Venue API Keys
+            </span>
+          }
+        />
         <Card>
           <CardContent className="py-12 text-center space-y-3">
             <AlertTriangle className="size-10 text-amber-400 mx-auto" />
             <h2 className="text-lg font-medium">No organisation linked</h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Your account hasn&apos;t been linked to an organisation yet. Once
-              your application is approved and an admin sets up your
-              organisation, you&apos;ll be able to add venue API keys here.
+              Your account hasn&apos;t been linked to an organisation yet. Once your application is approved and an
+              admin sets up your organisation, you&apos;ll be able to add venue API keys here.
             </p>
             <p className="text-xs text-muted-foreground">
-              Contact <span className="text-foreground">support@odum.io</span>{" "}
-              if you believe this is an error.
+              Contact <span className="text-foreground">support@odum.io</span> if you believe this is an error.
             </p>
           </CardContent>
         </Card>
@@ -185,20 +152,19 @@ export default function ApiKeysSettingsPage() {
   const revokedKeys = org.api_keys.filter((k) => k.status !== "active");
 
   return (
-    <div className="p-8 max-w-3xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold flex items-center gap-2">
+    <div className="mx-auto max-w-3xl space-y-6 p-8">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
             <Key className="size-6" /> Venue API Keys
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {org.name} &mdash; manage your exchange and venue API credentials
-          </p>
-        </div>
+          </span>
+        }
+        description={`${org.name} — manage your exchange and venue API credentials`}
+      >
         <Button size="sm" onClick={() => setAdding(true)} disabled={adding}>
-          <Plus className="size-4 mr-1" /> Add Key
+          <Plus className="mr-1 size-4" /> Add Key
         </Button>
-      </div>
+      </PageHeader>
 
       <Card className="border-amber-500/20 bg-amber-500/5">
         <CardContent className="py-4">
@@ -207,10 +173,9 @@ export default function ApiKeysSettingsPage() {
             <div className="text-sm">
               <p className="font-medium text-amber-400">Security Notice</p>
               <p className="text-muted-foreground">
-                API keys are encrypted at rest and never displayed in full after
-                submission. We only require <strong>read-only</strong> and{" "}
-                <strong>trade</strong> permissions &mdash; never withdrawal
-                permissions. You can revoke access at any time.
+                API keys are encrypted at rest and never displayed in full after submission. We only require{" "}
+                <strong>read-only</strong> and <strong>trade</strong> permissions &mdash; never withdrawal permissions.
+                You can revoke access at any time.
               </p>
             </div>
           </div>
@@ -222,8 +187,7 @@ export default function ApiKeysSettingsPage() {
           <CardHeader>
             <CardTitle className="text-base">Add Venue API Key</CardTitle>
             <CardDescription>
-              Connect a new exchange or venue. Keys are stored securely in
-              Secret Manager.
+              Connect a new exchange or venue. Keys are stored securely in Secret Manager.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -276,19 +240,12 @@ export default function ApiKeysSettingsPage() {
                   onClick={() => setShowSecret(!showSecret)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
-                  {showSecret ? (
-                    <EyeOff className="size-4" />
-                  ) : (
-                    <Eye className="size-4" />
-                  )}
+                  {showSecret ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
             </div>
             <div className="flex gap-2 pt-2">
-              <Button
-                onClick={handleAddKey}
-                disabled={!newVenue || !newApiKey || !newApiSecret}
-              >
+              <Button onClick={handleAddKey} disabled={!newVenue || !newApiKey || !newApiSecret}>
                 <CheckCircle2 className="size-4 mr-1" /> Save Key
               </Button>
               <Button variant="ghost" onClick={() => setAdding(false)}>
@@ -323,11 +280,7 @@ export default function ApiKeysSettingsPage() {
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        Key:{" "}
-                        <code className="bg-muted px-1 rounded">
-                          {key.api_key_masked}
-                        </code>{" "}
-                        &mdash; Added{" "}
+                        Key: <code className="bg-muted px-1 rounded">{key.api_key_masked}</code> &mdash; Added{" "}
                         {new Date(key.added_at).toLocaleDateString("en-GB", {
                           day: "numeric",
                           month: "short",
@@ -355,8 +308,8 @@ export default function ApiKeysSettingsPage() {
             <Key className="size-10 text-muted-foreground mx-auto" />
             <h2 className="text-lg font-medium">No API keys yet</h2>
             <p className="text-sm text-muted-foreground max-w-md mx-auto">
-              Add your first venue API key to start receiving reports and
-              analytics. We support {SUPPORTED_VENUES.length} venues.
+              Add your first venue API key to start receiving reports and analytics. We support{" "}
+              {SUPPORTED_VENUES.length} venues.
             </p>
             <Button onClick={() => setAdding(true)}>
               <Plus className="size-4 mr-1" /> Add Your First Key
@@ -377,9 +330,7 @@ export default function ApiKeysSettingsPage() {
                   <Key className="size-4 text-muted-foreground" />
                   <div>
                     <span className="text-sm">{key.venue}</span>
-                    <span className="text-xs text-muted-foreground ml-2">
-                      {key.label}
-                    </span>
+                    <span className="text-xs text-muted-foreground ml-2">{key.label}</span>
                   </div>
                   <Badge variant="secondary" className="text-[10px] ml-auto">
                     {key.status}

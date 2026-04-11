@@ -11,8 +11,8 @@ registerPresets("orders", [
     tab: "orders",
     isPreset: true,
     layouts: [
-      { widgetId: "orders-kpi-strip", instanceId: "orders-kpi-strip-1", x: 0, y: 0, w: 12, h: 1 },
-      { widgetId: "orders-table", instanceId: "orders-table-1", x: 0, y: 1, w: 12, h: 10 },
+      { widgetId: "orders-kpi-strip", instanceId: "orders-kpi-strip-1", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "orders-table", instanceId: "orders-table-1", x: 0, y: 2, w: 12, h: 10 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -22,12 +22,13 @@ registerPresets("orders", [
 registerWidget({
   id: "orders-kpi-strip",
   label: "Order Summary",
-  description: "4 KPIs: total, open, partial, filled order counts.",
+  description:
+    "6 KPIs: total, open, partial, filled, rejected, and failed order counts. Layout and responsive grid via KPI summary shell.",
   icon: ArrowUpDown,
-  minW: 4,
-  minH: 1,
+  minW: 2,
+  minH: 2,
   defaultW: 12,
-  defaultH: 1,
+  defaultH: 2,
   requiredEntitlements: ["execution-basic", "execution-full"],
   category: "Orders",
   availableOn: ["orders"],

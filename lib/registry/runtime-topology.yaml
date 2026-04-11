@@ -918,23 +918,23 @@ ibkr_gateway_connectivity:
   # note: see comment below
   # All IBKR connectivity routes through the long-lived ibkr-gateway-infra process (IB Gateway Java
   # app). Do NOT add direct IB Gateway connections anywhere else in the workspace — one process,
-  # one connection point. The four adapters (UMI ibkr_adapter, UTEI ibkr_tradfi, UPI ibkr,
-  # URDI ibkr) all accept an injected ib_insync.IB object. The caller owns the connection lifecycle.
+  # one connection point. The four adapters (MTDS market_interface ibkr_adapter, exec-svc ibkr_tradfi,
+  # pos-bal-mon ibkr, instruments-svc ibkr) all accept an injected ib_insync.IB object. The caller owns the connection lifecycle.
   live_mode:
     source: ibkr-gateway-infra
     protocol: TWS socket (ib_insync EClient/EWrapper)
     consumers:
       market-tick-data-service:
-        adapter: unified_market_interface.adapters.ibkr_adapter
+        adapter: market_tick_data_service.market_interface.adapters.ibkr_adapter
         data: real-time tick data, historical bars (reqMktData, reqHistoricalData)
       instruments-service:
-        adapter: unified_reference_data_interface.adapters.ibkr
+        adapter: instruments_service.reference_data.adapters.tradfi.ibkr
         data: contract details, options chains, corporate actions (reqContractDetails)
       execution-service:
-        adapter: unified_trade_execution_interface.adapters.ibkr_tradfi
+        adapter: execution_service.adapters.ibkr_tradfi
         data: order routing, fill callbacks (placeOrder, reqOpenOrders)
       position-balance-monitor-service:
-        adapter: unified_position_interface.adapters.ibkr
+        adapter: position_balance_monitor_service.adapters.ibkr
         data: position and account updates (reqAccountUpdates, reqPositions)
   batch_mode:
     source: matching-engine-library (MEL)
@@ -966,10 +966,10 @@ ibkr-gateway-infra:
   depends_on: [unified-trading-settings]
   connects_to:
     [
-      unified-market-interface,
-      unified-trade-execution-interface,
-      unified-position-interface,
-      unified-reference-data-interface,
+      market-tick-data-service,
+      execution-service,
+      position-balance-monitor-service,
+      instruments-service,
     ]
   status: planned
   notes: >

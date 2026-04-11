@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CRYPTO_VENUES, TRADFI_VENUES } from "@/lib/config/services/markets.config";
 import { useMarketsData } from "./markets-data-context";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
   const { liveBookUpdates, assetClass, bookDepth } = useMarketsData();
@@ -91,7 +92,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
                           )}
                         >
                           <span className="text-[var(--pnl-positive)]">${level.price.toLocaleString()}</span>
-                          <span className="text-muted-foreground ml-1">/{level.size.toFixed(1)}</span>
+                          <span className="text-muted-foreground ml-1">/{formatNumber(level.size, 1)}</span>
                         </td>
                       ))
                     : Array.from({ length: bookDepth }).map((_, i) => (
@@ -115,7 +116,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
                           {update.trade.side === "buy" ? "B" : "S"}
                         </span>
                         <span className="font-bold">${update.trade.price.toLocaleString()}</span>
-                        <span className="text-muted-foreground">x{update.trade.size.toFixed(2)}</span>
+                        <span className="text-muted-foreground">x{formatNumber(update.trade.size, 2)}</span>
                         <span
                           className={cn(
                             "text-[9px]",
@@ -142,7 +143,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
                           )}
                         >
                           <span className="text-[var(--pnl-negative)]">${level.price.toLocaleString()}</span>
-                          <span className="text-muted-foreground ml-1">/{level.size.toFixed(1)}</span>
+                          <span className="text-muted-foreground ml-1">/{formatNumber(level.size, 1)}</span>
                         </td>
                       ))
                     : Array.from({ length: bookDepth }).map((_, i) => (

@@ -3,7 +3,7 @@
 import { CalendarEventFeed } from "@/components/trading/calendar-event-feed";
 import type { IndicatorOverlay } from "@/components/trading/candlestick-chart";
 import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
-import { generateMockOrderBook } from "@/components/trading/order-book";
+import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAlerts } from "@/hooks/api/use-alerts";
@@ -13,7 +13,8 @@ import { useBalances, usePositions } from "@/hooks/api/use-positions";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { mock01, mockRange } from "@/lib/deterministic-mock";
+import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { Strategy } from "@/lib/strategy-registry";
 import { STRATEGIES } from "@/lib/strategy-registry";
@@ -28,21 +29,20 @@ import {
   type TerminalInstrument,
 } from "@/components/widgets/terminal/terminal-data-context";
 
-import "@/components/widgets/terminal/register";
-
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
-  { symbol: "BTC/USDT", name: "Bitcoin", venue: "Binance", category: "CeFi", midPrice: 87234.56, change: 1.23 },
-  { symbol: "ETH/USDT", name: "Ethereum", venue: "Binance", category: "CeFi", midPrice: 2045.78, change: -0.45 },
+  { symbol: "BTC/USDT", name: "Bitcoin", venue: "Binance", category: "CeFi", instrumentKey: "BTC-USDT-SPOT@BINANCE", midPrice: 87234.56, change: 1.23 },
+  { symbol: "ETH/USDT", name: "Ethereum", venue: "Binance", category: "CeFi", instrumentKey: "ETH-USDT-SPOT@BINANCE", midPrice: 2045.78, change: -0.45 },
   {
     symbol: "ETH-PERP",
     name: "ETH Perpetual",
     venue: "Hyperliquid",
     category: "CeFi",
+    instrumentKey: "ETH-PERP@HYPERLIQUID",
     midPrice: 2043.5,
     change: -0.52,
   },
-  { symbol: "SOL/USDT", name: "Solana", venue: "Binance", category: "CeFi", midPrice: 134.21, change: 2.15 },
-  { symbol: "BTC-PERP", name: "BTC Perpetual", venue: "Binance", category: "CeFi", midPrice: 87200.0, change: 1.18 },
+  { symbol: "SOL/USDT", name: "Solana", venue: "Binance", category: "CeFi", instrumentKey: "SOL-USDT-SPOT@BINANCE", midPrice: 134.21, change: 2.15 },
+  { symbol: "BTC-PERP", name: "BTC Perpetual", venue: "Binance", category: "CeFi", instrumentKey: "BTC-PERP@BINANCE", midPrice: 87200.0, change: 1.18 },
 ];
 
 const strategyInstruments: Record<string, string> = {
@@ -89,32 +89,43 @@ export default function TradingPage() {
 
   const instruments = React.useMemo(() => {
     const instData = instrumentsApiData as Record<string, unknown> | undefined;
-    const instArr = (instData?.instruments ?? []) as Array<Record<string, unknown>>;
+    const instArr = (instData?.data ?? instData?.instruments ?? []) as Array<Record<string, unknown>>;
     if (instArr.length > 0) {
-      return instArr.map((i) => ({
-        symbol: (i.symbol as string) ?? (i.instrumentKey as string) ?? "",
-        name: (i.symbol as string) ?? "",
-        venue: (i.venue as string) ?? "",
-        category: (i.category as string) ?? "Other",
-        midPrice: 0,
-        change: 0,
-      }));
+      return instArr.map((i) => {
+        const sym = (i.symbol as string) ?? (i.instrumentKey as string) ?? "";
+        const ven = (i.venue as string) ?? "";
+        const iKey = (i.instrument_key as string) ?? (i.instrumentKey as string) ?? `${sym}@${ven}`;
+        return {
+          symbol: sym,
+          name: sym,
+          venue: ven,
+          category: (i.category as string) ?? "Other",
+          instrumentKey: iKey,
+          midPrice: 0,
+          change: 0,
+        };
+      });
     }
     const tickersRaw: Record<string, unknown>[] =
       ((tickersData as Record<string, unknown>)?.data as Record<string, unknown>[]) ??
       ((tickersData as Record<string, unknown>)?.tickers as Record<string, unknown>[]) ??
       [];
     if (tickersRaw.length > 0) {
-      return tickersRaw.map((t) => ({
-        symbol: (t.symbol as string) ?? "",
-        name: (t.name as string) ?? (t.symbol as string) ?? "",
-        venue: (t.venue as string) ?? "",
-        category: (t.category as string) ?? "CeFi",
-        midPrice: (t.midPrice as number) ?? (t.price as number) ?? 0,
-        change: (t.change as number) ?? (t.changePct as number) ?? 0,
-      }));
+      return tickersRaw.map((t) => {
+        const sym = (t.symbol as string) ?? "";
+        const ven = (t.venue as string) ?? "";
+        return {
+          symbol: sym,
+          name: (t.name as string) ?? sym,
+          venue: ven,
+          category: (t.category as string) ?? "CeFi",
+          instrumentKey: (t.instrument_key as string) ?? (t.instrumentKey as string) ?? `${sym}@${ven}`,
+          midPrice: (t.midPrice as number) ?? (t.price as number) ?? 0,
+          change: (t.change as number) ?? (t.changePct as number) ?? 0,
+        };
+      });
     }
-    return DEFAULT_INSTRUMENTS.map((d) => ({ ...d, category: "CeFi" }));
+    return DEFAULT_INSTRUMENTS.map((d) => ({ ...d }));
   }, [instrumentsApiData, tickersData]);
 
   const instrumentsByCategory = React.useMemo(() => {
@@ -264,7 +275,7 @@ export default function TradingPage() {
 
   const availableAccounts = React.useMemo(() => {
     const raw = balancesApiData as Record<string, unknown> | undefined;
-    const balances = (raw?.balances ?? raw?.data ?? []) as Array<Record<string, unknown>>;
+    const balances = (raw?.data ?? raw?.balances ?? []) as Array<Record<string, unknown>>;
     if (balances.length > 0) {
       return balances.map((b, i) => ({
         id: (b.id as string) ?? `acc-${i}`,
@@ -336,7 +347,7 @@ export default function TradingPage() {
 
   const [tickCount, setTickCount] = React.useState(0);
   const wallClockMs = useTickingNowMs(1000);
-  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const isMockMode = isMockDataMode();
   const mockPriceTickRef = React.useRef(0);
 
   React.useEffect(() => {

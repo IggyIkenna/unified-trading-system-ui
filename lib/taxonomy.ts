@@ -1062,6 +1062,327 @@ export const CANDIDATE_LIFECYCLE_VERBS = {
 } as const;
 
 // =============================================================================
+// STRATEGY LIFECYCLE STAGES — progression from design to retirement
+// =============================================================================
+
+export const STRATEGY_LIFECYCLE_STAGES = [
+  "design",
+  "backtest",
+  "validate",
+  "paper",
+  "shadow",
+  "promote",
+  "live",
+  "monitor",
+  "review",
+] as const;
+export type StrategyLifecycleStage = (typeof STRATEGY_LIFECYCLE_STAGES)[number];
+
+export const STRATEGY_LIFECYCLE_CONFIG: Record<
+  StrategyLifecycleStage,
+  {
+    label: string;
+    description: string;
+    order: number;
+    color: string;
+  }
+> = {
+  design: {
+    label: "Design",
+    description: "Define strategy hypothesis and parameters",
+    order: 1,
+    color: "#64748b",
+  },
+  backtest: {
+    label: "Backtest",
+    description: "Run historical simulation",
+    order: 2,
+    color: "#8b5cf6",
+  },
+  validate: {
+    label: "Validate",
+    description: "Statistical and risk validation of results",
+    order: 3,
+    color: "#f59e0b",
+  },
+  paper: {
+    label: "Paper",
+    description: "Live data, simulated execution",
+    order: 4,
+    color: "#f97316",
+  },
+  shadow: {
+    label: "Shadow",
+    description: "Live data, parallel to production, no capital",
+    order: 5,
+    color: "#06b6d4",
+  },
+  promote: {
+    label: "Promote",
+    description: "Governance review and deployment approval",
+    order: 6,
+    color: "#eab308",
+  },
+  live: {
+    label: "Live",
+    description: "Active production trading",
+    order: 7,
+    color: "#22c55e",
+  },
+  monitor: {
+    label: "Monitor",
+    description: "Ongoing performance and drift tracking",
+    order: 8,
+    color: "#3b82f6",
+  },
+  review: {
+    label: "Review",
+    description: "Periodic performance review and revalidation",
+    order: 9,
+    color: "#a855f7",
+  },
+};
+
+// =============================================================================
+// CANDIDATE STATUSES — states within the promote/review pipeline
+// =============================================================================
+
+export const CANDIDATE_STATUSES = [
+  "draft",
+  "shortlisted",
+  "under_review",
+  "approved",
+  "rejected",
+  "promoted",
+  "retired",
+] as const;
+export type CandidateStatus = (typeof CANDIDATE_STATUSES)[number];
+
+export const CANDIDATE_STATUS_CONFIG: Record<
+  CandidateStatus,
+  {
+    label: string;
+    description: string;
+    color: string;
+    terminal: boolean;
+  }
+> = {
+  draft: {
+    label: "Draft",
+    description: "Initial candidate, not yet submitted for review",
+    color: "#64748b",
+    terminal: false,
+  },
+  shortlisted: {
+    label: "Shortlisted",
+    description: "Selected for comparison and review",
+    color: "#3b82f6",
+    terminal: false,
+  },
+  under_review: {
+    label: "Under Review",
+    description: "Active governance and risk review",
+    color: "#f59e0b",
+    terminal: false,
+  },
+  approved: {
+    label: "Approved",
+    description: "Approved for production deployment",
+    color: "#22c55e",
+    terminal: false,
+  },
+  rejected: {
+    label: "Rejected",
+    description: "Failed review criteria",
+    color: "#ef4444",
+    terminal: true,
+  },
+  promoted: {
+    label: "Promoted",
+    description: "Deployed to production",
+    color: "#10b981",
+    terminal: true,
+  },
+  retired: {
+    label: "Retired",
+    description: "Removed from production",
+    color: "#78716c",
+    terminal: true,
+  },
+};
+
+// =============================================================================
+// READINESS STATES — deployment/testing readiness
+// =============================================================================
+
+export const READINESS_STATES = [
+  "not_ready",
+  "partial",
+  "ready",
+  "validated",
+  "deployed",
+] as const;
+export type ReadinessState = (typeof READINESS_STATES)[number];
+
+export const READINESS_STATE_CONFIG: Record<
+  ReadinessState,
+  {
+    label: string;
+    description: string;
+    color: string;
+    icon: string;
+  }
+> = {
+  not_ready: {
+    label: "Not Ready",
+    description: "Prerequisites not met",
+    color: "#ef4444",
+    icon: "XCircle",
+  },
+  partial: {
+    label: "Partial",
+    description: "Some checks passing, others pending",
+    color: "#f59e0b",
+    icon: "AlertCircle",
+  },
+  ready: {
+    label: "Ready",
+    description: "All prerequisites met, awaiting action",
+    color: "#3b82f6",
+    icon: "CheckCircle2",
+  },
+  validated: {
+    label: "Validated",
+    description: "Passed all validation gates",
+    color: "#22c55e",
+    icon: "ShieldCheck",
+  },
+  deployed: {
+    label: "Deployed",
+    description: "Active in target environment",
+    color: "#10b981",
+    icon: "Rocket",
+  },
+};
+
+// =============================================================================
+// SERVICE AVAILABILITY STATES — hub display states
+// =============================================================================
+
+export const SERVICE_AVAILABILITY_STATES = [
+  "available",
+  "locked",
+  "degraded",
+  "hidden",
+  "maintenance",
+] as const;
+export type ServiceAvailabilityState =
+  (typeof SERVICE_AVAILABILITY_STATES)[number];
+
+export const SERVICE_AVAILABILITY_CONFIG: Record<
+  ServiceAvailabilityState,
+  {
+    label: string;
+    description: string;
+    color: string;
+    icon: string;
+  }
+> = {
+  available: {
+    label: "Available",
+    description: "Fully operational",
+    color: "#22c55e",
+    icon: "CheckCircle2",
+  },
+  locked: {
+    label: "Locked",
+    description: "Requires subscription upgrade",
+    color: "#64748b",
+    icon: "Lock",
+  },
+  degraded: {
+    label: "Degraded",
+    description: "Partially operational, reduced functionality",
+    color: "#f59e0b",
+    icon: "AlertTriangle",
+  },
+  hidden: {
+    label: "Hidden",
+    description: "Not visible to current role",
+    color: "#1e293b",
+    icon: "EyeOff",
+  },
+  maintenance: {
+    label: "Maintenance",
+    description: "Temporarily unavailable for maintenance",
+    color: "#06b6d4",
+    icon: "Wrench",
+  },
+};
+
+// =============================================================================
+// STRATEGY REGISTRY ENTRY — canonical shape for strategy-facing pages
+// =============================================================================
+// Every strategy card, detail page, comparison view, and candidate basket
+// must be able to render from this shape. The actual data lives in
+// strategy-registry.ts; this is the contract.
+
+export interface StrategyRegistryEntry {
+  /** Unique strategy identifier */
+  id: string;
+  /** User-facing display name */
+  displayName: string;
+  /** Strategy archetype from taxonomy */
+  archetype: StrategyArchetype;
+  /** Primary asset class */
+  assetClass: AssetClass;
+  /** Strategy-level execution mode (SCE/HUF/EVT) */
+  executionMode: StrategyExecutionMode;
+  /** Instruction types this strategy can generate */
+  instructionTypes: readonly InstructionType[];
+  /** Default venues for this strategy */
+  defaultVenues: readonly string[];
+  /** Short template-level description */
+  templateDescription: string;
+  /** Whether this strategy supports batch/backtest mode */
+  supportsBatch: boolean;
+  /** Whether this strategy supports live trading */
+  supportsLive: boolean;
+  /** Whether this strategy supports promotion pipeline */
+  supportsPromotion: boolean;
+  /** Current lifecycle stage */
+  lifecycleStage: StrategyLifecycleStage;
+  /** Current candidate status (if in promote pipeline) */
+  candidateStatus?: CandidateStatus;
+  /** Strategy version string */
+  version: string;
+}
+
+// =============================================================================
+// CANDIDATE PACKAGE — shared shape for research family handoff
+// =============================================================================
+// Used across Strategy, ML, and Execution candidate baskets.
+
+export interface CandidatePackage {
+  /** Which research domain this candidate comes from */
+  sourceDomain: "strategy" | "ml" | "execution";
+  /** Domain-specific entity ID */
+  entityId: string;
+  /** Type of entity (strategy config, model version, algo config) */
+  entityType: string;
+  /** Semantic version or run ID */
+  version: string;
+  /** Key metrics snapshot for comparison */
+  summaryMetrics: Record<string, number | string>;
+  /** Why this candidate was selected */
+  rationale: string;
+  /** Current review state */
+  reviewState: CandidateStatus;
+  /** Where this candidate should be handed off to */
+  targetHandoff: "promote" | "deploy" | "archive";
+}
+
+// =============================================================================
 // LEGACY LIFECYCLE PHASES (deprecated — use PLATFORM_LIFECYCLE_STAGES)
 // =============================================================================
 

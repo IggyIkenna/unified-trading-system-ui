@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { DeFiDataProvider } from "@/components/widgets/defi/defi-data-context";
 
-import "@/components/widgets/defi/register";
-
 function DeFiPageContent() {
   return (
     <DeFiDataProvider>

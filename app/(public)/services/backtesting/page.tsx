@@ -33,7 +33,7 @@ export default function BacktestingServicePage() {
             <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-violet-400/10">
               <LineChart className="size-8 text-violet-400" />
             </div>
-            <h1 className="text-3xl font-bold">Research &amp; Backtesting</h1>
+            <h1 className="text-3xl font-bold">Research</h1>
             <p className="mt-2 text-lg text-muted-foreground">
               One place to build everything. Train ML models (gradient boost,
               neural networks, regression — your choice), build signals from our
@@ -143,7 +143,7 @@ export default function BacktestingServicePage() {
           {/* What's Included */}
           <div className="mb-8">
             <h3 className="text-lg font-semibold mb-2">
-              What Research & Backtesting Covers
+              What Research Covers
             </h3>
             <p className="text-sm text-muted-foreground mb-6">
               Three layers working together: train ML models to generate

@@ -1,6 +1,6 @@
 "use client";
 
-import { KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { useAccountsData } from "./accounts-data-context";
@@ -26,5 +26,5 @@ export function AccountsKpiWidget(_props: WidgetComponentProps) {
     },
   ];
 
-  return <KpiStrip metrics={metrics} columns={3} />;
+  return <KpiSummaryWidget metrics={metrics} storageKey="uts-accounts-kpi-layout" />;
 }

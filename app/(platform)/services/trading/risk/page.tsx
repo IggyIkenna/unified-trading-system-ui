@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { AlertTriangle, RefreshCw, OctagonX } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { OctagonX } from "lucide-react";
+import { ApiError } from "@/components/shared/api-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -36,8 +36,6 @@ import {
   COMPONENT_TO_RISK_TYPE,
 } from "@/components/widgets/risk/risk-data-context";
 
-import "@/components/widgets/risk/register";
-
 const VAR_METHOD_MULTIPLIERS: Record<string, number> = {
   historical: 1.0,
   parametric: 0.92,
@@ -46,17 +44,41 @@ const VAR_METHOD_MULTIPLIERS: Record<string, number> = {
 };
 
 export default function RiskPage() {
-  const { data: riskLimitsData, isLoading: limitsLoading } = useRiskLimits();
-  const { data: varData, isLoading: varLoading } = useVaR();
-  const { data: greeksData, isLoading: greeksLoading } = useGreeks();
-  const { data: stressScenariosData, isLoading: stressLoading } = useStressScenarios();
+  const {
+    data: riskLimitsData,
+    isLoading: limitsLoading,
+    isError: limitsIsError,
+    error: limitsError,
+    refetch: refetchLimits,
+  } = useRiskLimits();
+  const { data: varData, isLoading: varLoading, isError: varIsError, error: varError, refetch: refetchVar } = useVaR();
+  const {
+    data: greeksData,
+    isLoading: greeksLoading,
+    isError: greeksIsError,
+    error: greeksError,
+    refetch: refetchGreeks,
+  } = useGreeks();
+  const {
+    data: stressScenariosData,
+    isLoading: stressLoading,
+    isError: stressIsError,
+    error: stressError,
+    refetch: refetchStress,
+  } = useStressScenarios();
   const { scope } = useGlobalScope();
   const isBatchMode = scope.mode === "batch";
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: scope.organizationIds, clientIds: scope.clientIds, strategyIds: scope.strategyIds }), [scope.organizationIds, scope.clientIds, scope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: scope.organizationIds,
+        clientIds: scope.clientIds,
+        strategyIds: scope.strategyIds,
+      }),
+    [scope.organizationIds, scope.clientIds, scope.strategyIds],
+  );
   // Scope reduction factor: when filtering to a subset, scale aggregated risk metrics
-  const scopeReductionFactor = scopeStrategyIds.length > 0
-    ? Math.max(0.15, scopeStrategyIds.length / 50)
-    : 1.0;
+  const scopeReductionFactor = scopeStrategyIds.length > 0 ? Math.max(0.15, scopeStrategyIds.length / 50) : 1.0;
   const { data: varSummaryData, isLoading: varSummaryLoading } = useVarSummary();
   const [selectedStressScenario, setSelectedStressScenario] = React.useState<string | null>(null);
   const { data: stressTestResult, isLoading: stressTestLoading } = useStressTest(selectedStressScenario);
@@ -86,9 +108,7 @@ export default function RiskPage() {
     [];
   const riskLimits: RiskLimit[] = React.useMemo(() => {
     if (scopeStrategyIds.length === 0) return riskLimitsRaw;
-    return riskLimitsRaw.filter((l) =>
-      l.entityType !== "strategy" || scopeStrategyIds.includes(l.entity)
-    );
+    return riskLimitsRaw.filter((l) => l.entityType !== "strategy" || scopeStrategyIds.includes(l.entity));
   }, [riskLimitsRaw, scopeStrategyIds]);
   const componentVarData: Array<Record<string, unknown>> =
     ((varData as Record<string, unknown>)?.data as Array<Record<string, unknown>>) ??
@@ -132,7 +152,15 @@ export default function RiskPage() {
     ((riskLimitsData as Record<string, unknown>)?.distanceToLiquidation as Array<Record<string, unknown>>) ?? [];
 
   const isLoading = limitsLoading || varLoading || greeksLoading || stressLoading;
-  const hasError = !isLoading && !riskLimitsData && !varData;
+  const hasError = limitsIsError || varIsError || greeksIsError || stressIsError;
+  const riskQueryError = (limitsError ?? varError ?? greeksError ?? stressError) as Error | null;
+
+  const refetchRiskCore = React.useCallback(() => {
+    void refetchLimits();
+    void refetchVar();
+    void refetchGreeks();
+    void refetchStress();
+  }, [refetchLimits, refetchVar, refetchGreeks, refetchStress]);
 
   const adjustedVarData = componentVarData.map((d) => ({
     ...d,
@@ -393,15 +421,10 @@ export default function RiskPage() {
     );
   }
 
-  if (hasError) {
+  if (hasError && riskQueryError) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <AlertTriangle className="size-12 text-[var(--status-error)] mb-4" />
-        <h3 className="text-lg font-semibold">Failed to load risk data</h3>
-        <p className="text-sm text-muted-foreground mt-1 mb-4">Risk exposure and limits data could not be fetched.</p>
-        <Button variant="outline" className="gap-2" onClick={() => window.location.reload()}>
-          <RefreshCw className="size-4" /> Retry
-        </Button>
+      <div className="p-6">
+        <ApiError error={riskQueryError} onRetry={refetchRiskCore} title="Failed to load risk data" />
       </div>
     );
   }

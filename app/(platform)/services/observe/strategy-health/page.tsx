@@ -1,17 +1,12 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   HeartPulse,
   TrendingUp,
@@ -31,6 +26,9 @@ import {
   type SignalFreshness,
   type ExecutionQuality,
 } from "@/hooks/api/use-strategies";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { ApiError } from "@/components/shared/api-error";
+import { EmptyState } from "@/components/shared/empty-state";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -135,16 +133,7 @@ function formatPnl(value: number): string {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const ASSET_CLASSES = [
-  "All",
-  "Crypto",
-  "DeFi",
-  "Equities",
-  "FX",
-  "Fixed Income",
-  "Commodities",
-  "Sports",
-] as const;
+const ASSET_CLASSES = ["All", "Crypto", "DeFi", "Equities", "FX", "Fixed Income", "Commodities", "Sports"] as const;
 const HEALTH_STATUSES = ["All", "Healthy", "Warning", "Critical"] as const;
 const SORT_OPTIONS = [
   { value: "health-desc", label: "Health (High to Low)" },
@@ -165,7 +154,7 @@ function getHealthBucket(score: number): string {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function StrategyHealthPage() {
-  const { data: strategies, isLoading } = useStrategyHealth();
+  const { data: strategies, isLoading, isError, error, refetch } = useStrategyHealth();
   const [assetClassFilter, setAssetClassFilter] = React.useState<string>("All");
   const [healthFilter, setHealthFilter] = React.useState<string>("All");
   const [sortBy, setSortBy] = React.useState<SortKey>("health-desc");
@@ -173,13 +162,8 @@ export default function StrategyHealthPage() {
   const filtered = React.useMemo(() => {
     if (!strategies) return [];
     let result = strategies.filter((s) => {
-      if (assetClassFilter !== "All" && s.assetClass !== assetClassFilter)
-        return false;
-      if (
-        healthFilter !== "All" &&
-        getHealthBucket(s.healthScore) !== healthFilter
-      )
-        return false;
+      if (assetClassFilter !== "All" && s.assetClass !== assetClassFilter) return false;
+      if (healthFilter !== "All" && getHealthBucket(s.healthScore) !== healthFilter) return false;
       return true;
     });
 
@@ -223,28 +207,50 @@ export default function StrategyHealthPage() {
     );
   }
 
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load strategy health" />
+      </div>
+    );
+  }
+
+  if (!strategies || strategies.length === 0) {
+    return (
+      <div className="p-6">
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
+              <HeartPulse className="size-6 text-emerald-400" />
+              Strategy Health
+            </span>
+          }
+          description="Live health monitoring across all active strategies"
+        />
+        <EmptyState title="No strategies" description="No strategy health records are available." />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6">
       <div className="max-w-[1400px] mx-auto space-y-6">
-        {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold flex items-center gap-2">
-            <HeartPulse className="size-6 text-emerald-400" />
-            Strategy Health
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Live health monitoring across all active strategies
-          </p>
-        </div>
+        <PageHeader
+          title={
+            <span className="flex items-center gap-2">
+              <HeartPulse className="size-6 text-emerald-400" />
+              Strategy Health
+            </span>
+          }
+          description="Live health monitoring across all active strategies"
+        />
 
         {/* Summary cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="bg-card/50">
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground mb-1">Total</div>
-              <div className="text-2xl font-semibold font-mono">
-                {strategies?.length ?? 0}
-              </div>
+              <div className="text-2xl font-semibold font-mono">{strategies?.length ?? 0}</div>
             </CardContent>
           </Card>
           <Card className="bg-card/50">
@@ -259,9 +265,7 @@ export default function StrategyHealthPage() {
             <CardContent className="p-4">
               <div className="text-xs text-muted-foreground mb-1">Warning</div>
               <div className="text-2xl font-semibold font-mono text-amber-400">
-                {strategies?.filter(
-                  (s) => s.healthScore >= 50 && s.healthScore <= 80,
-                ).length ?? 0}
+                {strategies?.filter((s) => s.healthScore >= 50 && s.healthScore <= 80).length ?? 0}
               </div>
             </CardContent>
           </Card>
@@ -320,21 +324,13 @@ export default function StrategyHealthPage() {
           </Select>
 
           <span className="text-xs text-muted-foreground ml-auto">
-            {filtered.length}{" "}
-            {filtered.length === 1 ? "strategy" : "strategies"}
+            {filtered.length} {filtered.length === 1 ? "strategy" : "strategies"}
           </span>
         </div>
 
         {/* Strategy Cards Grid */}
         {filtered.length === 0 ? (
-          <Card className="bg-card/50">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <AlertTriangle className="size-8 mb-2" />
-              <p className="text-sm">
-                No strategies match the current filters.
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState title="No matching strategies" description="No strategies match the current filters." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((strategy) => (
@@ -348,10 +344,7 @@ export default function StrategyHealthPage() {
 }
 
 function StrategyCard({ strategy }: { strategy: StrategyHealth }) {
-  const drawdownRatio =
-    strategy.maxDrawdownPct > 0
-      ? (strategy.drawdownPct / strategy.maxDrawdownPct) * 100
-      : 0;
+  const drawdownRatio = strategy.maxDrawdownPct > 0 ? (strategy.drawdownPct / strategy.maxDrawdownPct) * 100 : 0;
 
   return (
     <Card className="bg-card/50 hover:bg-card/80 transition-colors">
@@ -364,10 +357,7 @@ function StrategyCard({ strategy }: { strategy: StrategyHealth }) {
               <Badge variant="outline" className="text-[10px]">
                 {strategy.assetClass}
               </Badge>
-              <Badge
-                variant={statusBadgeVariant(strategy.status)}
-                className="text-[10px] capitalize"
-              >
+              <Badge variant={statusBadgeVariant(strategy.status)} className="text-[10px] capitalize">
                 {strategy.status}
               </Badge>
             </div>
@@ -378,39 +368,29 @@ function StrategyCard({ strategy }: { strategy: StrategyHealth }) {
               className={cn(
                 "flex items-center justify-center size-12 rounded-full border-2 font-mono text-lg font-semibold",
                 strategy.healthScore > 80 && "border-emerald-500/50",
-                strategy.healthScore >= 50 &&
-                  strategy.healthScore <= 80 &&
-                  "border-amber-500/50",
+                strategy.healthScore >= 50 && strategy.healthScore <= 80 && "border-amber-500/50",
                 strategy.healthScore < 50 && "border-red-500/50",
                 healthColor(strategy.healthScore),
               )}
             >
               {strategy.healthScore}
             </div>
-            <span className="text-[9px] text-muted-foreground mt-0.5">
-              Health
-            </span>
+            <span className="text-[9px] text-muted-foreground mt-0.5">Health</span>
           </div>
         </div>
 
         {/* Indicators grid */}
         <div className="grid grid-cols-3 gap-3">
           <div>
-            <div className="text-[10px] text-muted-foreground mb-0.5">
-              PnL Drift
-            </div>
+            <div className="text-[10px] text-muted-foreground mb-0.5">PnL Drift</div>
             {pnlDriftLabel(strategy.pnlDrift)}
           </div>
           <div>
-            <div className="text-[10px] text-muted-foreground mb-0.5">
-              Signal
-            </div>
+            <div className="text-[10px] text-muted-foreground mb-0.5">Signal</div>
             {signalFreshnessLabel(strategy.signalFreshness)}
           </div>
           <div>
-            <div className="text-[10px] text-muted-foreground mb-0.5">
-              Execution
-            </div>
+            <div className="text-[10px] text-muted-foreground mb-0.5">Execution</div>
             {executionQualityLabel(strategy.executionQuality)}
           </div>
         </div>
@@ -420,7 +400,7 @@ function StrategyCard({ strategy }: { strategy: StrategyHealth }) {
           <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1">
             <span>Drawdown</span>
             <span className="font-mono">
-              {strategy.drawdownPct.toFixed(1)}% / {strategy.maxDrawdownPct}%
+              {formatPercent(strategy.drawdownPct, 1)} / {strategy.maxDrawdownPct}%
             </span>
           </div>
           <Progress
@@ -428,9 +408,7 @@ function StrategyCard({ strategy }: { strategy: StrategyHealth }) {
             className={cn(
               "h-1.5",
               drawdownRatio <= 50 && "[&>div]:bg-emerald-500",
-              drawdownRatio > 50 &&
-                drawdownRatio <= 80 &&
-                "[&>div]:bg-amber-500",
+              drawdownRatio > 50 && drawdownRatio <= 80 && "[&>div]:bg-amber-500",
               drawdownRatio > 80 && "[&>div]:bg-red-500",
             )}
           />
@@ -440,18 +418,11 @@ function StrategyCard({ strategy }: { strategy: StrategyHealth }) {
         <div className="flex items-center justify-between text-xs border-t border-border pt-3">
           <div>
             <span className="text-muted-foreground">Sharpe: </span>
-            <span className="font-mono font-medium">
-              {strategy.sharpeRatio.toFixed(1)}
-            </span>
+            <span className="font-mono font-medium">{formatNumber(strategy.sharpeRatio, 1)}</span>
           </div>
           <div>
             <span className="text-muted-foreground">Today: </span>
-            <span
-              className={cn(
-                "font-mono font-medium",
-                strategy.pnlToday >= 0 ? "text-emerald-400" : "text-red-400",
-              )}
-            >
+            <span className={cn("font-mono font-medium", strategy.pnlToday >= 0 ? "text-emerald-400" : "text-red-400")}>
               {formatPnl(strategy.pnlToday)}
             </span>
           </div>

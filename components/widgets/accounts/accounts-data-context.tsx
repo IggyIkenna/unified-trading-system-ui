@@ -5,7 +5,7 @@ import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { useBalances } from "@/hooks/api/use-positions";
 import { useTransferHistory } from "@/hooks/api/use-transfer-history";
-import { ACCOUNTS } from "@/lib/trading-data";
+import { ACCOUNTS } from "@/lib/mocks/fixtures/trading-data";
 import type { BalanceRecord, TransferHistoryEntry } from "@/lib/types/accounts";
 import type { VenueMargin } from "@/components/trading/margin-utilization";
 
@@ -37,7 +37,7 @@ const AccountsDataContext = React.createContext<AccountsDataContextValue | null>
 function coerceBalances(raw: unknown): BalanceRecord[] {
   if (!raw) return [];
   const r = raw as Record<string, unknown>;
-  const arr = Array.isArray(r) ? r : r.balances;
+  const arr = Array.isArray(r) ? r : (r.data ?? r.balances);
   return Array.isArray(arr) ? (arr as BalanceRecord[]) : [];
 }
 
@@ -58,8 +58,7 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
   const orgVenues = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return null; // null = show all
     const venues = new Set<string>();
-    ACCOUNTS.filter((a) => globalScope.organizationIds.includes(a.organizationId))
-      .forEach((a) => venues.add(a.venue));
+    ACCOUNTS.filter((a) => globalScope.organizationIds.includes(a.organizationId)).forEach((a) => venues.add(a.venue));
     return venues;
   }, [globalScope.organizationIds]);
 

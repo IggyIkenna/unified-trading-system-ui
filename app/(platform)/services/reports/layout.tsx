@@ -1,15 +1,11 @@
 "use client";
 
 import { ServiceTabs, REPORTS_TABS } from "@/components/shell/service-tabs";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
 import { useAuth } from "@/hooks/use-auth";
 
-export default function ReportsServiceLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ReportsServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
 
   return (

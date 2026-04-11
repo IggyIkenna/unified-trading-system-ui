@@ -6,16 +6,18 @@ import type { WidgetComponentProps } from "../widget-registry";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { ArrowUpRight, ArrowDownRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBookTradeData, type BookTrade } from "./book-data-context";
 
 function formatTimestamp(iso: string): string {
   const d = new Date(iso);
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+  return (
+    d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
     " " +
-    d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+  );
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -39,9 +41,7 @@ const columns: ColumnDef<BookTrade, unknown>[] = [
     accessorKey: "instrument",
     header: "Instrument",
     enableSorting: true,
-    cell: ({ row }) => (
-      <span className="font-mono font-medium text-sm">{row.getValue<string>("instrument")}</span>
-    ),
+    cell: ({ row }) => <span className="font-mono font-medium text-sm">{row.getValue<string>("instrument")}</span>,
   },
   {
     accessorKey: "venue",
@@ -77,9 +77,7 @@ const columns: ColumnDef<BookTrade, unknown>[] = [
     accessorKey: "quantity",
     header: () => <span className="flex justify-end">Qty</span>,
     enableSorting: true,
-    cell: ({ row }) => (
-      <div className="text-right font-mono">{row.getValue<number>("quantity").toLocaleString()}</div>
-    ),
+    cell: ({ row }) => <div className="text-right font-mono">{row.getValue<number>("quantity").toLocaleString()}</div>,
   },
   {
     accessorKey: "price",
@@ -87,7 +85,10 @@ const columns: ColumnDef<BookTrade, unknown>[] = [
     enableSorting: true,
     cell: ({ row }) => (
       <div className="text-right font-mono">
-        ${row.getValue<number>("price").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        $
+        {row
+          .getValue<number>("price")
+          .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
     ),
   },
@@ -97,7 +98,8 @@ const columns: ColumnDef<BookTrade, unknown>[] = [
     enableSorting: true,
     cell: ({ row }) => (
       <div className="text-right font-mono text-muted-foreground">
-        ${row.getValue<number>("fees").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        $
+        {row.getValue<number>("fees").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
     ),
   },
@@ -107,7 +109,10 @@ const columns: ColumnDef<BookTrade, unknown>[] = [
     enableSorting: true,
     cell: ({ row }) => (
       <div className="text-right font-mono font-medium">
-        ${row.getValue<number>("total").toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        $
+        {row
+          .getValue<number>("total")
+          .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </div>
     ),
   },
@@ -173,12 +178,7 @@ export function BookTradeHistoryWidget(_props: WidgetComponentProps) {
       <div className="flex-1 overflow-auto">
         <Card className="border-0 rounded-none">
           <CardContent className="p-0">
-            <DataTable
-              columns={columns}
-              data={filtered}
-              enableSorting
-              emptyMessage="No trades match your search"
-            />
+            <DataTable columns={columns} data={filtered} enableSorting emptyMessage="No trades match your search" />
           </CardContent>
         </Card>
       </div>

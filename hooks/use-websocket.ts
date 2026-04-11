@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 export type WebSocketStatus =
   | "connecting"
@@ -35,9 +36,7 @@ export function useWebSocket({
   reconnectInterval = 5000,
 }: UseWebSocketOptions) {
   // Disable WebSocket in static mock mode — no backend to connect to
-  const isMockMode =
-    typeof window !== "undefined" &&
-    process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const isMockMode = typeof window !== "undefined" && isMockDataMode();
   if (isMockMode) enabled = false;
   const [status, setStatus] = useState<WebSocketStatus>("disconnected");
   const wsRef = useRef<WebSocket | null>(null);

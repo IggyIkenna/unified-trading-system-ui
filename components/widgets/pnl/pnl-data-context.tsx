@@ -24,6 +24,7 @@ import type {
   PnLComponent,
   StrategyRecord,
 } from "@/lib/types/pnl";
+import { type ShareClass, SHARE_CLASSES } from "@/lib/types/defi";
 
 export type { PnLComponent, ClientPnLRow, FactorDrilldown } from "@/lib/types/pnl";
 
@@ -44,6 +45,8 @@ export interface PnLData {
   setDateRange: (d: string) => void;
   groupBy: string;
   setGroupBy: (g: string) => void;
+  shareClass: ShareClass | "all";
+  setShareClass: (sc: ShareClass | "all") => void;
 
   selectedFactor: string | null;
   setSelectedFactor: (f: string | null) => void;
@@ -72,7 +75,7 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const apiStrategies: StrategyRecord[] = React.useMemo(() => {
     if (!perfRaw) return [];
     const raw = perfRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).strategies;
+    const arr = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).strategies);
     let result = Array.isArray(arr) ? (arr as StrategyRecord[]) : [];
     if (globalScope.strategyIds.length > 0) {
       result = result.filter((s) => globalScope.strategyIds.includes(s.id));
@@ -83,14 +86,14 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const apiOrgs: OrgRecord[] = React.useMemo(() => {
     if (!orgsRaw) return [];
     const raw = orgsRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).organizations;
+    const arr = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).organizations);
     return Array.isArray(arr) ? (arr as OrgRecord[]) : [];
   }, [orgsRaw]);
 
   const apiClients: ClientRecord[] = React.useMemo(() => {
     if (!orgsRaw) return [];
     const raw = orgsRaw as Record<string, unknown>;
-    const arr = (raw as Record<string, unknown>).clients;
+    const arr = (raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).clients;
     return Array.isArray(arr) ? (arr as ClientRecord[]) : [];
   }, [orgsRaw]);
 
@@ -109,6 +112,7 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section");
   const [dataMode, setDataMode] = React.useState<"live" | "batch">("live");
   const [selectedFactor, setSelectedFactor] = React.useState<string | null>(null);
+  const [shareClass, setShareClass] = React.useState<ShareClass | "all">("all");
 
   const [selectedOrgIds, setSelectedOrgIds] = React.useState<string[]>([]);
   const [selectedClientIds, setSelectedClientIds] = React.useState<string[]>([]);
@@ -197,6 +201,8 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       setDateRange,
       groupBy,
       setGroupBy,
+      shareClass,
+      setShareClass,
       selectedFactor,
       setSelectedFactor,
       selectedFactorData,
@@ -221,6 +227,7 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       dataMode,
       dateRange,
       groupBy,
+      shareClass,
       selectedFactor,
       selectedFactorData,
       selectedOrgIds,

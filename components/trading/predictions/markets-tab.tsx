@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { useToast } from "@/hooks/use-toast";
 import type { PredictionMarket, MarketCategory, MarketVenue, SortOption } from "./types";
-import { MOCK_MARKETS } from "./mock-data";
+import { MOCK_MARKETS } from "@/lib/mocks/fixtures/predictions-data";
 import { fmtVolume, probColour } from "./helpers";
 import { VenueChip, LiveDot, ProbBadge, YesNoButtons } from "./shared";
 
@@ -97,7 +98,7 @@ function PriceHistoryChart({ series }: { series: { t: number; prob: number }[] }
           />
           <Tooltip
             contentStyle={{ background: "#1a1a1a", border: "1px solid #333", borderRadius: 6, fontSize: 11 }}
-            formatter={(v: number) => [`${v.toFixed(1)}%`, "Probability"]}
+            formatter={(v: number) => [`${formatPercent(v, 1)}`, "Probability"]}
             labelFormatter={() => ""}
           />
         </AreaChart>
@@ -335,7 +336,7 @@ export function MarketDetailPanel({
             <div className="text-center space-y-1">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">YES shares</p>
               <p className="text-lg font-bold text-emerald-400 tabular-nums">
-                {(selectedOutcome.yesPrice * 100).toFixed(0)}¢
+                {formatNumber(selectedOutcome.yesPrice * 100, 0)}¢
               </p>
               <p className="text-[10px] text-muted-foreground">
                 {fmtVolume(market.volume * selectedOutcome.yesPrice)} matched
@@ -344,7 +345,7 @@ export function MarketDetailPanel({
             <div className="text-center space-y-1">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wider">NO shares</p>
               <p className="text-lg font-bold text-red-400 tabular-nums">
-                {(selectedOutcome.noPrice * 100).toFixed(0)}¢
+                {formatNumber(selectedOutcome.noPrice * 100, 0)}¢
               </p>
               <p className="text-[10px] text-muted-foreground">
                 {fmtVolume(market.volume * selectedOutcome.noPrice)} matched
@@ -405,16 +406,17 @@ export function MarketDetailPanel({
             <div className="rounded-lg border border-border/50 bg-muted/30 p-3 space-y-1.5">
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Avg price</span>
-                <span className="tabular-nums">{(price * 100).toFixed(1)}¢</span>
+                <span className="tabular-nums">{formatNumber(price * 100, 1)}¢</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Shares</span>
-                <span className="tabular-nums">{potentialReturn.toFixed(2)}</span>
+                <span className="tabular-nums">{formatNumber(potentialReturn, 2)}</span>
               </div>
               <div className="flex justify-between text-xs">
                 <span className="text-muted-foreground">Potential return</span>
                 <span className="tabular-nums font-medium text-emerald-400">
-                  ${potentialReturn.toFixed(2)} (+${potentialProfit.toFixed(2)})
+                  {formatCurrency(potentialReturn, "USD", 2)} (+
+                  {formatCurrency(potentialProfit, "USD", 2)})
                 </span>
               </div>
             </div>
@@ -441,7 +443,7 @@ export function MarketDetailPanel({
               setStakeAmount("");
               toast({
                 title: "Position opened",
-                description: `${selectedSide.toUpperCase()} ${selectedOutcome.name} — $${stakeNum.toFixed(2)} @ ${(price * 100).toFixed(0)}¢ (${order.id})`,
+                description: `${selectedSide.toUpperCase()} ${selectedOutcome.name} — ${formatCurrency(stakeNum, "USD", 2)} @ ${formatNumber(price * 100, 0)}¢ (${order.id})`,
               });
             }}
           >

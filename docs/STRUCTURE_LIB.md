@@ -86,7 +86,15 @@ const selectedOrg = useGlobalScopeStore((s) => s.selectedOrg);
 
 ## lib/mocks/ — MSW Mock Service Worker
 
-Used in development (when `NEXT_PUBLIC_MOCK_API=true`) and in Jest unit tests. MSW intercepts fetch calls and returns mock responses — no real backend needed.
+Used in development when `NEXT_PUBLIC_MOCK_API=true` and in Jest unit tests.
+
+### Data mode ideology (authoritative)
+
+- **Single switch:** mock data mode is controlled only by `NEXT_PUBLIC_MOCK_API`.
+- **Helper-first:** runtime code must use `isMockDataMode()` from `lib/runtime/data-mode.ts` instead of reading `process.env.NEXT_PUBLIC_MOCK_API` directly.
+- **Auth is independent:** `NEXT_PUBLIC_AUTH_PROVIDER=demo` does not imply mock API mode.
+- **Mock mode behavior:** fetch interception + fixture-backed responses keep the UI self-sufficient with no backend.
+- **Real mode behavior:** do not silently fall back to fixtures for API-backed views; show real API data, empty states, or explicit errors.
 
 ### Setup files
 

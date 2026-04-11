@@ -2,34 +2,35 @@
 
 /**
  * /services/data/raw — Raw data ingestion status.
- * FinderBrowser layout: Category → Venue → Instrument Type → Data Type
+ * FinderBrowser layout: Category → Venue → Instrument Type → Instrument → Data Type
  * Shows completion %, date range, and freshness per data type.
  */
 
-import * as React from "react";
+import { RAW_DATA_COLUMNS, getRawDataContextStats } from "@/components/data/raw-data-finder-config";
+import { PageHeader } from "@/components/shared/page-header";
+import type { FinderSelections } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
+import type { InstrumentEntry } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
-import { RefreshCw, Download, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { FinderBrowser, finderText } from "@/components/shared/finder";
-import type { FinderSelections } from "@/components/shared/finder";
-import { RAW_DATA_COLUMNS, getRawDataContextStats } from "@/components/data/raw-data-finder-config";
-import { MOCK_PIPELINE_STAGES } from "@/lib/data-service-mock-data";
+import { formatNumber } from "@/lib/utils/formatters";
+import { AlertTriangle, CheckCircle2, Download, RefreshCw } from "lucide-react";
 
 // ─── Detail panel ─────────────────────────────────────────────────────────────
 
 function RawDataDetail({ selections }: { selections: FinderSelections }) {
   const dtItem = selections["datatype"];
+  const instItem = selections["instrument"];
   const folderData = selections["folder"]?.data as { folder: string; venue: string; cat: string } | undefined;
-  const venueData = selections["venue"]?.data as { venue: string; cat: string } | undefined;
 
   if (dtItem) {
-    const { dt, venue, folder, completionPct } = dtItem.data as {
+    const { dt, venue, folder, symbol, completionPct } = dtItem.data as {
       dt: string;
       venue: string;
       folder: string;
+      symbol?: string;
       completionPct: number;
     };
     const color = completionPct >= 90 ? "text-emerald-400" : completionPct >= 70 ? "text-yellow-400" : "text-red-400";
@@ -41,6 +42,7 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Data Type</p>
           <p className="text-sm font-semibold font-mono capitalize">{dt.replace(/_/g, " ")}</p>
           <p className="text-xs text-muted-foreground">
+            {symbol ? `${symbol} · ` : ""}
             {venue.replace(/_/g, " ")} / {folder.replace(/_/g, " ")}
           </p>
         </div>
@@ -85,11 +87,24 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
     );
   }
 
+  if (instItem) {
+    const inst = instItem.data as InstrumentEntry | null;
+    return (
+      <div className="p-4 space-y-3">
+        <p className="text-sm font-semibold font-mono">{inst?.symbol ?? instItem.label}</p>
+        {inst?.instrumentKey && (
+          <p className="text-xs text-muted-foreground font-mono break-all">{inst.instrumentKey}</p>
+        )}
+        <p className="text-xs text-muted-foreground">Select a data type to see completion and download options</p>
+      </div>
+    );
+  }
+
   if (folderData) {
     return (
       <div className="p-4 space-y-3">
         <p className="text-sm font-semibold capitalize">{folderData.folder.replace(/_/g, " ")}</p>
-        <p className="text-xs text-muted-foreground">Select a data type to see completion details</p>
+        <p className="text-xs text-muted-foreground">Select an instrument, then a data type</p>
       </div>
     );
   }
@@ -98,7 +113,9 @@ function RawDataDetail({ selections }: { selections: FinderSelections }) {
     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
       <Download className="size-8 mb-2 opacity-20" />
       <p className="text-sm font-medium text-muted-foreground">No data type selected</p>
-      <p className="text-xs text-muted-foreground/60 mt-1">Drill down to see completion % and configure downloads</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">
+        Drill down by venue, type, and instrument to see completion and configure downloads
+      </p>
     </div>
   );
 }
@@ -110,17 +127,15 @@ export default function RawDataPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-border/50">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight">Raw Data</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {rawStage
-              ? `${rawStage.completionPct.toFixed(1)}% overall · ${rawStage.completedShards.toLocaleString()} shards complete`
-              : "Download status for raw market data"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="border-b border-border/50 px-6 pt-4 pb-3">
+        <PageHeader
+          title="Raw Data"
+          description={
+            rawStage
+              ? `${formatNumber(rawStage.completionPct, 1)}% overall · ${formatNumber(rawStage.completedShards, 0)} shards complete`
+              : "Download status for raw market data"
+          }
+        >
           {rawStage && rawStage.failedShards > 0 && (
             <Badge variant="outline" className="text-xs gap-1.5 border-red-400/30 text-red-400">
               <AlertTriangle className="size-3" />
@@ -136,7 +151,7 @@ export default function RawDataPage() {
             <RefreshCw className="size-4 mr-2" />
             Refresh
           </Button>
-        </div>
+        </PageHeader>
       </div>
 
       {/* FinderBrowser */}

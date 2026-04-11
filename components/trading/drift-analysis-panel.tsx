@@ -5,12 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import {
   ArrowLeftRight,
   TrendingUp,
@@ -69,15 +66,14 @@ export function DriftAnalysisPanel({
   const [isPromoting, setIsPromoting] = React.useState(false);
 
   const formatValue = (value: number, unit?: string) => {
-    if (unit === "%") return `${value.toFixed(2)}%`;
-    if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(2)}M`;
-    if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(1)}k`;
-    return `$${value.toFixed(0)}`;
+    if (unit === "%") return formatPercent(value, 2);
+    if (Math.abs(value) >= 1000000) return `$${formatNumber(value / 1000000, 2)}M`;
+    if (Math.abs(value) >= 1000) return `$${formatNumber(value / 1000, 1)}k`;
+    return formatCurrency(value, "USD", 0);
   };
 
   const getDelta = (live: number, batch: number) => live - batch;
-  const getDeltaPercent = (live: number, batch: number) =>
-    batch !== 0 ? ((live - batch) / Math.abs(batch)) * 100 : 0;
+  const getDeltaPercent = (live: number, batch: number) => (batch !== 0 ? ((live - batch) / Math.abs(batch)) * 100 : 0);
 
   const isSignificantDrift = (live: number, batch: number, threshold = 5) => {
     const percent = Math.abs(getDeltaPercent(live, batch));
@@ -91,9 +87,7 @@ export function DriftAnalysisPanel({
     onPromoteToBatch?.();
   };
 
-  const significantDrifts = metrics.filter((m) =>
-    isSignificantDrift(m.liveValue, m.batchValue, m.threshold || 5),
-  );
+  const significantDrifts = metrics.filter((m) => isSignificantDrift(m.liveValue, m.batchValue, m.threshold || 5));
 
   return (
     <Card className={cn("border-dashed", className)}>
@@ -141,40 +135,25 @@ export function DriftAnalysisPanel({
             <div className="space-y-3">
               {metrics.map((metric) => {
                 const delta = getDelta(metric.liveValue, metric.batchValue);
-                const deltaPercent = getDeltaPercent(
-                  metric.liveValue,
-                  metric.batchValue,
-                );
-                const isSignificant = isSignificantDrift(
-                  metric.liveValue,
-                  metric.batchValue,
-                  metric.threshold,
-                );
+                const deltaPercent = getDeltaPercent(metric.liveValue, metric.batchValue);
+                const isSignificant = isSignificantDrift(metric.liveValue, metric.batchValue, metric.threshold);
 
                 return (
                   <div key={metric.label} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{metric.label}</span>
-                        {isSignificant && (
-                          <AlertTriangle className="size-3 text-[var(--status-warning)]" />
-                        )}
+                        {isSignificant && <AlertTriangle className="size-3 text-[var(--status-warning)]" />}
                       </div>
                       <div className="flex items-center gap-3 font-mono">
-                        <span className="text-muted-foreground">
-                          {formatValue(metric.batchValue, metric.unit)}
-                        </span>
+                        <span className="text-muted-foreground">{formatValue(metric.batchValue, metric.unit)}</span>
                         <ArrowUpRight
                           className={cn(
                             "size-3",
-                            delta >= 0
-                              ? "text-[var(--pnl-positive)]"
-                              : "text-[var(--pnl-negative)] rotate-90",
+                            delta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)] rotate-90",
                           )}
                         />
-                        <span>
-                          {formatValue(metric.liveValue, metric.unit)}
-                        </span>
+                        <span>{formatValue(metric.liveValue, metric.unit)}</span>
                         <Badge
                           variant="outline"
                           className={cn(
@@ -185,7 +164,7 @@ export function DriftAnalysisPanel({
                           )}
                         >
                           {delta >= 0 ? "+" : ""}
-                          {deltaPercent.toFixed(1)}%
+                          {formatNumber(deltaPercent, 1)}%
                         </Badge>
                       </div>
                     </div>
@@ -199,10 +178,7 @@ export function DriftAnalysisPanel({
                           width: `${Math.min(
                             100,
                             (Math.abs(metric.batchValue) /
-                              Math.max(
-                                Math.abs(metric.batchValue),
-                                Math.abs(metric.liveValue),
-                              )) *
+                              Math.max(Math.abs(metric.batchValue), Math.abs(metric.liveValue))) *
                               100,
                           )}%`,
                         }}
@@ -211,18 +187,13 @@ export function DriftAnalysisPanel({
                       <div
                         className={cn(
                           "absolute h-full",
-                          delta >= 0
-                            ? "bg-[var(--status-live)]"
-                            : "bg-[var(--status-warning)]",
+                          delta >= 0 ? "bg-[var(--status-live)]" : "bg-[var(--status-warning)]",
                         )}
                         style={{
                           width: `${Math.min(
                             100,
                             (Math.abs(metric.liveValue) /
-                              Math.max(
-                                Math.abs(metric.batchValue),
-                                Math.abs(metric.liveValue),
-                              )) *
+                              Math.max(Math.abs(metric.batchValue), Math.abs(metric.liveValue))) *
                               100,
                           )}%`,
                         }}
@@ -237,39 +208,23 @@ export function DriftAnalysisPanel({
             {unreconciledItems.length > 0 && (
               <div className="pt-3 border-t border-border">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium">
-                    Unreconciled Items ({unreconciledItems.length})
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 text-xs"
-                    onClick={onViewUnreconciled}
-                  >
+                  <span className="text-xs font-medium">Unreconciled Items ({unreconciledItems.length})</span>
+                  <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={onViewUnreconciled}>
                     View All
                   </Button>
                 </div>
                 <div className="space-y-1.5 max-h-32 overflow-y-auto">
                   {unreconciledItems.slice(0, 4).map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center justify-between text-xs p-2 bg-muted/30 rounded"
-                    >
+                    <div key={item.id} className="flex items-center justify-between text-xs p-2 bg-muted/30 rounded">
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-[10px]">
                           {item.type}
                         </Badge>
-                        <span className="truncate max-w-[200px]">
-                          {item.description}
-                        </span>
+                        <span className="truncate max-w-[200px]">{item.description}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono">
-                          {formatValue(item.amount)}
-                        </span>
-                        <span className="text-muted-foreground">
-                          {item.venue}
-                        </span>
+                        <span className="font-mono">{formatValue(item.amount)}</span>
+                        <span className="text-muted-foreground">{item.venue}</span>
                       </div>
                     </div>
                   ))}
@@ -279,22 +234,12 @@ export function DriftAnalysisPanel({
 
             {/* Actions */}
             <div className="flex items-center gap-2 pt-2 border-t border-border">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5"
-                onClick={onExportDelta}
-              >
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={onExportDelta}>
                 <FileText className="size-3.5" />
                 Export Delta
               </Button>
               {unreconciledItems.length > 0 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5"
-                  onClick={onViewUnreconciled}
-                >
+                <Button variant="outline" size="sm" className="gap-1.5" onClick={onViewUnreconciled}>
                   View {unreconciledItems.length} Unreconciled
                 </Button>
               )}
@@ -321,14 +266,13 @@ export function DriftIndicator({
   className?: string;
 }) {
   const delta = liveValue - batchValue;
-  const deltaPercent =
-    batchValue !== 0 ? (delta / Math.abs(batchValue)) * 100 : 0;
+  const deltaPercent = batchValue !== 0 ? (delta / Math.abs(batchValue)) * 100 : 0;
 
   const formatValue = (value: number) => {
-    if (unit === "%") return `${value.toFixed(2)}%`;
-    if (Math.abs(value) >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
-    if (Math.abs(value) >= 1000) return `$${(value / 1000).toFixed(0)}k`;
-    return `$${value.toFixed(0)}`;
+    if (unit === "%") return formatPercent(value, 2);
+    if (Math.abs(value) >= 1000000) return `$${formatNumber(value / 1000000, 1)}M`;
+    if (Math.abs(value) >= 1000) return `$${formatNumber(value / 1000, 0)}k`;
+    return formatCurrency(value, "USD", 0);
   };
 
   return (
@@ -340,20 +284,13 @@ export function DriftIndicator({
         ) : (
           <TrendingDown className="size-3 text-[var(--pnl-negative)]" />
         )}
-        <span
-          className={cn(
-            "font-mono",
-            delta >= 0
-              ? "text-[var(--pnl-positive)]"
-              : "text-[var(--pnl-negative)]",
-          )}
-        >
+        <span className={cn("font-mono", delta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}>
           {delta >= 0 ? "+" : ""}
           {formatValue(delta)}
         </span>
         <span className="text-muted-foreground">
           ({deltaPercent >= 0 ? "+" : ""}
-          {deltaPercent.toFixed(1)}%)
+          {formatNumber(deltaPercent, 1)}%)
         </span>
       </div>
     </div>

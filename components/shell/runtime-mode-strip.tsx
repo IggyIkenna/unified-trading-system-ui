@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { AlertTriangle } from "lucide-react";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 type ApiStatus = "reachable" | "degraded" | "offline";
 
@@ -14,10 +15,7 @@ export function RuntimeModeStrip() {
 
   React.useEffect(() => {
     // In mock mode, the UI runs standalone — no backend needed
-    if (
-      process.env.NEXT_PUBLIC_MOCK_API === "true" ||
-      process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo"
-    ) {
+    if (isMockDataMode()) {
       setApiStatus("reachable");
       return;
     }

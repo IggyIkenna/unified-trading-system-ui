@@ -20,9 +20,7 @@ export function getAuthProvider(): AuthProvider {
 }
 
 function createProvider(): AuthProvider {
-  const useDemo =
-    process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo" ||
-    process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const useDemo = process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo";
 
   if (useDemo) {
     const { DemoAuthProvider } = require("./demo-provider") as {

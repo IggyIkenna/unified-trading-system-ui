@@ -1,20 +1,21 @@
 "use client";
 
-import * as React from "react";
-import type { Fixture } from "@/components/trading/sports/types";
-import type { FootballLeague } from "@/components/trading/sports/types";
-import { EmptyState, LeagueBadge } from "@/components/trading/sports/shared";
-import { FOOTBALL_LEAGUES } from "@/components/trading/sports/mock-fixtures";
-import { groupFixtures, FixtureSection } from "@/components/trading/sports/fixtures-tab";
-import { FilterBar } from "@/components/platform/filter-bar";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
+import { FixtureSection, groupFixtures } from "@/components/trading/sports/fixtures-tab";
+import { FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
+import { LeagueBadge } from "@/components/trading/sports/shared";
+import type { Fixture, FootballLeague } from "@/components/trading/sports/types";
+import { EmptyState } from "@/components/shared/empty-state";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Filter } from "lucide-react";
+import * as React from "react";
 import { useSportsData, type GlobalFilters } from "./sports-data-context";
 
 export function SportsFixturesWidget(_props: WidgetComponentProps) {
-  const { filteredFixtures, selectedFixtureId, setSelectedFixtureId, handleViewArb, filters, setFilters } = useSportsData();
+  const { filteredFixtures, selectedFixtureId, setSelectedFixtureId, handleViewArb, filters, setFilters } =
+    useSportsData();
   const [showFilters, setShowFilters] = React.useState(true);
 
   const filterDefs = React.useMemo<FilterDefinition[]>(
@@ -102,7 +103,10 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
   return (
     <div className="flex flex-col flex-1 min-h-0 h-full overflow-auto">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
-        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => setShowFilters((f) => !f)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <Filter className="size-3" />
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>
@@ -144,52 +148,52 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
         </div>
       )}
       <div className="p-2">
-      {totalCount === 0 ? (
-        <EmptyState message="No fixtures match the current filters" />
-      ) : (
-        <div className="flex flex-col gap-3 max-w-4xl">
-          <FixtureSection
-            title="Suspended"
-            fixtures={groups.suspended}
-            selectedId={selectedFixtureId}
-            onSelect={selectFixture}
-            onViewArb={handleViewArb}
-            onOpenDetail={openDetail}
-          />
-          <FixtureSection
-            title="Live now"
-            fixtures={[...groups.live, ...groups.halftime]}
-            selectedId={selectedFixtureId}
-            onSelect={selectFixture}
-            onViewArb={handleViewArb}
-            onOpenDetail={openDetail}
-          />
-          <FixtureSection
-            title="Upcoming today"
-            fixtures={groups.upcomingToday}
-            selectedId={selectedFixtureId}
-            onSelect={selectFixture}
-            onViewArb={handleViewArb}
-            onOpenDetail={openDetail}
-          />
-          <FixtureSection
-            title="Upcoming"
-            fixtures={groups.upcomingLater}
-            selectedId={selectedFixtureId}
-            onSelect={selectFixture}
-            onViewArb={handleViewArb}
-            onOpenDetail={openDetail}
-          />
-          <FixtureSection
-            title="Recently completed"
-            fixtures={groups.completed}
-            selectedId={selectedFixtureId}
-            onSelect={selectFixture}
-            onViewArb={handleViewArb}
-            onOpenDetail={openDetail}
-          />
-        </div>
-      )}
+        {totalCount === 0 ? (
+          <EmptyState variant="inline" title="No fixtures match the current filters" />
+        ) : (
+          <div className="flex flex-col gap-3 max-w-4xl">
+            <FixtureSection
+              title="Suspended"
+              fixtures={groups.suspended}
+              selectedId={selectedFixtureId}
+              onSelect={selectFixture}
+              onViewArb={handleViewArb}
+              onOpenDetail={openDetail}
+            />
+            <FixtureSection
+              title="Live now"
+              fixtures={[...groups.live, ...groups.halftime]}
+              selectedId={selectedFixtureId}
+              onSelect={selectFixture}
+              onViewArb={handleViewArb}
+              onOpenDetail={openDetail}
+            />
+            <FixtureSection
+              title="Upcoming today"
+              fixtures={groups.upcomingToday}
+              selectedId={selectedFixtureId}
+              onSelect={selectFixture}
+              onViewArb={handleViewArb}
+              onOpenDetail={openDetail}
+            />
+            <FixtureSection
+              title="Upcoming"
+              fixtures={groups.upcomingLater}
+              selectedId={selectedFixtureId}
+              onSelect={selectFixture}
+              onViewArb={handleViewArb}
+              onOpenDetail={openDetail}
+            />
+            <FixtureSection
+              title="Recently completed"
+              fixtures={groups.completed}
+              selectedId={selectedFixtureId}
+              onSelect={selectFixture}
+              onViewArb={handleViewArb}
+              onOpenDetail={openDetail}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

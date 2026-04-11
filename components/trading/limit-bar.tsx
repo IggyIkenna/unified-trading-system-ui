@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 
 interface LimitBarProps {
@@ -14,10 +15,7 @@ interface LimitBarProps {
   className?: string;
 }
 
-function getUtilization(
-  value: number | undefined | null,
-  limit: number | undefined | null,
-): number {
+function getUtilization(value: number | undefined | null, limit: number | undefined | null): number {
   const safeValue = value ?? 0;
   const safeLimit = limit ?? 1;
   if (safeLimit === 0) return 0;
@@ -69,9 +67,9 @@ export function LimitBar({
 
   const formatValue = (val: number | undefined | null): string => {
     if (val == null || typeof val !== "number" || isNaN(val)) return "-";
-    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}m`;
-    if (val >= 1_000) return `${(val / 1_000).toFixed(1)}k`;
-    return val.toFixed(unit === "%" ? 0 : 2);
+    if (val >= 1_000_000) return `${formatNumber(val / 1_000_000, 1)}m`;
+    if (val >= 1_000) return `${formatNumber(val / 1_000, 1)}k`;
+    return formatNumber(val, unit === "%" ? 0 : 2);
   };
 
   return (
@@ -96,22 +94,16 @@ export function LimitBar({
                 backgroundColor: config.bgColor,
               }}
             >
-              ({utilization.toFixed(0)}%)
+              ({formatNumber(utilization, 0)}%)
             </span>
           )}
         </div>
       </div>
       <div className="relative h-2 bg-muted rounded-full overflow-hidden">
         {/* Warning threshold marker at 70% */}
-        <div
-          className="absolute top-0 bottom-0 w-px bg-muted-foreground/30"
-          style={{ left: "70%" }}
-        />
+        <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/30" style={{ left: "70%" }} />
         {/* Critical threshold marker at 90% */}
-        <div
-          className="absolute top-0 bottom-0 w-px bg-muted-foreground/30"
-          style={{ left: "90%" }}
-        />
+        <div className="absolute top-0 bottom-0 w-px bg-muted-foreground/30" style={{ left: "90%" }} />
         {/* Progress bar */}
         <div
           className="h-full rounded-full transition-all duration-300"
@@ -122,10 +114,7 @@ export function LimitBar({
         />
       </div>
       {showStatus && (
-        <div
-          className="flex items-center gap-1 text-xs"
-          style={{ color: config.color }}
-        >
+        <div className="flex items-center gap-1 text-xs" style={{ color: config.color }}>
           <StatusIcon className="size-3" />
           <span>{config.label}</span>
         </div>
@@ -135,24 +124,16 @@ export function LimitBar({
 }
 
 // Compact limit display for tables
-export function LimitCell({
-  value,
-  limit,
-  unit = "",
-}: {
-  value?: number;
-  limit?: number;
-  unit?: string;
-}) {
+export function LimitCell({ value, limit, unit = "" }: { value?: number; limit?: number; unit?: string }) {
   const utilization = getUtilization(value ?? 0, limit ?? 1);
   const status = getStatus(utilization);
   const config = statusConfig[status];
 
   const formatValue = (val: number | undefined | null): string => {
     if (val == null || typeof val !== "number" || isNaN(val)) return "-";
-    if (val >= 1_000_000) return `${(val / 1_000_000).toFixed(1)}m`;
-    if (val >= 1_000) return `${(val / 1_000).toFixed(0)}k`;
-    return val.toFixed(0);
+    if (val >= 1_000_000) return `${formatNumber(val / 1_000_000, 1)}m`;
+    if (val >= 1_000) return `${formatNumber(val / 1_000, 0)}k`;
+    return formatNumber(val, 0);
   };
 
   return (

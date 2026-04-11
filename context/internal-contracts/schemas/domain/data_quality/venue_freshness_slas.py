@@ -10,7 +10,7 @@ The values reflect the nature of each venue:
 - DeFi protocols depend on block times and indexer lag; SLAs are 15-300 s.
 - Onchain perps sit between CeFi and DeFi; SLAs are 2-5 s.
 
-SSOT for venue names: unified-market-interface VENUE_REGISTRY (factory.py).
+SSOT for venue names: market-tick-data-service market_interface VENUE_REGISTRY (factory.py).
 """
 
 from __future__ import annotations

@@ -1,27 +1,14 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import type {
-  FeatureCatalogueEntry,
-  FeatureGroupEntry,
-} from "@/lib/build-mock-data";
+import type { FeatureCatalogueEntry } from "@/lib/mocks/fixtures/build-data";
 import { cn } from "@/lib/utils";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Clock,
-  Loader2,
-  XCircle,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, RefreshCw, XCircle } from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 export const PAGE_SIZE = 100;
 
-export function categoryIdToShard(
-  serviceId: string,
-  categoryId: string,
-): FeatureCatalogueEntry["shard"] {
+export function categoryIdToShard(serviceId: string, categoryId: string): FeatureCatalogueEntry["shard"] {
   if (serviceId === "sports") return "Sports";
   if (serviceId === "calendar") return "Prediction";
   if (categoryId === "CEFI") return "CeFi";
@@ -30,9 +17,7 @@ export function categoryIdToShard(
   return "CeFi";
 }
 
-export function serviceIdToFeatureType(
-  serviceId: string,
-): FeatureCatalogueEntry["feature_type"] {
+export function serviceIdToFeatureType(serviceId: string): FeatureCatalogueEntry["feature_type"] {
   const m: Record<string, FeatureCatalogueEntry["feature_type"]> = {
     "delta-one": "Delta-One",
     volatility: "Volatility",
@@ -57,7 +42,7 @@ export function makeNewFeatureIds(nameClean: string) {
 export const GROUP_STATUS_CFG = {
   healthy: { icon: CheckCircle2, color: "text-emerald-400", label: "Healthy" },
   stale: { icon: AlertTriangle, color: "text-amber-400", label: "Stale" },
-  computing: { icon: Loader2, color: "text-blue-400", label: "Computing" },
+  computing: { icon: RefreshCw, color: "text-blue-400", label: "Computing" },
   failed: { icon: XCircle, color: "text-red-400", label: "Failed" },
   not_started: {
     icon: Clock,
@@ -117,30 +102,10 @@ export function ComputedBar({ pct, color }: { pct: number; color: string }) {
   return (
     <div className="w-full h-1 rounded-full bg-muted/60 overflow-hidden">
       <div
-        className={cn(
-          "h-full rounded-full transition-all",
-          SERVICE_BAR[color] ?? "bg-primary",
-        )}
+        className={cn("h-full rounded-full transition-all", SERVICE_BAR[color] ?? "bg-primary")}
         style={{ width: `${pct}%` }}
       />
     </div>
-  );
-}
-
-export function CatStatusBadge({
-  status,
-}: {
-  status: FeatureCatalogueEntry["status"];
-}) {
-  const cfg = FEAT_STATUS_CFG[status];
-  const Icon = cfg.icon;
-  return (
-    <Badge variant="outline" className={cn("text-xs gap-1", cfg.badge)}>
-      <Icon className="size-3" />
-      {status === "not_computed"
-        ? "Not Computed"
-        : status.charAt(0).toUpperCase() + status.slice(1)}
-    </Badge>
   );
 }
 
@@ -157,12 +122,11 @@ export type EditableFeature = {
 
 export type ParamRow = { key: string; value: string };
 
-export const CATALOGUE_FEATURE_GROUP_OPTIONS: FeatureCatalogueEntry["feature_group"][] =
-  [
-    "Technical",
-    "Fundamental",
-    "Sentiment",
-    "Microstructure",
-    "Risk",
-    "ML-Derived",
-  ];
+export const CATALOGUE_FEATURE_GROUP_OPTIONS: FeatureCatalogueEntry["feature_group"][] = [
+  "Technical",
+  "Fundamental",
+  "Sentiment",
+  "Microstructure",
+  "Risk",
+  "ML-Derived",
+];

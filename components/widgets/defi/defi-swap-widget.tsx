@@ -9,19 +9,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import {
+  BASIS_TRADE_MOCK_DATA,
+  calculateBasisTradeFundingImpact,
+  calculateBasisTradeCostOfCarry,
+} from "@/lib/mocks/fixtures/defi-basis-trade";
+import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
+import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
-export function DeFiSwapWidget(_props: WidgetComponentProps) {
+export function DeFiSwapWidget(props: WidgetComponentProps) {
   const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
   const tokens = swapTokens as string[];
 
-  const [tokenIn, setTokenIn] = React.useState("ETH");
-  const [tokenOut, setTokenOut] = React.useState("USDC");
+  // Check if this widget is in basis-trade mode
+  const isBasisTrade = props.config?.mode === "basis-trade";
+  const isStakedBasis = props.config?.mode === "staked-basis";
+
+  const [tokenIn, setTokenIn] = React.useState("USDT");
+  const [tokenOut, setTokenOut] = React.useState("ETH");
+
+  React.useEffect(() => {
+    if (isStakedBasis) {
+      setTokenIn("USDT");
+      setTokenOut("weETH");
+    }
+  }, [isStakedBasis]);
   const [amountIn, setAmountIn] = React.useState("");
   const [slippage, setSlippage] = React.useState("0.5");
+  const [algoType, setAlgoType] = React.useState<AlgoType>("SOR_DEX");
+
+  const swapAlgos = DEFI_ALGO_TYPES.filter((a) =>
+    (["SOR_DEX", "SOR_TWAP", "SOR_CROSS_CHAIN"] as string[]).includes(a.value),
+  );
 
   // Gas balance check for selected chain
   const chainPortfolio = MOCK_CHAIN_PORTFOLIOS.find((p) => p.chain === selectedChain);
@@ -55,7 +79,8 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         <div className="flex items-center gap-2 p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-xs">
           <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
           <span className="text-amber-400">
-            Low {gasSymbol} balance ({gasBalance.toFixed(4)} {gasSymbol}). You may not have enough gas for this swap.
+            Low {gasSymbol} balance ({formatNumber(gasBalance, 4)} {gasSymbol}). You may not have enough gas for this
+            swap.
           </span>
         </div>
       )}
@@ -137,6 +162,77 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         </div>
       </div>
 
+      <div className="space-y-1.5">
+        <label className="text-xs text-muted-foreground">Routing algo</label>
+        <Select value={algoType} onValueChange={(v) => setAlgoType(v as AlgoType)}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {swapAlgos.map((a) => (
+              <SelectItem key={a.value} value={a.value} className="text-xs">
+                {a.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isStakedBasis && (
+        <>
+          <Separator className="my-2" />
+          <CollapsibleSection title="Staked basis — swap leg" defaultOpen={true}>
+            <p className="text-xs text-muted-foreground px-1 pb-2">
+              SOR swap stable → weETH (EtherFi LST). Then use{" "}
+              <span className="font-mono text-foreground">Transfer &amp; Bridge</span> for Hyperliquid margin and{" "}
+              <span className="font-mono text-foreground">Book</span> for ETH-USDC perp short to complete delta-neutral
+              deployment.
+            </p>
+          </CollapsibleSection>
+        </>
+      )}
+
+      {isBasisTrade && amountIn && (
+        <>
+          <Separator className="my-2" />
+          <CollapsibleSection title="Basis Trade Metrics" defaultOpen={true}>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="space-y-1">
+                <div className="text-muted-foreground">Funding APY</div>
+                <div className="font-mono font-semibold text-green-600">
+                  {formatPercent(calculateBasisTradeFundingImpact(tokenOut) / 100, 1)}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-muted-foreground">Cost of Carry</div>
+                <div className="font-mono font-semibold text-amber-500">
+                  {formatPercent(calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut) / 100, 2)}
+                </div>
+              </div>
+              <div className="space-y-1 col-span-2">
+                <div className="text-muted-foreground">Net APY</div>
+                <div
+                  className={cn(
+                    "font-mono font-bold",
+                    calculateBasisTradeFundingImpact(tokenOut) >
+                      calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut)
+                      ? "text-green-600"
+                      : "text-red-500",
+                  )}
+                >
+                  {formatPercent(
+                    (calculateBasisTradeFundingImpact(tokenOut) -
+                      calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut)) /
+                      100,
+                    1,
+                  )}
+                </div>
+              </div>
+            </div>
+          </CollapsibleSection>
+        </>
+      )}
+
       {route && (
         <CollapsibleSection title="Route details" defaultOpen={false}>
           <div className="px-2 pb-2 space-y-2">
@@ -156,14 +252,16 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
               <div className="text-[10px] text-muted-foreground">{route.pools.join(" › ")}</div>
               <Separator />
               <div className="grid grid-cols-2 gap-1 text-xs">
+                <span className="text-muted-foreground">Algo</span>
+                <span className="font-mono">{swapAlgos.find((a) => a.value === algoType)?.label ?? algoType}</span>
                 <span className="text-muted-foreground">Price impact</span>
                 <span className={cn("font-mono", route.priceImpactPct > 0.5 ? "text-rose-400" : "text-emerald-400")}>
-                  {route.priceImpactPct.toFixed(2)}%
+                  {formatPercent(route.priceImpactPct, 2)}
                 </span>
                 <span className="text-muted-foreground">Gas estimate</span>
                 <span className="font-mono">
-                  {route.gasEstimateEth.toFixed(4)} ETH
-                  <span className="text-muted-foreground ml-1">(${route.gasEstimateUsd.toFixed(2)})</span>
+                  {formatNumber(route.gasEstimateEth, 4)} ETH
+                  <span className="text-muted-foreground ml-1">(${formatNumber(route.gasEstimateUsd, 2)})</span>
                 </span>
               </div>
             </div>
@@ -177,24 +275,38 @@ export function DeFiSwapWidget(_props: WidgetComponentProps) {
         onClick={() => {
           executeDeFiOrder({
             client_id: "internal-trader",
+            strategy_id: isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING",
+            instruction_type: "SWAP",
+            algo_type: algoType,
             instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
-            venue: "Uniswap",
+            venue: "UNISWAPV3-ETHEREUM",
             side: "buy",
             order_type: "market",
             quantity: amountNum,
             price: route?.expectedOutput ?? 0,
+            max_slippage_bps: Number(slippage) * 100,
+            expected_output: route?.expectedOutput ?? 0,
+            benchmark_price: route?.expectedOutput ?? 0,
             asset_class: "DeFi",
             lane: "defi",
           });
           setAmountIn("");
           toast({
-            title: "Swap submitted",
+            title: isStakedBasis
+              ? "Staked basis swap submitted"
+              : isBasisTrade
+                ? "Basis trade swap submitted"
+                : "Swap submitted",
             description: `${amountNum} ${tokenIn} → ${tokenOut} (mock ledger)`,
           });
         }}
       >
         <ArrowLeftRight className="size-4 mr-2" />
-        Swap {tokenIn} for {tokenOut}
+        {isStakedBasis
+          ? "Execute staked-basis swap (USDT → weETH)"
+          : isBasisTrade
+            ? "Execute Basis Trade Swap"
+            : `Swap ${tokenIn} for ${tokenOut}`}
       </Button>
     </div>
   );

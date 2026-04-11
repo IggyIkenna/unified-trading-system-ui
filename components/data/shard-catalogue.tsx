@@ -11,22 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import {
-  ChevronRight,
-  ChevronDown,
-  Search,
-  CheckCircle2,
-  Lock,
-  Plus,
-  Database,
-  Zap,
-  Cloud,
-} from "lucide-react";
-import {
-  VENUES_BY_CATEGORY,
-  DATA_CATEGORY_LABELS,
-  FOLDERS_BY_CATEGORY,
-} from "@/lib/data-service-types";
+import { ChevronRight, ChevronDown, Search, CheckCircle2, Lock, Plus, Database, Zap, Cloud } from "lucide-react";
+import { VENUES_BY_CATEGORY, DATA_CATEGORY_LABELS, FOLDERS_BY_CATEGORY } from "@/lib/types/data-service";
 import type {
   DataCategory,
   DataFolder,
@@ -34,8 +20,8 @@ import type {
   OrgMode,
   CatalogueEntry,
   DataSubscription,
-} from "@/lib/data-service-types";
-import { MOCK_CATALOGUE, VENUE_DISPLAY } from "@/lib/data-service-mock-data";
+} from "@/lib/types/data-service";
+import { MOCK_CATALOGUE, VENUE_DISPLAY } from "@/lib/mocks/fixtures/data-service";
 
 // Category accent colours
 export const CATEGORY_COLORS: Record<DataCategory, string> = {
@@ -60,16 +46,10 @@ export function ShardCatalogue({
   onSubscribeClick,
   className,
 }: ShardCatalogueProps) {
-  const [expandedCategories, setExpandedCategories] = React.useState<
-    Set<DataCategory>
-  >(new Set(["cefi"]));
-  const [expandedVenues, setExpandedVenues] = React.useState<Set<string>>(
-    new Set(),
-  );
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<DataCategory>>(new Set(["cefi"]));
+  const [expandedVenues, setExpandedVenues] = React.useState<Set<string>>(new Set());
   const [search, setSearch] = React.useState("");
-  const [filterCategory, setFilterCategory] = React.useState<
-    DataCategory | "all"
-  >("all");
+  const [filterCategory, setFilterCategory] = React.useState<DataCategory | "all">("all");
 
   const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
 
@@ -102,8 +82,7 @@ export function ShardCatalogue({
       search === "" ||
       entry.instrument.symbol.toLowerCase().includes(search.toLowerCase()) ||
       entry.instrument.venue.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory =
-      filterCategory === "all" || entry.instrument.category === filterCategory;
+    const matchesCategory = filterCategory === "all" || entry.instrument.category === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -134,13 +113,8 @@ export function ShardCatalogue({
               key={cat}
               variant={filterCategory === cat ? "secondary" : "ghost"}
               size="sm"
-              onClick={() =>
-                setFilterCategory(cat === filterCategory ? "all" : cat)
-              }
-              className={cn(
-                "h-7 text-xs",
-                filterCategory === cat && CATEGORY_COLORS[cat],
-              )}
+              onClick={() => setFilterCategory(cat === filterCategory ? "all" : cat)}
+              className={cn("h-7 text-xs", filterCategory === cat && CATEGORY_COLORS[cat])}
             >
               {DATA_CATEGORY_LABELS[cat]}
             </Button>
@@ -152,9 +126,7 @@ export function ShardCatalogue({
       {categories
         .filter((cat) => filterCategory === "all" || cat === filterCategory)
         .map((cat) => {
-          const catEntries = filteredCatalogue.filter(
-            (e) => e.instrument.category === cat,
-          );
+          const catEntries = filteredCatalogue.filter((e) => e.instrument.category === cat);
 
           const allVenues = VENUES_BY_CATEGORY[cat];
           // Filter venues by search — only show venues matching the search term
@@ -164,24 +136,14 @@ export function ShardCatalogue({
               : allVenues.filter(
                   (v) =>
                     v.toLowerCase().includes(search.toLowerCase()) ||
-                    (VENUE_DISPLAY[v]?.label ?? "")
-                      .toLowerCase()
-                      .includes(search.toLowerCase()) ||
+                    (VENUE_DISPLAY[v]?.label ?? "").toLowerCase().includes(search.toLowerCase()) ||
                     catEntries.some((e) => e.instrument.venue === v),
                 );
 
-          if (
-            catEntries.length === 0 &&
-            venueList.length === 0 &&
-            search !== ""
-          )
-            return null;
+          if (catEntries.length === 0 && venueList.length === 0 && search !== "") return null;
           const catAvgCompleteness =
             catEntries.length > 0
-              ? Math.round(
-                  catEntries.reduce((sum, e) => sum + e.freshnessPct, 0) /
-                    catEntries.length,
-                )
+              ? Math.round(catEntries.reduce((sum, e) => sum + e.freshnessPct, 0) / catEntries.length)
               : 0;
 
           return (
@@ -197,27 +159,18 @@ export function ShardCatalogue({
                   ) : (
                     <ChevronRight className="size-4 text-muted-foreground" />
                   )}
-                  <Badge
-                    variant="outline"
-                    className={cn("text-xs", CATEGORY_COLORS[cat])}
-                  >
+                  <Badge variant="outline" className={cn("text-xs", CATEGORY_COLORS[cat])}>
                     {DATA_CATEGORY_LABELS[cat]}
                   </Badge>
                   <span className="text-sm text-muted-foreground">
-                    {venueList.length} venues · {catEntries.length || "?"}{" "}
-                    instruments
+                    {venueList.length} venues · {catEntries.length || "?"} instruments
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
                   {catAvgCompleteness > 0 && (
                     <div className="flex items-center gap-2">
-                      <Progress
-                        value={catAvgCompleteness}
-                        className="h-1.5 w-20"
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        {catAvgCompleteness}%
-                      </span>
+                      <Progress value={catAvgCompleteness} className="h-1.5 w-20" />
+                      <span className="text-xs text-muted-foreground">{catAvgCompleteness}%</span>
                     </div>
                   )}
                 </div>
@@ -229,18 +182,11 @@ export function ShardCatalogue({
                   <div className="divide-y divide-border/50">
                     {venueList.map((venue) => {
                       const venueKey = `${cat}:${venue}`;
-                      const venueEntries = catEntries.filter(
-                        (e) => e.instrument.venue === venue,
-                      );
+                      const venueEntries = catEntries.filter((e) => e.instrument.venue === venue);
                       const venueDisplay = VENUE_DISPLAY[venue];
                       const venueCompleteness =
                         venueEntries.length > 0
-                          ? Math.round(
-                              venueEntries.reduce(
-                                (sum, e) => sum + e.freshnessPct,
-                                0,
-                              ) / venueEntries.length,
-                            )
+                          ? Math.round(venueEntries.reduce((sum, e) => sum + e.freshnessPct, 0) / venueEntries.length)
                           : null;
 
                       return (
@@ -256,13 +202,9 @@ export function ShardCatalogue({
                               ) : (
                                 <ChevronRight className="size-3.5 text-muted-foreground" />
                               )}
-                              <span className="text-sm font-medium">
-                                {venueDisplay?.label ?? venue}
-                              </span>
+                              <span className="text-sm font-medium">{venueDisplay?.label ?? venue}</span>
                               {venueDisplay?.dataHistory && (
-                                <span className="text-xs text-muted-foreground">
-                                  since {venueDisplay.dataHistory}
-                                </span>
+                                <span className="text-xs text-muted-foreground">since {venueDisplay.dataHistory}</span>
                               )}
                             </div>
                             <div className="flex items-center gap-3">
@@ -278,18 +220,12 @@ export function ShardCatalogue({
                                           : "bg-red-500",
                                     )}
                                   />
-                                  <span className="text-xs text-muted-foreground font-mono">
-                                    {venueCompleteness}%
-                                  </span>
+                                  <span className="text-xs text-muted-foreground font-mono">{venueCompleteness}%</span>
                                 </div>
                               )}
                               <div className="flex gap-1">
                                 {FOLDERS_BY_CATEGORY[cat].map((folder) => (
-                                  <Badge
-                                    key={folder}
-                                    variant="secondary"
-                                    className="text-[10px] h-4 px-1"
-                                  >
+                                  <Badge key={folder} variant="secondary" className="text-[10px] h-4 px-1">
                                     {folder}
                                   </Badge>
                                 ))}
@@ -308,30 +244,16 @@ export function ShardCatalogue({
                                 >
                                   <div className="flex items-center gap-3">
                                     <Database className="size-3.5 text-muted-foreground" />
-                                    <span className="text-sm font-mono">
-                                      {entry.instrument.symbol}
-                                    </span>
+                                    <span className="text-sm font-mono">{entry.instrument.symbol}</span>
                                     <div className="flex gap-1 flex-wrap">
-                                      {entry.instrument.dataTypes
-                                        .slice(0, 3)
-                                        .map((dt) => (
-                                          <Badge
-                                            key={dt}
-                                            variant="outline"
-                                            className="text-[10px] h-4 px-1"
-                                          >
-                                            {dt}
-                                          </Badge>
-                                        ))}
-                                      {entry.instrument.dataTypes.length >
-                                        3 && (
-                                        <Badge
-                                          variant="outline"
-                                          className="text-[10px] h-4 px-1"
-                                        >
-                                          +
-                                          {entry.instrument.dataTypes.length -
-                                            3}
+                                      {entry.instrument.dataTypes.slice(0, 3).map((dt) => (
+                                        <Badge key={dt} variant="outline" className="text-[10px] h-4 px-1">
+                                          {dt}
+                                        </Badge>
+                                      ))}
+                                      {entry.instrument.dataTypes.length > 3 && (
+                                        <Badge variant="outline" className="text-[10px] h-4 px-1">
+                                          +{entry.instrument.dataTypes.length - 3}
                                         </Badge>
                                       )}
                                     </div>
@@ -344,9 +266,7 @@ export function ShardCatalogue({
                                       </span>
                                       {entry.awsCompleteness > 0 && (
                                         <>
-                                          <span className="text-muted-foreground/40">
-                                            |
-                                          </span>
+                                          <span className="text-muted-foreground/40">|</span>
                                           <Cloud className="size-3 text-orange-400" />
                                           <span className="font-mono text-muted-foreground">
                                             AWS {entry.awsCompleteness}%
@@ -358,12 +278,7 @@ export function ShardCatalogue({
                                       {entry.sizeGb.toLocaleString()} GB
                                     </span>
                                     {orgMode === "demo" ? (
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="h-7 text-xs"
-                                        disabled
-                                      >
+                                      <Button size="sm" variant="outline" className="h-7 text-xs" disabled>
                                         <Lock className="mr-1 size-3" />
                                         Sign in
                                       </Button>
@@ -380,9 +295,7 @@ export function ShardCatalogue({
                                         size="sm"
                                         variant="outline"
                                         className="h-7 text-xs"
-                                        onClick={() =>
-                                          onSubscribeClick?.(entry)
-                                        }
+                                        onClick={() => onSubscribeClick?.(entry)}
                                       >
                                         <Plus className="mr-1 size-3" />
                                         Add

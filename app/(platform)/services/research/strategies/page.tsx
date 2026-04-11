@@ -1,57 +1,46 @@
 "use client";
 
-import * as React from "react";
+import { ApiError } from "@/components/shared/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import {
-  useStrategyBacktests,
-  useStrategyTemplates,
-} from "@/hooks/api/use-strategies";
-import type {
-  BacktestRun,
-  StrategyTemplate,
-  StrategySignal,
-  SignalQualityMetrics,
-} from "@/lib/strategy-platform-types";
-import type { BacktestAnalytics } from "@/lib/backtest-analytics-types";
+import { useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import {
   BACKTEST_ANALYTICS,
   BACKTEST_SIGNALS,
   BACKTEST_SIGNAL_QUALITY,
   BACKTEST_RUNS as MOCK_BACKTEST_RUNS,
   STRATEGY_TEMPLATES,
-} from "@/lib/strategy-platform-mock-data";
+} from "@/lib/mocks/fixtures/strategy-platform";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import type { BacktestAnalytics } from "@/lib/types/backtest-analytics";
+import type {
+  BacktestRun,
+  SignalQualityMetrics,
+  StrategySignal,
+  StrategyTemplate,
+} from "@/lib/types/strategy-platform";
+import { cn } from "@/lib/utils";
 import { FlaskConical, GitCompare, Grid3X3, Plus, Search } from "lucide-react";
+import * as React from "react";
 
-import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
-import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
 import {
-  DetailPanel,
-  ComparePanel,
-} from "@/components/research/strategies/strategy-detail-panel";
-import {
-  ResearchListDetailLayout,
-  ResearchToolbar,
-  useCompareMode,
   GridSearchDialog,
+  useCompareMode
 } from "@/components/research/shared";
+import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
+import { ComparePanel, DetailPanel } from "@/components/research/strategies/strategy-detail-panel";
+import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 type SortKey = "recent" | "sharpe" | "return" | "name";
 
 export default function StrategiesPage() {
+  const mockDataMode = isMockDataMode();
   const [search, setSearch] = React.useState("");
   const [archetypeFilter, setArchetypeFilter] = React.useState("all");
   const [statusFilter, setStatusFilter] = React.useState("all");
@@ -63,32 +52,38 @@ export default function StrategiesPage() {
   const { compareSelected, toggleCompare, clearCompare, compareCount } = useCompareMode(3);
   const [selectedBt, setSelectedBt] = React.useState<string | null>(null);
 
-  const { data: backtestsData, isLoading: btLoading } = useStrategyBacktests();
-  const { data: templatesData } = useStrategyTemplates();
+  const {
+    data: backtestsData,
+    isLoading: btLoading,
+    isError: btIsError,
+    error: btError,
+    refetch: refetchBt,
+  } = useStrategyBacktests();
+  const {
+    data: templatesData,
+    isLoading: tplLoading,
+    isError: tplIsError,
+    error: tplError,
+    refetch: refetchTpl,
+  } = useStrategyTemplates();
 
   const backtests: BacktestRun[] = React.useMemo(() => {
     const raw =
-      (backtestsData as Record<string, unknown>)?.data ??
-      (backtestsData as Record<string, unknown>)?.backtests ??
-      [];
+      (backtestsData as Record<string, unknown>)?.data ?? (backtestsData as Record<string, unknown>)?.backtests ?? [];
     const arr = raw as BacktestRun[];
     if (arr.length > 0) return arr;
-    return MOCK_BACKTEST_RUNS;
-  }, [backtestsData]);
+    return mockDataMode ? MOCK_BACKTEST_RUNS : [];
+  }, [backtestsData, mockDataMode]);
 
   const templates: StrategyTemplate[] = React.useMemo(() => {
     const raw =
-      (templatesData as Record<string, unknown>)?.data ??
-      (templatesData as Record<string, unknown>)?.templates ??
-      [];
+      (templatesData as Record<string, unknown>)?.data ?? (templatesData as Record<string, unknown>)?.templates ?? [];
     const arr = raw as StrategyTemplate[];
     if (arr.length > 0) return arr;
-    return STRATEGY_TEMPLATES;
-  }, [templatesData]);
+    return mockDataMode ? STRATEGY_TEMPLATES : [];
+  }, [templatesData, mockDataMode]);
 
-  const archetypes = [
-    ...new Set(backtests.map((b) => b.archetype).filter(Boolean)),
-  ];
+  const archetypes = [...new Set(backtests.map((b) => b.archetype).filter(Boolean))];
   const shards = [...new Set(backtests.map((b) => b.shard).filter(Boolean))];
 
   const filtered = React.useMemo(() => {
@@ -103,36 +98,24 @@ export default function StrategiesPage() {
           (b.shard ?? "").toLowerCase().includes(q),
       );
     }
-    if (archetypeFilter !== "all")
-      items = items.filter((b) => b.archetype === archetypeFilter);
-    if (statusFilter !== "all")
-      items = items.filter((b) => b.status === statusFilter);
-    if (shardFilter !== "all")
-      items = items.filter((b) => b.shard === shardFilter);
+    if (archetypeFilter !== "all") items = items.filter((b) => b.archetype === archetypeFilter);
+    if (statusFilter !== "all") items = items.filter((b) => b.status === statusFilter);
+    if (shardFilter !== "all") items = items.filter((b) => b.shard === shardFilter);
     if (strategyKindFilter !== "all") {
-      items = items.filter(
-        (b) => (b.strategyKind ?? "ml") === strategyKindFilter,
-      );
+      items = items.filter((b) => (b.strategyKind ?? "ml") === strategyKindFilter);
     }
 
     const sorted = [...items];
     switch (sortKey) {
       case "sharpe":
-        sorted.sort(
-          (a, b) => (b.metrics?.sharpe ?? -999) - (a.metrics?.sharpe ?? -999),
-        );
+        sorted.sort((a, b) => (b.metrics?.sharpe ?? -999) - (a.metrics?.sharpe ?? -999));
         break;
       case "return":
-        sorted.sort(
-          (a, b) =>
-            (b.metrics?.totalReturn ?? -999) - (a.metrics?.totalReturn ?? -999),
-        );
+        sorted.sort((a, b) => (b.metrics?.totalReturn ?? -999) - (a.metrics?.totalReturn ?? -999));
         break;
       case "name":
         sorted.sort((a, b) =>
-          (a.configName ?? a.templateName ?? "").localeCompare(
-            b.configName ?? b.templateName ?? "",
-          ),
+          (a.configName ?? a.templateName ?? "").localeCompare(b.configName ?? b.templateName ?? ""),
         );
         break;
       case "recent":
@@ -144,33 +127,35 @@ export default function StrategiesPage() {
         });
     }
     return sorted;
-  }, [
-    backtests,
-    search,
-    archetypeFilter,
-    statusFilter,
-    shardFilter,
-    strategyKindFilter,
-    sortKey,
-  ]);
+  }, [backtests, search, archetypeFilter, statusFilter, shardFilter, strategyKindFilter, sortKey]);
 
   // toggleCompare and compareSelected from useCompareMode hook
 
-  const selectedBacktest = selectedBt
-    ? (backtests.find((b) => b.id === selectedBt) ?? null)
-    : null;
+  const selectedBacktest = selectedBt ? (backtests.find((b) => b.id === selectedBt) ?? null) : null;
 
   const showCompare = compareCount >= 2 && !selectedBt;
   const showDetail = selectedBacktest && !showCompare;
 
   const detailAnalytics: BacktestAnalytics | null =
     showDetail && selectedBt ? (BACKTEST_ANALYTICS[selectedBt] ?? null) : null;
-  const detailSignals: StrategySignal[] =
-    showDetail && selectedBt ? (BACKTEST_SIGNALS[selectedBt] ?? []) : [];
+  const detailSignals: StrategySignal[] = showDetail && selectedBt ? (BACKTEST_SIGNALS[selectedBt] ?? []) : [];
   const detailQuality: SignalQualityMetrics | null =
-    showDetail && selectedBt
-      ? (BACKTEST_SIGNAL_QUALITY[selectedBt] ?? null)
-      : null;
+    showDetail && selectedBt ? (BACKTEST_SIGNAL_QUALITY[selectedBt] ?? null) : null;
+
+  if (!btLoading && !tplLoading && (btIsError || tplIsError)) {
+    return (
+      <div className="p-6">
+        <ApiError
+          error={(btError ?? tplError) as Error}
+          onRetry={() => {
+            void refetchBt();
+            void refetchTpl();
+          }}
+          title="Failed to load strategies"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -242,10 +227,7 @@ export default function StrategiesPage() {
               ))}
             </SelectContent>
           </Select>
-          <Select
-            value={strategyKindFilter}
-            onValueChange={setStrategyKindFilter}
-          >
+          <Select value={strategyKindFilter} onValueChange={setStrategyKindFilter}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Strategy kind" />
             </SelectTrigger>
@@ -255,10 +237,7 @@ export default function StrategiesPage() {
               <SelectItem value="rule">Rule only</SelectItem>
             </SelectContent>
           </Select>
-          <Select
-            value={sortKey}
-            onValueChange={(v) => setSortKey(v as SortKey)}
-          >
+          <Select value={sortKey} onValueChange={(v) => setSortKey(v as SortKey)}>
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
@@ -287,9 +266,7 @@ export default function StrategiesPage() {
           )}
         >
           {btLoading ? (
-            Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 w-full rounded-lg" />
-            ))
+            Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)
           ) : filtered.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center">
@@ -318,10 +295,7 @@ export default function StrategiesPage() {
         {/* Right Panel: Detail or Compare */}
         {(showDetail || showCompare) && (
           <div className="flex-1 border rounded-lg overflow-hidden bg-card min-w-0">
-            {showDetail &&
-            selectedBacktest &&
-            detailAnalytics &&
-            detailQuality ? (
+            {showDetail && selectedBacktest && detailAnalytics && detailQuality ? (
               <DetailPanel
                 bt={selectedBacktest}
                 analytics={detailAnalytics}
@@ -330,27 +304,15 @@ export default function StrategiesPage() {
                 onClose={() => setSelectedBt(null)}
               />
             ) : showCompare ? (
-              <ComparePanel
-                selected={compareSelected}
-                backtests={backtests}
-                onClose={clearCompare}
-              />
+              <ComparePanel selected={compareSelected} backtests={backtests} onClose={clearCompare} />
             ) : null}
           </div>
         )}
       </div>
 
-      <NewBacktestDialog
-        templates={templates}
-        open={newBacktestOpen}
-        onClose={() => setNewBacktestOpen(false)}
-      />
+      <NewBacktestDialog templates={templates} open={newBacktestOpen} onClose={() => setNewBacktestOpen(false)} />
 
-      <GridSearchDialog
-        open={gridSearchOpen}
-        onClose={() => setGridSearchOpen(false)}
-        domain="strategy"
-      />
+      <GridSearchDialog open={gridSearchOpen} onClose={() => setGridSearchOpen(false)} domain="strategy" />
     </div>
   );
 }

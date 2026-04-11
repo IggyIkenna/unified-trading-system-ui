@@ -5,13 +5,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { getOperationBadgeClass, getOperationColor } from "@/lib/utils/bundles";
@@ -29,6 +23,7 @@ import {
   Trash2,
   Zap,
 } from "lucide-react";
+import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // DeFi operation types (subset for DeFi-specific builder)
@@ -115,7 +110,7 @@ const GAS_PRICE_GWEI = 24;
 
 function gasToUsd(gasUnits: number): number {
   const ethPrice = 3_200;
-  return (gasUnits * GAS_PRICE_GWEI * 1e-9) * ethPrice;
+  return gasUnits * GAS_PRICE_GWEI * 1e-9 * ethPrice;
 }
 
 // ---------------------------------------------------------------------------
@@ -159,37 +154,34 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
     });
   }, []);
 
-  const updateOp = React.useCallback(
-    (id: string, field: keyof DefiOp, value: string) => {
-      setOperations((prev) =>
-        prev.map((o) => {
-          if (o.id !== id) return o;
-          if (field === "operationType") {
-            const defOp = DEFI_OPERATIONS.find((d) => d.value === value);
-            const gasEstimates: Record<string, number> = {
-              SWAP: 185_000,
-              FLASH_BORROW: 145_000,
-              FLASH_REPAY: 145_000,
-              LEND: 120_000,
-              STAKE: 130_000,
-              UNSTAKE: 130_000,
-              TRANSFER: 210_000,
-              ADD_LIQUIDITY: 250_000,
-              REMOVE_LIQUIDITY: 95_000,
-            };
-            return {
-              ...o,
-              operationType: value,
-              estimatedGas: gasEstimates[value] ?? 185_000,
-              token: defOp?.venue === "Aave" ? o.token : o.token,
-            };
-          }
-          return { ...o, [field]: value };
-        }),
-      );
-    },
-    [],
-  );
+  const updateOp = React.useCallback((id: string, field: keyof DefiOp, value: string) => {
+    setOperations((prev) =>
+      prev.map((o) => {
+        if (o.id !== id) return o;
+        if (field === "operationType") {
+          const defOp = DEFI_OPERATIONS.find((d) => d.value === value);
+          const gasEstimates: Record<string, number> = {
+            SWAP: 185_000,
+            FLASH_BORROW: 145_000,
+            FLASH_REPAY: 145_000,
+            LEND: 120_000,
+            STAKE: 130_000,
+            UNSTAKE: 130_000,
+            TRANSFER: 210_000,
+            ADD_LIQUIDITY: 250_000,
+            REMOVE_LIQUIDITY: 95_000,
+          };
+          return {
+            ...o,
+            operationType: value,
+            estimatedGas: gasEstimates[value] ?? 185_000,
+            token: defOp?.venue === "Aave" ? o.token : o.token,
+          };
+        }
+        return { ...o, [field]: value };
+      }),
+    );
+  }, []);
 
   const loadTemplate = React.useCallback((template: DefiTemplate) => {
     setOperations(
@@ -239,11 +231,9 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                   <div className="flex items-center gap-2 text-[10px] shrink-0">
                     <span className="text-muted-foreground font-mono flex items-center gap-0.5">
                       <Fuel className="size-2.5" />
-                      {(t.estimatedGas / 1000).toFixed(0)}K
+                      {formatNumber(t.estimatedGas / 1000, 0)}K
                     </span>
-                    {t.estimatedProfit > 0 && (
-                      <span className="text-emerald-400 font-mono">+${t.estimatedProfit}</span>
-                    )}
+                    {t.estimatedProfit > 0 && <span className="text-emerald-400 font-mono">+${t.estimatedProfit}</span>}
                   </div>
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-0.5">{t.description}</p>
@@ -388,7 +378,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                   <label className="text-[10px] text-muted-foreground">Est. Gas</label>
                   <div className="h-7 flex items-center text-xs font-mono text-muted-foreground px-2 border rounded-md bg-muted/20">
                     <Fuel className="size-3 mr-1.5 shrink-0" />
-                    {(op.estimatedGas / 1000).toFixed(0)}K ({gasToUsd(op.estimatedGas).toFixed(2)} USD)
+                    {`${formatNumber(op.estimatedGas / 1000, 0)}K (${formatCurrency(gasToUsd(op.estimatedGas), "USD", 2)} USD)`}
                   </div>
                 </div>
               </div>
@@ -445,7 +435,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
               <div className="space-y-1">
                 <span className="text-[10px] text-muted-foreground">Total Gas Cost</span>
                 <p className="text-sm font-mono font-bold text-rose-400">
-                  {(totalGas / 1000).toFixed(0)}K gas (~${totalGasUsd.toFixed(2)})
+                  {`${formatNumber(totalGas / 1000, 0)}K gas (~${formatCurrency(totalGasUsd, "USD", 2)})`}
                 </p>
               </div>
               <div className="space-y-1">
@@ -459,9 +449,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
               <ShieldCheck className="size-4 text-amber-400 shrink-0" />
               <div>
                 <p className="text-[10px] font-medium text-amber-400">Atomic Guarantee</p>
-                <p className="text-[10px] text-muted-foreground">
-                  All or nothing -- reverts if any step fails
-                </p>
+                <p className="text-[10px] text-muted-foreground">All or nothing -- reverts if any step fails</p>
               </div>
             </div>
 

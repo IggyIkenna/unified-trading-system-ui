@@ -7,10 +7,11 @@
 
 // In mock mode, use relative URLs so the mock handler intercepts them.
 // In production, call the UMU backend directly.
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+
 const isMockMode =
   typeof process !== "undefined" &&
-  (process.env.NEXT_PUBLIC_MOCK_API === "true" ||
-    process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo");
+  isMockDataMode();
 
 const USER_MGMT_API = isMockMode
   ? ""
@@ -65,7 +66,7 @@ export async function submitSignup(
     if (res.status === 404) {
       throw new Error(
         body.error ||
-          "Signup API not found (404). Deploy a user-management API that exposes POST /api/v1/signup, or set NEXT_PUBLIC_USER_MGMT_API_URL to that service’s base URL.",
+        "Signup API not found (404). Deploy a user-management API that exposes POST /api/v1/signup, or set NEXT_PUBLIC_USER_MGMT_API_URL to that service’s base URL.",
       );
     }
     throw new Error(body.error || `Signup failed: HTTP ${res.status}`);

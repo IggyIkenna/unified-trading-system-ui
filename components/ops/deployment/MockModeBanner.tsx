@@ -4,8 +4,9 @@
  * Mock mode banner for deployment UI.
  * TODO: wire to actual mock mode detection from env/config.
  */
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
-const MOCK_MODE = process.env.NEXT_PUBLIC_MOCK_API === "true";
+const MOCK_MODE = isMockDataMode();
 
 export function MockModeBanner() {
   if (!MOCK_MODE) return null;

@@ -9,41 +9,16 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import {
-  useFeatureProvenance,
-  useModelFamilies,
-} from "@/hooks/api/use-ml-models";
-import { mock01 } from "@/lib/deterministic-mock";
+import { useFeatureProvenance, useModelFamilies } from "@/hooks/api/use-ml-models";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { cn } from "@/lib/utils";
-import {
-  BarChart3,
-  Brain,
-  Check,
-  ChevronRight,
-  Grid3X3,
-  Layers,
-  Loader2,
-  Play,
-  Target,
-} from "lucide-react";
+import { BarChart3, Brain, Check, ChevronRight, Grid3X3, Layers, Loader2, Play, Target } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -100,8 +75,7 @@ const GPU_TYPES = ["T4", "A100", "V100", "L4"];
 
 export default function MLConfigPage() {
   const { data: familiesData, isLoading: familiesLoading } = useModelFamilies();
-  const { data: featuresData, isLoading: featuresLoading } =
-    useFeatureProvenance();
+  const { data: featuresData, isLoading: featuresLoading } = useFeatureProvenance();
   const MODEL_FAMILIES: Array<{
     id: string;
     name: string;
@@ -120,8 +94,7 @@ export default function MLConfigPage() {
 
   const [currentStep, setCurrentStep] = React.useState<StepId>("select");
   const [selectedFamily, setSelectedFamily] = React.useState<string>("");
-  const [selectedAssetClass, setSelectedAssetClass] =
-    React.useState<string>("CeFi");
+  const [selectedAssetClass, setSelectedAssetClass] = React.useState<string>("CeFi");
   const [selectedFeatures, setSelectedFeatures] = React.useState<string[]>([]);
   const [selectedTarget, setSelectedTarget] = React.useState<string>("return");
   const [isRunning, setIsRunning] = React.useState(false);
@@ -141,9 +114,7 @@ export default function MLConfigPage() {
   const [gridLrMax, setGridLrMax] = React.useState(0.01);
   const [gridEpochsMin, setGridEpochsMin] = React.useState(50);
   const [gridEpochsMax, setGridEpochsMax] = React.useState(300);
-  const [gridBatchSizes, setGridBatchSizes] = React.useState([
-    32, 128, 256, 512,
-  ]);
+  const [gridBatchSizes, setGridBatchSizes] = React.useState([32, 128, 256, 512]);
 
   const currentStepIndex = STEPS.findIndex((s) => s.id === currentStep);
   const family = MODEL_FAMILIES.find((f) => f.id === selectedFamily);
@@ -182,9 +153,7 @@ export default function MLConfigPage() {
           return (
             <React.Fragment key={step.id}>
               <button
-                onClick={() =>
-                  idx <= currentStepIndex && setCurrentStep(step.id)
-                }
+                onClick={() => idx <= currentStepIndex && setCurrentStep(step.id)}
                 className={cn(
                   "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all",
                   isCurrent && "bg-primary text-primary-foreground",
@@ -192,16 +161,10 @@ export default function MLConfigPage() {
                   !isCurrent && !isComplete && "text-muted-foreground",
                 )}
               >
-                {isComplete ? (
-                  <Check className="size-4" />
-                ) : (
-                  <Icon className="size-4" />
-                )}
+                {isComplete ? <Check className="size-4" /> : <Icon className="size-4" />}
                 <span className="hidden md:inline">{step.label}</span>
               </button>
-              {idx < STEPS.length - 1 && (
-                <ChevronRight className="size-4 text-muted-foreground shrink-0" />
-              )}
+              {idx < STEPS.length - 1 && <ChevronRight className="size-4 text-muted-foreground shrink-0" />}
             </React.Fragment>
           );
         })}
@@ -212,18 +175,13 @@ export default function MLConfigPage() {
         <Card>
           <CardHeader>
             <CardTitle>Select Model Family</CardTitle>
-            <CardDescription>
-              Choose a model family and filter by asset class
-            </CardDescription>
+            <CardDescription>Choose a model family and filter by asset class</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex gap-4">
               <div className="flex-1">
                 <Label className="mb-2 block">Asset Class</Label>
-                <Select
-                  value={selectedAssetClass}
-                  onValueChange={setSelectedAssetClass}
-                >
+                <Select value={selectedAssetClass} onValueChange={setSelectedAssetClass}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -239,28 +197,20 @@ export default function MLConfigPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {MODEL_FAMILIES.filter((f) =>
-                f.assetClasses.includes(selectedAssetClass),
-              ).map((f) => (
+              {MODEL_FAMILIES.filter((f) => f.assetClasses.includes(selectedAssetClass)).map((f) => (
                 <button
                   key={f.id}
                   onClick={() => setSelectedFamily(f.id)}
                   className={cn(
                     "text-left p-4 rounded-lg border transition-all",
-                    selectedFamily === f.id
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50",
+                    selectedFamily === f.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
                   )}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm">{f.name}</span>
-                    {selectedFamily === f.id && (
-                      <Check className="size-4 text-primary" />
-                    )}
+                    {selectedFamily === f.id && <Check className="size-4 text-primary" />}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {f.description}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{f.description}</p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline" className="text-[10px]">
                       {f.archetype}
@@ -273,11 +223,7 @@ export default function MLConfigPage() {
               ))}
             </div>
 
-            <Button
-              disabled={!selectedFamily}
-              onClick={() => setCurrentStep("features")}
-              className="mt-4"
-            >
+            <Button disabled={!selectedFamily} onClick={() => setCurrentStep("features")} className="mt-4">
               Continue <ChevronRight className="size-4 ml-1" />
             </Button>
           </CardContent>
@@ -288,10 +234,7 @@ export default function MLConfigPage() {
         <Card>
           <CardHeader>
             <CardTitle>Select Feature Sets</CardTitle>
-            <CardDescription>
-              Choose which feature sets to include in training for{" "}
-              {family?.name}
-            </CardDescription>
+            <CardDescription>Choose which feature sets to include in training for {family?.name}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {FEATURE_SET_VERSIONS.map((fs) => (
@@ -299,9 +242,7 @@ export default function MLConfigPage() {
                 key={fs.id}
                 onClick={() => {
                   setSelectedFeatures((prev) =>
-                    prev.includes(fs.id)
-                      ? prev.filter((id) => id !== fs.id)
-                      : [...prev, fs.id],
+                    prev.includes(fs.id) ? prev.filter((id) => id !== fs.id) : [...prev, fs.id],
                   );
                 }}
                 className={cn(
@@ -315,28 +256,19 @@ export default function MLConfigPage() {
                   <div>
                     <span className="font-medium text-sm">{fs.name}</span>
                     <p className="text-xs text-muted-foreground mt-1">
-                      v{fs.version} · {fs.featureCount} features ·{" "}
-                      {fs.coveragePct}% coverage
+                      v{fs.version} · {fs.featureCount} features · {fs.coveragePct}% coverage
                     </p>
                   </div>
-                  {selectedFeatures.includes(fs.id) && (
-                    <Check className="size-4 text-primary" />
-                  )}
+                  {selectedFeatures.includes(fs.id) && <Check className="size-4 text-primary" />}
                 </div>
               </button>
             ))}
 
             <div className="flex gap-2 mt-4">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep("select")}
-              >
+              <Button variant="outline" onClick={() => setCurrentStep("select")}>
                 Back
               </Button>
-              <Button
-                disabled={selectedFeatures.length === 0}
-                onClick={() => setCurrentStep("target")}
-              >
+              <Button disabled={selectedFeatures.length === 0} onClick={() => setCurrentStep("target")}>
                 Continue <ChevronRight className="size-4 ml-1" />
               </Button>
             </div>
@@ -358,16 +290,12 @@ export default function MLConfigPage() {
                   onClick={() => setSelectedTarget(tv.id)}
                   className={cn(
                     "text-left p-4 rounded-lg border transition-all",
-                    selectedTarget === tv.id
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/50",
+                    selectedTarget === tv.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50",
                   )}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium text-sm">{tv.label}</span>
-                    {selectedTarget === tv.id && (
-                      <Check className="size-4 text-primary" />
-                    )}
+                    {selectedTarget === tv.id && <Check className="size-4 text-primary" />}
                   </div>
                   <p className="text-xs text-muted-foreground">{tv.desc}</p>
                 </button>
@@ -375,10 +303,7 @@ export default function MLConfigPage() {
             </div>
 
             <div className="flex gap-2 mt-4">
-              <Button
-                variant="outline"
-                onClick={() => setCurrentStep("features")}
-              >
+              <Button variant="outline" onClick={() => setCurrentStep("features")}>
                 Back
               </Button>
               <Button onClick={() => setCurrentStep("grid")}>
@@ -394,8 +319,7 @@ export default function MLConfigPage() {
           <CardHeader>
             <CardTitle>Parameter Grid Configuration</CardTitle>
             <CardDescription>
-              Configure the hyperparameter search space. {gridSize}{" "}
-              configurations will be generated.
+              Configure the hyperparameter search space. {gridSize} configurations will be generated.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -450,9 +374,7 @@ export default function MLConfigPage() {
 
             {/* Sliders for search ranges */}
             <div className="space-y-6 border rounded-lg p-4 bg-muted/30">
-              <h4 className="text-sm font-semibold">
-                Hyperparameter Search Ranges
-              </h4>
+              <h4 className="text-sm font-semibold">Hyperparameter Search Ranges</h4>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -463,9 +385,7 @@ export default function MLConfigPage() {
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <Label className="text-[10px] text-muted-foreground">
-                      Min
-                    </Label>
+                    <Label className="text-[10px] text-muted-foreground">Min</Label>
                     <Slider
                       value={[gridLrMin * 10000]}
                       onValueChange={([v]) => setGridLrMin(v / 10000)}
@@ -475,9 +395,7 @@ export default function MLConfigPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-[10px] text-muted-foreground">
-                      Max
-                    </Label>
+                    <Label className="text-[10px] text-muted-foreground">Max</Label>
                     <Slider
                       value={[gridLrMax * 10000]}
                       onValueChange={([v]) => setGridLrMax(v / 10000)}
@@ -498,9 +416,7 @@ export default function MLConfigPage() {
                 </div>
                 <div className="flex gap-4">
                   <div className="flex-1">
-                    <Label className="text-[10px] text-muted-foreground">
-                      Min
-                    </Label>
+                    <Label className="text-[10px] text-muted-foreground">Min</Label>
                     <Slider
                       value={[gridEpochsMin]}
                       onValueChange={([v]) => setGridEpochsMin(v)}
@@ -510,9 +426,7 @@ export default function MLConfigPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <Label className="text-[10px] text-muted-foreground">
-                      Max
-                    </Label>
+                    <Label className="text-[10px] text-muted-foreground">Max</Label>
                     <Slider
                       value={[gridEpochsMax]}
                       onValueChange={([v]) => setGridEpochsMax(v)}
@@ -527,9 +441,7 @@ export default function MLConfigPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <Label>Batch Sizes</Label>
-                  <span className="text-xs text-muted-foreground font-mono">
-                    {gridBatchSizes.join(", ")}
-                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">{gridBatchSizes.join(", ")}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {[32, 64, 128, 256, 512, 1024].map((bs) => (
@@ -537,9 +449,7 @@ export default function MLConfigPage() {
                       key={bs}
                       onClick={() => {
                         setGridBatchSizes((prev) =>
-                          prev.includes(bs)
-                            ? prev.filter((b) => b !== bs)
-                            : [...prev, bs].sort((a, b) => a - b),
+                          prev.includes(bs) ? prev.filter((b) => b !== bs) : [...prev, bs].sort((a, b) => a - b),
                         );
                       }}
                       className={cn(
@@ -557,18 +467,12 @@ export default function MLConfigPage() {
 
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Switch
-                    checked={earlyStopping}
-                    onCheckedChange={setEarlyStopping}
-                  />
+                  <Switch checked={earlyStopping} onCheckedChange={setEarlyStopping} />
                   <Label>Early Stopping</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Label>GPUs</Label>
-                  <Select
-                    value={String(numGpus)}
-                    onValueChange={(v) => setNumGpus(Number(v))}
-                  >
+                  <Select value={String(numGpus)} onValueChange={(v) => setNumGpus(Number(v))}>
                     <SelectTrigger className="w-20">
                       <SelectValue />
                     </SelectTrigger>
@@ -587,16 +491,10 @@ export default function MLConfigPage() {
             <div className="flex items-center justify-between pt-2">
               <div className="text-sm">
                 <span className="font-medium">{gridSize}</span>
-                <span className="text-muted-foreground">
-                  {" "}
-                  configurations will be generated
-                </span>
+                <span className="text-muted-foreground"> configurations will be generated</span>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setCurrentStep("target")}
-                >
+                <Button variant="outline" onClick={() => setCurrentStep("target")}>
                   Back
                 </Button>
                 <Button onClick={() => setCurrentStep("run")}>
@@ -612,9 +510,7 @@ export default function MLConfigPage() {
         <Card>
           <CardHeader>
             <CardTitle>Review & Launch</CardTitle>
-            <CardDescription>
-              Review your configuration before launching training
-            </CardDescription>
+            <CardDescription>Review your configuration before launching training</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -631,12 +527,7 @@ export default function MLConfigPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Target</span>
-                    <span>
-                      {
-                        TARGET_VARIABLES.find((t) => t.id === selectedTarget)
-                          ?.label
-                      }
-                    </span>
+                    <span>{TARGET_VARIABLES.find((t) => t.id === selectedTarget)?.label}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Feature Sets</span>
@@ -646,9 +537,7 @@ export default function MLConfigPage() {
               </div>
 
               <div className="space-y-3 p-4 border rounded-lg">
-                <h4 className="text-sm font-semibold">
-                  Training Configuration
-                </h4>
+                <h4 className="text-sm font-semibold">Training Configuration</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Grid Size</span>
@@ -665,9 +554,7 @@ export default function MLConfigPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">
-                      Early Stopping
-                    </span>
+                    <span className="text-muted-foreground">Early Stopping</span>
                     <span>{earlyStopping ? "Yes" : "No"}</span>
                   </div>
                 </div>
@@ -722,49 +609,31 @@ export default function MLConfigPage() {
                 </thead>
                 <tbody>
                   {Array.from({ length: Math.min(gridSize, 12) }, (_, i) => {
-                    const lr = (
-                      gridLrMin +
-                      (gridLrMax - gridLrMin) * (i / gridSize)
-                    ).toFixed(4);
-                    const epoch =
-                      gridEpochsMin +
-                      Math.floor(
-                        ((gridEpochsMax - gridEpochsMin) * ((i * 3) % 10)) / 10,
-                      );
+                    const lr = (gridLrMin + (gridLrMax - gridLrMin) * (i / gridSize)).toFixed(4);
+                    const epoch = gridEpochsMin + Math.floor(((gridEpochsMax - gridEpochsMin) * ((i * 3) % 10)) / 10);
                     const batch = gridBatchSizes[i % gridBatchSizes.length];
                     const acc = (0.55 + mock01(i, 11) * 0.2).toFixed(3);
                     const sharpe = (0.5 + mock01(i, 12) * 2.5).toFixed(2);
                     const loss = (0.2 + mock01(i, 13) * 0.5).toFixed(3);
                     const best = i === 2;
                     return (
-                      <tr
-                        key={i}
-                        className={cn("border-b", best && "bg-emerald-500/5")}
-                      >
+                      <tr key={i} className={cn("border-b", best && "bg-emerald-500/5")}>
                         <td className="p-3 font-mono text-xs">
                           run-{String(i + 1).padStart(3, "0")}
                           {best && (
-                            <Badge
-                              className="ml-2 text-[9px]"
-                              variant="outline"
-                            >
+                            <Badge className="ml-2 text-[9px]" variant="outline">
                               Best
                             </Badge>
                           )}
                         </td>
-                        <td className="p-3 text-right font-mono text-xs">
-                          {lr}
-                        </td>
+                        <td className="p-3 text-right font-mono text-xs">{lr}</td>
                         <td className="p-3 text-right">{epoch}</td>
                         <td className="p-3 text-right">{batch}</td>
                         <td className="p-3 text-right font-mono">{acc}</td>
                         <td className="p-3 text-right font-mono">{sharpe}</td>
                         <td className="p-3 text-right font-mono">{loss}</td>
                         <td className="p-3 text-center">
-                          <Badge
-                            variant="outline"
-                            className="text-emerald-400 border-emerald-400/30 text-[10px]"
-                          >
+                          <Badge variant="outline" className="text-emerald-400 border-emerald-400/30 text-[10px]">
                             Done
                           </Badge>
                         </td>
@@ -777,14 +646,10 @@ export default function MLConfigPage() {
 
             <div className="flex gap-2">
               <Button asChild variant="outline" size="sm">
-                <Link href="/services/research/ml/experiments">
-                  View All Experiments
-                </Link>
+                <Link href="/services/research/ml/experiments">View All Experiments</Link>
               </Button>
               <Button asChild size="sm">
-                <Link href="/services/research/ml/deploy">
-                  Promote Best Model
-                </Link>
+                <Link href="/services/research/ml/deploy">Promote Best Model</Link>
               </Button>
             </div>
           </CardContent>

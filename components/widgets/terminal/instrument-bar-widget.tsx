@@ -8,6 +8,7 @@ import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
 import { Database, Maximize2, Radio, RefreshCw, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTerminalData } from "./terminal-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function InstrumentBarWidget(_props: WidgetComponentProps) {
   const {
@@ -25,16 +26,16 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
 
   const formatPrice = (v: number) => {
     if (v >= 1000) return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (v >= 1) return v.toFixed(4);
-    return v.toFixed(6);
+    if (v >= 1) return formatNumber(v, 4);
+    return formatNumber(v, 6);
   };
 
   return (
     <div className="flex items-center gap-3 px-3 h-full flex-wrap">
       <Select
-        value={`${selectedInstrument.symbol}@${selectedInstrument.venue}`}
+        value={selectedInstrument.instrumentKey}
         onValueChange={(val) => {
-          const inst = instruments.find((i) => `${i.symbol}@${i.venue}` === val);
+          const inst = instruments.find((i) => i.instrumentKey === val);
           if (inst) setSelectedInstrument(inst);
         }}
       >
@@ -47,8 +48,8 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
               <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase">{cat}</div>
               {insts.map((inst) => (
                 <SelectItem
-                  key={`${inst.symbol}@${inst.venue}`}
-                  value={`${inst.symbol}@${inst.venue}`}
+                  key={inst.instrumentKey}
+                  value={inst.instrumentKey}
                   className="text-xs"
                 >
                   {inst.symbol} <span className="text-muted-foreground ml-1">{inst.venue}</span>
@@ -95,7 +96,7 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
           )}
         >
           {priceChange >= 0 ? "+" : ""}
-          {priceChange.toFixed(2)}%
+          {formatPercent(priceChange, 2)}
         </Badge>
         {!isBatchMode && (
           <Badge variant="outline" className="text-[10px] gap-1">

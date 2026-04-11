@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Droplets, Plus, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   const { liquidityPools, executeDeFiOrder } = useDeFiData();
@@ -62,7 +63,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
               <SelectItem key={p.name} value={p.name}>
                 <span className="font-mono">{p.name}</span>
                 <span className="text-[10px] text-muted-foreground ml-2">
-                  TVL ${(p.tvl / 1_000_000).toFixed(0)}M / APR {p.apr24h.toFixed(1)}%
+                  TVL ${formatNumber(p.tvl / 1_000_000, 0)}M / APR {formatPercent(p.apr24h, 1)}
                 </span>
               </SelectItem>
             ))}
@@ -132,11 +133,11 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">TVL</span>
-              <span className="font-mono">${(pool.tvl / 1_000_000).toFixed(0)}M</span>
+              <span className="font-mono">${formatNumber(pool.tvl / 1_000_000, 0)}M</span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">24h APR</span>
-              <span className="font-mono text-emerald-400">{pool.apr24h.toFixed(1)}%</span>
+              <span className="font-mono text-emerald-400">{formatPercent(pool.apr24h, 1)}</span>
             </div>
             <div className="flex items-center justify-between text-xs">
               <span className="text-muted-foreground">Pool fee tier</span>
@@ -153,12 +154,18 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           const amountNum = parseFloat(amount) || 0;
           executeDeFiOrder({
             client_id: "internal-trader",
-            instrument_id: `UNISWAPV3:LP:${pool.name}`,
-            venue: "Uniswap",
+            strategy_id: "AMM_LP",
+            instruction_type: operation,
+            algo_type: "AMM_CONCENTRATED",
+            instrument_id: `${pool.venue_id}:LP:${pool.name}`,
+            venue: pool.venue_id,
             side: operation === "ADD_LIQUIDITY" ? "buy" : "sell",
             order_type: "market",
             quantity: amountNum,
             price: pool.apr24h,
+            max_slippage_bps: 50,
+            expected_output: amountNum,
+            benchmark_price: pool.apr24h,
             asset_class: "DeFi",
             lane: "defi",
           });

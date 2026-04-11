@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight, Mail, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -40,7 +41,7 @@ export default function LoginPage() {
       return;
     }
     // In mock mode, just show a toast
-    if (process.env.NEXT_PUBLIC_MOCK_API === "true" || process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo") {
+    if (isMockDataMode() || process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo") {
       toast({
         title: "Password reset (demo mode)",
         description: `In production, a reset link would be sent to ${email}. Demo accounts use password "demo".`,

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // Canvas-only. Zero JSX SVG elements.
 // Matches reference: large fixed-position nodes, sequential packet firing per connection.
@@ -132,7 +133,7 @@ export function ArbitrageGalaxy() {
         const a = s.alpha * (0.55 + 0.45 * Math.sin(t * 0.0007 + s.phase));
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${a.toFixed(2)})`;
+        ctx.fillStyle = `rgba(255,255,255,${formatNumber(a, 2)})`;
         ctx.fill();
       }
 
@@ -161,16 +162,7 @@ export function ArbitrageGalaxy() {
         const isActive = ci === connIdx && !pausing;
         const pillFill = isActive ? conn.color + "40" : conn.color + "15";
         const pillStroke = isActive ? conn.color + "cc" : conn.color + "55";
-        drawRoundRect(
-          mx - tw / 2,
-          my - 11,
-          tw,
-          22,
-          11,
-          pillFill,
-          pillStroke,
-          isActive ? 1.5 : 1,
-        );
+        drawRoundRect(mx - tw / 2, my - 11, tw, 22, 11, pillFill, pillStroke, isActive ? 1.5 : 1);
         ctx.fillStyle = isActive ? conn.color : conn.color + "99";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -243,16 +235,7 @@ export function ArbitrageGalaxy() {
           const badge = conn.delta;
           ctx.font = "bold 10px 'Geist Mono', monospace";
           const bw = ctx.measureText(badge).width + 14;
-          drawRoundRect(
-            px - bw / 2,
-            py - 26,
-            bw,
-            18,
-            9,
-            "#0a0a0b",
-            conn.color,
-            1.2,
-          );
+          drawRoundRect(px - bw / 2, py - 26, bw, 18, 9, "#0a0a0b", conn.color, 1.2);
           ctx.fillStyle = conn.color;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";

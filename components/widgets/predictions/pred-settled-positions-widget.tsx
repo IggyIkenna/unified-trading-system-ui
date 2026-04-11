@@ -3,7 +3,8 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { CollapsibleSection, DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { PredictionPosition, SettlementOutcome } from "@/components/trading/predictions/types";
 import { fmtUsdPrecise, fmtRelativeTime } from "@/components/trading/predictions/helpers";

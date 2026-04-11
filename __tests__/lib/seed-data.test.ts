@@ -3,6 +3,7 @@ import {
   getPositionsForScope,
   getOrdersForScope,
   getTradesForScope,
+  getTradesForPosition,
   getAlertsForScope,
   getStrategiesForScope,
   getPnlForScope,
@@ -12,7 +13,7 @@ import {
   SEED_TRADES,
   SEED_ALERTS,
   SEED_STRATEGIES,
-} from "@/lib/mock-data";
+} from "@/lib/mocks/fixtures/mock-data-index";
 
 describe("Seed Data", () => {
   it("has positions for multiple orgs", () => {
@@ -29,8 +30,28 @@ describe("Seed Data", () => {
     expect(orgs.has("atlas-ventures")).toBe(true);
   });
 
-  it("uses org IDs that match trading-data.ts", () => {
-    // These are the IDs from trading-data.ts ORGANIZATIONS
+  it("links every position to seed trades with matching net quantity", () => {
+    for (const p of SEED_POSITIONS) {
+      const trades = getTradesForPosition(p.id);
+      expect(trades.length).toBeGreaterThanOrEqual(2);
+      let net = 0;
+      for (const t of trades) {
+        expect(t.positionId).toBe(p.id);
+        expect(t.instrument).toBe(p.instrument);
+        expect(t.strategyId).toBe(p.strategyId);
+        expect(t.venue).toBe(p.venue);
+        net += t.side === "buy" ? t.quantity : -t.quantity;
+      }
+      if (p.side === "long") {
+        expect(net).toBeCloseTo(p.quantity, 2);
+      } else {
+        expect(net).toBeCloseTo(-p.quantity, 2);
+      }
+    }
+  });
+
+  it("uses org IDs that match trading-data fixtures", () => {
+    // These are the IDs from lib/mocks/fixtures/trading-data ORGANIZATIONS
     const validOrgIds = ["odum", "alpha-capital", "vertex-partners", "meridian-fund", "atlas-ventures"];
     for (const s of SEED_STRATEGIES) {
       expect(validOrgIds).toContain(s.orgId);

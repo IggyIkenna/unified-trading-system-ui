@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -17,10 +18,9 @@ import {
   Building2,
   Lock,
 } from "lucide-react";
-import {
-  usePermissionCatalogue,
-  useSearchPermissions,
-} from "@/hooks/api/use-user-management";
+import { usePermissionCatalogue, useSearchPermissions } from "@/hooks/api/use-user-management";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import type { PermissionDomain } from "@/lib/types/user-management";
 
 const DOMAIN_ICONS: Record<string, React.ReactNode> = {
@@ -34,14 +34,10 @@ const DOMAIN_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function CataloguePage() {
-  const { data, isLoading } = usePermissionCatalogue();
+  const { data, isLoading, isError, error, refetch } = usePermissionCatalogue();
   const [search, setSearch] = React.useState("");
-  const [expandedDomains, setExpandedDomains] = React.useState<Set<string>>(
-    new Set(),
-  );
-  const [expandedCategories, setExpandedCategories] = React.useState<
-    Set<string>
-  >(new Set());
+  const [expandedDomains, setExpandedDomains] = React.useState<Set<string>>(new Set());
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<string>>(new Set());
   const searchResults = useSearchPermissions(search);
 
   const toggleDomain = (key: string) => {
@@ -64,11 +60,7 @@ export default function CataloguePage() {
 
   const expandAll = () => {
     const domains = new Set((data?.domains ?? []).map((d) => d.key));
-    const cats = new Set(
-      (data?.domains ?? []).flatMap((d) =>
-        d.categories.map((c) => `${d.key}:${c.key}`),
-      ),
-    );
+    const cats = new Set((data?.domains ?? []).flatMap((d) => d.categories.map((c) => `${d.key}:${c.key}`)));
     setExpandedDomains(domains);
     setExpandedCategories(cats);
   };
@@ -80,30 +72,39 @@ export default function CataloguePage() {
 
   // Count total permissions
   const totalPerms = (data?.domains ?? []).reduce(
-    (sum, d) =>
-      sum + d.categories.reduce((s, c) => s + c.permissions.length, 0),
+    (sum, d) => sum + d.categories.reduce((s, c) => s + c.permissions.length, 0),
     0,
   );
 
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center px-6 py-12">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="px-6 py-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load permission catalogue" />
+      </div>
+    );
+  }
+
   return (
     <div className="px-6 py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">Permission Catalogue</h1>
-          <p className="text-sm text-muted-foreground">
-            {data?.domains?.length ?? 0} domains, {totalPerms} permissions
-            available
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={expandAll}>
-            Expand All
-          </Button>
-          <Button variant="outline" size="sm" onClick={collapseAll}>
-            Collapse All
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Permission Catalogue"
+        description={`${data?.domains?.length ?? 0} domains, ${totalPerms} permissions available`}
+      >
+        <Button variant="outline" size="sm" onClick={expandAll}>
+          Expand All
+        </Button>
+        <Button variant="outline" size="sm" onClick={collapseAll}>
+          Collapse All
+        </Button>
+      </PageHeader>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -119,16 +120,11 @@ export default function CataloguePage() {
       {search.length >= 2 && searchResults.data && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">
-              Search Results ({searchResults.data.total})
-            </CardTitle>
+            <CardTitle className="text-base">Search Results ({searchResults.data.total})</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
             {searchResults.data.results.map((r) => (
-              <div
-                key={`${r.domain}:${r.category}:${r.key}`}
-                className="flex items-center gap-2 py-1.5 text-sm"
-              >
+              <div key={`${r.domain}:${r.category}:${r.key}`} className="flex items-center gap-2 py-1.5 text-sm">
                 <Badge variant="outline" className="text-xs">
                   {r.domain_label}
                 </Badge>
@@ -136,12 +132,8 @@ export default function CataloguePage() {
                   {r.category_label}
                 </Badge>
                 <span className="font-medium">{r.label}</span>
-                <span className="text-muted-foreground text-xs">
-                  {r.description}
-                </span>
-                {r.internal_only === "True" && (
-                  <Lock className="h-3 w-3 text-muted-foreground" />
-                )}
+                <span className="text-muted-foreground text-xs">{r.description}</span>
+                {r.internal_only === "True" && <Lock className="h-3 w-3 text-muted-foreground" />}
               </div>
             ))}
           </CardContent>
@@ -149,26 +141,18 @@ export default function CataloguePage() {
       )}
 
       {/* Domain tree */}
-      {isLoading ? (
-        <div className="text-muted-foreground text-sm">
-          Loading catalogue...
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {(data?.domains ?? []).map((domain) => (
-            <DomainSection
-              key={domain.key}
-              domain={domain}
-              isExpanded={expandedDomains.has(domain.key)}
-              expandedCategories={expandedCategories}
-              onToggleDomain={() => toggleDomain(domain.key)}
-              onToggleCategory={(catKey) =>
-                toggleCategory(`${domain.key}:${catKey}`)
-              }
-            />
-          ))}
-        </div>
-      )}
+      <div className="space-y-2">
+        {(data?.domains ?? []).map((domain) => (
+          <DomainSection
+            key={domain.key}
+            domain={domain}
+            isExpanded={expandedDomains.has(domain.key)}
+            expandedCategories={expandedCategories}
+            onToggleDomain={() => toggleDomain(domain.key)}
+            onToggleCategory={(catKey) => toggleCategory(`${domain.key}:${catKey}`)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -186,10 +170,7 @@ function DomainSection({
   onToggleDomain: () => void;
   onToggleCategory: (catKey: string) => void;
 }) {
-  const totalPerms = domain.categories.reduce(
-    (s, c) => s + c.permissions.length,
-    0,
-  );
+  const totalPerms = domain.categories.reduce((s, c) => s + c.permissions.length, 0);
 
   return (
     <Card>
@@ -198,17 +179,11 @@ function DomainSection({
         className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          {isExpanded ? (
-            <ChevronDown className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
+          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           {DOMAIN_ICONS[domain.key] ?? <Shield className="h-4 w-4" />}
           <div className="text-left">
             <div className="font-medium text-sm">{domain.label}</div>
-            <div className="text-xs text-muted-foreground">
-              {domain.description}
-            </div>
+            <div className="text-xs text-muted-foreground">{domain.description}</div>
           </div>
         </div>
         <Badge variant="secondary" className="text-xs">
@@ -227,15 +202,9 @@ function DomainSection({
                   onClick={() => onToggleCategory(cat.key)}
                   className="w-full flex items-center gap-2 py-1.5 text-sm hover:bg-muted/30 rounded px-2 transition-colors"
                 >
-                  {isCatExpanded ? (
-                    <ChevronDown className="h-3 w-3" />
-                  ) : (
-                    <ChevronRight className="h-3 w-3" />
-                  )}
+                  {isCatExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
                   <span className="font-medium">{cat.label}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({cat.permissions.length})
-                  </span>
+                  <span className="text-xs text-muted-foreground">({cat.permissions.length})</span>
                 </button>
                 {isCatExpanded && (
                   <div className="ml-5 space-y-0.5 pb-1">
@@ -244,18 +213,10 @@ function DomainSection({
                         key={perm.key}
                         className="flex items-center gap-2 py-1 px-2 text-xs rounded hover:bg-muted/20"
                       >
-                        <code className="text-muted-foreground font-mono">
-                          {perm.key}
-                        </code>
+                        <code className="text-muted-foreground font-mono">{perm.key}</code>
                         <span>{perm.label}</span>
-                        {perm.description && (
-                          <span className="text-muted-foreground">
-                            -- {perm.description}
-                          </span>
-                        )}
-                        {perm.internal_only && (
-                          <Lock className="h-3 w-3 text-muted-foreground" />
-                        )}
+                        {perm.description && <span className="text-muted-foreground">-- {perm.description}</span>}
+                        {perm.internal_only && <Lock className="h-3 w-3 text-muted-foreground" />}
                       </div>
                     ))}
                   </div>

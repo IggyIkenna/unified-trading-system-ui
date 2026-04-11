@@ -22,7 +22,7 @@
  */
 
 import * as React from "react";
-import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { EntitlementGate } from "@/components/platform/entitlement-gate";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
 import { useAuth } from "@/hooks/use-auth";
@@ -56,7 +56,7 @@ const PLATFORM_CONFIG: Record<
   execution: {
     label: "Execution Research",
     entitlement: "execution-basic",
-    serviceName: "Execution Analytics",
+    serviceName: "Execution",
     defaultStage: "Simulate",
   },
 };
@@ -98,10 +98,7 @@ export function ResearchFamilyShell({
 
       {/* Content: entitlement gated + error bounded */}
       <div className="flex-1 min-h-0 overflow-auto">
-        <EntitlementGate
-          entitlement={config.entitlement}
-          serviceName={config.serviceName}
-        >
+        <EntitlementGate entitlement={config.entitlement} serviceName={config.serviceName}>
           <ErrorBoundary>{children}</ErrorBoundary>
         </EntitlementGate>
       </div>

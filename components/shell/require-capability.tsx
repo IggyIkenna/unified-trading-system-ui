@@ -1,7 +1,8 @@
 "use client";
 
+import { Spinner } from "@/components/shared/spinner";
 import * as React from "react";
-import { Loader2 } from "lucide-react";
+
 import { useAppAccess } from "@/hooks/use-app-access";
 import { AccessDenied } from "./access-denied";
 
@@ -20,18 +21,13 @@ interface RequireCapabilityProps {
  *     <TradingDashboard />
  *   </RequireCapability>
  */
-export function RequireCapability({
-  capability,
-  anyOf,
-  children,
-}: RequireCapabilityProps) {
-  const { authorized, hasCapability, hasAnyCapability, loading } =
-    useAppAccess();
+export function RequireCapability({ capability, anyOf, children }: RequireCapabilityProps) {
+  const { authorized, hasCapability, hasAnyCapability, loading } = useAppAccess();
 
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        <Spinner size="lg" className="size-8 text-muted-foreground" />
       </div>
     );
   }

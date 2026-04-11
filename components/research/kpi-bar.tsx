@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { KpiBarItem } from "@/lib/backtest-analytics-types";
+import type { KpiBarItem } from "@/lib/types/backtest-analytics";
 
 interface KpiBarProps {
   items: KpiBarItem[];
@@ -25,30 +25,15 @@ export function KpiBar({ items, className }: KpiBarProps) {
       {items.map((item, i) => (
         <div
           key={item.label}
-          className={cn(
-            "flex flex-col gap-0.5",
-            i < items.length - 1 && "border-r border-border/50 pr-6",
-          )}
+          className={cn("flex flex-col gap-0.5", i < items.length - 1 && "border-r border-border/50 pr-6")}
         >
-          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
-            {item.label}
-          </span>
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">{item.label}</span>
           <div className="flex items-baseline gap-1.5">
-            <span
-              className={cn(
-                "text-lg font-bold tabular-nums",
-                COLOR_MAP[item.color ?? "default"],
-              )}
-            >
+            <span className={cn("text-lg font-bold tabular-nums", COLOR_MAP[item.color ?? "default"])}>
               {item.value}
             </span>
             {item.sub_value && (
-              <span
-                className={cn(
-                  "text-xs font-medium tabular-nums",
-                  COLOR_MAP[item.color ?? "default"],
-                )}
-              >
+              <span className={cn("text-xs font-medium tabular-nums", COLOR_MAP[item.color ?? "default"])}>
                 {item.sub_value}
               </span>
             )}

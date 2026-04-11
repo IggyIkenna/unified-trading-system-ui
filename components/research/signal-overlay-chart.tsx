@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  createChart,
-  CandlestickSeries,
-  HistogramSeries,
-  ColorType,
-  createSeriesMarkers,
-} from "lightweight-charts";
+import { createChart, CandlestickSeries, HistogramSeries, ColorType, createSeriesMarkers } from "lightweight-charts";
 import type {
   IChartApi,
   ISeriesApi,
@@ -18,7 +12,7 @@ import type {
 } from "lightweight-charts";
 import { cn } from "@/lib/utils";
 import { bumpDuplicateTimes } from "@/lib/lightweight-charts-series";
-import type { StrategySignal } from "@/lib/strategy-platform-types";
+import type { StrategySignal } from "@/lib/types/strategy-platform";
 
 /** Close-only bar input (e.g. from `generateSyntheticPriceSeries`) — converted to OHLC in-chart */
 export interface PriceBarPoint {
@@ -44,9 +38,7 @@ interface SignalOverlayChartProps {
 }
 
 /** Build OHLC from a synthetic close series (deterministic wicks from bar range). */
-function pricePointsToCandlesticks(
-  points: PriceBarPoint[],
-): CandlestickData<Time>[] {
+function pricePointsToCandlesticks(points: PriceBarPoint[]): CandlestickData<Time>[] {
   if (points.length === 0) return [];
   const out: CandlestickData<Time>[] = [];
   for (let i = 0; i < points.length; i++) {
@@ -66,10 +58,7 @@ function pricePointsToCandlesticks(
   return out;
 }
 
-function snapToNearestBarTime(
-  signalTimeSec: number,
-  barTimes: number[],
-): number {
+function snapToNearestBarTime(signalTimeSec: number, barTimes: number[]): number {
   if (barTimes.length === 0) return signalTimeSec;
   let best = barTimes[0];
   let bestD = Infinity;
@@ -83,10 +72,7 @@ function snapToNearestBarTime(
   return best;
 }
 
-function buildMarkers(
-  strategies: SignalOverlayStrategy[],
-  barTimes: number[],
-): SeriesMarker<Time>[] {
+function buildMarkers(strategies: SignalOverlayStrategy[], barTimes: number[]): SeriesMarker<Time>[] {
   const markers: SeriesMarker<Time>[] = [];
   for (const st of strategies) {
     for (const s of st.signals) {
@@ -103,9 +89,7 @@ function buildMarkers(
       });
     }
   }
-  const sorted = [...markers].sort(
-    (a, b) => (a.time as number) - (b.time as number),
-  );
+  const sorted = [...markers].sort((a, b) => (a.time as number) - (b.time as number));
   return bumpDuplicateTimes(sorted);
 }
 
@@ -123,20 +107,11 @@ export function SignalOverlayChart({
   const volumeRef = React.useRef<ISeriesApi<"Histogram"> | null>(null);
   const markersRef = React.useRef<ISeriesMarkersPluginApi<Time> | null>(null);
 
-  const candleData = React.useMemo(
-    () => bumpDuplicateTimes(pricePointsToCandlesticks(priceSeries)),
-    [priceSeries],
-  );
+  const candleData = React.useMemo(() => bumpDuplicateTimes(pricePointsToCandlesticks(priceSeries)), [priceSeries]);
 
-  const barTimes = React.useMemo(
-    () => priceSeries.map((p) => p.time),
-    [priceSeries],
-  );
+  const barTimes = React.useMemo(() => priceSeries.map((p) => p.time), [priceSeries]);
 
-  const markers = React.useMemo(
-    () => buildMarkers(strategies, barTimes),
-    [strategies, barTimes],
-  );
+  const markers = React.useMemo(() => buildMarkers(strategies, barTimes), [strategies, barTimes]);
 
   React.useEffect(() => {
     if (!containerRef.current) return;
@@ -157,9 +132,7 @@ export function SignalOverlayChart({
       },
       rightPriceScale: {
         borderColor: "rgba(255, 255, 255, 0.08)",
-        scaleMargins: showVolume
-          ? { top: 0.08, bottom: 0.22 }
-          : { top: 0.08, bottom: 0.05 },
+        scaleMargins: showVolume ? { top: 0.08, bottom: 0.22 } : { top: 0.08, bottom: 0.05 },
       },
       timeScale: {
         borderColor: "rgba(255, 255, 255, 0.08)",
@@ -241,12 +214,8 @@ export function SignalOverlayChart({
   return (
     <div className={cn("space-y-2", className)}>
       <div>
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Price & Signal Overlay
-        </h4>
-        {subtitle ? (
-          <p className="text-[10px] text-muted-foreground mt-0.5">{subtitle}</p>
-        ) : null}
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Price & Signal Overlay</h4>
+        {subtitle ? <p className="text-[10px] text-muted-foreground mt-0.5">{subtitle}</p> : null}
       </div>
       <div className="flex flex-wrap gap-3 text-[10px] mb-1">
         <span className="flex items-center gap-1.5 text-muted-foreground">
@@ -255,10 +224,7 @@ export function SignalOverlayChart({
         </span>
         {strategies.map((s) => (
           <span key={s.id} className="flex items-center gap-1.5">
-            <span
-              className="size-2 rounded-full"
-              style={{ backgroundColor: s.color }}
-            />
+            <span className="size-2 rounded-full" style={{ backgroundColor: s.color }} />
             {s.label}
           </span>
         ))}

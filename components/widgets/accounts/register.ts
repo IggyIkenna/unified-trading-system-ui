@@ -1,11 +1,12 @@
 import { registerWidget } from "../widget-registry";
 import { registerPresets } from "../preset-registry";
-import { ArrowRightLeft, Clock, DollarSign, ShieldCheck, Wallet } from "lucide-react";
+import { ArrowRightLeft, Clock, DollarSign, FileText, ShieldCheck, Wallet } from "lucide-react";
 import { AccountsKpiWidget } from "./accounts-kpi-widget";
 import { AccountsBalanceTableWidget } from "./accounts-balance-table-widget";
 import { AccountsMarginUtilWidget } from "./accounts-margin-util-widget";
 import { AccountsTransferWidget } from "./accounts-transfer-widget";
 import { AccountsTransferHistoryWidget } from "./accounts-transfer-history-widget";
+import { SaftPortfolioWidget } from "./saft-portfolio-widget";
 
 registerPresets("accounts", [
   {
@@ -25,6 +26,14 @@ registerPresets("accounts", [
         y: 11,
         w: 12,
         h: 4,
+      },
+      {
+        widgetId: "saft-portfolio",
+        instanceId: "saft-portfolio-1",
+        x: 0,
+        y: 15,
+        w: 12,
+        h: 16,
       },
     ],
     createdAt: "2026-01-01T00:00:00Z",
@@ -110,4 +119,20 @@ registerWidget({
   availableOn: ["accounts"],
   singleton: true,
   component: AccountsTransferHistoryWidget,
+});
+
+registerWidget({
+  id: "saft-portfolio",
+  label: "SAFT & Token Warrants",
+  description: "Simple Agreement for Future Tokens — portfolio, vesting timeline, and treasury tracking (demo data).",
+  icon: FileText,
+  minW: 6,
+  minH: 8,
+  defaultW: 12,
+  defaultH: 20,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Accounts",
+  availableOn: ["accounts"],
+  singleton: true,
+  component: SaftPortfolioWidget,
 });
