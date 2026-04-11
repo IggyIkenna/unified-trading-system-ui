@@ -50,6 +50,8 @@ import {
 } from "@/lib/mocks/fixtures/strategy-platform";
 import {
   MOCK_CLIENTS as PERF_MOCK_CLIENTS,
+  MOCK_ORGANISATIONS as PERF_MOCK_ORGANISATIONS,
+  MOCK_STRATEGIES as PERF_MOCK_STRATEGIES,
   MOCK_POSITIONS as PERF_MOCK_POSITIONS,
   MOCK_COIN_BREAKDOWN as PERF_MOCK_COINS,
   MOCK_TRADES as PERF_MOCK_TRADES,
@@ -87,8 +89,9 @@ import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { FOOTBALL_LEAGUES, BOOKMAKERS, SUBSCRIBED_BOOKMAKERS, ODDS_MARKETS } from "@/lib/mocks/fixtures/sports-fixtures";
 import { MOCK_FIXTURES, MOCK_ODDS, MOCK_ARB_STREAM, MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
-export const MOCK_MODE = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
+export const MOCK_MODE = typeof window !== "undefined" && isMockDataMode();
 
 function json(data: unknown, delay = 50): Promise<Response> {
   return new Promise((resolve) => {
@@ -2302,7 +2305,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   // --- Client Performance Dashboard ---
   if (route === "/api/reporting/clients") {
-    return json(PERF_MOCK_CLIENTS);
+    return json({ clients: PERF_MOCK_CLIENTS, organisations: PERF_MOCK_ORGANISATIONS, strategies: PERF_MOCK_STRATEGIES });
   }
   if (route === "/api/reporting/performance/summary") {
     const qs = new URLSearchParams(path.split("?")[1] ?? "");

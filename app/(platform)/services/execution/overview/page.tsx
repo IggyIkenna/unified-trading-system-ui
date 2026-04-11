@@ -1,14 +1,18 @@
 "use client";
 
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
-import { PageHeader } from "@/components/shared/page-header";
+import { ResearchFamilyShell } from "@/components/platform/research-family-shell";
+import { ApiError } from "@/components/shared/api-error";
 import { MetricCard } from "@/components/shared/metric-card";
+import { PageHeader } from "@/components/shared/page-header";
+import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAlgos, useExecutionMetrics, useOrders, useVenues } from "@/hooks/api/use-orders";
-import { ApiError } from "@/components/shared/api-error";
-import { Spinner } from "@/components/shared/spinner";
+import { SEED_ALGOS, SEED_RECENT_ORDERS, SEED_VENUES } from "@/lib/mocks/fixtures/execution-pages";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import {
@@ -21,9 +25,9 @@ import {
   TrendingDown,
   Zap,
 } from "lucide-react";
-import { SEED_ALGOS, SEED_RECENT_ORDERS, SEED_VENUES } from "@/lib/mocks/fixtures/execution-pages";
 
 export default function ExecutionOverviewPage() {
+  const mockDataMode = isMockDataMode();
   const {
     data: metricsData,
     isLoading: metricsLoading,
@@ -37,19 +41,22 @@ export default function ExecutionOverviewPage() {
   const isLoading = metricsLoading || venuesLoading || ordersLoading || algosLoading;
 
   const metricsRaw: Record<string, any> = (metricsData as any)?.data ?? {};
+  const fallbackByAlgo = mockDataMode
+    ? { TWAP: 412, VWAP: 318, "Aggressive Limit": 245, Iceberg: 142, POV: 98, Market: 32 }
+    : {};
   const metrics: Record<string, any> = {
-    ordersExecuted: metricsRaw?.ordersExecuted ?? 1247,
-    volumeTraded: metricsRaw?.volumeTraded ?? 48_320_000,
-    avgSlippage: metricsRaw?.avgSlippage ?? 0.82,
-    avgFillRate: metricsRaw?.avgFillRate ?? 97.3,
-    avgLatency: metricsRaw?.avgLatency ?? 12.4,
-    rejects: metricsRaw?.rejects ?? 3,
+    ordersExecuted: metricsRaw?.ordersExecuted ?? 0,
+    volumeTraded: metricsRaw?.volumeTraded ?? 0,
+    avgSlippage: metricsRaw?.avgSlippage ?? 0,
+    avgFillRate: metricsRaw?.avgFillRate ?? 0,
+    avgLatency: metricsRaw?.avgLatency ?? 0,
+    rejects: metricsRaw?.rejects ?? 0,
     ...metricsRaw,
-    byAlgo: metricsRaw?.byAlgo ?? { TWAP: 412, VWAP: 318, "Aggressive Limit": 245, Iceberg: 142, POV: 98, Market: 32 },
+    byAlgo: metricsRaw?.byAlgo ?? fallbackByAlgo,
   };
-  const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? SEED_VENUES;
-  const MOCK_RECENT_ORDERS: Array<any> = (ordersData as any)?.data ?? SEED_RECENT_ORDERS;
-  const MOCK_EXECUTION_ALGOS: Array<any> = (algosData as any)?.data ?? SEED_ALGOS;
+  const MOCK_VENUES: Array<any> = (venuesData as any)?.data ?? (mockDataMode ? SEED_VENUES : []);
+  const MOCK_RECENT_ORDERS: Array<any> = (ordersData as any)?.data ?? (mockDataMode ? SEED_RECENT_ORDERS : []);
+  const MOCK_EXECUTION_ALGOS: Array<any> = (algosData as any)?.data ?? (mockDataMode ? SEED_ALGOS : []);
 
   const hasError = !!(metricsError || venuesError || ordersError || algosError);
   const refetchAll = () => {
@@ -88,17 +95,22 @@ export default function ExecutionOverviewPage() {
   const totalVenues = MOCK_VENUES.length;
   const liveAlgos = MOCK_EXECUTION_ALGOS.filter((a: any) => a.status === "live").length;
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b">
-        <div className="platform-page-width px-6 py-3">
-          <ExecutionNav />
-        </div>
-      </div>
+  const execTabs = (
+    <Tabs defaultValue="overview" className="w-full">
+      <TabsList className="h-8">
+        <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+        <TabsTrigger value="algos" className="text-xs">Algos</TabsTrigger>
+        <TabsTrigger value="venues" className="text-xs">Venues</TabsTrigger>
+        <TabsTrigger value="tca" className="text-xs">TCA</TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
 
+  return (
+    <ResearchFamilyShell platform="execution" tabs={execTabs} showBatchLiveRail>
       <div className="platform-page-width p-6 space-y-6">
         <PageHeader
-          title="Execution Platform"
+          title="Execution"
           description="Real-time execution quality monitoring, algo comparison, and TCA analysis"
         />
 
@@ -426,6 +438,6 @@ export default function ExecutionOverviewPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </ResearchFamilyShell>
   );
 }

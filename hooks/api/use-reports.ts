@@ -1,12 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useReports() {
   const { user, token } = useAuth();
 
   return useQuery({
-    queryKey: ["reports", user?.id],
+    queryKey: ["reports", user?.id ?? "anon"],
     queryFn: () => apiFetch("/api/reporting/reports", token),
     enabled: !!user,
   });
@@ -16,7 +16,7 @@ export function useSettlements() {
   const { user, token } = useAuth();
 
   return useQuery({
-    queryKey: ["settlements", user?.id],
+    queryKey: ["settlements", user?.id ?? "anon"],
     queryFn: () => apiFetch("/api/reporting/settlements", token),
     enabled: !!user,
   });
@@ -36,7 +36,7 @@ export function useRegulatoryReports() {
   const { user, token } = useAuth();
 
   return useQuery({
-    queryKey: ["regulatory-reports", user?.id],
+    queryKey: ["regulatory-reports", user?.id ?? "anon"],
     queryFn: () => apiFetch("/api/reporting/regulatory", token),
     enabled: !!user,
   });
@@ -46,7 +46,7 @@ export function usePnlAttribution() {
   const { user, token } = useAuth();
 
   return useQuery({
-    queryKey: ["pnl-attribution", user?.id],
+    queryKey: ["pnl-attribution", user?.id ?? "anon"],
     queryFn: () => apiFetch("/api/reporting/pnl-attribution", token),
     enabled: !!user,
   });
@@ -56,7 +56,7 @@ export function useExecutiveSummary() {
   const { user, token } = useAuth();
 
   return useQuery({
-    queryKey: ["executive-summary", user?.id],
+    queryKey: ["executive-summary", user?.id ?? "anon"],
     queryFn: () => apiFetch("/api/reporting/executive-summary", token),
     enabled: !!user,
   });
@@ -66,7 +66,7 @@ export function useInvoices() {
   const { user, token } = useAuth();
 
   return useQuery({
-    queryKey: ["invoices", user?.id],
+    queryKey: ["invoices", user?.id ?? "anon"],
     queryFn: () => apiFetch("/api/reporting/invoices", token),
     enabled: !!user,
   });
@@ -87,13 +87,13 @@ export function useReconciliationBreaks(params?: ReconciliationBreaksParams) {
 
   const queryString = params
     ? "?" +
-      Object.entries(params)
-        .filter(([, v]) => v !== undefined && v !== "")
-        .map(
-          ([k, v]) =>
-            `${encodeURIComponent(k)}=${encodeURIComponent(v as string)}`,
-        )
-        .join("&")
+    Object.entries(params)
+      .filter(([, v]) => v !== undefined && v !== "")
+      .map(
+        ([k, v]) =>
+          `${encodeURIComponent(k)}=${encodeURIComponent(v as string)}`,
+      )
+      .join("&")
     : "";
 
   return useQuery({
@@ -234,6 +234,30 @@ export function useAutoReconHistory() {
     queryKey: ["recon-auto-history", user?.id],
     queryFn: () =>
       apiFetch("/api/positions/reconciliation/auto-recon/history", token),
+    enabled: !!user,
+  });
+}
+
+// ── Fund Operations & NAV hooks ─────────────────────────────────────────────
+
+export function useFundOperations(clientIds?: string) {
+  const { user, token } = useAuth();
+  const qs = clientIds ? `?client_ids=${encodeURIComponent(clientIds)}` : "";
+
+  return useQuery({
+    queryKey: ["fund-operations", clientIds, user?.id ?? "anon"],
+    queryFn: () => apiFetch(`/api/reporting/fund-operations${qs}`, token),
+    enabled: !!user,
+  });
+}
+
+export function useNAV(clientIds?: string) {
+  const { user, token } = useAuth();
+  const qs = clientIds ? `?client_ids=${encodeURIComponent(clientIds)}` : "";
+
+  return useQuery({
+    queryKey: ["nav", clientIds, user?.id ?? "anon"],
+    queryFn: () => apiFetch(`/api/reporting/nav${qs}`, token),
     enabled: !!user,
   });
 }

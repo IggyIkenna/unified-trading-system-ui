@@ -1,30 +1,31 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { submitSignup, uploadUserDocument } from "@/lib/api/signup-client";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { Briefcase, CheckCircle2, Shield } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
+import { OnboardingWizardTail } from "./onboarding-wizard-tail";
 import {
+  getDocSlots,
+  INV_OPTS,
   REG_ACTIVITIES,
   REG_ADDONS,
   REG_ENGAGEMENT,
   REG_FUND_OPTS,
-  INV_OPTS,
   type ApplicantType,
   type DeclarationField,
   type DocSlot,
   type PendingUpload,
-  getDocSlots,
 } from "./signup-data";
 import { generateDeclarationPdfBlob } from "./signup-pdf";
 import { OnboardingBackBtn, OnboardingNextBtn, StepIndicator } from "./signup-ui-bits";
-import { OnboardingWizardTail } from "./onboarding-wizard-tail";
 
 export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "investment" }) {
   const svcName = serviceType === "regulatory" ? "Regulatory Umbrella" : "Investment Management";
@@ -155,7 +156,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
       setSubmitError(`Please upload required documents: ${missingRequiredDocs.join(", ")}.`);
       return;
     }
-    const isMock = process.env.NEXT_PUBLIC_MOCK_API === "true" || process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo";
+    const isMock = isMockDataMode();
     if (!isMock) {
       const staleDraftDocs = Object.keys(docs).filter((key) => !pendingUploads[key]);
       if (staleDraftDocs.length > 0) {

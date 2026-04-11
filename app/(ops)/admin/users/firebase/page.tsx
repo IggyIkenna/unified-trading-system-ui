@@ -57,16 +57,14 @@ export default function FirebaseUsersPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <PageHeader
-        title="Firebase Auth Users"
+        title={<span className="flex items-center gap-2"><Flame className="size-5" />Firebase Auth Users</span>}
         description={`${data?.total ?? 0} accounts in Firebase Authentication`}
-        icon={<Flame className="size-5" />}
-        actions={
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
-            {isFetching ? <Spinner size="sm" className="mr-1.5" /> : <RefreshCw className="size-3.5 mr-1.5" />}
-            Refresh
-          </Button>
-        }
-      />
+      >
+        <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+          {isFetching ? <Spinner size="sm" className="mr-1.5" /> : <RefreshCw className="size-3.5 mr-1.5" />}
+          Refresh
+        </Button>
+      </PageHeader>
 
       <div className="flex items-center gap-2 max-w-sm">
         <Search className="size-4 text-muted-foreground shrink-0" />
@@ -84,11 +82,11 @@ export default function FirebaseUsersPage() {
         </div>
       )}
 
-      {isError && <ApiError error={error} retry={refetch} />}
+      {isError && <ApiError error={error} onRetry={() => void refetch()} />}
 
       {!isLoading && !isError && filtered.length === 0 && (
         <EmptyState
-          icon={<Flame className="size-8 text-muted-foreground" />}
+          icon={Flame}
           title={search ? "No users match your search" : "No Firebase users found"}
           description={search ? "Try a different query." : "No accounts exist in Firebase Authentication yet."}
         />

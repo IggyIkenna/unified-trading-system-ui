@@ -22,14 +22,14 @@ const ENTITLEMENTS = [
     key: "execution-full",
     label: "Execution (Full) — All algos + SOR + dark pools",
   },
-  { key: "ml-full", label: "ML & Backtesting — Model training & deployment" },
+  { key: "ml-full", label: "Research (ML) — Model training & deployment" },
   {
     key: "strategy-full",
-    label: "Strategy Platform — Backtesting & strategy deployment",
+    label: "Research (Strategy) — Strategy backtesting & deployment",
   },
   {
     key: "reporting",
-    label: "Reporting & Analytics — P&L, settlement, compliance",
+    label: "Reports — P&L, settlement, compliance",
   },
 ];
 

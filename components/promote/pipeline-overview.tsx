@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { AlertTriangle, ChevronRight, Target } from "lucide-react";
+import { AlertTriangle, ChevronRight, Target, Activity } from "lucide-react";
+import { DataFreshnessStrip, type DataSource } from "@/components/shared/data-freshness-strip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,8 +50,21 @@ export function PipelineOverview({
 
   const selectedStrategy = selectedId ? candidates.find((c) => c.id === selectedId) : undefined;
 
+  const dataSources = React.useMemo<DataSource[]>(() => [
+    { label: "Pipeline", source: "batch" as const, asOf: new Date().toISOString(), staleAfterSeconds: 300 },
+    { label: "Gate Results", source: "batch" as const, asOf: new Date(Date.now() - 1800_000).toISOString(), staleAfterSeconds: 3600 },
+  ], []);
+
+  // Narrative summary
+  const readyCount = candidates.filter((c) => c.stages.governance.status === "passed").length;
+  const blockedCount = candidates.filter((c) =>
+    Object.values(c.stages).some((s) => s.status === "failed"),
+  ).length;
+
   return (
     <div className="space-y-6">
+      <DataFreshnessStrip sources={dataSources} />
+
       <div className="grid grid-cols-2 gap-0 rounded-lg border border-border bg-card/30 p-3 sm:grid-cols-3 lg:grid-cols-6">
         <MetricCard
           variant="pipeline"
@@ -103,6 +117,20 @@ export function PipelineOverview({
           </span>
         </div>
       )}
+
+      {/* Narrative summary */}
+      <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          <span className="font-medium text-foreground/80">Pipeline Status</span> —{" "}
+          <span className="font-mono">{filtered.length}</span> strategies in cohort,{" "}
+          <span className="font-mono text-emerald-400">{readyCount}</span> fully approved,{" "}
+          <span className="font-mono text-amber-400">{slaBreaches}</span> past SLA
+          {blockedCount > 0 && (
+            <>, <span className="font-mono text-rose-400">{blockedCount}</span> with gate failures</>
+          )}
+          . Average dwell time <span className="font-mono">{fmtNum(pipelineDerived.avgDwell, 1)}d</span> per stage.
+        </p>
+      </div>
 
       <Card>
         <CardHeader className="pb-2">

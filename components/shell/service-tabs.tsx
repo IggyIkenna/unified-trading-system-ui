@@ -463,7 +463,7 @@ export const USER_MGMT_TABS = ADMIN_TABS;
 // ── Legacy aliases (for backward compatibility during transition) ─────────────
 export const RESEARCH_TABS = BUILD_TABS;
 export const EXECUTE_TABS: ServiceTab[] = [
-  { label: "Analytics", href: "/services/execution/overview" },
+  { label: "Overview", href: "/services/execution/overview" },
   { label: "Algos", href: "/services/execution/algos" },
   { label: "Venues", href: "/services/execution/venues" },
   { label: "TCA", href: "/services/execution/tca" },

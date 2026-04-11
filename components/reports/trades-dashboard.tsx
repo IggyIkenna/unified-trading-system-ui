@@ -13,6 +13,7 @@ import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { ApiError } from "@/components/shared/api-error";
 import { PnLValue } from "@/components/trading/pnl-value";
 import { useClients, useTradeHistory } from "@/hooks/api/use-performance";
+import type { TradeRecord } from "@/lib/mocks/fixtures/client-performance";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import {
   ArrowDownUp,
@@ -30,7 +31,7 @@ export function TradesDashboard() {
   const [page, setPage] = React.useState(0);
   const pageSize = 50;
 
-  const { data: clients, isLoading: clientsLoading } = useClients();
+  const { data: clientsData, isLoading: clientsLoading } = useClients();
   const { data: tradesData, isLoading: tradesLoading, isError, error, refetch } = useTradeHistory(
     selectedClientId,
     {
@@ -41,9 +42,11 @@ export function TradesDashboard() {
     },
   );
 
+  const clients = clientsData?.clients ?? [];
+
   // Auto-select first client
   React.useEffect(() => {
-    if (clients && clients.length > 0 && !selectedClientId) {
+    if (clients.length > 0 && !selectedClientId) {
       setSelectedClientId(clients[0].id);
     }
   }, [clients, selectedClientId]);
@@ -85,13 +88,13 @@ export function TradesDashboard() {
               <SelectValue placeholder="Select client" />
             </SelectTrigger>
             <SelectContent>
-              {(clients ?? []).map((c) => (
+              {clients.map((c) => (
                 <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
           <ExportDropdown
-            data={trades.map((t) => ({ ...t }))}
+            data={trades.map((t: TradeRecord) => ({ ...t }))}
             columns={[
               { key: "trade_id", header: "Trade ID" },
               { key: "symbol", header: "Symbol" },

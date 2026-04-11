@@ -1,22 +1,13 @@
 "use client";
 
-import * as React from "react";
+import { ApiError } from "@/components/shared/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ApiError } from "@/components/shared/api-error";
-import { cn } from "@/lib/utils";
 import { useStrategyBacktests, useStrategyTemplates } from "@/hooks/api/use-strategies";
-import type {
-  BacktestRun,
-  StrategyTemplate,
-  StrategySignal,
-  SignalQualityMetrics,
-} from "@/lib/types/strategy-platform";
-import type { BacktestAnalytics } from "@/lib/types/backtest-analytics";
 import {
   BACKTEST_ANALYTICS,
   BACKTEST_SIGNALS,
@@ -24,23 +15,32 @@ import {
   BACKTEST_RUNS as MOCK_BACKTEST_RUNS,
   STRATEGY_TEMPLATES,
 } from "@/lib/mocks/fixtures/strategy-platform";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import type { BacktestAnalytics } from "@/lib/types/backtest-analytics";
+import type {
+  BacktestRun,
+  SignalQualityMetrics,
+  StrategySignal,
+  StrategyTemplate,
+} from "@/lib/types/strategy-platform";
+import { cn } from "@/lib/utils";
 import { FlaskConical, GitCompare, Grid3X3, Plus, Search } from "lucide-react";
+import * as React from "react";
 
-import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
-import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
-import { DetailPanel, ComparePanel } from "@/components/research/strategies/strategy-detail-panel";
 import {
-  ResearchListDetailLayout,
-  ResearchToolbar,
-  useCompareMode,
   GridSearchDialog,
+  useCompareMode
 } from "@/components/research/shared";
+import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
+import { ComparePanel, DetailPanel } from "@/components/research/strategies/strategy-detail-panel";
+import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 type SortKey = "recent" | "sharpe" | "return" | "name";
 
 export default function StrategiesPage() {
+  const mockDataMode = isMockDataMode();
   const [search, setSearch] = React.useState("");
   const [archetypeFilter, setArchetypeFilter] = React.useState("all");
   const [statusFilter, setStatusFilter] = React.useState("all");
@@ -72,16 +72,16 @@ export default function StrategiesPage() {
       (backtestsData as Record<string, unknown>)?.data ?? (backtestsData as Record<string, unknown>)?.backtests ?? [];
     const arr = raw as BacktestRun[];
     if (arr.length > 0) return arr;
-    return MOCK_BACKTEST_RUNS;
-  }, [backtestsData]);
+    return mockDataMode ? MOCK_BACKTEST_RUNS : [];
+  }, [backtestsData, mockDataMode]);
 
   const templates: StrategyTemplate[] = React.useMemo(() => {
     const raw =
       (templatesData as Record<string, unknown>)?.data ?? (templatesData as Record<string, unknown>)?.templates ?? [];
     const arr = raw as StrategyTemplate[];
     if (arr.length > 0) return arr;
-    return STRATEGY_TEMPLATES;
-  }, [templatesData]);
+    return mockDataMode ? STRATEGY_TEMPLATES : [];
+  }, [templatesData, mockDataMode]);
 
   const archetypes = [...new Set(backtests.map((b) => b.archetype).filter(Boolean))];
   const shards = [...new Set(backtests.map((b) => b.shard).filter(Boolean))];

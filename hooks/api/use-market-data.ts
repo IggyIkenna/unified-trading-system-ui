@@ -2,11 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 type CandlesResponse = GatewayApiResponse<"/api/market-data/candles">;
 type OrderBookResponse = GatewayApiResponse<"/api/market-data/orderbook">;
 type TradesResponse = GatewayApiResponse<"/api/market-data/trades">;
 type TickersResponse = GatewayApiResponse<"/api/market-data/tickers">;
+const mockDataMode = isMockDataMode();
 
 export function useCandles(
   venue: string,
@@ -66,7 +68,7 @@ export function useOrderBook(
       ),
     enabled: !!user && !!venue && !!instrument,
     refetchInterval:
-      mode === "batch" || process.env.NEXT_PUBLIC_MOCK_API === "true"
+      mode === "batch" || mockDataMode
         ? false
         : 5000,
   });
@@ -83,7 +85,7 @@ export function useTrades(venue: string, instrument: string) {
         token,
       ),
     enabled: !!user && !!venue && !!instrument,
-    refetchInterval: process.env.NEXT_PUBLIC_MOCK_API === "true" ? false : 3000,
+    refetchInterval: mockDataMode ? false : 3000,
   });
 }
 
@@ -96,7 +98,7 @@ export function useTickers() {
       typedFetch<TickersResponse>("/api/market-data/tickers", token),
     enabled: !!user,
     refetchInterval:
-      process.env.NEXT_PUBLIC_MOCK_API === "true" ? false : 10000,
+      mockDataMode ? false : 10000,
   });
 }
 

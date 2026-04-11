@@ -1,6 +1,10 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { DataFreshnessStrip } from "@/components/shared/data-freshness-strip";
+import type { DataSource } from "@/components/shared/data-freshness-strip";
+import { BatchDetailDrawer } from "@/components/batch-workspace";
+import type { DetailSection } from "@/components/batch-workspace/batch-detail-drawer";
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +41,18 @@ export default function ExecutionCandidatesPage() {
   const mockCandidates: Array<any> = (candidatesData as any)?.data ?? [];
 
   const [selectedCandidates, setSelectedCandidates] = React.useState<string[]>([]);
+  const [detailCandidateId, setDetailCandidateId] = React.useState<string | null>(null);
+
+  const detailCandidate = detailCandidateId
+    ? mockCandidates.find((c: { id: string }) => c.id === detailCandidateId)
+    : null;
+
+  const dataSources = React.useMemo<DataSource[]>(
+    () => [
+      { label: "Candidates", source: "batch" as const, asOf: new Date().toISOString(), staleAfterSeconds: 300 },
+    ],
+    [],
+  );
 
   const toggleCandidate = (id: string) => {
     setSelectedCandidates((prev) => (prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]));
@@ -98,7 +114,8 @@ export default function ExecutionCandidatesPage() {
             title="Promotion Candidates"
             description="Review and approve algorithms for environment promotion"
           />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <DataFreshnessStrip sources={dataSources} />
             <Badge variant="outline" className="gap-1">
               <ShoppingBasket className="size-3" />
               {selectedCandidates.length} selected
@@ -110,54 +127,74 @@ export default function ExecutionCandidatesPage() {
           </div>
         </div>
 
+        {/* Narrative summary */}
+        <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <span className="font-medium text-foreground/80">Promotion Pipeline</span> —{" "}
+            <span className="font-mono">{mockCandidates.length}</span> candidates under review.{" "}
+            <span className="font-mono text-emerald-400">{readyCandidates.length}</span> ready for promotion,{" "}
+            <span className="font-mono text-amber-400">
+              {mockCandidates.filter((c) => c.status === "pending_review").length}
+            </span> pending review,{" "}
+            <span className="font-mono text-blue-400">
+              {mockCandidates.filter((c) => c.status === "needs_paper").length}
+            </span> need paper trading.
+            {mockCandidates.filter((c) => c.status === "blocked").length > 0 && (
+              <>{" "}<span className="font-mono text-red-400">
+                {mockCandidates.filter((c) => c.status === "blocked").length}
+              </span> blocked.</>
+            )}
+          </p>
+        </div>
+
         {/* Summary Cards */}
         <div className="grid grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <CheckCircle2 className="size-4 text-emerald-500" />
+          <Card className="border-border/50 bg-gradient-to-br from-background to-muted/10">
+            <CardContent className="pt-5 pb-4 space-y-1.5">
+              <div className="flex items-center gap-2 text-muted-foreground text-[10px] uppercase tracking-[0.1em]">
+                <CheckCircle2 className="size-3.5 text-emerald-500" />
                 Ready for Promotion
               </div>
-              <div className="text-2xl font-bold tabular-nums">{readyCandidates.length}</div>
+              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{readyCandidates.length}</div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <Clock className="size-4 text-amber-500" />
+          <Card className="border-border/50 bg-gradient-to-br from-background to-muted/10">
+            <CardContent className="pt-5 pb-4 space-y-1.5">
+              <div className="flex items-center gap-2 text-muted-foreground text-[10px] uppercase tracking-[0.1em]">
+                <Clock className="size-3.5 text-amber-500" />
                 Pending Review
               </div>
-              <div className="text-2xl font-bold tabular-nums">
+              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
                 {mockCandidates.filter((c) => c.status === "pending_review").length}
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <Zap className="size-4 text-blue-500" />
+          <Card className="border-border/50 bg-gradient-to-br from-background to-muted/10">
+            <CardContent className="pt-5 pb-4 space-y-1.5">
+              <div className="flex items-center gap-2 text-muted-foreground text-[10px] uppercase tracking-[0.1em]">
+                <Zap className="size-3.5 text-blue-500" />
                 Needs Paper Trading
               </div>
-              <div className="text-2xl font-bold tabular-nums">
+              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
                 {mockCandidates.filter((c) => c.status === "needs_paper").length}
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                <TrendingUp className="size-4" />
+          <Card className="border-border/50 bg-gradient-to-br from-background to-muted/10">
+            <CardContent className="pt-5 pb-4 space-y-1.5">
+              <div className="flex items-center gap-2 text-muted-foreground text-[10px] uppercase tracking-[0.1em]">
+                <TrendingUp className="size-3.5" />
                 Avg Improvement
               </div>
-              <div className="text-2xl font-bold tabular-nums text-emerald-500">+1.4 bps</div>
+              <div className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-emerald-500">+1.4 bps</div>
             </CardContent>
           </Card>
         </div>
 
         {/* Candidates Table */}
-        <Card>
+        <Card className="border-border/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Algorithm Candidates</CardTitle>
+            <CardTitle className="text-base font-semibold tracking-tight">Algorithm Candidates</CardTitle>
             <CardDescription>Select candidates to batch promote or review individually</CardDescription>
           </CardHeader>
           <CardContent>
@@ -247,7 +284,12 @@ export default function ExecutionCandidatesPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="sm" className="gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="gap-1"
+                          onClick={() => setDetailCandidateId(candidate.id)}
+                        >
                           Review
                           <ChevronRight className="size-4" />
                         </Button>
@@ -261,9 +303,9 @@ export default function ExecutionCandidatesPage() {
         </Card>
 
         {/* Checklist Details */}
-        <Card>
+        <Card className="border-border/50">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Approval Checklist</CardTitle>
+            <CardTitle className="text-base font-semibold tracking-tight">Approval Checklist</CardTitle>
             <CardDescription>Required approvals before promotion</CardDescription>
           </CardHeader>
           <CardContent>
@@ -317,6 +359,65 @@ export default function ExecutionCandidatesPage() {
             </div>
           </CardContent>
         </Card>
+        {/* Detail Drawer */}
+        {detailCandidate && (
+          <BatchDetailDrawer
+            open={detailCandidateId !== null}
+            onClose={() => setDetailCandidateId(null)}
+            entityName={detailCandidate.algoName}
+            entityVersion={detailCandidate.algoId}
+            entityType="execution_algo"
+            platform="execution"
+            status={detailCandidate.status}
+            sections={[
+              {
+                title: "Performance",
+                items: [
+                  { label: "Slippage vs Arrival", value: `${detailCandidate.metrics.slippageVsArrival >= 0 ? "+" : ""}${formatNumber(detailCandidate.metrics.slippageVsArrival, 1)} bps`, format: "mono" as const },
+                  { label: "Fill Rate", value: `${detailCandidate.metrics.fillRate}%`, format: "mono" as const },
+                  { label: "Avg Latency", value: `${detailCandidate.metrics.avgLatency}ms`, format: "mono" as const },
+                ],
+              },
+              {
+                title: "Improvement vs Current",
+                items: [
+                  { label: "Slippage", value: detailCandidate.improvement.slippage, format: "text" as const },
+                  { label: "Fill Rate", value: detailCandidate.improvement.fillRate, format: "text" as const },
+                  { label: "Latency", value: detailCandidate.improvement.latency, format: "text" as const },
+                ],
+              },
+              {
+                title: "Promotion Path",
+                items: [
+                  { label: "Source Env", value: detailCandidate.sourceEnv, format: "text" as const },
+                  { label: "Target Env", value: detailCandidate.targetEnv, format: "text" as const },
+                ],
+              },
+            ] satisfies DetailSection[]}
+            onAddToBasket={() => {
+              if (!selectedCandidates.includes(detailCandidate.id)) {
+                setSelectedCandidates((prev) => [...prev, detailCandidate.id]);
+              }
+            }}
+          >
+            {/* Checklist detail */}
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Approval Checklist</h4>
+              <div className="space-y-2">
+                {Object.entries(detailCandidate.checklist as Record<string, boolean>).map(([key, passed]) => (
+                  <div key={key} className="flex items-center justify-between py-1">
+                    <span className="text-xs text-muted-foreground capitalize">{key.replace(/([A-Z])/g, " $1").trim()}</span>
+                    {passed ? (
+                      <CheckCircle2 className="size-3.5 text-emerald-500" />
+                    ) : (
+                      <Clock className="size-3.5 text-amber-500" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </BatchDetailDrawer>
+        )}
       </div>
     </div>
   );

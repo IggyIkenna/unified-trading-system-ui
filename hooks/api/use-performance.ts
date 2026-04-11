@@ -5,28 +5,38 @@ import type { PerformanceSummary } from "@/lib/mocks/fixtures/client-performance
 import {
   getMockPerformanceSummary,
   MOCK_CLIENTS,
+  MOCK_ORGANISATIONS,
+  MOCK_STRATEGIES,
   MOCK_COIN_BREAKDOWN,
   MOCK_POSITIONS,
   MOCK_TRADES,
   MOCK_BALANCE_BREAKDOWN,
   type ClientInfo,
+  type ClientsResponse,
+  type OrganisationInfo,
+  type StrategyInfo,
   type PositionRecord,
   type CoinBreakdown,
   type TradeRecord,
   type BalanceBreakdown,
 } from "@/lib/mocks/fixtures/client-performance";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
-const isMock = process.env.NEXT_PUBLIC_MOCK_API === "true";
+const isMock = isMockDataMode();
 
 export function useClients() {
   const { user, token } = useAuth();
 
-  return useQuery<ClientInfo[]>({
+  return useQuery<ClientsResponse>({
     queryKey: ["client-reporting-clients", user?.id],
     queryFn: async () => {
-      if (isMock) return MOCK_CLIENTS;
+      if (isMock) return { clients: MOCK_CLIENTS, organisations: MOCK_ORGANISATIONS, strategies: MOCK_STRATEGIES };
       const data = await apiFetch("/api/reporting/clients", token);
-      return data as ClientInfo[];
+      // Handle both old (array) and new (object) response shapes
+      if (Array.isArray(data)) {
+        return { clients: data as ClientInfo[], organisations: [] as OrganisationInfo[], strategies: [] as StrategyInfo[] };
+      }
+      return data as ClientsResponse;
     },
     enabled: !!user,
   });
@@ -135,7 +145,19 @@ export function useTradeHistory(clientId: string | null, params?: { symbol?: str
       if (params?.symbol) qs.set("symbol", params.symbol);
       if (params?.side) qs.set("side", params.side);
       const data = await apiFetch(`/api/reporting/trades?${qs.toString()}`, token);
-      return data as ReturnType<typeof useTradeHistory> extends { data: infer T } ? T : never;
+      return data as {
+        client_id: string;
+        trades: TradeRecord[];
+        total: number;
+        offset: number;
+        limit: number;
+        aggregates: {
+          total_trades: number;
+          total_volume_usd: number;
+          total_fees_usd: number;
+          net_realized_pnl: number;
+        };
+      };
     },
     enabled: !!user && !!clientId,
   });

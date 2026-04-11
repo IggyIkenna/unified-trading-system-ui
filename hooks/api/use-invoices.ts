@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -139,7 +140,7 @@ const MOCK_INVOICES: Invoice[] = [
   },
 ];
 
-const IS_MOCK = typeof window !== "undefined" && process.env.NEXT_PUBLIC_MOCK_API === "true";
+const isMock = isMockDataMode();
 
 // ── Hooks ──────────────────────────────────────────────────────────────────────
 
@@ -150,7 +151,7 @@ export function useInvoices(orgId: string | undefined) {
   return useQuery<Invoice[]>({
     queryKey: ["invoices", orgId, user?.id],
     queryFn: async () => {
-      if (IS_MOCK) {
+      if (isMock) {
         const filtered = orgId ? MOCK_INVOICES.filter((inv) => inv.org_id === orgId) : MOCK_INVOICES;
         return filtered;
       }
@@ -170,7 +171,7 @@ export function useInvoice(invoiceId: string | undefined) {
   return useQuery<Invoice | null>({
     queryKey: ["invoice", invoiceId, user?.id],
     queryFn: async () => {
-      if (IS_MOCK) {
+      if (isMock) {
         return MOCK_INVOICES.find((inv) => inv.invoice_id === invoiceId) ?? null;
       }
       const result = await apiFetch(`/api/reporting/invoices/${invoiceId}`, token);
@@ -186,7 +187,7 @@ export function useGenerateInvoice() {
 
   return useMutation<Invoice, Error, GenerateInvoiceParams>({
     mutationFn: async (params) => {
-      if (IS_MOCK) {
+      if (isMock) {
         const newInvoice: Invoice = {
           invoice_id: `INV-2026-${String(Math.floor(Math.random() * 9000) + 1000)}`,
           org_id: params.org_id,
@@ -233,7 +234,7 @@ export function useTransitionInvoice() {
 
   return useMutation<Invoice, Error, TransitionInvoiceParams>({
     mutationFn: async (params) => {
-      if (IS_MOCK) {
+      if (isMock) {
         const existing = MOCK_INVOICES.find((inv) => inv.invoice_id === params.invoice_id);
         if (!existing) throw new Error("Invoice not found");
         const statusMap: Record<TransitionAction, InvoiceStatus> = {

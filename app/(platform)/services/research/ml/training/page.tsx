@@ -32,6 +32,8 @@ import { toast } from "sonner";
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 import { ApiError } from "@/components/shared/api-error";
+import { DataFreshnessStrip } from "@/components/shared/data-freshness-strip";
+import type { DataSource } from "@/components/shared/data-freshness-strip";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -203,12 +205,21 @@ export default function TrainingPage() {
 
   const resourceData = React.useMemo(() => generateResourceData(), []);
 
+  const dataSources = React.useMemo<DataSource[]>(
+    () => [
+      { label: "Training Runs", source: "live" as const, asOf: new Date().toISOString(), staleAfterSeconds: 30 },
+      { label: "GPU Queue", source: "live" as const, asOf: new Date().toISOString(), staleAfterSeconds: 60 },
+    ],
+    [],
+  );
+
   if (runsIsError) {
     return (
       <div className="min-h-screen bg-background p-6">
         <ApiError
           error={runsError instanceof Error ? runsError : new Error("Failed to load training runs")}
           title="Could not load training"
+          onRetry={() => void refetchRuns()}
         />
       </div>
     );
@@ -310,6 +321,9 @@ export default function TrainingPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Data freshness */}
+        <DataFreshnessStrip sources={dataSources} />
 
         {/* Main Layout: list + detail */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">

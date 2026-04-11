@@ -243,6 +243,7 @@ export interface TurboCategoryData {
   >;
   data_types?: string[];
   feature_groups?: string[];
+  sub_dimension_label?: string;
   bulk_service?: boolean;
   error?: string;
 }

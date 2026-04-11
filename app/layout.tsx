@@ -1,4 +1,5 @@
 import { PreviewBanner } from "@/components/preview-banner";
+import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { StagingGate } from "@/components/staging-gate";
 import { Toaster } from "@/components/ui/sonner";
 import { ExecutionModeProvider } from "@/lib/execution-mode-context";
@@ -80,6 +81,7 @@ export default function RootLayout({
               <ExecutionModeProvider>{children}</ExecutionModeProvider>
             </Providers>
           </StagingGate>
+          <RuntimeModeBadge />
           <Toaster />
         </ThemeProvider>
       </body>

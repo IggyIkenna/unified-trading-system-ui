@@ -2,6 +2,8 @@
 
 import { PageHeader } from "@/components/shared/page-header";
 import { ApiError } from "@/components/shared/api-error";
+import { ResearchFamilyShell } from "@/components/platform/research-family-shell";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -62,8 +64,9 @@ export default function MLOverviewPage() {
     isLoading: pipelineLoading,
     isError: pipelineIsError,
     error: pipelineError,
+    refetch: refetchPipeline,
   } = useMLPipelineStatus();
-  const { data: runsData, isLoading: runsLoading, isError: runsIsError, error: runsError } = useUnifiedTrainingRuns();
+  const { data: runsData, isLoading: runsLoading, isError: runsIsError, error: runsError, refetch: refetchRuns } = useUnifiedTrainingRuns();
   const { data: queueData, isLoading: queueLoading } = useTrainingQueue();
   const { data: alertsData } = useMLAlerts();
   const { data: familiesData, isLoading: famLoading } = useModelFamilies();
@@ -110,13 +113,23 @@ export default function MLOverviewPage() {
           : new Error("Request failed");
     return (
       <div className="min-h-screen bg-background p-6">
-        <ApiError error={err} title="Could not load ML overview" />
+        <ApiError error={err} title="Could not load ML overview" onRetry={() => { void refetchPipeline(); void refetchRuns(); }} />
       </div>
     );
   }
 
+  const mlTabs = (
+    <Tabs defaultValue="overview" className="w-full">
+      <TabsList className="h-8">
+        <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+        <TabsTrigger value="training" className="text-xs">Training</TabsTrigger>
+        <TabsTrigger value="registry" className="text-xs">Registry</TabsTrigger>
+      </TabsList>
+    </Tabs>
+  );
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <ResearchFamilyShell platform="ml" tabs={mlTabs} showBatchLiveRail>
       <div className="platform-page-width space-y-6 p-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -383,6 +396,6 @@ export default function MLOverviewPage() {
           </div>
         </div>
       </div>
-    </div>
+    </ResearchFamilyShell>
   );
 }

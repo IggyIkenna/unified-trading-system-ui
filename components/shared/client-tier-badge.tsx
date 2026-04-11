@@ -4,7 +4,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { deriveClientTier, CLIENT_TIER_FEATURES, type ClientTier } from "@/lib/config/auth";
+import { deriveClientTier, CLIENT_TIER_FEATURES, type ClientTier, type EntitlementOrWildcard } from "@/lib/config/auth";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -40,7 +40,8 @@ interface ClientTierBadgeProps {
 export function ClientTierBadge({ entitlements, className, showTooltip = true }: ClientTierBadgeProps) {
   const { user } = useAuth();
 
-  const ents = entitlements ?? (user?.entitlements as readonly string[] | undefined) ?? [];
+  const rawEnts = entitlements ?? user?.entitlements ?? [];
+  const ents = rawEnts as readonly EntitlementOrWildcard[];
   const tier = deriveClientTier(ents);
   const features = CLIENT_TIER_FEATURES[tier];
   const colorClass = TIER_COLORS[tier];

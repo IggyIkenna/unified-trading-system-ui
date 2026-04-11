@@ -239,9 +239,9 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
 
   const extendedMetrics: KpiMetric[] = varSummary
     ? [
-        { label: "Hist VaR 99%", value: formatCurrency(-varSummary.historical_var_99), sentiment: "negative" },
-        { label: "Param VaR 99%", value: formatCurrency(-varSummary.parametric_var_99), sentiment: "negative" },
-        { label: "CVaR 99%", value: formatCurrency(-varSummary.cvar_99), sentiment: "negative" },
+        { label: "Hist VaR 99%", value: formatCurrency(-Number(varSummary.historical_var_99 ?? 0)), sentiment: "negative" },
+        { label: "Param VaR 99%", value: formatCurrency(-Number(varSummary.parametric_var_99 ?? 0)), sentiment: "negative" },
+        { label: "CVaR 99%", value: formatCurrency(-Number(varSummary.cvar_99 ?? 0)), sentiment: "negative" },
       ]
     : [];
 

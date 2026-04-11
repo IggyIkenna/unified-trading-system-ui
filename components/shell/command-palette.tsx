@@ -39,7 +39,7 @@ const SERVICE_ITEMS = [
   { label: "Trading Overview", href: "/services/trading/overview", icon: Play },
   { label: "Trading Terminal", href: "/services/trading/terminal", icon: Play },
   {
-    label: "Execution Analytics",
+    label: "Execution",
     href: "/services/execution/overview",
     icon: Zap,
   },

@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { resetDemo } from "@/lib/reset-demo";
 import { cn } from "@/lib/utils";
 import { Bug, ChevronUp, RotateCcw, User } from "lucide-react";
@@ -18,7 +19,7 @@ import * as React from "react";
 /**
  * Debug Footer — ONLY visible in mock mode.
  * Shows: Reset Demo, current persona, mock mode badge, persona switcher.
- * Visibility controlled by NEXT_PUBLIC_MOCK_API env var or API health check mock_mode flag.
+ * Visibility controlled by data-mode helper or API health check mock_mode flag.
  * Rendered in document flow below UnifiedShell’s main (not fixed) so it does not cover page content.
  */
 export function DebugFooter() {
@@ -29,7 +30,7 @@ export function DebugFooter() {
 
   React.useEffect(() => {
     // Check env var first
-    if (process.env.NEXT_PUBLIC_MOCK_API === "true") {
+    if (isMockDataMode()) {
       setMockMode(true);
       return;
     }

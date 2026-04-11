@@ -20,7 +20,7 @@ import {
 } from "@/lib/mocks/fixtures/trading-data";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { cn } from "@/lib/utils";
-import { BarChart3, Building2, Check, ChevronDown, ChevronRight, Users, X } from "lucide-react";
+import { BarChart3, Building2, Check, ChevronDown, ChevronRight, Layers, Users, X } from "lucide-react";
 import * as React from "react";
 
 interface Organization {

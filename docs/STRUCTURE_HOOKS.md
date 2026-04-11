@@ -113,7 +113,11 @@ Query keys follow `[domain, ...params]` pattern. Invalidation is domain-scoped.
 
 ### How hooks connect to MSW mocks
 
-In development with `NEXT_PUBLIC_MOCK_API=true`, the fetch calls in these hooks are intercepted by MSW handlers in `lib/mocks/handlers/`. The query function calls `fetch('/api/...')` and MSW returns mock data instead of hitting a real server.
+In development with `NEXT_PUBLIC_MOCK_API=true`, hook fetch calls are intercepted by the UI mock layer, so `/api/*` requests resolve from fixtures without requiring backend services.
+
+Use `isMockDataMode()` from `lib/runtime/data-mode.ts` for runtime mode checks. Do not read `process.env.NEXT_PUBLIC_MOCK_API` directly in hooks/components.
+
+In non-mock mode, API-backed hooks/pages should not silently replace missing API payloads with fixtures. They should return real API data, explicit empty states, or surfaced errors.
 
 To trace a hook to its mock:
 

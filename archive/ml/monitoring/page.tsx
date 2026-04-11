@@ -1,29 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
-  XCircle,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  Cpu,
-  Zap,
-  Database,
-  BarChart3,
-  RefreshCw,
-  Bell,
-  Settings,
-  Eye,
-  Filter,
-  ChevronRight,
-  Target,
-  Layers,
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -31,9 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -41,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -51,21 +25,37 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  LineChart,
+  Activity,
+  AlertTriangle,
+  ArrowLeft,
+  Bell,
+  CheckCircle2,
+  Clock,
+  Database,
+  Eye,
+  Settings,
+  Target,
+  Zap
+} from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  ReferenceLine,
 } from "recharts";
 
-import { useMLDeployments, useModelVersions } from "@/hooks/api/use-ml-models";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMLDeployments, useModelVersions } from "@/hooks/api/use-ml-models";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 // Live model metrics (simulated real-time data)
 const generateLiveMetrics = () => {
@@ -127,7 +117,7 @@ export default function LiveMonitoringPage() {
     drift: f.drift ?? 0,
     coverage: f.coverage ?? 100,
   }));
-  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const isMockMode = isMockDataMode();
   const isLoading = deploymentsLoading && versionsLoading;
   const [liveMetrics, setLiveMetrics] = useState(generateLiveMetrics());
   const [selectedModel, setSelectedModel] = useState("all");
@@ -621,13 +611,12 @@ export default function LiveMonitoringPage() {
                 {recentAlerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className={`flex items-start gap-3 p-3 rounded-lg ${
-                      alert.acknowledged
+                    className={`flex items-start gap-3 p-3 rounded-lg ${alert.acknowledged
                         ? "bg-muted/30"
                         : alert.severity === "warning"
                           ? "bg-[var(--status-warning)]/10"
                           : "bg-muted/50"
-                    }`}
+                      }`}
                   >
                     {alert.severity === "warning" ? (
                       <AlertTriangle className="size-4 text-[var(--status-warning)] mt-0.5" />

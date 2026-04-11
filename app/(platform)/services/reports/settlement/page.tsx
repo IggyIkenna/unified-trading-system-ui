@@ -1,19 +1,15 @@
 "use client";
 
-import * as React from "react";
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/shared/data-table";
-import { CheckCircle2, Clock, AlertTriangle, Receipt, RefreshCw, FileText, ArrowDownCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSettlements } from "@/hooks/api/use-reports";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
-import { formatNumber } from "@/lib/utils/formatters";
 import {
   MOCK_INVOICES,
   MOCK_SETTLEMENTS,
@@ -22,6 +18,11 @@ import {
   type SettlementStatus,
   type Side,
 } from "@/lib/mocks/fixtures/reports-pages";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { formatNumber } from "@/lib/utils/formatters";
+import { type ColumnDef } from "@tanstack/react-table";
+import { AlertTriangle, ArrowDownCircle, CheckCircle2, Clock, FileText, Receipt, RefreshCw } from "lucide-react";
+import * as React from "react";
 
 function formatVenue(venue: string): string {
   if (!venue) return "—";
@@ -229,6 +230,7 @@ function LoadingSkeleton() {
 }
 
 export default function SettlementPage() {
+  const mockDataMode = isMockDataMode();
   const { data: apiData, isLoading, isError, refetch } = useSettlements();
 
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
@@ -243,13 +245,13 @@ export default function SettlementPage() {
     if (list?.length) {
       return list.map(normalizeSettlementRow);
     }
-    return MOCK_SETTLEMENTS;
-  }, [apiData]);
+    return mockDataMode ? MOCK_SETTLEMENTS : [];
+  }, [apiData, mockDataMode]);
 
   const rawInvoices: Invoice[] = React.useMemo(() => {
     const apiInvoices = (apiData as Record<string, unknown>)?.invoices as Invoice[] | undefined;
-    return apiInvoices ?? MOCK_INVOICES;
-  }, [apiData]);
+    return apiInvoices ?? (mockDataMode ? MOCK_INVOICES : []);
+  }, [apiData, mockDataMode]);
 
   const settlements = React.useMemo(() => {
     let filtered = rawSettlements;
@@ -467,9 +469,8 @@ export default function SettlementPage() {
               >
                 <div className="flex items-center gap-4">
                   <Receipt
-                    className={`size-5 ${
-                      invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
-                    }`}
+                    className={`size-5 ${invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
+                      }`}
                   />
                   <div>
                     <p className="font-medium font-mono text-sm">{invoice.id}</p>

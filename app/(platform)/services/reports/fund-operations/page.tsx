@@ -1,16 +1,20 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { ApiError } from "@/components/shared/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/shared/data-table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowDownRight, Building2, Calendar, FileText, Scale, Shield, Users, Wallet } from "lucide-react";
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { useFundOperations } from "@/hooks/api/use-reports";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 import { MOCK_INVESTORS_FUND_OPERATIONS, type InvestorRegister } from "@/lib/mocks/fixtures/reports-pages";
 
@@ -31,12 +35,10 @@ interface DistributionWaterfallStep {
 }
 
 // ---------------------------------------------------------------------------
-// Mock data
+// Mock data (fallback in mock mode only)
 // ---------------------------------------------------------------------------
 
-const MOCK_INVESTORS = MOCK_INVESTORS_FUND_OPERATIONS;
-
-const CAPITAL_ACCOUNTS: Record<string, CapitalAccount[]> = {
+const MOCK_CAPITAL_ACCOUNTS: Record<string, CapitalAccount[]> = {
   "Odum Fund I": [
     { label: "Opening Balance", value: 4520000 },
     { label: "Contributions", value: 280000 },
@@ -47,64 +49,16 @@ const CAPITAL_ACCOUNTS: Record<string, CapitalAccount[]> = {
     { label: "Unrealised P&L Allocation", value: 268200 },
     { label: "Ending Balance", value: 4962000 },
   ],
-  "Odum Fund II": [
-    { label: "Opening Balance", value: 3620000 },
-    { label: "Contributions", value: 1000000 },
-    { label: "Distributions", value: -120000 },
-    { label: "Management Fee Allocation", value: -78400 },
-    { label: "Performance Fee Allocation", value: -112000 },
-    { label: "Realised P&L Allocation", value: 248000 },
-    { label: "Unrealised P&L Allocation", value: -377600 },
-    { label: "Ending Balance", value: 4180000 },
-  ],
-  "Seed LP": [
-    { label: "Opening Balance", value: 3180000 },
-    { label: "Contributions", value: 150000 },
-    { label: "Distributions", value: -90000 },
-    { label: "Management Fee Allocation", value: -58800 },
-    { label: "Performance Fee Allocation", value: -84000 },
-    { label: "Realised P&L Allocation", value: 186000 },
-    { label: "Unrealised P&L Allocation", value: 196800 },
-    { label: "Ending Balance", value: 3480000 },
-  ],
-  "Meridian Fund": [
-    { label: "Opening Balance", value: 2680000 },
-    { label: "Contributions", value: 500000 },
-    { label: "Distributions", value: -72000 },
-    { label: "Management Fee Allocation", value: -49800 },
-    { label: "Performance Fee Allocation", value: -71200 },
-    { label: "Realised P&L Allocation", value: 158000 },
-    { label: "Unrealised P&L Allocation", value: -25000 },
-    { label: "Ending Balance", value: 3120000 },
-  ],
 };
 
-const DISTRIBUTION_WATERFALL: DistributionWaterfallStep[] = [
-  {
-    tier: "Return of Capital",
-    description: "Return of contributed capital to investors",
-    amount: 2500000,
-    cumulative: 2500000,
-  },
-  {
-    tier: "Preferred Return (8%)",
-    description: "8% preferred return to LPs before GP catch-up",
-    amount: 1200000,
-    cumulative: 3700000,
-  },
-  {
-    tier: "GP Catch-up",
-    description: "100% to GP until 20% of total profits received",
-    amount: 800000,
-    cumulative: 4500000,
-  },
-  {
-    tier: "Carried Interest (20%)",
-    description: "80/20 split above hurdle — 20% to GP, 80% to LPs",
-    amount: 500000,
-    cumulative: 5000000,
-  },
+const MOCK_WATERFALL: DistributionWaterfallStep[] = [
+  { tier: "Return of Capital", description: "Return of contributed capital", amount: 2500000, cumulative: 2500000 },
+  { tier: "Preferred Return (8%)", description: "8% preferred return to LPs", amount: 1200000, cumulative: 3700000 },
+  { tier: "GP Catch-up", description: "100% to GP until 20%", amount: 800000, cumulative: 4500000 },
+  { tier: "Carried Interest (20%)", description: "80/20 split above hurdle", amount: 500000, cumulative: 5000000 },
 ];
+
+const mockDataMode = isMockDataMode();
 
 const FUND_TERMS = {
   fundName: "Odum Capital Digital Assets Fund I, LP",
@@ -217,22 +171,91 @@ function useInvestorRegisterColumns(): ColumnDef<InvestorRegister>[] {
 }
 
 // ---------------------------------------------------------------------------
+// Loading skeleton
+// ---------------------------------------------------------------------------
+
+function LoadingSkeleton() {
+  return (
+    <main className="flex-1 p-6 space-y-6">
+      <Skeleton className="h-10 w-64" />
+      <Skeleton className="h-6 w-96" />
+      <div className="grid grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Card key={i}><CardContent className="pt-4"><Skeleton className="h-16" /></CardContent></Card>
+        ))}
+      </div>
+      <Skeleton className="h-[400px]" />
+    </main>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Page component
 // ---------------------------------------------------------------------------
 
 export default function FundOperationsPage() {
-  const [selectedInvestor, setSelectedInvestor] = React.useState("Odum Fund I");
-  const capitalAccount = CAPITAL_ACCOUNTS[selectedInvestor] ?? [];
-  const totalDistribution = DISTRIBUTION_WATERFALL[DISTRIBUTION_WATERFALL.length - 1]?.cumulative ?? 0;
+  const { data: apiData, isLoading, isError, error, refetch } = useFundOperations();
+  const apiResult = apiData as Record<string, unknown> | undefined;
+
+  // Use API data or mock fallback
+  const investors: InvestorRegister[] = React.useMemo(() => {
+    const apiInvestors = apiResult?.investors as InvestorRegister[] | undefined;
+    if (apiInvestors?.length) return apiInvestors;
+    return mockDataMode ? MOCK_INVESTORS_FUND_OPERATIONS : [];
+  }, [apiResult]);
+
+  const capitalAccounts: Record<string, CapitalAccount[]> = React.useMemo(() => {
+    const apiAccounts = apiResult?.capital_accounts as Record<string, CapitalAccount[]> | undefined;
+    if (apiAccounts && Object.keys(apiAccounts).length > 0) return apiAccounts;
+    return mockDataMode ? MOCK_CAPITAL_ACCOUNTS : {};
+  }, [apiResult]);
+
+  const distributionWaterfall: DistributionWaterfallStep[] = React.useMemo(() => {
+    const apiWaterfall = apiResult?.distribution_waterfall as DistributionWaterfallStep[] | undefined;
+    if (apiWaterfall?.length) return apiWaterfall;
+    return mockDataMode ? MOCK_WATERFALL : [];
+  }, [apiResult]);
+
+  const totalAum = (apiResult?.total_aum as number) ?? 0;
+  const totalPnl = (apiResult?.total_pnl as number) ?? 0;
+  const investorCount = (apiResult?.investor_count as number) ?? investors.length;
+
+  const [selectedInvestor, setSelectedInvestor] = React.useState("");
+  const capitalAccountNames = Object.keys(capitalAccounts);
+
+  // Auto-select first capital account
+  React.useEffect(() => {
+    if (!selectedInvestor && capitalAccountNames.length > 0) {
+      setSelectedInvestor(capitalAccountNames[0]!);
+    }
+  }, [capitalAccountNames, selectedInvestor]);
+
+  const capitalAccount = capitalAccounts[selectedInvestor] ?? [];
+  const totalDistribution = distributionWaterfall.length > 0
+    ? distributionWaterfall[distributionWaterfall.length - 1]?.cumulative ?? 0
+    : 0;
   const investorColumns = useInvestorRegisterColumns();
   const investorTotals = React.useMemo(
     () => ({
-      commitment: MOCK_INVESTORS.reduce((acc, i) => acc + i.commitment, 0),
-      drawn: MOCK_INVESTORS.reduce((acc, i) => acc + i.drawn, 0),
-      remaining: MOCK_INVESTORS.reduce((acc, i) => acc + i.remaining, 0),
+      commitment: investors.reduce((acc, i) => acc + i.commitment, 0),
+      drawn: investors.reduce((acc, i) => acc + i.drawn, 0),
+      remaining: investors.reduce((acc, i) => acc + i.remaining, 0),
     }),
-    [],
+    [investors],
   );
+
+  if (isLoading) return <LoadingSkeleton />;
+
+  if (isError && !mockDataMode) {
+    return (
+      <div className="p-6">
+        <ApiError
+          error={error instanceof Error ? error : new Error("Failed to load fund operations data")}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
 
   return (
     <main className="flex-1 p-6 space-y-6">
@@ -241,6 +264,49 @@ export default function FundOperationsPage() {
         title="Fund Operations"
         description="Investor register, capital accounts, distributions, and fund terms"
       />
+
+      {/* KPI Strip */}
+      <div className="grid grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Wallet className="size-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold font-mono">{formatCurrency(totalAum)}</p>
+                <p className="text-xs text-muted-foreground">Total AUM</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-[var(--pnl-positive)]/10">
+                <ArrowDownRight className="size-5" style={{ color: "var(--pnl-positive)" }} />
+              </div>
+              <div>
+                <p className={`text-xl font-semibold font-mono ${pnlColor(totalPnl)}`}>{formatCurrency(totalPnl)}</p>
+                <p className="text-xs text-muted-foreground">Total P&L</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-emerald-500/10">
+                <Users className="size-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold font-mono">{investorCount}</p>
+                <p className="text-xs text-muted-foreground">Active Investors</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Tabs */}
       <Tabs defaultValue="register">
@@ -261,14 +327,14 @@ export default function FundOperationsPage() {
                   Investor Register
                 </CardTitle>
                 <Badge variant="outline" className="text-xs font-mono">
-                  {MOCK_INVESTORS.length} investors
+                  {investors.length} investors
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <DataTable
                 columns={investorColumns}
-                data={MOCK_INVESTORS}
+                data={investors}
                 enableColumnVisibility={false}
                 tableFooter={
                   <TableFooter className="border-t-2 bg-transparent">
@@ -302,18 +368,20 @@ export default function FundOperationsPage() {
                   <Wallet className="size-4 text-muted-foreground" />
                   Capital Account Statement
                 </CardTitle>
-                <Select value={selectedInvestor} onValueChange={setSelectedInvestor}>
-                  <SelectTrigger className="w-[220px] h-8 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(CAPITAL_ACCOUNTS).map((name) => (
-                      <SelectItem key={name} value={name} className="text-xs">
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {capitalAccountNames.length > 0 && (
+                  <Select value={selectedInvestor} onValueChange={setSelectedInvestor}>
+                    <SelectTrigger className="w-[220px] h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {capitalAccountNames.map((name) => (
+                        <SelectItem key={name} value={name} className="text-xs">
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </CardHeader>
             <CardContent>
@@ -326,7 +394,7 @@ export default function FundOperationsPage() {
                 </TableHeader>
                 <TableBody>
                   {capitalAccount.map((item, i) => {
-                    const isTotal = item.label === "Ending Balance" || item.label === "Opening Balance";
+                    const isTotal = item.label === "Ending Balance" || item.label === "Opening Balance" || item.label === "Current Equity";
                     return (
                       <TableRow key={i} className={isTotal ? "border-t-2 font-semibold" : ""}>
                         <TableCell className="text-sm">
@@ -335,7 +403,6 @@ export default function FundOperationsPage() {
                         <TableCell
                           className={`text-right font-mono text-sm ${isTotal ? "font-semibold" : pnlColor(item.value)}`}
                         >
-                          {item.value >= 0 ? "" : ""}
                           {formatFullCurrency(item.value)}
                         </TableCell>
                       </TableRow>
@@ -356,64 +423,72 @@ export default function FundOperationsPage() {
                   <ArrowDownRight className="size-4 text-muted-foreground" />
                   Distribution Waterfall
                 </CardTitle>
-                <Badge variant="outline" className="text-xs font-mono">
-                  Total: {formatCurrency(totalDistribution)}
-                </Badge>
+                {totalDistribution > 0 && (
+                  <Badge variant="outline" className="text-xs font-mono">
+                    Total: {formatCurrency(totalDistribution)}
+                  </Badge>
+                )}
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Visual waterfall */}
-              <div className="space-y-3">
-                {DISTRIBUTION_WATERFALL.map((step) => {
-                  const widthPct = (step.amount / totalDistribution) * 100;
-                  const colors = [
-                    "bg-[var(--accent-blue)]/60",
-                    "bg-[var(--pnl-positive)]/60",
-                    "bg-purple-500/60",
-                    "bg-primary/60",
-                  ];
-                  const idx = DISTRIBUTION_WATERFALL.indexOf(step);
-                  return (
-                    <div key={step.tier} className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <div>
-                          <span className="font-medium">{step.tier}</span>
-                          <span className="text-xs text-muted-foreground ml-2">{step.description}</span>
+              {distributionWaterfall.length > 0 ? (
+                <>
+                  {/* Visual waterfall */}
+                  <div className="space-y-3">
+                    {distributionWaterfall.map((step, idx) => {
+                      const widthPct = totalDistribution > 0 ? (Math.abs(step.amount) / totalDistribution) * 100 : 0;
+                      const colors = [
+                        "bg-[var(--accent-blue)]/60",
+                        "bg-[var(--pnl-positive)]/60",
+                        "bg-purple-500/60",
+                        "bg-primary/60",
+                        "bg-emerald-500/60",
+                      ];
+                      return (
+                        <div key={step.tier} className="space-y-1">
+                          <div className="flex items-center justify-between text-sm">
+                            <div>
+                              <span className="font-medium">{step.tier}</span>
+                              <span className="text-xs text-muted-foreground ml-2">{step.description}</span>
+                            </div>
+                            <span className="font-mono">{formatCurrency(step.amount)}</span>
+                          </div>
+                          <div className="h-6 rounded bg-muted overflow-hidden">
+                            <div
+                              className={`h-full rounded transition-all ${colors[idx % colors.length]}`}
+                              style={{ width: `${widthPct}%` }}
+                            />
+                          </div>
                         </div>
-                        <span className="font-mono">{formatCurrency(step.amount)}</span>
-                      </div>
-                      <div className="h-6 rounded bg-muted overflow-hidden">
-                        <div
-                          className={`h-full rounded transition-all ${colors[idx % colors.length]}`}
-                          style={{ width: `${widthPct}%` }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+                      );
+                    })}
+                  </div>
 
-              {/* Detail table */}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Tier</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right">Cumulative</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {DISTRIBUTION_WATERFALL.map((step) => (
-                    <TableRow key={step.tier}>
-                      <TableCell className="text-sm font-medium">{step.tier}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{step.description}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(step.amount)}</TableCell>
-                      <TableCell className="text-right font-mono text-sm">{formatCurrency(step.cumulative)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  {/* Detail table */}
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Tier</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="text-right">Cumulative</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {distributionWaterfall.map((step) => (
+                        <TableRow key={step.tier}>
+                          <TableCell className="text-sm font-medium">{step.tier}</TableCell>
+                          <TableCell className="text-sm text-muted-foreground">{step.description}</TableCell>
+                          <TableCell className="text-right font-mono text-sm">{formatCurrency(step.amount)}</TableCell>
+                          <TableCell className="text-right font-mono text-sm">{formatCurrency(step.cumulative)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">No distribution data available.</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

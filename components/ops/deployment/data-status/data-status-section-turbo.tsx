@@ -426,13 +426,12 @@ export function DataStatusSectionTurbo() {
                           <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
                             <div className="flex items-center justify-between mb-2">
                               <p className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wide">
-                                {catData.venues
-                                  ? catData.folders
+                                {catData.sub_dimension_label ??
+                                  (catData.venues
                                     ? "Venues"
-                                    : "Venues"
-                                  : catData.data_types
-                                    ? "Data Types"
-                                    : "Feature Groups"}
+                                    : catData.data_types
+                                      ? "Data Types"
+                                      : "Feature Groups")}
                               </p>
                               {/* Venue Summary Badges */}
                               {catData.venue_summary && (

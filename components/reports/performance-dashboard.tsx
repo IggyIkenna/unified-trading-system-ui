@@ -52,18 +52,40 @@ const PIE_COLORS = ["#3b82f6", "#8b5cf6", "#06b6d4", "#f59e0b", "#ef4444", "#10b
 
 export function PerformanceDashboard() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
-  const { data: clients, isLoading: clientsLoading } = useClients();
+  const [strategyFilter, setStrategyFilter] = React.useState<string>("all");
+  const { data: clientsData, isLoading: clientsLoading } = useClients();
   const { data: summary, isLoading: summaryLoading, isError: summaryError, error: summaryErr, refetch: refetchSummary } = usePerformanceSummary(selectedClientId);
   const { data: positionsData } = useOpenPositions(selectedClientId);
   const { data: coinsData } = useCoinBreakdown(selectedClientId);
   const { data: balancesData } = useBalanceBreakdown(selectedClientId);
 
+  const allClients = clientsData?.clients ?? [];
+  const organisations = clientsData?.organisations ?? [];
+  const strategies = clientsData?.strategies ?? [];
+
+  // Filter clients by strategy
+  const filteredClients = React.useMemo(() => {
+    if (strategyFilter === "all") return allClients;
+    return allClients.filter((c) => c.strategy_id === strategyFilter);
+  }, [allClients, strategyFilter]);
+
+  // Group clients by organisation for the selector
+  const clientsByOrg = React.useMemo(() => {
+    const groups: Record<string, typeof filteredClients> = {};
+    for (const c of filteredClients) {
+      const orgName = c.organisation_name ?? "Other";
+      if (!groups[orgName]) groups[orgName] = [];
+      groups[orgName].push(c);
+    }
+    return groups;
+  }, [filteredClients]);
+
   // Auto-select first client
   React.useEffect(() => {
-    if (clients && clients.length > 0 && !selectedClientId) {
-      setSelectedClientId(clients[0].id);
+    if (filteredClients.length > 0 && (!selectedClientId || !filteredClients.some((c) => c.id === selectedClientId))) {
+      setSelectedClientId(filteredClients[0].id);
     }
-  }, [clients, selectedClientId]);
+  }, [filteredClients, selectedClientId]);
 
   const positions = positionsData?.positions ?? [];
   const coins = coinsData?.coins ?? [];
@@ -160,19 +182,39 @@ export function PerformanceDashboard() {
           title="Client Performance"
           description="Equity curves, monthly returns, stats, positions, and coin breakdowns"
         >
+          {strategies.length > 0 && (
+            <Select value={strategyFilter} onValueChange={setStrategyFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="All Strategies" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Strategies</SelectItem>
+                {strategies.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Select value={selectedClientId ?? ""} onValueChange={setSelectedClientId}>
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-[240px]">
               <SelectValue placeholder="Select client" />
             </SelectTrigger>
             <SelectContent>
-              {(clients ?? []).map((c) => (
-                <SelectItem key={c.id} value={c.id}>
-                  <span className="flex items-center gap-2">
-                    {c.name}
-                    <span className="text-xs text-muted-foreground">{c.venue}</span>
-                    {c.is_underwater && <Badge variant="destructive" className="text-[9px] px-1 py-0">UW</Badge>}
-                  </span>
-                </SelectItem>
+              {Object.entries(clientsByOrg).map(([orgName, orgClients]) => (
+                <React.Fragment key={orgName}>
+                  {Object.keys(clientsByOrg).length > 1 && (
+                    <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{orgName}</div>
+                  )}
+                  {orgClients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      <span className="flex items-center gap-2">
+                        {c.name}
+                        <span className="text-xs text-muted-foreground">{c.venue}</span>
+                        {c.is_underwater && <Badge variant="destructive" className="text-[9px] px-1 py-0">UW</Badge>}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </React.Fragment>
               ))}
             </SelectContent>
           </Select>

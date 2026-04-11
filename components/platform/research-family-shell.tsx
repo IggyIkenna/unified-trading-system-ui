@@ -56,7 +56,7 @@ const PLATFORM_CONFIG: Record<
   execution: {
     label: "Execution Research",
     entitlement: "execution-basic",
-    serviceName: "Execution Analytics",
+    serviceName: "Execution",
     defaultStage: "Simulate",
   },
 };

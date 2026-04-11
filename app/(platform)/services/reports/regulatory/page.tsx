@@ -1,27 +1,13 @@
 "use client";
 
-import * as React from "react";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/shared/data-table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useRegulatoryReports } from "@/hooks/api/use-reports";
-import {
-  Shield,
-  FileText,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  ChevronDown,
-  ChevronRight,
-  Calendar,
-  RefreshCw,
-} from "lucide-react";
 import {
   MOCK_REPORTS,
   type Jurisdiction,
@@ -29,6 +15,21 @@ import {
   type ReportStatus,
   type ReportType,
 } from "@/lib/mocks/fixtures/reports-regulatory";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { cn } from "@/lib/utils";
+import type { ColumnDef } from "@tanstack/react-table";
+import {
+  AlertTriangle,
+  Calendar,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  FileText,
+  RefreshCw,
+  Shield,
+} from "lucide-react";
+import * as React from "react";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -289,6 +290,7 @@ function makeColumns(
 
 export default function RegulatoryPage() {
   const { data: rawData, isLoading, isError, refetch } = useRegulatoryReports();
+  const mockDataMode = isMockDataMode();
   const [expandedId, setExpandedId] = React.useState<string | null>(null);
   const [activeTab, setActiveTab] = React.useState("all");
 
@@ -296,8 +298,8 @@ export default function RegulatoryPage() {
   const reports: RegulatoryReport[] = React.useMemo(() => {
     const apiReports = (rawData as { data?: RegulatoryReport[] } | undefined)?.data;
     if (Array.isArray(apiReports) && apiReports.length > 0) return apiReports;
-    return MOCK_REPORTS;
-  }, [rawData]);
+    return mockDataMode ? MOCK_REPORTS : [];
+  }, [rawData, mockDataMode]);
 
   // Summary counts
   const counts = React.useMemo(() => {

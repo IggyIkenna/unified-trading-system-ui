@@ -3,12 +3,21 @@
 import { ExecutionNav } from "@/components/execution-platform/execution-nav";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { DataFreshnessStrip } from "@/components/shared/data-freshness-strip";
+import type { DataSource } from "@/components/shared/data-freshness-strip";
+import {
+  ComparisonPanel,
+  BatchDetailDrawer,
+} from "@/components/batch-workspace";
+import type { ComparisonEntity, MetricDefinition } from "@/components/batch-workspace/comparison-panel";
+import type { DetailSection } from "@/components/batch-workspace/batch-detail-drawer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTable } from "@/components/shared/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAlgos, useExecutionBacktests } from "@/hooks/api/use-orders";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -36,6 +45,54 @@ type AlgoListRow = {
   status: string;
 };
 
+const ALGO_METRICS: MetricDefinition[] = [
+  { key: "avgSlippage", label: "Avg Slippage (bps)", format: "number", higherIsBetter: false, group: "Performance" },
+  { key: "avgFillRate", label: "Fill Rate (%)", format: "percent", higherIsBetter: true, group: "Performance" },
+  { key: "avgLatency", label: "Latency (ms)", format: "duration", higherIsBetter: false, group: "Operational" },
+  { key: "costVsBenchmark", label: "Cost vs VWAP (bps)", format: "number", higherIsBetter: false, group: "Performance" },
+];
+
+function algoToComparisonEntity(algo: AlgoListRow): ComparisonEntity {
+  return {
+    id: algo.id,
+    name: algo.name,
+    version: algo.version,
+    platform: "execution",
+    metrics: {
+      avgSlippage: algo.metrics.avgSlippage,
+      avgFillRate: algo.metrics.avgFillRate / 100, // normalize to 0-1 for percent format
+      avgLatency: algo.metrics.avgLatency / 1000, // ms → s for duration format
+      costVsBenchmark: algo.metrics.costVsBenchmark,
+    },
+    metadata: { type: algo.type, status: algo.status },
+  };
+}
+
+function algoToDetailSections(algo: AlgoListRow): DetailSection[] {
+  return [
+    {
+      title: "Performance",
+      items: [
+        { label: "Avg Slippage", value: `${formatNumber(algo.metrics.avgSlippage, 2)} bps`, format: "mono" },
+        { label: "Fill Rate", value: `${formatNumber(algo.metrics.avgFillRate, 1)}%`, format: "mono" },
+        { label: "Cost vs VWAP", value: `${algo.metrics.costVsBenchmark >= 0 ? "+" : ""}${formatNumber(algo.metrics.costVsBenchmark, 2)} bps`, format: "mono" },
+        { label: "Avg Latency", value: `${algo.metrics.avgLatency}ms`, format: "mono" },
+      ],
+    },
+    {
+      title: "Configuration",
+      items: [
+        { label: "Type", value: algo.type, format: "text" },
+        { label: "Version", value: algo.version, format: "mono" },
+        { label: "Supported Venues", value: algo.supportedVenues.join(", "), format: "text" },
+        ...(algo.params?.aggressiveness !== undefined
+          ? [{ label: "Aggressiveness", value: `${formatNumber(algo.params.aggressiveness * 100, 0)}%` as string, format: "mono" as const }]
+          : []),
+      ],
+    },
+  ];
+}
+
 export default function ExecutionAlgosPage() {
   const { data: algosData, isLoading: algosLoading, error: algosError, refetch: refetchAlgos } = useAlgos();
   const { data: backtestsData, isLoading: btLoading, error: btError, refetch: refetchBt } = useExecutionBacktests();
@@ -46,7 +103,18 @@ export default function ExecutionAlgosPage() {
   const MOCK_ALGO_BACKTESTS: Array<any> = (backtestsData as any)?.data ?? [];
 
   const [selectedAlgos, setSelectedAlgos] = React.useState<string[]>([]);
-  const [compareMode, setCompareMode] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState("algos");
+  const [detailAlgoId, setDetailAlgoId] = React.useState<string | null>(null);
+
+  const detailAlgo = detailAlgoId ? mockExecutionAlgos.find((a) => a.id === detailAlgoId) : null;
+
+  const dataSources = React.useMemo<DataSource[]>(
+    () => [
+      { label: "Algo Registry", source: "batch" as const, asOf: new Date().toISOString(), staleAfterSeconds: 300 },
+      { label: "Backtests", source: "batch" as const, asOf: new Date().toISOString(), staleAfterSeconds: 600 },
+    ],
+    [],
+  );
 
   const isLoading = algosLoading || btLoading;
 
@@ -55,6 +123,11 @@ export default function ExecutionAlgosPage() {
   }, []);
 
   const selectedAlgoData = mockExecutionAlgos.filter((a: AlgoListRow) => selectedAlgos.includes(a.id));
+
+  const comparisonEntities = React.useMemo(
+    () => selectedAlgoData.map(algoToComparisonEntity),
+    [selectedAlgoData],
+  );
 
   const hasError = algosError || btError;
   const refetchAll = () => {
@@ -84,10 +157,16 @@ export default function ExecutionAlgosPage() {
         id: "algorithm",
         header: "Algorithm",
         cell: ({ row }) => (
-          <div>
+          <button
+            className="text-left hover:underline"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDetailAlgoId(row.original.id);
+            }}
+          >
             <div className="font-medium">{row.original.name}</div>
             <div className="max-w-[200px] truncate text-xs text-muted-foreground">{row.original.description}</div>
-          </div>
+          </button>
         ),
       },
       {
@@ -201,213 +280,190 @@ export default function ExecutionAlgosPage() {
       </div>
 
       <div className="platform-page-width p-6 space-y-6">
-        <PageHeader
-          title={
-            <span className="flex items-center gap-3">
-              <Cpu className="size-6" />
-              Algo Comparison
-            </span>
-          }
-          description="Compare execution algorithms across performance metrics and market conditions"
-        >
-          {selectedAlgos.length >= 2 && (
-            <Button onClick={() => setCompareMode(!compareMode)}>
-              <GitCompare className="mr-2 size-4" />
-              {compareMode ? "Exit Compare" : `Compare (${selectedAlgos.length})`}
-            </Button>
-          )}
-        </PageHeader>
+        <div className="flex items-start justify-between gap-4">
+          <PageHeader
+            title={
+              <span className="flex items-center gap-3">
+                <Cpu className="size-6" />
+                Algo Comparison
+              </span>
+            }
+            description="Compare execution algorithms across performance metrics and market conditions"
+          />
+          <DataFreshnessStrip sources={dataSources} />
+        </div>
 
-        {/* Comparison View */}
-        {compareMode && selectedAlgoData.length >= 2 && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Side-by-Side Comparison</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2 font-medium">Metric</th>
-                      {selectedAlgoData.map((algo) => (
-                        <th key={algo.id} className="text-center p-2 font-medium min-w-[140px]">
-                          <div>{algo.name}</div>
-                          <Badge variant="outline" className="text-xs mt-1">
-                            {algo.type}
-                          </Badge>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="p-2 text-muted-foreground">Avg Slippage (bps)</td>
-                      {selectedAlgoData.map((algo) => {
-                        const best = Math.min(...selectedAlgoData.map((a) => a.metrics.avgSlippage));
-                        const isBest = algo.metrics.avgSlippage === best;
-                        return (
-                          <td
-                            key={algo.id}
-                            className={cn("text-center p-2 font-mono", isBest && "text-emerald-500 font-bold")}
-                          >
-                            {formatNumber(algo.metrics.avgSlippage, 2)}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-2 text-muted-foreground">Fill Rate (%)</td>
-                      {selectedAlgoData.map((algo) => {
-                        const best = Math.max(...selectedAlgoData.map((a) => a.metrics.avgFillRate));
-                        const isBest = algo.metrics.avgFillRate === best;
-                        return (
-                          <td
-                            key={algo.id}
-                            className={cn("text-center p-2 font-mono", isBest && "text-emerald-500 font-bold")}
-                          >
-                            {formatNumber(algo.metrics.avgFillRate, 1)}%
-                          </td>
-                        );
-                      })}
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-2 text-muted-foreground">Latency (ms)</td>
-                      {selectedAlgoData.map((algo) => {
-                        const best = Math.min(...selectedAlgoData.map((a) => a.metrics.avgLatency));
-                        const isBest = algo.metrics.avgLatency === best;
-                        return (
-                          <td
-                            key={algo.id}
-                            className={cn("text-center p-2 font-mono", isBest && "text-emerald-500 font-bold")}
-                          >
-                            {algo.metrics.avgLatency}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-2 text-muted-foreground">Cost vs Benchmark (bps)</td>
-                      {selectedAlgoData.map((algo) => {
-                        const best = Math.min(...selectedAlgoData.map((a) => a.metrics.costVsBenchmark));
-                        const isBest = algo.metrics.costVsBenchmark === best;
-                        return (
-                          <td
-                            key={algo.id}
-                            className={cn("text-center p-2 font-mono", isBest && "text-emerald-500 font-bold")}
-                          >
-                            {algo.metrics.costVsBenchmark >= 0 ? "+" : ""}
-                            {formatNumber(algo.metrics.costVsBenchmark, 2)}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                    <tr className="border-b">
-                      <td className="p-2 text-muted-foreground">Aggressiveness</td>
-                      {selectedAlgoData.map((algo) => (
-                        <td key={algo.id} className="text-center p-2">
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div
-                              className="bg-primary rounded-full h-2"
-                              style={{
-                                width: `${(algo.params?.aggressiveness ?? 0) * 100}%`,
-                              }}
-                            />
-                          </div>
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="p-2 text-muted-foreground">Supported Venues</td>
-                      {selectedAlgoData.map((algo) => (
-                        <td key={algo.id} className="text-center p-2">
-                          {algo.supportedVenues.length}
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Narrative summary */}
+        {mockExecutionAlgos.length > 0 && (
+          <div className="px-4 py-3 rounded-lg border border-border/30 bg-muted/5">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <span className="font-medium text-foreground/80">Algo Fleet</span> —{" "}
+              <span className="font-mono">{mockExecutionAlgos.length}</span> algorithms registered.{" "}
+              <span className="font-mono text-emerald-400">
+                {mockExecutionAlgos.filter((a) => a.status === "live").length}
+              </span> live,{" "}
+              <span className="font-mono text-amber-400">
+                {mockExecutionAlgos.filter((a) => a.status === "testing").length}
+              </span> testing.
+              {" "}Avg slippage{" "}
+              <span className="font-mono">
+                {formatNumber(mockExecutionAlgos.reduce((s, a) => s + a.metrics.avgSlippage, 0) / mockExecutionAlgos.length, 2)} bps
+              </span>,{" "}avg fill{" "}
+              <span className="font-mono">
+                {formatNumber(mockExecutionAlgos.reduce((s, a) => s + a.metrics.avgFillRate, 0) / mockExecutionAlgos.length, 1)}%
+              </span>.
+              {MOCK_ALGO_BACKTESTS.length > 0 && (
+                <> <span className="font-mono">{MOCK_ALGO_BACKTESTS.length}</span> backtest{MOCK_ALGO_BACKTESTS.length !== 1 ? "s" : ""} available.</>
+              )}
+            </p>
+          </div>
         )}
 
-        {/* Algo Grid */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Execution Algorithms</CardTitle>
-            <CardDescription>Select algorithms to compare their performance characteristics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DataTable
-              columns={algoColumns}
-              data={mockExecutionAlgos}
-              enableColumnVisibility={false}
-              emptyMessage="No execution algorithms configured. Algorithms will appear here once deployed."
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="h-8">
+            <TabsTrigger value="algos" className="text-xs">Algorithms</TabsTrigger>
+            <TabsTrigger value="compare" className="text-xs">
+              Compare
+              {selectedAlgos.length >= 2 && (
+                <Badge variant="secondary" className="ml-1.5 text-[9px] px-1.5 py-0">
+                  {selectedAlgos.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="backtests" className="text-xs">Backtests</TabsTrigger>
+          </TabsList>
+
+          {/* --- Algorithms Tab --- */}
+          <TabsContent value="algos" className="space-y-6 mt-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold tracking-tight">Execution Algorithms</CardTitle>
+                <CardDescription>Select algorithms to compare, click a row to inspect</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DataTable
+                  columns={algoColumns}
+                  data={mockExecutionAlgos}
+                  enableColumnVisibility={false}
+                  emptyMessage="No execution algorithms configured. Algorithms will appear here once deployed."
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* --- Compare Tab --- */}
+          <TabsContent value="compare" className="space-y-6 mt-4">
+            <ComparisonPanel
+              entities={comparisonEntities}
+              metricDefinitions={ALGO_METRICS}
+              onRemove={(id) => setSelectedAlgos((prev) => prev.filter((a) => a !== id))}
+              highlightBest
+              className="border-border/50"
             />
-          </CardContent>
-        </Card>
+          </TabsContent>
 
-        {/* Backtest Results */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Recent Backtests</CardTitle>
-            <CardDescription>Historical performance analysis across market conditions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {MOCK_ALGO_BACKTESTS.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-6">No backtest results available yet</p>
-            )}
-            <div className="grid grid-cols-2 gap-4">
-              {MOCK_ALGO_BACKTESTS.map((bt) => {
-                const algo = mockExecutionAlgos.find((a) => a.id === bt.algoId);
-                return (
-                  <div key={bt.id} className="p-4 rounded-lg border">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <div className="font-medium">{algo?.name || bt.algoId}</div>
-                        <div className="text-xs text-muted-foreground">v{bt.algoVersion}</div>
-                      </div>
-                      <StatusBadge
-                        status={
-                          bt.status === "live"
-                            ? "live"
-                            : bt.status === "completed" || bt.status === "done"
-                              ? "done"
-                              : "running"
-                        }
-                        label={bt.status}
-                        showDot
-                      />
-                    </div>
+          {/* --- Backtests Tab --- */}
+          <TabsContent value="backtests" className="space-y-6 mt-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold tracking-tight">Recent Backtests</CardTitle>
+                <CardDescription>Historical performance analysis across market conditions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {MOCK_ALGO_BACKTESTS.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-6">No backtest results available yet</p>
+                )}
+                <div className="grid grid-cols-2 gap-4">
+                  {MOCK_ALGO_BACKTESTS.map((bt: {
+                    id: string;
+                    algoId: string;
+                    algoVersion: string;
+                    status: string;
+                    metrics: { avgSlippage: number; avgFillRate: number; costVsVWAP: number };
+                    testPeriod: { numOrders: number };
+                    instruments: string[];
+                  }) => {
+                    const algo = mockExecutionAlgos.find((a) => a.id === bt.algoId);
+                    return (
+                      <div key={bt.id} className="p-4 rounded-lg border border-border/50 hover:bg-muted/10 transition-colors">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <div className="font-medium">{algo?.name || bt.algoId}</div>
+                            <div className="text-xs text-muted-foreground">v{bt.algoVersion}</div>
+                          </div>
+                          <StatusBadge
+                            status={
+                              bt.status === "live"
+                                ? "live"
+                                : bt.status === "completed" || bt.status === "done"
+                                  ? "done"
+                                  : "running"
+                            }
+                            label={bt.status}
+                            showDot
+                          />
+                        </div>
 
-                    <div className="grid grid-cols-3 gap-3 mb-4">
-                      <div className="p-2 rounded bg-muted/50">
-                        <div className="text-xs text-muted-foreground">Avg Slippage</div>
-                        <div className="font-mono font-medium">{formatNumber(bt.metrics.avgSlippage, 2)} bps</div>
-                      </div>
-                      <div className="p-2 rounded bg-muted/50">
-                        <div className="text-xs text-muted-foreground">Fill Rate</div>
-                        <div className="font-mono font-medium">{formatNumber(bt.metrics.avgFillRate, 1)}%</div>
-                      </div>
-                      <div className="p-2 rounded bg-muted/50">
-                        <div className="text-xs text-muted-foreground">vs VWAP</div>
-                        <div className={cn("font-mono font-medium", pnlColorClass(-bt.metrics.costVsVWAP))}>
-                          {bt.metrics.costVsVWAP >= 0 ? "+" : ""}
-                          {formatNumber(bt.metrics.costVsVWAP, 2)}
+                        <div className="grid grid-cols-3 gap-3 mb-4">
+                          <div className="p-2 rounded bg-muted/50">
+                            <div className="text-xs text-muted-foreground">Avg Slippage</div>
+                            <div className="font-mono font-medium">{formatNumber(bt.metrics.avgSlippage, 2)} bps</div>
+                          </div>
+                          <div className="p-2 rounded bg-muted/50">
+                            <div className="text-xs text-muted-foreground">Fill Rate</div>
+                            <div className="font-mono font-medium">{formatNumber(bt.metrics.avgFillRate, 1)}%</div>
+                          </div>
+                          <div className="p-2 rounded bg-muted/50">
+                            <div className="text-xs text-muted-foreground">vs VWAP</div>
+                            <div className={cn("font-mono font-medium", pnlColorClass(-bt.metrics.costVsVWAP))}>
+                              {bt.metrics.costVsVWAP >= 0 ? "+" : ""}
+                              {formatNumber(bt.metrics.costVsVWAP, 2)}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-xs text-muted-foreground">
+                          {bt.testPeriod.numOrders.toLocaleString()} orders · {bt.instruments.join(", ")}
                         </div>
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
-                    <div className="text-xs text-muted-foreground">
-                      {bt.testPeriod.numOrders.toLocaleString()} orders • {bt.instruments.join(", ")}
-                    </div>
-                  </div>
-                );
-              })}
+        {/* Detail Drawer */}
+        {detailAlgo && (
+          <BatchDetailDrawer
+            open={detailAlgoId !== null}
+            onClose={() => setDetailAlgoId(null)}
+            entityName={detailAlgo.name}
+            entityVersion={detailAlgo.version}
+            entityType="execution_algo"
+            platform="execution"
+            status={detailAlgo.status}
+            sections={algoToDetailSections(detailAlgo)}
+            onAddToBasket={() => {
+              if (!selectedAlgos.includes(detailAlgo.id)) {
+                setSelectedAlgos((prev) => [...prev, detailAlgo.id]);
+              }
+              setActiveTab("compare");
+            }}
+          >
+            <div className="space-y-3">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Supported Venues</h4>
+              <div className="flex flex-wrap gap-1.5">
+                {detailAlgo.supportedVenues.map((v) => (
+                  <Badge key={v} variant="outline" className="text-[10px] font-mono">
+                    {v}
+                  </Badge>
+                ))}
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </BatchDetailDrawer>
+        )}
       </div>
     </div>
   );

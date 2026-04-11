@@ -106,5 +106,6 @@ The following were deleted in commit `8e536fc` — they had zero consumers after
 | [docs/STRUCTURE_COMPONENTS.md](docs/STRUCTURE_COMPONENTS.md) | All 11 component domains, key files, naming rules                      |
 | [docs/STRUCTURE_LIB.md](docs/STRUCTURE_LIB.md)               | lib/ layout — types, stores, mocks, config, utilities                  |
 | [docs/STRUCTURE_HOOKS.md](docs/STRUCTURE_HOOKS.md)           | hooks/api/ and hooks/deployment/ — conventions and patterns            |
+| [docs/DATA_MODE_IDEOLOGY.md](docs/DATA_MODE_IDEOLOGY.md)     | Mock-vs-real data ideology — `isMockDataMode()`, no silent live fallbacks |
 | [docs/STRUCTURE_CONTEXT.md](docs/STRUCTURE_CONTEXT.md)       | context/ folder — how to use backend reference material                |
 | [docs/STRUCTURE_REFERENCE.md](docs/STRUCTURE_REFERENCE.md)   | \_reference/ Python services — what they contain and when to read them |

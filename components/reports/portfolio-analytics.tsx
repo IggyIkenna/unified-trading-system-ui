@@ -74,13 +74,15 @@ const MOCK_RISK_METRICS: RiskMetric[] = [
 
 export function PortfolioAnalytics() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
-  const { data: clients, isLoading: clientsLoading } = useClients();
+  const { data: clientsData, isLoading: clientsLoading } = useClients();
   const { data: summary } = usePerformanceSummary(selectedClientId);
   const { data: coinsData } = useCoinBreakdown(selectedClientId);
 
+  const clients = clientsData?.clients ?? [];
+
   // Auto-select first client
   React.useEffect(() => {
-    if (clients && clients.length > 0 && !selectedClientId) {
+    if (clients.length > 0 && !selectedClientId) {
       setSelectedClientId(clients[0].id);
     }
   }, [clients, selectedClientId]);
@@ -91,20 +93,20 @@ export function PortfolioAnalytics() {
   const allocationData = React.useMemo(() => {
     return coins.map((c) => ({
       name: c.symbol,
-      value: Math.round(c.allocation_pct * 100),
-      marketValue: c.market_value_usd,
-      costBasis: c.cost_basis_usd,
-      pnl: c.total_pnl,
-      pnlPct: c.cost_basis_usd > 0 ? (c.total_pnl / c.cost_basis_usd) * 100 : 0,
+      value: Math.round((c.allocation_pct ?? 0) * 100),
+      marketValue: c.market_value_usd ?? 0,
+      costBasis: c.cost_basis_usd ?? 0,
+      pnl: c.total_pnl ?? 0,
+      pnlPct: (c.cost_basis_usd ?? 0) > 0 ? ((c.total_pnl ?? 0) / (c.cost_basis_usd ?? 1)) * 100 : 0,
     }));
   }, [coins]);
 
   // Totals for allocation table
   const allocationTotals = React.useMemo(() => {
     return {
-      marketValue: coins.reduce((s, c) => s + c.market_value_usd, 0),
-      costBasis: coins.reduce((s, c) => s + c.cost_basis_usd, 0),
-      pnl: coins.reduce((s, c) => s + c.total_pnl, 0),
+      marketValue: coins.reduce((s, c) => s + (c.market_value_usd ?? 0), 0),
+      costBasis: coins.reduce((s, c) => s + (c.cost_basis_usd ?? 0), 0),
+      pnl: coins.reduce((s, c) => s + (c.total_pnl ?? 0), 0),
     };
   }, [coins]);
 
@@ -165,7 +167,7 @@ export function PortfolioAnalytics() {
               <SelectValue placeholder="Select client" />
             </SelectTrigger>
             <SelectContent>
-              {(clients ?? []).map((c) => (
+              {clients.map((c) => (
                 <SelectItem key={c.id} value={c.id}>
                   <span className="flex items-center gap-2">
                     {c.name}
@@ -241,9 +243,9 @@ export function PortfolioAnalytics() {
                         <TableRow key={row.name}>
                           <TableCell className="font-medium font-mono">{row.name}</TableCell>
                           <TableCell className="text-right font-mono">{formatPercent(row.value, 0)}</TableCell>
-                          <TableCell className="text-right font-mono">{formatCurrency(row.marketValue, "USD", 0)}</TableCell>
-                          <TableCell className="text-right font-mono">{formatCurrency(row.costBasis, "USD", 0)}</TableCell>
-                          <TableCell className="text-right"><PnLValue value={row.pnl} size="sm" showSign /></TableCell>
+                          <TableCell className="text-right font-mono">{formatCurrency(row.marketValue ?? 0, "USD", 0)}</TableCell>
+                          <TableCell className="text-right font-mono">{formatCurrency(row.costBasis ?? 0, "USD", 0)}</TableCell>
+                          <TableCell className="text-right"><PnLValue value={row.pnl ?? 0} size="sm" showSign /></TableCell>
                           <TableCell className="text-right font-mono">
                             <span className={row.pnlPct >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}>
                               {row.pnlPct >= 0 ? "+" : ""}{formatPercent(row.pnlPct, 2)}

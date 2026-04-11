@@ -59,7 +59,7 @@ const nextConfig = {
     const reportingBase = process.env.NEXT_PUBLIC_REPORTING_API_URL || "http://localhost:8014";
     return [
       { source: "/api/auth/:path*", destination: `${authBase}/:path*` },
-      { source: "/api/reporting/:path*", destination: `${reportingBase}/api/v1/:path*` },
+      { source: "/api/reporting/:path*", destination: `${reportingBase}/api/reporting/:path*` },
       { source: "/api/:path*", destination: `${apiBase}/:path*` },
     ];
   },

@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/shared/spinner";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -474,7 +475,7 @@ export default function HealthPage() {
   const { checks, running, lastRun, runChecks, detectedTier, apiMeta } = useHealthChecks();
 
   const env = process.env.NEXT_PUBLIC_APP_ENV || "dev";
-  const mockApi = process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const mockApi = isMockDataMode();
   const integration = process.env.NEXT_PUBLIC_UI_INTEGRATION || "slim";
   const isMockMode = apiMeta?.mock_mode === true || mockApi;
 

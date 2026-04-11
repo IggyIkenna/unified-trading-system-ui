@@ -95,7 +95,7 @@ export default function ProviderHealthChecksPage() {
     setRunning(true);
     runMutation.mutate(undefined, {
       onSuccess: (result) => {
-        setLatestResult(result as HealthCheckResult);
+        setLatestResult((result as { result?: HealthCheckResult }).result ?? result as unknown as HealthCheckResult);
         toast.success("Health checks complete");
         refetch();
         setRunning(false);
@@ -117,16 +117,14 @@ export default function ProviderHealthChecksPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <PageHeader
-        title="Provider Health Checks"
+        title={<span className="flex items-center gap-2"><Activity className="size-5" />Provider Health Checks</span>}
         description="Real-time status of all provisioning providers (GitHub, Slack, M365, GCP, AWS, Portal)."
-        icon={<Activity className="size-5" />}
-        actions={
-          <Button size="sm" onClick={handleRun} disabled={running}>
-            {running ? <Spinner size="sm" className="mr-1.5" /> : <PlayCircle className="size-3.5 mr-1.5" />}
-            Run Checks
-          </Button>
-        }
-      />
+      >
+        <Button size="sm" onClick={handleRun} disabled={running}>
+          {running ? <Spinner size="sm" className="mr-1.5" /> : <PlayCircle className="size-3.5 mr-1.5" />}
+          Run Checks
+        </Button>
+      </PageHeader>
 
       {/* Overall status banner */}
       {displayChecks.length > 0 && (
@@ -183,7 +181,7 @@ export default function ProviderHealthChecksPage() {
         </h2>
 
         {historyLoading && <Spinner size="sm" />}
-        {historyError && <ApiError error={historyErr} retry={refetch} />}
+        {historyError && <ApiError error={historyErr} onRetry={() => void refetch()} />}
 
         {!historyLoading && !historyError && history.length > 0 && (
           <div className="rounded-md border">
@@ -222,7 +220,7 @@ export default function ProviderHealthChecksPage() {
                         <span className="text-xs text-rose-400 font-mono">{downCount}</span>
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {entry.triggered_by ?? "System"}
+                        {(entry as unknown as Record<string, string>).triggered_by ?? "System"}
                       </TableCell>
                     </TableRow>
                   );

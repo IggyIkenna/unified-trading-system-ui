@@ -8,6 +8,11 @@ import { cn } from "@/lib/utils";
 import { useCorrelationMatrix } from "@/hooks/api/use-risk";
 import { formatNumber } from "@/lib/utils/formatters";
 
+interface CorrelationData {
+  labels: string[];
+  matrix: number[][];
+}
+
 function correlationColor(value: number): string {
   if (value < 0) {
     const intensity = Math.abs(value);
@@ -22,7 +27,8 @@ function correlationColor(value: number): string {
 }
 
 export function CorrelationHeatmap() {
-  const { data: correlationData, isLoading } = useCorrelationMatrix();
+  const { data: rawCorrelationData, isLoading } = useCorrelationMatrix();
+  const correlationData = rawCorrelationData as CorrelationData | undefined;
   const [hoveredCell, setHoveredCell] = React.useState<{
     row: number;
     col: number;

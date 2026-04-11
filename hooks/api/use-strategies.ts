@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
 import { SEED_STRATEGIES, type StrategyHealth } from "@/lib/mocks/fixtures/strategies-seed";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
 export type { PnlDrift, SignalFreshness, ExecutionQuality, StrategyHealth } from "@/lib/mocks/fixtures/strategies-seed";
@@ -172,6 +173,7 @@ export function useBacktestDetail(id: string) {
 
 export function useStrategyHealth() {
   const { user, token } = useAuth();
+  const isMock = isMockDataMode();
 
   return useQuery<StrategyHealth[]>({
     queryKey: ["strategy-health", user?.id],
@@ -181,10 +183,11 @@ export function useStrategyHealth() {
       if (Array.isArray(items) && items.length > 0) {
         return items as StrategyHealth[];
       }
-      return SEED_STRATEGIES;
+      // Only fall back to seed data in mock mode; in live mode return empty
+      return isMock ? SEED_STRATEGIES : [];
     },
     enabled: !!user,
-    placeholderData: SEED_STRATEGIES,
+    placeholderData: isMock ? SEED_STRATEGIES : undefined,
     retry: false,
   });
 }

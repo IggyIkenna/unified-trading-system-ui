@@ -1,27 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { type ColumnDef } from "@tanstack/react-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { StatusDot } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/shared/data-table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
-import {
-  Shield,
-  Building2,
-  Scale,
-  FileText,
-  ChevronDown,
-  AlertTriangle,
-  RefreshCw,
-  ClipboardList,
-  Clock,
-} from "lucide-react";
-import { StatusDot } from "@/components/shared/status-badge";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import {
@@ -32,6 +18,21 @@ import {
   type ComplianceRule,
   type Violation,
 } from "@/lib/mocks/fixtures/manage-data";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { useQuery } from "@tanstack/react-query";
+import { type ColumnDef } from "@tanstack/react-table";
+import {
+  AlertTriangle,
+  Building2,
+  ChevronDown,
+  ClipboardList,
+  Clock,
+  FileText,
+  RefreshCw,
+  Scale,
+  Shield,
+} from "lucide-react";
+import * as React from "react";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -166,6 +167,7 @@ const violationsColumns: ColumnDef<Violation, unknown>[] = [
 
 export default function CompliancePage() {
   const { user, token } = useAuth();
+  const mockDataMode = isMockDataMode();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["compliance-status", user?.id],
@@ -175,18 +177,21 @@ export default function CompliancePage() {
 
   const rules: ComplianceRule[] = React.useMemo(() => {
     const apiRules = (data as Record<string, unknown>)?.rules as ComplianceRule[] | undefined;
-    return Array.isArray(apiRules) && apiRules.length > 0 ? apiRules : FALLBACK_RULES;
-  }, [data]);
+    if (Array.isArray(apiRules) && apiRules.length > 0) return apiRules;
+    return mockDataMode ? FALLBACK_RULES : [];
+  }, [data, mockDataMode]);
 
   const violations: Violation[] = React.useMemo(() => {
     const apiViolations = (data as Record<string, unknown>)?.violations as Violation[] | undefined;
-    return Array.isArray(apiViolations) && apiViolations.length > 0 ? apiViolations : FALLBACK_VIOLATIONS;
-  }, [data]);
+    if (Array.isArray(apiViolations) && apiViolations.length > 0) return apiViolations;
+    return mockDataMode ? FALLBACK_VIOLATIONS : [];
+  }, [data, mockDataMode]);
 
   const auditEvents: AuditEvent[] = React.useMemo(() => {
     const apiEvents = (data as Record<string, unknown>)?.audit_trail as AuditEvent[] | undefined;
-    return Array.isArray(apiEvents) && apiEvents.length > 0 ? apiEvents : FALLBACK_AUDIT;
-  }, [data]);
+    if (Array.isArray(apiEvents) && apiEvents.length > 0) return apiEvents;
+    return mockDataMode ? FALLBACK_AUDIT : [];
+  }, [data, mockDataMode]);
 
   const [fcaOpen, setFcaOpen] = React.useState(false);
 

@@ -78,12 +78,12 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
           <Badge
             className={cn(
               "text-[10px]",
-              regimeData.regime === "normal" && "bg-emerald-500/20 text-emerald-400",
-              regimeData.regime === "stressed" && "bg-amber-500/20 text-amber-400",
-              regimeData.regime === "crisis" && "bg-rose-500/20 text-rose-400",
+              String(regimeData.regime) === "normal" && "bg-emerald-500/20 text-emerald-400",
+              String(regimeData.regime) === "stressed" && "bg-amber-500/20 text-amber-400",
+              String(regimeData.regime) === "crisis" && "bg-rose-500/20 text-rose-400",
             )}
           >
-            Regime: {regimeData.regime.charAt(0).toUpperCase() + regimeData.regime.slice(1)}
+            Regime: {String(regimeData.regime).charAt(0).toUpperCase() + String(regimeData.regime).slice(1)}
           </Badge>
         )}
         <div className="flex items-center gap-1.5 ml-auto">
@@ -127,18 +127,18 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
               <div className="p-2 rounded bg-muted/30 text-center">
                 <div className="text-[10px] text-muted-foreground">Expected Loss</div>
                 <div className="text-sm font-bold font-mono text-rose-400">
-                  {formatCurrency(-stressTestResult.expected_loss_usd)}
+                  {formatCurrency(-Number(stressTestResult.expected_loss_usd ?? 0))}
                 </div>
               </div>
               <div className="p-2 rounded bg-muted/30 text-center">
                 <div className="text-[10px] text-muted-foreground">Portfolio Impact</div>
                 <div className="text-sm font-bold font-mono text-rose-400">
-                  {formatPercent(stressTestResult.portfolio_impact_pct, 1)}
+                  {formatPercent(Number(stressTestResult.portfolio_impact_pct ?? 0), 1)}
                 </div>
               </div>
               <div className="p-2 rounded bg-muted/30 text-center">
                 <div className="text-[10px] text-muted-foreground">Worst Strategy</div>
-                <div className="text-sm font-bold font-mono">{stressTestResult.worst_strategy}</div>
+                <div className="text-sm font-bold font-mono">{String(stressTestResult.worst_strategy ?? "—")}</div>
               </div>
             </div>
           ) : (

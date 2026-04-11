@@ -14,6 +14,7 @@ import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { Strategy } from "@/lib/strategy-registry";
 import { STRATEGIES } from "@/lib/strategy-registry";
@@ -346,7 +347,7 @@ export default function TradingPage() {
 
   const [tickCount, setTickCount] = React.useState(0);
   const wallClockMs = useTickingNowMs(1000);
-  const isMockMode = process.env.NEXT_PUBLIC_MOCK_API === "true";
+  const isMockMode = isMockDataMode();
   const mockPriceTickRef = React.useRef(0);
 
   React.useEffect(() => {

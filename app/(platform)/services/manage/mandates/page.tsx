@@ -1,20 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { useQuery } from "@tanstack/react-query";
-import { type ColumnDef } from "@tanstack/react-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DataTable } from "@/components/shared/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, Target, AlertTriangle, ClipboardCheck, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
-import { formatNumber } from "@/lib/utils/formatters";
 import { FALLBACK_MANDATES, type Mandate } from "@/lib/mocks/fixtures/manage-data";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { formatNumber } from "@/lib/utils/formatters";
+import { useQuery } from "@tanstack/react-query";
+import { type ColumnDef } from "@tanstack/react-table";
+import { AlertTriangle, ChevronDown, ChevronRight, ClipboardCheck, FileText, RefreshCw, Target } from "lucide-react";
+import * as React from "react";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -128,6 +129,7 @@ function mandateColumns(
 
 export default function ManageMandatesPage() {
   const { user, token } = useAuth();
+  const mockDataMode = isMockDataMode();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["mandates", user?.id],
@@ -137,8 +139,9 @@ export default function ManageMandatesPage() {
 
   const mandates: Mandate[] = React.useMemo(() => {
     const apiRows = (data as Record<string, unknown>)?.data as Mandate[] | undefined;
-    return Array.isArray(apiRows) && apiRows.length > 0 ? apiRows : FALLBACK_MANDATES;
-  }, [data]);
+    if (Array.isArray(apiRows) && apiRows.length > 0) return apiRows;
+    return mockDataMode ? FALLBACK_MANDATES : [];
+  }, [data, mockDataMode]);
 
   // Filters
   const [clientFilter, setClientFilter] = React.useState("all");

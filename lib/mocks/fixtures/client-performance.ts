@@ -13,19 +13,63 @@ export interface ClientInfo {
   tranche: string;
   is_active: boolean;
   is_underwater: boolean;
+  organisation_id?: string;
+  organisation_name?: string;
+  organisation_type?: string;
+  strategy_id?: string;
+  strategy_name?: string;
 }
 
+export interface OrganisationInfo {
+  id: string;
+  name: string;
+  type: string;
+}
+
+export interface StrategyInfo {
+  id: string;
+  name: string;
+  description?: string;
+}
+
+export interface ClientsResponse {
+  clients: ClientInfo[];
+  organisations: OrganisationInfo[];
+  strategies: StrategyInfo[];
+}
+
+export const MOCK_ORGANISATIONS: OrganisationInfo[] = [
+  { id: "odum", name: "Odum Capital", type: "internal" },
+  { id: "prism", name: "Prism Capital", type: "client" },
+  { id: "namnar", name: "Namnar", type: "client" },
+  { id: "eqvilent", name: "Eqvilent", type: "client" },
+  { id: "steadyhash", name: "Steady Hash", type: "client" },
+  { id: "gpd", name: "GPD Capital", type: "client" },
+  { id: "shaun_lim", name: "Shaun Lim", type: "client" },
+  { id: "anu", name: "Anu", type: "client" },
+  { id: "ik", name: "IK Group", type: "client" },
+  { id: "yoav", name: "Yoav", type: "client" },
+  { id: "guy_asraf", name: "Guy Asraf", type: "client" },
+];
+
+export const MOCK_STRATEGIES: StrategyInfo[] = [
+  { id: "mean_reversion_top20", name: "Mean Reversion Top 20", description: "Perpetual futures mean reversion on top 20 crypto assets" },
+  { id: "defi_btc_yield", name: "DeFi BTC Yield", description: "BTC-denominated yield via DeFi protocols and fund-of-fund allocation" },
+];
+
 export const MOCK_CLIENTS: ClientInfo[] = [
-  { id: "PR", name: "Prism Capital", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false },
-  { id: "ET", name: "Eqvilent", venue: "binance", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false },
-  { id: "STD", name: "Steady Hash", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false },
-  { id: "NN", name: "Namnar", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false },
-  { id: "ODUM_PROP", name: "Odum Prop (Flagship)", venue: "binance", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false },
-  { id: "GP", name: "GPD Capital", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: true },
-  { id: "SL", name: "Shaun Lim", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: true },
-  { id: "IK", name: "IK Pooled", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: true },
-  { id: "YOAV", name: "Yoav", venue: "n/a", currency: "BTC", tranche: "fund_of_fund", is_active: true, is_underwater: false },
-  { id: "GUY_ASRAF", name: "Guy Asraf", venue: "n/a", currency: "BTC", tranche: "fund_of_fund", is_active: true, is_underwater: false },
+  { id: "PR", name: "Prism Capital", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false, organisation_id: "prism", organisation_name: "Prism Capital", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "ET", name: "Eqvilent", venue: "binance", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false, organisation_id: "eqvilent", organisation_name: "Eqvilent", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "STD", name: "Steady Hash", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false, organisation_id: "steadyhash", organisation_name: "Steady Hash", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "NN", name: "Namnar", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false, organisation_id: "namnar", organisation_name: "Namnar", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "ODUM_PROP", name: "Odum Prop (Flagship)", venue: "binance", currency: "USDT", tranche: "managed", is_active: true, is_underwater: false, organisation_id: "odum", organisation_name: "Odum Capital", organisation_type: "internal", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "GP", name: "GPD Capital", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: true, organisation_id: "gpd", organisation_name: "GPD Capital", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "SL", name: "Shaun Lim (USDT)", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: true, organisation_id: "shaun_lim", organisation_name: "Shaun Lim", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "SL2", name: "Shaun Lim (BTC)", venue: "okx", currency: "BTC", tranche: "managed", is_active: true, is_underwater: true, organisation_id: "shaun_lim", organisation_name: "Shaun Lim", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "ANU", name: "Anu", venue: "okx", currency: "BTC", tranche: "managed", is_active: true, is_underwater: true, organisation_id: "anu", organisation_name: "Anu", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "IK", name: "IK Pooled", venue: "okx", currency: "USDT", tranche: "managed", is_active: true, is_underwater: true, organisation_id: "ik", organisation_name: "IK Group", organisation_type: "client", strategy_id: "mean_reversion_top20", strategy_name: "Mean Reversion Top 20" },
+  { id: "YOAV", name: "Yoav", venue: "n/a", currency: "BTC", tranche: "fund_of_fund", is_active: true, is_underwater: false, organisation_id: "yoav", organisation_name: "Yoav", organisation_type: "client", strategy_id: "defi_btc_yield", strategy_name: "DeFi BTC Yield" },
+  { id: "GUY_ASRAF", name: "Guy Asraf", venue: "n/a", currency: "BTC", tranche: "fund_of_fund", is_active: true, is_underwater: false, organisation_id: "guy_asraf", organisation_name: "Guy Asraf", organisation_type: "client", strategy_id: "defi_btc_yield", strategy_name: "DeFi BTC Yield" },
 ];
 
 // ── Equity curve ────────────────────────────────────────────────────────────
@@ -158,6 +202,8 @@ export interface PerformanceSummary {
   timestamp?: string;
   asset_count?: number;
   position_count?: number;
+  equity_source?: string;
+  trade_count?: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   equity_curve: any[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -182,6 +228,8 @@ export function getMockPerformanceSummary(clientId: string): PerformanceSummary 
   const currentEq = equityCurve.length > 0 ? equityCurve[equityCurve.length - 1].equity_usd : start;
   const client = MOCK_CLIENTS.find((c) => c.id === clientId);
 
+  const hwm = equityCurve.length > 0 ? Math.max(...equityCurve.map((p) => p.equity_usd)) : start;
+
   return {
     client_id: clientId,
     client_name: client?.name ?? clientId,
@@ -189,7 +237,12 @@ export function getMockPerformanceSummary(clientId: string): PerformanceSummary 
     currency: "USD",
     period_label: "all",
     current_equity_usd: currentEq,
-    current_hwm_usd: Math.max(...equityCurve.map((p) => p.equity_usd)),
+    current_hwm_usd: hwm,
+    free_balance_usd: Math.round(currentEq * 0.35 * 100) / 100,
+    locked_balance_usd: Math.round(currentEq * 0.15 * 100) / 100,
+    unrealized_pnl_usd: Math.round((currentEq - start) * 0.4 * 100) / 100,
+    equity_source: client?.venue === "binance" ? "binance_income" : "okx_bills",
+    trade_count: 20200,
     equity_curve: equityCurve,
     monthly_returns: monthlyReturns,
     stats: {

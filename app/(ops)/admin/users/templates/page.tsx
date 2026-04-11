@@ -94,6 +94,9 @@ function TemplateForm({
               role,
               entitlements: entitlements.split(",").map((e) => e.trim()).filter(Boolean),
               services: [],
+              aws_permission_sets: [],
+              slack_channels: [],
+              github_teams: [],
             })
           }
           disabled={submitting || !name.trim()}
@@ -163,31 +166,29 @@ export default function AccessTemplatesPage() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <PageHeader
-        title="Access Templates"
+        title={<span className="flex items-center gap-2"><Layers className="size-5" />Access Templates</span>}
         description="Pre-defined permission bundles applied during user onboarding."
-        icon={<Layers className="size-5" />}
-        actions={
-          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm">
-                <Plus className="size-3.5 mr-1.5" />
-                New Template
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>New Access Template</DialogTitle>
-                <DialogDescription>Define a reusable permission bundle for onboarding.</DialogDescription>
-              </DialogHeader>
-              <TemplateForm
-                onSubmit={handleCreate}
-                onCancel={() => setCreateOpen(false)}
-                submitting={createMutation.isPending}
-              />
-            </DialogContent>
-          </Dialog>
-        }
-      />
+      >
+        <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm">
+              <Plus className="size-3.5 mr-1.5" />
+              New Template
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>New Access Template</DialogTitle>
+              <DialogDescription>Define a reusable permission bundle for onboarding.</DialogDescription>
+            </DialogHeader>
+            <TemplateForm
+              onSubmit={handleCreate}
+              onCancel={() => setCreateOpen(false)}
+              submitting={createMutation.isPending}
+            />
+          </DialogContent>
+        </Dialog>
+      </PageHeader>
 
       {isLoading && (
         <div className="flex items-center justify-center h-40">
@@ -196,12 +197,12 @@ export default function AccessTemplatesPage() {
       )}
 
       {isError && (
-        <ApiError error={error} retry={refetch} />
+        <ApiError error={error} onRetry={() => void refetch()} />
       )}
 
       {!isLoading && !isError && templates.length === 0 && (
         <EmptyState
-          icon={<Shield className="size-8 text-muted-foreground" />}
+          icon={Shield}
           title="No access templates"
           description="Create a template to speed up user onboarding."
         />

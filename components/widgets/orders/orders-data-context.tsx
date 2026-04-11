@@ -9,6 +9,7 @@ import { useAmendOrder, useCancelOrder, useOrders } from "@/hooks/api/use-orders
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getOrdersForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { SEED_STRATEGIES } from "@/lib/mocks/fixtures/mock-data-seed";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
@@ -161,7 +162,8 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     const apiResult = Array.isArray(arr) && arr.length > 0 ? (arr as OrderRecord[]) : [];
     if (apiResult.length > 0) return apiResult;
 
-    // Fall back to seed data
+    // Only fall back to seed data in mock mode; in live mode return empty
+    if (!isMockDataMode()) return [];
     const seed = getOrdersForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
     return seed.map((s, idx) => {
       const strat = SEED_STRATEGIES.find((st) => st.id === s.strategyId);

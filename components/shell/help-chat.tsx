@@ -10,10 +10,10 @@ type ChatStep = "welcome" | "service" | "action" | "fallback";
 
 const SERVICES = [
   { id: "data", label: "Data", icon: Database, color: "text-sky-400" },
-  { id: "backtesting", label: "Research & Build", icon: Brain, color: "text-violet-400" },
-  { id: "platform", label: "Trading Terminal", icon: Layers, color: "text-amber-400" },
+  { id: "research", label: "Research", icon: Brain, color: "text-violet-400" },
+  { id: "platform", label: "Trading", icon: Layers, color: "text-amber-400" },
   { id: "regulatory", label: "Regulatory Umbrella", icon: Shield, color: "text-slate-400" },
-  { id: "investment", label: "Investment Management", icon: Briefcase, color: "text-rose-400" },
+  { id: "investment", label: "Manage", icon: Briefcase, color: "text-rose-400" },
 ];
 
 interface ChatMessage {

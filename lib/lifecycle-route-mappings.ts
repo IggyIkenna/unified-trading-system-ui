@@ -81,14 +81,14 @@ export const routeMappings: RouteMapping[] = [
   },
   {
     path: "/services/research/ml/monitoring",
-    label: "Model Monitoring",
+    label: "Model Observe",
     primaryStage: "observe",
     lanes: ["ml"],
     requiresAuth: true,
   },
   {
     path: "/services/research/ml/deploy",
-    label: "Model Deploy",
+    label: "Model Promote",
     primaryStage: "promote",
     lanes: ["ml"],
     requiresAuth: true,
@@ -284,10 +284,10 @@ export const routeMappings: RouteMapping[] = [
   // Execution Service (Execute stage)
   {
     path: "/services/execution/overview",
-    label: "Execution Analytics",
+    label: "Execution",
     primaryStage: "execute",
     lanes: ["execution"],
-    description: "Live execution analytics",
+    description: "Live execution research and analytics",
     requiresAuth: true,
   },
   {
@@ -479,7 +479,7 @@ export const routeMappings: RouteMapping[] = [
   },
   {
     path: "/services/investment",
-    label: "Investment Service",
+    label: "Manage",
     primaryStage: "manage",
     lanes: ["capital"],
     requiresAuth: false,

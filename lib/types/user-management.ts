@@ -28,6 +28,9 @@ export interface AccessTemplate {
   id: string;
   name: string;
   description: string;
+  role: string;
+  entitlements: string[];
+  services: string[];
   aws_permission_sets: string[];
   slack_channels: string[];
   github_teams: string[];
