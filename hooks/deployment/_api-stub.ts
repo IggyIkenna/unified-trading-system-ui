@@ -205,6 +205,15 @@ export interface TurboVenueData {
       status?: string;
     }
   >;
+  leagues?: Record<
+    string,
+    {
+      dates_found?: number;
+      dates_expected?: number;
+      dates_missing?: number;
+      completion_pct?: number;
+    }
+  >;
 }
 
 export interface TurboCategoryVenueSummary {

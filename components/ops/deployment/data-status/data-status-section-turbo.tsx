@@ -604,6 +604,51 @@ export function DataStatusSectionTurbo() {
                                         </div>
                                       </details>
                                     )}
+                                    {/* League breakdown if available (sports venues) */}
+                                    {subData.leagues && Object.keys(subData.leagues).length > 0 && (
+                                      <details className="mt-1">
+                                        <summary className="text-[9px] text-[var(--color-accent-cyan)] cursor-pointer hover:underline">
+                                          {Object.keys(subData.leagues).length} leagues
+                                        </summary>
+                                        <div className="mt-1 space-y-0.5 pl-1 border-l border-[var(--color-border-subtle)]">
+                                          {Object.entries(subData.leagues).map(
+                                            ([leagueId, leagueData]: [
+                                              string,
+                                              {
+                                                dates_found?: number;
+                                                dates_expected?: number;
+                                                dates_missing?: number;
+                                                completion_pct?: number;
+                                              },
+                                            ]) => {
+                                              const pct = leagueData.completion_pct ?? 0;
+                                              return (
+                                                <div key={leagueId} className="flex items-center gap-1 text-[9px]">
+                                                  <span className="truncate flex-1" title={leagueId}>
+                                                    {leagueId}
+                                                  </span>
+                                                  <div className="w-12 h-1 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden shrink-0">
+                                                    <div
+                                                      className="h-full"
+                                                      style={{
+                                                        width: `${pct}%`,
+                                                        backgroundColor: getCompletionColor(pct),
+                                                      }}
+                                                    />
+                                                  </div>
+                                                  <span
+                                                    className="font-mono shrink-0 w-8 text-right"
+                                                    style={{ color: getCompletionColor(pct) }}
+                                                  >
+                                                    {Math.round(pct)}%
+                                                  </span>
+                                                </div>
+                                              );
+                                            },
+                                          )}
+                                        </div>
+                                      </details>
+                                    )}
                                     {/* Available dates breakdown if available (green) */}
                                     {subData.dates_found_count && subData.dates_found_count > 0 && (
                                       <details className="mt-1">
