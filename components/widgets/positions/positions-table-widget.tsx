@@ -124,6 +124,7 @@ function buildColumns(
     {
       accessorKey: "instrument",
       header: "Instrument",
+      meta: { type: "text" },
       enableSorting: true,
       cell: ({ row }) => {
         const r = row.original;
@@ -158,7 +159,8 @@ function buildColumns(
     },
     {
       accessorKey: "side",
-      header: () => <span className="flex justify-center">Side</span>,
+      header: "Side",
+      meta: { type: "badge" },
       enableSorting: true,
       cell: ({ row }) => {
         const side = row.getValue<"LONG" | "SHORT">("side");
@@ -186,7 +188,8 @@ function buildColumns(
     },
     {
       accessorKey: "quantity",
-      header: () => <span className="flex justify-end">Quantity</span>,
+      header: "Quantity",
+      meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right font-mono text-[11px]">{row.getValue<number>("quantity").toLocaleString()}</div>
@@ -194,7 +197,8 @@ function buildColumns(
     },
     {
       accessorKey: "entry_price",
-      header: () => <span className="flex justify-end">Entry Price</span>,
+      header: "Entry Price",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right font-mono text-[11px]">
@@ -207,7 +211,8 @@ function buildColumns(
     },
     {
       accessorKey: "current_price",
-      header: () => <span className="flex justify-end">Current Price</span>,
+      header: "Current Price",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right font-mono text-[11px]">
@@ -220,19 +225,22 @@ function buildColumns(
     },
     {
       accessorKey: "today_pnl",
-      header: () => <span className="flex justify-end">Today&apos;s P&amp;L</span>,
+      header: "Today's P&L",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => <PnlCell abs={row.original.today_pnl} pct={row.original.today_pnl_pct} />,
     },
     {
       accessorKey: "net_pnl",
-      header: () => <span className="flex justify-end">Net P&L</span>,
+      header: "Net P&L",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => <PnlCell abs={row.original.net_pnl} pct={row.original.net_pnl_pct} />,
     },
     {
       accessorKey: "net_delta",
-      header: () => <span className="flex justify-end">Net Delta</span>,
+      header: "Net Delta",
+      meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => {
         const delta = row.getValue<number | undefined>("net_delta");
@@ -253,7 +261,8 @@ function buildColumns(
     },
     {
       accessorKey: "health_factor",
-      header: () => <span className="flex justify-end">HF</span>,
+      header: "HF",
+      meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => {
         const hf = row.getValue<number | undefined>("health_factor");
@@ -281,12 +290,14 @@ function buildColumns(
     {
       accessorKey: "venue",
       header: "Venue",
+      meta: { type: "text" },
       enableSorting: true,
       cell: ({ row }) => <span className="text-[11px]">{row.getValue<string>("venue")}</span>,
     },
     {
       accessorKey: "updated_at",
-      header: () => <span className="flex justify-end">Updated</span>,
+      header: "Updated",
+      meta: { type: "datetime" },
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right text-[11px] text-muted-foreground font-mono">
@@ -296,8 +307,10 @@ function buildColumns(
     },
     {
       id: "trades",
-      header: () => <span className="flex justify-end">Trades</span>,
+      header: "Trades",
+      meta: { type: "actions" },
       enableSorting: false,
+      enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
           <Link
