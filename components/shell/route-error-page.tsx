@@ -24,17 +24,21 @@ export function RouteErrorPage({
   homeLabel = "Go to dashboard",
 }: RouteErrorPageProps) {
   React.useEffect(() => {
-    console.error("[route-error]", error.message, error.digest ?? "");
+    console.error("[route-error]", error?.message, error?.digest ?? "");
   }, [error]);
 
-  const safeMessage = error.message && error.message.length < 500 ? error.message : "An unexpected error occurred.";
+  const rawMessage = error?.message;
+  const safeMessage =
+    typeof rawMessage === "string" && rawMessage.length > 0 && rawMessage.length < 500
+      ? rawMessage
+      : "An unexpected error occurred.";
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-8 text-center">
       <AlertTriangle className="text-destructive size-10" aria-hidden />
       <h2 className="text-lg font-semibold">Something went wrong</h2>
       <p className="text-muted-foreground max-w-md text-sm">{safeMessage}</p>
-      {error.digest ? <p className="text-muted-foreground/70 font-mono text-xs">Reference: {error.digest}</p> : null}
+      {error?.digest ? <p className="text-muted-foreground/70 font-mono text-xs">Reference: {error.digest}</p> : null}
       <div className="flex flex-wrap items-center justify-center gap-3">
         <Button type="button" onClick={reset}>
           Try again

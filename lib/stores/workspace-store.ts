@@ -762,6 +762,10 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
 
       ensureProfiles: () => {
         const state = get();
+        // Guard: profiles may be undefined in stale persisted state
+        if (!Array.isArray(state.profiles)) {
+          set({ profiles: [], activeProfileId: "" });
+        }
         const defaultProfile = buildDefaultProfile();
         const fullProfile = buildFullProfile();
 
@@ -800,6 +804,7 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
     }),
     {
       name: STORAGE_KEY,
+      version: 2,
       partialize: (s) => ({
         workspaces: s.workspaces,
         activeWorkspaceId: s.activeWorkspaceId,
@@ -809,6 +814,41 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
         profiles: s.profiles,
         activeProfileId: s.activeProfileId,
       }),
+      migrate: (persistedState: unknown, version: number) => {
+        const initial = buildInitialState();
+        if (version < 2) {
+          // Versions 0-1 predate the profiles field — preserve workspace data
+          // but reset profiles so ensureProfiles() can rebuild cleanly.
+          const s = (persistedState ?? {}) as Partial<WorkspaceState>;
+          return {
+            ...initial,
+            workspaces: s.workspaces && typeof s.workspaces === "object" ? s.workspaces : {},
+            activeWorkspaceId:
+              s.activeWorkspaceId && typeof s.activeWorkspaceId === "object" ? s.activeWorkspaceId : {},
+            editMode: typeof s.editMode === "boolean" ? s.editMode : true,
+            customPanels: Array.isArray(s.customPanels) ? s.customPanels : [],
+            snapshots: s.snapshots && typeof s.snapshots === "object" ? s.snapshots : {},
+            profiles: [],
+            activeProfileId: "",
+          };
+        }
+        return persistedState as WorkspaceState;
+      },
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.warn("[workspace-store] rehydration error — resetting store", error);
+          useWorkspaceStore.setState(buildInitialState());
+        } else if (state) {
+          // Defensive: fill in any missing arrays/objects that old data may omit.
+          if (!Array.isArray(state.profiles)) state.profiles = [];
+          if (!Array.isArray(state.customPanels)) state.customPanels = [];
+          if (!state.workspaces || typeof state.workspaces !== "object") state.workspaces = {};
+          if (!state.activeWorkspaceId || typeof state.activeWorkspaceId !== "object") state.activeWorkspaceId = {};
+          if (!state.snapshots || typeof state.snapshots !== "object") state.snapshots = {};
+          if (!state.undoStack || typeof state.undoStack !== "object") state.undoStack = {};
+          if (typeof state.activeProfileId !== "string") state.activeProfileId = "";
+        }
+      },
     },
   ),
 );
