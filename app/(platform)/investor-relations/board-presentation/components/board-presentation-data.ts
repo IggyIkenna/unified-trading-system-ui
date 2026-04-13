@@ -1,488 +1,530 @@
-// Auto-extracted presentation data
+// Board Presentation — data for 11-slide strategic advisor deck
+// Last updated: April 2026
+
 // Venue list for scrolling display - color-coded by asset class
 export const VENUE_LIST = [
-  // TradFi - cyan
-  { name: "IBKR", color: "cyan" },
-  { name: "CME", color: "cyan" },
-  { name: "NYSE", color: "cyan" },
-  { name: "NASDAQ", color: "cyan" },
+  // Traditional Finance - cyan
+  { name: "CME Group", color: "cyan" },
   { name: "ICE", color: "cyan" },
   { name: "CBOE", color: "cyan" },
-  { name: "NYMEX", color: "cyan" },
-  // CeFi - green
+  { name: "NASDAQ", color: "cyan" },
+  { name: "NYSE", color: "cyan" },
+  // Centralised Crypto - green
   { name: "Binance", color: "green" },
   { name: "OKX", color: "green" },
   { name: "Bybit", color: "green" },
   { name: "Deribit", color: "green" },
   { name: "Coinbase", color: "green" },
-  { name: "Kraken", color: "green" },
   { name: "Hyperliquid", color: "green" },
-  // DeFi - violet
-  { name: "Uniswap V2", color: "violet" },
+  { name: "Aster", color: "green" },
+  { name: "Upbit", color: "green" },
+  // Decentralised Finance - violet
   { name: "Uniswap V3", color: "violet" },
   { name: "Uniswap V4", color: "violet" },
   { name: "Aave V3", color: "violet" },
   { name: "Morpho", color: "violet" },
   { name: "Curve", color: "violet" },
+  { name: "Balancer", color: "violet" },
   { name: "Lido", color: "violet" },
   { name: "EtherFi", color: "violet" },
+  { name: "Ethena", color: "violet" },
+  { name: "PancakeSwap", color: "violet" },
+  { name: "SushiSwap", color: "violet" },
+  { name: "GMX", color: "violet" },
+  { name: "Aerodrome", color: "violet" },
+  { name: "Velodrome", color: "violet" },
+  { name: "Raydium", color: "violet" },
+  { name: "Orca", color: "violet" },
   // Sports - amber
   { name: "Betfair", color: "amber" },
   { name: "Pinnacle", color: "amber" },
+  { name: "Smarkets", color: "amber" },
   { name: "DraftKings", color: "amber" },
   { name: "FanDuel", color: "amber" },
   { name: "Bet365", color: "amber" },
-  { name: "BetMGM", color: "amber" },
-  { name: "Caesars", color: "amber" },
   // Predictions - rose
   { name: "Polymarket", color: "rose" },
   { name: "Kalshi", color: "rose" },
-  { name: "Smarkets", color: "rose" },
 ];
 
 // Slide data
 export const slides = [
-  // Slide 1: Cover
+  // ── Slide 1: Cover ────────────────────────────────────────
   {
     id: 1,
     type: "cover",
-    title: "Unified Trading Infrastructure",
+    title: "One Unified Trading System",
     subtitle:
-      "The same infrastructure we use to run our own capital - available to institutional clients at any entry point.",
+      "A single operating layer for multi-asset trading, execution, and oversight. Built for our own capital. Structured for institutional clients.",
     tagline: "FCA Authorised",
     stats: [
-      { value: "128", label: "Live Venues" },
       { value: "5", label: "Asset Classes" },
-      { value: "1.5M+", label: "Instruments" },
-      { value: "24/7", label: "Operations" },
+      { value: "12,000+", label: "Live Instruments" },
+      { value: "22", label: "Microservices" },
+      { value: "$7.5M", label: "Under Management" },
     ],
   },
-  // Slide 2: Entry Points
+
+  // ── Slide 2: The Problem ──────────────────────────────────
   {
     id: 2,
-    type: "entrypoints",
-    title: "One Platform, Multiple Entry Points",
+    type: "doctrine",
+    title: "The Market Is Still Stitched Together",
     subtitle:
-      "Clients enter at the lifecycle stage that fits their operating model. Execution workflows integrate with existing research pipelines.",
-    entries: [
+      "To replicate what we have, a firm would need to integrate 80+ venues across 5 asset classes, 28 decentralised finance protocols on 11 blockchains, and 65+ sports data sources \u2014 each with different schemas, settlement logic, and connectivity. Most firms stitch together fragments. We built the unified layer.",
+    points: [
       {
-        name: "Data",
-        stages: ["Acquire"],
-        alpha: false,
-        desc: "Normalised feeds across all asset classes",
+        problem: "80+ venues, 5 asset classes, dozens of schemas",
+        solution: "One codebase, one language, one normalised schema",
       },
       {
-        name: "Research",
-        stages: ["Acquire", "Build"],
-        alpha: true,
-        desc: "Data plus backtesting and simulation",
+        problem: "Strategies break when promoted to live",
+        solution:
+          "One configuration structure \u2014 config change to promote, not a rewrite",
       },
       {
-        name: "Execution",
-        stages: ["Promote", "Run", "Observe"],
-        alpha: false,
-        desc: "Integrate existing signals into our execution stack",
+        problem: "Execution fragmented across venues and chains",
+        solution: "One deployment infrastructure, one algo layer across all venues",
       },
       {
-        name: "Full Platform",
-        stages: ["Acquire", "Build", "Promote", "Run", "Observe"],
-        alpha: true,
-        desc: "End-to-end infrastructure access",
-      },
-      {
-        name: "Managed",
-        stages: ["Manage", "Report"],
-        alpha: false,
-        desc: "Discretionary capital management",
+        problem: "Monitoring and compliance bolted on after the fact",
+        solution:
+          "One web-based interface for trading, reporting, and controls",
       },
     ],
-    note: "Flexible integration for firms that retain their own research stack.",
+    differentiators: [
+      "Cross-asset backtesting: decentralised finance, traditional finance, crypto, sports, prediction markets \u2014 one environment",
+      "Backtest to live with no rewrite \u2014 same data, same features, same risk controls",
+      "Same infrastructure for internal capital and external clients",
+    ],
+    conclusion: "The alternative is stitching together 80+ integrations. We built one system.",
   },
-  // Slide 3: Lifecycle
+
+  // ── Slide 3: The Solution ─────────────────────────────────
   {
     id: 3,
     type: "lifecycle-new",
-    title: "Platform Lifecycle",
+    title: "One System, Five Connected Layers",
     subtitle:
-      "From data ingestion through execution to regulatory reporting - the same lifecycle governs internal operations and client access.",
+      "From instrument discovery through execution to regulatory reporting \u2014 the same layers govern internal operations and client access.",
     stages: [
-      { name: "Acquire", desc: "Ingest, normalise, validate" },
-      { name: "Build", desc: "Research, train, simulate" },
-      { name: "Promote", desc: "Review, approve, deploy" },
-      { name: "Run", desc: "Execute, route, fill" },
-      { name: "Observe", desc: "Monitor, alert, reconcile" },
-      { name: "Manage", desc: "Allocate, govern, control" },
-      { name: "Report", desc: "Attribute, audit, disclose" },
+      { name: "Instruments & Data", desc: "Discover, normalise, validate" },
+      { name: "Research & Modelling", desc: "Features, ML, simulate" },
+      { name: "Decision & Strategy", desc: "Signals, sizing, risk" },
+      { name: "Execution & Control", desc: "Route, fill, monitor" },
+      { name: "Governance & Reporting", desc: "Audit, comply, report" },
     ],
   },
-  // Slide 4: Operational Lanes (renamed from Domain Lanes)
+
+  // ── Slide 4: Why This Is Hard to Replicate ────────────────
   {
     id: 4,
-    type: "lanes-visual",
-    title: "Trading Operations Across the Lifecycle",
-    subtitle: "Six operational lanes flow through the lifecycle with varying intensity at each stage.",
-    stages: ["Acquire", "Build", "Promote", "Run", "Observe", "Manage", "Report"],
-    lanes: [
-      {
-        name: "Data",
-        desc: "Feeds, normalisation, entitlements",
-        color: "sky",
-        emphasis: [0, 1, 4],
-      },
-      {
-        name: "ML",
-        desc: "Features, models, signals, inference",
-        color: "violet",
-        emphasis: [1, 2, 3, 4],
-      },
-      {
-        name: "Strategy",
-        desc: "Research, simulation, decision logic",
-        color: "amber",
-        emphasis: [1, 2, 3, 4],
-      },
-      {
-        name: "Execution",
-        desc: "Algos, routing, transaction cost",
-        color: "emerald",
-        emphasis: [2, 3, 4],
-      },
-      {
-        name: "Capital",
-        desc: "Mandates, allocations, oversight",
-        color: "rose",
-        emphasis: [3, 4, 5, 6],
-      },
-      {
-        name: "Compliance",
-        desc: "Audit trail, regulatory controls",
-        color: "slate",
-        emphasis: [2, 3, 4, 6],
-      },
-    ],
-  },
-  // Slide 5: Commercial Packaging
-  {
-    id: 5,
-    type: "packaging",
-    title: "Commercial Packaging",
-    subtitle: "Each service maps to specific lifecycle stages. Clients can start at any point and expand over time.",
-    services: [
-      {
-        name: "Data Provision",
-        stages: ["Acquire"],
-        model: "Subscription",
-        desc: "Normalised market data across 5 asset classes",
-      },
-      {
-        name: "Backtesting as a Service",
-        stages: ["Acquire", "Build"],
-        model: "Compute credits",
-        desc: "Research infrastructure and simulation",
-      },
-      {
-        name: "Trading Terminal",
-        stages: ["Run", "Observe"],
-        model: "Platform subscription",
-        desc: "Live trading, monitoring, execution, and control",
-      },
-      {
-        name: "Regulatory Umbrella",
-        stages: ["Manage", "Report"],
-        model: "Retainer",
-        desc: "FCA Appointed Representative services",
-      },
-      {
-        name: "Investment Management",
-        stages: ["Manage", "Report"],
-        model: "Performance-aligned",
-        desc: "Discretionary capital management",
-      },
-      {
-        name: "Platform Licence",
-        stages: ["Acquire", "Build", "Promote", "Run", "Observe"],
-        model: "Enterprise",
-        desc: "Full infrastructure access",
-      },
-    ],
-    note: "Contact us for pricing. Terms vary by service and volume.",
-  },
-  // Slide 6: Why One Platform
-  {
-    id: 6,
-    type: "doctrine",
-    title: "Why One Platform",
-    subtitle:
-      "The alternative is disconnected tools - separate data vendors, separate backtesting, separate execution, separate compliance. Each boundary creates friction, reconciliation overhead, and operational risk.",
-    points: [
-      {
-        problem: "Disconnected data sources",
-        solution: "One normalised schema across all 5 asset classes",
-      },
-      {
-        problem: "Multiple backtesting tools",
-        solution: "Single simulation engine, unified strategy framework",
-      },
-      {
-        problem: "Fragmented execution",
-        solution: "Unified algo layer across 128 venues",
-      },
-      {
-        problem: "Separate compliance stacks",
-        solution: "Integrated audit trail and regulatory reporting",
-      },
-    ],
-    conclusion: "Clients enter at any stage - but they're entering the same system we run our own capital through.",
-    differentiators: [
-      "Cross-asset backtesting: Sports, DeFi, Options, Crypto Perps, TradFi Futures in one environment",
-      "Execution-only access preserves client alpha IP",
-      "Same infrastructure serves internal operations and external clients",
-    ],
-  },
-  {
-    id: 8,
-    type: "coverage",
-    title: "Unmatched Market Coverage",
-    subtitle: "Trading 24/7/365 across all global markets",
-    markets: [
-      {
-        icon: "TrendingUp",
-        name: "TradFi",
-        sub: "CME, ICE, NYMEX, IBKR",
-        count: "12 venues",
-        color: "cyan",
-        detail: "Futures, options, equities",
-      },
-      {
-        icon: "Database",
-        name: "Crypto CeFi",
-        sub: "Binance, OKX, Deribit, Bybit",
-        count: "18 venues",
-        color: "green",
-        detail: "Spot, perps, options",
-      },
-      {
-        icon: "Layers",
-        name: "DeFi",
-        sub: "Uniswap, Aave, Hyperliquid",
-        count: "8 venues",
-        color: "violet",
-        detail: "LP, lending, on-chain perps",
-      },
-      {
-        icon: "Globe",
-        name: "Sports",
-        sub: "Betfair, Pinnacle +90 more",
-        count: "90 venues",
-        color: "amber",
-        detail: "Football, NFL, NBA, Tennis",
-      },
-      {
-        icon: "LineChart",
-        name: "Predictions",
-        sub: "Polymarket, Kalshi",
-        count: "4 venues",
-        color: "rose",
-        detail: "Political, crypto, macro",
-      },
-    ],
-    instrumentCount: "1.5M+",
-    instrumentNote: "instruments registered in our database (including historical/expired)",
-    differentiator:
-      "Normalised data schema across all asset classes. Enables cross-market arbitrage: BTC across CeFi/DeFi, BTC prediction markets vs CeFi derivatives (Polymarket vs Binance/Deribit), S&P data for crypto predictions, sports odds vs prediction markets. ML signals translate across domains.",
-  },
-  {
-    id: 9,
-    type: "demo",
-    title: "Platform Demo",
-    subtitle:
-      "A preview of the trading infrastructure. Full interactive walkthrough available during this presentation.",
-    previewLink: "/demo/preview",
-    sections: [
-      { name: "Strategy Heatmap", desc: "Cross-asset performance matrix" },
-      { name: "Backtest Results", desc: "Historical simulation outputs" },
-      { name: "Live Trading", desc: "Real-time positions and P&L" },
-      { name: "Data Coverage", desc: "Venue and instrument breadth" },
-    ],
-    note: "This preview shows representative views. The live demo will use actual production data.",
-  },
-  {
-    id: 10,
-    type: "revenue",
-    title: "Revenue Streams",
-    services: [
-      {
-        name: "Data Provision",
-        model: "From £250/mo",
-        status: "live",
-        note: "we use the data",
-      },
-      {
-        name: "Backtesting as a Service",
-        model: "From £8,000/mo",
-        status: "live",
-        note: "we use the backtest",
-      },
-      {
-        name: "Trading Terminal",
-        model: "Platform subscription + advanced execution bolt-on",
-        status: "live",
-        note: "execution included in terminal, advanced algos as add-on",
-      },
-      {
-        name: "Regulatory Umbrella (AR)",
-        model: "GBP 10k setup + GBP 4k/mo",
-        status: "active",
-        note: "first client onboarded",
-      },
-      {
-        name: "Investment Management",
-        model: "0% management + 35% performance",
-        status: "live",
-        note: "+34.2% since Feb 2026",
-      },
-      {
-        name: "Strategy / Platform Licence",
-        model: "From $100k per strategy",
-        status: "ready",
-        note: "",
-      },
-    ],
-    disclosure: "Investment Management note: +34.2% since Feb 2026 on client accounts on Binance and OKX.",
-  },
-  {
-    id: 11,
-    type: "flywheel",
-    title: "Land & Expand Flywheel",
-    subtitle: "Clients enter at one service, naturally expand to others. Each step increases contract value 3-10x.",
-    funnel: [
-      { name: "Data", sub: "entry point", active: true },
-      { name: "Backtesting", sub: "test strategies", active: false },
-      { name: "Execution", sub: "go live", active: false },
-      { name: "Full Platform", sub: "white label", active: false },
-      { name: "Investment Mgmt", sub: "we run it", active: true },
-    ],
-    examples: [
-      "Data subscriber sees signal quality -> subscribes to BaaS",
-      "BaaS client validates edge -> wants live execution",
-      "Execution client scales -> needs regulatory coverage",
-      "AR client grows AUM -> becomes investment management client",
-    ],
-  },
-  {
-    id: 12,
     type: "operations",
-    title: "AI-Powered Efficiency",
+    title: "Why This Is Hard to Replicate",
     columns: [
       {
-        title: "Autonomous Agents",
+        title: "One Shared Instrument Layer",
         items: [
-          "P&L monitoring - real-time anomaly detection",
-          "Trade quality - benchmark vs fill, flag issues",
-          "Bad-trade detection - auto-escalate to human review",
-          "PR review agents - detect bugs, open fix PRs",
+          "12,000+ live instruments across 5 asset classes",
+          "28 decentralised finance protocols across 11 blockchains",
+          "40,000+ sports fixtures processed annually",
+          "One canonical schema across all domains",
         ],
       },
       {
-        title: "Rapid Development",
+        title: "Built for Ourselves First",
         items: [
-          "Strategy from concept to live in ~2 weeks",
-          "New venue integration in a day",
-          "Quality gates codified - lint, tests, typecheck",
-          "26 microservices, 20+ internal libraries",
+          "$7.5M of our own capital through the same system",
+          "Clients for every service we offer \u2014 trust is established",
+          "Nothing we deploy for clients goes without the same vetting we apply to our own capital",
+          "We never build strategies that overlap with what we\u2019ve built for you",
         ],
       },
       {
-        title: "Scalable Operations",
+        title: "One Operating Layer",
         items: [
-          "Same system serves internal + external clients",
-          "Headcount scales sub-linearly with revenue",
-          "Agent-assisted client onboarding",
-          "Full git audit trail + GitHub issue tracking",
+          "Data, research, execution, monitoring, governance \u2014 not bolted together",
+          "New venue integration benefits every strategy automatically",
+          "New strategy benefits every client automatically",
+          "AI-assisted operations with human approval gates",
         ],
       },
     ],
     callout:
-      "A competitor building this from scratch would need 15–20 people. We run the same system with a fraction of that headcount — automating the majority of workflows with human approval gates at critical decisions.",
+      "Rebuilding this from scratch would be a significant multi-year, multi-team effort. We operate it with a small team \u2014 AI-assisted workflows handle routine operations, with human approval gates at critical decisions.",
     metrics: [
-      { value: "26", label: "Microservices" },
-      { value: "246–1,056", label: "Tests per service" },
-      { value: "<1 day", label: "New venue integration" },
-      { value: "~2 weeks", label: "Concept to live deployment" },
+      { value: "5", label: "Asset Classes" },
+      { value: "24,500+", label: "Automated Tests" },
+      { value: "22", label: "Microservices" },
+      { value: "$7.5M", label: "Under Management" },
     ],
   },
+
+  // ── Slide 5: Breadth Without Fragmentation ────────────────
   {
-    id: 13,
+    id: 5,
+    type: "breadth-matrix",
+    title: "Breadth Without Fragmentation",
+    subtitle: "Every cell is served by the same underlying system.",
+    columns: [
+      "Instruments",
+      "Data",
+      "Research",
+      "Execution",
+      "Monitoring",
+    ],
+    rows: [
+      {
+        asset: "Traditional Finance",
+        color: "cyan",
+        cells: [
+          "CME Group, ICE, CBOE, NASDAQ, NYSE",
+          "Tick, orderbook, candles",
+          "Futures, options, equities",
+          "Time-weighted, volume-weighted, smart routing, optimal execution",
+          "Returns, risk, reconciliation",
+        ],
+      },
+      {
+        asset: "Centralised Crypto",
+        color: "green",
+        cells: [
+          "Binance, OKX, Bybit, Deribit +4",
+          "Tick, orderbook, liquidations, funding",
+          "Spot, perpetuals, options surface",
+          "Same algo suite + venue routing",
+          "Same monitoring layer",
+        ],
+      },
+      {
+        asset: "Decentralised Finance",
+        color: "violet",
+        cells: [
+          "28 protocols, 11 chains",
+          "Lending rates, pool data, gas fees",
+          "Yield simulation, flash loans",
+          "Uniswap, Aave, Morpho, Curve, Lido, and more",
+          "On-chain position tracking",
+        ],
+      },
+      {
+        asset: "Sports",
+        color: "amber",
+        cells: [
+          "102 leagues, 40K+ fixtures/yr",
+          "Odds from 65+ sources",
+          "Machine learning prediction pipeline",
+          "Cross-bookmaker routing",
+          "Settlement reconciliation",
+        ],
+      },
+      {
+        asset: "Predictions",
+        color: "rose",
+        cells: [
+          "Polymarket, Kalshi +3",
+          "Binary / multi-outcome pricing",
+          "Cross-market arbitrage detection",
+          "Prediction market execution",
+          "Event resolution tracking",
+        ],
+      },
+    ],
+  },
+
+  // ── Slide 6: Strategy Families ────────────────────────────
+  {
+    id: 6,
+    type: "strategies",
+    title: "Strategy Families \u2014 Risk, Return & Capacity",
+    subtitle: "Same infrastructure, configurable risk appetite.",
+    families: [
+      {
+        name: "Decentralised \u2014 Stable Yield",
+        returns: "3-12% annual",
+        drawdown: "<1%",
+        capacity: "$50M-$100M+",
+        character: "Lending, stablecoin yield",
+        risk: "low",
+      },
+      {
+        name: "Decentralised \u2014 Basis Trades",
+        returns: "10-30% annual",
+        drawdown: "5%",
+        capacity: "$5M-$20M",
+        character: "Delta-neutral, funding capture",
+        risk: "low",
+      },
+      {
+        name: "Decentralised \u2014 Leveraged",
+        returns: "20-50% annual",
+        drawdown: "15%",
+        capacity: "$5M/pool",
+        character: "Recursive staking, liquidity provision",
+        risk: "medium",
+      },
+      {
+        name: "Crypto Trading",
+        returns: "Market-dependent",
+        drawdown: "5-10%",
+        capacity: "$2M/pair",
+        character: "Momentum, mean reversion, arbitrage",
+        risk: "medium",
+      },
+      {
+        name: "Traditional Finance Quant",
+        returns: "12-18%",
+        drawdown: "8-10%",
+        capacity: "$5M/name",
+        character: "Machine learning directional, options, volatility",
+        risk: "medium",
+      },
+      {
+        name: "Sports",
+        returns: "Market-dependent",
+        drawdown: "20%",
+        capacity: "$100K-$1M",
+        character: "Machine learning prediction, arbitrage",
+        risk: "high",
+      },
+    ],
+    callout:
+      "We deploy from $100K to $100M+ depending on the strategy. The infrastructure is the same \u2014 only the configuration changes.",
+  },
+
+  // ── Slide 7: What Is Live Today ───────────────────────────
+  {
+    id: 7,
     type: "traction",
-    title: "Where We Are Today",
+    title: "What Is Real Today",
     achieved: [
       {
-        text: "UTS platform operational",
-        detail: "full lifecycle management across 5 asset classes",
+        text: "Crypto mean reversion",
+        detail: "$4M under management, ~30%+ annualised, 1 year track record, $3.3M at high watermark",
       },
       {
-        text: "Investment management live",
-        detail: "clients at high watermark, +34.2% since Feb 2026",
+        text: "Bitcoin fund of funds",
+        detail: "$3.5M+ under management, 5 year track record",
       },
       {
-        text: "First regulatory client onboarded",
-        detail: "FCA Appointed Representative",
+        text: "First regulatory coverage client onboarded",
+        detail: "FCA ref 975797",
       },
-      { text: "First services client delivery", detail: "in days, not months" },
+      {
+        text: "First trading platform sold \u2014 $125K contract revenue (75% received)",
+        detail: "Decentralised finance client \u2014 3 strategies (5-20% annual), growing to $250K+ annual revenue",
+      },
+      {
+        text: "Platform operational",
+        detail: "22 microservices, 24,500+ tests, all passing",
+      },
     ],
     inProgress: [
       {
-        text: "Client funding development",
-        detail: "options on India Exchange (Delta One + Arbitrage)",
+        text: "3 additional regulatory coverage prospects",
+        detail: "in conversation, evaluating coverage",
       },
       {
-        text: "Building track record",
-        detail: "for initial strategies across all asset classes",
-      },
-      {
-        text: "Expanding AR services",
-        detail: "in talks about further regulatory coverage",
-      },
-      {
-        text: "MOU for execution services",
+        text: "Memorandum of understanding for execution services",
         detail: "institutional counterparty",
+      },
+      {
+        text: "Client funding development",
+        detail: "India Exchange \u2014 delta one + arbitrage",
+      },
+    ],
+    launchReady: [
+      {
+        text: "Broader platform deployments",
+        detail: "First sale complete, ready for additional clients across all 5 asset classes",
+      },
+      {
+        text: "Data provision",
+        detail: "Normalised feeds across all domains",
+      },
+      {
+        text: "Backtest to live",
+        detail: "Same code path, config change to promote",
+      },
+      {
+        text: "35 strategies, 5 families",
+        detail: "30 code-complete, covering full spectrum",
+      },
+      {
+        text: "9 execution algorithms",
+        detail: "Time-weighted, volume-weighted, smart routing, optimal execution + more",
       },
     ],
     checkpoint:
-      "This is a checkpoint. We're aligning on how to best diversify revenue streams, targeting the most commercially viable products and markets. The toolkit is built - now we're pointing it in the right direction.",
+      "Across all three services, the remaining constraint is commercial focus and sequencing rather than core engineering build-out.",
   },
+
+  // ── Slide 8: Three Services ───────────────────────────────
   {
-    id: 14,
-    type: "ask",
-    title: "Next Steps",
+    id: 8,
+    type: "packaging",
+    title: "Three Commercial Wrappers, One System",
     subtitle:
-      "The infrastructure is built, the regulation is in place, and the stack is live across all five asset classes. The purpose of this meeting is to sense-check the path forward — which products to lead with, which markets to prioritise, and where the advisory board can accelerate that.",
+      "Clients start where it fits. The system underneath is the same.",
+    services: [
+      {
+        name: "Trading Platform as a Service",
+        stages: [
+          "Instruments & Data",
+          "Research",
+          "Decision",
+          "Execution",
+          "Governance",
+        ],
+        model: "Subscription \u2014 scoped to client need",
+        desc: "Bespoke access from data feeds to research to the full trading platform. Same system, configurable scope.",
+      },
+      {
+        name: "Investment Management",
+        stages: ["Decision", "Execution", "Governance"],
+        model: "20-40% performance (strategy-dependent)",
+        desc: "We run capital. $7.5M under management across two mandates. Lower-yielding strategies carry lower fees.",
+      },
+      {
+        name: "Regulatory Umbrella",
+        stages: ["Governance"],
+        model: "Onboarding fee + monthly retainer",
+        desc: "FCA regulatory coverage. Compliance, reporting officer coverage, best execution reporting. 1 live, 3 in pipeline.",
+      },
+    ],
+    note: "Three wrappers. One system. A regulatory coverage client who needs execution uses the same algorithms. An investment management mandate that outgrows managed capital graduates to platform access.",
+  },
+
+  // ── Slide 9: The Flywheel ─────────────────────────────────
+  {
+    id: 9,
+    type: "flywheel",
+    title: "Why One Sale Leads to Others",
+    subtitle:
+      "The relationship deepens naturally because every step uses the same system.",
+    funnel: [
+      { name: "Data", sub: "entry point", active: true },
+      { name: "Research", sub: "validate ideas", active: false },
+      { name: "Live Trading", sub: "same code, live capital", active: false },
+      { name: "Full Platform", sub: "complete operating layer", active: false },
+      { name: "Managed", sub: "we run or regulate it", active: true },
+    ],
+    examples: [
+      "Data subscriber discovers signal quality \u2192 starts backtesting",
+      "Backtester validates edge \u2192 promotes to live (config change)",
+      "Live trader scales \u2192 needs regulatory coverage",
+      "Platform user wants managed capital \u2192 becomes investment management client",
+    ],
+  },
+
+  // ── Slide 10: The Ask ─────────────────────────────────────
+  {
+    id: 10,
+    type: "ask",
+    title: "What Fits Your Network",
+    subtitle:
+      "Everything we\u2019ve shown is shippable. The question is which service resonates with the people you work with \u2014 and what they\u2019d need to see to move.",
     asks: [
       {
-        title: "Product Prioritisation",
+        title: "Investment Management",
         items: [
-          "Which of the six revenue lines should we lead with?",
-          "Where is the clearest near-term commercial opportunity?",
-          "Which products are ready to scale vs. which need more runway?",
+          "Current strategies (crypto, Bitcoin): ready today",
+          "Additional strategies, new asset classes: coming through",
+          "Who in your network allocates to alternative strategies?",
+          "What would they need \u2014 track record, reporting format, minimum ticket?",
         ],
       },
       {
-        title: "Strategic Partnerships",
+        title: "Trading Platform as a Service",
         items: [
-          "Technology partnerships for venue integration and licensing",
-          "Distribution into institutional research desks and quant firms",
-          "AR umbrella expansion for firms entering UK regulation",
+          "First sale: $125K contract revenue (75% received), growing to $250K+ annual revenue",
+          "Ready for broader deployment across additional clients",
+          "Who needs trading infrastructure but doesn\u2019t want to build it?",
+          "What would land \u2014 data-only entry, full demo, specific asset class?",
         ],
       },
       {
-        title: "Advisory Input",
+        title: "Regulatory Umbrella",
         items: [
-          "Help identifying which markets, products, and geographies to prioritise",
-          "Guidance on what's most commercially viable — we don't have to launch everything",
-          "Introductions to relevant distribution partners or anchor clients",
+          "Ready today \u2014 1 client live, 3 in pipeline",
+          "Who in your network is entering UK regulation or needs FCA coverage?",
+          "What would move them \u2014 pricing, scope, onboarding speed?",
         ],
       },
     ],
     contact: "ikenna@odum-research.com",
+  },
+
+  // ── Slide 11: FAQ ──────────────────────────────────────────
+  {
+    id: 11,
+    type: "faq",
+    title: "Questions We Get Asked",
+    subtitle: "Standardised answers to the most common questions from advisors and prospects.",
+    questions: [
+      {
+        q: "Why can\u2019t someone just build this with AI?",
+        a: "AI is a force multiplier, but it multiplies the judgement of the person directing it. Our team has personally traded options, delta one, high frequency, and medium frequency across traditional finance, crypto, and sports. If you have a significant drawdown, you need to be able to switch off the AI and debug the system yourself. That requires experience that transcends the tooling. We use AI heavily \u2014 but the critical decisions are made by experienced humans.",
+      },
+      {
+        q: "Why would someone share their alpha with you?",
+        a: "They don\u2019t have to. The platform is modular. You can use just data, just execution, just research, or just reporting \u2014 without us ever seeing your signals. Even on the full platform, we make bespoke deals. We don\u2019t trade the same strategy you\u2019re running. We don\u2019t need to \u2014 we have our own.",
+      },
+      {
+        q: "How do you handle conflicts between your own trading and client strategies?",
+        a: "We partition. Internal alpha stays internal \u2014 we don\u2019t share signal logic, feature weights, or parameters. Client strategies are bespoke and separate. We will never front-run a client or build strategies that overlap with theirs. We have enough strategy families to allocate some to investment management and still build for clients without conflict.",
+      },
+      {
+        q: "Why should I trust you with my infrastructure?",
+        a: "We built this for ourselves first. It runs our own capital \u2014 $7.5M across two mandates. We have clients for every service we offer. Nothing we deploy for a client goes through without the same vetting we apply to our own money. If we wouldn\u2019t trust it with our capital, it doesn\u2019t ship.",
+      },
+      {
+        q: "What happens if a client wants to leave?",
+        a: "They can. If we built a bespoke strategy for you, the logic is yours. The switching cost is operational \u2014 the accumulated validation, data history, and familiarity with the platform \u2014 not contractual lock-in.",
+      },
+    ],
+  },
+
+  // ── Slide 12: Live Demo ───────────────────────────────────
+  {
+    id: 12,
+    type: "demo",
+    title: "Platform Demo",
+    subtitle:
+      "A walkthrough of the live system. Click any section to navigate directly.",
+    previewLink: "/dashboard",
+    sections: [
+      {
+        name: "Dashboard",
+        desc: "Platform overview \u2014 positions, returns, risk, alerts",
+        link: "/dashboard",
+      },
+      {
+        name: "Trading & Positions",
+        desc: "Live positions, orders, returns attribution",
+        link: "/services/trading/positions",
+      },
+      {
+        name: "Instruments & Coverage",
+        desc: "12,000+ instruments across all asset classes",
+        link: "/services/data/instruments",
+      },
+      {
+        name: "Strategy Research",
+        desc: "Backtests, strategy comparison, machine learning analysis",
+        link: "/services/research/strategy/overview",
+      },
+      {
+        name: "Client Reporting",
+        desc: "Executive dashboard, investment book of records, reconciliation",
+        link: "/services/reports/executive",
+      },
+      {
+        name: "Risk & Scenarios",
+        desc: "Scenario analysis, stress testing, historical replay",
+        link: "/services/observe/scenarios",
+      },
+    ],
+    note: "All views use the same underlying system. Demo data is representative of production output.",
   },
 ];

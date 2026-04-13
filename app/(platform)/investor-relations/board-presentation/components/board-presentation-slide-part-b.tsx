@@ -134,35 +134,193 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
         </div>
       )}
 
-      {/* Demo Slide */}
-      {slide.type === "demo" && (
+      {/* Strategies Slide */}
+      {slide.type === "strategies" && (
         <div>
           <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
-          <p className="text-muted-foreground mb-8 max-w-3xl">{slide.subtitle}</p>
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            {slide.sections?.map((section: { name: string; desc: string }, i: number) => (
+          <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
+          <div className="overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-card">
+                  <th className="text-left p-3 text-primary font-semibold border-b border-primary">Family</th>
+                  <th className="text-left p-3 text-primary font-semibold border-b border-primary">Return Range</th>
+                  <th className="text-left p-3 text-primary font-semibold border-b border-primary">Max Drawdown</th>
+                  <th className="text-left p-3 text-primary font-semibold border-b border-primary">Capacity</th>
+                  <th className="text-left p-3 text-primary font-semibold border-b border-primary">Character</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(
+                  (slide.families as Array<{
+                    name: string;
+                    returns: string;
+                    drawdown: string;
+                    capacity: string;
+                    character: string;
+                    risk: string;
+                  }>) || []
+                ).map((family, i) => {
+                  const riskBorderColors: Record<string, string> = {
+                    low: "border-l-4 border-l-emerald-400",
+                    medium: "border-l-4 border-l-amber-400",
+                    high: "border-l-4 border-l-rose-400",
+                  };
+                  return (
+                    <motion.tr
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * i }}
+                      className={cn(
+                        "border-b border-border hover:bg-muted/50",
+                        riskBorderColors[family.risk] || "",
+                      )}
+                    >
+                      <td className="p-3 font-semibold">{family.name}</td>
+                      <td className="p-3 text-muted-foreground">{family.returns}</td>
+                      <td className="p-3 text-muted-foreground">{family.drawdown}</td>
+                      <td className="p-3 text-muted-foreground">{family.capacity}</td>
+                      <td className="p-3 text-muted-foreground">{family.character}</td>
+                    </motion.tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {slide.callout && (
+            <div className="mt-4 p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
+              <p className="text-sm text-muted-foreground">{slide.callout as string}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Timeline Matrix Slide — strategies × time periods */}
+      {slide.type === "timeline-matrix" && (
+        <div>
+          <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
+          <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
+          <div className="overflow-hidden rounded-lg border border-border">
+            {/* Period headers */}
+            <div
+              className="grid bg-card border-b border-primary"
+              style={{ gridTemplateColumns: `200px repeat(${((slide.periods as string[]) || []).length}, 1fr)` }}
+            >
+              <div className="p-3" />
+              {((slide.periods as string[]) || []).map((period: string) => (
+                <div key={period} className="p-3 text-center">
+                  <span className="text-[10px] text-primary font-semibold uppercase tracking-wider">{period}</span>
+                </div>
+              ))}
+            </div>
+            {/* Strategy rows */}
+            {(
+              (slide.strategies as Array<{ name: string; statuses: string[] }>) || []
+            ).map((strategy, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.08 * i }}
+                className={cn(
+                  "grid border-b border-border last:border-b-0",
+                  i % 2 === 0 ? "bg-card" : "bg-card/50",
+                )}
+                style={{ gridTemplateColumns: `200px repeat(${((slide.periods as string[]) || []).length}, 1fr)` }}
+              >
+                <div className="p-3 flex items-center">
+                  <span className="text-xs font-semibold">{strategy.name}</span>
+                </div>
+                {strategy.statuses.map((status: string, j: number) => {
+                  const statusStyles: Record<string, string> = {
+                    live: "bg-emerald-400/20 text-emerald-400 border-emerald-400/30",
+                    testing: "bg-amber-400/20 text-amber-400 border-amber-400/30",
+                    available: "bg-primary/20 text-primary border-primary/30",
+                  };
+                  return (
+                    <div key={j} className="p-3 flex items-center justify-center">
+                      {status ? (
+                        <span
+                          className={cn(
+                            "px-2 py-0.5 text-[9px] font-semibold rounded border uppercase",
+                            statusStyles[status] || "bg-muted/20 text-muted-foreground border-border",
+                          )}
+                        >
+                          {status}
+                        </span>
+                      ) : (
+                        <span className="size-1.5 rounded-full bg-border" />
+                      )}
+                    </div>
+                  );
+                })}
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* FAQ Slide */}
+      {slide.type === "faq" && (
+        <div>
+          <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
+          <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
+          <div className="space-y-4">
+            {(
+              (slide.questions as Array<{ q: string; a: string }>) || []
+            ).map((faq, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * i }}
-                className="p-6 rounded-lg border border-border bg-card"
+                className="p-4 rounded-lg border border-border bg-card"
               >
-                <div className="text-sm font-semibold text-primary mb-1">{section.name}</div>
-                <div className="text-xs text-muted-foreground">{section.desc}</div>
+                <div className="text-sm font-semibold text-primary mb-2">{faq.q}</div>
+                <div className="text-xs text-muted-foreground leading-relaxed">{faq.a}</div>
               </motion.div>
             ))}
           </div>
-          {slide.previewLink && (
-            <div className="flex justify-center mb-6">
-              <Button size="lg" asChild>
-                <Link href={slide.previewLink}>
-                  Launch Interactive Preview
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
-            </div>
-          )}
+        </div>
+      )}
+
+      {/* Demo Slide — clickable section cards */}
+      {slide.type === "demo" && (
+        <div>
+          <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
+          <p className="text-muted-foreground mb-8 max-w-3xl">{slide.subtitle}</p>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {slide.sections?.map(
+              (section: { name: string; desc: string; link?: string }, i: number) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * i }}
+                >
+                  {section.link ? (
+                    <Link
+                      href={section.link}
+                      target="_blank"
+                      className="block p-6 rounded-lg border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="text-sm font-semibold text-primary">{section.name}</div>
+                        <ArrowRight className="size-4 text-primary/50 group-hover:text-primary transition-colors" />
+                      </div>
+                      <div className="text-xs text-muted-foreground">{section.desc}</div>
+                    </Link>
+                  ) : (
+                    <div className="p-6 rounded-lg border border-border bg-card">
+                      <div className="text-sm font-semibold text-primary mb-1">{section.name}</div>
+                      <div className="text-xs text-muted-foreground">{section.desc}</div>
+                    </div>
+                  )}
+                </motion.div>
+              ),
+            )}
+          </div>
           {slide.note && (
             <div className="p-4 rounded-lg border border-border/50 bg-muted/30 text-center">
               <p className="text-xs text-muted-foreground italic">{slide.note}</p>
@@ -307,13 +465,17 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
           <div className="grid grid-cols-2 gap-6">
             <div className="p-6 rounded-lg border border-primary/30 bg-primary/5 text-center">
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Data clients become backtesting clients.
+                The critical conversion is research to live.
                 <br />
-                Backtesting clients want execution.
+                On most platforms, that transition requires a rewrite.
                 <br />
-                Execution clients want the full platform.
+                On ours, it is a configuration change — same data,
+                <br />
+                same features, same risk controls.
               </p>
-              <p className="mt-4 text-primary font-medium">Every entry point is a gateway to deeper engagement.</p>
+              <p className="mt-4 text-primary font-medium">
+                That continuity is what makes the platform difficult to leave.
+              </p>
             </div>
             <div className="p-4 rounded-lg border border-border bg-card">
               <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">Cross-Sell Examples</h3>
@@ -382,13 +544,15 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
         </div>
       )}
 
-      {/* Traction Slide */}
+      {/* Traction Slide — supports 2 or 3 columns */}
       {slide.type === "traction" && (
         <div>
           <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-6">{slide.title}</h2>
-          <div className="grid grid-cols-2 gap-8">
+          <div className={cn("grid gap-6", slide.launchReady ? "grid-cols-3" : "grid-cols-2")}>
             <div>
-              <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">Achieved</h3>
+              <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-4">
+                {slide.launchReady ? "Live & Revenue-Generating" : "Achieved"}
+              </h3>
               <div className="space-y-3">
                 {slide.achieved?.map((item: { text: string; detail: string }, i: number) => (
                   <motion.div
@@ -408,13 +572,15 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-4">In Progress</h3>
+              <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider mb-4">
+                {slide.launchReady ? "In Active Pipeline" : "In Progress"}
+              </h3>
               <div className="space-y-3">
                 {slide.inProgress?.map((item: { text: string; detail: string }, i: number) => (
                   <motion.div
                     key={i}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * i }}
                     className="flex items-start gap-3 p-3 border-b border-border"
                   >
@@ -427,13 +593,38 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
                 ))}
               </div>
             </div>
+            {slide.launchReady && (
+              <div>
+                <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-4">
+                  Built & Launch-Ready
+                </h3>
+                <div className="space-y-3">
+                  {(slide.launchReady as Array<{ text: string; detail: string }>).map(
+                    (item: { text: string; detail: string }, i: number) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * i }}
+                        className="flex items-start gap-3 p-3 border-b border-border"
+                      >
+                        <ArrowRight className="size-5 text-primary flex-shrink-0" />
+                        <div>
+                          <div className="font-semibold text-sm">{item.text}</div>
+                          <div className="text-xs text-muted-foreground">{item.detail}</div>
+                        </div>
+                      </motion.div>
+                    ),
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-          <div className="mt-6 p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
-            <p className="text-sm text-muted-foreground">
-              This is a <span className="text-primary font-medium">checkpoint</span>.{" "}
-              {slide.checkpoint?.split("checkpoint.")[1]}
-            </p>
-          </div>
+          {slide.checkpoint && (
+            <div className="mt-6 p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
+              <p className="text-sm text-muted-foreground">{slide.checkpoint as string}</p>
+            </div>
+          )}
         </div>
       )}
 

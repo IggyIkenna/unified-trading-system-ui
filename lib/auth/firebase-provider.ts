@@ -35,6 +35,12 @@ const CAPABILITY_TO_ENTITLEMENT: Record<string, Entitlement[]> = {
   "manage.edit": ["reporting"],
   "ops.view": ["reporting"],
   "ops.control": ["reporting"],
+  "investor.view": ["investor-relations"],
+  "investor.board": ["investor-board"],
+  "investor.plan": ["investor-plan"],
+  "investor.platform": ["investor-platform"],
+  "investor.im": ["investor-im"],
+  "investor.regulatory": ["investor-regulatory"],
 };
 
 function mapCapabilitiesToEntitlements(

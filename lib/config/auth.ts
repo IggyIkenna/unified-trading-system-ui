@@ -22,6 +22,11 @@ export const ENTITLEMENTS = [
   "options-trading",
   "reporting",
   "investor-relations",
+  "investor-board",
+  "investor-plan",
+  "investor-platform",
+  "investor-im",
+  "investor-regulatory",
 ] as const;
 
 export type Entitlement = (typeof ENTITLEMENTS)[number];

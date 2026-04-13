@@ -358,57 +358,122 @@ export function BoardSlidePartA({ slide }: { slide: Record<string, any> }) {
         </div>
       )}
 
-      {/* Problem Slide */}
-      {slide.type === "problem" && (
+      {/* Breadth Matrix Slide */}
+      {slide.type === "breadth-matrix" && (
         <div>
           <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
           <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
-          <div className="grid grid-cols-4 gap-4 mb-6">
-            {slide.costs?.map(
-              (
-                cost: {
-                  label?: string;
-                  value?: string;
-                  icon?: string;
-                  asset?: string;
-                  vendor?: string;
-                  cost?: string;
-                  period?: string;
-                },
-                i: number,
-              ) => (
+
+          <div className="overflow-hidden rounded-lg border border-border">
+            {/* Column headers */}
+            <div className="grid grid-cols-6 bg-card border-b border-primary">
+              <div className="p-2" />
+              {((slide.columns as string[]) || []).map((col: string) => (
+                <div key={col} className="p-2 text-center">
+                  <span className="text-[10px] text-primary font-semibold uppercase tracking-wider">{col}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Data rows */}
+            {(
+              (slide.rows as Array<{
+                asset: string;
+                color: string;
+                cells: string[];
+              }>) || []
+            ).map((row, i) => {
+              const borderColors: Record<string, string> = {
+                cyan: "border-l-cyan-400",
+                green: "border-l-emerald-400",
+                violet: "border-l-violet-400",
+                amber: "border-l-amber-400",
+                rose: "border-l-rose-400",
+              };
+              const textColors: Record<string, string> = {
+                cyan: "text-cyan-400",
+                green: "text-emerald-400",
+                violet: "text-violet-400",
+                amber: "text-amber-400",
+                rose: "text-rose-400",
+              };
+              return (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * i }}
-                  className="p-4 rounded-lg border border-destructive/30 bg-destructive/5 text-center"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08 * i }}
+                  className={cn(
+                    "grid grid-cols-6 border-b border-border last:border-b-0 border-l-4",
+                    borderColors[row.color] || "border-l-border",
+                    i % 2 === 0 ? "bg-card" : "bg-card/50",
+                  )}
                 >
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{cost.asset}</div>
-                  <div className="font-semibold text-sm mb-1">{cost.vendor}</div>
-                  <div className="text-xl font-bold text-destructive">{cost.cost}</div>
-                  <div className="text-xs text-muted-foreground">{cost.period}</div>
+                  <div className="p-3 flex items-center">
+                    <span className={cn("text-xs font-semibold", textColors[row.color])}>{row.asset}</span>
+                  </div>
+                  {row.cells.map((cell: string, j: number) => (
+                    <div key={j} className="p-3 flex items-center">
+                      <span className="text-[10px] text-muted-foreground leading-tight">{cell}</span>
+                    </div>
+                  ))}
                 </motion.div>
-              ),
-            )}
+              );
+            })}
           </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="p-4 rounded-lg border border-border bg-card">
-              <h3 className="text-sm font-semibold text-destructive uppercase tracking-wider mb-3">The Pain</h3>
-              <ul className="space-y-2">
-                {slide.pain?.map((item: string, i: number) => (
-                  <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <span className="text-destructive">✕</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="p-4 rounded-lg border border-primary/30 bg-primary/5">
-              <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">Our Solution</h3>
-              <p className="text-lg font-semibold text-primary">{slide.solution}</p>
-            </div>
+        </div>
+      )}
+
+      {/* Trajectory Slide — horizontal timeline with growing milestones */}
+      {slide.type === "trajectory" && (
+        <div>
+          <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
+          <p className="text-muted-foreground mb-8">{slide.subtitle}</p>
+          <div className="flex items-end gap-4 mb-8" style={{ height: 200 }}>
+            {(
+              (slide.milestones as Array<{
+                date: string;
+                value: string;
+                detail: string;
+                active?: boolean;
+              }>) || []
+            ).map((milestone, i, arr) => {
+              const heightPct = ((i + 1) / arr.length) * 100;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: `${heightPct}%`, opacity: 1 }}
+                  transition={{ delay: 0.2 * i, duration: 0.6 }}
+                  className={cn(
+                    "flex-1 rounded-t-lg border border-b-0 flex flex-col justify-end p-3",
+                    milestone.active
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card",
+                  )}
+                >
+                  <div className={cn("text-2xl font-bold mb-1", milestone.active ? "text-primary" : "text-foreground")}>
+                    {milestone.value}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground leading-tight">{milestone.detail}</div>
+                </motion.div>
+              );
+            })}
           </div>
+          <div className="flex gap-4">
+            {(
+              (slide.milestones as Array<{ date: string }>) || []
+            ).map((milestone, i) => (
+              <div key={i} className="flex-1 text-center text-xs text-muted-foreground font-medium">
+                {milestone.date}
+              </div>
+            ))}
+          </div>
+          {slide.callout && (
+            <div className="mt-6 p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
+              <p className="text-sm text-muted-foreground">{slide.callout as string}</p>
+            </div>
+          )}
         </div>
       )}
     </>
