@@ -1,13 +1,11 @@
 "use client";
 
-import { DataTable } from "@/components/shared/data-table";
-import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableFilterConfig } from "@/components/shared/table-widget";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDownRight, ArrowUpRight, Search } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useBookTradeData, type BookTrade } from "./book-data-context";
@@ -146,11 +144,11 @@ const columns: ColumnDef<BookTrade, unknown>[] = [
 
 export function BookTradeHistoryWidget(_props: WidgetComponentProps) {
   const { trades } = useBookTradeData();
-  const [search, setSearch] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const filtered = React.useMemo(() => {
-    if (!search) return trades;
-    const q = search.toLowerCase();
+    if (!searchQuery) return trades;
+    const q = searchQuery.toLowerCase();
     return trades.filter(
       (t) =>
         t.instrument.toLowerCase().includes(q) ||
@@ -160,30 +158,24 @@ export function BookTradeHistoryWidget(_props: WidgetComponentProps) {
         t.counterparty.toLowerCase().includes(q) ||
         t.id.toLowerCase().includes(q),
     );
-  }, [trades, search]);
+  }, [trades, searchQuery]);
+
+  const filterConfig: TableFilterConfig = {
+    search: {
+      query: searchQuery,
+      onChange: setSearchQuery,
+      placeholder: "Search trades…",
+    },
+  };
 
   return (
-    <LiveFeedWidget
-      header={
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40">
-          <Search className="size-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Search trades..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-7 text-xs flex-1"
-          />
-          <span className="text-xs text-muted-foreground whitespace-nowrap">
-            {filtered.length} trade{filtered.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-      }
-    >
-      <Card className="border-0 rounded-none">
-        <CardContent className="p-0">
-          <DataTable columns={columns} data={filtered} enableSorting emptyMessage="No trades match your search" />
-        </CardContent>
-      </Card>
-    </LiveFeedWidget>
+    <TableWidget
+      columns={columns}
+      data={filtered}
+      filterConfig={filterConfig}
+      enableSorting
+      enableColumnVisibility={false}
+      emptyMessage="No trades match your search"
+    />
   );
 }

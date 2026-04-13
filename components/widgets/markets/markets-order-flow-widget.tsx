@@ -1,120 +1,131 @@
 "use client";
 
-import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableActionsConfig } from "@/components/shared/table-widget";
 import { LiveFeedWidget, useLiveFeed } from "@/components/shared/live-feed-widget";
 import { Badge } from "@/components/ui/badge";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatNumber } from "@/lib/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
 import * as React from "react";
 import { useMarketsData, type OrderFlowEntry } from "./markets-data-context";
+
+const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
+  {
+    accessorKey: "exchangeTime",
+    header: "Exch Time",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="font-mono text-[10px]">
+        {new Date(row.getValue<string>("exchangeTime")).toLocaleTimeString()}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "localTime",
+    header: "Local",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="font-mono text-[10px] text-muted-foreground">
+        {new Date(row.getValue<string>("localTime")).toLocaleTimeString()}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "delayMs",
+    header: () => <span className="flex justify-end">Delay</span>,
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="text-right font-mono text-[10px] text-muted-foreground">{row.getValue<number>("delayMs")}ms</div>
+    ),
+  },
+  {
+    accessorKey: "type",
+    header: "Type",
+    enableSorting: false,
+    cell: ({ row }) => {
+      const type = row.getValue<string>("type");
+      return (
+        <Badge variant={type === "trade" ? "default" : "outline"} className="text-[10px] px-1 py-0">
+          {type}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "side",
+    header: "Side",
+    enableSorting: false,
+    cell: ({ row }) => {
+      const side = row.getValue<string>("side");
+      return (
+        <span className={side === "buy" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}>
+          {side.toUpperCase()}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "price",
+    header: () => <span className="flex justify-end">Price</span>,
+    enableSorting: false,
+    cell: ({ row }) => <div className="text-right font-mono">${row.getValue<number>("price").toLocaleString()}</div>,
+  },
+  {
+    accessorKey: "size",
+    header: () => <span className="flex justify-end">Size</span>,
+    enableSorting: false,
+    cell: ({ row }) => <div className="text-right font-mono">{formatNumber(row.getValue<number>("size"), 4)}</div>,
+  },
+  {
+    accessorKey: "venue",
+    header: "Venue",
+    enableSorting: false,
+    cell: ({ row }) => <span className="text-muted-foreground text-[10px]">{row.getValue<string>("venue")}</span>,
+  },
+  {
+    accessorKey: "aggressor",
+    header: "Aggressor",
+    enableSorting: false,
+    cell: ({ row }) => {
+      const aggressor = row.getValue<string | null>("aggressor");
+      if (!aggressor) return <span>—</span>;
+      return (
+        <span
+          className={`text-[10px] ${aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+        >
+          {aggressor}
+        </span>
+      );
+    },
+  },
+];
 
 export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
   const { orderFlowData, assetClass, orderFlowRange } = useMarketsData();
   const rows = useLiveFeed(orderFlowData, 500);
 
-  const columns: DataTableColumn<OrderFlowEntry>[] = React.useMemo(
-    () => [
-      {
-        key: "exchangeTime",
-        label: "Exch Time",
-        accessor: (row) => (
-          <span className="font-mono text-[10px]">{new Date(row.exchangeTime).toLocaleTimeString()}</span>
-        ),
-        minWidth: 88,
-      },
-      {
-        key: "localTime",
-        label: "Local",
-        accessor: (row) => (
-          <span className="font-mono text-[10px] text-muted-foreground">
-            {new Date(row.localTime).toLocaleTimeString()}
-          </span>
-        ),
-        minWidth: 88,
-      },
-      {
-        key: "delayMs",
-        label: "Delay",
-        align: "right",
-        accessor: (row) => <span className="font-mono text-[10px] text-muted-foreground">{row.delayMs}ms</span>,
-      },
-      {
-        key: "type",
-        label: "Type",
-        accessor: (row) => (
-          <Badge variant={row.type === "trade" ? "default" : "outline"} className="text-[10px] px-1 py-0">
-            {row.type}
-          </Badge>
-        ),
-      },
-      {
-        key: "side",
-        label: "Side",
-        accessor: (row) => (
-          <span className={row.side === "buy" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}>
-            {row.side.toUpperCase()}
-          </span>
-        ),
-      },
-      {
-        key: "price",
-        label: "Price",
-        align: "right",
-        accessor: (row) => <span className="font-mono">${row.price.toLocaleString()}</span>,
-      },
-      {
-        key: "size",
-        label: "Size",
-        align: "right",
-        accessor: (row) => <span className="font-mono">{formatNumber(row.size, 4)}</span>,
-      },
-      {
-        key: "venue",
-        label: "Venue",
-        accessor: (row) => <span className="text-muted-foreground text-[10px]">{row.venue}</span>,
-      },
-      {
-        key: "aggressor",
-        label: "Aggressor",
-        accessor: (row) =>
-          row.aggressor ? (
-            <span
-              className={`text-[10px] ${row.aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
-            >
-              {row.aggressor}
-            </span>
-          ) : (
-            "—"
-          ),
-      },
-    ],
-    [],
-  );
+  const actionsConfig: TableActionsConfig = {
+    extraActions: (
+      <div className="flex items-center gap-2 shrink-0">
+        <Badge variant="outline" className="text-[10px]">
+          {assetClass === "crypto" ? "Crypto" : assetClass === "tradfi" ? "TradFi" : "DeFi"}
+        </Badge>
+        <span className="text-[10px] text-muted-foreground">
+          {orderFlowRange.toUpperCase()} · {orderFlowData.length} orders
+        </span>
+      </div>
+    ),
+  };
 
   return (
-    <LiveFeedWidget
-      isEmpty={rows.length === 0}
+    <TableWidget
+      columns={columns}
+      data={rows}
+      actions={actionsConfig}
+      enableSorting={false}
+      enableColumnVisibility={false}
       emptyMessage="No order flow data yet"
-      header={
-        <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground p-2">
-          <Badge variant="outline" className="text-[10px]">
-            {assetClass === "crypto" ? "Crypto" : assetClass === "tradfi" ? "TradFi" : "DeFi"}
-          </Badge>
-          <span>
-            {orderFlowRange.toUpperCase()} · {orderFlowData.length} orders
-          </span>
-        </div>
-      }
-    >
-      <div className="px-2 pb-2">
-        <DataTableWidget
-          columns={columns}
-          data={rows}
-          rowKey={(row) => row.id}
-          getRowClassName={(row) => (row.isOwn ? "bg-yellow-500/10" : undefined)}
-          compact
-        />
-      </div>
-    </LiveFeedWidget>
+    />
   );
 }

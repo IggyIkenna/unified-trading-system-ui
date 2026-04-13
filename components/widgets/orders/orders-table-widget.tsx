@@ -1,20 +1,14 @@
 "use client";
 
-import { DataTable } from "@/components/shared/data-table";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
-import { FilterBar } from "@/components/shared/filter-bar";
-import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableActionsConfig, TableFilterConfig } from "@/components/shared/table-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDownRight, ArrowUpRight, ChevronDown, Pencil, RefreshCw, XCircle } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Pencil, XCircle } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
@@ -291,105 +285,117 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
     refetch,
     cancelOrder,
     openAmendDialog,
-    filterDefs,
-    filterValues,
-    handleFilterChange,
-    resetFilters,
+    searchQuery,
+    setSearchQuery,
+    venueFilter,
+    setVenueFilter,
+    statusFilter,
+    setStatusFilter,
+    strategyFilter,
+    setStrategyFilter,
+    sideFilter,
+    setSideFilter,
     instrumentTypeFilters,
     toggleInstrumentTypeFilter,
     assetClassOptions,
-    strategyFilter,
+    uniqueVenues,
+    uniqueStatuses,
+    uniqueStrategies,
+    resetFilters,
   } = useOrdersData();
 
-  const assetClassLabel =
-    instrumentTypeFilters.length === 0
-      ? "All asset classes"
-      : instrumentTypeFilters.length === 1
-        ? instrumentTypeFilters[0]
-        : `${instrumentTypeFilters.length} classes`;
+  const activeFilterCount =
+    [
+      searchQuery,
+      venueFilter !== "all" ? venueFilter : "",
+      statusFilter !== "all" ? statusFilter : "",
+      strategyFilter !== "all" ? strategyFilter : "",
+      sideFilter !== "all" ? sideFilter : "",
+    ].filter(Boolean).length + instrumentTypeFilters.length;
 
   const columns = React.useMemo(() => buildColumns(cancelOrder, openAmendDialog), [cancelOrder, openAmendDialog]);
 
+  const filterConfig: TableFilterConfig = {
+    search: {
+      query: searchQuery,
+      onChange: setSearchQuery,
+      placeholder: "Search orders…",
+    },
+    selectFilters: [
+      {
+        value: strategyFilter,
+        onChange: setStrategyFilter,
+        placeholder: "Strategy",
+        allLabel: "All Strategies",
+        width: "w-32",
+        options: uniqueStrategies.filter(([id]) => id).map(([id, name]) => ({ value: id, label: name })),
+      },
+      {
+        value: venueFilter,
+        onChange: setVenueFilter,
+        placeholder: "Venue",
+        allLabel: "All Venues",
+        width: "w-32",
+        options: uniqueVenues.filter(Boolean).map((v) => ({ value: v, label: v })),
+      },
+      {
+        value: statusFilter,
+        onChange: setStatusFilter,
+        placeholder: "Status",
+        allLabel: "All Statuses",
+        width: "w-28",
+        options: uniqueStatuses.filter(Boolean).map((s) => ({ value: s, label: s })),
+      },
+      {
+        value: sideFilter,
+        onChange: (v) => setSideFilter(v as "all" | "BUY" | "SELL"),
+        placeholder: "Side",
+        allLabel: "Both Sides",
+        width: "w-24",
+        options: [
+          { value: "BUY", label: "Buy" },
+          { value: "SELL", label: "Sell" },
+        ],
+      },
+    ],
+    assetClass: {
+      options: assetClassOptions as string[],
+      active: instrumentTypeFilters as string[],
+      onToggle: (cls) => toggleInstrumentTypeFilter(cls as AssetClassFilter),
+    },
+    activeFilterCount,
+    onReset: resetFilters,
+  };
+
+  const actionsConfig: TableActionsConfig = {
+    onRefresh: refetch,
+    extraActions:
+      strategyFilter !== "all" ? (
+        <Link href={`/services/trading/strategies/${strategyFilter}`} className="shrink-0">
+          <Button variant="outline" size="sm" className="h-7 text-xs">
+            View Strategy
+          </Button>
+        </Link>
+      ) : undefined,
+    export: {
+      data: filteredOrders as unknown as Record<string, unknown>[],
+      columns: ORDER_EXPORT_COLUMNS,
+      filename: "orders",
+    },
+  };
+
   return (
-    <LiveFeedWidget
+    <TableWidget
+      columns={columns}
+      data={filteredOrders}
+      filterConfig={filterConfig}
+      actions={actionsConfig}
       isLoading={isLoading}
       error={error ? "Failed to load orders" : null}
       onRetry={refetch}
-      header={
-        <>
-          <div className="flex items-center justify-end px-3 py-1.5 border-b border-border/40">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => refetch()}>
-                <RefreshCw className="size-3" />
-                Refresh
-              </Button>
-              <ExportDropdown
-                data={filteredOrders as unknown as Record<string, unknown>[]}
-                columns={ORDER_EXPORT_COLUMNS}
-                filename="orders"
-              />
-            </div>
-          </div>
-          <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
-            <FilterBar
-              filters={filterDefs}
-              values={filterValues}
-              onChange={handleFilterChange}
-              onReset={resetFilters}
-              className="border-b-0 px-0 py-0"
-            />
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
-                    {assetClassLabel}
-                    <ChevronDown className="size-3.5 opacity-60" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-56 p-3" align="start">
-                  <p className="text-[10px] text-muted-foreground mb-2">Asset class (multi-select)</p>
-                  <div className="space-y-2">
-                    {assetClassOptions.map((opt: AssetClassFilter) => (
-                      <div key={opt} className="flex items-center gap-2">
-                        <Checkbox
-                          id={`orders-asset-${opt}`}
-                          checked={instrumentTypeFilters.includes(opt)}
-                          onCheckedChange={() => toggleInstrumentTypeFilter(opt)}
-                        />
-                        <Label htmlFor={`orders-asset-${opt}`} className="text-xs font-normal cursor-pointer">
-                          {opt}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/40">
-                    Empty selection = all classes
-                  </p>
-                </PopoverContent>
-              </Popover>
-              {strategyFilter !== "all" && (
-                <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
-                  <Button variant="outline" size="sm" className="h-8 text-xs">
-                    View Strategy Details
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </div>
-        </>
-      }
-    >
-      <Card className="border-0 rounded-none h-full">
-        <CardContent className="p-0 overflow-x-auto">
-          <DataTable
-            columns={columns}
-            data={filteredOrders}
-            enableSorting
-            enableColumnVisibility
-            emptyMessage="No orders match your filters"
-          />
-        </CardContent>
-      </Card>
-    </LiveFeedWidget>
+      emptyMessage="No orders match your filters"
+      enableSorting
+      enableColumnVisibility
+    />
   );
 }

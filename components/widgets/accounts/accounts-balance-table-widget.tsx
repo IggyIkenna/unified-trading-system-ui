@@ -1,14 +1,16 @@
 "use client";
 
 import * as React from "react";
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableActionsConfig } from "@/components/shared/table-widget";
 import { Badge } from "@/components/ui/badge";
-import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
-import type { BalanceRecord } from "@/lib/types/accounts";
-import { useAccountsData } from "./accounts-data-context";
 import { formatPercent } from "@/lib/utils/formatters";
+import type { BalanceRecord } from "@/lib/types/accounts";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useAccountsData } from "./accounts-data-context";
 
 interface BalanceRow extends BalanceRecord {
   marginUsed: number;
@@ -16,8 +18,78 @@ interface BalanceRow extends BalanceRecord {
   utilization: number;
 }
 
+const columns: ColumnDef<BalanceRow, unknown>[] = [
+  {
+    accessorKey: "venue",
+    header: "Venue",
+    enableSorting: true,
+    cell: ({ row }) => <span>{row.getValue<string>("venue")}</span>,
+  },
+  {
+    accessorKey: "free",
+    header: () => <span className="flex justify-end">Free</span>,
+    enableSorting: true,
+    cell: ({ row }) => <div className="text-right font-mono">${formatCurrency(row.getValue<number>("free"))}</div>,
+  },
+  {
+    accessorKey: "locked",
+    header: () => <span className="flex justify-end">Locked</span>,
+    enableSorting: true,
+    cell: ({ row }) => <div className="text-right font-mono">${formatCurrency(row.getValue<number>("locked"))}</div>,
+  },
+  {
+    accessorKey: "total",
+    header: () => <span className="flex justify-end">Total</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-right font-mono font-medium">${formatCurrency(row.getValue<number>("total"))}</div>
+    ),
+  },
+  {
+    accessorKey: "marginUsed",
+    header: () => <span className="flex justify-end">Margin Used</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-right font-mono">${formatCurrency(row.getValue<number>("marginUsed"))}</div>
+    ),
+  },
+  {
+    id: "marginAvail",
+    header: () => <span className="flex justify-end">Margin Avail.</span>,
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="text-right font-mono">${formatCurrency(row.original.margin_available ?? row.original.free)}</div>
+    ),
+  },
+  {
+    accessorKey: "utilization",
+    header: () => <span className="flex justify-end">Utilization</span>,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const util = row.getValue<number>("utilization");
+      return (
+        <div className="flex justify-end">
+          <Badge
+            variant="outline"
+            className={cn(
+              "font-mono text-[10px]",
+              util >= 90
+                ? "border-[var(--status-error)] text-[var(--status-error)]"
+                : util >= 75
+                  ? "border-[var(--status-warning)] text-[var(--status-warning)]"
+                  : "border-[var(--status-live)] text-[var(--status-live)]",
+            )}
+          >
+            {formatPercent(util, 0)}
+          </Badge>
+        </div>
+      );
+    },
+  },
+];
+
 export function AccountsBalanceTableWidget(_props: WidgetComponentProps) {
-  const { balances } = useAccountsData();
+  const { balances, isLoading, error, refetch } = useAccountsData();
 
   const rows: BalanceRow[] = React.useMemo(
     () =>
@@ -30,70 +102,21 @@ export function AccountsBalanceTableWidget(_props: WidgetComponentProps) {
     [balances],
   );
 
-  const columns: DataTableColumn<BalanceRow>[] = React.useMemo(
-    () => [
-      { key: "venue", label: "Venue", accessor: "venue" },
-      {
-        key: "free",
-        label: "Free",
-        accessor: (r) => <span className="font-mono">${formatCurrency(r.free)}</span>,
-        align: "right",
-      },
-      {
-        key: "locked",
-        label: "Locked",
-        accessor: (r) => <span className="font-mono">${formatCurrency(r.locked)}</span>,
-        align: "right",
-      },
-      {
-        key: "total",
-        label: "Total",
-        accessor: (r) => <span className="font-mono font-medium">${formatCurrency(r.total)}</span>,
-        align: "right",
-      },
-      {
-        key: "marginUsed",
-        label: "Margin Used",
-        accessor: (r) => <span className="font-mono">${formatCurrency(r.marginUsed)}</span>,
-        align: "right",
-      },
-      {
-        key: "marginAvail",
-        label: "Margin Avail.",
-        accessor: (r) => <span className="font-mono">${formatCurrency(r.margin_available ?? r.free)}</span>,
-        align: "right",
-      },
-      {
-        key: "util",
-        label: "Utilization",
-        accessor: (r) => (
-          <Badge
-            variant="outline"
-            className={cn(
-              "font-mono text-[10px]",
-              r.utilization >= 90
-                ? "border-[var(--status-error)] text-[var(--status-error)]"
-                : r.utilization >= 75
-                  ? "border-[var(--status-warning)] text-[var(--status-warning)]"
-                  : "border-[var(--status-live)] text-[var(--status-live)]",
-            )}
-          >
-            {formatPercent(r.utilization, 0)}
-          </Badge>
-        ),
-        align: "right",
-      },
-    ],
-    [],
-  );
+  const actionsConfig: TableActionsConfig = {
+    onRefresh: refetch,
+  };
 
   return (
-    <DataTableWidget<BalanceRow>
+    <TableWidget
       columns={columns}
       data={rows}
-      rowKey={(r, i) => `${r.venue}-${i}`}
+      actions={actionsConfig}
+      isLoading={isLoading}
+      error={error ? "Failed to load balances" : null}
+      onRetry={refetch}
       emptyMessage="No balance data available"
-      compact
+      enableSorting
+      enableColumnVisibility={false}
     />
   );
 }

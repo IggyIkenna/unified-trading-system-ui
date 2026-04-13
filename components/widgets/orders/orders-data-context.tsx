@@ -158,7 +158,11 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
 
   const orders: OrderRecord[] = React.useMemo(() => {
     const raw = ordersRaw as Record<string, unknown> | undefined;
-    const arr = raw ? (Array.isArray(raw) ? raw : (raw as Record<string, unknown>).orders) : undefined;
+    const arr = raw
+      ? Array.isArray(raw)
+        ? raw
+        : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).orders)
+      : undefined;
     const apiResult = Array.isArray(arr) && arr.length > 0 ? (arr as OrderRecord[]) : [];
     if (apiResult.length > 0) return apiResult;
 

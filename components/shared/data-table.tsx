@@ -3,6 +3,7 @@
 import {
   type ColumnDef,
   type SortingState,
+  type Table as TanstackTable,
   type VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -28,6 +29,10 @@ interface DataTableProps<TData> {
   data: TData[];
   enableSorting?: boolean;
   enableColumnVisibility?: boolean;
+  /** When true, the internal Columns toggle button bar is hidden (use with onTableReady to render it externally). */
+  hideColumnToggle?: boolean;
+  /** Called once the tanstack table instance is created; use to render the Columns toggle outside the DataTable. */
+  onTableReady?: (table: TanstackTable<TData>) => void;
   enableVirtualization?: boolean;
   virtualRowHeight?: number;
   className?: string;
@@ -41,6 +46,8 @@ function DataTable<TData>({
   data,
   enableSorting = true,
   enableColumnVisibility = true,
+  hideColumnToggle = false,
+  onTableReady,
   enableVirtualization = false,
   virtualRowHeight = 35,
   className,
@@ -66,6 +73,13 @@ function DataTable<TData>({
 
   const { rows } = table.getRowModel();
 
+  // Notify parent of the table instance so it can render the Columns toggle externally.
+  const onTableReadyRef = React.useRef(onTableReady);
+  onTableReadyRef.current = onTableReady;
+  React.useEffect(() => {
+    onTableReadyRef.current?.(table);
+  }, [table]);
+
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
@@ -78,7 +92,7 @@ function DataTable<TData>({
 
   return (
     <div className={cn("w-full space-y-2", className)}>
-      {enableColumnVisibility && (
+      {enableColumnVisibility && !hideColumnToggle && (
         <div className="flex items-center justify-end">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
