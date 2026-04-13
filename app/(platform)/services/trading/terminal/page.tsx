@@ -122,26 +122,50 @@ export default function TradingPage() {
   const instruments = React.useMemo(() => {
     const instData = instrumentsApiData as Record<string, unknown> | undefined;
     const instArr = (instData?.data ?? instData?.instruments ?? []) as Array<Record<string, unknown>>;
+
+    const tickersRaw: Record<string, unknown>[] =
+      ((tickersData as Record<string, unknown>)?.data as Record<string, unknown>[]) ??
+      ((tickersData as Record<string, unknown>)?.tickers as Record<string, unknown>[]) ??
+      [];
+
     if (instArr.length > 0) {
+      // Build a price lookup from tickers so instrument list entries get real prices
+      const tickersBySymbol = new Map<string, Record<string, unknown>>();
+      for (const t of tickersRaw) {
+        const sym = (t.symbol as string) ?? "";
+        if (sym) tickersBySymbol.set(sym, t);
+      }
       return instArr.map((i) => {
         const sym = (i.symbol as string) ?? (i.instrumentKey as string) ?? "";
         const ven = (i.venue as string) ?? "";
         const iKey = (i.instrument_key as string) ?? (i.instrumentKey as string) ?? `${sym}@${ven}`;
+        const ticker = tickersBySymbol.get(sym);
+        const defaultInst = DEFAULT_INSTRUMENTS.find((d) => d.symbol === sym);
+        // Prefer API price → ticker price → DEFAULT_INSTRUMENTS fallback (never leave at 0)
+        const midPrice =
+          (i.midPrice as number) ||
+          (i.price as number) ||
+          (ticker?.midPrice as number) ||
+          (ticker?.price as number) ||
+          defaultInst?.midPrice ||
+          0;
+        const change =
+          (i.change as number) ||
+          (ticker?.change as number) ||
+          (ticker?.changePct as number) ||
+          defaultInst?.change ||
+          0;
         return {
           symbol: sym,
           name: sym,
           venue: ven,
           category: (i.category as string) ?? "Other",
           instrumentKey: iKey,
-          midPrice: 0,
-          change: 0,
+          midPrice,
+          change,
         };
       });
     }
-    const tickersRaw: Record<string, unknown>[] =
-      ((tickersData as Record<string, unknown>)?.data as Record<string, unknown>[]) ??
-      ((tickersData as Record<string, unknown>)?.tickers as Record<string, unknown>[]) ??
-      [];
     if (tickersRaw.length > 0) {
       return tickersRaw.map((t) => {
         const sym = (t.symbol as string) ?? "";
@@ -445,40 +469,61 @@ export default function TradingPage() {
       | Array<Record<string, unknown>>
       | undefined;
     if (apiCandles && Array.isArray(apiCandles) && apiCandles.length > 0) {
-      const mapped = apiCandles.map((c) => ({
-        time: typeof c.time === "number" ? c.time : Math.floor(new Date(c.time as string).getTime() / 1000),
-        open: c.open as number,
-        high: c.high as number,
-        low: c.low as number,
-        close: c.close as number,
-        volume: (c.volume as number) ?? 0,
-        isUp: (c.close as number) >= (c.open as number),
-      }));
-      if (mapped.length > 0 && isClient && livePrice > 0) {
-        const last = mapped[mapped.length - 1];
-        const intervalSeconds = timeframe === "1m" ? 60 : timeframe === "5m" ? 300 : timeframe === "15m" ? 900 : 3600;
-        const nowUnix = Math.floor(wallClockMs / 1000);
-        if (nowUnix >= last.time + intervalSeconds) {
-          mapped.push({
-            time: Math.floor(nowUnix / intervalSeconds) * intervalSeconds,
-            open: livePrice,
-            high: livePrice,
-            low: livePrice,
-            close: livePrice,
-            volume: 0,
-            isUp: true,
-          });
-        } else {
-          last.close = livePrice;
-          last.high = Math.max(last.high, livePrice);
-          last.low = Math.min(last.low, livePrice);
-          last.isUp = last.close >= last.open;
+      const mapped = apiCandles
+        .map((c) => {
+          // Accept both "time" (Unix seconds) and legacy "timestamp" (ISO string or number)
+          const rawTime = c.time ?? c.timestamp;
+          const time =
+            typeof rawTime === "number"
+              ? rawTime
+              : typeof rawTime === "string"
+                ? Math.floor(new Date(rawTime).getTime() / 1000)
+                : NaN;
+          return {
+            time,
+            open: c.open as number,
+            high: c.high as number,
+            low: c.low as number,
+            close: c.close as number,
+            volume: (c.volume as number) ?? 0,
+            isUp: (c.close as number) >= (c.open as number),
+          };
+        })
+        // Drop any entries with invalid timestamps — prevents NaN propagating to indicators
+        .filter((c) => Number.isFinite(c.time));
+      // If filter removed all candles (all had bad timestamps), fall through to generateCandleData
+      if (mapped.length === 0) {
+        // intentional fall-through
+      } else {
+        if (isClient && livePrice > 0) {
+          const last = mapped[mapped.length - 1];
+          const intervalSeconds = timeframe === "1m" ? 60 : timeframe === "5m" ? 300 : timeframe === "15m" ? 900 : 3600;
+          const nowUnix = Math.floor(wallClockMs / 1000);
+          if (nowUnix >= last.time + intervalSeconds) {
+            mapped.push({
+              time: Math.floor(nowUnix / intervalSeconds) * intervalSeconds,
+              open: livePrice,
+              high: livePrice,
+              low: livePrice,
+              close: livePrice,
+              volume: 0,
+              isUp: true,
+            });
+          } else {
+            last.close = livePrice;
+            last.high = Math.max(last.high, livePrice);
+            last.low = Math.min(last.low, livePrice);
+            last.isUp = last.close >= last.open;
+          }
         }
+        return mapped;
       }
-      return mapped;
     }
-    const data = generateCandleData(selectedInstrument.midPrice, timeframe);
-    if (data.length > 0 && isClient) {
+    // Guard: if midPrice is 0 (e.g. instrumentsApiData cached without prices), fall back to DEFAULT price
+    const basePrice = selectedInstrument.midPrice > 0 ? selectedInstrument.midPrice : DEFAULT_INSTRUMENTS[0].midPrice;
+    const data = generateCandleData(basePrice, timeframe);
+    // Only animate the last candle when we have a valid live price (no backend = livePrice stays 0)
+    if (data.length > 0 && isClient && livePrice > 0) {
       const lastCandle = data[data.length - 1];
       const variation = (tickCount % 10) * 0.0001 * livePrice;
       lastCandle.close = livePrice + Math.sin(tickCount * 0.5) * variation;

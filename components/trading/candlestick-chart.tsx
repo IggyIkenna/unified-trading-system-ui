@@ -56,6 +56,9 @@ export function CandlestickChart({
   const volumeSeriesRef = React.useRef<ISeriesApi<"Histogram"> | null>(null);
   const areaSeriesRef = React.useRef<ISeriesApi<"Area"> | null>(null);
   const indicatorSeriesRef = React.useRef<Map<string, ISeriesApi<"Line">>>(new Map());
+  // Only call fitContent() on the first data load per chart instance so that user scroll
+  // position is preserved during live updates and when new candles form.
+  const hasInitializedViewRef = React.useRef(false);
 
   // Initialize chart + keep size in sync (autoSize breaks inside flex + Radix ScrollArea)
   React.useLayoutEffect(() => {
@@ -183,6 +186,8 @@ export function CandlestickChart({
       ro.disconnect();
       chart.remove();
       indicatorSeriesRef.current.clear();
+      // Reset so the next chart instance calls fitContent() on its first data load
+      hasInitializedViewRef.current = false;
     };
 
     // displayType initial value is intentionally captured at mount; subsequent changes handled below
@@ -241,8 +246,11 @@ export function CandlestickChart({
       areaSeriesRef.current.setData(areaData);
     }
 
-    if (chartRef.current) {
+    // Only auto-fit on the very first data load. After that, preserve the user's
+    // scroll position so panning into history isn't interrupted by live updates.
+    if (chartRef.current && !hasInitializedViewRef.current) {
       chartRef.current.timeScale().fitContent();
+      hasInitializedViewRef.current = true;
     }
   }, [data]);
 
@@ -264,8 +272,15 @@ export function CandlestickChart({
 
     // Add or update indicators
     for (const indicator of indicators) {
+      // typeof NaN === "number" is true, so we must also check Number.isFinite
       const lineData: LineData[] = indicator.data
-        .filter((d) => d.value !== null && typeof d.time === "number")
+        .filter(
+          (d) =>
+            d.value !== null &&
+            typeof d.value === "number" &&
+            Number.isFinite(d.value as number) &&
+            Number.isFinite(d.time as number),
+        )
         .map((d) => ({ time: d.time as Time, value: d.value as number }));
 
       if (lineData.length === 0) continue;

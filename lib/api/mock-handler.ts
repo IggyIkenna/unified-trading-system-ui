@@ -87,7 +87,12 @@ import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
 import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
-import { FOOTBALL_LEAGUES, BOOKMAKERS, SUBSCRIBED_BOOKMAKERS, ODDS_MARKETS } from "@/lib/mocks/fixtures/sports-fixtures";
+import {
+  FOOTBALL_LEAGUES,
+  BOOKMAKERS,
+  SUBSCRIBED_BOOKMAKERS,
+  ODDS_MARKETS,
+} from "@/lib/mocks/fixtures/sports-fixtures";
 import { MOCK_FIXTURES, MOCK_ODDS, MOCK_ARB_STREAM, MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 
@@ -436,10 +441,12 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({ tickers, venue: "all" });
   }
   if (route === "/api/market-data/candles") {
+    const nowSec = Math.floor(Date.now() / 1000);
+    const intervalSec = 3600; // 1H — LightweightCharts needs Unix seconds, not ISO strings
     const candles = Array.from({ length: 100 }, (_, i) => {
-      const base = 40000 + Math.sin(i * 0.15) * 2000;
+      const base = 87000 + Math.sin(i * 0.15) * 2000;
       return {
-        timestamp: new Date(Date.now() - (100 - i) * 3600000).toISOString(),
+        time: nowSec - (100 - i) * intervalSec, // Unix seconds — key must be "time"
         open: base,
         high: base + 200 + Math.random() * 300,
         low: base - 200 - Math.random() * 300,
@@ -588,7 +595,16 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     }
 
     // GET: merge static TCA orders with stateful ledger orders
-    const tcaVenues = ["BINANCE-SPOT", "OKX-SPOT", "HYPERLIQUID", "DERIBIT", "AAVEV3-ETHEREUM", "UNISWAPV3-ETHEREUM", "POLYMARKET", "BETFAIR"];
+    const tcaVenues = [
+      "BINANCE-SPOT",
+      "OKX-SPOT",
+      "HYPERLIQUID",
+      "DERIBIT",
+      "AAVEV3-ETHEREUM",
+      "UNISWAPV3-ETHEREUM",
+      "POLYMARKET",
+      "BETFAIR",
+    ];
     const tcaAlgos = ["TWAP", "VWAP", "IS", "Sniper"];
     const tcaInstruments = [
       "BTC-PERP",
@@ -824,9 +840,37 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/execution/sports/bets") {
     return json({
       data: [
-        { bet_id: "bet-001", instrument: "SPORTS:FIXTURE:EPL:ARSENAL-CHELSEA", venue: "BETFAIR", side: "back", stake: 500, odds: 1.85, status: "open", placed_at: "2026-03-27T14:00:00Z" },
-        { bet_id: "bet-002", instrument: "SPORTS:FIXTURE:LA_LIGA:BARCELONA-REAL_MADRID", venue: "PINNACLE", side: "back", stake: 250, odds: 2.45, status: "settled", placed_at: "2026-03-27T18:00:00Z", pnl: 361.25 },
-        { bet_id: "bet-003", instrument: "SPORTS:FIXTURE:BUNDESLIGA:BAYERN-DORTMUND", venue: "BET365", side: "lay", stake: 300, odds: 1.55, status: "open", placed_at: "2026-03-27T19:30:00Z" },
+        {
+          bet_id: "bet-001",
+          instrument: "SPORTS:FIXTURE:EPL:ARSENAL-CHELSEA",
+          venue: "BETFAIR",
+          side: "back",
+          stake: 500,
+          odds: 1.85,
+          status: "open",
+          placed_at: "2026-03-27T14:00:00Z",
+        },
+        {
+          bet_id: "bet-002",
+          instrument: "SPORTS:FIXTURE:LA_LIGA:BARCELONA-REAL_MADRID",
+          venue: "PINNACLE",
+          side: "back",
+          stake: 250,
+          odds: 2.45,
+          status: "settled",
+          placed_at: "2026-03-27T18:00:00Z",
+          pnl: 361.25,
+        },
+        {
+          bet_id: "bet-003",
+          instrument: "SPORTS:FIXTURE:BUNDESLIGA:BAYERN-DORTMUND",
+          venue: "BET365",
+          side: "lay",
+          stake: 300,
+          odds: 1.55,
+          status: "open",
+          placed_at: "2026-03-27T19:30:00Z",
+        },
       ],
       pagination: { page: 1, page_size: 50, total: 3 },
       mode: "live",
@@ -872,9 +916,36 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/execution/defi/execute") {
     return json({
       data: [
-        { tx_hash: "0xabc123", operation_type: "LEND", venue: "AAVEV3-ETHEREUM", instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC", amount: 50000, gas_used: 195000, status: "confirmed", timestamp: "2026-03-27T10:00:00Z" },
-        { tx_hash: "0xdef456", operation_type: "SWAP", venue: "UNISWAPV3-ETHEREUM", instrument: "UNISWAPV3-ETHEREUM:POOL:WETH-USDC-3000", amount: 5, gas_used: 210000, status: "confirmed", timestamp: "2026-03-27T11:30:00Z" },
-        { tx_hash: "0xghi789", operation_type: "STAKE", venue: "LIDO-ETHEREUM", instrument: "LIDO-ETHEREUM:STAKING:STETH", amount: 10, gas_used: 120000, status: "confirmed", timestamp: "2026-03-27T12:15:00Z" },
+        {
+          tx_hash: "0xabc123",
+          operation_type: "LEND",
+          venue: "AAVEV3-ETHEREUM",
+          instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC",
+          amount: 50000,
+          gas_used: 195000,
+          status: "confirmed",
+          timestamp: "2026-03-27T10:00:00Z",
+        },
+        {
+          tx_hash: "0xdef456",
+          operation_type: "SWAP",
+          venue: "UNISWAPV3-ETHEREUM",
+          instrument: "UNISWAPV3-ETHEREUM:POOL:WETH-USDC-3000",
+          amount: 5,
+          gas_used: 210000,
+          status: "confirmed",
+          timestamp: "2026-03-27T11:30:00Z",
+        },
+        {
+          tx_hash: "0xghi789",
+          operation_type: "STAKE",
+          venue: "LIDO-ETHEREUM",
+          instrument: "LIDO-ETHEREUM:STAKING:STETH",
+          amount: 10,
+          gas_used: 120000,
+          status: "confirmed",
+          timestamp: "2026-03-27T12:15:00Z",
+        },
       ],
       pagination: { page: 1, page_size: 50, total: 3 },
       mode: "live",
@@ -1016,12 +1087,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     if (venue) filtered = filtered.filter((i) => i.venue === venue);
     if (instrumentType) filtered = filtered.filter((i) => i.instrument_type === instrumentType);
     if (status) filtered = filtered.filter((i) => i.status === status);
-    if (search) filtered = filtered.filter((i) => {
-      const key = (i.instrument_key ?? "").toUpperCase();
-      const sym = (i.raw_symbol ?? "").toUpperCase();
-      const base = (i.base_asset ?? "").toUpperCase();
-      return key.includes(search) || sym.includes(search) || base.includes(search);
-    });
+    if (search)
+      filtered = filtered.filter((i) => {
+        const key = (i.instrument_key ?? "").toUpperCase();
+        const sym = (i.raw_symbol ?? "").toUpperCase();
+        const base = (i.base_asset ?? "").toUpperCase();
+        return key.includes(search) || sym.includes(search) || base.includes(search);
+      });
     const total = filtered.length;
     const start = (page - 1) * pageSize;
     const paged = filtered.slice(start, start + pageSize);
@@ -1124,13 +1196,13 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         by_category: {
           cefi: { gross: totalExposure * 0.45, net: totalExposure * 0.15 },
           defi: { gross: totalExposure * 0.25, net: totalExposure * 0.12 },
-          tradfi: { gross: totalExposure * 0.20, net: totalExposure * 0.05 },
-          sports: { gross: totalExposure * 0.10, net: totalExposure * 0.03 },
+          tradfi: { gross: totalExposure * 0.2, net: totalExposure * 0.05 },
+          sports: { gross: totalExposure * 0.1, net: totalExposure * 0.03 },
         },
         by_venue: [
           { venue: "BINANCE-SPOT", gross: totalExposure * 0.15, net: totalExposure * 0.05 },
           { venue: "DERIBIT", gross: totalExposure * 0.12, net: totalExposure * 0.02 },
-          { venue: "AAVEV3-ETHEREUM", gross: totalExposure * 0.10, net: totalExposure * 0.08 },
+          { venue: "AAVEV3-ETHEREUM", gross: totalExposure * 0.1, net: totalExposure * 0.08 },
           { venue: "HYPERLIQUID", gross: totalExposure * 0.08, net: totalExposure * 0.03 },
         ],
       },
@@ -1251,15 +1323,71 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         { component: "Duration", category: "structural", pnl: 0, exposure: "4.2y", limit: "7y", utilization: 60 },
         { component: "Correlation", category: "structural", pnl: 0, exposure: "0.72", limit: "0.85", utilization: 85 },
         // operational
-        { component: "Venue/Protocol", category: "operational", pnl: 0, exposure: "$1.2M", limit: "$3M", utilization: 40 },
-        { component: "Interest Rate", category: "operational", pnl: -400, exposure: "$0.3M", limit: "$1M", utilization: 30 },
+        {
+          component: "Venue/Protocol",
+          category: "operational",
+          pnl: 0,
+          exposure: "$1.2M",
+          limit: "$3M",
+          utilization: 40,
+        },
+        {
+          component: "Interest Rate",
+          category: "operational",
+          pnl: -400,
+          exposure: "$0.3M",
+          limit: "$1M",
+          utilization: 30,
+        },
         // domain_specific
-        { component: "Staking/LTV", category: "domain_specific", pnl: 0, exposure: "0.72", limit: "0.85", utilization: 85 },
-        { component: "Protocol Risk", category: "domain_specific", pnl: 0, exposure: "Medium", limit: "High", utilization: 60 },
-        { component: "Impermanent Loss", category: "domain_specific", pnl: -2100, exposure: "$0.5M", limit: "$1.5M", utilization: 33 },
-        { component: "Edge Decay", category: "domain_specific", pnl: 0, exposure: "1.8%/day", limit: "3%/day", utilization: 60 },
-        { component: "Market Suspension", category: "domain_specific", pnl: 0, exposure: "0 events", limit: "2 events", utilization: 0 },
-        { component: "Slide", category: "domain_specific", pnl: -200, exposure: "$0.1M", limit: "$0.5M", utilization: 20 },
+        {
+          component: "Staking/LTV",
+          category: "domain_specific",
+          pnl: 0,
+          exposure: "0.72",
+          limit: "0.85",
+          utilization: 85,
+        },
+        {
+          component: "Protocol Risk",
+          category: "domain_specific",
+          pnl: 0,
+          exposure: "Medium",
+          limit: "High",
+          utilization: 60,
+        },
+        {
+          component: "Impermanent Loss",
+          category: "domain_specific",
+          pnl: -2100,
+          exposure: "$0.5M",
+          limit: "$1.5M",
+          utilization: 33,
+        },
+        {
+          component: "Edge Decay",
+          category: "domain_specific",
+          pnl: 0,
+          exposure: "1.8%/day",
+          limit: "3%/day",
+          utilization: 60,
+        },
+        {
+          component: "Market Suspension",
+          category: "domain_specific",
+          pnl: 0,
+          exposure: "0 events",
+          limit: "2 events",
+          utilization: 0,
+        },
+        {
+          component: "Slide",
+          category: "domain_specific",
+          pnl: -200,
+          exposure: "$0.1M",
+          limit: "$0.5M",
+          utilization: 20,
+        },
         { component: "Rho", category: "second_order", pnl: 150, exposure: "$0.05M", limit: "$0.3M", utilization: 17 },
         { component: "Convexity", category: "structural", pnl: 0, exposure: "0.12", limit: "0.5", utilization: 24 },
       ],
@@ -1744,14 +1872,62 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/defi/funding-rates") {
     return json({
       data: [
-        { venue: "HYPERLIQUID", instrument: "ETH-PERP", rate8h: 0.0012, annualized: 5.26, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "HYPERLIQUID", instrument: "BTC-PERP", rate8h: 0.0008, annualized: 3.51, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "BINANCE-FUTURES", instrument: "ETH-PERP", rate8h: 0.001, annualized: 4.38, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "BINANCE-FUTURES", instrument: "BTC-PERP", rate8h: 0.0006, annualized: 2.63, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "BINANCE-FUTURES", instrument: "SOL-PERP", rate8h: 0.0015, annualized: 6.57, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "DERIBIT", instrument: "ETH-PERP", rate8h: 0.0009, annualized: 3.94, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "DERIBIT", instrument: "BTC-PERP", rate8h: 0.0005, annualized: 2.19, timestamp: "2026-03-28T08:00:00Z" },
-        { venue: "OKX-SPOT", instrument: "ETH-PERP", rate8h: 0.0011, annualized: 4.82, timestamp: "2026-03-28T08:00:00Z" },
+        {
+          venue: "HYPERLIQUID",
+          instrument: "ETH-PERP",
+          rate8h: 0.0012,
+          annualized: 5.26,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "HYPERLIQUID",
+          instrument: "BTC-PERP",
+          rate8h: 0.0008,
+          annualized: 3.51,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "BINANCE-FUTURES",
+          instrument: "ETH-PERP",
+          rate8h: 0.001,
+          annualized: 4.38,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "BINANCE-FUTURES",
+          instrument: "BTC-PERP",
+          rate8h: 0.0006,
+          annualized: 2.63,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "BINANCE-FUTURES",
+          instrument: "SOL-PERP",
+          rate8h: 0.0015,
+          annualized: 6.57,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "DERIBIT",
+          instrument: "ETH-PERP",
+          rate8h: 0.0009,
+          annualized: 3.94,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "DERIBIT",
+          instrument: "BTC-PERP",
+          rate8h: 0.0005,
+          annualized: 2.19,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
+        {
+          venue: "OKX-SPOT",
+          instrument: "ETH-PERP",
+          rate8h: 0.0011,
+          annualized: 4.82,
+          timestamp: "2026-03-28T08:00:00Z",
+        },
       ],
       mode: "live",
       as_of: null,
@@ -1770,9 +1946,33 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         { asset: "DAI", reference: "USD", depeg_pct: 0.04, status: "healthy", threshold_pct: 0.5 },
       ],
       borrow_staking_spread: [
-        { strategy: "RECURSIVE_STAKED_BASIS", staking_apy: 4.2, borrow_apy: 2.8, net_spread: 1.4, leveraged_spread: 4.2, min_viable: 2.0, status: "healthy" },
-        { strategy: "AAVE_LENDING", staking_apy: null, borrow_apy: null, net_spread: 3.1, leveraged_spread: 3.1, min_viable: 1.0, status: "healthy" },
-        { strategy: "STAKED_BASIS", staking_apy: 4.2, borrow_apy: 0.0, net_spread: 4.2, leveraged_spread: 4.2, min_viable: 1.5, status: "healthy" },
+        {
+          strategy: "RECURSIVE_STAKED_BASIS",
+          staking_apy: 4.2,
+          borrow_apy: 2.8,
+          net_spread: 1.4,
+          leveraged_spread: 4.2,
+          min_viable: 2.0,
+          status: "healthy",
+        },
+        {
+          strategy: "AAVE_LENDING",
+          staking_apy: null,
+          borrow_apy: null,
+          net_spread: 3.1,
+          leveraged_spread: 3.1,
+          min_viable: 1.0,
+          status: "healthy",
+        },
+        {
+          strategy: "STAKED_BASIS",
+          staking_apy: 4.2,
+          borrow_apy: 0.0,
+          net_spread: 4.2,
+          leveraged_spread: 4.2,
+          min_viable: 1.5,
+          status: "healthy",
+        },
       ],
       stablecoin_peg: [
         { asset: "USDC", peg: 1.0, price: 1.0001, deviation_pct: 0.01, status: "healthy" },
@@ -1788,8 +1988,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       rebalance_cost_estimate: [
         { strategy: "BASIS_TRADE", est_cost_usd: 420, pct_nav: 0.014, gas_usd: 35, slippage_usd: 385, est_minutes: 12 },
         { strategy: "AAVE_LENDING", est_cost_usd: 85, pct_nav: 0.003, gas_usd: 85, slippage_usd: 0, est_minutes: 3 },
-        { strategy: "RECURSIVE_STAKED_BASIS", est_cost_usd: 1240, pct_nav: 0.041, gas_usd: 140, slippage_usd: 1100, est_minutes: 45 },
-        { strategy: "STAKED_BASIS", est_cost_usd: 310, pct_nav: 0.010, gas_usd: 90, slippage_usd: 220, est_minutes: 8 },
+        {
+          strategy: "RECURSIVE_STAKED_BASIS",
+          est_cost_usd: 1240,
+          pct_nav: 0.041,
+          gas_usd: 140,
+          slippage_usd: 1100,
+          est_minutes: 45,
+        },
+        { strategy: "STAKED_BASIS", est_cost_usd: 310, pct_nav: 0.01, gas_usd: 90, slippage_usd: 220, est_minutes: 8 },
       ],
       emergency_close_cost: [
         { strategy: "BASIS_TRADE", est_cost_usd: 2800, pct_nav: 0.093, est_minutes: 35 },
@@ -1921,9 +2128,33 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/analytics/settlements") {
     return json({
       data: [
-        { id: "stl-001", date: "2026-03-27", venue: "BINANCE-SPOT", currency: "USDT", amount: 125000, status: "settled", type: "trade" },
-        { id: "stl-002", date: "2026-03-27", venue: "DERIBIT", currency: "BTC", amount: 0.85, status: "pending", type: "expiry" },
-        { id: "stl-003", date: "2026-03-26", venue: "AAVEV3-ETHEREUM", currency: "USDC", amount: 50000, status: "settled", type: "lending_interest" },
+        {
+          id: "stl-001",
+          date: "2026-03-27",
+          venue: "BINANCE-SPOT",
+          currency: "USDT",
+          amount: 125000,
+          status: "settled",
+          type: "trade",
+        },
+        {
+          id: "stl-002",
+          date: "2026-03-27",
+          venue: "DERIBIT",
+          currency: "BTC",
+          amount: 0.85,
+          status: "pending",
+          type: "expiry",
+        },
+        {
+          id: "stl-003",
+          date: "2026-03-26",
+          venue: "AAVEV3-ETHEREUM",
+          currency: "USDC",
+          amount: 50000,
+          status: "settled",
+          type: "lending_interest",
+        },
       ],
       pagination: { page: 1, page_size: 50, total: 3 },
       mode: "live",
@@ -2305,7 +2536,11 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   // --- Client Performance Dashboard ---
   if (route === "/api/reporting/clients") {
-    return json({ clients: PERF_MOCK_CLIENTS, organisations: PERF_MOCK_ORGANISATIONS, strategies: PERF_MOCK_STRATEGIES });
+    return json({
+      clients: PERF_MOCK_CLIENTS,
+      organisations: PERF_MOCK_ORGANISATIONS,
+      strategies: PERF_MOCK_STRATEGIES,
+    });
   }
   if (route === "/api/reporting/performance/summary") {
     const qs = new URLSearchParams(path.split("?")[1] ?? "");
@@ -2590,8 +2825,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       ytdReturn: 11.8,
       hourlyTimeSeries: Array.from({ length: 168 }, (_, i) => ({
         timestamp: new Date(Date.now() - (167 - i) * 3_600_000).toISOString(),
-        nav: 45_200_000 + (Math.sin(i * 0.3) * 800_000) + i * 5_000,
-        aum: 45_200_000 + (Math.sin(i * 0.3) * 800_000) + i * 5_000,
+        nav: 45_200_000 + Math.sin(i * 0.3) * 800_000 + i * 5_000,
+        aum: 45_200_000 + Math.sin(i * 0.3) * 800_000 + i * 5_000,
       })),
       capitalFlows: [
         { date: "2026-03-01", type: "subscription", investor: "Vertex Partners", amount: 2_000_000 },
@@ -2611,10 +2846,54 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/reporting/ibor") {
     return json({
       positions: [
-        { id: "p1", instrument: "ETH-PERP", venue: "Hyperliquid", strategy: "BASIS_TRADE", quantity: 250, entryPrice: 3_420, markPrice: 3_540, unrealizedPnl: 30_000, positionDate: "2026-03-20", ibor_source: "execution-service" },
-        { id: "p2", instrument: "AUSDC", venue: "AAVEV3-ETHEREUM", strategy: "AAVE_LENDING", quantity: 500_000, entryPrice: 1.0, markPrice: 1.0012, unrealizedPnl: 600, positionDate: "2026-03-18", ibor_source: "execution-service" },
-        { id: "p3", instrument: "WEETH", venue: "MORPHO-ETHEREUM", strategy: "RECURSIVE_STAKED_BASIS", quantity: 300, entryPrice: 3_580, markPrice: 3_610, unrealizedPnl: 9_000, positionDate: "2026-03-15", ibor_source: "execution-service" },
-        { id: "p4", instrument: "BTC-PERP", venue: "Binance-Futures", strategy: "CEFI_BTC_MM", quantity: 15, entryPrice: 68_200, markPrice: 69_400, unrealizedPnl: 18_000, positionDate: "2026-03-22", ibor_source: "execution-service" },
+        {
+          id: "p1",
+          instrument: "ETH-PERP",
+          venue: "Hyperliquid",
+          strategy: "BASIS_TRADE",
+          quantity: 250,
+          entryPrice: 3_420,
+          markPrice: 3_540,
+          unrealizedPnl: 30_000,
+          positionDate: "2026-03-20",
+          ibor_source: "execution-service",
+        },
+        {
+          id: "p2",
+          instrument: "AUSDC",
+          venue: "AAVEV3-ETHEREUM",
+          strategy: "AAVE_LENDING",
+          quantity: 500_000,
+          entryPrice: 1.0,
+          markPrice: 1.0012,
+          unrealizedPnl: 600,
+          positionDate: "2026-03-18",
+          ibor_source: "execution-service",
+        },
+        {
+          id: "p3",
+          instrument: "WEETH",
+          venue: "MORPHO-ETHEREUM",
+          strategy: "RECURSIVE_STAKED_BASIS",
+          quantity: 300,
+          entryPrice: 3_580,
+          markPrice: 3_610,
+          unrealizedPnl: 9_000,
+          positionDate: "2026-03-15",
+          ibor_source: "execution-service",
+        },
+        {
+          id: "p4",
+          instrument: "BTC-PERP",
+          venue: "Binance-Futures",
+          strategy: "CEFI_BTC_MM",
+          quantity: 15,
+          entryPrice: 68_200,
+          markPrice: 69_400,
+          unrealizedPnl: 18_000,
+          positionDate: "2026-03-22",
+          ibor_source: "execution-service",
+        },
       ],
       breaks: [],
       lastReconciled: new Date(Date.now() - 7_200_000).toISOString(),
@@ -2624,9 +2903,42 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/reporting/saft") {
     return json({
       warrants: [
-        { id: "saft-001", tokenSymbol: "OUM", investor: "Vertex Partners", totalTokens: 500_000, vestedTokens: 125_000, cliffDate: "2025-01-15", vestingEndDate: "2028-01-15", currentPrice: 1.82, npv: 227_500, vestingSchedule: "4yr linear, 1yr cliff" },
-        { id: "saft-002", tokenSymbol: "OUM", investor: "Alpha Capital", totalTokens: 250_000, vestedTokens: 62_500, cliffDate: "2025-06-01", vestingEndDate: "2028-06-01", currentPrice: 1.82, npv: 113_750, vestingSchedule: "4yr linear, 1yr cliff" },
-        { id: "saft-003", tokenSymbol: "OUM", investor: "Beta Fund", totalTokens: 100_000, vestedTokens: 50_000, cliffDate: "2024-12-01", vestingEndDate: "2026-12-01", currentPrice: 1.82, npv: 91_000, vestingSchedule: "2yr linear, immediate" },
+        {
+          id: "saft-001",
+          tokenSymbol: "OUM",
+          investor: "Vertex Partners",
+          totalTokens: 500_000,
+          vestedTokens: 125_000,
+          cliffDate: "2025-01-15",
+          vestingEndDate: "2028-01-15",
+          currentPrice: 1.82,
+          npv: 227_500,
+          vestingSchedule: "4yr linear, 1yr cliff",
+        },
+        {
+          id: "saft-002",
+          tokenSymbol: "OUM",
+          investor: "Alpha Capital",
+          totalTokens: 250_000,
+          vestedTokens: 62_500,
+          cliffDate: "2025-06-01",
+          vestingEndDate: "2028-06-01",
+          currentPrice: 1.82,
+          npv: 113_750,
+          vestingSchedule: "4yr linear, 1yr cliff",
+        },
+        {
+          id: "saft-003",
+          tokenSymbol: "OUM",
+          investor: "Beta Fund",
+          totalTokens: 100_000,
+          vestedTokens: 50_000,
+          cliffDate: "2024-12-01",
+          vestingEndDate: "2026-12-01",
+          currentPrice: 1.82,
+          npv: 91_000,
+          vestingSchedule: "2yr linear, immediate",
+        },
       ],
       unlockTimeline: Array.from({ length: 12 }, (_, i) => ({
         month: new Date(Date.now() + i * 30 * 86_400_000).toISOString().slice(0, 7),
