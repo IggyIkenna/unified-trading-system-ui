@@ -253,6 +253,17 @@ export interface TurboCategoryData {
   >;
   data_types?: string[];
   feature_groups?: string[];
+  defi_sub_dimensions?: Record<
+    string,
+    {
+      dates_found?: number;
+      dates_expected?: number;
+      dates_missing?: number;
+      completion_pct?: number;
+      venues?: string[];
+      venue_count?: number;
+    }
+  >;
   sub_dimension_label?: string;
   bulk_service?: boolean;
   error?: string;

@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Layers, X } from "lucide-react";
+import { Copy, Layers, X } from "lucide-react";
 
 import {
   useCreateMLGridConfig,
@@ -43,7 +43,8 @@ export function GridConfigEditor({
   config,
   onSaved,
 }: GridConfigEditorProps) {
-  const isEdit = !!config;
+  const [isSaveAs, setIsSaveAs] = React.useState(false);
+  const isEdit = !!config && !isSaveAs;
 
   const [name, setName] = React.useState("");
   const [category, setCategory] = React.useState<GridConfigCategory>("CEFI");
@@ -76,6 +77,7 @@ export function GridConfigEditor({
       setExcludeFeatures([]);
     }
     setExcludeInput("");
+    setIsSaveAs(false);
   }, [config, open]);
 
   function toggleGroup(group: string) {
@@ -143,7 +145,7 @@ export function GridConfigEditor({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Layers className="size-4" />
-            {isEdit ? "Edit Grid Config" : "New Grid Config"}
+            {isSaveAs ? "Save Config As" : isEdit ? "Edit Grid Config" : "New Grid Config"}
           </DialogTitle>
         </DialogHeader>
 
@@ -157,8 +159,9 @@ export function GridConfigEditor({
                   id="gc-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. btc-momentum-v2"
+                  placeholder={isSaveAs ? "New config name" : "e.g. btc-momentum-v2"}
                   disabled={isEdit}
+                  autoFocus={isSaveAs}
                 />
               </div>
               <div className="space-y-1.5">
@@ -302,25 +305,46 @@ export function GridConfigEditor({
           </div>
         </ScrollArea>
 
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            disabled={isPending || !name.trim() || selectedGroups.length === 0}
-            onClick={handleSave}
-          >
-            {isPending
-              ? "Saving..."
-              : isEdit
-                ? "Update config"
-                : "Create config"}
-          </Button>
+        <DialogFooter className="flex-row justify-between sm:justify-between">
+          <div>
+            {!!config && !isSaveAs && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="gap-1.5 text-muted-foreground"
+                onClick={() => {
+                  setIsSaveAs(true);
+                  setName(`${config.name}-copy`);
+                }}
+              >
+                <Copy className="size-3.5" />
+                Save As
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={isPending || !name.trim() || selectedGroups.length === 0}
+              onClick={handleSave}
+            >
+              {isPending
+                ? "Saving..."
+                : isSaveAs
+                  ? "Save copy"
+                  : isEdit
+                    ? "Update config"
+                    : "Create config"}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

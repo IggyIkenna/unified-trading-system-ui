@@ -379,8 +379,8 @@ export function DataStatusSectionTurbo() {
                         </div>
                       )}
 
-                      {/* Sub-dimension breakdown (venues, data_types, feature_groups) */}
-                      {(catData.venues || catData.data_types || catData.feature_groups) && (
+                      {/* Sub-dimension breakdown (venues, data_types, feature_groups, defi_sub_dimensions) */}
+                      {(catData.venues || catData.data_types || catData.feature_groups || catData.defi_sub_dimensions) && (
                         <div className="mt-3 pl-6 space-y-3 border-l-2 border-[var(--color-border)]">
                           {/* Folders/Instrument Types section - own bordered container */}
                           {catData.folders && Object.keys(catData.folders).length > 0 && (
@@ -415,6 +415,49 @@ export function DataStatusSectionTurbo() {
                                     </div>
                                     <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
                                       {folderData.dates_found}/{folderData.dates_expected} days
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* DeFi Sub-Dimensions (gas-fees, dex-pools, lending-indices, etc.) */}
+                          {catData.defi_sub_dimensions && Object.keys(catData.defi_sub_dimensions).length > 0 && (
+                            <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-3">
+                              <p className="text-xs text-[var(--color-text-muted)] font-medium uppercase tracking-wide mb-2">
+                                DeFi Data Sources
+                              </p>
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                                {Object.entries(catData.defi_sub_dimensions)
+                                  .sort(([, a], [, b]) => (b.completion_pct ?? 0) - (a.completion_pct ?? 0))
+                                  .map(([dimName, dimData]) => (
+                                  <div key={dimName} className="bg-[var(--color-bg-tertiary)] rounded p-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-mono truncate" title={dimName}>
+                                        {dimName}
+                                      </span>
+                                      <span
+                                        className="text-xs font-mono font-medium ml-1"
+                                        style={{
+                                          color: getCompletionColor(dimData.completion_pct ?? 0),
+                                        }}
+                                      >
+                                        {formatPercent(dimData.completion_pct ?? 0, 0)}
+                                      </span>
+                                    </div>
+                                    <div className="h-1.5 bg-[var(--color-bg-secondary)] rounded-full overflow-hidden mt-1">
+                                      <div
+                                        className="h-full"
+                                        style={{
+                                          width: `${dimData.completion_pct ?? 0}%`,
+                                          backgroundColor: getCompletionColor(dimData.completion_pct ?? 0),
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5">
+                                      {dimData.dates_found}/{dimData.dates_expected} days
+                                      {dimData.venue_count ? ` · ${dimData.venue_count} venues` : ""}
                                     </div>
                                   </div>
                                 ))}
