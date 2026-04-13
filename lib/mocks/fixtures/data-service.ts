@@ -73,7 +73,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Perpetuals
   {
     instrumentKey: "binance:perpetuals:BTCUSDT",
-    venue: "BINANCE-SPOT",
+    venue: "binance",
     category: "cefi",
     folder: "perpetuals",
     symbol: "BTCUSDT",
@@ -84,7 +84,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "binance:perpetuals:ETHUSDT",
-    venue: "BINANCE-SPOT",
+    venue: "binance",
     category: "cefi",
     folder: "perpetuals",
     symbol: "ETHUSDT",
@@ -95,7 +95,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "bybit:perpetuals:SOLUSDT",
-    venue: "BYBIT",
+    venue: "bybit",
     category: "cefi",
     folder: "perpetuals",
     symbol: "SOLUSDT",
@@ -106,7 +106,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "bybit:perpetuals:BTCUSDT",
-    venue: "BYBIT",
+    venue: "bybit",
     category: "cefi",
     folder: "perpetuals",
     symbol: "BTCUSDT",
@@ -118,7 +118,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Options
   {
     instrumentKey: "deribit:options:BTC-PERPETUAL",
-    venue: "DERIBIT",
+    venue: "deribit",
     category: "cefi",
     folder: "options",
     symbol: "BTC-PERPETUAL",
@@ -129,7 +129,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "deribit:options:ETH-PERPETUAL",
-    venue: "DERIBIT",
+    venue: "deribit",
     category: "cefi",
     folder: "options",
     symbol: "ETH-PERPETUAL",
@@ -141,7 +141,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // CeFi — Spot
   {
     instrumentKey: "coinbase:spot:BTC-USD",
-    venue: "COINBASE-SPOT",
+    venue: "coinbase",
     category: "cefi",
     folder: "spot",
     symbol: "BTC-USD",
@@ -152,7 +152,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "okx:spot:ETH-USDT",
-    venue: "OKX-SPOT",
+    venue: "okx",
     category: "cefi",
     folder: "spot",
     symbol: "ETH-USDT",
@@ -161,10 +161,34 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     dataTypes: ["ohlcv", "trades"],
     availableFrom: "2018-01-01",
   },
+  // CeFi — Futures
+  {
+    instrumentKey: "binance:futures:BTCUSDT_250328",
+    venue: "binance",
+    category: "cefi",
+    folder: "futures",
+    symbol: "BTCUSDT_250328",
+    baseCurrency: "BTC",
+    quoteCurrency: "USDT",
+    dataTypes: ["ohlcv", "trades", "book_snapshot_5"],
+    availableFrom: "2023-01-01",
+    availableTo: "2025-03-28",
+  },
+  {
+    instrumentKey: "bybit:futures:BTCUSDT_250627",
+    venue: "bybit",
+    category: "cefi",
+    folder: "futures",
+    symbol: "BTCUSDT_250627",
+    baseCurrency: "BTC",
+    quoteCurrency: "USDT",
+    dataTypes: ["ohlcv", "trades"],
+    availableFrom: "2024-01-01",
+  },
   // TradFi
   {
     instrumentKey: "databento:futures:ES.c.0",
-    venue: "DATABENTO",
+    venue: "databento",
     category: "tradfi",
     folder: "futures",
     symbol: "ES.c.0",
@@ -173,7 +197,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "databento:futures:NQ.c.0",
-    venue: "DATABENTO",
+    venue: "databento",
     category: "tradfi",
     folder: "futures",
     symbol: "NQ.c.0",
@@ -181,8 +205,17 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     availableFrom: "2018-01-01",
   },
   {
+    instrumentKey: "databento:equity:AAPL",
+    venue: "databento",
+    category: "tradfi",
+    folder: "equity",
+    symbol: "AAPL",
+    dataTypes: ["ohlcv", "trades", "book_snapshot_5"],
+    availableFrom: "2012-01-01",
+  },
+  {
     instrumentKey: "ibkr:equity:AAPL",
-    venue: "IBKR",
+    venue: "ibkr",
     category: "tradfi",
     folder: "equity",
     symbol: "AAPL",
@@ -190,18 +223,36 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     availableFrom: "2010-01-01",
   },
   {
+    instrumentKey: "ibkr:equity:MSFT",
+    venue: "ibkr",
+    category: "tradfi",
+    folder: "equity",
+    symbol: "MSFT",
+    dataTypes: ["ohlcv", "trades"],
+    availableFrom: "2010-01-01",
+  },
+  {
     instrumentKey: "fred:rates:DFF",
-    venue: "FRED",
+    venue: "fred",
     category: "tradfi",
     folder: "rates",
     symbol: "DFF",
     dataTypes: ["ohlcv"],
     availableFrom: "1954-07-01",
   },
+  {
+    instrumentKey: "fred:rates:US10Y",
+    venue: "fred",
+    category: "tradfi",
+    folder: "rates",
+    symbol: "US10Y",
+    dataTypes: ["ohlcv"],
+    availableFrom: "1962-01-01",
+  },
   // DeFi
   {
     instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05",
-    venue: "UNISWAPV3-ETHEREUM",
+    venue: "uniswap_v3",
     category: "defi",
     folder: "pool_state",
     symbol: "USDC-ETH-0.05",
@@ -209,8 +260,17 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     availableFrom: "2021-05-05",
   },
   {
+    instrumentKey: "uniswap_v3:pool_state:WBTC-ETH-0.3",
+    venue: "uniswap_v3",
+    category: "defi",
+    folder: "pool_state",
+    symbol: "WBTC-ETH-0.3",
+    dataTypes: ["pool_state", "swap_events", "price_feeds"],
+    availableFrom: "2021-05-05",
+  },
+  {
     instrumentKey: "aave_v3:lending:USDC",
-    venue: "AAVEV3-ETHEREUM",
+    venue: "aave_v3",
     category: "defi",
     folder: "lending",
     symbol: "USDC",
@@ -218,8 +278,17 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     availableFrom: "2023-01-01",
   },
   {
+    instrumentKey: "aave_v3:lending:WETH",
+    venue: "aave_v3",
+    category: "defi",
+    folder: "lending",
+    symbol: "WETH",
+    dataTypes: ["lending_rates", "price_feeds"],
+    availableFrom: "2023-01-01",
+  },
+  {
     instrumentKey: "lido:staking:ETH",
-    venue: "LIDO-ETHEREUM",
+    venue: "lido",
     category: "defi",
     folder: "staking",
     symbol: "stETH",
@@ -229,7 +298,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // Onchain Perps
   {
     instrumentKey: "hyperliquid:perpetuals:BTC-USD",
-    venue: "HYPERLIQUID",
+    venue: "hyperliquid",
     category: "onchain_perps",
     folder: "perpetuals",
     symbol: "BTC-USD",
@@ -240,7 +309,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "hyperliquid:perpetuals:ETH-USD",
-    venue: "HYPERLIQUID",
+    venue: "hyperliquid",
     category: "onchain_perps",
     folder: "perpetuals",
     symbol: "ETH-USD",
@@ -250,7 +319,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   // Prediction Markets
   {
     instrumentKey: "polymarket:predictions:TRUMP_WIN_2024",
-    venue: "POLYMARKET",
+    venue: "polymarket",
     category: "prediction_market",
     folder: "predictions",
     symbol: "TRUMP_WIN_2024",
@@ -259,18 +328,36 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     availableTo: "2024-11-06",
   },
   {
+    instrumentKey: "polymarket:odds:BTC_100K_2025",
+    venue: "polymarket",
+    category: "prediction_market",
+    folder: "odds",
+    symbol: "BTC_100K_2025",
+    dataTypes: ["odds", "settlement_prices"],
+    availableFrom: "2024-10-01",
+  },
+  {
     instrumentKey: "kalshi:predictions:FED_RATE_JUL2025",
-    venue: "KALSHI",
+    venue: "kalshi",
     category: "prediction_market",
     folder: "predictions",
     symbol: "FED_RATE_JUL2025",
     dataTypes: ["odds", "settlement_prices"],
     availableFrom: "2024-12-01",
   },
+  {
+    instrumentKey: "kalshi:odds:US_RECESSION_2025",
+    venue: "kalshi",
+    category: "prediction_market",
+    folder: "odds",
+    symbol: "US_RECESSION_2025",
+    dataTypes: ["odds", "settlement_prices"],
+    availableFrom: "2025-01-01",
+  },
   // Sports
   {
     instrumentKey: "api_football:fixtures:EPL_2025",
-    venue: "API-FOOTBALL",
+    venue: "api_football",
     category: "sports",
     folder: "fixtures",
     symbol: "EPL_2025",
@@ -279,7 +366,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "api_football:fixtures:UCL_2025",
-    venue: "API-FOOTBALL",
+    venue: "api_football",
     category: "sports",
     folder: "fixtures",
     symbol: "UCL_2025",
@@ -287,8 +374,17 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
     availableFrom: "2023-09-01",
   },
   {
+    instrumentKey: "api_football:odds:EPL_2025_MD32",
+    venue: "api_football",
+    category: "sports",
+    folder: "odds",
+    symbol: "EPL_2025_MD32",
+    dataTypes: ["odds"],
+    availableFrom: "2025-04-01",
+  },
+  {
     instrumentKey: "footystats:fixtures:EPL_2025",
-    venue: "FOOTYSTATS",
+    venue: "footystats",
     category: "sports",
     folder: "fixtures",
     symbol: "EPL_2025",
@@ -297,12 +393,21 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   },
   {
     instrumentKey: "footystats:fixtures:LA_LIGA_2025",
-    venue: "FOOTYSTATS",
+    venue: "footystats",
     category: "sports",
     folder: "fixtures",
     symbol: "LA_LIGA_2025",
     dataTypes: ["odds", "game_events"],
     availableFrom: "2022-01-01",
+  },
+  {
+    instrumentKey: "footystats:game_events:EPL_2025_GW34",
+    venue: "footystats",
+    category: "sports",
+    folder: "game_events",
+    symbol: "EPL_2025_GW34",
+    dataTypes: ["game_events"],
+    availableFrom: "2025-04-01",
   },
 ];
 

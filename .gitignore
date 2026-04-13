@@ -33,6 +33,7 @@ storybook-static/
 test-results/
 playwright-report/
 blob-report/
+.playwright-mcp/
 
 # Local dev cache and logs (machine-generated, never commit)
 .local-dev-cache/
