@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/hooks/use-auth";
 import { useTabParam } from "@/hooks/use-tab-param";
 import { GenerateReportModal } from "@/components/reports/generate-report-modal";
 import { ScheduleReportModal } from "@/components/reports/schedule-report-modal";
@@ -50,6 +51,19 @@ import {
 import * as React from "react";
 
 export default function ReportsPage() {
+  const { hasEntitlement, isAdmin, isInternal } = useAuth();
+  const reportsTitle = (() => {
+    if (isAdmin() || isInternal()) return "Reports";
+    if (hasEntitlement("investor-im")) return "Investment Portfolio";
+    if (hasEntitlement("investor-regulatory")) return "Compliance Portal";
+    return "Reports";
+  })();
+  const reportsDescription = (() => {
+    if (isAdmin() || isInternal()) return "Portfolio performance, attribution, settlements, and client statements";
+    if (hasEntitlement("investor-im")) return "Your portfolio performance, returns attribution, trade history, and settlement tracking";
+    if (hasEntitlement("investor-regulatory")) return "Compliance reports, audit trail documentation, trade history, and settlement tracking";
+    return "Portfolio performance, attribution, settlements, and client statements";
+  })();
   const [activeTab, setActiveTab] = useTabParam("portfolio");
   const {
     data: reportsApiData,
@@ -189,10 +203,10 @@ export default function ReportsPage() {
     <div className="p-8">
       <div className="max-w-[1600px] mx-auto space-y-8">
         <PageHeader
-          title="Reports"
+          title={reportsTitle}
           description={
             <>
-              <p>Portfolio performance, attribution, settlements, and client statements</p>
+              <p>{reportsDescription}</p>
               <p className="text-caption text-muted-foreground/60 font-mono">
                 Data as of {formatDate(new Date(), "calendar")} &middot; Reconciled T+1
               </p>

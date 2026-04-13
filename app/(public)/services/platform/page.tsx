@@ -26,7 +26,7 @@ import {
 
 const HERO_METRICS = [
   { label: "P&L Factors", value: "10" },
-  { label: "Connected Venues", value: "33" },
+  { label: "Connected Venues", value: "80+" },
   { label: "Risk Dimensions", value: "6" },
   { label: "Latency", value: "<50ms" },
 ];
@@ -83,22 +83,20 @@ export default function PlatformServicePage() {
               className="mb-4 border-amber-500/30 text-amber-400 text-xs"
             >
               <Layers className="mr-1.5 size-3" />
-              Live Trading Platform
+              Trading Platform as a Service
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">
-              One screen.{" "}
-              <span className="text-amber-400">Every venue. Every trade.</span>
+              Trading infrastructure{" "}
+              <span className="text-amber-400">without the build.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              See all your trades across every product in one normalised view.
-              Live P&amp;L, position monitoring, risk analytics — and every
-              morning, compare yesterday&apos;s live trades against what the
-              backtest would have done.
+              The same platform we use for our own capital &mdash; available to you.
+              Data, research, execution, monitoring, and compliance across five asset classes.
+              Built for ourselves first. It runs our own money. Now you can use it too.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
-              Full web dashboards for monitoring and control, with API access
-              for custom integrations. The same code runs your backtests and
-              your live strategies.
+              One bespoke service with flexible scope &mdash; from data feeds to the full
+              trading operating layer. Reporting tools included with every engagement.
             </p>
             <div className="mt-12 grid grid-cols-4 gap-4">
               {HERO_METRICS.map((m) => (

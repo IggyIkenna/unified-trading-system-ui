@@ -37,7 +37,7 @@ import {
 } from "@/lib/mocks/fixtures/data-service";
 
 const HERO_METRICS = [
-  { label: "Venues", value: "128" },
+  { label: "Venues", value: "80+" },
   { label: "Asset Classes", value: "5" },
   { label: "Years History", value: "6+" },
   { label: "Data Types", value: "18+" },
@@ -60,7 +60,7 @@ export default function DataServicePublicPage() {
               Institutional market data. <span className="text-sky-400">One schema.</span>
             </h1>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-              One unified feed for all your data. Stocks, crypto, DeFi, sports, prediction markets — 128 venues, same
+              One unified feed for all your data. Stocks, crypto, DeFi, sports, prediction markets — 80+ venues, same
               format. Raw ticks or processed candles, depending on what you need.
             </p>
             <p className="mt-2 text-sm text-muted-foreground max-w-xl mx-auto">
@@ -79,6 +79,19 @@ export default function DataServicePublicPage() {
           </div>
         </div>
       </section>
+
+      {/* Part of Trading Platform as a Service banner */}
+      <div className="bg-primary/5 border-b border-primary/20 px-4 py-3">
+        <div className="container mx-auto max-w-4xl flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-primary">Part of Trading Platform as a Service</span>
+            {" "}&mdash; data provision is one capability within our bespoke platform offering.{" "}
+            <Link href="/services/platform" className="text-primary underline underline-offset-2 hover:text-primary/80">
+              Learn about the full platform &rarr;
+            </Link>
+          </p>
+        </div>
+      </div>
 
       {/* What You Get Inside */}
       <section className="border-b border-border bg-card/30">

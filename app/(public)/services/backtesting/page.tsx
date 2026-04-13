@@ -25,6 +25,19 @@ import {
 export default function BacktestingServicePage() {
   return (
     <div className="min-h-screen bg-background">
+      {/* Part of Trading Platform as a Service banner */}
+      <div className="bg-primary/5 border-b border-primary/20 px-4 py-3">
+        <div className="container mx-auto max-w-4xl flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-primary">Part of Trading Platform as a Service</span>
+            {" "}&mdash; research and backtesting is one capability within our bespoke platform offering.{" "}
+            <Link href="/services/platform" className="text-primary underline underline-offset-2 hover:text-primary/80">
+              Learn about the full platform &rarr;
+            </Link>
+          </p>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main className="container px-4 py-12 md:px-6">
         <div className="mx-auto max-w-4xl">

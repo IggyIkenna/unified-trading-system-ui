@@ -104,7 +104,7 @@ export default function InvestmentServicePage() {
           </Card>
 
           {/* Key Features */}
-          <div className="grid gap-4 md:grid-cols-3 mb-8">
+          <div className="grid gap-4 md:grid-cols-4 mb-8">
             <Card>
               <CardHeader className="pb-2">
                 <Shield className="size-8 text-rose-400 mb-2" />
@@ -138,6 +138,18 @@ export default function InvestmentServicePage() {
                 <CardDescription>
                   Co-invest alongside Odum principals at identical fee terms and
                   execution quality
+                </CardDescription>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader className="pb-2">
+                <BarChart3 className="size-8 text-primary mb-2" />
+                <CardTitle className="text-base">Reporting Included</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Full investor portal with trade history, settlement tracking,
+                  compliance reports, and 10-factor returns attribution
                 </CardDescription>
               </CardContent>
             </Card>
