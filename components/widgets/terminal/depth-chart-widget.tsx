@@ -1,0 +1,15 @@
+"use client";
+
+import type { WidgetComponentProps } from "../widget-registry";
+import { DepthChart } from "@/components/trading/order-book";
+import { useTerminalData } from "./terminal-data-context";
+
+export function DepthChartWidget(_props: WidgetComponentProps) {
+  const { selectedInstrument, bids, asks, livePrice } = useTerminalData();
+
+  return (
+    <div className="absolute inset-0 overflow-auto p-2">
+      <DepthChart bids={bids} asks={asks} midPrice={livePrice} symbol={selectedInstrument.symbol} />
+    </div>
+  );
+}

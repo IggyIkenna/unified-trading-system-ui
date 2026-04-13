@@ -42,8 +42,8 @@ export interface TerminalData {
   setOrderSize: (s: string) => void;
   timeframe: string;
   setTimeframe: (tf: string) => void;
-  chartType: "candles" | "line" | "depth" | "options";
-  setChartType: (ct: "candles" | "line" | "depth" | "options") => void;
+  chartType: "candles" | "line";
+  setChartType: (ct: "candles" | "line") => void;
   activeIndicators: Set<string>;
   toggleIndicator: (id: string) => void;
   linkedStrategyId: string | null;

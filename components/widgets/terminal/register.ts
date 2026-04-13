@@ -9,10 +9,14 @@ import {
   Calendar,
   Layers,
   BarChart2,
+  ChartArea,
+  Layers2,
 } from "lucide-react";
 import { InstrumentBarWidget } from "./instrument-bar-widget";
 import { OrderBookWidget } from "./order-book-widget";
 import { PriceChartWidget } from "./price-chart-widget";
+import { DepthChartWidget } from "./depth-chart-widget";
+import { TerminalOptionsWidget } from "./terminal-options-widget";
 import { OrderEntryWidget } from "./order-entry-widget";
 import { MarketTradesWidget } from "./market-trades-widget";
 import { CalendarEventsWidget } from "./calendar-events-widget";
@@ -71,7 +75,7 @@ registerWidget({
 registerWidget({
   id: "price-chart",
   label: "Price Chart",
-  description: "Candlestick, line, depth, or options chain chart with indicators.",
+  description: "Candlestick and line chart with technical indicators and timeframe controls.",
   icon: LineChart,
   minW: 3,
   minH: 2,
@@ -82,6 +86,38 @@ registerWidget({
   availableOn: ["terminal"],
   singleton: false,
   component: PriceChartWidget,
+});
+
+registerWidget({
+  id: "depth-chart",
+  label: "Depth Chart",
+  description: "Market depth visualization showing cumulative bid/ask volume.",
+  icon: ChartArea,
+  minW: 3,
+  minH: 3,
+  defaultW: 6,
+  defaultH: 6,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Terminal",
+  availableOn: ["terminal"],
+  singleton: false,
+  component: DepthChartWidget,
+});
+
+registerWidget({
+  id: "terminal-options",
+  label: "Options Chain",
+  description: "Options chain and volatility surface for the selected underlying.",
+  icon: Layers2,
+  minW: 4,
+  minH: 4,
+  defaultW: 8,
+  defaultH: 8,
+  requiredEntitlements: ["execution-full"],
+  category: "Terminal",
+  availableOn: ["terminal"],
+  singleton: false,
+  component: TerminalOptionsWidget,
 });
 
 registerWidget({

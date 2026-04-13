@@ -1,8 +1,8 @@
 "use client";
 
-// CandlestickChart v4.0 - supports indicator overlays via LineSeries
+// CandlestickChart v5.0 - supports candle/line display switching via displayType prop
 import * as React from "react";
-import { createChart, CandlestickSeries, HistogramSeries, LineSeries, ColorType } from "lightweight-charts";
+import { createChart, CandlestickSeries, HistogramSeries, LineSeries, AreaSeries, ColorType } from "lightweight-charts";
 import type { IChartApi, ISeriesApi, CandlestickData, Time, LineData } from "lightweight-charts";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +33,11 @@ interface CandlestickChartProps {
    * (flex + Lightweight Charts often leave `clientHeight` too small).
    */
   absoluteFill?: boolean;
+  /**
+   * "candles" shows candlestick + volume histogram (default).
+   * "line" shows an area chart of close prices using the same chart instance — no remount on switch.
+   */
+  displayType?: "candles" | "line";
 }
 
 export function CandlestickChart({
@@ -41,6 +46,7 @@ export function CandlestickChart({
   height,
   className,
   absoluteFill = false,
+  displayType = "candles",
 }: CandlestickChartProps) {
   /** Layout box — lightweight-charts sets inline px size on the mount node, which breaks `absolute inset-0` stretch. */
   const chartOuterRef = React.useRef<HTMLDivElement>(null);
@@ -48,6 +54,7 @@ export function CandlestickChart({
   const chartRef = React.useRef<IChartApi | null>(null);
   const candlestickSeriesRef = React.useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volumeSeriesRef = React.useRef<ISeriesApi<"Histogram"> | null>(null);
+  const areaSeriesRef = React.useRef<ISeriesApi<"Area"> | null>(null);
   const indicatorSeriesRef = React.useRef<Map<string, ISeriesApi<"Line">>>(new Map());
 
   // Initialize chart + keep size in sync (autoSize breaks inside flex + Radix ScrollArea)
@@ -107,7 +114,7 @@ export function CandlestickChart({
       wickDownColor: "#ef4444",
     });
 
-    /* Paired with volume overlay — https://tradingview.github.io/lightweight-charts/tutorials/how_to/price-and-volume */
+    /* Paired with volume overlay */
     candlestickSeries.priceScale().applyOptions({
       scaleMargins: { top: 0.1, bottom: 0.4 },
     });
@@ -122,9 +129,27 @@ export function CandlestickChart({
       scaleMargins: { top: 0.7, bottom: 0 },
     });
 
+    /* Area series for line chart mode — same chart instance, toggled via displayType */
+    const areaSeries = chart.addSeries(AreaSeries, {
+      lineColor: "#10b981",
+      topColor: "rgba(16, 185, 129, 0.3)",
+      bottomColor: "rgba(16, 185, 129, 0)",
+      lineWidth: 2,
+    });
+    areaSeries.priceScale().applyOptions({
+      scaleMargins: { top: 0.05, bottom: 0.05 },
+    });
+
+    // Set initial visibility based on displayType at mount time
+    const isLine = displayType === "line";
+    candlestickSeries.applyOptions({ visible: !isLine });
+    volumeSeries.applyOptions({ visible: !isLine });
+    areaSeries.applyOptions({ visible: isLine });
+
     chartRef.current = chart;
     candlestickSeriesRef.current = candlestickSeries;
     volumeSeriesRef.current = volumeSeries;
+    areaSeriesRef.current = areaSeries;
 
     const syncSize = () => {
       const c = chartRef.current;
@@ -159,9 +184,31 @@ export function CandlestickChart({
       chart.remove();
       indicatorSeriesRef.current.clear();
     };
+
+    // displayType initial value is intentionally captured at mount; subsequent changes handled below
   }, [height]);
 
-  // Update data when it changes
+  // Toggle candle/line display without recreating the chart instance
+  React.useEffect(() => {
+    const cs = candlestickSeriesRef.current;
+    const vs = volumeSeriesRef.current;
+    const as = areaSeriesRef.current;
+    if (!cs || !vs || !as) return;
+
+    const isLine = displayType === "line";
+    cs.applyOptions({ visible: !isLine });
+    vs.applyOptions({ visible: !isLine });
+    as.applyOptions({ visible: isLine });
+
+    if (isLine) {
+      as.priceScale().applyOptions({ scaleMargins: { top: 0.05, bottom: 0.05 } });
+    } else {
+      cs.priceScale().applyOptions({ scaleMargins: { top: 0.1, bottom: 0.4 } });
+      vs.priceScale().applyOptions({ scaleMargins: { top: 0.7, bottom: 0 } });
+    }
+  }, [displayType]);
+
+  // Update candle, volume, and area series data
   React.useEffect(() => {
     if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
     if (!data || !Array.isArray(data) || data.length === 0) return;
@@ -183,8 +230,16 @@ export function CandlestickChart({
       color: d.close >= d.open ? "rgba(16, 185, 129, 0.5)" : "rgba(239, 68, 68, 0.5)",
     }));
 
+    const areaData = validData.map((d) => ({
+      time: d.time as Time,
+      value: d.close,
+    }));
+
     candlestickSeriesRef.current.setData(candlestickData);
     volumeSeriesRef.current.setData(volumeData);
+    if (areaSeriesRef.current) {
+      areaSeriesRef.current.setData(areaData);
+    }
 
     if (chartRef.current) {
       chartRef.current.timeScale().fitContent();

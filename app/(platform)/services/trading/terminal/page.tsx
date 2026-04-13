@@ -30,8 +30,24 @@ import {
 } from "@/components/widgets/terminal/terminal-data-context";
 
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
-  { symbol: "BTC/USDT", name: "Bitcoin", venue: "Binance", category: "CeFi", instrumentKey: "BTC-USDT-SPOT@BINANCE", midPrice: 87234.56, change: 1.23 },
-  { symbol: "ETH/USDT", name: "Ethereum", venue: "Binance", category: "CeFi", instrumentKey: "ETH-USDT-SPOT@BINANCE", midPrice: 2045.78, change: -0.45 },
+  {
+    symbol: "BTC/USDT",
+    name: "Bitcoin",
+    venue: "Binance",
+    category: "CeFi",
+    instrumentKey: "BTC-USDT-SPOT@BINANCE",
+    midPrice: 87234.56,
+    change: 1.23,
+  },
+  {
+    symbol: "ETH/USDT",
+    name: "Ethereum",
+    venue: "Binance",
+    category: "CeFi",
+    instrumentKey: "ETH-USDT-SPOT@BINANCE",
+    midPrice: 2045.78,
+    change: -0.45,
+  },
   {
     symbol: "ETH-PERP",
     name: "ETH Perpetual",
@@ -41,8 +57,24 @@ const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
     midPrice: 2043.5,
     change: -0.52,
   },
-  { symbol: "SOL/USDT", name: "Solana", venue: "Binance", category: "CeFi", instrumentKey: "SOL-USDT-SPOT@BINANCE", midPrice: 134.21, change: 2.15 },
-  { symbol: "BTC-PERP", name: "BTC Perpetual", venue: "Binance", category: "CeFi", instrumentKey: "BTC-PERP@BINANCE", midPrice: 87200.0, change: 1.18 },
+  {
+    symbol: "SOL/USDT",
+    name: "Solana",
+    venue: "Binance",
+    category: "CeFi",
+    instrumentKey: "SOL-USDT-SPOT@BINANCE",
+    midPrice: 134.21,
+    change: 2.15,
+  },
+  {
+    symbol: "BTC-PERP",
+    name: "BTC Perpetual",
+    venue: "Binance",
+    category: "CeFi",
+    instrumentKey: "BTC-PERP@BINANCE",
+    midPrice: 87200.0,
+    change: 1.18,
+  },
 ];
 
 const strategyInstruments: Record<string, string> = {
@@ -152,7 +184,7 @@ export default function TradingPage() {
   const [orderPrice, setOrderPrice] = React.useState("");
   const [orderSize, setOrderSize] = React.useState("");
   const [timeframe, setTimeframe] = React.useState("5m");
-  const [chartType, setChartType] = React.useState<"candles" | "line" | "depth" | "options">("candles");
+  const [chartType, setChartType] = React.useState<"candles" | "line">("candles");
   const [activeIndicators, setActiveIndicators] = React.useState<Set<string>>(new Set());
   const [linkedStrategyId, setLinkedStrategyId] = React.useState<string | null>(null);
 
