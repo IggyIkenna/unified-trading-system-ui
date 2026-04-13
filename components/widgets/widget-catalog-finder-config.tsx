@@ -1,9 +1,5 @@
 "use client";
 
-import * as React from "react";
-import { Badge } from "@/components/ui/badge";
-import { Lock, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
@@ -11,6 +7,9 @@ import type {
   FinderItem,
   FinderSelections,
 } from "@/components/shared/finder/types";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Check, Lock } from "lucide-react";
 import { getAllWidgets, type WidgetDefinition } from "./widget-registry";
 
 interface CategoryData {

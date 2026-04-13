@@ -1,11 +1,11 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { Building2, ClipboardPen, FileText, History, Settings2, ShieldCheck } from "lucide-react";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
+import { BookAlgoConfigWidget } from "./book-algo-config-widget";
 import { BookHierarchyBarWidget } from "./book-hierarchy-bar-widget";
 import { BookOrderFormWidget } from "./book-order-form-widget";
-import { BookAlgoConfigWidget } from "./book-algo-config-widget";
-import { BookRecordDetailsWidget } from "./book-record-details-widget";
 import { BookPreviewComplianceWidget } from "./book-preview-compliance-widget";
+import { BookRecordDetailsWidget } from "./book-record-details-widget";
 import { BookTradeHistoryWidget } from "./book-trade-history-widget";
 
 registerPresets("book", [
@@ -21,6 +21,22 @@ registerPresets("book", [
       { widgetId: "book-algo-config", instanceId: "book-algo-config-1", x: 6, y: 9, w: 6, h: 4 },
       { widgetId: "book-record-details", instanceId: "book-record-details-1", x: 6, y: 13, w: 6, h: 3 },
       { widgetId: "book-preview-compliance", instanceId: "book-preview-compliance-1", x: 6, y: 16, w: 6, h: 5 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "book-full",
+    name: "Full",
+    tab: "book",
+    isPreset: true,
+    layouts: [
+      { widgetId: "book-hierarchy-bar", instanceId: "book-hierarchy-bar-full", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "book-order-form", instanceId: "book-order-form-full", x: 0, y: 1, w: 6, h: 8 },
+      { widgetId: "book-algo-config", instanceId: "book-algo-config-full", x: 6, y: 1, w: 6, h: 4 },
+      { widgetId: "book-record-details", instanceId: "book-record-details-full", x: 0, y: 9, w: 6, h: 3 },
+      { widgetId: "book-preview-compliance", instanceId: "book-preview-compliance-full", x: 6, y: 9, w: 6, h: 5 },
+      { widgetId: "book-trade-history", instanceId: "book-trade-history-full", x: 0, y: 14, w: 12, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

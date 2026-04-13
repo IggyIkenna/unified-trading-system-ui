@@ -1,12 +1,12 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { Activity, BarChart3, FileText, LayoutGrid, LineChart, TrendingUp } from "lucide-react";
-import { PnlControlsWidget } from "./pnl-controls-widget";
-import { PnlWaterfallWidget } from "./pnl-waterfall-widget";
-import { PnlTimeSeriesWidget } from "./pnl-time-series-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { PnlByClientWidget } from "./pnl-by-client-widget";
+import { PnlControlsWidget } from "./pnl-controls-widget";
 import { PnlFactorDrilldownWidget } from "./pnl-factor-drilldown-widget";
 import { PnlReportButtonWidget } from "./pnl-report-button-widget";
+import { PnlTimeSeriesWidget } from "./pnl-time-series-widget";
+import { PnlWaterfallWidget } from "./pnl-waterfall-widget";
 
 registerPresets("pnl", [
   {
@@ -33,6 +33,22 @@ registerPresets("pnl", [
       { widgetId: "pnl-time-series", instanceId: "pnl-time-series-1", x: 0, y: 2, w: 12, h: 5 },
       { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-1", x: 0, y: 7, w: 7, h: 6 },
       { widgetId: "pnl-by-client", instanceId: "pnl-by-client-1", x: 7, y: 7, w: 5, h: 6 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "pnl-full",
+    name: "Full",
+    tab: "pnl",
+    isPreset: true,
+    layouts: [
+      { widgetId: "pnl-controls", instanceId: "pnl-controls-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-full", x: 0, y: 2, w: 7, h: 8 },
+      { widgetId: "pnl-by-client", instanceId: "pnl-by-client-full", x: 7, y: 2, w: 5, h: 8 },
+      { widgetId: "pnl-time-series", instanceId: "pnl-time-series-full", x: 0, y: 10, w: 12, h: 5 },
+      { widgetId: "pnl-factor-drilldown", instanceId: "pnl-factor-drilldown-full", x: 0, y: 15, w: 12, h: 5 },
+      { widgetId: "pnl-report-button", instanceId: "pnl-report-button-full", x: 0, y: 20, w: 2, h: 1 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

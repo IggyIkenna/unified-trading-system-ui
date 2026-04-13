@@ -23,8 +23,8 @@ import { DeFiLendingWidget } from "./defi-lending-widget";
 import { DeFiLiquidityWidget } from "./defi-liquidity-widget";
 import { DeFiRatesOverviewWidget } from "./defi-rates-overview-widget";
 import { DeFiRewardPnlWidget } from "./defi-reward-pnl-widget";
-import { DeFiStakingWidget } from "./defi-staking-widget";
 import { DeFiStakingRewardsWidget } from "./defi-staking-rewards-widget";
+import { DeFiStakingWidget } from "./defi-staking-widget";
 import { DeFiStrategyConfigWidget } from "./defi-strategy-config-widget";
 import { DeFiSwapWidget } from "./defi-swap-widget";
 import { DeFiTradeHistoryWidget } from "./defi-trade-history-widget";
@@ -82,6 +82,31 @@ registerPresets("defi", [
       { widgetId: "defi-reward-pnl", instanceId: "defi-reward-pnl-wt", x: 4, y: 13, w: 4, h: 6 },
       { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-wt", x: 8, y: 10, w: 4, h: 6 },
       { widgetId: "defi-trade-history", instanceId: "defi-trade-history-wt", x: 0, y: 19, w: 12, h: 5 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "defi-full",
+    name: "Full",
+    tab: "defi",
+    isPreset: true,
+    layouts: [
+      { widgetId: "defi-wallet-summary", instanceId: "defi-wallet-summary-full", x: 0, y: 0, w: 4, h: 2 },
+      { widgetId: "defi-lending", instanceId: "defi-lending-full", x: 4, y: 0, w: 4, h: 6 },
+      { widgetId: "defi-swap", instanceId: "defi-swap-full", x: 8, y: 0, w: 4, h: 6 },
+      { widgetId: "defi-liquidity", instanceId: "defi-liquidity-full", x: 0, y: 6, w: 4, h: 7 },
+      { widgetId: "defi-staking", instanceId: "defi-staking-full", x: 4, y: 6, w: 4, h: 6 },
+      { widgetId: "defi-flash-loans", instanceId: "defi-flash-loans-full", x: 0, y: 13, w: 6, h: 7 },
+      { widgetId: "defi-transfer", instanceId: "defi-transfer-full", x: 6, y: 13, w: 4, h: 6 },
+      { widgetId: "defi-rates-overview", instanceId: "defi-rates-overview-full", x: 0, y: 20, w: 8, h: 4 },
+      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-full", x: 0, y: 24, w: 12, h: 5 },
+      { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-full", x: 0, y: 29, w: 4, h: 6 },
+      { widgetId: "defi-staking-rewards", instanceId: "defi-staking-rewards-full", x: 4, y: 29, w: 4, h: 6 },
+      { widgetId: "defi-funding-matrix", instanceId: "defi-funding-matrix-full", x: 0, y: 35, w: 8, h: 5 },
+      { widgetId: "defi-waterfall-weights", instanceId: "defi-waterfall-weights-full", x: 8, y: 35, w: 4, h: 6 },
+      { widgetId: "defi-health-factor", instanceId: "defi-health-factor-full", x: 0, y: 41, w: 4, h: 8 },
+      { widgetId: "defi-reward-pnl", instanceId: "defi-reward-pnl-full", x: 4, y: 41, w: 4, h: 6 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

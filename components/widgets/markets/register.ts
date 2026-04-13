@@ -1,5 +1,3 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import {
   Activity,
   AlertTriangle,
@@ -10,14 +8,16 @@ import {
   FileText,
   LayoutGrid,
 } from "lucide-react";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { MarketsControlsWidget } from "./markets-controls-widget";
-import { MarketsOrderFlowWidget } from "./markets-order-flow-widget";
+import { MarketsDefiAmmWidget } from "./markets-defi-amm-widget";
+import { MarketsLatencyDetailWidget } from "./markets-latency-detail-widget";
+import { MarketsLatencySummaryWidget } from "./markets-latency-summary-widget";
 import { MarketsLiveBookWidget } from "./markets-live-book-widget";
 import { MarketsMyOrdersWidget } from "./markets-my-orders-widget";
+import { MarketsOrderFlowWidget } from "./markets-order-flow-widget";
 import { MarketsReconWidget } from "./markets-recon-widget";
-import { MarketsLatencySummaryWidget } from "./markets-latency-summary-widget";
-import { MarketsLatencyDetailWidget } from "./markets-latency-detail-widget";
-import { MarketsDefiAmmWidget } from "./markets-defi-amm-widget";
 
 registerPresets("markets", [
   {
@@ -57,6 +57,24 @@ registerPresets("markets", [
       { widgetId: "markets-latency-summary", instanceId: "markets-latency-summary-1", x: 0, y: 1, w: 5, h: 6 },
       { widgetId: "markets-latency-detail", instanceId: "markets-latency-detail-1", x: 5, y: 1, w: 7, h: 6 },
       { widgetId: "markets-recon", instanceId: "markets-recon-1", x: 0, y: 7, w: 12, h: 4 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "markets-full",
+    name: "Full",
+    tab: "markets",
+    isPreset: true,
+    layouts: [
+      { widgetId: "markets-controls", instanceId: "markets-controls-full", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "markets-order-flow", instanceId: "markets-order-flow-full", x: 0, y: 1, w: 12, h: 7 },
+      { widgetId: "markets-live-book", instanceId: "markets-live-book-full", x: 0, y: 8, w: 12, h: 7 },
+      { widgetId: "markets-my-orders", instanceId: "markets-my-orders-full", x: 0, y: 15, w: 12, h: 5 },
+      { widgetId: "markets-recon", instanceId: "markets-recon-full", x: 0, y: 20, w: 12, h: 4 },
+      { widgetId: "markets-latency-summary", instanceId: "markets-latency-summary-full", x: 0, y: 24, w: 12, h: 5 },
+      { widgetId: "markets-latency-detail", instanceId: "markets-latency-detail-full", x: 0, y: 29, w: 12, h: 6 },
+      { widgetId: "markets-defi-amm", instanceId: "markets-defi-amm-full", x: 0, y: 35, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

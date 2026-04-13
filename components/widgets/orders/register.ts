@@ -1,6 +1,6 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { ArrowUpDown, Table2 } from "lucide-react";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { OrdersKpiStripWidget } from "./orders-kpi-strip-widget";
 import { OrdersTableWidget } from "./orders-table-widget";
 
@@ -13,6 +13,18 @@ registerPresets("orders", [
     layouts: [
       { widgetId: "orders-kpi-strip", instanceId: "orders-kpi-strip-1", x: 0, y: 0, w: 12, h: 2 },
       { widgetId: "orders-table", instanceId: "orders-table-1", x: 0, y: 2, w: 12, h: 10 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "orders-full",
+    name: "Full",
+    tab: "orders",
+    isPreset: true,
+    layouts: [
+      { widgetId: "orders-kpi-strip", instanceId: "orders-kpi-strip-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "orders-table", instanceId: "orders-table-full", x: 0, y: 2, w: 12, h: 10 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

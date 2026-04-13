@@ -1,6 +1,6 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { Activity, Table2 } from "lucide-react";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { PositionsKpiWidget } from "./positions-kpi-widget";
 import { PositionsTableWidget } from "./positions-table-widget";
 
@@ -13,6 +13,18 @@ registerPresets("positions", [
     layouts: [
       { widgetId: "positions-kpi-strip", instanceId: "positions-kpi-strip-1", x: 0, y: 0, w: 12, h: 2 },
       { widgetId: "positions-table", instanceId: "positions-table-1", x: 0, y: 2, w: 12, h: 10 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "positions-full",
+    name: "Full",
+    tab: "positions",
+    isPreset: true,
+    layouts: [
+      { widgetId: "positions-kpi-strip", instanceId: "positions-kpi-strip-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "positions-table", instanceId: "positions-table-full", x: 0, y: 2, w: 12, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

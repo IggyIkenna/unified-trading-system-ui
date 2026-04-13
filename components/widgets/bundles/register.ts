@@ -1,10 +1,10 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { DollarSign, FileText, Layers, Send, Zap } from "lucide-react";
-import { BundleTemplatesWidget } from "./bundle-templates-widget";
-import { BundleStepsWidget } from "./bundle-steps-widget";
-import { BundlePnlWidget } from "./bundle-pnl-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { BundleActionsWidget } from "./bundle-actions-widget";
+import { BundlePnlWidget } from "./bundle-pnl-widget";
+import { BundleStepsWidget } from "./bundle-steps-widget";
+import { BundleTemplatesWidget } from "./bundle-templates-widget";
 import { DefiAtomicBundleWidget } from "./defi-atomic-bundle-widget";
 
 registerPresets("bundles", [
@@ -34,6 +34,21 @@ registerPresets("bundles", [
       { widgetId: "bundle-templates", instanceId: "bundle-templates-1", x: 8, y: 4, w: 4, h: 4 },
       { widgetId: "bundle-actions", instanceId: "bundle-actions-1", x: 0, y: 8, w: 12, h: 1 },
       { widgetId: "defi-atomic-bundle", instanceId: "defi-atomic-bundle-1", x: 0, y: 9, w: 12, h: 8 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "bundles-full",
+    name: "Full",
+    tab: "bundles",
+    isPreset: true,
+    layouts: [
+      { widgetId: "bundle-templates", instanceId: "bundle-templates-full", x: 0, y: 0, w: 4, h: 5 },
+      { widgetId: "bundle-steps", instanceId: "bundle-steps-full", x: 4, y: 0, w: 8, h: 7 },
+      { widgetId: "bundle-pnl", instanceId: "bundle-pnl-full", x: 0, y: 7, w: 4, h: 3 },
+      { widgetId: "bundle-actions", instanceId: "bundle-actions-full", x: 4, y: 7, w: 4, h: 1 },
+      { widgetId: "defi-atomic-bundle", instanceId: "defi-atomic-bundle-full", x: 0, y: 10, w: 8, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

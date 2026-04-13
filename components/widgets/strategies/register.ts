@@ -1,9 +1,9 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { Activity, LayoutGrid, LineChart } from "lucide-react";
-import { StrategiesKpiWidget } from "./strategies-kpi-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { StrategiesCatalogueWidget } from "./strategies-catalogue-widget";
 import { StrategiesGridLinkWidget } from "./strategies-grid-link-widget";
+import { StrategiesKpiWidget } from "./strategies-kpi-widget";
 
 registerPresets("strategies", [
   {
@@ -15,6 +15,19 @@ registerPresets("strategies", [
       { widgetId: "strategies-kpi-strip", instanceId: "strategies-kpi-strip-1", x: 0, y: 0, w: 12, h: 2 },
       { widgetId: "strategies-catalogue", instanceId: "strategies-catalogue-1", x: 0, y: 2, w: 12, h: 9 },
       { widgetId: "strategies-grid-link", instanceId: "strategies-grid-link-1", x: 0, y: 11, w: 12, h: 1 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "strategies-full",
+    name: "Full",
+    tab: "strategies",
+    isPreset: true,
+    layouts: [
+      { widgetId: "strategies-kpi-strip", instanceId: "strategies-kpi-strip-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "strategies-catalogue", instanceId: "strategies-catalogue-full", x: 0, y: 2, w: 12, h: 9 },
+      { widgetId: "strategies-grid-link", instanceId: "strategies-grid-link-full", x: 0, y: 11, w: 12, h: 1 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

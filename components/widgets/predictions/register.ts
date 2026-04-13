@@ -1,5 +1,3 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import {
   Activity,
   BarChart3,
@@ -13,17 +11,19 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import { PredMarketsGridWidget } from "./pred-markets-grid-widget";
-import { PredMarketDetailWidget } from "./pred-market-detail-widget";
-import { PredPortfolioKpisWidget } from "./pred-portfolio-kpis-widget";
-import { PredOpenPositionsWidget } from "./pred-open-positions-widget";
-import { PredSettledPositionsWidget } from "./pred-settled-positions-widget";
-import { PredOdumFocusWidget } from "./pred-odum-focus-widget";
-import { PredArbStreamWidget } from "./pred-arb-stream-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { PredArbClosedWidget } from "./pred-arb-closed-widget";
-import { PredTradePanelWidget } from "./pred-trade-panel-widget";
-import { PredTopMarketsWidget } from "./pred-top-markets-widget";
+import { PredArbStreamWidget } from "./pred-arb-stream-widget";
+import { PredMarketDetailWidget } from "./pred-market-detail-widget";
+import { PredMarketsGridWidget } from "./pred-markets-grid-widget";
+import { PredOdumFocusWidget } from "./pred-odum-focus-widget";
+import { PredOpenPositionsWidget } from "./pred-open-positions-widget";
+import { PredPortfolioKpisWidget } from "./pred-portfolio-kpis-widget";
 import { PredRecentFillsWidget } from "./pred-recent-fills-widget";
+import { PredSettledPositionsWidget } from "./pred-settled-positions-widget";
+import { PredTopMarketsWidget } from "./pred-top-markets-widget";
+import { PredTradePanelWidget } from "./pred-trade-panel-widget";
 
 const PRED_ENTITLEMENTS = ["execution-basic", "execution-full"] as const;
 
@@ -52,6 +52,27 @@ registerPresets("predictions", [
       { widgetId: "pred-arb-closed", instanceId: "pred-arb-closed-1", x: 6, y: 0, w: 6, h: 4 },
       { widgetId: "pred-odum-focus", instanceId: "pred-odum-focus-1", x: 0, y: 6, w: 12, h: 6 },
       { widgetId: "pred-recent-fills", instanceId: "pred-recent-fills-1", x: 6, y: 4, w: 6, h: 2 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "predictions-full",
+    name: "Full",
+    tab: "predictions",
+    isPreset: true,
+    layouts: [
+      { widgetId: "pred-portfolio-kpis", instanceId: "pred-portfolio-kpis-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "pred-markets-grid", instanceId: "pred-markets-grid-full", x: 0, y: 2, w: 8, h: 7 },
+      { widgetId: "pred-market-detail", instanceId: "pred-market-detail-full", x: 8, y: 2, w: 4, h: 7 },
+      { widgetId: "pred-open-positions", instanceId: "pred-open-positions-full", x: 0, y: 9, w: 12, h: 4 },
+      { widgetId: "pred-settled-positions", instanceId: "pred-settled-positions-full", x: 0, y: 13, w: 12, h: 3 },
+      { widgetId: "pred-top-markets", instanceId: "pred-top-markets-full", x: 0, y: 16, w: 6, h: 4 },
+      { widgetId: "pred-recent-fills", instanceId: "pred-recent-fills-full", x: 6, y: 16, w: 6, h: 4 },
+      { widgetId: "pred-odum-focus", instanceId: "pred-odum-focus-full", x: 0, y: 20, w: 12, h: 6 },
+      { widgetId: "pred-arb-stream", instanceId: "pred-arb-stream-full", x: 0, y: 26, w: 6, h: 6 },
+      { widgetId: "pred-arb-closed", instanceId: "pred-arb-closed-full", x: 6, y: 26, w: 6, h: 4 },
+      { widgetId: "pred-trade-panel", instanceId: "pred-trade-panel-full", x: 0, y: 32, w: 6, h: 7 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

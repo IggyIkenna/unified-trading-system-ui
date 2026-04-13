@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { AlertCircle } from "lucide-react";
+import * as React from "react";
 
 /**
  * Guard component that catches missing-provider errors from widgets
@@ -27,9 +27,7 @@ export class WidgetContextGuard extends React.Component<
         <div className="flex h-full items-center justify-center p-4 bg-muted/10">
           <div className="text-center space-y-2 max-w-[200px]">
             <AlertCircle className="size-5 text-amber-500 mx-auto" />
-            <p className="text-xs font-medium text-muted-foreground">
-              {this.props.widgetLabel}
-            </p>
+            <p className="text-xs font-medium text-muted-foreground">{this.props.widgetLabel}</p>
             <p className="text-[10px] text-muted-foreground/60 leading-relaxed">
               {isProviderError
                 ? "This widget needs its native tab to load data. Navigate to the tab or remove it."

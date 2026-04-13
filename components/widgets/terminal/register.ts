@@ -1,25 +1,23 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import {
-  BarChart3,
-  LineChart,
-  BookOpen,
-  ShoppingCart,
   ArrowRightLeft,
+  BarChart3,
+  BookOpen,
   Calendar,
-  Layers,
-  BarChart2,
   ChartArea,
   Layers2,
+  LineChart,
+  ShoppingCart,
 } from "lucide-react";
-import { InstrumentBarWidget } from "./instrument-bar-widget";
-import { OrderBookWidget } from "./order-book-widget";
-import { PriceChartWidget } from "./price-chart-widget";
-import { DepthChartWidget } from "./depth-chart-widget";
-import { TerminalOptionsWidget } from "./terminal-options-widget";
-import { OrderEntryWidget } from "./order-entry-widget";
-import { MarketTradesWidget } from "./market-trades-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { CalendarEventsWidget } from "./calendar-events-widget";
+import { DepthChartWidget } from "./depth-chart-widget";
+import { InstrumentBarWidget } from "./instrument-bar-widget";
+import { MarketTradesWidget } from "./market-trades-widget";
+import { OrderBookWidget } from "./order-book-widget";
+import { OrderEntryWidget } from "./order-entry-widget";
+import { PriceChartWidget } from "./price-chart-widget";
+import { TerminalOptionsWidget } from "./terminal-options-widget";
 
 registerPresets("terminal", [
   {
@@ -34,6 +32,24 @@ registerPresets("terminal", [
       { widgetId: "order-entry", instanceId: "order-entry-1", x: 9, y: 1, w: 3, h: 8 },
       { widgetId: "market-trades", instanceId: "market-trades-1", x: 0, y: 9, w: 6, h: 3 },
       { widgetId: "calendar-events", instanceId: "calendar-events-1", x: 6, y: 9, w: 6, h: 3 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "terminal-full",
+    name: "Full",
+    tab: "terminal",
+    isPreset: true,
+    layouts: [
+      { widgetId: "instrument-bar", instanceId: "instrument-bar-full", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "order-book", instanceId: "order-book-full", x: 0, y: 1, w: 3, h: 8 },
+      { widgetId: "price-chart", instanceId: "price-chart-full", x: 3, y: 1, w: 6, h: 8 },
+      { widgetId: "order-entry", instanceId: "order-entry-full", x: 9, y: 1, w: 3, h: 8 },
+      { widgetId: "market-trades", instanceId: "market-trades-full", x: 0, y: 9, w: 6, h: 3 },
+      { widgetId: "calendar-events", instanceId: "calendar-events-full", x: 6, y: 9, w: 6, h: 3 },
+      { widgetId: "depth-chart", instanceId: "depth-chart-full", x: 0, y: 12, w: 6, h: 6 },
+      { widgetId: "terminal-options", instanceId: "terminal-options-full", x: 0, y: 18, w: 8, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

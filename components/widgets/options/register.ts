@@ -1,15 +1,15 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { Activity, BarChart3, ClipboardPen, Grid3X3, Settings2, Star, Zap } from "lucide-react";
-import { OptionsControlBarWidget } from "./options-control-bar-widget";
-import { OptionsWatchlistWidget } from "./options-watchlist-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { OptionsChainWidget } from "./options-chain-widget";
-import { OptionsTradePanelWidget } from "./options-trade-panel-widget";
+import { OptionsControlBarWidget } from "./options-control-bar-widget";
 import { OptionsFuturesTableWidget } from "./options-futures-table-widget";
 import { OptionsFuturesTradePanelWidget } from "./options-futures-trade-panel-widget";
-import { OptionsStrategiesWidget } from "./options-strategies-widget";
-import { OptionsScenarioWidget } from "./options-scenario-widget";
 import { OptionsGreekSurfaceWidget } from "./options-greek-surface-widget";
+import { OptionsScenarioWidget } from "./options-scenario-widget";
+import { OptionsStrategiesWidget } from "./options-strategies-widget";
+import { OptionsTradePanelWidget } from "./options-trade-panel-widget";
+import { OptionsWatchlistWidget } from "./options-watchlist-widget";
 
 registerPresets("options", [
   {
@@ -39,6 +39,25 @@ registerPresets("options", [
       { widgetId: "options-scenario", instanceId: "options-scenario-1", x: 7, y: 1, w: 5, h: 7 },
       { widgetId: "options-trade-panel", instanceId: "options-trade-panel-2", x: 0, y: 8, w: 4, h: 5 },
       { widgetId: "options-chain", instanceId: "options-chain-2", x: 4, y: 8, w: 8, h: 5 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "options-full",
+    name: "Full",
+    tab: "options",
+    isPreset: true,
+    layouts: [
+      { widgetId: "options-control-bar", instanceId: "options-control-bar-full", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "options-watchlist", instanceId: "options-watchlist-full", x: 0, y: 1, w: 3, h: 10 },
+      { widgetId: "options-chain", instanceId: "options-chain-full", x: 3, y: 1, w: 9, h: 8 },
+      { widgetId: "options-trade-panel", instanceId: "options-trade-panel-full", x: 0, y: 11, w: 3, h: 6 },
+      { widgetId: "futures-table", instanceId: "futures-table-full", x: 3, y: 11, w: 9, h: 6 },
+      { widgetId: "futures-trade-panel", instanceId: "futures-trade-panel-full", x: 0, y: 17, w: 3, h: 5 },
+      { widgetId: "options-strategies", instanceId: "options-strategies-full", x: 3, y: 17, w: 9, h: 6 },
+      { widgetId: "options-scenario", instanceId: "options-scenario-full", x: 0, y: 23, w: 9, h: 6 },
+      { widgetId: "options-greek-surface", instanceId: "options-greek-surface-full", x: 0, y: 29, w: 6, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

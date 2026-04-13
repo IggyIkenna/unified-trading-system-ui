@@ -1,6 +1,6 @@
-import type { Workspace, WorkspaceProfile } from "@/lib/stores/workspace-store";
 import type { WidgetPlacement } from "@/components/widgets/widget-registry";
 import { getWidgetsForTab } from "@/components/widgets/widget-registry";
+import type { Workspace, WorkspaceProfile } from "@/lib/stores/workspace-store";
 import { getPresetsForTab } from "./preset-registry";
 
 export const ALL_WIDGET_TABS = [

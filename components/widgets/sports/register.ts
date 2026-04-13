@@ -1,11 +1,11 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { Activity, FileText, Trophy, Wallet, Zap } from "lucide-react";
-import { SportsFixturesWidget } from "./sports-fixtures-widget";
-import { SportsFixtureDetailWidget } from "./sports-fixture-detail-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { SportsArbWidget } from "./sports-arb-widget";
-import { SportsMyBetsWidget } from "./sports-my-bets-widget";
+import { SportsFixtureDetailWidget } from "./sports-fixture-detail-widget";
+import { SportsFixturesWidget } from "./sports-fixtures-widget";
 import { SportsLiveScoresWidget } from "./sports-live-scores-widget";
+import { SportsMyBetsWidget } from "./sports-my-bets-widget";
 
 registerPresets("sports", [
   {
@@ -31,6 +31,21 @@ registerPresets("sports", [
       { widgetId: "sports-fixtures", instanceId: "sports-fixtures-1", x: 6, y: 0, w: 6, h: 7 },
       { widgetId: "sports-live-scores", instanceId: "sports-live-scores-1", x: 0, y: 7, w: 12, h: 1 },
       { widgetId: "sports-my-bets", instanceId: "sports-my-bets-1", x: 0, y: 8, w: 12, h: 4 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "sports-full",
+    name: "Full",
+    tab: "sports",
+    isPreset: true,
+    layouts: [
+      { widgetId: "sports-live-scores", instanceId: "sports-live-scores-full", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "sports-fixtures", instanceId: "sports-fixtures-full", x: 0, y: 1, w: 8, h: 10 },
+      { widgetId: "sports-fixture-detail", instanceId: "sports-fixture-detail-full", x: 8, y: 1, w: 4, h: 8 },
+      { widgetId: "sports-arb", instanceId: "sports-arb-full", x: 0, y: 11, w: 12, h: 6 },
+      { widgetId: "sports-my-bets", instanceId: "sports-my-bets-full", x: 0, y: 17, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

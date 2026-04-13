@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
+import { Lock, Sparkles } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Sparkles, Lock } from "lucide-react";
+import * as React from "react";
 
 /**
  * Staging auth gate — wraps the entire app when NEXT_PUBLIC_STAGING_AUTH=true.

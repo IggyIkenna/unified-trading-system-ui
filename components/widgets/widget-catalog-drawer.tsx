@@ -1,17 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Lock, Plus, LayoutGrid, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/use-auth";
-import { FinderBrowser, finderText } from "@/components/shared/finder";
 import type { FinderSelections } from "@/components/shared/finder";
-import { getAllWidgets, type WidgetDefinition } from "./widget-registry";
-import { useWorkspaceStore, useActiveLayouts } from "@/lib/stores/workspace-store";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
+import { cn } from "@/lib/utils";
+import { Check, LayoutGrid, Lock, Plus } from "lucide-react";
+import * as React from "react";
 import { buildCatalogColumns, getCatalogContextStats } from "./widget-catalog-finder-config";
+import { getAllWidgets, type WidgetDefinition } from "./widget-registry";
 
 interface WidgetCatalogDrawerProps {
   tab: string;
