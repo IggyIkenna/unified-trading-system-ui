@@ -62,13 +62,15 @@ function buildColumns(
     {
       accessorKey: "order_id",
       header: "Order ID",
-      enableSorting: false,
+      meta: { type: "text" },
+      enableSorting: true,
       cell: ({ row }) => <span className="font-mono text-xs">{row.getValue<string>("order_id")}</span>,
     },
     {
       accessorKey: "instrument",
       header: "Instrument",
-      enableSorting: false,
+      meta: { type: "text" },
+      enableSorting: true,
       cell: ({ row }) => {
         const instrument = row.getValue<string>("instrument");
         const type = classifyInstrument(instrument);
@@ -84,12 +86,13 @@ function buildColumns(
     },
     {
       accessorKey: "side",
-      header: () => <span className="flex justify-center">Side</span>,
-      enableSorting: false,
+      header: "Side",
+      meta: { type: "badge" },
+      enableSorting: true,
       cell: ({ row }) => {
         const side = row.getValue<"BUY" | "SELL">("side");
         return (
-          <div className="text-center">
+          <div className="flex justify-center">
             <Badge
               variant="outline"
               className={cn(
@@ -109,12 +112,14 @@ function buildColumns(
     {
       accessorKey: "type",
       header: "Type",
-      enableSorting: false,
+      meta: { type: "text" },
+      enableSorting: true,
       cell: ({ row }) => <span className="text-xs uppercase">{row.getValue<string>("type")}</span>,
     },
     {
       accessorKey: "price",
-      header: () => <span className="flex justify-end">Price</span>,
+      header: "Price",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right font-mono">
@@ -127,7 +132,8 @@ function buildColumns(
     },
     {
       accessorKey: "mark_price",
-      header: () => <span className="flex justify-end">Mark</span>,
+      header: "Mark",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => {
         const mark = row.getValue<number>("mark_price");
@@ -140,7 +146,8 @@ function buildColumns(
     },
     {
       accessorKey: "edge_bps",
-      header: () => <span className="flex justify-end">Edge</span>,
+      header: "Edge",
+      meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => {
         const edge = row.getValue<number>("edge_bps") ?? 0;
@@ -154,7 +161,8 @@ function buildColumns(
     },
     {
       accessorKey: "instant_pnl",
-      header: () => <span className="flex justify-end">Instant P&L</span>,
+      header: "Instant P&L",
+      meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => {
         const pnl = row.getValue<number>("instant_pnl") ?? 0;
@@ -170,7 +178,8 @@ function buildColumns(
     {
       accessorKey: "strategy_name",
       header: "Strategy",
-      enableSorting: false,
+      meta: { type: "text" },
+      enableSorting: true,
       cell: ({ row }) => (
         <span className="text-xs text-muted-foreground truncate max-w-24 block">
           {row.getValue<string>("strategy_name") || "—"}
@@ -179,7 +188,8 @@ function buildColumns(
     },
     {
       accessorKey: "quantity",
-      header: () => <span className="flex justify-end">Qty</span>,
+      header: "Qty",
+      meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => (
         <div className="text-right font-mono">{row.getValue<number>("quantity").toLocaleString()}</div>
@@ -187,7 +197,8 @@ function buildColumns(
     },
     {
       accessorKey: "filled",
-      header: () => <span className="flex justify-end">Filled</span>,
+      header: "Filled",
+      meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => {
         const filled = row.getValue<number>("filled");
@@ -203,12 +214,13 @@ function buildColumns(
     },
     {
       accessorKey: "status",
-      header: () => <span className="flex justify-center">Status</span>,
-      enableSorting: false,
+      header: "Status",
+      meta: { type: "badge" },
+      enableSorting: true,
       cell: ({ row }) => {
         const status = row.getValue<string>("status");
         return (
-          <div className="text-center">
+          <div className="flex justify-center">
             <Badge variant="outline" className={cn("text-xs", getStatusColor(status))}>
               {status}
             </Badge>
@@ -219,21 +231,25 @@ function buildColumns(
     {
       accessorKey: "venue",
       header: "Venue",
-      enableSorting: false,
+      meta: { type: "text" },
+      enableSorting: true,
       cell: ({ row }) => <span className="text-sm">{row.getValue<string>("venue")}</span>,
     },
     {
       accessorKey: "created_at",
-      header: () => <span className="flex justify-end">Created</span>,
+      header: "Created",
+      meta: { type: "datetime" },
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-right text-xs text-muted-foreground">{row.getValue<string>("created_at")}</div>
+        <div className="text-right text-xs text-muted-foreground font-mono">{row.getValue<string>("created_at")}</div>
       ),
     },
     {
       id: "actions",
-      header: () => <span className="flex justify-center">Actions</span>,
+      header: "Actions",
+      meta: { type: "actions" },
       enableSorting: false,
+      enableHiding: false,
       cell: ({ row }) => {
         const status = row.original.status;
         if (!isActionable(status)) return <div className="text-center text-xs text-muted-foreground">—</div>;
