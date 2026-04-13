@@ -37,10 +37,10 @@ registerWidget({
   description:
     "6 KPIs: total, open, partial, filled, rejected, and failed order counts. Layout and responsive grid via KPI summary shell.",
   icon: ArrowUpDown,
-  minW: 2,
-  minH: 2,
+  minW: 1,
+  minH: 1,
   defaultW: 12,
-  defaultH: 2,
+  defaultH: 1,
   requiredEntitlements: ["execution-basic", "execution-full"],
   category: "Orders",
   availableOn: ["orders"],
