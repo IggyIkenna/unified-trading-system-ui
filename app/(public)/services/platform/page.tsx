@@ -501,6 +501,9 @@ export default function PlatformServicePage() {
               <Button size="lg" variant="outline" asChild>
                 <Link href="/contact?service=platform">Contact Us</Link>
               </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <Link href="/login?redirect=/investor-relations/platform-presentation">View Presentation</Link>
+              </Button>
             </div>
           </div>
         </div>
