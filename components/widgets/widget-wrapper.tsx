@@ -1,19 +1,19 @@
 "use client";
 
-import * as React from "react";
-import { createPortal } from "react-dom";
-import { GripHorizontal, Maximize2, Minimize2, Plus, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/shared/spinner";
-import { useAuth } from "@/hooks/use-auth";
 import { UpgradeCard } from "@/components/platform/upgrade-card";
+import { Spinner } from "@/components/shared/spinner";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { type WidgetDefinition, type WidgetPlacement, getWidget, getAllWidgets } from "./widget-registry";
-import { useWorkspaceStore, useActiveLayouts } from "@/lib/stores/workspace-store";
-import { WidgetContextGuard } from "./widget-context-guard";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { WidgetHeaderEndSlotContext } from "@/components/widgets/widget-chrome-context";
+import { useAuth } from "@/hooks/use-auth";
+import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
+import { cn } from "@/lib/utils";
+import { GripHorizontal, Maximize2, Minimize2, Plus, X } from "lucide-react";
+import * as React from "react";
+import { createPortal } from "react-dom";
+import { WidgetContextGuard } from "./widget-context-guard";
+import { type WidgetDefinition, type WidgetPlacement, getAllWidgets, getWidget } from "./widget-registry";
 
 interface WidgetWrapperProps {
   definition: WidgetDefinition;

@@ -1,9 +1,9 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { BarChart3, FileText, Zap } from "lucide-react";
-import { InstructionsSummaryWidget } from "./instructions-summary-widget";
-import { InstructionsPipelineTableWidget } from "./instructions-pipeline-table-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { InstructionsDetailPanelWidget } from "./instructions-detail-panel-widget";
+import { InstructionsPipelineTableWidget } from "./instructions-pipeline-table-widget";
+import { InstructionsSummaryWidget } from "./instructions-summary-widget";
 
 registerPresets("instructions", [
   {
@@ -27,6 +27,19 @@ registerPresets("instructions", [
       { widgetId: "instr-summary", instanceId: "instr-summary-2", x: 0, y: 0, w: 12, h: 1 },
       { widgetId: "instr-pipeline-table", instanceId: "instr-pipeline-table-2", x: 0, y: 1, w: 8, h: 11 },
       { widgetId: "instr-detail-panel", instanceId: "instr-detail-panel-1", x: 8, y: 1, w: 4, h: 11 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "instructions-full",
+    name: "Full",
+    tab: "instructions",
+    isPreset: true,
+    layouts: [
+      { widgetId: "instr-summary", instanceId: "instr-summary-full", x: 0, y: 0, w: 12, h: 1 },
+      { widgetId: "instr-pipeline-table", instanceId: "instr-pipeline-table-full", x: 0, y: 1, w: 12, h: 11 },
+      { widgetId: "instr-detail-panel", instanceId: "instr-detail-panel-full", x: 0, y: 12, w: 12, h: 3 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

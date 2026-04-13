@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { isServiceTabActive } from "@/lib/utils/nav-helpers";
 import type { LucideIcon } from "lucide-react";
 import {
+  Activity,
   BarChart3,
   Bell,
   BookMarked,
@@ -294,6 +295,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: LayoutDashboard,
   },
   { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
+  { label: "Markets", href: "/services/trading/markets", icon: Activity },
   { label: "Book", href: "/services/trading/book", icon: BookMarked },
   { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
   { label: "Positions", href: "/services/trading/positions", icon: BookOpen },

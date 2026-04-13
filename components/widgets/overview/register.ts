@@ -1,11 +1,11 @@
-import { registerWidget } from "../widget-registry";
+import { ArrowRightLeft, BarChart3, Bell, LayoutGrid, LineChart, PieChart, Server, Table2 } from "lucide-react";
 import { registerPresets } from "../preset-registry";
-import { BarChart3, LineChart, LayoutGrid, Table2, PieChart, Bell, ArrowRightLeft, Server } from "lucide-react";
-import { ScopeSummaryWidget } from "./scope-summary-widget";
-import { PnLChartWidget } from "./pnl-chart-widget";
+import { registerWidget } from "../widget-registry";
+import { AlertsPreviewWidget, HealthGridWidget, PnLAttributionWidget, RecentFillsWidget } from "./bottom-widgets";
 import { KPIStripWidget } from "./kpi-strip-widget";
+import { PnLChartWidget } from "./pnl-chart-widget";
+import { ScopeSummaryWidget } from "./scope-summary-widget";
 import { StrategyTableWidget } from "./strategy-table-widget";
-import { PnLAttributionWidget, AlertsPreviewWidget, RecentFillsWidget, HealthGridWidget } from "./bottom-widgets";
 
 registerPresets("overview", [
   {
@@ -22,6 +22,24 @@ registerPresets("overview", [
       { widgetId: "alerts-preview", instanceId: "alerts-preview-1", x: 3, y: 12, w: 3, h: 3 },
       { widgetId: "recent-fills", instanceId: "recent-fills-1", x: 6, y: 12, w: 3, h: 3 },
       { widgetId: "health-grid", instanceId: "health-grid-1", x: 9, y: 12, w: 3, h: 3 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "overview-full",
+    name: "Full",
+    tab: "overview",
+    isPreset: true,
+    layouts: [
+      { widgetId: "scope-summary", instanceId: "scope-summary-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "kpi-strip", instanceId: "kpi-strip-full", x: 0, y: 2, w: 12, h: 2 },
+      { widgetId: "pnl-chart", instanceId: "pnl-chart-full", x: 0, y: 4, w: 12, h: 4 },
+      { widgetId: "strategy-table", instanceId: "strategy-table-full", x: 0, y: 8, w: 12, h: 4 },
+      { widgetId: "pnl-attribution", instanceId: "pnl-attribution-full", x: 0, y: 12, w: 3, h: 3 },
+      { widgetId: "alerts-preview", instanceId: "alerts-preview-full", x: 3, y: 12, w: 3, h: 3 },
+      { widgetId: "recent-fills", instanceId: "recent-fills-full", x: 6, y: 12, w: 3, h: 3 },
+      { widgetId: "health-grid", instanceId: "health-grid-full", x: 9, y: 12, w: 3, h: 3 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

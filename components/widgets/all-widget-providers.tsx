@@ -11,20 +11,20 @@
  */
 
 import * as React from "react";
-import { PositionsDataProvider } from "./positions/positions-data-context";
-import { OrdersDataProvider } from "./orders/orders-data-context";
+import { AccountsDataProvider } from "./accounts/accounts-data-context";
 import { AlertsDataProvider } from "./alerts/alerts-data-context";
-import { StrategiesDataProvider } from "./strategies/strategies-data-context";
-import { SportsDataProvider } from "./sports/sports-data-context";
-import { InstructionsDataProvider } from "./instructions/instructions-data-context";
-import { PnLDataProvider } from "./pnl/pnl-data-context";
-import { MarketsDataProvider } from "./markets/markets-data-context";
-import { DeFiDataProvider } from "./defi/defi-data-context";
-import { PredictionsDataProvider } from "./predictions/predictions-data-context";
 import { BookTradeDataProvider } from "./book/book-data-context";
 import { BundlesDataProvider } from "./bundles/bundles-data-context";
-import { AccountsDataProvider } from "./accounts/accounts-data-context";
+import { DeFiDataProvider } from "./defi/defi-data-context";
+import { InstructionsDataProvider } from "./instructions/instructions-data-context";
+import { MarketsDataProvider } from "./markets/markets-data-context";
 import { OptionsDataProvider } from "./options/options-data-context";
+import { OrdersDataProvider } from "./orders/orders-data-context";
+import { PnLDataProvider } from "./pnl/pnl-data-context";
+import { PositionsDataProvider } from "./positions/positions-data-context";
+import { PredictionsDataProvider } from "./predictions/predictions-data-context";
+import { SportsDataProvider } from "./sports/sports-data-context";
+import { StrategiesDataProvider } from "./strategies/strategies-data-context";
 
 // NOTE: OverviewDataProvider, TerminalDataProvider, and RiskDataProvider
 // require a `value` prop and are mounted by their respective page components.
@@ -46,9 +46,7 @@ export function AllWidgetProviders({ children }: { children: React.ReactNode }) 
                         <BookTradeDataProvider>
                           <BundlesDataProvider>
                             <AccountsDataProvider>
-                              <OptionsDataProvider>
-                                {children}
-                              </OptionsDataProvider>
+                              <OptionsDataProvider>{children}</OptionsDataProvider>
                             </AccountsDataProvider>
                           </BundlesDataProvider>
                         </BookTradeDataProvider>

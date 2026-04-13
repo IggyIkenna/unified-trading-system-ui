@@ -1,11 +1,11 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import { ArrowRightLeft, Clock, DollarSign, FileText, ShieldCheck, Wallet } from "lucide-react";
-import { AccountsKpiWidget } from "./accounts-kpi-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { AccountsBalanceTableWidget } from "./accounts-balance-table-widget";
+import { AccountsKpiWidget } from "./accounts-kpi-widget";
 import { AccountsMarginUtilWidget } from "./accounts-margin-util-widget";
-import { AccountsTransferWidget } from "./accounts-transfer-widget";
 import { AccountsTransferHistoryWidget } from "./accounts-transfer-history-widget";
+import { AccountsTransferWidget } from "./accounts-transfer-widget";
 import { SaftPortfolioWidget } from "./saft-portfolio-widget";
 
 registerPresets("accounts", [
@@ -35,6 +35,22 @@ registerPresets("accounts", [
         w: 12,
         h: 16,
       },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "accounts-full",
+    name: "Full",
+    tab: "accounts",
+    isPreset: true,
+    layouts: [
+      { widgetId: "accounts-kpi-strip", instanceId: "accounts-kpi-strip-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "accounts-balance-table", instanceId: "accounts-balance-table-full", x: 0, y: 2, w: 12, h: 5 },
+      { widgetId: "accounts-margin-util", instanceId: "accounts-margin-util-full", x: 0, y: 7, w: 12, h: 4 },
+      { widgetId: "accounts-transfer", instanceId: "accounts-transfer-full", x: 0, y: 11, w: 4, h: 7 },
+      { widgetId: "accounts-transfer-history", instanceId: "accounts-transfer-history-full", x: 4, y: 11, w: 8, h: 4 },
+      { widgetId: "saft-portfolio", instanceId: "saft-portfolio-full", x: 0, y: 18, w: 12, h: 20 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

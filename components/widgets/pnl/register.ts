@@ -1,12 +1,15 @@
-import { registerWidget } from "../widget-registry";
+import { Activity, BarChart3, LineChart, TrendingUp } from "lucide-react";
 import { registerPresets } from "../preset-registry";
-import { Activity, BarChart3, FileText, LayoutGrid, LineChart, TrendingUp } from "lucide-react";
-import { PnlControlsWidget } from "./pnl-controls-widget";
-import { PnlWaterfallWidget } from "./pnl-waterfall-widget";
-import { PnlTimeSeriesWidget } from "./pnl-time-series-widget";
+import { registerWidget } from "../widget-registry";
 import { PnlByClientWidget } from "./pnl-by-client-widget";
 import { PnlFactorDrilldownWidget } from "./pnl-factor-drilldown-widget";
-import { PnlReportButtonWidget } from "./pnl-report-button-widget";
+import { PnlTimeSeriesWidget } from "./pnl-time-series-widget";
+import { PnlWaterfallWidget } from "./pnl-waterfall-widget";
+
+// Controls are now embedded in the Waterfall widget header — no standalone
+// pnl-controls widget. The PnLDataProvider still owns all shared state
+// (date range, data mode, etc.) so every other widget reacts to changes
+// made inside the waterfall.
 
 registerPresets("pnl", [
   {
@@ -15,10 +18,10 @@ registerPresets("pnl", [
     tab: "pnl",
     isPreset: true,
     layouts: [
-      { widgetId: "pnl-controls", instanceId: "pnl-controls-1", x: 0, y: 0, w: 12, h: 2 },
-      { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-1", x: 0, y: 2, w: 7, h: 8 },
-      { widgetId: "pnl-by-client", instanceId: "pnl-by-client-1", x: 7, y: 2, w: 5, h: 8 },
-      { widgetId: "pnl-factor-drilldown", instanceId: "pnl-factor-drilldown-1", x: 0, y: 10, w: 12, h: 5 },
+      // Waterfall is taller to accommodate its embedded controls bar
+      { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-1", x: 0, y: 0, w: 7, h: 11 },
+      { widgetId: "pnl-by-client", instanceId: "pnl-by-client-1", x: 7, y: 0, w: 5, h: 11 },
+      { widgetId: "pnl-factor-drilldown", instanceId: "pnl-factor-drilldown-1", x: 0, y: 11, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -29,10 +32,24 @@ registerPresets("pnl", [
     tab: "pnl",
     isPreset: true,
     layouts: [
-      { widgetId: "pnl-controls", instanceId: "pnl-controls-1", x: 0, y: 0, w: 12, h: 2 },
-      { widgetId: "pnl-time-series", instanceId: "pnl-time-series-1", x: 0, y: 2, w: 12, h: 5 },
-      { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-1", x: 0, y: 7, w: 7, h: 6 },
-      { widgetId: "pnl-by-client", instanceId: "pnl-by-client-1", x: 7, y: 7, w: 5, h: 6 },
+      { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-ts", x: 0, y: 0, w: 7, h: 11 },
+      { widgetId: "pnl-by-client", instanceId: "pnl-by-client-ts", x: 7, y: 0, w: 5, h: 11 },
+      { widgetId: "pnl-time-series", instanceId: "pnl-time-series-ts", x: 0, y: 11, w: 12, h: 7 },
+      { widgetId: "pnl-factor-drilldown", instanceId: "pnl-factor-drilldown-ts", x: 0, y: 18, w: 12, h: 5 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "pnl-full",
+    name: "Full",
+    tab: "pnl",
+    isPreset: true,
+    layouts: [
+      { widgetId: "pnl-waterfall", instanceId: "pnl-waterfall-full", x: 0, y: 0, w: 7, h: 11 },
+      { widgetId: "pnl-by-client", instanceId: "pnl-by-client-full", x: 7, y: 0, w: 5, h: 11 },
+      { widgetId: "pnl-time-series", instanceId: "pnl-time-series-full", x: 0, y: 11, w: 12, h: 7 },
+      { widgetId: "pnl-factor-drilldown", instanceId: "pnl-factor-drilldown-full", x: 0, y: 18, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -42,30 +59,14 @@ registerPresets("pnl", [
 const PNL_ENTITLEMENTS = ["execution-basic", "execution-full"] as const;
 
 registerWidget({
-  id: "pnl-controls",
-  label: "P&L Controls",
-  description: "View mode, live/batch, date range, group-by, data mode badge.",
-  icon: LayoutGrid,
-  minW: 4,
-  minH: 2,
-  defaultW: 12,
-  defaultH: 2,
-  requiredEntitlements: [...PNL_ENTITLEMENTS],
-  category: "P&L",
-  availableOn: ["pnl"],
-  singleton: true,
-  component: PnlControlsWidget,
-});
-
-registerWidget({
   id: "pnl-waterfall",
   label: "P&L Waterfall",
-  description: "Structural P&L, factor bars with drill-down, residual, net total.",
+  description: "Controls, structural P&L, factor attribution with drill-down, DeFi breakdown, residual, net total.",
   icon: BarChart3,
   minW: 4,
-  minH: 4,
+  minH: 6,
   defaultW: 7,
-  defaultH: 8,
+  defaultH: 11,
   requiredEntitlements: [...PNL_ENTITLEMENTS],
   category: "P&L",
   availableOn: ["pnl"],
@@ -76,12 +77,13 @@ registerWidget({
 registerWidget({
   id: "pnl-time-series",
   label: "P&L Time Series",
-  description: "Stacked area chart of ten factors over time.",
+  description:
+    "Multi-line chart: one line per factor showing cumulative P&L over time. Includes backtest vs live view.",
   icon: LineChart,
   minW: 4,
-  minH: 3,
+  minH: 4,
   defaultW: 12,
-  defaultH: 5,
+  defaultH: 7,
   requiredEntitlements: [...PNL_ENTITLEMENTS],
   category: "P&L",
   availableOn: ["pnl"],
@@ -97,7 +99,7 @@ registerWidget({
   minW: 3,
   minH: 3,
   defaultW: 5,
-  defaultH: 8,
+  defaultH: 11,
   requiredEntitlements: [...PNL_ENTITLEMENTS],
   category: "P&L",
   availableOn: ["pnl"],
@@ -108,7 +110,7 @@ registerWidget({
 registerWidget({
   id: "pnl-factor-drilldown",
   label: "Factor Breakdown",
-  description: "Per-strategy breakdown for the selected factor plus mini time series.",
+  description: "Factor summary table — click any factor for per-strategy attribution and mini time series.",
   icon: Activity,
   minW: 4,
   minH: 3,
@@ -119,20 +121,4 @@ registerWidget({
   availableOn: ["pnl"],
   singleton: true,
   component: PnlFactorDrilldownWidget,
-});
-
-registerWidget({
-  id: "pnl-report-button",
-  label: "P&L Report",
-  description: "Placeholder CTA to generate a P&L report.",
-  icon: FileText,
-  minW: 2,
-  minH: 1,
-  defaultW: 2,
-  defaultH: 1,
-  requiredEntitlements: [...PNL_ENTITLEMENTS],
-  category: "P&L",
-  availableOn: ["pnl"],
-  singleton: true,
-  component: PnlReportButtonWidget,
 });

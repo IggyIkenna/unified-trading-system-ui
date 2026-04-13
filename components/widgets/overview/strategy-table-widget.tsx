@@ -1,18 +1,20 @@
 "use client";
 
+import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
+import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Spinner } from "@/components/shared/spinner";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ---------------------------------------------------------------------------
 // Latency class badge — derived from archetype
@@ -118,6 +120,23 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
     }
   }, [grouped, collapsedGroups]);
 
+  const assetClassOptions = React.useMemo(
+    () => [...new Set((allFiltered as Array<Record<string, unknown>>).map((s) => String(s.assetClass)))].sort(),
+    [allFiltered],
+  );
+
+  const activeFilterCount = [
+    strategySearch,
+    assetClassFilter !== "all" ? assetClassFilter : "",
+    statusFilter !== "all" ? statusFilter : "",
+  ].filter(Boolean).length;
+
+  const resetFilters = () => {
+    setStrategySearch("");
+    setAssetClassFilter("all");
+    setStatusFilter("all");
+  };
+
   if (!ctx) {
     return (
       <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
@@ -126,7 +145,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
     );
   }
 
-  const { strategyPerformance, realtimePnl, perfLoading, formatDollar } = ctx;
+  const { strategyPerformance: _sp, realtimePnl, perfLoading, formatDollar } = ctx;
 
   const toggleGroup = (g: string) => {
     setCollapsedGroups((prev) => {
@@ -139,221 +158,233 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
 
   const toggleSort = (col: string) => setStrategySort(strategySort === col ? `-${col}` : col);
 
+  const toolbar = (
+    <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/40 bg-muted/10 overflow-x-auto min-w-0">
+      {perfLoading && <Spinner size="sm" className="size-3.5 text-muted-foreground shrink-0" />}
+
+      <div className="relative shrink-0">
+        <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+        <Input
+          value={strategySearch}
+          onChange={(e) => setStrategySearch(e.target.value)}
+          placeholder="Search strategies…"
+          className="h-7 pl-7 pr-2 text-xs w-40"
+        />
+      </div>
+
+      <Select value={assetClassFilter} onValueChange={setAssetClassFilter}>
+        <SelectTrigger className="h-7 text-xs shrink-0 w-32">
+          <SelectValue placeholder="Asset Class" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Classes</SelectItem>
+          {assetClassOptions.filter(Boolean).map((ac) => (
+            <SelectItem key={ac} value={ac}>
+              {ac}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <SelectTrigger className="h-7 text-xs shrink-0 w-28">
+          <SelectValue placeholder="Status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Status</SelectItem>
+          <SelectItem value="live">Live</SelectItem>
+          <SelectItem value="paused">Paused</SelectItem>
+          <SelectItem value="warning">Warning</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {activeFilterCount > 0 && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 text-xs gap-1 text-muted-foreground shrink-0"
+          onClick={resetFilters}
+        >
+          <RotateCcw className="size-3" />
+          Reset ({activeFilterCount})
+        </Button>
+      )}
+
+      <div className="flex-1 min-w-2" />
+
+      <span className="text-xs text-muted-foreground shrink-0">{filtered.length} strategies</span>
+      <span className="font-mono text-xs shrink-0">
+        P&L:{" "}
+        <span
+          className={cn(
+            filtered.reduce((s, x) => s + (Number(x.pnl) || 0), 0) >= 0 ? "text-emerald-400" : "text-rose-400",
+          )}
+        >
+          {formatDollar(filtered.reduce((s, x) => s + (Number(x.pnl) || 0), 0))}
+        </span>
+      </span>
+      <Link href="/services/trading/strategies" className="shrink-0">
+        <Button variant="outline" size="sm" className="h-7 text-xs">
+          View All
+        </Button>
+      </Link>
+    </div>
+  );
+
   return (
-    <div className="h-full overflow-auto">
-      <Card className="border-0 rounded-none h-full">
-        <CardHeader className="pb-2 pt-2 px-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-wrap">
-              {perfLoading && <Spinner size="sm" className="size-3.5 text-muted-foreground" />}
-              <input
-                type="text"
-                placeholder="Search..."
-                value={strategySearch}
-                onChange={(e) => setStrategySearch(e.target.value)}
-                className="h-7 w-36 px-2 text-xs rounded-md border border-border bg-background focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              <select
-                value={assetClassFilter}
-                onChange={(e) => setAssetClassFilter(e.target.value)}
-                className="h-7 px-2 text-xs rounded-md border border-border bg-background"
+    <LiveFeedWidget header={toolbar}>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="text-xs">
+              <TableHead className="cursor-pointer hover:text-foreground" onClick={() => toggleSort("name")}>
+                Strategy
+              </TableHead>
+              <TableHead className="text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("pnl")}>
+                P&L
+              </TableHead>
+              <TableHead
+                className="text-right cursor-pointer hover:text-foreground"
+                onClick={() => toggleSort("sharpe")}
               >
-                <option value="all">All Classes</option>
-                {[...new Set((strategyPerformance as Array<Record<string, unknown>>).map((s) => String(s.assetClass)))]
-                  .sort()
-                  .map((ac) => (
-                    <option key={ac} value={ac}>
-                      {ac}
-                    </option>
-                  ))}
-              </select>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-7 px-2 text-xs rounded-md border border-border bg-background"
+                Sharpe
+              </TableHead>
+              <TableHead className="text-right">Drawdown</TableHead>
+              <TableHead
+                className="text-right cursor-pointer hover:text-foreground"
+                onClick={() => toggleSort("exposure")}
               >
-                <option value="all">All Status</option>
-                <option value="live">Live</option>
-                <option value="paused">Paused</option>
-                <option value="warning">Warning</option>
-              </select>
-            </div>
-            <Link href="/services/trading/strategies">
-              <Button variant="ghost" size="sm" className="h-7 text-xs">
-                View All
-              </Button>
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent className="px-3 pb-2 overflow-x-auto">
-          <div className="flex items-center gap-6 mb-3 pb-3 border-b border-border text-xs">
-            <span className="text-muted-foreground">{filtered.length} strategies</span>
-            <span className="font-mono">
-              P&L:{" "}
-              <span
-                className={cn(
-                  filtered.reduce((s, x) => s + (Number(x.pnl) || 0), 0) >= 0 ? "text-emerald-400" : "text-rose-400",
-                )}
-              >
-                {formatDollar(filtered.reduce((s, x) => s + (Number(x.pnl) || 0), 0))}
-              </span>
-            </span>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow className="text-xs">
-                <TableHead className="cursor-pointer hover:text-foreground" onClick={() => toggleSort("name")}>
-                  Strategy
-                </TableHead>
-                <TableHead
-                  className="text-right cursor-pointer hover:text-foreground"
-                  onClick={() => toggleSort("pnl")}
-                >
-                  P&L
-                </TableHead>
-                <TableHead
-                  className="text-right cursor-pointer hover:text-foreground"
-                  onClick={() => toggleSort("sharpe")}
-                >
-                  Sharpe
-                </TableHead>
-                <TableHead className="text-right">Drawdown</TableHead>
-                <TableHead
-                  className="text-right cursor-pointer hover:text-foreground"
-                  onClick={() => toggleSort("exposure")}
-                >
-                  Exposure
-                </TableHead>
-                <TableHead className="text-right">NAV</TableHead>
-                <TableHead>Asset Class</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Object.entries(grouped).map(([group, items]) => {
-                const isCollapsed = collapsedGroups === null || collapsedGroups.has(group);
-                const gPnl = items.reduce((s, x) => s + (Number(x.pnl) || 0), 0);
-                return (
-                  <React.Fragment key={group}>
-                    <TableRow
-                      className="text-xs cursor-pointer hover:bg-muted/50 border-b-0"
-                      onClick={() => toggleGroup(group)}
+                Exposure
+              </TableHead>
+              <TableHead className="text-right">NAV</TableHead>
+              <TableHead>Asset Class</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {Object.entries(grouped).map(([group, items]) => {
+              const isCollapsed = collapsedGroups === null || collapsedGroups.has(group);
+              const gPnl = items.reduce((s, x) => s + (Number(x.pnl) || 0), 0);
+              return (
+                <React.Fragment key={group}>
+                  <TableRow
+                    className="text-xs cursor-pointer hover:bg-muted/50 border-b-0"
+                    onClick={() => toggleGroup(group)}
+                  >
+                    <TableCell className="font-medium">
+                      <span className="flex items-center gap-1.5">
+                        <ChevronDown className={cn("size-3 transition-transform", isCollapsed && "-rotate-90")} />
+                        {group}
+                        <Badge variant="outline" className="text-[9px] h-4 px-1">
+                          {items.length}
+                        </Badge>
+                      </span>
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        "text-right font-mono tabular-nums font-medium",
+                        gPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
+                      )}
                     >
-                      <TableCell className="font-medium">
-                        <span className="flex items-center gap-1.5">
-                          <ChevronDown className={cn("size-3 transition-transform", isCollapsed && "-rotate-90")} />
-                          {group}
-                          <Badge variant="outline" className="text-[9px] h-4 px-1">
-                            {items.length}
-                          </Badge>
-                        </span>
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          "text-right font-mono tabular-nums font-medium",
-                          gPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
-                        )}
-                      >
-                        {formatDollar(gPnl)}
-                      </TableCell>
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                      <TableCell />
-                    </TableRow>
-                    {!isCollapsed &&
-                      items.map((s) => {
-                        const livePnl = realtimePnl[String(s.id)] ?? Number(s.pnl) ?? 0;
-                        return (
-                          <TableRow key={String(s.id)} className="text-xs">
-                            <TableCell className="pl-8">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <Link
-                                  href={`/services/trading/strategies/${s.id}`}
-                                  className="font-medium hover:underline"
-                                >
-                                  {String(s.name)}
-                                </Link>
-                                <LatencyBadge archetype={String(s.archetype ?? "")} />
-                              </div>
-                            </TableCell>
-                            <TableCell
+                      {formatDollar(gPnl)}
+                    </TableCell>
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                    <TableCell />
+                  </TableRow>
+                  {!isCollapsed &&
+                    items.map((s) => {
+                      const livePnl = realtimePnl[String(s.id)] ?? Number(s.pnl) ?? 0;
+                      return (
+                        <TableRow key={String(s.id)} className="text-xs">
+                          <TableCell className="pl-8">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <Link
+                                href={`/services/trading/strategies/${s.id}`}
+                                className="font-medium hover:underline"
+                              >
+                                {String(s.name)}
+                              </Link>
+                              <LatencyBadge archetype={String(s.archetype ?? "")} />
+                            </div>
+                          </TableCell>
+                          <TableCell
+                            className={cn(
+                              "text-right font-mono tabular-nums",
+                              livePnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
+                            )}
+                          >
+                            {formatDollar(livePnl)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {formatNumber(Number(s.sharpe) || 0, 2)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums text-rose-400">
+                            {formatPercent(Number(s.maxDrawdown) || 0, 1)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {formatDollar(Number(s.exposure) || 0)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono tabular-nums">
+                            {formatDollar(Number(s.nav) || 0)}
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-[10px] text-muted-foreground">{String(s.assetClass)}</span>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
                               className={cn(
-                                "text-right font-mono tabular-nums",
-                                livePnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
+                                "text-[10px]",
+                                s.status === "live" && "text-emerald-500 border-emerald-500/30",
+                                s.status === "warning" && "text-amber-500 border-amber-500/30",
+                                s.status === "paused" && "text-muted-foreground",
                               )}
                             >
-                              {formatDollar(livePnl)}
-                            </TableCell>
-                            <TableCell className="text-right font-mono tabular-nums">
-                              {formatNumber(Number(s.sharpe) || 0, 2)}
-                            </TableCell>
-                            <TableCell className="text-right font-mono tabular-nums text-rose-400">
-                              {formatPercent(Number(s.maxDrawdown) || 0, 1)}
-                            </TableCell>
-                            <TableCell className="text-right font-mono tabular-nums">
-                              {formatDollar(Number(s.exposure) || 0)}
-                            </TableCell>
-                            <TableCell className="text-right font-mono tabular-nums">
-                              {formatDollar(Number(s.nav) || 0)}
-                            </TableCell>
-                            <TableCell>
-                              <span className="text-[10px] text-muted-foreground">{String(s.assetClass)}</span>
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={cn(
-                                  "text-[10px]",
-                                  s.status === "live" && "text-emerald-500 border-emerald-500/30",
-                                  s.status === "warning" && "text-amber-500 border-amber-500/30",
-                                  s.status === "paused" && "text-muted-foreground",
-                                )}
-                              >
-                                {String(s.status)}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                  "h-6 px-2 text-[10px]",
-                                  s.status === "live" || s.status === "warning"
-                                    ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
-                                    : "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10",
-                                )}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {s.status === "live" || s.status === "warning" ? "Pause" : "Resume"}
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </React.Fragment>
-                );
-              })}
-            </TableBody>
-          </Table>
-          {filtered.length > 15 && (
-            <div className="pt-2 border-t border-border mt-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full text-xs text-muted-foreground"
-                onClick={() => setShowAll(!showAll)}
-              >
-                {showAll ? `Show less (15 of ${filtered.length})` : `Show all ${filtered.length} strategies`}
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                              {String(s.status)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className={cn(
+                                "h-6 px-2 text-[10px]",
+                                s.status === "live" || s.status === "warning"
+                                  ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
+                                  : "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10",
+                              )}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {s.status === "live" || s.status === "warning" ? "Pause" : "Resume"}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </React.Fragment>
+              );
+            })}
+          </TableBody>
+        </Table>
+        {filtered.length > 15 && (
+          <div className="pt-2 border-t border-border mt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full text-xs text-muted-foreground"
+              onClick={() => setShowAll(!showAll)}
+            >
+              {showAll ? `Show less (15 of ${filtered.length})` : `Show all ${filtered.length} strategies`}
+            </Button>
+          </div>
+        )}
+      </div>
+    </LiveFeedWidget>
   );
 }

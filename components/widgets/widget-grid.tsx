@@ -4,9 +4,9 @@ import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-stor
 import * as React from "react";
 import type { Layout, LayoutItem, ResponsiveLayouts } from "react-grid-layout";
 import { ResponsiveGridLayout, useContainerWidth, verticalCompactor } from "react-grid-layout";
+import { AllWidgetProviders } from "./all-widget-providers";
 import { getWidget, type WidgetPlacement } from "./widget-registry";
 import { WidgetWrapper } from "./widget-wrapper";
-import { AllWidgetProviders } from "./all-widget-providers";
 
 import "react-grid-layout/css/styles.css";
 

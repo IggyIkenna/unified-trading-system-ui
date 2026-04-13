@@ -29,6 +29,7 @@ export interface AccountsDataContextValue extends AccountsData {
   transferHistoryLoading: boolean;
   transferHistoryError: boolean;
   refetchTransferHistory: () => void;
+  addTransferEntry: (entry: Omit<TransferHistoryEntry, "timestamp" | "txHash">) => void;
   mode?: string;
 }
 
@@ -53,6 +54,18 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
   } = useTransferHistory();
 
   const [transferOpen, setTransferOpen] = React.useState(false);
+  const [localEntries, setLocalEntries] = React.useState<TransferHistoryEntry[]>([]);
+
+  const addTransferEntry = React.useCallback((entry: Omit<TransferHistoryEntry, "timestamp" | "txHash">) => {
+    const txHash = `0x${Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("")}…`;
+    const timestamp = new Date().toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setLocalEntries((prev) => [{ ...entry, timestamp, txHash }, ...prev]);
+  }, []);
 
   // Determine which venues belong to the selected org(s)
   const orgVenues = React.useMemo(() => {
@@ -117,10 +130,11 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
       venueMargins,
       transferOpen,
       setTransferOpen,
-      transferHistory,
+      transferHistory: [...localEntries, ...transferHistory],
       transferHistoryLoading,
       transferHistoryError,
       refetchTransferHistory,
+      addTransferEntry,
       mode,
     }),
     [
@@ -133,10 +147,12 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
       totalLocked,
       venueMargins,
       transferOpen,
+      localEntries,
       transferHistory,
       transferHistoryLoading,
       transferHistoryError,
       refetchTransferHistory,
+      addTransferEntry,
       isPaper,
       isBatch,
       mode,

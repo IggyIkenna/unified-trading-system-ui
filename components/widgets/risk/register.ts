@@ -1,30 +1,30 @@
-import { registerWidget } from "../widget-registry";
-import { registerPresets } from "../preset-registry";
 import {
-  Shield,
-  Zap,
-  BarChart3,
-  AlertTriangle,
-  TrendingUp,
   Activity,
-  Wallet,
+  AlertTriangle,
+  BarChart3,
   Clock,
-  Target,
   LineChart,
+  Shield,
+  Target,
+  TrendingUp,
+  Wallet,
+  Zap,
 } from "lucide-react";
-import { RiskKpiStripWidget } from "./risk-kpi-strip-widget";
-import { RiskStrategyHeatmapWidget } from "./risk-strategy-heatmap-widget";
-import { RiskUtilizationWidget } from "./risk-utilization-widget";
-import { RiskVarChartWidget } from "./risk-var-chart-widget";
-import { RiskStressTableWidget } from "./risk-stress-table-widget";
-import { RiskExposureAttributionWidget } from "./risk-exposure-attribution-widget";
-import { RiskGreeksSummaryWidget } from "./risk-greeks-summary-widget";
-import { RiskMarginWidget } from "./risk-margin-widget";
-import { RiskTermStructureWidget } from "./risk-term-structure-widget";
-import { RiskLimitsHierarchyWidget } from "./risk-limits-hierarchy-widget";
-import { RiskWhatIfSliderWidget } from "./risk-what-if-slider-widget";
+import { registerPresets } from "../preset-registry";
+import { registerWidget } from "../widget-registry";
 import { RiskCircuitBreakersWidget } from "./risk-circuit-breakers-widget";
 import { RiskCorrelationHeatmapWidget } from "./risk-correlation-heatmap-widget";
+import { RiskExposureAttributionWidget } from "./risk-exposure-attribution-widget";
+import { RiskGreeksSummaryWidget } from "./risk-greeks-summary-widget";
+import { RiskKpiStripWidget } from "./risk-kpi-strip-widget";
+import { RiskLimitsHierarchyWidget } from "./risk-limits-hierarchy-widget";
+import { RiskMarginWidget } from "./risk-margin-widget";
+import { RiskStrategyHeatmapWidget } from "./risk-strategy-heatmap-widget";
+import { RiskStressTableWidget } from "./risk-stress-table-widget";
+import { RiskTermStructureWidget } from "./risk-term-structure-widget";
+import { RiskUtilizationWidget } from "./risk-utilization-widget";
+import { RiskVarChartWidget } from "./risk-var-chart-widget";
+import { RiskWhatIfSliderWidget } from "./risk-what-if-slider-widget";
 
 // ---------------------------------------------------------------------------
 // Presets
@@ -65,6 +65,29 @@ registerPresets("risk", [
       { widgetId: "risk-var-chart", instanceId: "risk-var-1", x: 0, y: 6, w: 6, h: 4 },
       { widgetId: "risk-margin", instanceId: "risk-margin-1", x: 6, y: 6, w: 6, h: 4 },
       { widgetId: "risk-circuit-breakers", instanceId: "risk-cb-1", x: 0, y: 10, w: 12, h: 3 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "risk-full",
+    name: "Full",
+    tab: "risk",
+    isPreset: true,
+    layouts: [
+      { widgetId: "risk-kpi-strip", instanceId: "risk-kpi-strip-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "risk-strategy-heatmap", instanceId: "risk-strategy-heatmap-full", x: 0, y: 2, w: 12, h: 4 },
+      { widgetId: "risk-utilization", instanceId: "risk-utilization-full", x: 0, y: 6, w: 6, h: 3 },
+      { widgetId: "risk-var-chart", instanceId: "risk-var-chart-full", x: 6, y: 6, w: 6, h: 4 },
+      { widgetId: "risk-stress-table", instanceId: "risk-stress-table-full", x: 0, y: 10, w: 12, h: 4 },
+      { widgetId: "risk-exposure-attribution", instanceId: "risk-exposure-attribution-full", x: 0, y: 14, w: 12, h: 5 },
+      { widgetId: "risk-greeks-summary", instanceId: "risk-greeks-summary-full", x: 0, y: 19, w: 6, h: 5 },
+      { widgetId: "risk-margin", instanceId: "risk-margin-full", x: 6, y: 19, w: 6, h: 5 },
+      { widgetId: "risk-term-structure", instanceId: "risk-term-structure-full", x: 0, y: 24, w: 6, h: 4 },
+      { widgetId: "risk-limits-hierarchy", instanceId: "risk-limits-hierarchy-full", x: 6, y: 24, w: 6, h: 5 },
+      { widgetId: "risk-what-if-slider", instanceId: "risk-what-if-slider-full", x: 0, y: 29, w: 12, h: 2 },
+      { widgetId: "risk-circuit-breakers", instanceId: "risk-circuit-breakers-full", x: 0, y: 31, w: 12, h: 3 },
+      { widgetId: "risk-correlation-heatmap", instanceId: "risk-correlation-heatmap-full", x: 0, y: 34, w: 12, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

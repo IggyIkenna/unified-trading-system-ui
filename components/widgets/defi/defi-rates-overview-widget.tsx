@@ -1,10 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { TableWidget } from "@/components/shared/table-widget";
 import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
-import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { DeFiRatesRow } from "@/lib/types/defi";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
@@ -13,6 +14,41 @@ function formatTvl(usd: number): string {
   if (usd >= 1e6) return `$${formatNumber(usd / 1e6, 0)}M`;
   return `$${formatNumber(usd, 0)}`;
 }
+
+const columns: ColumnDef<DeFiRatesRow, unknown>[] = [
+  {
+    accessorKey: "protocol",
+    header: "Protocol / Pool",
+    enableSorting: true,
+    cell: ({ row }) => <span>{row.getValue<string>("protocol")}</span>,
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+    enableSorting: true,
+    cell: ({ row }) => <span>{row.getValue<string>("category")}</span>,
+  },
+  {
+    accessorKey: "detail",
+    header: "Detail",
+    enableSorting: false,
+    cell: ({ row }) => <span className="text-muted-foreground">{row.getValue<string>("detail")}</span>,
+  },
+  {
+    accessorKey: "apyPct",
+    header: () => <span className="flex justify-end">APY / APR %</span>,
+    enableSorting: true,
+    cell: ({ row }) => <div className="text-right font-mono">{formatNumber(row.getValue<number>("apyPct"), 2)}</div>,
+  },
+  {
+    accessorKey: "tvlUsd",
+    header: () => <span className="flex justify-end">TVL</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-right font-mono text-muted-foreground">{formatTvl(row.getValue<number>("tvlUsd"))}</div>
+    ),
+  },
+];
 
 export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
   const { lendingProtocols, stakingProtocols, liquidityPools } = useDeFiData();
@@ -80,33 +116,18 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
     { label: "Max APY / APR (mock)", value: `${formatPercent(maxApy, 1)}`, sentiment: "positive" },
   ];
 
-  const columns: DataTableColumn<DeFiRatesRow>[] = [
-    { key: "protocol", label: "Protocol / pool", accessor: "protocol" },
-    { key: "category", label: "Category", accessor: "category" },
-    { key: "detail", label: "Detail", accessor: "detail" },
-    {
-      key: "apy",
-      label: "APY / APR %",
-      accessor: (r) => <span className="font-mono">{formatNumber(r.apyPct, 2)}</span>,
-      align: "right",
-    },
-    {
-      key: "tvl",
-      label: "TVL",
-      accessor: (r) => <span className="font-mono text-muted-foreground">{formatTvl(r.tvlUsd)}</span>,
-      align: "right",
-    },
-  ];
-
   return (
-    <div className="space-y-2 p-1">
-      <KpiStrip metrics={headerMetrics} columns={2} />
-      <DataTableWidget<DeFiRatesRow>
+    <div className="flex flex-col h-full">
+      <div className="px-3 py-2 border-b border-border/40 shrink-0">
+        <KpiStrip metrics={headerMetrics} columns={2} />
+      </div>
+      <TableWidget
         columns={columns}
         data={rows}
-        rowKey={(r) => r.id}
+        enableSorting
+        enableColumnVisibility={false}
         emptyMessage="No rate rows"
-        className="border rounded-md"
+        className="flex-1 min-h-0"
       />
     </div>
   );

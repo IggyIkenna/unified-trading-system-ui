@@ -1,6 +1,6 @@
+import { AlertCircle, Bell, Power } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
-import { AlertCircle, Bell, Power } from "lucide-react";
 import { AlertsKillSwitchWidget } from "./alerts-kill-switch-widget";
 import { AlertsKpiStripWidget } from "./alerts-kpi-strip-widget";
 import { AlertsTableWidget } from "./alerts-table-widget";
@@ -15,6 +15,19 @@ registerPresets("alerts", [
       { widgetId: "alerts-kpi-strip", instanceId: "alerts-kpi-strip-1", x: 0, y: 0, w: 12, h: 2 },
       { widgetId: "alerts-table", instanceId: "alerts-table-1", x: 0, y: 2, w: 9, h: 9 },
       { widgetId: "alerts-kill-switch", instanceId: "alerts-kill-switch-1", x: 9, y: 2, w: 3, h: 9 },
+    ],
+    createdAt: "2026-01-01T00:00:00Z",
+    updatedAt: "2026-01-01T00:00:00Z",
+  },
+  {
+    id: "alerts-full",
+    name: "Full",
+    tab: "alerts",
+    isPreset: true,
+    layouts: [
+      { widgetId: "alerts-kpi-strip", instanceId: "alerts-kpi-strip-full", x: 0, y: 0, w: 12, h: 2 },
+      { widgetId: "alerts-table", instanceId: "alerts-table-full", x: 0, y: 2, w: 12, h: 9 },
+      { widgetId: "alerts-kill-switch", instanceId: "alerts-kill-switch-full", x: 0, y: 11, w: 4, h: 6 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

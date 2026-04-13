@@ -1,24 +1,15 @@
 "use client";
 
-import * as React from "react";
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableActionsConfig, TableFilterConfig } from "@/components/shared/table-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { DataFreshness } from "@/components/shared/data-freshness";
-import { DataTable } from "@/components/shared/data-table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { ALERT_EXPORT_COLUMNS } from "@/lib/config/services/alerts.config";
 import { cn } from "@/lib/utils";
-import { exportTableToCsv, exportTableToXlsx } from "@/lib/utils/export";
 import { type ColumnDef } from "@tanstack/react-table";
 import {
   AlertCircle,
@@ -29,12 +20,9 @@ import {
   CheckCircle2,
   ChevronRight,
   Clock,
-  Download,
-  Filter,
-  RefreshCw,
   XCircle,
 } from "lucide-react";
-import { FilterBar } from "@/components/shared/filter-bar";
+import * as React from "react";
 import type { Alert, AlertSeverity, AlertStatus } from "./alerts-data-context";
 import { useAlertsData } from "./alerts-data-context";
 
@@ -74,8 +62,6 @@ function getStatusColor(status: AlertStatus) {
       return "text-[var(--status-warning)]";
     case "resolved":
       return "text-[var(--status-live)]";
-    case "muted":
-      return "text-muted-foreground";
     default:
       return "text-muted-foreground";
   }
@@ -111,13 +97,20 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
     acknowledgePending,
     escalatePending,
     resolvePending,
-    alertFilterDefs,
-    alertFilterValues,
-    handleFilterChange,
-    handleFilterReset,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    setStatusFilter,
+    severityFilter,
+    setSeverityFilter,
+    resetFilters,
   } = useAlertsData();
 
-  const [showFilters, setShowFilters] = React.useState(true);
+  const activeFilterCount = [
+    searchQuery,
+    statusFilter !== "all" ? statusFilter : "",
+    severityFilter !== "all" ? severityFilter : "",
+  ].filter(Boolean).length;
 
   const alertColumns: ColumnDef<Alert, unknown>[] = React.useMemo(
     () => [
@@ -363,115 +356,93 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
     [isBatchMode, acknowledgePending, escalatePending, resolvePending, acknowledgeAlert, escalateAlert, resolveAlert],
   );
 
-  if (isLoading) {
-    return (
-      <div className="space-y-3 p-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Skeleton className="h-8 w-28" />
-          <Skeleton className="h-8 w-24" />
-        </div>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton key={i} className="h-10 w-full" />
-        ))}
-      </div>
-    );
-  }
+  // Context-specific badges shown in the right-side actions area
+  const alertBadges = (
+    <div className="flex items-center gap-1.5 shrink-0">
+      {criticalCount > 0 && (
+        <Badge variant="destructive" className="gap-1 text-xs">
+          <XCircle className="size-3" />
+          {criticalCount} Critical
+        </Badge>
+      )}
+      {highCount > 0 && (
+        <Badge variant="outline" className="gap-1 text-xs text-[var(--status-error)] border-[var(--status-error)]">
+          <AlertCircle className="size-3" />
+          {highCount} High
+        </Badge>
+      )}
+      {isBatchMode && (
+        <span className="text-[10px] text-[var(--status-warning)] shrink-0">Batch — actions disabled</span>
+      )}
+    </div>
+  );
 
-  if (isError) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-        <AlertCircle className="size-10 text-[var(--status-error)] mb-3" />
-        <h3 className="text-sm font-semibold">Failed to load alerts</h3>
-        <p className="text-xs text-muted-foreground mt-1 mb-3">
-          Could not fetch alerts from the server. Please try again.
-        </p>
-        <Button variant="outline" size="sm" className="gap-2" onClick={() => refetch()}>
-          <RefreshCw className="size-4" />
-          Retry
-        </Button>
-      </div>
-    );
-  }
+  const filterConfig: TableFilterConfig = {
+    search: {
+      query: searchQuery,
+      onChange: setSearchQuery,
+      placeholder: "Search alerts…",
+    },
+    selectFilters: [
+      {
+        value: statusFilter,
+        onChange: setStatusFilter,
+        placeholder: "Status",
+        allLabel: "All Statuses",
+        width: "w-32",
+        options: [
+          { value: "active", label: "Active" },
+          { value: "acknowledged", label: "Acknowledged" },
+          { value: "resolved", label: "Resolved" },
+          { value: "muted", label: "Muted" },
+        ],
+      },
+      {
+        value: severityFilter,
+        onChange: setSeverityFilter,
+        placeholder: "Severity",
+        allLabel: "All Severities",
+        width: "w-28",
+        options: [
+          { value: "critical", label: "Critical" },
+          { value: "high", label: "High" },
+          { value: "medium", label: "Medium" },
+          { value: "low", label: "Low" },
+          { value: "info", label: "Info" },
+        ],
+      },
+    ],
+    activeFilterCount,
+    onReset: resetFilters,
+  };
+
+  const actionsConfig: TableActionsConfig = {
+    onRefresh: refetch,
+    extraActions: alertBadges,
+    dataFreshness: {
+      lastUpdated: alertsResponse ? new Date() : new Date(0),
+      isWebSocket: false,
+      isBatch: isBatchMode,
+    },
+    export: {
+      data: filteredAlerts as unknown as Record<string, unknown>[],
+      columns: ALERT_EXPORT_COLUMNS,
+      filename: "alerts",
+    },
+  };
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 p-2">
-      <div className="flex items-center justify-between shrink-0">
-        <button
-          onClick={() => setShowFilters((f) => !f)}
-          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-        >
-          <Filter className="size-3" />
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
-      </div>
-      {showFilters && (
-        <div className="px-1 py-2 border-b border-border/30 bg-muted/20 rounded-md">
-          <FilterBar
-            filters={alertFilterDefs}
-            values={alertFilterValues}
-            onChange={handleFilterChange}
-            onReset={handleFilterReset}
-            className="border-b-0 px-2 py-0"
-          />
-        </div>
-      )}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between shrink-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <DataFreshness lastUpdated={alertsResponse ? new Date() : null} isWebSocket={false} isBatch={isBatchMode} />
-          {criticalCount > 0 && (
-            <Badge variant="destructive" className="gap-1 text-xs">
-              <XCircle className="size-3" />
-              {criticalCount} Critical
-            </Badge>
-          )}
-          {highCount > 0 && (
-            <Badge variant="outline" className="gap-1 text-xs text-[var(--status-error)] border-[var(--status-error)]">
-              <AlertCircle className="size-3" />
-              {highCount} High
-            </Badge>
-          )}
-          {isBatchMode && (
-            <span className="text-[10px] text-[var(--status-warning)]">Batch mode — row actions disabled</span>
-          )}
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1.5 h-8 text-xs">
-              <Download className="size-3.5" />
-              Export
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              onClick={() =>
-                exportTableToCsv(filteredAlerts as unknown as Record<string, unknown>[], ALERT_EXPORT_COLUMNS, "alerts")
-              }
-            >
-              CSV
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                exportTableToXlsx(
-                  filteredAlerts as unknown as Record<string, unknown>[],
-                  ALERT_EXPORT_COLUMNS,
-                  "alerts",
-                )
-              }
-            >
-              Excel
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="flex-1 min-h-0">
-        <DataTable
-          columns={alertColumns}
-          data={filteredAlerts}
-          emptyMessage="No active alerts — all systems operating normally"
-          enableSorting
-          enableColumnVisibility={false}
-        />
-      </div>
-    </div>
+    <TableWidget
+      columns={alertColumns}
+      data={filteredAlerts}
+      filterConfig={filterConfig}
+      actions={actionsConfig}
+      isLoading={isLoading}
+      error={isError ? "Failed to load alerts" : null}
+      onRetry={refetch}
+      emptyMessage="No active alerts — all systems operating normally"
+      enableSorting
+      enableColumnVisibility={false}
+    />
   );
 }

@@ -35,8 +35,8 @@ interface KpiStripProps {
   /** Fill the widget: full width/height, min-height 0 for grid children. */
   fill?: boolean;
   /**
-   * Tighter spacing: `gap-1` (vs `gap-2`), `py-1 px-1` tiles (vs `py-2 px-3`), smaller grid min track
-   * (`~4.375rem` vs `8.75rem`). Used by `KpiSummaryWidget`.
+   * Tighter spacing: `gap-1` (vs `gap-2`), `py-1 px-1` tiles (vs `py-2 px-3`), smaller grid min track.
+   * Used by `KpiSummaryWidget`.
    */
   compact?: boolean;
   className?: string;
@@ -53,13 +53,20 @@ const GRID_COLS: Record<number, string> = {
 /** Width-first: prefer tiles in a row; narrow containers collapse to one column. */
 const FLUID_GRID_GAP = "gap-2";
 const FLUID_GRID_GAP_COMPACT = "gap-1";
-const FLUID_MIN_TRACK = "8.75rem";
-const FLUID_MIN_TRACK_COMPACT = "4.375rem";
+// Reduced min-track so a single tile is narrow — titles are short labels + numbers.
+const FLUID_MIN_TRACK = "5.5rem";
+const FLUID_MIN_TRACK_COMPACT = "4rem";
 
 function fluidGridClass(compact: boolean): string {
   const gap = compact ? FLUID_GRID_GAP_COMPACT : FLUID_GRID_GAP;
+  // grid-template-columns is applied via inline style — Tailwind's extractor can't
+  // reliably parse nested commas/parens in arbitrary values (same pattern as single-row).
+  return `grid w-full min-w-0 ${gap} content-start items-start`;
+}
+
+function fluidGridStyle(compact: boolean): React.CSSProperties {
   const min = compact ? FLUID_MIN_TRACK_COMPACT : FLUID_MIN_TRACK;
-  return `grid w-full min-w-0 [grid-template-columns:repeat(auto-fit,minmax(min(100%,${min}),1fr))] ${gap} content-start`;
+  return { gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, ${min}), 1fr))` };
 }
 
 function deriveSentiment(m: KpiMetric): "positive" | "negative" | "neutral" {
@@ -118,37 +125,44 @@ export function KpiStrip({ metrics, columns, responsive, layoutMode, fill, compa
   const mode = resolveLayoutMode(layoutMode, responsive);
   const n = metrics.length;
   const gap = compact ? "gap-1" : "gap-2";
-  const minTrack = compact ? "4.375rem" : "8.75rem";
+  const minTrack = compact ? FLUID_MIN_TRACK_COMPACT : FLUID_MIN_TRACK;
+
+  const isFluid =
+    mode === "fluid" ||
+    (mode !== "single-row" &&
+      mode !== "single-column" &&
+      mode !== "cols-2" &&
+      mode !== "cols-3" &&
+      mode !== "legacy-fixed");
 
   const gridClassName = React.useMemo(() => {
     if (mode === "legacy-fixed") {
-      return cn("grid w-full min-w-0 content-start", gap, GRID_COLS[cols]);
+      return cn("grid w-full min-w-0 content-start items-start", gap, GRID_COLS[cols]);
     }
     switch (mode) {
       case "fluid":
         return fluidGridClass(!!compact);
       case "single-column":
-        return cn("grid w-full min-w-0 grid-cols-1 content-start", gap);
+        return cn("grid w-full min-w-0 grid-cols-1 content-start items-start", gap);
       case "cols-2":
-        return cn("grid w-full min-w-0 grid-cols-2 content-start", gap);
+        return cn("grid w-full min-w-0 grid-cols-2 content-start items-start", gap);
       case "cols-3":
-        return cn("grid w-full min-w-0 grid-cols-3 content-start", gap);
+        return cn("grid w-full min-w-0 grid-cols-3 content-start items-start", gap);
       default:
         return fluidGridClass(!!compact);
     }
   }, [mode, cols, compact, gap]);
 
+  const gridStyle = React.useMemo<React.CSSProperties | undefined>(
+    () => (isFluid ? fluidGridStyle(!!compact) : undefined),
+    [isFluid, compact],
+  );
+
   if (mode === "single-row") {
     return (
-      <div
-        className={cn(
-          "w-full min-w-0 overflow-x-auto overflow-y-visible",
-          fill && "h-full min-h-0 flex flex-col",
-          className,
-        )}
-      >
+      <div className={cn("w-full min-w-0 overflow-x-auto overflow-y-visible", className)}>
         <div
-          className={cn("grid", gap, fill && "min-h-0 flex-1")}
+          className={cn("grid items-start", gap)}
           style={{
             gridTemplateColumns: n > 0 ? `repeat(${n}, minmax(${minTrack}, 1fr))` : undefined,
             minWidth: "100%",
@@ -163,8 +177,8 @@ export function KpiStrip({ metrics, columns, responsive, layoutMode, fill, compa
   }
 
   return (
-    <div className={cn("w-full min-w-0", fill && "h-full min-h-0 flex flex-col", className)}>
-      <div className={cn(gridClassName, fill && "h-full min-h-0")}>
+    <div className={cn("w-full min-w-0", className)}>
+      <div className={cn(gridClassName)} style={gridStyle}>
         {metrics.map((m, idx) => (
           <KpiCard key={idx} m={m} compact={compact} />
         ))}

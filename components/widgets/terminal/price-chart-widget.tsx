@@ -1,48 +1,10 @@
 "use client";
 
-import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { CandlestickChart } from "@/components/trading/candlestick-chart";
-import { DepthChart } from "@/components/trading/order-book";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTerminalData } from "./terminal-data-context";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import dynamic from "next/dynamic";
-
-const OptionsChain = dynamic(
-  () => import("@/components/trading/options-chain").then((m) => ({ default: m.OptionsChain })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center h-[300px] text-sm text-muted-foreground">
-        Loading options chain...
-      </div>
-    ),
-  },
-);
-const VolSurfaceChart = dynamic(
-  () => import("@/components/trading/vol-surface-chart").then((m) => ({ default: m.VolSurfaceChart })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center h-[200px] text-sm text-muted-foreground">
-        Loading vol surface...
-      </div>
-    ),
-  },
-);
 
 const TIMEFRAMES = ["1m", "5m", "15m", "1H", "4H", "1D"];
 const INDICATORS = [
@@ -54,12 +16,8 @@ const INDICATORS = [
 
 export function PriceChartWidget(_props: WidgetComponentProps) {
   const {
-    selectedInstrument,
-    livePrice,
     candleData,
     indicatorOverlays,
-    bids,
-    asks,
     chartType,
     setChartType,
     timeframe,
@@ -69,10 +27,13 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
   } = useTerminalData();
 
   return (
-    <Card className="flex min-h-0 w-full flex-1 flex-col gap-0 border-0 rounded-none p-0 shadow-none">
+    // `absolute inset-0` positions the Card relative to the WidgetScroll Root
+    // (which has position:relative), bypassing Radix ScrollArea's display:table
+    // wrapper div that breaks flex-1 height propagation to chart children.
+    <Card className="absolute inset-0 flex flex-col gap-0 border-0 rounded-none p-0 shadow-none overflow-hidden">
       <CardHeader className="pb-2 pt-2 px-3 shrink-0">
         <div className="flex items-center justify-end gap-1">
-          {(["candles", "line", "depth", "options"] as const).map((ct) => (
+          {(["candles", "line"] as const).map((ct) => (
             <Button
               key={ct}
               variant={chartType === ct ? "secondary" : "ghost"}
@@ -111,65 +72,16 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
         </div>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
-        {chartType === "candles" && (
-          <div className="relative min-h-0 min-h-[120px] flex-1 p-2">
-            <CandlestickChart
-              absoluteFill
-              className="absolute inset-0"
-              data={candleData as never}
-              indicators={indicatorOverlays as never}
-            />
-          </div>
-        )}
-        {chartType === "line" && (
-          <div className="relative min-h-0 min-h-[120px] flex-1 p-2">
-            <div className="absolute inset-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={candleData.map((c) => ({
-                    time: (c as Record<string, unknown>).time,
-                    value: (c as Record<string, unknown>).close,
-                  }))}
-                >
-                  <defs>
-                    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--pnl-positive)" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="var(--pnl-positive)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="time" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                  <Tooltip
-                    contentStyle={{
-                      background: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      fontSize: 11,
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="var(--pnl-positive)"
-                    fill="url(#lineGrad)"
-                    strokeWidth={1.5}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-        {chartType === "depth" && (
-          <div className="flex min-h-0 flex-1 flex-col overflow-auto p-2">
-            <DepthChart bids={bids} asks={asks} midPrice={livePrice} symbol={selectedInstrument.symbol} />
-          </div>
-        )}
-        {chartType === "options" && (
-          <div className="flex min-h-0 flex-1 flex-col space-y-4 overflow-auto p-2">
-            <OptionsChain underlying={selectedInstrument.symbol} venue={selectedInstrument.venue} />
-            <VolSurfaceChart underlying={selectedInstrument.symbol} />
-          </div>
-        )}
+        {/* Candles and Line share one persistent LWC chart instance — no remount on switch */}
+        <div className="flex-1 min-h-0 relative">
+          <CandlestickChart
+            absoluteFill
+            className="absolute inset-0"
+            displayType={chartType === "line" ? "line" : "candles"}
+            data={candleData as never}
+            indicators={indicatorOverlays as never}
+          />
+        </div>
       </CardContent>
     </Card>
   );

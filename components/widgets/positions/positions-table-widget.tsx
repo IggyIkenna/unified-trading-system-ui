@@ -1,22 +1,16 @@
 "use client";
 
-import { DataFreshness } from "@/components/shared/data-freshness";
-import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
-import { FilterBar } from "@/components/shared/filter-bar";
-import { Spinner } from "@/components/shared/spinner";
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableActionsConfig, TableFilterConfig } from "@/components/shared/table-widget";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatCurrency } from "@/lib/reference-data";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
 import { formatPercent } from "@/lib/utils/formatters";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, ExternalLink, Info, RefreshCw } from "lucide-react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowDownRight, ArrowUpRight, ExternalLink, Info } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import type { AssetClassFilter } from "./positions-data-context";
@@ -74,24 +68,33 @@ function formatInstrumentId(id: string): string {
   return `${symbol}${suffix}${venueStr}`;
 }
 
-/**
- * Derive a canonical VENUE:TYPE:ASSET compound key from a PositionRecord.
- * Format: VENUE:INSTRUMENT_TYPE:ASSET (e.g. HYPERLIQUID:PERPETUAL:ETH-USD)
- */
 function deriveCanonicalId(row: PositionRecord): string {
   const venue = row.venue?.toUpperCase().replace(/\s+/g, "_") ?? "UNKNOWN";
   const instrument = row.instrument?.toUpperCase() ?? "";
 
-  // Infer type from strategy_id + instrument pattern
   let type = "SPOT";
-  if (row.strategy_id?.includes("BASIS") || row.strategy_id?.includes("PERP") || instrument.endsWith("-PERP") || instrument.endsWith("-USD")) {
+  if (
+    row.strategy_id?.includes("BASIS") ||
+    row.strategy_id?.includes("PERP") ||
+    instrument.endsWith("-PERP") ||
+    instrument.endsWith("-USD")
+  ) {
     type = "PERPETUAL";
-  } else if (row.strategy_id?.includes("AAVE") || instrument.startsWith("A_") || instrument.startsWith("AUSDC") || instrument.startsWith("AWETH")) {
+  } else if (
+    row.strategy_id?.includes("AAVE") ||
+    instrument.startsWith("A_") ||
+    instrument.startsWith("AUSDC") ||
+    instrument.startsWith("AWETH")
+  ) {
     type = "A_TOKEN";
-  } else if (row.strategy_id?.includes("STAKED") || row.strategy_id?.includes("RECURSIVE") || instrument.startsWith("WEETH") || instrument.startsWith("STETH") || instrument.startsWith("WSTETH")) {
+  } else if (
+    row.strategy_id?.includes("STAKED") ||
+    row.strategy_id?.includes("RECURSIVE") ||
+    instrument.startsWith("WEETH") ||
+    instrument.startsWith("STETH") ||
+    instrument.startsWith("WSTETH")
+  ) {
     type = "LST";
-  } else if (instrument.includes("-") && !instrument.includes("-PERP")) {
-    type = "SPOT";
   }
 
   return `${venue}:${type}:${instrument}`;
@@ -113,300 +116,324 @@ function PnlCell({ abs, pct }: { abs: number; pct: number }) {
   );
 }
 
-export function PositionsTableWidget(_props: WidgetComponentProps) {
-  const {
-    filteredPositions,
-    isLoading,
-    positionsError,
-    refetchPositions,
-    isLive,
-    classifyInstrument,
-    getInstrumentRoute,
-    filterDefs,
-    filterValues,
-    handleFilterChange,
-    resetFilters,
-    instrumentTypeFilters,
-    toggleInstrumentTypeFilter,
-    assetClassOptions,
-    strategyFilter,
-  } = usePositionsData();
-
-  const assetClassLabel =
-    instrumentTypeFilters.length === 0
-      ? "All asset classes"
-      : instrumentTypeFilters.length === 1
-        ? instrumentTypeFilters[0]
-        : `${instrumentTypeFilters.length} classes`;
-
-  const columns: DataTableColumn<PositionRecord>[] = React.useMemo(
-    () => [
-      {
-        key: "instrument",
-        label: "Instrument",
-        sortable: true,
-        accessor: (row) => {
-          const canonicalId = deriveCanonicalId(row);
-          return (
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1">
-                <Link
-                  href={getInstrumentRoute(row.instrument, classifyInstrument(row.instrument))}
-                  className="font-mono font-medium text-primary hover:underline cursor-pointer"
-                >
-                  {formatInstrumentId(row.instrument)}
-                </Link>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="size-2.5 text-muted-foreground cursor-help shrink-0" />
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-[280px]">
-                      <div className="space-y-0.5">
-                        <p className="text-[10px] font-medium text-muted-foreground">Canonical ID</p>
-                        <p className="font-mono text-xs select-all">{canonicalId}</p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-              <span className="text-[10px] text-muted-foreground">{row.strategy_name}</span>
+function buildColumns(
+  getInstrumentRoute: (instrument: string, type: AssetClassFilter) => string,
+  classifyInstrument: (instrument: string) => AssetClassFilter,
+): ColumnDef<PositionRecord, unknown>[] {
+  return [
+    {
+      accessorKey: "instrument",
+      header: "Instrument",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const r = row.original;
+        const canonicalId = deriveCanonicalId(r);
+        return (
+          <div className="flex flex-col min-w-[160px]">
+            <div className="flex items-center gap-1">
+              <Link
+                href={getInstrumentRoute(r.instrument, classifyInstrument(r.instrument))}
+                className="font-mono font-medium text-primary hover:underline cursor-pointer"
+              >
+                {formatInstrumentId(r.instrument)}
+              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Info className="size-2.5 text-muted-foreground cursor-help shrink-0" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[280px]">
+                    <div className="space-y-0.5">
+                      <p className="text-[10px] font-medium text-muted-foreground">Canonical ID</p>
+                      <p className="font-mono text-xs select-all">{canonicalId}</p>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
-          );
-        },
-        minWidth: 160,
+            <span className="text-[10px] text-muted-foreground">{r.strategy_name}</span>
+          </div>
+        );
       },
-      {
-        key: "side",
-        label: "Side",
-        sortable: true,
-        align: "center" as const,
-        accessor: (row) => (
-          <Badge
-            variant="outline"
-            className={cn(
-              "font-mono text-[10px]",
-              row.side === "LONG"
-                ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
-                : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]",
-            )}
-          >
-            {row.side === "LONG" ? (
-              <ArrowUpRight className="size-2.5 mr-0.5" />
-            ) : (
-              <ArrowDownRight className="size-2.5 mr-0.5" />
-            )}
-            {row.side}
-          </Badge>
-        ),
-      },
-      {
-        key: "quantity",
-        label: "Quantity",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) => row.quantity.toLocaleString(),
-      },
-      {
-        key: "entry_price",
-        label: "Entry Price",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) =>
-          `$${row.entry_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      },
-      {
-        key: "current_price",
-        label: "Current Price",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) =>
-          `$${row.current_price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      },
-      {
-        key: "today_pnl",
-        label: "Today's P&L",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) => <PnlCell abs={row.today_pnl} pct={row.today_pnl_pct} />,
-      },
-      {
-        key: "net_pnl",
-        label: "Net P&L",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) => <PnlCell abs={row.net_pnl} pct={row.net_pnl_pct} />,
-      },
-      {
-        key: "net_delta",
-        label: "Net Delta",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) =>
-          row.net_delta != null ? (
-            <span
+    },
+    {
+      accessorKey: "side",
+      header: "Side",
+      meta: { type: "badge" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const side = row.getValue<"LONG" | "SHORT">("side");
+        return (
+          <div className="flex justify-center">
+            <Badge
+              variant="outline"
               className={cn(
-                "font-mono text-[11px]",
-                row.net_delta > 0 ? "pnl-positive" : row.net_delta < 0 ? "pnl-negative" : "text-muted-foreground",
+                "font-mono text-[10px]",
+                side === "LONG"
+                  ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
+                  : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]",
               )}
             >
-              {row.net_delta > 0 ? "+" : ""}
-              {row.net_delta.toFixed(2)}
-            </span>
-          ) : (
-            <span className="text-muted-foreground text-[10px]">--</span>
-          ),
+              {side === "LONG" ? (
+                <ArrowUpRight className="size-2.5 mr-0.5" />
+              ) : (
+                <ArrowDownRight className="size-2.5 mr-0.5" />
+              )}
+              {side}
+            </Badge>
+          </div>
+        );
       },
-      {
-        key: "health_factor",
-        label: "HF",
-        sortable: true,
-        align: "right" as const,
-        accessor: (row) =>
-          row.health_factor != null ? (
+    },
+    {
+      accessorKey: "quantity",
+      header: "Quantity",
+      meta: { type: "number" },
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right font-mono text-[11px]">{row.getValue<number>("quantity").toLocaleString()}</div>
+      ),
+    },
+    {
+      accessorKey: "entry_price",
+      header: "Entry Price",
+      meta: { type: "currency" },
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right font-mono text-[11px]">
+          $
+          {row
+            .getValue<number>("entry_price")
+            .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "current_price",
+      header: "Current Price",
+      meta: { type: "currency" },
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right font-mono text-[11px]">
+          $
+          {row
+            .getValue<number>("current_price")
+            .toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "today_pnl",
+      header: "Today's P&L",
+      meta: { type: "currency" },
+      enableSorting: true,
+      cell: ({ row }) => <PnlCell abs={row.original.today_pnl} pct={row.original.today_pnl_pct} />,
+    },
+    {
+      accessorKey: "net_pnl",
+      header: "Net P&L",
+      meta: { type: "currency" },
+      enableSorting: true,
+      cell: ({ row }) => <PnlCell abs={row.original.net_pnl} pct={row.original.net_pnl_pct} />,
+    },
+    {
+      accessorKey: "net_delta",
+      header: "Net Delta",
+      meta: { type: "number" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const delta = row.getValue<number | undefined>("net_delta");
+        return delta != null ? (
+          <span
+            className={cn(
+              "font-mono text-[11px] block text-right",
+              delta > 0 ? "pnl-positive" : delta < 0 ? "pnl-negative" : "text-muted-foreground",
+            )}
+          >
+            {delta > 0 ? "+" : ""}
+            {delta.toFixed(2)}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-[10px] block text-right">--</span>
+        );
+      },
+    },
+    {
+      accessorKey: "health_factor",
+      header: "HF",
+      meta: { type: "number" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const hf = row.getValue<number | undefined>("health_factor");
+        return hf != null ? (
+          <div className="flex justify-end">
             <Badge
               variant="outline"
               className={cn(
                 "font-mono text-[10px] px-1.5 py-0",
-                row.health_factor >= 1.5
+                hf >= 1.5
                   ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                  : row.health_factor >= 1.25
+                  : hf >= 1.25
                     ? "bg-amber-500/20 text-amber-400 border-amber-500/30"
                     : "bg-rose-500/20 text-rose-400 border-rose-500/30",
               )}
             >
-              {row.health_factor.toFixed(2)}
+              {hf.toFixed(2)}
             </Badge>
-          ) : (
-            <span className="text-muted-foreground text-[10px]">--</span>
-          ),
+          </div>
+        ) : (
+          <span className="text-muted-foreground text-[10px] block text-right">--</span>
+        );
       },
-      {
-        key: "venue",
-        label: "Venue",
-        sortable: true,
-        accessor: "venue" as keyof PositionRecord,
-      },
-      {
-        key: "updated_at",
-        label: "Updated",
-        sortable: true,
-        align: "right" as const,
-        accessor: "updated_at" as keyof PositionRecord,
-        className: "text-muted-foreground",
-      },
-      {
-        key: "trades",
-        label: "Trades",
-        sortable: false,
-        align: "right" as const,
-        accessor: (row) => (
+    },
+    {
+      accessorKey: "venue",
+      header: "Venue",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => <span className="text-[11px]">{row.getValue<string>("venue")}</span>,
+    },
+    {
+      accessorKey: "updated_at",
+      header: "Updated",
+      meta: { type: "datetime" },
+      enableSorting: true,
+      cell: ({ row }) => (
+        <div className="text-right text-[11px] text-muted-foreground font-mono">
+          {row.getValue<string>("updated_at")}
+        </div>
+      ),
+    },
+    {
+      id: "trades",
+      header: "Trades",
+      meta: { type: "actions" },
+      enableSorting: false,
+      enableHiding: false,
+      cell: ({ row }) => (
+        <div className="flex justify-end">
           <Link
-            href={`/services/trading/positions/trades?position_id=${encodeURIComponent(row.id)}`}
+            href={`/services/trading/positions/trades?position_id=${encodeURIComponent(row.original.id)}`}
             className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
           >
             View trades
             <ExternalLink className="size-3 shrink-0" />
           </Link>
-        ),
-        minWidth: 110,
-      },
-    ],
-    [classifyInstrument, getInstrumentRoute],
+        </div>
+      ),
+    },
+  ];
+}
+
+export function PositionsTableWidget(_props: WidgetComponentProps) {
+  const {
+    filteredPositions,
+    isLoading: positionsLoading,
+    positionsError,
+    refetchPositions,
+    isLive,
+    classifyInstrument,
+    getInstrumentRoute,
+    searchQuery,
+    setSearchQuery,
+    venueFilter,
+    setVenueFilter,
+    sideFilter,
+    setSideFilter,
+    strategyFilter,
+    setStrategyFilter,
+    instrumentTypeFilters,
+    toggleInstrumentTypeFilter,
+    assetClassOptions,
+    uniqueVenues,
+    uniqueStrategies,
+    resetFilters,
+  } = usePositionsData();
+
+  const activeFilterCount =
+    [
+      searchQuery,
+      venueFilter !== "all" ? venueFilter : "",
+      sideFilter !== "all" ? sideFilter : "",
+      strategyFilter !== "all" ? strategyFilter : "",
+    ].filter(Boolean).length + instrumentTypeFilters.length;
+
+  const columns = React.useMemo(
+    () => buildColumns(getInstrumentRoute, classifyInstrument),
+    [getInstrumentRoute, classifyInstrument],
   );
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full gap-2 text-muted-foreground">
-        <Spinner className="size-4" />
-        <span className="text-xs">Loading positions...</span>
-      </div>
-    );
-  }
+  const filterConfig: TableFilterConfig = {
+    search: {
+      query: searchQuery,
+      onChange: setSearchQuery,
+      placeholder: "Search positions…",
+    },
+    selectFilters: [
+      {
+        value: strategyFilter,
+        onChange: setStrategyFilter,
+        placeholder: "Strategy",
+        allLabel: "All Strategies",
+        width: "w-32",
+        options: uniqueStrategies.filter(([id]) => id).map(([id, name]) => ({ value: id, label: name })),
+      },
+      {
+        value: venueFilter,
+        onChange: setVenueFilter,
+        placeholder: "Venue",
+        allLabel: "All Venues",
+        width: "w-32",
+        options: uniqueVenues.filter(Boolean).map((v) => ({ value: v, label: v })),
+      },
+      {
+        value: sideFilter,
+        onChange: (v) => setSideFilter(v as "all" | "LONG" | "SHORT"),
+        placeholder: "Side",
+        allLabel: "Both Sides",
+        width: "w-24",
+        options: [
+          { value: "LONG", label: "Long" },
+          { value: "SHORT", label: "Short" },
+        ],
+      },
+    ],
+    assetClass: {
+      options: assetClassOptions as string[],
+      active: instrumentTypeFilters as string[],
+      onToggle: (cls) => toggleInstrumentTypeFilter(cls as AssetClassFilter),
+    },
+    activeFilterCount,
+    onReset: resetFilters,
+  };
 
-  if (positionsError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
-        <AlertCircle className="size-6 text-destructive" />
-        <p className="text-xs">Failed to load positions</p>
-        <Button variant="outline" size="sm" onClick={() => refetchPositions()}>
-          <RefreshCw className="size-3 mr-1" />
-          Retry
-        </Button>
-      </div>
-    );
-  }
+  const actionsConfig: TableActionsConfig = {
+    onRefresh: refetchPositions,
+    dataFreshness: {
+      lastUpdated: new Date(),
+      isWebSocket: isLive,
+      isBatch: !isLive,
+    },
+    export: {
+      data: filteredPositions as unknown as Record<string, unknown>[],
+      columns: EXPORT_COLUMNS,
+      filename: "positions",
+    },
+  };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-end px-3 py-1.5 border-b border-border/40">
-        <div className="flex items-center gap-1.5">
-          <DataFreshness lastUpdated={new Date()} isWebSocket={isLive} isBatch={!isLive} />
-          <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => refetchPositions()}>
-            <RefreshCw className="size-3 mr-1" />
-            Refresh
-          </Button>
-          <ExportDropdown
-            data={filteredPositions as unknown as Record<string, unknown>[]}
-            columns={EXPORT_COLUMNS}
-            filename="positions"
-          />
-        </div>
-      </div>
-      <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
-        <FilterBar
-          filters={filterDefs}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onReset={resetFilters}
-          className="border-b-0 px-0 py-0"
-        />
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
-                {assetClassLabel}
-                <ChevronDown className="size-3.5 opacity-60" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-3" align="start">
-              <p className="text-[10px] text-muted-foreground mb-2">Asset class (multi-select)</p>
-              <div className="space-y-2">
-                {assetClassOptions.map((opt: AssetClassFilter) => (
-                  <div key={opt} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`asset-${opt}`}
-                      checked={instrumentTypeFilters.includes(opt)}
-                      onCheckedChange={() => toggleInstrumentTypeFilter(opt)}
-                    />
-                    <Label htmlFor={`asset-${opt}`} className="text-xs font-normal cursor-pointer">
-                      {opt}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/40">
-                Empty selection = all classes
-              </p>
-            </PopoverContent>
-          </Popover>
-          {strategyFilter !== "all" && (
-            <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
-              <Button variant="outline" size="sm" className="h-8 text-xs">
-                View Strategy Details
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-      <DataTableWidget<PositionRecord>
-        columns={columns}
-        data={filteredPositions}
-        rowKey={(row) => row.id}
-        compact
-        stickyFirstColumn
-        emptyMessage="No positions match your filters"
-      />
-    </div>
+    <TableWidget
+      columns={columns}
+      data={filteredPositions}
+      filterConfig={filterConfig}
+      actions={actionsConfig}
+      isLoading={positionsLoading}
+      error={positionsError ? "Failed to load positions" : null}
+      onRetry={refetchPositions}
+      emptyMessage="No positions match your filters"
+      enableSorting
+      enableColumnVisibility
+    />
   );
 }
