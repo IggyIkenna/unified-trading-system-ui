@@ -8,7 +8,6 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { usePredictionsData } from "./predictions-data-context";
-import { formatNumber } from "@/lib/utils/formatters";
 
 export function PredRecentFillsWidget(_props: WidgetComponentProps) {
   const { recentFills } = usePredictionsData();
