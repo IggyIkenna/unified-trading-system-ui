@@ -37,8 +37,6 @@ export interface PnLData {
   timeSeriesData: Array<Record<string, number | string>>;
   timeSeriesNetPnL: number;
 
-  viewMode: "cross-section" | "time-series";
-  setViewMode: (m: "cross-section" | "time-series") => void;
   dataMode: "live" | "batch";
   setDataMode: (m: "live" | "batch") => void;
   dateRange: string;
@@ -59,12 +57,16 @@ export interface PnLData {
   selectedStrategyIds: string[];
   setSelectedStrategyIds: React.Dispatch<React.SetStateAction<string[]>>;
 
-  displayNetPnL: number;
+  /** True when |residualPnL| / |netPnL| exceeds 10% — surface a warning banner */
+  isResidualAlert: boolean;
+  residualThresholdPct: number;
 
   isLoading: boolean;
 }
 
 const PnLDataContext = React.createContext<PnLData | null>(null);
+
+const RESIDUAL_ALERT_THRESHOLD = 0.1; // 10%
 
 export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const { data: tickersData, isLoading: tickersLoading, error: tickersError, refetch: refetchTickers } = useTickers();
@@ -75,7 +77,9 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const apiStrategies: StrategyRecord[] = React.useMemo(() => {
     if (!perfRaw) return [];
     const raw = perfRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).strategies);
+    const arr = Array.isArray(raw)
+      ? raw
+      : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).strategies);
     let result = Array.isArray(arr) ? (arr as StrategyRecord[]) : [];
     if (globalScope.strategyIds.length > 0) {
       result = result.filter((s) => globalScope.strategyIds.includes(s.id));
@@ -86,7 +90,9 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const apiOrgs: OrgRecord[] = React.useMemo(() => {
     if (!orgsRaw) return [];
     const raw = orgsRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).organizations);
+    const arr = Array.isArray(raw)
+      ? raw
+      : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).organizations);
     return Array.isArray(arr) ? (arr as OrgRecord[]) : [];
   }, [orgsRaw]);
 
@@ -109,7 +115,6 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
 
   const [groupBy, setGroupBy] = React.useState("all");
   const [dateRange, setDateRange] = React.useState("today");
-  const [viewMode, setViewMode] = React.useState<"cross-section" | "time-series">("cross-section");
   const [dataMode, setDataMode] = React.useState<"live" | "batch">("live");
   const [selectedFactor, setSelectedFactor] = React.useState<string | null>(null);
   const [shareClass, setShareClass] = React.useState<ShareClass | "all">("all");
@@ -121,9 +126,8 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   // Sync local P&L scope selectors with the global scope bar
   React.useEffect(() => {
     setSelectedOrgIds(globalScope.organizationIds);
-    const derivedClients = globalScope.clientIds.length > 0
-      ? globalScope.clientIds
-      : getClientIdsForOrgs(globalScope.organizationIds);
+    const derivedClients =
+      globalScope.clientIds.length > 0 ? globalScope.clientIds : getClientIdsForOrgs(globalScope.organizationIds);
     setSelectedClientIds(derivedClients);
     setSelectedStrategyIds(getStrategyIdsForScope(globalScope));
   }, [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
@@ -154,7 +158,10 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
     [filterMultiplier, dataMode, dateRange],
   );
 
-  const displayNetPnL = viewMode === "time-series" ? timeSeriesNetPnL : netPnL;
+  const isResidualAlert = React.useMemo(
+    () => netPnL !== 0 && Math.abs(residualPnL.value) / Math.abs(netPnL) > RESIDUAL_ALERT_THRESHOLD,
+    [residualPnL.value, netPnL],
+  );
 
   const selectedFactorData = React.useMemo((): FactorDrilldown | null => {
     if (!selectedFactor) return null;
@@ -193,8 +200,6 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       clientPnL,
       timeSeriesData,
       timeSeriesNetPnL,
-      viewMode,
-      setViewMode,
       dataMode,
       setDataMode,
       dateRange,
@@ -212,7 +217,8 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       setSelectedClientIds,
       selectedStrategyIds,
       setSelectedStrategyIds,
-      displayNetPnL,
+      isResidualAlert,
+      residualThresholdPct: RESIDUAL_ALERT_THRESHOLD * 100,
       isLoading: tickersLoading,
     }),
     [
@@ -223,7 +229,6 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       clientPnL,
       timeSeriesData,
       timeSeriesNetPnL,
-      viewMode,
       dataMode,
       dateRange,
       groupBy,
@@ -233,7 +238,7 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       selectedOrgIds,
       selectedClientIds,
       selectedStrategyIds,
-      displayNetPnL,
+      isResidualAlert,
       tickersLoading,
     ],
   );

@@ -2,9 +2,15 @@
 
 import { PnLValue } from "@/components/trading/pnl-value";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { AlertTriangle, Database, FileText, Radio } from "lucide-react";
+import { toast } from "sonner";
 import { usePnLData } from "./pnl-data-context";
 import { formatPercent } from "@/lib/utils/formatters";
+import { SHARE_CLASSES, SHARE_CLASS_LABELS, type ShareClass } from "@/lib/types/defi";
 
 // ---------------------------------------------------------------------------
 // DeFi P&L Attribution Mock Data
@@ -14,35 +20,162 @@ interface DeFiPnLCategory {
   name: string;
   value: number;
   color: string;
-  isNegative: boolean;
 }
 
 const DEFI_PNL_ATTRIBUTION: DeFiPnLCategory[] = [
-  { name: "Interest Income", value: 5860, color: "#10b981", isNegative: false },
-  { name: "Funding Income", value: 4120, color: "#3b82f6", isNegative: false },
-  { name: "Staking Yield", value: 2850, color: "#8b5cf6", isNegative: false },
-  { name: "Rewards (EIGEN/ETHFI)", value: 1240, color: "#14b8a6", isNegative: false },
-  { name: "Gas Costs", value: -345, color: "#6b7280", isNegative: true },
-  { name: "Swap Slippage", value: -128, color: "#f59e0b", isNegative: true },
-  { name: "Impermanent Loss", value: -520, color: "#ef4444", isNegative: true },
-  { name: "Bridge Fees", value: -85, color: "#94a3b8", isNegative: true },
+  { name: "Interest Income", value: 5860, color: "#10b981" },
+  { name: "Funding Income", value: 4120, color: "#3b82f6" },
+  { name: "Staking Yield", value: 2850, color: "#8b5cf6" },
+  { name: "Rewards (EIGEN/ETHFI)", value: 1240, color: "#14b8a6" },
+  { name: "Gas Costs", value: -345, color: "#6b7280" },
+  { name: "Swap Slippage", value: -128, color: "#f59e0b" },
+  { name: "Impermanent Loss", value: -520, color: "#ef4444" },
+  { name: "Bridge Fees", value: -85, color: "#94a3b8" },
 ];
 
-const DEFI_PNL_NET = DEFI_PNL_ATTRIBUTION.reduce((sum, c) => sum + c.value, 0);
-const DEFI_PNL_MAX_ABS = Math.max(...DEFI_PNL_ATTRIBUTION.map((c) => Math.abs(c.value)), 1);
+const DEFI_PNL_NET = DEFI_PNL_ATTRIBUTION.reduce((s, c) => s + c.value, 0);
+const DEFI_PNL_MAX = Math.max(...DEFI_PNL_ATTRIBUTION.map((c) => Math.abs(c.value)), 1);
+
+// ---------------------------------------------------------------------------
+// Main widget
+// ---------------------------------------------------------------------------
 
 export function PnlWaterfallWidget(_props: WidgetComponentProps) {
-  const { structuralPnL, residualPnL, pnlComponents, netPnL, selectedFactor, setSelectedFactor } = usePnLData();
+  const {
+    structuralPnL,
+    residualPnL,
+    pnlComponents,
+    netPnL,
+    selectedFactor,
+    setSelectedFactor,
+    dataMode,
+    setDataMode,
+    dateRange,
+    setDateRange,
+    groupBy,
+    setGroupBy,
+    shareClass,
+    setShareClass,
+    isResidualAlert,
+    residualThresholdPct,
+  } = usePnLData();
 
   const maxFactorAbs = Math.max(...pnlComponents.map((c) => Math.abs(c.value)), 1);
 
+  function handleGenerateReport() {
+    toast.success("P&L report queued", {
+      description: `${dateRange.toUpperCase()} · ${dataMode} data · group by ${groupBy}. Delivery in ~2 min.`,
+      duration: 5000,
+    });
+  }
+
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 p-2">
+    <div className="flex flex-col gap-2 h-full min-h-0 p-2">
+      {/* ── Controls bar ─────────────────────────────────────────── */}
+      <div className="shrink-0 space-y-1.5 pb-2 border-b border-border/60">
+        {/* Row 1: Live/Batch · Date range · Badge · Report */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-0.5 p-0.5 bg-muted rounded-md">
+            <Button
+              variant={dataMode === "live" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-6 px-2 gap-1 text-[11px]"
+              onClick={() => setDataMode("live")}
+            >
+              <Radio className="size-3" />
+              Live
+            </Button>
+            <Button
+              variant={dataMode === "batch" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-6 px-2 gap-1 text-[11px]"
+              onClick={() => setDataMode("batch")}
+            >
+              <Database className="size-3" />
+              Batch
+            </Button>
+          </div>
+
+          <Select value={dateRange} onValueChange={setDateRange}>
+            <SelectTrigger className="w-[120px] h-7 text-[11px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="yesterday">Yesterday</SelectItem>
+              <SelectItem value="wtd">Week to Date</SelectItem>
+              <SelectItem value="mtd">Month to Date</SelectItem>
+              <SelectItem value="ytd">Year to Date</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="ml-auto flex items-center gap-2">
+            <Badge variant={dataMode === "live" ? "default" : "secondary"} className="gap-1 text-[10px]">
+              {dataMode === "live" ? <Radio className="size-3" /> : <Database className="size-3" />}
+              {dataMode === "live" ? "Live" : "Batch"}
+            </Badge>
+            <Button variant="outline" size="sm" className="h-6 gap-1 text-[11px]" onClick={handleGenerateReport}>
+              <FileText className="size-3" />
+              Report
+            </Button>
+          </div>
+        </div>
+
+        {/* Row 2: Group-by · Currency */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[10px] text-muted-foreground shrink-0">Group:</span>
+          <div className="flex gap-0.5">
+            {["all", "client", "strategy", "venue", "asset"].map((g) => (
+              <Button
+                key={g}
+                variant={groupBy === g ? "secondary" : "ghost"}
+                size="sm"
+                className="h-6 px-1.5 text-[11px] capitalize"
+                onClick={() => setGroupBy(g)}
+              >
+                {g === "all" ? "Total" : g}
+              </Button>
+            ))}
+          </div>
+          <div className="ml-auto flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground">Ccy:</span>
+            <Select value={shareClass} onValueChange={(v) => setShareClass(v as ShareClass | "all")}>
+              <SelectTrigger className="h-6 w-[110px] text-[10px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="text-[10px]">
+                  All (USD)
+                </SelectItem>
+                {SHARE_CLASSES.map((sc) => (
+                  <SelectItem key={sc} value={sc} className="text-[10px] font-mono">
+                    {sc} — {SHARE_CLASS_LABELS[sc]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Residual alert */}
+        {isResidualAlert && (
+          <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30 text-[10px] text-[var(--status-warning)]">
+            <AlertTriangle className="size-3 shrink-0" />
+            <span>
+              Unexplained residual <strong>${Math.abs(residualPnL.value).toLocaleString()}</strong> exceeds{" "}
+              {residualThresholdPct}% of net P&L — missing risk factor?
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* ── Net P&L header ───────────────────────────────────────── */}
       <div className="flex items-center justify-between shrink-0">
         <span className="text-xs text-muted-foreground">Cross-section net</span>
         <PnLValue value={netPnL} size="lg" showSign />
       </div>
 
+      {/* ── Structural P&L ───────────────────────────────────────── */}
       <CollapsibleSection title="Structural" defaultOpen>
         <div className="space-y-2 pb-2 px-1">
           {structuralPnL.map((component) => {
@@ -78,6 +211,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         </div>
       </CollapsibleSection>
 
+      {/* ── Factor Attribution ───────────────────────────────────── */}
       <div className="space-y-2 py-1 min-h-0 overflow-auto flex-1">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-1">Factor Attribution</p>
         {pnlComponents.map((component) => {
@@ -114,11 +248,11 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         })}
       </div>
 
-      {/* DeFi P&L Attribution */}
+      {/* ── DeFi P&L Attribution ─────────────────────────────────── */}
       <CollapsibleSection title="DeFi P&L Attribution" defaultOpen={false} count={DEFI_PNL_ATTRIBUTION.length}>
         <div className="space-y-2 pb-2 px-1">
           {DEFI_PNL_ATTRIBUTION.map((cat) => {
-            const width = (Math.abs(cat.value) / DEFI_PNL_MAX_ABS) * 100;
+            const width = (Math.abs(cat.value) / DEFI_PNL_MAX) * 100;
             return (
               <div key={cat.name} className="p-2 -mx-2">
                 <div className="flex items-center justify-between mb-1">
@@ -128,11 +262,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
                 <div className="h-4 bg-muted rounded-md overflow-hidden">
                   <div
                     className="h-full rounded-md transition-all duration-300"
-                    style={{
-                      width: `${width}%`,
-                      backgroundColor: cat.color,
-                      opacity: 0.7,
-                    }}
+                    style={{ width: `${width}%`, backgroundColor: cat.color, opacity: 0.7 }}
                   />
                 </div>
               </div>
@@ -145,6 +275,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         </div>
       </CollapsibleSection>
 
+      {/* ── Residual ─────────────────────────────────────────────── */}
       <div className="pt-2 border-t border-dashed border-[var(--status-warning)]/40 space-y-2 shrink-0">
         <div
           className="p-2 -mx-1 rounded-lg bg-[var(--status-warning)]/5 border border-dashed border-[var(--status-warning)]/30"
@@ -169,6 +300,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         </div>
       </div>
 
+      {/* ── Net P&L footer ───────────────────────────────────────── */}
       <div className="pt-3 border-t border-border shrink-0">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">NET P&L</span>
