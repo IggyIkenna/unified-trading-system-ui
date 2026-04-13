@@ -9,11 +9,7 @@ export {
   type Org,
   type AuthPersona,
 } from "./auth";
-export {
-  SERVICE_REGISTRY,
-  getVisibleServices,
-  type ServiceDefinition,
-} from "./services";
+export { SERVICE_REGISTRY, getVisibleServices, type ServiceDefinition } from "./services";
 export {
   PROMOTE_LIFECYCLE_BASE,
   PROMOTE_PIPELINE_HREF,
@@ -24,3 +20,4 @@ export {
   type PromoteLifecycleNavKey,
   type PromoteLifecycleNavDefinition,
 } from "./services/promote.config";
+export { getTradingNavLeafLabel, getTradingIntermediateBreadcrumbItems } from "./services/trading-nav-paths.config";

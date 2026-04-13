@@ -82,9 +82,93 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Investor",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
-    entitlements: ["investor-relations"],
+    entitlements: [
+      "investor-relations",
+      "investor-board",
+      "investor-plan",
+      "investor-platform",
+      "investor-im",
+      "investor-regulatory",
+    ],
     description:
-      "Investor / board member. Sees investor relations presentations only — board deck, disaster recovery, security posture.",
+      "Investor / board member. Sees all investor relations presentations and demos.",
+  },
+  {
+    id: "advisor",
+    email: "advisor@odum-research.co.uk",
+    password: "demo",
+    displayName: "Strategic Advisor",
+    role: "client",
+    org: { id: "odum-ir", name: "Odum Investor Relations" },
+    entitlements: [
+      "investor-relations",
+      "investor-board",
+      "investor-plan",
+    ],
+    description:
+      "Strategic advisor. Sees board presentation and plan deck only.",
+  },
+  {
+    id: "prospect-im",
+    email: "prospect-im@odum-research.co.uk",
+    password: "demo",
+    displayName: "Investment Prospect",
+    role: "client",
+    org: { id: "odum-ir", name: "Odum Investor Relations" },
+    entitlements: [
+      "investor-relations",
+      "investor-im",
+    ],
+    description:
+      "Investment management prospect. Sees investment management presentation and demo.",
+  },
+  {
+    id: "prospect-platform",
+    email: "prospect-platform@odum-research.co.uk",
+    password: "demo",
+    displayName: "Platform Prospect",
+    role: "client",
+    org: { id: "odum-ir", name: "Odum Investor Relations" },
+    entitlements: [
+      "investor-relations",
+      "investor-platform",
+      "data-pro",
+      "execution-full",
+      "reporting",
+    ],
+    description:
+      "Platform prospect. Sees platform presentation, demo, and data/execution/reporting pages.",
+  },
+  {
+    id: "prospect-regulatory",
+    email: "prospect-regulatory@odum-research.co.uk",
+    password: "demo",
+    displayName: "Regulatory Prospect",
+    role: "client",
+    org: { id: "odum-ir", name: "Odum Investor Relations" },
+    entitlements: [
+      "investor-relations",
+      "investor-regulatory",
+      "reporting",
+    ],
+    description:
+      "Regulatory umbrella prospect. Sees regulatory presentation, demo, and reporting pages.",
+  },
+  {
+    id: "elysium-defi",
+    email: "patrick@bankelysium.com",
+    password: "demo",
+    displayName: "Patrick",
+    role: "client",
+    org: { id: "elysium", name: "Elysium" },
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "defi-trading",
+      "reporting",
+    ],
+    description:
+      "DeFi client demo. DeFi trading tab + general terminal (overview, positions, orders, P&L, risk, alerts, book, accounts, instructions). Strategy families LOCKED. Sports/Predictions/Options LOCKED. Build/Data LOCKED. Strategies: AAVE_LENDING, BASIS_TRADE, STAKED_BASIS, RECURSIVE_STAKED_BASIS (demo only).",
   },
 ] as const;
 

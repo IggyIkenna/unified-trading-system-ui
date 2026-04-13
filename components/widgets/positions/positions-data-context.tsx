@@ -2,22 +2,30 @@
 
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
-import { usePositions, useBalances } from "@/hooks/api/use-positions";
+import { usePositions } from "@/hooks/api/use-positions";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getPositionsForScope } from "@/lib/mock-data";
+import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useQueryClient } from "@tanstack/react-query";
-import type { FilterDefinition } from "@/components/platform/filter-bar";
+import { getOrders } from "@/lib/api/mock-trade-ledger";
+import type { MockOrder } from "@/lib/api/mock-trade-ledger";
+import type { FilterDefinition } from "@/components/shared/filter-bar";
 
-const DEFI_VENUES = new Set(["AAVE_V3", "COMPOUND_V3", "AAVE", "COMPOUND", "MORPHO", "EULER"]);
+export type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
 
-type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
+type AssetClassFilter = Exclude<InstrumentType, "All">;
 
-const INSTRUMENT_TYPES: InstrumentType[] = ["All", "Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
+const ASSET_CLASS_OPTIONS: AssetClassFilter[] = ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
 
-function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> {
+function hashId(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function classifyInstrument(instrument: string): AssetClassFilter {
   const upper = instrument.toUpperCase();
   if (/\d+-[CP]$/.test(upper) || upper.includes("OPTIONS")) return "Options";
   if (upper.includes("PERPETUAL") || upper.includes("PERP")) return "Perp";
@@ -43,7 +51,7 @@ function classifyInstrument(instrument: string): Exclude<InstrumentType, "All"> 
   return "Spot";
 }
 
-function getInstrumentRoute(instrument: string, type: Exclude<InstrumentType, "All">): string {
+function getInstrumentRoute(instrument: string, type: AssetClassFilter): string {
   const asset = instrument.split("-")[0].split(":")[0].toUpperCase();
   switch (type) {
     case "Spot":
@@ -69,21 +77,188 @@ interface PositionRecord {
   quantity: number;
   entry_price: number;
   current_price: number;
-  pnl: number;
-  pnl_pct: number;
+  /** Total unrealized P&L since entry */
+  net_pnl: number;
+  net_pnl_pct: number;
+  /** Today's slice of unrealized P&L (mock / derived) */
+  today_pnl: number;
+  today_pnl_pct: number;
   unrealized_pnl?: number;
   venue: string;
   margin: number;
   leverage: number;
   updated_at: string;
+  /** USD notional from API (accounts for contract size on derivatives) */
+  notional_usd?: number;
+  /** DeFi: per-underlying net delta (ETH-equivalent) */
+  net_delta?: number;
+  /** DeFi: AAVE health factor (lending/recursive positions) */
   health_factor?: number;
 }
 
-interface BalanceRecord {
-  venue: string;
-  free: number;
-  locked: number;
-  total: number;
+// ---------------------------------------------------------------------------
+// DeFi mock positions — appended alongside CeFi/TradFi positions
+// ---------------------------------------------------------------------------
+
+const DEFI_MOCK_POSITIONS: PositionRecord[] = [
+  {
+    id: "defi-aave-ausdc-001",
+    strategy_id: "AAVE_LENDING",
+    strategy_name: "AAVE Lending",
+    instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
+    side: "LONG",
+    quantity: 100000,
+    entry_price: 1.0,
+    current_price: 1.0,
+    net_pnl: 13.25,
+    net_pnl_pct: 0.013,
+    today_pnl: 5.86,
+    today_pnl_pct: 0.006,
+    unrealized_pnl: 13.25,
+    venue: "AAVEV3-ETHEREUM",
+    margin: 0,
+    leverage: 1,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: 0,
+    health_factor: undefined,
+  },
+  {
+    id: "defi-basis-eth-spot-001",
+    strategy_id: "BASIS_TRADE",
+    strategy_name: "Multi-Venue Basis Trade",
+    instrument: "WALLET:SPOT_ASSET:ETH",
+    side: "LONG",
+    quantity: 30,
+    entry_price: 3000,
+    current_price: 3010,
+    net_pnl: 300,
+    net_pnl_pct: 0.33,
+    today_pnl: 120,
+    today_pnl_pct: 0.13,
+    unrealized_pnl: 300,
+    venue: "WALLET",
+    margin: 0,
+    leverage: 1,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: 0.3,
+    health_factor: undefined,
+  },
+  {
+    id: "defi-basis-eth-perp-001",
+    strategy_id: "BASIS_TRADE",
+    strategy_name: "Multi-Venue Basis Trade",
+    instrument: "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+    side: "SHORT",
+    quantity: 30,
+    entry_price: 3000,
+    current_price: 3010,
+    net_pnl: -300,
+    net_pnl_pct: -0.33,
+    today_pnl: -120,
+    today_pnl_pct: -0.13,
+    unrealized_pnl: -300,
+    venue: "HYPERLIQUID",
+    margin: 9000,
+    leverage: 10,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: -0.3,
+    health_factor: undefined,
+  },
+  {
+    id: "defi-recursive-collateral-001",
+    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_name: "Recursive Staked Basis (Hedged)",
+    instrument: "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
+    side: "LONG",
+    quantity: 96,
+    entry_price: 3100,
+    current_price: 3150,
+    net_pnl: 4800,
+    net_pnl_pct: 1.61,
+    today_pnl: 1920,
+    today_pnl_pct: 0.65,
+    unrealized_pnl: 4800,
+    venue: "AAVEV3-ETHEREUM",
+    margin: 0,
+    leverage: 2.5,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: 1.2,
+    health_factor: 1.42,
+  },
+  {
+    id: "defi-recursive-debt-001",
+    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_name: "Recursive Staked Basis (Hedged)",
+    instrument: "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
+    side: "SHORT",
+    quantity: 60,
+    entry_price: 3000,
+    current_price: 3010,
+    net_pnl: -600,
+    net_pnl_pct: -0.33,
+    today_pnl: -240,
+    today_pnl_pct: -0.13,
+    unrealized_pnl: -600,
+    venue: "AAVEV3-ETHEREUM",
+    margin: 0,
+    leverage: 2.5,
+    updated_at: "2026-03-30T10:00:00Z",
+    net_delta: -0.8,
+    health_factor: 1.42,
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Derive position deltas from filled DeFi orders in the mock ledger
+// ---------------------------------------------------------------------------
+
+function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
+  const filledDefi = getOrders().filter(
+    (o: MockOrder) => o.asset_class === "DeFi" && o.status === "filled" && o.lane === "defi",
+  );
+
+  // Group by instrument_id to accumulate quantity changes
+  const deltaMap = new Map<string, { order: MockOrder; qtyDelta: number }>();
+  for (const order of filledDefi) {
+    const existing = deltaMap.get(order.instrument_id);
+    const delta = order.side === "buy" ? order.quantity : -order.quantity;
+    if (existing) {
+      existing.qtyDelta += delta;
+    } else {
+      deltaMap.set(order.instrument_id, { order, qtyDelta: delta });
+    }
+  }
+
+  const derived: PositionRecord[] = [];
+  for (const [instrumentId, { order, qtyDelta }] of deltaMap) {
+    // Skip if there's already a hardcoded position with the same instrument
+    const matchId = `defi-ledger-${instrumentId}`;
+    if (existingIds.has(matchId)) continue;
+    // Also skip if qty is zero (fully closed)
+    if (Math.abs(qtyDelta) < 0.000001) continue;
+
+    const price = order.average_fill_price ?? order.price;
+    derived.push({
+      id: matchId,
+      strategy_id: order.strategy_id ?? "UNKNOWN",
+      strategy_name: order.strategy_id ?? "DeFi Order",
+      instrument: instrumentId,
+      side: qtyDelta > 0 ? "LONG" : "SHORT",
+      quantity: Math.abs(qtyDelta),
+      entry_price: price,
+      current_price: price,
+      net_pnl: 0,
+      net_pnl_pct: 0,
+      today_pnl: 0,
+      today_pnl_pct: 0,
+      unrealized_pnl: 0,
+      venue: order.venue,
+      margin: 0,
+      leverage: 1,
+      updated_at: order.updated_at,
+    });
+  }
+  return derived;
 }
 
 interface PositionsSummary {
@@ -97,9 +272,7 @@ interface PositionsSummary {
 
 interface PositionsDataContextValue {
   positions: PositionRecord[];
-  balances: BalanceRecord[];
   isLoading: boolean;
-  balancesLoading: boolean;
   positionsError: Error | null;
   refetchPositions: () => void;
 
@@ -114,8 +287,9 @@ interface PositionsDataContextValue {
   setSideFilter: (s: "all" | "LONG" | "SHORT") => void;
   strategyFilter: string;
   setStrategyFilter: (s: string) => void;
-  instrumentTypeFilter: InstrumentType;
-  setInstrumentTypeFilter: (t: InstrumentType) => void;
+  instrumentTypeFilters: AssetClassFilter[];
+  setInstrumentTypeFilters: React.Dispatch<React.SetStateAction<AssetClassFilter[]>>;
+  toggleInstrumentTypeFilter: (t: AssetClassFilter) => void;
   resetFilters: () => void;
 
   uniqueVenues: string[];
@@ -124,15 +298,63 @@ interface PositionsDataContextValue {
   filterValues: Record<string, unknown>;
   handleFilterChange: (key: string, value: unknown) => void;
 
-  instrumentTypes: InstrumentType[];
+  assetClassOptions: AssetClassFilter[];
   isLive: boolean;
 
-  classifyInstrument: (instrument: string) => Exclude<InstrumentType, "All">;
-  getInstrumentRoute: (instrument: string, type: Exclude<InstrumentType, "All">) => string;
-  isDeFiVenue: (venue: string) => boolean;
+  classifyInstrument: (instrument: string) => AssetClassFilter;
+  getInstrumentRoute: (instrument: string, type: AssetClassFilter) => string;
+
+  /** Re-read mock ledger to pick up newly filled DeFi orders as positions */
+  refreshPositions: () => void;
 }
 
 const PositionsDataContext = React.createContext<PositionsDataContextValue | null>(null);
+
+function mapRawRowToPosition(row: Record<string, unknown>): PositionRecord {
+  const id = String(row.id ?? "");
+  const entry = Number(row.entry_price ?? 0);
+  const current = Number(row.current_price ?? 0);
+  const netPnl = Number(row.net_pnl ?? row.pnl ?? row.unrealized_pnl ?? 0);
+  const netPct =
+    row.net_pnl_pct != null
+      ? Number(row.net_pnl_pct)
+      : row.pnl_pct != null
+        ? Number(row.pnl_pct)
+        : entry > 0
+          ? ((current - entry) / entry) * 100
+          : 0;
+  const h = hashId(id);
+  const dailyFrac = 0.1 + (h % 21) / 100;
+  const todayPnl = row.today_pnl != null ? Number(row.today_pnl) : Math.round(netPnl * dailyFrac * 100) / 100;
+  const qty = Number(row.quantity ?? 0);
+  const todayPct =
+    row.today_pnl_pct != null
+      ? Number(row.today_pnl_pct)
+      : entry > 0 && Math.abs(qty) > 0
+        ? (todayPnl / (Math.abs(qty) * entry)) * 100
+        : dailyFrac * netPct;
+
+  return {
+    id,
+    strategy_id: String(row.strategy_id ?? ""),
+    strategy_name: String(row.strategy_name ?? ""),
+    instrument: String(row.instrument ?? ""),
+    side: (String(row.side ?? "LONG").toUpperCase() === "SHORT" ? "SHORT" : "LONG") as "LONG" | "SHORT",
+    quantity: qty,
+    entry_price: entry,
+    current_price: current,
+    net_pnl: netPnl,
+    net_pnl_pct: netPct,
+    today_pnl: todayPnl,
+    today_pnl_pct: todayPct,
+    unrealized_pnl: row.unrealized_pnl != null ? Number(row.unrealized_pnl) : netPnl,
+    venue: String(row.venue ?? ""),
+    margin: Number(row.margin ?? 0),
+    leverage: Number(row.leverage ?? 0),
+    updated_at: String(row.updated_at ?? new Date().toISOString()),
+    notional_usd: row.notional_usd != null ? Number(row.notional_usd) : undefined,
+  };
+}
 
 export function PositionsDataProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
@@ -146,34 +368,53 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     error: positionsError,
     refetch: refetchPositions,
   } = usePositions();
-  const { data: balancesRaw, isLoading: balancesLoading } = useBalances();
 
   const [searchQuery, setSearchQuery] = React.useState("");
   const [venueFilter, setVenueFilter] = React.useState("all");
   const [sideFilter, setSideFilter] = React.useState<"all" | "LONG" | "SHORT">("all");
   const [strategyFilter, setStrategyFilter] = React.useState(strategyIdFilter || "all");
-  const [instrumentTypeFilter, setInstrumentTypeFilter] = React.useState<InstrumentType>("All");
+  const [instrumentTypeFilters, setInstrumentTypeFilters] = React.useState<AssetClassFilter[]>([]);
+  const [ledgerRefreshCounter, setLedgerRefreshCounter] = React.useState(0);
+
+  /** Trigger a re-derivation of positions from the mock trade ledger */
+  const refreshPositionsFromLedger = React.useCallback(() => {
+    setLedgerRefreshCounter((c) => c + 1);
+  }, []);
 
   const queryClient = useQueryClient();
   const handleWsMessage = React.useCallback(
     (msg: Record<string, unknown>) => {
       if (msg.channel === "positions" && msg.type === "pnl_update") {
-        const updatedPositions = (msg.data as Record<string, unknown>)?.positions as PositionRecord[] | undefined;
+        const updatedPositions = (msg.data as Record<string, unknown>)?.positions as
+          | Record<string, unknown>[]
+          | undefined;
         if (updatedPositions) {
           queryClient.setQueryData(["positions", undefined], (old: unknown) => {
             if (!old) return old;
             const oldData = old as Record<string, unknown>;
-            const oldPositions = (oldData.positions ?? oldData) as PositionRecord[];
+            const oldPositions = ((oldData as Record<string, unknown>).data ?? (oldData as Record<string, unknown>).positions ?? oldData) as Record<string, unknown>[];
             if (!Array.isArray(oldPositions)) return old;
-            const updateMap = new Map(updatedPositions.map((p) => [p.instrument + p.venue, p]));
+            const updateMap = new Map(
+              updatedPositions.map((p) => [
+                String((p as Record<string, unknown>).instrument) + String((p as Record<string, unknown>).venue),
+                p,
+              ]),
+            );
             const merged = oldPositions.map((p) => {
-              const update = updateMap.get(p.instrument + p.venue);
+              const row = p as Record<string, unknown>;
+              const update = updateMap.get(String(row.instrument) + String(row.venue));
               if (update) {
-                return { ...p, unrealized_pnl: update.unrealized_pnl, current_price: update.current_price };
+                const u = update as Record<string, unknown>;
+                return {
+                  ...row,
+                  unrealized_pnl: u.unrealized_pnl,
+                  current_price: u.current_price,
+                  net_pnl: u.net_pnl ?? u.unrealized_pnl ?? row.net_pnl,
+                };
               }
               return p;
             });
-            return { ...oldData, positions: merged };
+            return { ...oldData, data: merged };
           });
         }
       }
@@ -183,53 +424,87 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
 
   useWebSocket({ url: "ws://localhost:8030/ws", enabled: isLive, onMessage: handleWsMessage });
 
+  // Auto-refresh positions when a mock DeFi order fills
+  React.useEffect(() => {
+    const handler = () => refreshPositionsFromLedger();
+    window.addEventListener("mock-order-filled", handler);
+    return () => window.removeEventListener("mock-order-filled", handler);
+  }, [refreshPositionsFromLedger]);
+
   React.useEffect(() => {
     if (strategyIdFilter) setStrategyFilter(strategyIdFilter);
   }, [strategyIdFilter]);
 
-  const scopeStrategyIds = React.useMemo(() => getStrategyIdsForScope({ organizationIds: globalScope.organizationIds, clientIds: globalScope.clientIds, strategyIds: globalScope.strategyIds }), [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  const scopeStrategyIds = React.useMemo(
+    () =>
+      getStrategyIdsForScope({
+        organizationIds: globalScope.organizationIds,
+        clientIds: globalScope.clientIds,
+        strategyIds: globalScope.strategyIds,
+      }),
+    [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds],
+  );
 
   const positions: PositionRecord[] = React.useMemo(() => {
     const raw = positionsRaw as Record<string, unknown> | undefined;
-    const arr = raw ? (Array.isArray(raw) ? raw : (raw as Record<string, unknown>).positions) : undefined;
-    let result = Array.isArray(arr) && arr.length > 0 ? (arr as PositionRecord[]) : [];
+    const arr = raw ? (Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).positions)) : undefined;
+    let result: PositionRecord[] = [];
 
-    // Fall back to seed data when API returns nothing
-    if (result.length === 0) {
-      const seed = getPositionsForScope(
-        globalScope.organizationIds,
-        globalScope.clientIds,
-        globalScope.strategyIds,
-      );
-      result = seed.map((s) => ({
-        id: s.id,
-        strategy_id: s.strategyId,
-        strategy_name: s.strategyName,
-        instrument: s.instrument,
-        side: s.side.toUpperCase() as "LONG" | "SHORT",
-        quantity: s.quantity,
-        entry_price: s.entryPrice,
-        current_price: s.currentPrice,
-        pnl: s.unrealisedPnl,
-        pnl_pct: s.entryPrice > 0 ? ((s.currentPrice - s.entryPrice) / s.entryPrice) * 100 : 0,
-        unrealized_pnl: s.unrealisedPnl,
-        venue: s.venue,
-        margin: Math.abs(s.quantity * s.entryPrice * 0.1),
-        leverage: 10,
-        updated_at: new Date().toISOString(),
-      }));
-    } else if (scopeStrategyIds.length > 0) {
+    if (Array.isArray(arr) && arr.length > 0) {
+      result = (arr as Record<string, unknown>[]).map((row) => mapRawRowToPosition(row));
+    } else {
+      const seed = getPositionsForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
+      result = seed.map((s) => {
+        const netPnl = s.unrealisedPnl;
+        const netPct = s.entryPrice > 0 ? ((s.currentPrice - s.entryPrice) / s.entryPrice) * 100 : 0;
+        const h = hashId(s.id);
+        const dailyFrac = 0.1 + (h % 21) / 100;
+        const todayPnl = Math.round(netPnl * dailyFrac * 100) / 100;
+        const todayPct =
+          s.entryPrice > 0 && Math.abs(s.quantity) > 0
+            ? (todayPnl / (Math.abs(s.quantity) * s.entryPrice)) * 100
+            : dailyFrac * netPct;
+        return {
+          id: s.id,
+          strategy_id: s.strategyId,
+          strategy_name: s.strategyName,
+          instrument: s.instrument,
+          side: s.side.toUpperCase() as "LONG" | "SHORT",
+          quantity: s.quantity,
+          entry_price: s.entryPrice,
+          current_price: s.currentPrice,
+          net_pnl: netPnl,
+          net_pnl_pct: netPct,
+          today_pnl: todayPnl,
+          today_pnl_pct: todayPct,
+          unrealized_pnl: netPnl,
+          venue: s.venue,
+          margin: Math.abs(s.quantity * s.entryPrice * 0.1),
+          leverage: 10,
+          updated_at: new Date().toISOString(),
+        };
+      });
+    }
+
+    // Append DeFi mock positions alongside existing CeFi/TradFi positions
+    const defiIds = new Set(DEFI_MOCK_POSITIONS.map((p) => p.id));
+    if (!result.some((p) => defiIds.has(p.id))) {
+      result = [...result, ...DEFI_MOCK_POSITIONS];
+    }
+
+    // Derive additional positions from filled DeFi orders in the mock ledger
+    const existingIds = new Set(result.map((p) => p.id));
+    const ledgerDerived = deriveDefiPositionDeltas(existingIds);
+    if (ledgerDerived.length > 0) {
+      result = [...result, ...ledgerDerived];
+    }
+
+    if (scopeStrategyIds.length > 0) {
       result = result.filter((p) => scopeStrategyIds.includes(p.strategy_id));
     }
     return result;
-  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
-
-  const balances: BalanceRecord[] = React.useMemo(() => {
-    if (!balancesRaw) return [];
-    const raw = balancesRaw as Record<string, unknown>;
-    const arr = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).balances;
-    return Array.isArray(arr) ? (arr as BalanceRecord[]) : [];
-  }, [balancesRaw]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds, ledgerRefreshCounter]);
 
   const filteredPositions = React.useMemo(() => {
     let result = positions;
@@ -245,27 +520,31 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     if (strategyFilter !== "all") result = result.filter((p) => p.strategy_id === strategyFilter);
     if (venueFilter !== "all") result = result.filter((p) => p.venue === venueFilter);
     if (sideFilter !== "all") result = result.filter((p) => p.side === sideFilter);
-    if (instrumentTypeFilter !== "All") {
-      result = result.filter((p) => classifyInstrument(p.instrument) === instrumentTypeFilter);
+    if (instrumentTypeFilters.length > 0) {
+      result = result.filter((p) => instrumentTypeFilters.includes(classifyInstrument(p.instrument)));
     }
     return result;
-  }, [positions, searchQuery, strategyFilter, venueFilter, sideFilter, instrumentTypeFilter]);
+  }, [positions, searchQuery, strategyFilter, venueFilter, sideFilter, instrumentTypeFilters]);
 
-  const summary: PositionsSummary = React.useMemo(
-    () => ({
+  const summary: PositionsSummary = React.useMemo(() => {
+    // Use API-provided notional_usd (accounts for contract size on derivatives)
+    // with fallback to quantity * price for mock/seed data
+    const getNotional = (p: PositionRecord) =>
+      p.notional_usd != null ? Math.abs(p.notional_usd) : Math.abs(p.quantity * p.current_price);
+
+    return {
       totalPositions: filteredPositions.length,
-      totalNotional: filteredPositions.reduce((sum, p) => sum + Math.abs(p.quantity * p.current_price), 0),
-      unrealizedPnL: filteredPositions.reduce((sum, p) => sum + p.pnl, 0),
+      totalNotional: filteredPositions.reduce((sum, p) => sum + getNotional(p), 0),
+      unrealizedPnL: filteredPositions.reduce((sum, p) => sum + p.net_pnl, 0),
       totalMargin: filteredPositions.reduce((sum, p) => sum + p.margin, 0),
       longExposure: filteredPositions
         .filter((p) => p.side === "LONG")
-        .reduce((sum, p) => sum + Math.abs(p.quantity * p.current_price), 0),
+        .reduce((sum, p) => sum + getNotional(p), 0),
       shortExposure: filteredPositions
         .filter((p) => p.side === "SHORT")
-        .reduce((sum, p) => sum + Math.abs(p.quantity * p.current_price), 0),
-    }),
-    [filteredPositions],
-  );
+        .reduce((sum, p) => sum + getNotional(p), 0),
+    };
+  }, [filteredPositions]);
 
   const uniqueVenues = React.useMemo(() => [...new Set(positions.map((p) => p.venue))].sort(), [positions]);
 
@@ -330,22 +609,22 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     }
   }, []);
 
+  const toggleInstrumentTypeFilter = React.useCallback((t: AssetClassFilter) => {
+    setInstrumentTypeFilters((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  }, []);
+
   const resetFilters = React.useCallback(() => {
     setSearchQuery("");
     setStrategyFilter("all");
     setVenueFilter("all");
     setSideFilter("all");
-    setInstrumentTypeFilter("All");
+    setInstrumentTypeFilters([]);
   }, []);
-
-  const isDeFiVenue = React.useCallback((venue: string) => DEFI_VENUES.has(venue), []);
 
   const value: PositionsDataContextValue = React.useMemo(
     () => ({
       positions,
-      balances,
       isLoading: positionsLoading,
-      balancesLoading,
       positionsError: positionsError as Error | null,
       refetchPositions,
       filteredPositions,
@@ -358,25 +637,24 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       setSideFilter,
       strategyFilter,
       setStrategyFilter,
-      instrumentTypeFilter,
-      setInstrumentTypeFilter,
+      instrumentTypeFilters,
+      setInstrumentTypeFilters,
+      toggleInstrumentTypeFilter,
       resetFilters,
       uniqueVenues,
       uniqueStrategies,
       filterDefs,
       filterValues,
       handleFilterChange,
-      instrumentTypes: INSTRUMENT_TYPES,
+      assetClassOptions: ASSET_CLASS_OPTIONS,
       isLive,
       classifyInstrument,
       getInstrumentRoute,
-      isDeFiVenue,
+      refreshPositions: refreshPositionsFromLedger,
     }),
     [
       positions,
-      balances,
       positionsLoading,
-      balancesLoading,
       positionsError,
       refetchPositions,
       filteredPositions,
@@ -385,7 +663,8 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       venueFilter,
       sideFilter,
       strategyFilter,
-      instrumentTypeFilter,
+      instrumentTypeFilters,
+      toggleInstrumentTypeFilter,
       resetFilters,
       uniqueVenues,
       uniqueStrategies,
@@ -393,7 +672,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       filterValues,
       handleFilterChange,
       isLive,
-      isDeFiVenue,
+      refreshPositionsFromLedger,
     ],
   );
 
@@ -406,4 +685,4 @@ export function usePositionsData(): PositionsDataContextValue {
   return ctx;
 }
 
-export type { PositionRecord, BalanceRecord, InstrumentType, PositionsSummary };
+export type { PositionRecord, PositionsSummary, AssetClassFilter };

@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { OptionsDataProvider } from "@/components/widgets/options/options-data-context";
 
-import "@/components/widgets/options/register";
-
 function OptionsPageContent() {
   return (
     <OptionsDataProvider>

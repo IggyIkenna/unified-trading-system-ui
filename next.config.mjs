@@ -1,3 +1,8 @@
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -6,7 +11,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   turbopack: {
-    root: import.meta.dirname,
+    root: __dirname,
   },
   experimental: {
     turbopackFileSystemCacheForBuild: true,
@@ -51,8 +56,23 @@ const nextConfig = {
     if (process.env.NEXT_PUBLIC_MOCK_API === "true") return [];
     const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8030";
     const authBase = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8200";
+    const reportingBase = process.env.NEXT_PUBLIC_REPORTING_API_URL || "http://localhost:8014";
+    const deploymentBase = process.env.NEXT_PUBLIC_DEPLOYMENT_API_URL || "http://localhost:8004";
     return [
       { source: "/api/auth/:path*", destination: `${authBase}/:path*` },
+      { source: "/api/reporting/:path*", destination: `${reportingBase}/api/reporting/:path*` },
+      { source: "/api/health", destination: `${deploymentBase}/health` },
+      { source: "/api/services/:path*", destination: `${deploymentBase}/api/services/:path*` },
+      { source: "/api/deployments/:path*", destination: `${deploymentBase}/api/deployments/:path*` },
+      { source: "/api/cloud-builds/:path*", destination: `${deploymentBase}/api/cloud-builds/:path*` },
+      { source: "/api/builds/:path*", destination: `${deploymentBase}/api/builds/:path*` },
+      { source: "/api/service-status/:path*", destination: `${deploymentBase}/api/service-status/:path*` },
+      { source: "/api/data-status/:path*", destination: `${deploymentBase}/api/data-status/:path*` },
+      { source: "/api/checklists/:path*", destination: `${deploymentBase}/api/checklists/:path*` },
+      { source: "/api/epics/:path*", destination: `${deploymentBase}/api/epics/:path*` },
+      { source: "/api/cache/:path*", destination: `${deploymentBase}/api/cache/:path*` },
+      { source: "/api/capabilities/:path*", destination: `${deploymentBase}/api/capabilities/:path*` },
+      { source: "/api/config/:path*", destination: `${deploymentBase}/api/config/:path*` },
       { source: "/api/:path*", destination: `${apiBase}/:path*` },
     ];
   },

@@ -39,17 +39,14 @@ export const useUIPrefsStore = create<UIPrefsState>()(
   persist(
     (set) => ({
       ...initialState,
-      toggleSidebar: () =>
-        set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
-      toggleDebugPanel: () =>
-        set((s) => ({ showDebugPanel: !s.showDebugPanel })),
+      toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+      toggleDebugPanel: () => set((s) => ({ showDebugPanel: !s.showDebugPanel })),
       setLastVisitedPage: (path) => set({ lastVisitedPage: path }),
       setColumnPreferences: (tableId, columns) =>
         set((s) => ({
           columnPreferences: { ...s.columnPreferences, [tableId]: columns },
         })),
-      setPanelSizes: (panelId, sizes) =>
-        set((s) => ({ panelSizes: { ...s.panelSizes, [panelId]: sizes } })),
+      setPanelSizes: (panelId, sizes) => set((s) => ({ panelSizes: { ...s.panelSizes, [panelId]: sizes } })),
       resetPreferences: () => {
         localStorage.removeItem(STORAGE_KEY);
         set(initialState);
@@ -59,6 +56,32 @@ export const useUIPrefsStore = create<UIPrefsState>()(
         set(initialState);
       },
     }),
-    { name: STORAGE_KEY },
+    {
+      name: STORAGE_KEY,
+      version: 1,
+      migrate: (persistedState: unknown, version: number) => {
+        if (version < 1) {
+          // v0 had no version — merge what we can, reset unknown fields.
+          const s = (persistedState ?? {}) as Partial<typeof initialState>;
+          return {
+            ...initialState,
+            sidebarCollapsed:
+              typeof s.sidebarCollapsed === "boolean" ? s.sidebarCollapsed : initialState.sidebarCollapsed,
+            showDebugPanel: typeof s.showDebugPanel === "boolean" ? s.showDebugPanel : initialState.showDebugPanel,
+            lastVisitedPage: typeof s.lastVisitedPage === "string" ? s.lastVisitedPage : null,
+            columnPreferences:
+              s.columnPreferences && typeof s.columnPreferences === "object" ? s.columnPreferences : {},
+            panelSizes: s.panelSizes && typeof s.panelSizes === "object" ? s.panelSizes : {},
+          };
+        }
+        return persistedState;
+      },
+      onRehydrateStorage: () => (_state, error) => {
+        if (error) {
+          console.warn("[ui-prefs-store] rehydration error — resetting", error);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      },
+    },
   ),
 );

@@ -5,13 +5,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   LineChart,
   Line,
@@ -24,15 +18,9 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from "recharts";
-import {
-  Calendar,
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Maximize2,
-} from "lucide-react";
+import { Calendar, TrendingUp, TrendingDown, ArrowRight, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { formatPercent } from "@/lib/utils/formatters";
 
 // Time range presets
 export const TIME_RANGES = [
@@ -109,8 +97,7 @@ export function TimeSeriesPanel({
   // Calculate change from first to last point
   const primarySeries = series[0];
   const firstValue = primarySeries?.data[0]?.value ?? 0;
-  const lastValue =
-    primarySeries?.data[primarySeries.data.length - 1]?.value ?? 0;
+  const lastValue = primarySeries?.data[primarySeries.data.length - 1]?.value ?? 0;
   const change = lastValue - firstValue;
   const changePercent = firstValue !== 0 ? (change / firstValue) * 100 : 0;
 
@@ -143,13 +130,8 @@ export function TimeSeriesPanel({
               <div className="flex items-center gap-3">
                 {series.map((s) => (
                   <div key={s.id} className="flex items-center gap-1.5">
-                    <span
-                      className="size-2 rounded-full"
-                      style={{ backgroundColor: s.color }}
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      {s.name}
-                    </span>
+                    <span className="size-2 rounded-full" style={{ backgroundColor: s.color }} />
+                    <span className="text-xs text-muted-foreground">{s.name}</span>
                   </div>
                 ))}
               </div>
@@ -159,12 +141,7 @@ export function TimeSeriesPanel({
             {/* Date Navigation */}
             {showDateNavigation && currentDate && (
               <div className="flex items-center gap-1 mr-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7"
-                  onClick={() => navigateDate("prev")}
-                >
+                <Button variant="ghost" size="icon" className="size-7" onClick={() => navigateDate("prev")}>
                   <ChevronLeft className="size-4" />
                 </Button>
                 <div className="flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
@@ -176,9 +153,7 @@ export function TimeSeriesPanel({
                   size="icon"
                   className="size-7"
                   onClick={() => navigateDate("next")}
-                  disabled={
-                    currentDate === new Date().toISOString().split("T")[0]
-                  }
+                  disabled={currentDate === new Date().toISOString().split("T")[0]}
                 >
                   <ChevronRight className="size-4" />
                 </Button>
@@ -228,61 +203,34 @@ export function TimeSeriesPanel({
         {/* Summary Stats */}
         <div className="flex items-center gap-4 mt-2">
           <div>
-            <span className="text-2xl font-semibold">
-              {valueFormatter(lastValue)}
-            </span>
+            <span className="text-2xl font-semibold">{valueFormatter(lastValue)}</span>
           </div>
           <div className="flex items-center gap-1">
             {change >= 0 ? (
-              <TrendingUp
-                className="size-4"
-                style={{ color: "var(--pnl-positive)" }}
-              />
+              <TrendingUp className="size-4" style={{ color: "var(--pnl-positive)" }} />
             ) : (
-              <TrendingDown
-                className="size-4"
-                style={{ color: "var(--pnl-negative)" }}
-              />
+              <TrendingDown className="size-4" style={{ color: "var(--pnl-negative)" }} />
             )}
-            <span
-              className={cn(
-                "text-sm font-medium",
-                change >= 0 ? "pnl-positive" : "pnl-negative",
-              )}
-            >
+            <span className={cn("text-sm font-medium", change >= 0 ? "pnl-positive" : "pnl-negative")}>
               {change >= 0 ? "+" : ""}
               {valueFormatter(change)} ({changePercent >= 0 ? "+" : ""}
-              {changePercent.toFixed(2)}%)
+              {formatPercent(changePercent, 2)})
             </span>
           </div>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
         <ResponsiveContainer width="100%" height={height}>
-          <AreaChart
-            data={chartData}
-            margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-          >
+          <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               {series.map((s) => (
-                <linearGradient
-                  key={s.id}
-                  id={`gradient-${s.id}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                <linearGradient key={s.id} id={`gradient-${s.id}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={s.color} stopOpacity={0.3} />
                   <stop offset="95%" stopColor={s.color} stopOpacity={0} />
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="var(--border)"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="timestamp"
               tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
@@ -304,10 +252,7 @@ export function TimeSeriesPanel({
                 borderRadius: "6px",
                 fontSize: "12px",
               }}
-              formatter={(value: number, name: string) => [
-                valueFormatter(value),
-                name,
-              ]}
+              formatter={(value: number, name: string) => [valueFormatter(value), name]}
               labelFormatter={(label) => `Time: ${label}`}
             />
             <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="3 3" />
@@ -367,10 +312,7 @@ export function generateTimeSeriesData(
       numPoints = 90;
       break;
     case "ytd":
-      numPoints = Math.floor(
-        (now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) /
-          (24 * 60 * 60 * 1000),
-      );
+      numPoints = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / (24 * 60 * 60 * 1000));
       break;
     case "1y":
       numPoints = 365;
@@ -384,7 +326,13 @@ export function generateTimeSeriesData(
   const pointVol = effectiveVol / Math.sqrt(numPoints);
   const drift = baseValue * 0.0003; // Small positive drift per point
 
-  let value = baseValue * (0.95 + Math.random() * 0.1); // Start near but not exactly at base
+  const seriesSalt =
+    range.charCodeAt(0) * 17 +
+    granularity.charCodeAt(0) * 31 +
+    Math.round(baseValue * 100) +
+    Math.round(volatility * 10000);
+
+  let value = baseValue * (0.95 + mock01(0, seriesSalt) * 0.1); // Start near but not exactly at base
 
   for (let i = 0; i < numPoints; i++) {
     // Add realistic intraday patterns for 1d view
@@ -398,12 +346,10 @@ export function generateTimeSeriesData(
     const change =
       drift +
       meanReversionForce +
-      (Math.random() - 0.48) * baseValue * pointVol * volatilityMultiplier;
+      (mock01(i + 1, seriesSalt + 1000) - 0.48) * baseValue * pointVol * volatilityMultiplier;
     value = Math.max(baseValue * 0.7, value + change); // Floor at 70% of base
 
-    const timestamp = new Date(
-      now.getTime() - (numPoints - i) * getGranularityMs(granularity, range),
-    );
+    const timestamp = new Date(now.getTime() - (numPoints - i) * getGranularityMs(granularity, range));
     points.push({
       timestamp: formatTimestamp(timestamp, range),
       value,

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GateCheckRow } from "@/components/shared/gate-check-row";
 import { statusBg } from "./helpers";
-import { SR_11_7_ITEMS } from "./mock-fixtures";
+import { SR_11_7_ITEMS } from "@/lib/mocks/fixtures/promote-fixtures";
 import type { CandidateStrategy, DocumentationChecklistItem, GateStatus } from "./types";
 
 export function ComplianceChecklist({ strategy }: { strategy: CandidateStrategy }) {

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Info } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { ARB_THRESHOLD_OPTIONS } from "@/components/trading/sports/mock-fixtures";
+import { ARB_THRESHOLD_OPTIONS } from "@/lib/mocks/fixtures/sports-fixtures";
 import type { PredictionArbMarketType } from "@/components/trading/predictions/types";
 import { PredActiveArbCard } from "./pred-arb-ui";
 import { usePredictionsData } from "./predictions-data-context";

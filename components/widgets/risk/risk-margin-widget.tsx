@@ -18,7 +18,8 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { CollapsibleSection } from "../shared";
+import { CollapsibleSection } from "@/components/shared";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskMarginWidget(_props: WidgetComponentProps) {
   const { sortedLimits, hfTimeSeries, distanceToLiquidation } = useRiskData();
@@ -76,15 +77,20 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
         {ltvLimits.length > 0 && (
           <CollapsibleSection title="DeFi Health Factor (Aave v3)" defaultOpen={true} count={ltvLimits.length}>
             <div className="space-y-2 pt-1">
-              {ltvLimits.map((limit) => (
+              {ltvLimits.map((limit) => {
+                // LTV is stored as ratio (0.72). HF = 1 / LTV. Display HF, not LTV.
+                const hf = limit.value > 0 ? (1 / limit.value) : 0;
+                const hfLimit = limit.limit > 0 ? (1 / limit.limit) : 2;
+                return (
                 <LimitBar
                   key={limit.id}
-                  label={`${limit.name} (${limit.entity})`}
-                  value={limit.value}
-                  limit={limit.limit}
-                  unit={limit.unit}
+                  label={`${limit.entity} HF (= 1/LTV)`}
+                  value={Math.round(hf * 100) / 100}
+                  limit={Math.round(hfLimit * 100) / 100}
+                  unit="HF"
                 />
-              ))}
+                );
+              })}
             </div>
           </CollapsibleSection>
         )}
@@ -105,10 +111,11 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                       borderRadius: "8px",
                       fontSize: "10px",
                     }}
-                    formatter={(value: number) => [value.toFixed(2), "HF"]}
+                    formatter={(value: number) => [formatNumber(value, 2), "HF"]}
                   />
-                  <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" />
-                  <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" />
+                  <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" label={{ value: "Liquidation 1.0", position: "right", fontSize: 8 }} />
+                  <ReferenceLine y={1.2} stroke="#f97316" strokeDasharray="4 4" label={{ value: "Emergency 1.2", position: "right", fontSize: 8 }} />
+                  <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" label={{ value: "Deleverage 1.5", position: "right", fontSize: 8 }} />
                   <Area
                     type="monotone"
                     dataKey="hf"
@@ -156,7 +163,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                             "bg-amber-500/20 text-amber-400",
                         )}
                       >
-                        {(row.distToLiq as number).toFixed(1)}%
+                        {formatPercent(row.distToLiq as number, 1)}
                       </Badge>
                     </TableCell>
                     <TableCell>

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { CLIENTS } from "@/lib/trading-data";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import {
   ALL_OPERATION_TYPES,
   BUNDLE_INSTRUMENTS,
@@ -48,9 +48,7 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
   // DeFi bundles only make sense for orgs with a DeFi desk
   const hasDefiDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true;
-    return CLIENTS.some(
-      (c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk",
-    );
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk");
   }, [globalScope.organizationIds]);
   const [steps, setSteps] = React.useState<BundleStep[]>([]);
   const [showTemplates, setShowTemplates] = React.useState(true);
@@ -160,7 +158,9 @@ export function BundlesDataProvider({ children }: { children: React.ReactNode })
     () =>
       hasDefiDesk
         ? BUNDLE_TEMPLATES
-        : BUNDLE_TEMPLATES.filter((t) => !t.steps.some((s) => s.operationType === "FLASH_BORROW" || s.operationType === "FLASH_REPAY")),
+        : BUNDLE_TEMPLATES.filter(
+            (t) => !t.steps.some((s) => s.operationType === "FLASH_BORROW" || s.operationType === "FLASH_REPAY"),
+          ),
     [hasDefiDesk],
   );
 

@@ -48,9 +48,9 @@ const SERVICE_CONFIG: Record<
   },
   backtesting: {
     inquiryValue: "backtesting",
-    label: "Backtesting Services",
+    label: "Research Services",
     demoMessage:
-      "I'd like to schedule a demo of the Research & Backtesting platform to explore strategy backtesting, ML signal evaluation, and promotion pipelines.",
+      "I'd like to schedule a demo of the Research platform to explore strategy backtesting, ML signal evaluation, and promotion pipelines.",
   },
   execution: {
     inquiryValue: "execution",
@@ -66,9 +66,9 @@ const SERVICE_CONFIG: Record<
   },
   investment: {
     inquiryValue: "investment",
-    label: "Investment Management",
+    label: "Manage Services",
     demoMessage:
-      "I'd like to discuss investment management services and explore how Odum Research can help with portfolio management.",
+      "I'd like to discuss management services and explore how Odum Research can help with portfolio management.",
   },
   regulatory: {
     inquiryValue: "regulatory",

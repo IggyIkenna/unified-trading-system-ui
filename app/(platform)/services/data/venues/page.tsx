@@ -219,7 +219,7 @@ export default function VenueHealthPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-semibold text-emerald-400">
@@ -277,7 +277,7 @@ export default function VenueHealthPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {filtered.map((v) => (
           <Card
             key={v.name}

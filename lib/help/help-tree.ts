@@ -542,6 +542,29 @@ export const HELP_TREE: HelpNode[] = [
         answer:
           "Organisation admins can manage users under **Admin > Users**. You can onboard new users, assign entitlements, modify roles, and offboard departing users. Each action has an approval workflow.",
         link: { href: "/admin/users", label: "Manage users" },
+        children: [
+          {
+            id: "accounts-templates",
+            question: "What are access templates?",
+            answer:
+              "Access templates are pre-defined sets of entitlements you can apply to new users — e.g., 'DeFi Analyst' gives defi-trading + data-pro. **Admin > Users > Templates** lets you create, edit, and delete templates. Applying a template to a user sets all entitlements in one click.",
+            link: { href: "/admin/users/templates", label: "Manage access templates" },
+          },
+          {
+            id: "accounts-firebase",
+            question: "How do I see all Firebase Auth accounts?",
+            answer:
+              "**Admin > Users > Firebase Users** lists all accounts in Firebase Auth — including UID, email, provider (Google/Microsoft/GitHub/Email), email verification status, and last sign-in. Use this page to find orphaned accounts or diagnose login issues.",
+            link: { href: "/admin/users/firebase", label: "View Firebase Users" },
+          },
+          {
+            id: "accounts-health-checks",
+            question: "How do I run authentication provider health checks?",
+            answer:
+              "**Admin > Users > Health Checks** shows the status of each auth provider (Firebase, Google OAuth, Microsoft SSO, GitHub). Click **Run Health Checks** to test all providers live. Each check shows latency, last run time, and error details if failing.",
+            link: { href: "/admin/users/health-checks", label: "View Health Checks" },
+          },
+        ],
       },
       {
         id: "accounts-trading-accounts",
@@ -558,7 +581,7 @@ export const HELP_TREE: HelpNode[] = [
     id: "reports",
     question: "What reports are available?",
     answer:
-      "The **Reports** service covers four areas: Executive summary, Settlement detail, Reconciliation, and Regulatory compliance.",
+      "The **Reports** service covers six areas: Executive summary, NAV (fund accounting), IBOR (investment book of record), SAFT (token warrants), Settlement detail, Reconciliation, and Regulatory compliance.",
     link: { href: "/services/reports/overview", label: "Open Reports" },
     children: [
       {
@@ -567,6 +590,27 @@ export const HELP_TREE: HelpNode[] = [
         answer:
           "**Reports > Executive** is the portfolio summary — total P&L, P&L attribution by strategy/venue/asset class, risk metrics, and performance charts. Supports daily, weekly, monthly, and custom date ranges.",
         link: { href: "/services/reports/executive", label: "View Executive Report" },
+      },
+      {
+        id: "reports-nav",
+        question: "What is the NAV report?",
+        answer:
+          "**Reports > NAV** is the fund net asset value page. It shows:\n\n• Total NAV in USD with daily change\n• NAV per share (multi-class funds)\n• Hourly NAV time series chart\n• Capital flows waterfall (subscriptions, redemptions)\n• Fee waterfall (management, performance, operating)\n\nNAV is calculated end-of-day using marked positions and accrued fees.",
+        link: { href: "/services/reports/nav", label: "View NAV Report" },
+      },
+      {
+        id: "reports-ibor",
+        question: "What is the IBOR report?",
+        answer:
+          "**IBOR** (Investment Book of Record) is the authoritative source for all positions and transactions. **Reports > IBOR** shows:\n\n• All positions with golden-source provenance\n• Reconciliation status vs venue fills\n• Settlement pending/confirmed status\n• Position lifecycle audit trail\n\nUse IBOR when you need the definitive position for compliance or regulatory queries.",
+        link: { href: "/services/reports/ibor", label: "View IBOR" },
+      },
+      {
+        id: "reports-saft",
+        question: "What is the SAFT report?",
+        answer:
+          "**SAFT** (Simple Agreement for Future Tokens) covers token warrant positions. **Trading > Accounts > SAFT** shows:\n\n• Active SAFT agreements with issuer and token detail\n• Vesting schedules (cliff + linear unlock)\n• Unlock timeline chart\n• Estimated value at current token price\n• Pending vs vested warrant counts\n\nSAFTs are typically long-dated — use the timeline chart to plan liquidity needs.",
+        link: { href: "/services/trading/accounts/saft", label: "View SAFT positions" },
       },
       {
         id: "reports-settlement",
@@ -595,6 +639,76 @@ export const HELP_TREE: HelpNode[] = [
         answer:
           "Yes. All report pages have a **Download** button — CSV for data analysis, PDF for stakeholder distribution. Scheduled reports can be configured to email automatically (daily, weekly, monthly).",
         link: { href: "/services/reports/overview", label: "Export options" },
+      },
+    ],
+  },
+
+  // ── 12b. Strategy Families ────────────────────────────────────────────────
+  {
+    id: "strategy-families",
+    question: "What strategy families does the platform support?",
+    answer:
+      "The platform organises strategies into four families, each with a dedicated UI and pipeline:\n\n• **DeFi** — on-chain strategies (basis trades, lending yields, recursive staking, flash loans)\n• **Sports** — event-driven betting (arbitrage, accumulator, model-based)\n• **Options** — derivatives strategies (spreads, straddles, condors)\n• **Predictions** — event market strategies (Polymarket, binary outcomes)\n\nEach family has its own strategy grid, config widgets, and execution path.",
+    children: [
+      {
+        id: "family-defi",
+        question: "What DeFi strategies are available?",
+        answer:
+          "Six DeFi strategy archetypes:\n\n• **Basis Trade** — long spot / short perp to capture funding rate\n• **Yield** — lending on Aave, Compound across chains\n• **Recursive Staking** — loop collateral to amplify staking yield\n• **Mean Reversion** — price reversion on DeFi pairs\n• **Momentum** — cross-chain momentum with on-chain confirmation\n• **Market Making** — concentrated liquidity provisioning (Uniswap V3)\n\nHealth Factor monitoring is available for all leveraged DeFi strategies.",
+        link: { href: "/services/trading/defi", label: "Open DeFi trading" },
+        children: [
+          {
+            id: "family-defi-hf",
+            question: "What is Health Factor and why does it matter?",
+            answer:
+              "**Health Factor (HF)** measures collateral safety in lending protocols:\n\n• **HF > 1.5** — safe zone\n• **1.2 ≤ HF < 1.5** — deleverage warning\n• **1.0 ≤ HF < 1.2** — emergency exit zone\n• **HF < 1.0** — liquidation by protocol\n\nThe Risk > Margin page shows the HF time series. Set alerts at HF 1.5 to get early warning.",
+            link: { href: "/services/observe/risk", label: "View Health Factor chart" },
+          },
+          {
+            id: "family-defi-chains",
+            question: "Which chains are used for DeFi strategies?",
+            answer:
+              "Strategies can run across: Ethereum, Arbitrum, Optimism, Polygon, Base, and BSC. Chain selection is in the DeFi strategy config panel. The platform uses the RPC URL registry in UAC — no custom RPC needed.",
+            link: { href: "/services/trading/defi", label: "Configure chain" },
+          },
+        ],
+      },
+      {
+        id: "family-sports",
+        question: "What sports strategies are available?",
+        answer:
+          "Three sports strategy archetypes:\n\n• **Arbitrage** — cross-bookmaker guaranteed profit on mispriced odds\n• **Accumulator** — multi-leg combo bets with ML probability weighting\n• **Model-Based** — ML model signals vs market odds (edge extraction)\n\nThe Sports Arb Scanner runs continuously across 15 bookmakers with ms-level latency.",
+        link: { href: "/services/trading/sports", label: "Open Sports trading" },
+        children: [
+          {
+            id: "family-sports-arb",
+            question: "How does sports arbitrage work?",
+            answer:
+              "The arb scanner identifies markets where the combined back+lay (or back+back) odds imply a guaranteed profit regardless of outcome. Each opportunity shows:\n\n• Gross margin %\n• Stake distribution per venue\n• Time to expiry\n• Recommended bet sizes\n\nOpportunities decay quickly — the scanner is optimised for sub-second detection.",
+            link: { href: "/services/trading/sports", label: "View arb opportunities" },
+          },
+          {
+            id: "family-sports-accumulators",
+            question: "What are accumulators?",
+            answer:
+              "Accumulators (accas) combine multiple match outcomes into a single bet. The payout multiplies — 4 legs at 2.0 odds = 16x return. The platform's ML models assign probability to each leg and recommend stakes via Kelly criterion.\n\nUse **Trading > Sports > My Bets** to track acca performance.",
+            link: { href: "/services/trading/sports", label: "View accumulators" },
+          },
+        ],
+      },
+      {
+        id: "family-options",
+        question: "What options strategies are available?",
+        answer:
+          "Options strategies cover:\n\n• **Spreads** — bull/bear call or put spreads\n• **Straddles** — long vol (buy call + put at same strike)\n• **Strangles** — cheaper vol play at OTM strikes\n• **Iron Condors** — range-bound premium collection\n• **Covered calls** — yield enhancement on long positions\n\nThe Options tab has a Greeks display, expiry strip navigation, and a scenario P&L panel.",
+        link: { href: "/services/trading/options", label: "Open Options" },
+      },
+      {
+        id: "family-predictions",
+        question: "What prediction market strategies are available?",
+        answer:
+          "Prediction market strategies use Polymarket and binary event venues:\n\n• **Market Making** — provide liquidity on both sides of a binary market\n• **Arbitrage** — cross-venue mispricing detection\n• **Model-Based** — ML probability vs market-implied probability\n\nThe Predictions tab has five sub-tabs: Markets, Trade, Portfolio, Odum Focus, and Arb Stream.",
+        link: { href: "/services/trading/predictions", label: "Open Predictions" },
       },
     ],
   },

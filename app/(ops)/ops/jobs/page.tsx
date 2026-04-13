@@ -1,39 +1,23 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/shared/page-header";
+import { Spinner } from "@/components/shared/spinner";
+import { StatusDot } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
-import {
-  Play,
-  Pause,
-  RotateCcw,
-  Search,
-  RefreshCw,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Calendar,
-  Timer,
-  AlertTriangle,
-} from "lucide-react";
-import { toast } from "sonner";
-import { DATA_FLOWS, SERVICES } from "@/lib/reference-data";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBatchJobs } from "@/hooks/api/use-audit";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { DATA_FLOWS } from "@/lib/reference-data";
+import { cn } from "@/lib/utils";
+import { Calendar, CheckCircle2, Clock, Pause, RefreshCw, RotateCcw, Search, XCircle } from "lucide-react";
+import { toast } from "sonner";
 
 // Batch job types from system topology
 interface BatchJob {
@@ -53,21 +37,12 @@ interface BatchJob {
 }
 
 // Generate fallback jobs from DATA_FLOWS (used when API returns no data)
-const fallbackJobs: BatchJob[] = DATA_FLOWS.filter(
-  (f) => f.mode === "batch",
-).map((flow, idx) => ({
+const fallbackJobs: BatchJob[] = DATA_FLOWS.filter((f) => f.mode === "batch").map((flow, idx) => ({
   id: `job-${flow.id}`,
   name: flow.id.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
   domain: flow.domain,
   service: flow.service || "Unknown",
-  status:
-    idx === 0
-      ? "running"
-      : idx === 1
-        ? "queued"
-        : idx % 5 === 0
-          ? "failed"
-          : "completed",
+  status: idx === 0 ? "running" : idx === 1 ? "queued" : idx % 5 === 0 ? "failed" : "completed",
   progress: idx === 0 ? 67 : idx === 1 ? 0 : 100,
   startedAt: idx === 0 ? "2m ago" : idx === 1 ? "-" : "1h ago",
   duration:
@@ -75,10 +50,10 @@ const fallbackJobs: BatchJob[] = DATA_FLOWS.filter(
       ? "2m 14s"
       : idx === 1
         ? "-"
-        : `${Math.floor(Math.random() * 10) + 1}m ${Math.floor(Math.random() * 60)}s`,
+        : `${Math.floor(mock01(idx, 11) * 10) + 1}m ${Math.floor(mock01(idx, 12) * 60)}s`,
   runDate: "2026-03-17",
-  records: Math.floor(Math.random() * 100000) + 10000,
-  errors: idx % 5 === 0 ? Math.floor(Math.random() * 100) : 0,
+  records: Math.floor(mock01(idx, 13) * 100000) + 10000,
+  errors: idx % 5 === 0 ? Math.floor(mock01(idx, 14) * 100) : 0,
   lastSuccess: idx % 5 === 0 ? "2d ago" : "1h ago",
   schedule: "Every hour",
 }));
@@ -86,23 +61,11 @@ const fallbackJobs: BatchJob[] = DATA_FLOWS.filter(
 function getStatusIcon(status: BatchJob["status"]) {
   switch (status) {
     case "running":
-      return (
-        <Loader2
-          className="size-4 animate-spin"
-          style={{ color: "var(--status-live)" }}
-        />
-      );
+      return <Spinner size="sm" className="text-[var(--status-live)]" />;
     case "completed":
-      return (
-        <CheckCircle2
-          className="size-4"
-          style={{ color: "var(--pnl-positive)" }}
-        />
-      );
+      return <CheckCircle2 className="size-4" style={{ color: "var(--pnl-positive)" }} />;
     case "failed":
-      return (
-        <XCircle className="size-4" style={{ color: "var(--pnl-negative)" }} />
-      );
+      return <XCircle className="size-4" style={{ color: "var(--pnl-negative)" }} />;
     case "queued":
       return <Clock className="size-4 text-muted-foreground" />;
     case "cancelled":
@@ -115,8 +78,7 @@ export default function JobsPage() {
   const { data: apiJobs, refetch } = useBatchJobs();
 
   // Use API data if available, otherwise fall back to reference-data-derived mock
-  const batchJobs: BatchJob[] =
-    ((apiJobs as Record<string, unknown>)?.jobs as BatchJob[]) ?? fallbackJobs;
+  const batchJobs: BatchJob[] = ((apiJobs as Record<string, unknown>)?.jobs as BatchJob[]) ?? fallbackJobs;
 
   const runningJobs = batchJobs.filter((j) => j.status === "running");
   const queuedJobs = batchJobs.filter((j) => j.status === "queued");
@@ -152,12 +114,7 @@ export default function JobsPage() {
       <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">Batch Jobs</h1>
-            <p className="text-sm text-muted-foreground">
-              Monitor batch processing jobs, schedules, and data pipelines
-            </p>
-          </div>
+          <PageHeader title="Batch Jobs" description="Monitor batch processing jobs, schedules, and data pipelines" />
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-3 py-1.5 border border-border rounded-md">
               <Calendar className="size-4 text-muted-foreground" />
@@ -188,17 +145,11 @@ export default function JobsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Running</p>
-                  <p
-                    className="text-2xl font-semibold"
-                    style={{ color: "var(--status-live)" }}
-                  >
+                  <p className="text-2xl font-semibold" style={{ color: "var(--status-live)" }}>
                     {runningJobs.length}
                   </p>
                 </div>
-                <Loader2
-                  className="size-8 animate-spin"
-                  style={{ color: "var(--status-live)" }}
-                />
+                <Spinner size="lg" className="text-[var(--status-live)]" />
               </div>
             </CardContent>
           </Card>
@@ -218,14 +169,9 @@ export default function JobsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Completed</p>
-                  <p className="text-2xl font-semibold pnl-positive">
-                    {completedJobs.length}
-                  </p>
+                  <p className="text-2xl font-semibold pnl-positive">{completedJobs.length}</p>
                 </div>
-                <CheckCircle2
-                  className="size-8"
-                  style={{ color: "var(--pnl-positive)" }}
-                />
+                <CheckCircle2 className="size-8" style={{ color: "var(--pnl-positive)" }} />
               </div>
             </CardContent>
           </Card>
@@ -234,14 +180,9 @@ export default function JobsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Failed</p>
-                  <p className="text-2xl font-semibold pnl-negative">
-                    {failedJobs.length}
-                  </p>
+                  <p className="text-2xl font-semibold pnl-negative">{failedJobs.length}</p>
                 </div>
-                <XCircle
-                  className="size-8"
-                  style={{ color: "var(--pnl-negative)" }}
-                />
+                <XCircle className="size-8" style={{ color: "var(--pnl-negative)" }} />
               </div>
             </CardContent>
           </Card>
@@ -252,10 +193,7 @@ export default function JobsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <Loader2
-                  className="size-4 animate-spin"
-                  style={{ color: "var(--status-live)" }}
-                />
+                <Spinner size="sm" className="text-[var(--status-live)]" />
                 Running Jobs
               </CardTitle>
             </CardHeader>
@@ -274,9 +212,7 @@ export default function JobsPage() {
                     <div className="flex items-center gap-4">
                       <div className="text-right">
                         <p className="text-sm font-mono">{job.progress}%</p>
-                        <p className="text-xs text-muted-foreground">
-                          {job.records.toLocaleString()} records
-                        </p>
+                        <p className="text-xs text-muted-foreground">{job.records.toLocaleString()} records</p>
                       </div>
                       <div className="flex items-center gap-1">
                         <Button
@@ -313,13 +249,9 @@ export default function JobsPage() {
             <TabsTrigger value="all">All Jobs ({batchJobs.length})</TabsTrigger>
             <TabsTrigger value="failed">
               Failed ({failedJobs.length})
-              {failedJobs.length > 0 && (
-                <span className="ml-1 size-2 rounded-full bg-[var(--pnl-negative)]" />
-              )}
+              {failedJobs.length > 0 && <StatusDot status="failed" className="ml-1 size-2" />}
             </TabsTrigger>
-            <TabsTrigger value="completed">
-              Completed ({completedJobs.length})
-            </TabsTrigger>
+            <TabsTrigger value="completed">Completed ({completedJobs.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all">
@@ -337,13 +269,7 @@ export default function JobsPage() {
   );
 }
 
-function JobsTable({
-  jobs,
-  onTrigger,
-}: {
-  jobs: BatchJob[];
-  onTrigger?: (jobId: string) => void;
-}) {
+function JobsTable({ jobs, onTrigger }: { jobs: BatchJob[]; onTrigger?: (jobId: string) => void }) {
   return (
     <Card>
       <Table>
@@ -375,12 +301,9 @@ function JobsTable({
                   <Badge
                     variant="outline"
                     className={cn(
-                      job.status === "completed" &&
-                        "border-[var(--pnl-positive)]/30 text-[var(--pnl-positive)]",
-                      job.status === "failed" &&
-                        "border-[var(--pnl-negative)]/30 text-[var(--pnl-negative)]",
-                      job.status === "running" &&
-                        "border-[var(--status-live)]/30 text-[var(--status-live)]",
+                      job.status === "completed" && "border-[var(--pnl-positive)]/30 text-[var(--pnl-positive)]",
+                      job.status === "failed" && "border-[var(--pnl-negative)]/30 text-[var(--pnl-negative)]",
+                      job.status === "running" && "border-[var(--status-live)]/30 text-[var(--status-live)]",
                     )}
                   >
                     {job.status}
@@ -388,28 +311,13 @@ function JobsTable({
                 </div>
               </TableCell>
               <TableCell className="font-mono text-sm">{job.runDate}</TableCell>
-              <TableCell className="text-right font-mono">
-                {job.records.toLocaleString()}
-              </TableCell>
+              <TableCell className="text-right font-mono">{job.records.toLocaleString()}</TableCell>
               <TableCell className="text-right">
-                <span
-                  className={cn(
-                    "font-mono",
-                    job.errors > 0 && "text-[var(--pnl-negative)]",
-                  )}
-                >
-                  {job.errors}
-                </span>
+                <span className={cn("font-mono", job.errors > 0 && "text-[var(--pnl-negative)]")}>{job.errors}</span>
               </TableCell>
-              <TableCell className="text-right font-mono text-sm">
-                {job.duration}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {job.lastSuccess}
-              </TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {job.schedule}
-              </TableCell>
+              <TableCell className="text-right font-mono text-sm">{job.duration}</TableCell>
+              <TableCell className="text-sm text-muted-foreground">{job.lastSuccess}</TableCell>
+              <TableCell className="text-sm text-muted-foreground">{job.schedule}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-1">
                   <Button

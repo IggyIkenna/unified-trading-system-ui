@@ -2,19 +2,10 @@
 
 import * as React from "react";
 import { KPICard } from "@/components/trading/kpi-card";
-import {
-  StrategyPerformanceTable,
-  type StrategyPerformance,
-} from "@/components/trading/strategy-performance-table";
+import { StrategyPerformanceTable, type StrategyPerformance } from "@/components/trading/strategy-performance-table";
 import { AlertsFeed, type Alert } from "@/components/trading/alerts-feed";
-import {
-  PnLAttributionPanel,
-  type PnLComponent,
-} from "@/components/trading/pnl-attribution-panel";
-import {
-  HealthStatusGrid,
-  type ServiceHealth,
-} from "@/components/trading/health-status-grid";
+import { PnLAttributionPanel, type PnLComponent } from "@/components/trading/pnl-attribution-panel";
+import { HealthStatusGrid, type ServiceHealth } from "@/components/trading/health-status-grid";
 import { LimitBar } from "@/components/trading/limit-bar";
 import { AsOfDatetimePicker } from "@/components/trading/as-of-datetime-picker";
 import {
@@ -27,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Shield,
   AlertTriangle,
@@ -38,6 +30,7 @@ import {
   Bell,
   FileText,
 } from "lucide-react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // Mock data
 const mockStrategies: StrategyPerformance[] = [
@@ -159,20 +152,12 @@ function CommandCenter() {
   const [timeRange, setTimeRange] = React.useState<TimeRange>("1d");
   const [granularity, setGranularity] = React.useState<Granularity>("1h");
   const [showTimeSeries, setShowTimeSeries] = React.useState(true);
-  const [currentDate, setCurrentDate] = React.useState(
-    new Date().toISOString().split("T")[0],
-  );
+  const [currentDate, setCurrentDate] = React.useState(new Date().toISOString().split("T")[0]);
 
   const totalPnl = mockPnLComponents.reduce((sum, c) => sum + c.pnl, 0);
-  const liveStrategies = mockStrategies.filter(
-    (s) => s.status === "live",
-  ).length;
-  const warningStrategies = mockStrategies.filter(
-    (s) => s.status === "warning",
-  ).length;
-  const criticalAlerts = mockAlerts.filter(
-    (a) => a.severity === "critical",
-  ).length;
+  const liveStrategies = mockStrategies.filter((s) => s.status === "live").length;
+  const warningStrategies = mockStrategies.filter((s) => s.status === "warning").length;
+  const criticalAlerts = mockAlerts.filter((a) => a.severity === "critical").length;
   const highAlerts = mockAlerts.filter((a) => a.severity === "high").length;
 
   const pnlTimeSeries = React.useMemo(
@@ -194,32 +179,43 @@ function CommandCenter() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Trading Command Center</h1>
-          <p className="text-sm text-muted-foreground">
-            Real-time operational state across all strategies
-          </p>
+          <p className="text-sm text-muted-foreground">Real-time operational state across all strategies</p>
         </div>
         <div className="flex items-center gap-3">
           <AsOfDatetimePicker />
-          <Button variant="outline" size="sm" className="gap-2">
-            <Shield className="size-4" />
-            Kill Switch
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Shield className="size-4" />
+                Kill Switch
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              Review or arm the firm-wide kill switch (requires confirmation in production).
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
       {/* Time Series Section */}
       <div className="space-y-2">
-        <button
-          onClick={() => setShowTimeSeries(!showTimeSeries)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {showTimeSeries ? (
-            <ChevronUp className="size-4" />
-          ) : (
-            <ChevronDown className="size-4" />
-          )}
-          {showTimeSeries ? "Hide" : "Show"} Time Series
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={() => setShowTimeSeries(!showTimeSeries)}
+              className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {showTimeSeries ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+              {showTimeSeries ? "Hide" : "Show"} Time Series
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-xs">
+            {showTimeSeries
+              ? "Collapse P&L, NAV, and exposure time series charts."
+              : "Expand time series charts for P&L, NAV, and exposure."}
+          </TooltipContent>
+        </Tooltip>
 
         {showTimeSeries && (
           <Tabs defaultValue="pnl" className="space-y-4">
@@ -245,7 +241,7 @@ function CommandCenter() {
                 granularity={granularity}
                 onGranularityChange={setGranularity}
                 showGranularity={timeRange === "1d"}
-                valueFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                valueFormatter={(v) => `$${formatNumber(v / 1000, 0)}k`}
                 height={200}
                 showDateNavigation
                 currentDate={currentDate}
@@ -269,7 +265,7 @@ function CommandCenter() {
                 granularity={granularity}
                 onGranularityChange={setGranularity}
                 showGranularity={timeRange === "1d"}
-                valueFormatter={(v) => `$${(v / 1000000).toFixed(2)}M`}
+                valueFormatter={(v) => `$${formatNumber(v / 1000000, 2)}M`}
                 height={200}
                 showDateNavigation
                 currentDate={currentDate}
@@ -293,7 +289,7 @@ function CommandCenter() {
                 granularity={granularity}
                 onGranularityChange={setGranularity}
                 showGranularity={timeRange === "1d"}
-                valueFormatter={(v) => `$${(v / 1000000).toFixed(2)}M`}
+                valueFormatter={(v) => `$${formatNumber(v / 1000000, 2)}M`}
                 height={200}
                 showDateNavigation
                 currentDate={currentDate}
@@ -308,7 +304,7 @@ function CommandCenter() {
       <div className="grid grid-cols-5 gap-4">
         <KPICard
           title="Firm P&L"
-          value={`$${(totalPnl / 1000000).toFixed(2)}m`}
+          value={`$${formatNumber(totalPnl / 1000000, 2)}m`}
           change={0.8}
           changeLabel="1d"
           sparklineData={[10, 12, 11, 14, 15, 18, 20, 22, 25, 28]}
@@ -321,12 +317,7 @@ function CommandCenter() {
           sparklineData={[20, 22, 21, 23, 25, 24, 26, 25, 27, 28]}
           status="neutral"
         />
-        <KPICard
-          title="Margin"
-          value="82%"
-          subtitle="$340k free"
-          status="warning"
-        />
+        <KPICard title="Margin" value="82%" subtitle="$340k free" status="warning" />
         <KPICard
           title="Live Strategies"
           value={liveStrategies.toString()}
@@ -337,13 +328,7 @@ function CommandCenter() {
           title="Alerts"
           value={mockAlerts.length.toString()}
           subtitle={`${criticalAlerts} crit, ${highAlerts} high`}
-          status={
-            criticalAlerts > 0
-              ? "critical"
-              : highAlerts > 0
-                ? "warning"
-                : "healthy"
-          }
+          status={criticalAlerts > 0 ? "critical" : highAlerts > 0 ? "warning" : "healthy"}
         />
       </div>
 
@@ -352,9 +337,7 @@ function CommandCenter() {
         <div className="col-span-7">
           <Card className="h-full">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">
-                Strategy Performance
-              </CardTitle>
+              <CardTitle className="text-base font-semibold">Strategy Performance</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <StrategyPerformanceTable
@@ -368,16 +351,10 @@ function CommandCenter() {
         <div className="col-span-5">
           <Card className="h-full">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">
-                P&L + Risk Attribution
-              </CardTitle>
+              <CardTitle className="text-base font-semibold">P&L + Risk Attribution</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
-              <PnLAttributionPanel
-                components={mockPnLComponents}
-                totalPnl={totalPnl}
-                showExposure={true}
-              />
+              <PnLAttributionPanel components={mockPnLComponents} totalPnl={totalPnl} showExposure={true} />
             </CardContent>
           </Card>
         </div>
@@ -403,16 +380,12 @@ function CommandCenter() {
         <div className="col-span-4">
           <Card className="h-full">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">
-                Health & Feature Freshness
-              </CardTitle>
+              <CardTitle className="text-base font-semibold">Health & Feature Freshness</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <HealthStatusGrid
                 services={mockServices}
-                onServiceClick={(name) =>
-                  console.log("Navigate to service:", name)
-                }
+                onServiceClick={(name) => console.log("Navigate to service:", name)}
               />
             </CardContent>
           </Card>
@@ -421,39 +394,13 @@ function CommandCenter() {
         <div className="col-span-3">
           <Card className="h-full">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base font-semibold">
-                Risk Limits
-              </CardTitle>
+              <CardTitle className="text-base font-semibold">Risk Limits</CardTitle>
             </CardHeader>
             <CardContent className="pt-0 space-y-4">
-              <LimitBar
-                label="Delta Exposure"
-                value={2400000}
-                limit={5000000}
-                unit="$"
-                showStatus={false}
-              />
-              <LimitBar
-                label="Margin (Binance)"
-                value={78}
-                limit={80}
-                unit="%"
-                showStatus={false}
-              />
-              <LimitBar
-                label="LTV (Aave)"
-                value={0.72}
-                limit={0.75}
-                unit=""
-                showStatus={false}
-              />
-              <LimitBar
-                label="Firm Leverage"
-                value={1.2}
-                limit={3}
-                unit="x"
-                showStatus={false}
-              />
+              <LimitBar label="Delta Exposure" value={2400000} limit={5000000} unit="$" showStatus={false} />
+              <LimitBar label="Margin (Binance)" value={78} limit={80} unit="%" showStatus={false} />
+              <LimitBar label="LTV (Aave)" value={0.72} limit={0.75} unit="" showStatus={false} />
+              <LimitBar label="Firm Leverage" value={1.2} limit={3} unit="x" showStatus={false} />
             </CardContent>
           </Card>
         </div>
@@ -467,13 +414,9 @@ function PositionsPage() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-2">Positions</h1>
-      <p className="text-muted-foreground mb-6">
-        Live positions across all venues and strategies
-      </p>
+      <p className="text-muted-foreground mb-6">Live positions across all venues and strategies</p>
       <Card>
-        <CardContent className="p-12 text-center text-muted-foreground">
-          Positions view - coming soon
-        </CardContent>
+        <CardContent className="p-12 text-center text-muted-foreground">Positions view - coming soon</CardContent>
       </Card>
     </div>
   );
@@ -483,13 +426,9 @@ function StrategiesPage() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-2">Strategies</h1>
-      <p className="text-muted-foreground mb-6">
-        Strategy management and configuration
-      </p>
+      <p className="text-muted-foreground mb-6">Strategy management and configuration</p>
       <Card>
-        <CardContent className="p-12 text-center text-muted-foreground">
-          Strategies view - coming soon
-        </CardContent>
+        <CardContent className="p-12 text-center text-muted-foreground">Strategies view - coming soon</CardContent>
       </Card>
     </div>
   );
@@ -499,13 +438,9 @@ function MarketsPage() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-2">Markets</h1>
-      <p className="text-muted-foreground mb-6">
-        Market data and instrument analysis
-      </p>
+      <p className="text-muted-foreground mb-6">Market data and instrument analysis</p>
       <Card>
-        <CardContent className="p-12 text-center text-muted-foreground">
-          Markets view - coming soon
-        </CardContent>
+        <CardContent className="p-12 text-center text-muted-foreground">Markets view - coming soon</CardContent>
       </Card>
     </div>
   );
@@ -515,13 +450,9 @@ function OrdersPage() {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-2">Orders</h1>
-      <p className="text-muted-foreground mb-6">
-        Order management and execution
-      </p>
+      <p className="text-muted-foreground mb-6">Order management and execution</p>
       <Card>
-        <CardContent className="p-12 text-center text-muted-foreground">
-          Orders view - coming soon
-        </CardContent>
+        <CardContent className="p-12 text-center text-muted-foreground">Orders view - coming soon</CardContent>
       </Card>
     </div>
   );
@@ -533,9 +464,7 @@ function AlertsPage() {
       <h1 className="text-2xl font-semibold mb-2">Alerts</h1>
       <p className="text-muted-foreground mb-6">Alert management and history</p>
       <Card>
-        <CardContent className="p-12 text-center text-muted-foreground">
-          Alerts view - coming soon
-        </CardContent>
+        <CardContent className="p-12 text-center text-muted-foreground">Alerts view - coming soon</CardContent>
       </Card>
     </div>
   );

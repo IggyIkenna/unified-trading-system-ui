@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import { DollarSign, Percent } from "lucide-react";
 
 export type ValueFormat = "dollar" | "percent";
@@ -12,18 +13,9 @@ interface ValueFormatToggleProps {
   className?: string;
 }
 
-export function ValueFormatToggle({
-  format,
-  onFormatChange,
-  className,
-}: ValueFormatToggleProps) {
+export function ValueFormatToggle({ format, onFormatChange, className }: ValueFormatToggleProps) {
   return (
-    <div
-      className={cn(
-        "flex items-center border border-border rounded-md overflow-hidden",
-        className,
-      )}
-    >
+    <div className={cn("flex items-center border border-border rounded-md overflow-hidden", className)}>
       <button
         onClick={() => onFormatChange("dollar")}
         className={cn(
@@ -62,14 +54,12 @@ export function useValueFormat(initial: ValueFormat = "dollar") {
       if (format === "percent") {
         if (baseValue === 0) return "0.00%";
         const pct = (dollarValue / baseValue) * 100;
-        return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+        return `${pct >= 0 ? "+" : ""}${formatNumber(pct, 2)}%`;
       }
       // Dollar format
-      if (Math.abs(dollarValue) >= 1000000)
-        return `$${(dollarValue / 1000000).toFixed(2)}M`;
-      if (Math.abs(dollarValue) >= 1000)
-        return `$${(dollarValue / 1000).toFixed(0)}k`;
-      return `$${dollarValue.toFixed(0)}`;
+      if (Math.abs(dollarValue) >= 1000000) return `$${formatNumber(dollarValue / 1000000, 2)}M`;
+      if (Math.abs(dollarValue) >= 1000) return `$${formatNumber(dollarValue / 1000, 0)}k`;
+      return formatCurrency(dollarValue, "USD", 0);
     },
     [format],
   );
@@ -86,39 +76,28 @@ interface FormattedValueProps {
   showBothOnHover?: boolean;
 }
 
-export function FormattedValue({
-  value,
-  baseValue,
-  format,
-  className,
-  showBothOnHover = true,
-}: FormattedValueProps) {
+export function FormattedValue({ value, baseValue, format, className, showBothOnHover = true }: FormattedValueProps) {
   const formatDollar = (v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(2)}M`;
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
+    if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 2)}M`;
+    if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+    return formatCurrency(v, "USD", 0);
   };
 
-  const formatPercent = (v: number, base: number) => {
+  const formatPct = (v: number, base: number) => {
     if (base === 0) return "0.00%";
     const pct = (v / base) * 100;
-    return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+    return `${pct >= 0 ? "+" : ""}${formatNumber(pct, 2)}%`;
   };
 
-  const primary =
-    format === "dollar" ? formatDollar(value) : formatPercent(value, baseValue);
-  const secondary =
-    format === "dollar" ? formatPercent(value, baseValue) : formatDollar(value);
+  const primary = format === "dollar" ? formatDollar(value) : formatPct(value, baseValue);
+  const secondary = format === "dollar" ? formatPct(value, baseValue) : formatDollar(value);
 
   if (!showBothOnHover) {
     return <span className={className}>{primary}</span>;
   }
 
   return (
-    <span
-      className={cn("group relative cursor-default", className)}
-      title={secondary}
-    >
+    <span className={cn("group relative cursor-default", className)} title={secondary}>
       {primary}
       <span className="absolute left-0 top-full mt-1 hidden group-hover:block px-2 py-1 bg-popover border border-border rounded text-xs shadow-lg whitespace-nowrap z-10">
         {secondary}

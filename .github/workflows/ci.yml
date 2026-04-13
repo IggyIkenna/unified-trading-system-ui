@@ -79,3 +79,59 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  registry-drift:
+    # Checks that lib/registry/ui-reference-data.json and lib/registry/openapi.json
+    # are up-to-date with UAC/UIC sources. Fails with an actionable error if stale.
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout UAC sibling repo
+        uses: actions/checkout@v4
+        with:
+          repository: IggyIkenna/unified-api-contracts
+          path: ../unified-api-contracts
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout UIC sibling repo
+        uses: actions/checkout@v4
+        with:
+          repository: IggyIkenna/unified-config-interface
+          path: ../unified-config-interface
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python deps
+        run: pip install pydantic
+
+      - name: Regenerate ui-reference-data.json
+        run: |
+          python ../unified-trading-pm/scripts/openapi/generate_ui_reference_data.py \
+            --uac-root ../unified-api-contracts \
+            --uic-root ../unified-config-interface \
+            --out /tmp/fresh-ui-reference-data.json
+
+      - name: Diff ui-reference-data.json
+        id: diff_registry
+        run: |
+          if diff -q lib/registry/ui-reference-data.json /tmp/fresh-ui-reference-data.json > /dev/null 2>&1; then
+            echo "registry_stale=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "registry_stale=true" >> "$GITHUB_OUTPUT"
+            diff lib/registry/ui-reference-data.json /tmp/fresh-ui-reference-data.json | head -80
+          fi
+
+      - name: Fail on stale registry
+        if: steps.diff_registry.outputs.registry_stale == 'true'
+        run: |
+          echo "::error::lib/registry/ui-reference-data.json is stale. Run 'python unified-trading-pm/scripts/openapi/generate_ui_reference_data.py' and commit the updated file."
+          exit 1

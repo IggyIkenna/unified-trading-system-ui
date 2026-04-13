@@ -1,14 +1,15 @@
 "use client";
 
-import * as React from "react";
-import type { WidgetComponentProps } from "../widget-registry";
-import { LiveBatchComparison } from "@/components/trading/live-batch-comparison";
 import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel";
+import { LiveBatchComparison } from "@/components/trading/live-batch-comparison";
 import { ValueFormatToggle, useValueFormat } from "@/components/trading/value-format-toggle";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDown, ChevronUp, Database, Loader2, Radio } from "lucide-react";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { ChevronDown, ChevronUp, Database, Radio } from "lucide-react";
+import * as React from "react";
+import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
 
 function getYesterday(): string {
@@ -23,7 +24,12 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   const [showTimeSeries, setShowTimeSeries] = React.useState(true);
   const [batchDate, setBatchDate] = React.useState(getYesterday());
   const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar");
-  if (!ctx) return <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">Navigate to Overview tab</div>;
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
   const { liveTimeSeries, batchTimeSeries, realtimePnlPoints, timeseriesLoading, liveBatchLoading, formatCurrency } =
     ctx;
 
@@ -53,7 +59,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
           )}
         </Badge>
         {(timeseriesLoading || liveBatchLoading) && (
-          <Loader2 className="size-3.5 animate-spin text-muted-foreground ml-1" />
+          <Spinner size="sm" className="size-3.5 text-muted-foreground ml-1" />
         )}
       </div>
 

@@ -11,24 +11,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { cn } from "@/lib/utils";
-import {
-  AlertOctagon,
-  CheckCircle2,
-  Pause,
-  Play,
-  RefreshCw,
-  Shield,
-  TrendingDown,
-} from "lucide-react";
+import { AlertOctagon, CheckCircle2, Pause, Play, RefreshCw, Shield, TrendingDown } from "lucide-react";
 import * as React from "react";
+import { formatNumber } from "@/lib/utils/formatters";
 
 interface InterventionControlsProps {
   scope: {
@@ -55,9 +43,7 @@ export function InterventionControls({
   const [showReduceDialog, setShowReduceDialog] = React.useState(false);
   const [showFlattenDialog, setShowFlattenDialog] = React.useState(false);
   const [reducePercent, setReducePercent] = React.useState(50);
-  const [flattenConfig, setFlattenConfig] = React.useState<
-    "aggressive" | "conservative"
-  >("conservative");
+  const [flattenConfig, setFlattenConfig] = React.useState<"aggressive" | "conservative">("conservative");
   const [isPaused, setIsPaused] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [lastAction, setLastAction] = React.useState<{
@@ -66,9 +52,9 @@ export function InterventionControls({
   } | null>(null);
 
   const formatExposure = (v: number) => {
-    if (Math.abs(v) >= 1000000) return `$${(v / 1000000).toFixed(1)}M`;
-    if (Math.abs(v) >= 1000) return `$${(v / 1000).toFixed(0)}k`;
-    return `$${v.toFixed(0)}`;
+    if (Math.abs(v) >= 1000000) return `$${formatNumber(v / 1000000, 1)}M`;
+    if (Math.abs(v) >= 1000) return `$${formatNumber(v / 1000, 0)}k`;
+    return `$${formatNumber(v, 0)}`;
   };
 
   const handlePauseAll = async () => {
@@ -120,14 +106,10 @@ export function InterventionControls({
       <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-md border border-border">
         <Shield className="size-3.5 text-muted-foreground" />
         <span className="text-xs text-muted-foreground">
-          Scope:{" "}
-          <span className="font-medium text-foreground">
-            {scope.scopeLabel}
-          </span>
+          Scope: <span className="font-medium text-foreground">{scope.scopeLabel}</span>
         </span>
         <span className="text-[10px] text-muted-foreground">
-          ({scope.strategyCount} strategies,{" "}
-          {formatExposure(scope.totalExposure)} exposed)
+          ({scope.strategyCount} strategies, {formatExposure(scope.totalExposure)} exposed)
         </span>
       </div>
 
@@ -138,11 +120,7 @@ export function InterventionControls({
             <Button
               variant={isPaused ? "default" : "outline"}
               size="sm"
-              className={cn(
-                "gap-1.5",
-                isPaused &&
-                  "bg-[var(--status-warning)] hover:bg-[var(--status-warning)]/90",
-              )}
+              className={cn("gap-1.5", isPaused && "bg-[var(--status-warning)] hover:bg-[var(--status-warning)]/90")}
               onClick={isPaused ? handleResumeAll : handlePauseAll}
               disabled={isProcessing}
             >
@@ -157,11 +135,7 @@ export function InterventionControls({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>
-              {isPaused
-                ? "Resume all paused strategies"
-                : "Pause all strategies in scope"}
-            </p>
+            <p>{isPaused ? "Resume all paused strategies" : "Pause all strategies in scope"}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -187,8 +161,7 @@ export function InterventionControls({
           <DialogHeader>
             <DialogTitle>Reduce Exposure</DialogTitle>
             <DialogDescription>
-              This will reduce position sizes across {scope.strategyCount}{" "}
-              strategies. Current exposure:{" "}
+              This will reduce position sizes across {scope.strategyCount} strategies. Current exposure:{" "}
               {formatExposure(scope.totalExposure)}
             </DialogDescription>
           </DialogHeader>
@@ -196,9 +169,7 @@ export function InterventionControls({
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm">Reduction Amount</span>
-                <span className="font-mono text-sm font-medium">
-                  {reducePercent}%
-                </span>
+                <span className="font-mono text-sm font-medium">{reducePercent}%</span>
               </div>
               <Slider
                 value={[reducePercent]}
@@ -216,16 +187,12 @@ export function InterventionControls({
             <div className="p-3 bg-muted rounded-md space-y-1">
               <div className="flex justify-between text-sm">
                 <span>Current Exposure</span>
-                <span className="font-mono">
-                  {formatExposure(scope.totalExposure)}
-                </span>
+                <span className="font-mono">{formatExposure(scope.totalExposure)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>After Reduction</span>
                 <span className="font-mono text-[var(--status-warning)]">
-                  {formatExposure(
-                    scope.totalExposure * (1 - reducePercent / 100),
-                  )}
+                  {formatExposure(scope.totalExposure * (1 - reducePercent / 100))}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
@@ -237,10 +204,7 @@ export function InterventionControls({
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowReduceDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowReduceDialog(false)}>
               Cancel
             </Button>
             <Button
@@ -289,16 +253,14 @@ export function InterventionControls({
               Emergency Flatten
             </DialogTitle>
             <DialogDescription>
-              This will immediately close ALL positions across{" "}
-              {scope.strategyCount} strategies. This action cannot be undone.
+              This will immediately close ALL positions across {scope.strategyCount} strategies. This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             {/* Flatten Config Options */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Flatten Configuration
-              </label>
+              <label className="text-sm font-medium">Flatten Configuration</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setFlattenConfig("conservative")}
@@ -314,8 +276,7 @@ export function InterventionControls({
                     <span className="font-medium text-sm">Conservative</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    TWAP over 15-30 min. Lower slippage (~0.2-0.5%), safer for
-                    large positions.
+                    TWAP over 15-30 min. Lower slippage (~0.2-0.5%), safer for large positions.
                   </p>
                 </button>
                 <button
@@ -332,8 +293,7 @@ export function InterventionControls({
                     <span className="font-medium text-sm">Aggressive</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Market orders immediately. Higher slippage (~1-3%), fastest
-                    exit.
+                    Market orders immediately. Higher slippage (~1-3%), fastest exit.
                   </p>
                 </button>
               </div>
@@ -347,31 +307,17 @@ export function InterventionControls({
               <ul className="text-sm space-y-1 text-muted-foreground ml-6 list-disc">
                 <li>
                   All open positions will be{" "}
-                  {flattenConfig === "aggressive"
-                    ? "market-sold immediately"
-                    : "closed via TWAP"}
+                  {flattenConfig === "aggressive" ? "market-sold immediately" : "closed via TWAP"}
                 </li>
-                <li>
-                  Expected slippage:{" "}
-                  {flattenConfig === "aggressive" ? "~1-3%" : "~0.2-0.5%"}
-                </li>
-                <li>
-                  Estimated time:{" "}
-                  {flattenConfig === "aggressive" ? "< 1 min" : "15-30 min"}
-                </li>
+                <li>Expected slippage: {flattenConfig === "aggressive" ? "~1-3%" : "~0.2-0.5%"}</li>
+                <li>Estimated time: {flattenConfig === "aggressive" ? "< 1 min" : "15-30 min"}</li>
                 <li>Strategies will be paused after flatten</li>
-                <li>
-                  This will affect {formatExposure(scope.totalExposure)} in
-                  exposure
-                </li>
+                <li>This will affect {formatExposure(scope.totalExposure)} in exposure</li>
               </ul>
             </div>
           </div>
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowFlattenDialog(false)}
-            >
+            <Button variant="outline" onClick={() => setShowFlattenDialog(false)}>
               Cancel
             </Button>
             <Button
@@ -397,9 +343,7 @@ export function InterventionControls({
         <div className="flex items-center gap-1.5 px-2 py-1 bg-secondary/50 rounded text-xs text-muted-foreground">
           <CheckCircle2 className="size-3 text-[var(--status-live)]" />
           {lastAction.type}
-          <span className="text-[10px]">
-            ({Math.round((nowMs - lastAction.timestamp.getTime()) / 1000)}s ago)
-          </span>
+          <span className="text-[10px]">({Math.round((nowMs - lastAction.timestamp.getTime()) / 1000)}s ago)</span>
         </div>
       )}
     </div>
@@ -426,20 +370,13 @@ export function InterventionControlsCompact({
             <Button
               variant="ghost"
               size="sm"
-              className={cn(
-                "h-7 px-2",
-                isPaused && "text-[var(--status-warning)]",
-              )}
+              className={cn("h-7 px-2", isPaused && "text-[var(--status-warning)]")}
               onClick={() => {
                 setIsPaused(!isPaused);
                 if (!isPaused) onPauseAll?.();
               }}
             >
-              {isPaused ? (
-                <Play className="size-3.5" />
-              ) : (
-                <Pause className="size-3.5" />
-              )}
+              {isPaused ? <Play className="size-3.5" /> : <Pause className="size-3.5" />}
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -452,11 +389,7 @@ export function InterventionControlsCompact({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-[var(--status-error)]"
-            >
+            <Button variant="ghost" size="sm" className="h-7 px-2 text-[var(--status-error)]">
               <AlertOctagon className="size-3.5" />
             </Button>
           </TooltipTrigger>

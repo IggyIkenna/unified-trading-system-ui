@@ -331,15 +331,10 @@ app/
 The layout receives `children` — a React prop representing whatever `page.tsx` rendered:
 
 ```tsx
-export default function PlatformLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   return (
     <RequireAuth>
-      <UnifiedShell>{children}</UnifiedShell>{" "}
-      {/* page.tsx renders where {children} is */}
+      <UnifiedShell>{children}</UnifiedShell> {/* page.tsx renders where {children} is */}
     </RequireAuth>
   );
 }
@@ -357,11 +352,7 @@ strategies/[id]/page.tsx    →   /strategies/strat-001
 Inside the component, you get the value via `params`:
 
 ```tsx
-export default function StrategyDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function StrategyDetailPage({ params }: { params: { id: string } }) {
   const strategyId = params.id; // "strat-001"
   // fetch data for this strategy...
 }
@@ -470,9 +461,7 @@ export function usePositions(orgId?: string) {
   return useQuery({
     queryKey: ["positions", orgId], // cache key — unique per query + params
     queryFn: async () => {
-      const res = await fetch(
-        `${API_CONFIG.baseUrl}/api/positions?org=${orgId}`,
-      );
+      const res = await fetch(`${API_CONFIG.baseUrl}/api/positions?org=${orgId}`);
       if (!res.ok) throw new Error("Failed to fetch positions");
       return res.json();
     },
@@ -742,8 +731,8 @@ It must be the first line. If you get an error about hooks in a Server Component
 **3. All API calls go through `hooks/api/` — never `fetch()` directly in a page**
 React Query handles caching, loading states, and retries. Bypass it and you lose all of that.
 
-**4. Never import from `components/ui/` and bypass the domain component**
-If a domain-specific component exists (e.g. `components/trading/status-badge.tsx`), use it. Do not rebuild it from primitives in your page file.
+**4. Use shared and domain components — do not bypass them with raw primitives**
+Cross-domain UI (`StatusBadge`, `PageHeader`, `Spinner`, `EmptyState`, `DataTable`, etc.) lives in `components/shared/` (see `components/shared/index.ts`). Domain-only pieces live in `components/<domain>/`. `components/ui/` is **shadcn/Radix primitives only** — not the place for custom app chrome. Do not rebuild shared patterns from scratch in a page file.
 
 **5. Never hardcode API URLs**
 All API paths come from `lib/config/api.ts`. Hardcoding creates invisible coupling that breaks when the backend URL changes.
@@ -764,13 +753,15 @@ The manifest tracks ongoing refactors and the target structure. Changes without 
 | You want to...                         | Look here                                                   |
 | -------------------------------------- | ----------------------------------------------------------- |
 | Add a new page                         | `app/(platform)/service/<domain>/`                          |
-| Add a reusable component               | `components/<domain>/`                                      |
+| Add cross-domain shared UI             | `components/shared/` (`components/shared/index.ts`)         |
+| Add a domain-only component            | `components/<domain>/` (trading, research, ops, …)          |
 | Add an API data fetching hook          | `hooks/api/use-<domain>.ts`                                 |
 | Add a mock API response                | `lib/mocks/handlers/<domain>.ts`                            |
 | Add a global config constant           | `lib/config/`                                               |
 | Add shared TypeScript types            | `lib/<domain>-types.ts`                                     |
 | Add global state (filters, user prefs) | `lib/stores/<name>-store.ts`                                |
-| Add a utility function                 | `lib/utils.ts`                                              |
+| Add `cn()` / class merging             | `lib/utils.ts`                                              |
+| Add formatters (numbers, dates, P&L)   | `lib/utils/formatters.ts`, `lib/utils/pnl.ts`, etc.         |
 | Add a test                             | `__tests__/<corresponding path>/`                           |
 | Understand the route structure         | `docs/STRUCTURE_APP.md`                                     |
 | Understand available components        | `docs/STRUCTURE_COMPONENTS.md`                              |

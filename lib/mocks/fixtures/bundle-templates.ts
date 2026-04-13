@@ -9,7 +9,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "FLASH_BORROW",
         instrument: "ETH",
-        venue: "Aave",
+        venue: "AAVEV3-ETHEREUM",
         side: "BUY",
         quantity: "100",
         price: "3456.00",
@@ -18,7 +18,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "SWAP",
         instrument: "ETH/USDT",
-        venue: "Uniswap",
+        venue: "UNISWAPV3-ETHEREUM",
         side: "SELL",
         quantity: "100",
         price: "3456.00",
@@ -27,7 +27,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "SWAP",
         instrument: "ETH/USDT",
-        venue: "Curve",
+        venue: "CURVE-ETHEREUM",
         side: "BUY",
         quantity: "345800",
         price: "3458.00",
@@ -36,7 +36,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "FLASH_REPAY",
         instrument: "ETH",
-        venue: "Aave",
+        venue: "AAVEV3-ETHEREUM",
         side: "SELL",
         quantity: "100.05",
         price: "3456.00",
@@ -54,7 +54,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "TRADE",
         instrument: "BTC/USDT",
-        venue: "Binance",
+        venue: "BINANCE-SPOT",
         side: "BUY",
         quantity: "0.1",
         price: "67234.50",
@@ -63,7 +63,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "TRADE",
         instrument: "BTC/USD-PERP",
-        venue: "Hyperliquid",
+        venue: "HYPERLIQUID",
         side: "SELL",
         quantity: "0.1",
         price: "67280.00",
@@ -81,7 +81,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "REPAY",
         instrument: "USDC",
-        venue: "Aave",
+        venue: "AAVEV3-ETHEREUM",
         side: "SELL",
         quantity: "5000",
         price: "1.00",
@@ -90,7 +90,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "WITHDRAW",
         instrument: "ETH",
-        venue: "Aave",
+        venue: "AAVEV3-ETHEREUM",
         side: "BUY",
         quantity: "2",
         price: "3456.00",
@@ -108,7 +108,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "OPTIONS_COMBO",
         instrument: "BTC-28MAR26-65000-P",
-        venue: "Deribit",
+        venue: "DERIBIT",
         side: "BUY",
         quantity: "1",
         price: "2450.00",
@@ -117,7 +117,7 @@ export const BUNDLE_TEMPLATES: BundleTemplate[] = [
       {
         operationType: "OPTIONS_COMBO",
         instrument: "BTC-28MAR26-70000-C",
-        venue: "Deribit",
+        venue: "DERIBIT",
         side: "SELL",
         quantity: "1",
         price: "1200.00",

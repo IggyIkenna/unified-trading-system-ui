@@ -110,40 +110,40 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
   return (
     <div ref={containerRef}>
       <AllWidgetProviders>
-      <ResponsiveGridLayout
-        className="widget-grid"
-        layouts={allBreakpointLayouts}
-        breakpoints={BREAKPOINTS}
-        cols={COLS}
-        rowHeight={ROW_HEIGHT}
-        margin={MARGIN}
-        containerPadding={CONTAINER_PADDING}
-        width={containerWidth}
-        dragConfig={dragConfig}
-        resizeConfig={resizeConfig}
-        compactor={verticalCompactor}
-        onLayoutChange={handleLayoutChange}
-      >
-        {placements.map((placement) => {
-          const def = getWidget(placement.widgetId);
-          if (!def) return <div key={placement.instanceId} />;
-          const isExpanded = expandedInstanceId === placement.instanceId;
-          return (
-            <div key={placement.instanceId}>
-              <WidgetWrapper
-                definition={def}
-                placement={placement}
-                pageTab={tab}
-                editMode={editMode}
-                onRemove={handleRemove}
-                expanded={isExpanded}
-                onExpand={handleExpand}
-                onCollapse={handleCollapse}
-              />
-            </div>
-          );
-        })}
-      </ResponsiveGridLayout>
+        <ResponsiveGridLayout
+          className="widget-grid"
+          layouts={allBreakpointLayouts}
+          breakpoints={BREAKPOINTS}
+          cols={COLS}
+          rowHeight={ROW_HEIGHT}
+          margin={MARGIN}
+          containerPadding={CONTAINER_PADDING}
+          width={containerWidth}
+          dragConfig={dragConfig}
+          resizeConfig={resizeConfig}
+          compactor={verticalCompactor}
+          onLayoutChange={handleLayoutChange}
+        >
+          {placements.map((placement) => {
+            const def = getWidget(placement.widgetId);
+            if (!def) return <div key={placement.instanceId} />;
+            const isExpanded = expandedInstanceId === placement.instanceId;
+            return (
+              <div key={placement.instanceId} className="h-full min-h-0">
+                <WidgetWrapper
+                  definition={def}
+                  placement={placement}
+                  pageTab={tab}
+                  editMode={editMode}
+                  onRemove={handleRemove}
+                  expanded={isExpanded}
+                  onExpand={handleExpand}
+                  onCollapse={handleCollapse}
+                />
+              </div>
+            );
+          })}
+        </ResponsiveGridLayout>
       </AllWidgetProviders>
     </div>
   );

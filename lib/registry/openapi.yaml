@@ -474,6 +474,43 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       security:
       - APIKeyHeader: []
+  /deployment-api/api/deployments/deploy-missing:
+    post:
+      tags:
+      - deployment-api
+      - Deployments
+      summary: Deploy Missing Shards
+      description: 'Detect missing data shards and deploy jobs to fill gaps.
+
+
+        Combines missing-shard detection with deployment creation in a single call.
+
+        When dry_run=True, returns only the missing analysis without deploying.'
+      operationId: deploy_missing_shards_api_deployments_deploy_missing_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployMissingRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Deploy Missing Shards Api Deployments Deploy Missing
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
   /deployment-api/api/deployments/{deployment_id}/cancel:
     post:
       tags:
@@ -1563,6 +1600,108 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-api/api/data-status/manifest:
+    get:
+      tags:
+      - deployment-api
+      - Data Status
+      summary: Get Data Status Manifest
+      description: Get data status from manifest availability indices (fastest path).
+      operationId: get_data_status_manifest_api_data_status_manifest_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Service name
+          title: Service
+        description: Service name
+      - name: start_date
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Start date (YYYY-MM-DD)
+          title: Start Date
+        description: Start date (YYYY-MM-DD)
+      - name: end_date
+        in: query
+        required: true
+        schema:
+          type: string
+          description: End date (YYYY-MM-DD)
+          title: End Date
+        description: End date (YYYY-MM-DD)
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: array
+            items:
+              type: string
+          - type: 'null'
+          description: Filter by category
+          title: Category
+        description: Filter by category
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-api/api/data-status/coverage-summary:
+    get:
+      tags:
+      - deployment-api
+      - Data Status
+      summary: Get Coverage Summary
+      description: Get coverage summary with shard counts and latest-day instrument
+        totals.
+      operationId: get_coverage_summary_api_data_status_coverage_summary_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Service name
+          default: instruments-service
+          title: Service
+        description: Service name
+      - name: categories
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Comma-separated categories
+          title: Categories
+        description: Comma-separated categories
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /deployment-api/api/data-status/turbo:
     get:
       tags:
@@ -2279,8 +2418,9 @@ paths:
         when viewing corporate-actions which is TRADFI-only).\n\nArgs:\n    service:\
         \ Service name (e.g., \"instruments-service\", \"corporate-actions\")\n\n\
         Returns:\n    {\"service\": str, \"categories\": List[str]}\n\nExamples:\n\
-        \    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]\n    - corporate-actions:\
-        \ [\"TRADFI\"]\n    - features-calendar-service: []  # No category dimension"
+        \    - instruments-service: [\"CEFI\", \"DEFI\", \"TRADFI\"]  # CORRECT-LOCAL\n\
+        \    - corporate-actions: [\"TRADFI\"]\n    - features-calendar-service: []\
+        \  # No category dimension"
       operationId: get_service_categories_api_capabilities_service_categories__service__get
       security:
       - APIKeyHeader: []
@@ -2353,13 +2493,10 @@ paths:
       - deployment-api
       - cloud-builds
       summary: Trigger Build
-      description: 'Manually trigger a Cloud Build for a service.
+      description: 'Manually trigger a Cloud Build / CodeBuild for a service.
 
 
-        This runs the build trigger as if code was pushed to the specified branch.
-
-
-        Requires: roles/cloudbuild.builds.editor on the service account.'
+        Dispatches to GCP Cloud Build or AWS CodeBuild based on CLOUD_PROVIDER.'
       operationId: trigger_build_api_cloud_builds_trigger_post
       requestBody:
         content:
@@ -3841,7 +3978,12 @@ paths:
       - unified-trading-api
       - execution
       summary: Create Order
-      description: 'Place a new order (mock: persists to store, real: routes to execution-service).'
+      description: 'Place a new order + auto-create/update position + fill record.
+
+
+        Mock mode: creates order, fill, and position records so GET endpoints
+
+        return realistic data after trades are placed.'
       operationId: create_order_execution_orders_post
       security:
       - APIKeyHeader: []
@@ -3977,6 +4119,63 @@ paths:
                 title: Response Get Algos Execution Algos Get
       security:
       - APIKeyHeader: []
+  /unified-trading-api/execution/grid-configs:
+    get:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Get Grid Configs
+      description: 'Get saved grid config library — named config sets with their fixed
+        + grid params.
+
+
+        Each grid config is a saved "folder" that references a grid run.
+
+        Use grid_run_id to find the child backtest results.'
+      operationId: get_grid_configs_execution_grid_configs_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: domain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by domain: strategy, execution, ml'
+          title: Domain
+        description: 'Filter by domain: strategy, execution, ml'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Grid Configs Execution Grid Configs Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/execution/backtests:
     get:
       tags:
@@ -4020,6 +4219,284 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Create Backtest
+      description: "Create a backtest — supports both single-run and grid search.\n\
+        \nGrid search mode (body contains 'grid_parameters'):\n  Expands parameter\
+        \ combinations into individual backtest configs,\n  persists each to the store,\
+        \ and returns the parent run with children.\n\nSingle mode (no 'grid_parameters'):\n\
+        \  Creates a single backtest record."
+      operationId: create_backtest_execution_backtests_post
+      security:
+      - APIKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Backtest Execution Backtests Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/orders/{order_id}/cancel:
+    put:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Cancel Order
+      description: 'Cancel an open order.
+
+
+        Mock mode: marks the order as cancelled in the store.
+
+        Real mode: routes to execution-service /manual/cancel.'
+      operationId: cancel_order_execution_orders__order_id__cancel_put
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Order Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Cancel Order Execution Orders  Order Id  Cancel Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/orders/{order_id}/amend:
+    put:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Amend Order
+      description: 'Amend quantity and/or price on an open order.
+
+
+        Mock mode: updates the order fields in the store.
+
+        Real mode: routes to execution-service /manual/amend.
+
+
+        Body: {quantity?: number, price?: number}'
+      operationId: amend_order_execution_orders__order_id__amend_put
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: order_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Order Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Amend Order Execution Orders  Order Id  Amend Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/sports/bets:
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Place Sports Bet
+      description: "Place a sports bet.\n\nMock mode: creates a bet record in the\
+        \ store with PENDING status,\nthen auto-settles via paper trading adapter\
+        \ simulation.\nReal mode: routes to execution-service sports_execution adapters\n\
+        which connect to the bookmaker API/exchange/browser.\n\nBody schema matches\
+        \ UAC BetOrder:\n  fixture_id, market, outcome, bookmaker, odds, stake, side\
+        \ (BACK/LAY),\n  bet_type (single/accumulator), legs (for accumulators)."
+      operationId: place_sports_bet_execution_sports_bets_post
+      security:
+      - APIKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              title: Body
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Place Sports Bet Execution Sports Bets Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Get Sports Bets
+      description: Get user's sports bets with optional status filter.
+      operationId: get_sports_bets_execution_sports_bets_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by bet status
+          title: Status
+        description: Filter by bet status
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Sports Bets Execution Sports Bets Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/sports/bets/{bet_id}/cancel:
+    delete:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Cancel Sports Bet
+      description: Cancel an unmatched sports bet.
+      operationId: cancel_sports_bet_execution_sports_bets__bet_id__cancel_delete
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: bet_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Bet Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Cancel Sports Bet Execution Sports Bets  Bet Id  Cancel
+                  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/defi/execute:
+    post:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Execute Defi Operation
+      description: 'Execute a DeFi operation (stake, lend, swap, borrow, flash_loan).
+
+
+        Creates the operation record + corresponding position.'
+      operationId: execute_defi_operation_execution_defi_execute_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Body
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Execute Defi Operation Execution Defi Execute Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
   /unified-trading-api/positions/active:
     get:
       tags:
@@ -4540,6 +5017,125 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/analytics/period-changes:
+    get:
+      tags:
+      - unified-trading-api
+      - analytics
+      summary: Get Period Changes
+      description: 'Compute period-over-period changes for a metric from daily snapshots.
+
+
+        Returns absolute and percentage changes between period start and the as_of
+        date.
+
+        All dates are UTC midnight boundaries.'
+      operationId: get_period_changes_analytics_period_changes_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 1d, wtd, mtd, qtd, ytd, 7d, 30d, 90d, 365d
+          default: 1d
+          title: Period
+        description: 1d, wtd, mtd, qtd, ytd, 7d, 30d, 90d, 365d
+      - name: metric
+        in: query
+        required: false
+        schema:
+          type: string
+          description: pnl, equity, risk, exposure
+          default: pnl
+          title: Metric
+        description: pnl, equity, risk, exposure
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reference date (YYYY-MM-DD UTC). Defaults to today.
+          title: As Of
+        description: Reference date (YYYY-MM-DD UTC). Defaults to today.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Period Changes Analytics Period Changes Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/analytics/period-summary:
+    get:
+      tags:
+      - unified-trading-api
+      - analytics
+      summary: Get Period Summary
+      description: 'Compute changes across all standard periods (1d, wtd, mtd, qtd,
+        ytd).
+
+
+        Returns a dict of period → changes for the UI dashboard cards.'
+      operationId: get_period_summary_analytics_period_summary_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: metric
+        in: query
+        required: false
+        schema:
+          type: string
+          default: pnl
+          title: Metric
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reference date (YYYY-MM-DD UTC). Defaults to today.
+          title: As Of
+        description: Reference date (YYYY-MM-DD UTC). Defaults to today.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Period Summary Analytics Period Summary Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/analytics/strategies:
     get:
       tags:
@@ -4721,6 +5317,54 @@ paths:
                 additionalProperties: true
                 title: Response Scale Strategy Analytics Strategies  Strategy Id  Scale
                   Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/analytics/live-batch-delta:
+    get:
+      tags:
+      - unified-trading-api
+      - analytics
+      summary: Get Live Batch Delta
+      description: 'Reconciliation view comparing live vs batch values for a metric.
+
+
+        Returns per-field deltas (live_value, batch_value, absolute_diff, pct_diff)
+
+        so ops can spot divergence between real-time and T+1 numbers.'
+      operationId: get_live_batch_delta_analytics_live_batch_delta_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: metric
+        in: query
+        required: false
+        schema:
+          type: string
+          description: pnl, equity, exposure
+          default: pnl
+          title: Metric
+        description: pnl, equity, exposure
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reference date (YYYY-MM-DD UTC). Defaults to today.
+          title: As Of
+        description: Reference date (YYYY-MM-DD UTC). Defaults to today.
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Live Batch Delta Analytics Live Batch Delta Get
         '422':
           description: Validation Error
           content:
@@ -5088,6 +5732,123 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/ml/monitoring:
+    get:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Get Ml Monitoring
+      description: 'Get ML model monitoring data — drift metrics, accuracy, prediction
+        distribution.
+
+
+        Returns per-model monitoring snapshots including feature drift scores,
+
+        prediction accuracy over time, and distribution statistics.'
+      operationId: get_ml_monitoring_ml_monitoring_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: model_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by model ID
+          title: Model Id
+        description: Filter by model ID
+      - name: family
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by model family
+          title: Family
+        description: Filter by model family
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Ml Monitoring Ml Monitoring Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/ml/governance:
+    get:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Get Ml Governance
+      description: 'Get ML governance data — approval status, audit trail.
+
+
+        Returns model approval records with reviewer, timestamp, and decision rationale.'
+      operationId: get_ml_governance_ml_governance_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: model_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by model ID
+          title: Model Id
+        description: Filter by model ID
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by approval status
+          title: Status
+        description: Filter by approval status
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Ml Governance Ml Governance Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/ml/config:
+    get:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Get Ml Config
+      description: 'Get ML pipeline configuration — feature sets, training schedules,
+        thresholds.
+
+
+        Returns the current ML pipeline configuration used by training and inference
+        services.'
+      operationId: get_ml_config_ml_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Ml Config Ml Config Get
+      security:
+      - APIKeyHeader: []
   /unified-trading-api/ml/models/{model_id}/promote:
     post:
       tags:
@@ -5322,7 +6083,12 @@ paths:
       - unified-trading-api
       - reporting
       summary: Generate Report
-      description: 'Generate a report (mock: creates record, real: proxies to client-reporting-api).'
+      description: 'Generate a report + auto-create invoice if applicable.
+
+
+        Mock mode: creates report record, optionally creates invoice
+
+        and settlement records as side effects.'
       operationId: generate_report_reporting_generate_post
       responses:
         '200':
@@ -5729,6 +6495,205 @@ paths:
                 title: Response Get Feature Flags Config Feature Flags Get
       security:
       - APIKeyHeader: []
+  /unified-trading-api/config/mandates:
+    get:
+      tags:
+      - unified-trading-api
+      - config
+      summary: Get Mandates
+      description: Get client mandate definitions — investment constraints, limits,
+        allowed instruments.
+      operationId: get_mandates_config_mandates_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by client ID
+          title: Client Id
+        description: Filter by client ID
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Mandates Config Mandates Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/config/fee-schedules:
+    get:
+      tags:
+      - unified-trading-api
+      - config
+      summary: Get Fee Schedules
+      description: Get fee schedules per venue/instrument type.
+      operationId: get_fee_schedules_config_fee_schedules_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: venue
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by venue
+          title: Venue
+        description: Filter by venue
+      - name: instrument_type
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by instrument type
+          title: Instrument Type
+        description: Filter by instrument type
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fee Schedules Config Fee Schedules Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/config/reload:
+    post:
+      tags:
+      - unified-trading-api
+      - config
+      summary: Reload Config
+      description: 'Trigger config hot-reload across all config domains.
+
+
+        In mock mode: clears cached config and returns success.
+
+        In real mode: would trigger config reloader on each service via Pub/Sub.'
+      operationId: reload_config_config_reload_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Reload Config Config Reload Post
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/config/strategies:
+    get:
+      tags:
+      - unified-trading-api
+      - config
+      summary: Get Strategy Config
+      description: 'Get strategy configuration — parameters, limits, schedules.
+
+
+        Different from /analytics/strategies which returns strategy performance.
+
+        This returns the raw config used by strategy-service.'
+      operationId: get_strategy_config_config_strategies_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by status: active, paused, staging'
+          title: Status
+        description: 'Filter by status: active, paused, staging'
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: cefi, defi, tradfi, sports'
+          title: Category
+        description: 'Filter by category: cefi, defi, tradfi, sports'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Strategy Config Config Strategies Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/alerts/list:
     get:
       tags:
@@ -6013,6 +6978,14 @@ paths:
         schema:
           type: string
           title: Strategy Id
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: cefi, defi, tradfi, sports'
+          title: Category
+        description: 'Filter by category: cefi, defi, tradfi, sports'
       - name: as_of
         in: query
         required: false
@@ -6239,6 +7212,103 @@ paths:
                 title: Response Kill Switch Risk Kill Switch Post
       security:
       - APIKeyHeader: []
+  /unified-trading-api/risk/exposure-types:
+    get:
+      tags:
+      - unified-trading-api
+      - risk
+      summary: Get Exposure Types
+      description: 'Get available exposure type definitions for the risk dashboard.
+
+
+        Returns exposure categories (gross, net, delta, vega, etc.) with their
+
+        descriptions and aggregation rules so the frontend can render dynamic
+
+        exposure breakdown widgets.'
+      operationId: get_exposure_types_risk_exposure_types_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: cefi, defi, tradfi, sports'
+          title: Category
+        description: 'Filter by category: cefi, defi, tradfi, sports'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Exposure Types Risk Exposure Types Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/risk/defi-health:
+    get:
+      tags:
+      - unified-trading-api
+      - risk
+      summary: Get Defi Health
+      description: 'Get DeFi health metrics — health factors, LTV ratios, liquidation
+        distances.
+
+
+        Aggregates across all DeFi positions: per-protocol health factor,
+
+        collateral vs. debt, liquidation thresholds, and real-time health status.'
+      operationId: get_defi_health_risk_defi_health_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by chain (e.g. ethereum, arbitrum)
+          title: Chain
+        description: Filter by chain (e.g. ethereum, arbitrum)
+      - name: protocol
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by protocol (e.g. aave_v3)
+          title: Protocol
+        description: Filter by protocol (e.g. aave_v3)
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: cefi, defi, tradfi, sports'
+          title: Category
+        description: 'Filter by category: cefi, defi, tradfi, sports'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Defi Health Risk Defi Health Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/risk/var-summary:
     get:
       tags:
@@ -6275,6 +7345,14 @@ paths:
         schema:
           type: string
           title: Scenario
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: cefi, defi, tradfi, sports'
+          title: Category
+        description: 'Filter by category: cefi, defi, tradfi, sports'
       responses:
         '200':
           description: Successful Response
@@ -6408,19 +7486,82 @@ paths:
       - unified-trading-api
       - instruments
       summary: Get Registry
-      description: Get instrument registry — canonical mapping across venues.
+      description: 'Get instrument registry — canonical mapping across venues.
+
+
+        Supports filtering by venue, category, instrument_type, and status.
+
+        Response includes trading_hours, tick_size, lot_size, fee_structure,
+
+        and available_since where available.'
       operationId: get_registry_instruments_registry_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: venue
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by venue (e.g. binance, deribit)
+          title: Venue
+        description: Filter by venue (e.g. binance, deribit)
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: cefi, defi, tradfi, sports'
+          title: Category
+        description: 'Filter by category: cefi, defi, tradfi, sports'
+      - name: instrument_type
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by type: spot, future, option, perp, lp_pool'
+          title: Instrument Type
+        description: 'Filter by type: spot, future, option, perp, lp_pool'
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by status: active, delisted, expired'
+          title: Status
+        description: 'Filter by status: active, delisted, expired'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
-                additionalProperties: true
                 type: object
+                additionalProperties: true
                 title: Response Get Registry Instruments Registry Get
-      security:
-      - APIKeyHeader: []
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/instruments/mock/create:
     post:
       tags:
@@ -7101,6 +8242,111 @@ paths:
                   Get
       security:
       - APIKeyHeader: []
+  /unified-trading-api/catalogue:
+    get:
+      tags:
+      - unified-trading-api
+      - catalogue
+      summary: Get Catalogue
+      description: Return the full permission catalogue tree (all 8 domains).
+      operationId: get_catalogue_catalogue_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Catalogue Catalogue Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/catalogue/domains:
+    get:
+      tags:
+      - unified-trading-api
+      - catalogue
+      summary: List Domains
+      description: List all permission domains with summary counts.
+      operationId: list_domains_catalogue_domains_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response List Domains Catalogue Domains Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/catalogue/domain/{domain}:
+    get:
+      tags:
+      - unified-trading-api
+      - catalogue
+      summary: Get Domain
+      description: Return a single domain's category and permission tree.
+      operationId: get_domain_catalogue_domain__domain__get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: domain
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Domain
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Domain Catalogue Domain  Domain  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/catalogue/search:
+    get:
+      tags:
+      - unified-trading-api
+      - catalogue
+      summary: Search Permissions
+      description: Search permissions by key, label, or description.
+      operationId: search_permissions_catalogue_search_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          description: Search query (case-insensitive substring match)
+          title: Q
+        description: Search query (case-insensitive substring match)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Search Permissions Catalogue Search Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/calendar/economic-results:
     get:
       tags:
@@ -8352,6 +9598,1175 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/{invoice_id}/transition:
+    put:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Transition Invoice
+      description: Transition an invoice through the lifecycle state machine.
+      operationId: transition_invoice_api_v1_invoices__invoice_id__transition_put
+      parameters:
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Invoice Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceTransitionRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Transition Invoice Api V1 Invoices  Invoice Id  Transition
+                  Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboard/fees:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Fee Dashboard
+      description: 'Full fee dashboard: all clients grouped by status with current
+        fees.
+
+
+        Uses hardcoded HWM seed from mr_report, overlaid with live equity
+
+        from GCS backfill data (the trickle).'
+      operationId: fee_dashboard_api_v1_invoices_dashboard_fees_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Fee Dashboard Api V1 Invoices Dashboard Fees Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboard/fees/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Client Fee Detail
+      description: Detailed fee breakdown for a single client.
+      operationId: client_fee_detail_api_v1_invoices_dashboard_fees__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Client Fee Detail Api V1 Invoices Dashboard Fees  Client
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboard/trader-payment:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Trader Payment Summary
+      description: 'Generate trader payment summary (like TRADER_PAYMENT_MESSAGE_FEB_2026.md).
+
+
+        Shows all at-HWM clients with fees due + underwater server costs.'
+      operationId: trader_payment_summary_api_v1_invoices_dashboard_trader_payment_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Trader Payment Summary Api V1 Invoices Dashboard Trader
+                  Payment Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboard/hwm/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Get Hwm State
+      description: Get current HWM state for a client.
+      operationId: get_hwm_state_api_v1_invoices_dashboard_hwm__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Hwm State Api V1 Invoices Dashboard Hwm  Client
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboard/introducers:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: List Introducers
+      description: List all introducer balances.
+      operationId: list_introducers_api_v1_invoices_dashboard_introducers_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Introducers Api V1 Invoices Dashboard Introducers
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/portal/admin:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Portal Admin
+      description: 'Admin view — full visibility: all clients, HWM, PnL, fees, recovery.
+
+
+        Shows effective HWM (base HWM + deposits), new watermark (the level
+
+        the next invoice will be based on), and all fee breakdowns.'
+      operationId: portal_admin_api_v1_invoices_portal_admin_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Portal Admin Api V1 Invoices Portal Admin Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/portal/trader:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Portal Trader
+      description: 'Trader view — sees PnL per client and their fee (10%, becoming
+        20%).
+
+
+        Only shows clients above HWM where there''s a fee due.
+
+        No underwater details, no Odum fees, no introducer info.'
+      operationId: portal_trader_api_v1_invoices_portal_trader_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Portal Trader Api V1 Invoices Portal Trader Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/portal/introducer/{introducer_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Portal Introducer
+      description: 'Introducer view — sees client PnL and their share of the performance
+        fee.
+
+
+        Only shows clients they introduced. No trader fees, no underwater, no Odum
+        internals.'
+      operationId: portal_introducer_api_v1_invoices_portal_introducer__introducer_id__get
+      parameters:
+      - name: introducer_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Introducer Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Portal Introducer Api V1 Invoices Portal Introducer  Introducer
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/view/{invoice_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: View Invoice Html
+      description: 'Serve a generated invoice as HTML (viewable in browser, printable
+        to PDF).
+
+
+        Generates all invoices on first access, then serves from disk cache.'
+      operationId: view_invoice_html_api_v1_invoices_view__invoice_id__get
+      parameters:
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Invoice Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/all:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: List All Invoices
+      description: 'List all 2026 invoices with optional filters.
+
+
+        Returns metadata for each invoice (no HTML content).
+
+        Filterable by client_id, type (odum/trader/introducer), status.'
+      operationId: list_all_invoices_api_v1_invoices_all_get
+      parameters:
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by client
+          title: Client Id
+        description: Filter by client
+      - name: invoice_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Filter: odum, trader, introducer'
+          title: Invoice Type
+        description: 'Filter: odum, trader, introducer'
+      - name: status
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Filter: ISSUED, PAID, VOIDED'
+          title: Status
+        description: 'Filter: ISSUED, PAID, VOIDED'
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response List All Invoices Api V1 Invoices All Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/generate-all:
+    post:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Regenerate All Invoices
+      description: 'Regenerate all invoice HTML files from current data.
+
+
+        Call this after updating invoice status or adding new invoices.'
+      operationId: regenerate_all_invoices_api_v1_invoices_generate_all_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Regenerate All Invoices Api V1 Invoices Generate All
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/charts/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: View Pnl Chart
+      description: 'Serve interactive PnL chart for a client.
+
+
+        Shows trading PnL (equity minus transfers), equity curve,
+
+        and transfer log. Chart.js powered — interactive tooltips.'
+      operationId: view_pnl_chart_api_v1_invoices_charts__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/charts:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: List Charts
+      description: List available PnL charts for all clients.
+      operationId: list_charts_api_v1_invoices_charts_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                title: Response List Charts Api V1 Invoices Charts Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboards/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: View Dashboard
+      description: 'Serve comprehensive performance dashboard for a client.
+
+
+        Includes: zoomable equity/PnL charts, daily/monthly bars, coin breakdown,
+
+        order browser, volume chart, all stats (Sharpe, Calmar, Sortino, DD, etc.).'
+      operationId: view_dashboard_api_v1_invoices_dashboards__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboards:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: List Dashboards
+      description: List available performance dashboards.
+      operationId: list_dashboards_api_v1_invoices_dashboards_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                title: Response List Dashboards Api V1 Invoices Dashboards Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/dashboards/generate-all:
+    post:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Regenerate All Dashboards
+      description: Regenerate all dashboards from latest data.
+      operationId: regenerate_all_dashboards_api_v1_invoices_dashboards_generate_all_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Regenerate All Dashboards Api V1 Invoices Dashboards
+                  Generate All Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/analytics/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Get Trade Analytics
+      description: 'Get coin-level PnL, volume, holding time breakdown for a client.
+
+
+        All numbers from real exchange data (bills ledger + trades).
+
+        Validated: sum(coin.net_pnl) == total_net_pnl.'
+      operationId: get_trade_analytics_api_v1_invoices_analytics__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Trade Analytics Api V1 Invoices Analytics  Client
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/analytics:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Get Aggregated Analytics
+      description: Get aggregated trade analytics across clients.
+      operationId: get_aggregated_analytics_api_v1_invoices_analytics_get
+      parameters:
+      - name: client_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Comma-separated client IDs (empty = all)
+          default: ''
+          title: Client Ids
+        description: Comma-separated client IDs (empty = all)
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Aggregated Analytics Api V1 Invoices Analytics
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/performance/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Get Performance Stats
+      description: 'Get full performance stats for a client.
+
+
+        Returns: simple/compounded/annualized return, Sharpe, Sortino, Calmar,
+
+        max drawdown (% and duration), win rate, and equity curve metadata.'
+      operationId: get_performance_stats_api_v1_invoices_performance__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Performance Stats Api V1 Invoices Performance  Client
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/orders/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: Get Orders
+      description: Browse orders for a client with pagination and filters.
+      operationId: get_orders_api_v1_invoices_orders__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: symbol
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by symbol (partial match)
+          default: ''
+          title: Symbol
+        description: Filter by symbol (partial match)
+      - name: side
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by side (buy/sell)
+          default: ''
+          title: Side
+        description: Filter by side (buy/sell)
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by status
+          default: ''
+          title: Status
+        description: Filter by status
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Orders Api V1 Invoices Orders  Client Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/reports/{client_id}/{year}/{month}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: View Monthly Report
+      description: 'Serve monthly PnL report as printable HTML (PDF-ready via browser
+        print).
+
+
+        Includes: equity curve, daily PnL bars, coin breakdown, transfers.'
+      operationId: view_monthly_report_api_v1_invoices_reports__client_id___year___month__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Year
+      - name: month
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Month
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            text/html:
+              schema:
+                type: string
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/invoices/reports/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - invoices
+      summary: List Monthly Reports
+      description: List available monthly reports for a client.
+      operationId: list_monthly_reports_api_v1_invoices_reports__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties:
+                    type: string
+                title: Response List Monthly Reports Api V1 Invoices Reports  Client
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /client-reporting-api/api/v1/compliance/trade-reporting:
     get:
       tags:
@@ -8755,6 +11170,1491 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/clients:
+    get:
+      tags:
+      - client-reporting-api
+      - clients
+      summary: List Clients
+      description: 'Return all active clients with org/strategy grouping.
+
+
+        Internal users see all; pass organisation_id to filter for a specific org.'
+      operationId: list_clients_api_v1_clients_get
+      parameters:
+      - name: organisation_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by organisation
+          title: Organisation Id
+        description: Filter by organisation
+      - name: strategy_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by strategy
+          title: Strategy Id
+        description: Filter by strategy
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: array
+                    items:
+                      type: object
+                      additionalProperties:
+                        anyOf:
+                        - type: string
+                        - type: boolean
+                  - type: array
+                    items:
+                      type: object
+                      additionalProperties:
+                        type: string
+                title: Response List Clients Api V1 Clients Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/clients/{client_id}:
+    get:
+      tags:
+      - client-reporting-api
+      - clients
+      summary: Get Client
+      description: Return config for a single client.
+      operationId: get_client_api_v1_clients__client_id__get
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Client Id
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: boolean
+                title: Response Get Client Api V1 Clients  Client Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/performance/summary:
+    get:
+      tags:
+      - client-reporting-api
+      - performance
+      summary: Get Performance Summary
+      description: Return full performance summary with equity curve, monthly returns,
+        and stats.
+      operationId: get_performance_summary_api_v1_performance_summary_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Performance Summary Api V1 Performance Summary
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/performance/positions:
+    get:
+      tags:
+      - client-reporting-api
+      - performance
+      summary: Get Open Positions
+      description: Return current open positions with unrealized P&L.
+      operationId: get_open_positions_api_v1_performance_positions_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Open Positions Api V1 Performance Positions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/performance/balances:
+    get:
+      tags:
+      - client-reporting-api
+      - performance
+      summary: Get Balance Breakdown
+      description: Return per-asset balance breakdown with USD values.
+      operationId: get_balance_breakdown_api_v1_performance_balances_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Balance Breakdown Api V1 Performance Balances
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/performance/coin-breakdown:
+    get:
+      tags:
+      - client-reporting-api
+      - performance
+      summary: Get Coin Breakdown
+      description: 'Return per-coin P&L breakdown from real bills ledger + trades.
+
+
+        Includes: realized PnL, fees, funding, net PnL, volume, trade count,
+
+        buy/sell split, avg holding time, round trips.
+
+        Validated: sum(coin.net_pnl) == total_net_pnl.'
+      operationId: get_coin_breakdown_api_v1_performance_coin_breakdown_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Coin Breakdown Api V1 Performance Coin Breakdown
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/trades:
+    get:
+      tags:
+      - client-reporting-api
+      - trades
+      summary: Get Trade History
+      description: Return paginated trade history with fills, fees, and P&L.
+      operationId: get_trade_history_api_v1_trades_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: symbol
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by symbol
+          title: Symbol
+        description: Filter by symbol
+      - name: side
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by side (BUY or SELL)
+          title: Side
+        description: Filter by side (BUY or SELL)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Number of trades
+          default: 50
+          title: Limit
+        description: Number of trades
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          description: Pagination offset
+          default: 0
+          title: Offset
+        description: Pagination offset
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Trade History Api V1 Trades Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/trades:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Trades Csv
+      description: Download full trade history as CSV.
+      operationId: export_trades_csv_api_v1_exports_trades_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/daily-summary:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Daily Summary Csv
+      description: Download daily P&L summary as CSV.
+      operationId: export_daily_summary_csv_api_v1_exports_daily_summary_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/hourly-snapshots:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Hourly Snapshots Csv
+      description: Download hourly equity snapshots as CSV.
+      operationId: export_hourly_snapshots_csv_api_v1_exports_hourly_snapshots_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/coin-breakdown:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Coin Breakdown Csv
+      description: Download per-coin P&L breakdown as CSV.
+      operationId: export_coin_breakdown_csv_api_v1_exports_coin_breakdown_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/tax/annual-summary:
+    get:
+      tags:
+      - client-reporting-api
+      - tax
+      summary: Get Annual Tax Summary
+      description: Return FIFO cost-basis tax lots and summary for a tax year.
+      operationId: get_annual_tax_summary_api_v1_tax_annual_summary_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: tax_year
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Tax year to report on
+          default: 2025
+          title: Tax Year
+        description: Tax year to report on
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnualTaxSummary'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/tax/annual-summary/csv:
+    get:
+      tags:
+      - client-reporting-api
+      - tax
+      summary: Export Annual Tax Csv
+      description: Download FIFO tax lots as CSV for a given tax year.
+      operationId: export_annual_tax_csv_api_v1_tax_annual_summary_csv_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: tax_year
+        in: query
+        required: false
+        schema:
+          type: integer
+          description: Tax year to report on
+          default: 2025
+          title: Tax Year
+        description: Tax year to report on
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/manual-entry/snapshot:
+    post:
+      tags:
+      - client-reporting-api
+      - manual-entry
+      summary: Create Manual Snapshot
+      description: Record a manual equity snapshot for a fund-of-fund client.
+      operationId: create_manual_snapshot_api_v1_manual_entry_snapshot_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualSnapshotRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Manual Snapshot Api V1 Manual Entry Snapshot
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/manual-entry/snapshots:
+    get:
+      tags:
+      - client-reporting-api
+      - manual-entry
+      summary: List Manual Snapshots
+      description: List manual equity snapshots for a client.
+      operationId: list_manual_snapshots_api_v1_manual_entry_snapshots_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response List Manual Snapshots Api V1 Manual Entry Snapshots
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/manual-entry/return:
+    post:
+      tags:
+      - client-reporting-api
+      - manual-entry
+      summary: Create Manual Return
+      description: Record a manual monthly return for a fund-of-fund client.
+      operationId: create_manual_return_api_v1_manual_entry_return_post
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManualReturnRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Manual Return Api V1 Manual Entry Return Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/manual-entry/returns:
+    get:
+      tags:
+      - client-reporting-api
+      - manual-entry
+      summary: List Manual Returns
+      description: List manual monthly returns for a client.
+      operationId: list_manual_returns_api_v1_manual_entry_returns_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response List Manual Returns Api V1 Manual Entry Returns Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/clients:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Clients
+      description: 'Return all clients, organisations, and strategies from credentials-registry.
+
+
+        Used by the UI client selector dropdown.'
+      operationId: get_clients_api_reporting_clients_get
+      parameters:
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: true
+                title: Response Get Clients Api Reporting Clients Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/performance/summary:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Performance Summary
+      description: Return full performance summary with real equity curve, monthly
+        returns, stats.
+      operationId: get_performance_summary_api_reporting_performance_summary_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client ID
+          title: Client Id
+        description: Client ID
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Performance Summary Api Reporting Performance
+                  Summary Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/performance/coin-breakdown:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Coin Breakdown
+      description: Return real coin-level PnL breakdown from bills ledger + trades.
+      operationId: get_coin_breakdown_api_reporting_performance_coin_breakdown_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client ID
+          title: Client Id
+        description: Client ID
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Coin Breakdown Api Reporting Performance Coin
+                  Breakdown Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/performance/positions:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Positions
+      description: Return current open positions from backfill data.
+      operationId: get_positions_api_reporting_performance_positions_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client ID
+          title: Client Id
+        description: Client ID
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Positions Api Reporting Performance Positions
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/performance/balances:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Balances
+      description: Return balance breakdown from backfill data.
+      operationId: get_balances_api_reporting_performance_balances_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client ID
+          title: Client Id
+        description: Client ID
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Balances Api Reporting Performance Balances Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/trades:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Trades
+      description: Return paginated trade history from backfill data.
+      operationId: get_trades_api_reporting_trades_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client ID
+          title: Client Id
+        description: Client ID
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 50
+          title: Limit
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: symbol
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Symbol
+      - name: side
+        in: query
+        required: false
+        schema:
+          type: string
+          default: ''
+          title: Side
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Trades Api Reporting Trades Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/reports:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Reports Overview
+      description: 'Return real data for the reports overview page.
+
+
+        Aggregates portfolio summary, monthly reports, invoices, account balances,
+
+        and recent transfers for all (or selected) clients.'
+      operationId: get_reports_overview_api_reporting_reports_get
+      parameters:
+      - name: client_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Comma-separated client IDs
+          default: ''
+          title: Client Ids
+        description: Comma-separated client IDs
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Reports Overview Api Reporting Reports Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/settlements:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Settlements
+      description: 'Return settlement/reconciliation data from real trade history.
+
+
+        Settlements = matched fills that are confirmed by the exchange.'
+      operationId: get_settlements_api_reporting_settlements_get
+      parameters:
+      - name: client_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Comma-separated client IDs
+          default: ''
+          title: Client Ids
+        description: Comma-separated client IDs
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Settlements Api Reporting Settlements Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/fund-operations:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Fund Operations
+      description: 'Return fund operations data — real investor register, capital
+        accounts.
+
+
+        Each client is an investor. Capital accounts derived from equity curves.'
+      operationId: get_fund_operations_api_reporting_fund_operations_get
+      parameters:
+      - name: client_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Comma-separated client IDs
+          default: ''
+          title: Client Ids
+        description: Comma-separated client IDs
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fund Operations Api Reporting Fund Operations
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/nav:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Nav
+      description: 'Return real NAV data aggregated across clients.
+
+
+        NAV = total equity across all clients. Hourly NAV from equity curves.'
+      operationId: get_nav_api_reporting_nav_get
+      parameters:
+      - name: client_ids
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Comma-separated client IDs
+          default: ''
+          title: Client Ids
+        description: Comma-separated client IDs
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Nav Api Reporting Nav Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/reporting/invoices:
+    get:
+      tags:
+      - client-reporting-api
+      - reporting
+      summary: Get Invoices
+      description: Return all invoices matching the UI Invoice type shape.
+      operationId: get_invoices_api_reporting_invoices_get
+      parameters:
+      - name: org_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by org ID
+          default: ''
+          title: Org Id
+        description: Filter by org ID
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: true
+                title: Response Get Invoices Api Reporting Invoices Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /client-reporting-api/metrics:
     get:
       summary: Metrics
@@ -8794,6 +12694,70 @@ paths:
           content:
             application/json:
               schema: {}
+  /alerting-service/alerts/delivery-status/{alert_id}:
+    get:
+      tags:
+      - alerting-service
+      - delivery
+      summary: Get Delivery Status
+      description: "Return delivery records for a given alert_id.\n\nScans GCS history\
+        \ partitions (last 7 days) for matching records.\n\nReturns:\n    JSON object\
+        \ with ``alert_id`` and a list of ``records``."
+      operationId: get_delivery_status_alerts_delivery_status__alert_id__get
+      parameters:
+      - name: alert_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Alert Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Delivery Status Alerts Delivery Status  Alert
+                  Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /alerting-service/alerts/delivery-status:
+    post:
+      tags:
+      - alerting-service
+      - delivery
+      summary: Create Delivery Record
+      description: Record a new delivery record. Persists in mock state when CLOUD_MOCK_MODE=true.
+      operationId: create_delivery_record_alerts_delivery_status_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: true
+              type: object
+              title: Record
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Create Delivery Record Alerts Delivery Status Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /execution-service/manual/instruction:
     post:
       tags:
@@ -9585,6 +13549,68 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
       tags:
       - risk-and-exposure-service
+  /risk-and-exposure-service/risk/strategy-status:
+    post:
+      summary: Strategy Risk Status
+      description: "Evaluate a client's current risk metrics against a strategy risk\
+        \ profile.\n\nAccepts a StrategyRiskProfile (from UAC internal) declaring\
+        \ which risk types\nthe strategy subscribes to. Returns the status (OK/WARNING/CRITICAL)\
+        \ for\neach subscribed risk type based on the client's current positions.\n\
+        \nReturns:\n    Dict with strategy_type and per-risk-type statuses."
+      operationId: strategy_risk_status_risk_strategy_status_post
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: X-Api-Key
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Api-Key
+      - name: X-Service-Token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StrategyRiskProfile'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  anyOf:
+                  - type: string
+                  - type: object
+                    additionalProperties:
+                      type: string
+                title: Response Strategy Risk Status Risk Strategy Status Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - risk-and-exposure-service
   /position-balance-monitor-service/health:
     get:
       tags:
@@ -9918,6 +13944,83 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FundNAVSnapshot'
+  /position-balance-monitor-service/risk/summary:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - risk
+      summary: Get Risk Summary
+      description: 'Return current risk metrics: leverage, health_factor, concentration,
+        drawdown.
+
+
+        Computes risk from the latest aggregated positions. Includes DeFi health
+
+        factor when lending positions are available. For full risk metrics (VaR,
+
+        stress testing, pre-trade checks), query risk-and-exposure-service.'
+      operationId: get_risk_summary_risk_summary_get
+      parameters:
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Client ID to compute risk for
+          default: default
+          title: Client Id
+        description: Client ID to compute risk for
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Risk Summary Risk Summary Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /position-balance-monitor-service/risk/defi-health:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - risk
+      summary: Get Defi Health
+      description: 'Return DeFi health aggregation: combined_hf, per-protocol breakdown.
+
+
+        Computes from cached lending positions. Returns 404 if no lending
+
+        positions are available for the client.'
+      operationId: get_defi_health_risk_defi_health_get
+      parameters:
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Client ID
+          default: default
+          title: Client Id
+        description: Client ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeFiAggregatedHealth'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /position-balance-monitor-service/trades:
     get:
       tags:
@@ -10159,6 +14262,148 @@ paths:
                 type: object
                 additionalProperties: true
                 title: Response Get Trade Trades  Fill Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /position-balance-monitor-service/treasury/balance:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - treasury
+      summary: Get Treasury Balance
+      description: 'Get current treasury balance and status.
+
+
+        Returns the latest treasury snapshot with:
+
+        - treasury_balance_usd: USD value in treasury wallet
+
+        - total_trading_balance_usd: USD value across all trading wallets
+
+        - total_aum_usd: total AUM (treasury + trading)
+
+        - treasury_pct: treasury as % of AUM
+
+        - status: "normal", "low", or "high"
+
+        - per_strategy_balance: {strategy_id: usd_balance}'
+      operationId: get_treasury_balance_treasury_balance_get
+      parameters:
+      - name: share_class
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Share class to query treasury for
+          default: USDC
+          title: Share Class
+        description: Share class to query treasury for
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Treasury Balance Treasury Balance Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /position-balance-monitor-service/treasury/balance/history:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - treasury
+      summary: Get Treasury History
+      description: 'Get historical treasury snapshots.
+
+
+        Returns most recent N snapshots for charting treasury balance over time.'
+      operationId: get_treasury_history_treasury_balance_history_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          description: Max snapshots to return
+          default: 100
+          title: Limit
+        description: Max snapshots to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Treasury History Treasury Balance History Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /position-balance-monitor-service/treasury/config:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - treasury
+      summary: Get Treasury Config
+      description: Get current treasury monitoring configuration.
+      operationId: get_treasury_config_treasury_config_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Treasury Config Treasury Config Get
+  /position-balance-monitor-service/treasury/evaluate:
+    post:
+      tags:
+      - position-balance-monitor-service
+      - treasury
+      summary: Evaluate Treasury
+      description: 'Manually trigger treasury evaluation with provided balance.
+
+
+        Useful for demo/testing — in production, balances come from custodian API
+        polling.'
+      operationId: evaluate_treasury_treasury_evaluate_post
+      parameters:
+      - name: treasury_balance_usd
+        in: query
+        required: true
+        schema:
+          anyOf:
+          - type: number
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          description: Current treasury balance in USD
+          title: Treasury Balance Usd
+        description: Current treasury balance in USD
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Evaluate Treasury Treasury Evaluate Post
         '422':
           description: Validation Error
           content:
@@ -10624,7 +14869,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/deployment_service__RollbackRequest'
+              $ref: '#/components/schemas/DeploymentServiceRollbackRequest'
       responses:
         '200':
           description: Successful Response
@@ -10685,6 +14930,57 @@ paths:
                 additionalProperties: true
                 title: Response Get Live Health Api V1 Deployments  Deployment Id  Live
                   Health Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      tags:
+      - deployment-service
+  /deployment-service/api/v1/data-coverage-summary:
+    get:
+      summary: Get Data Coverage Summary
+      description: "Return instrument coverage summary for the deployment UI.\n\n\
+        Fast endpoint: reads manifest parquets (totals) + latest-day parquets\n(unique\
+        \ instrument counts by type).\n\nQuery params:\n    service: service name\
+        \ (default: instruments-service)\n    categories: comma-separated category\
+        \ list (default: CEFI,TRADFI,DEFI,SPORTS)"
+      operationId: get_data_coverage_summary_api_v1_data_coverage_summary_get
+      parameters:
+      - name: service
+        in: query
+        required: false
+        schema:
+          type: string
+          default: instruments-service
+          title: Service
+      - name: categories
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Categories
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Data Coverage Summary Api V1 Data Coverage Summary
+                  Get
         '422':
           description: Validation Error
           content:
@@ -11915,6 +16211,88 @@ components:
       type: object
       title: DependencyIssueDict
       description: A dependency issue found during check.
+    DeployMissingRequest:
+      properties:
+        service:
+          type: string
+          title: Service
+          description: Service name
+        start_date:
+          type: string
+          title: Start Date
+          description: Start date (YYYY-MM-DD)
+        end_date:
+          type: string
+          title: End Date
+          description: End date (YYYY-MM-DD)
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: Category filter
+        venue:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Venue
+          description: Venue filter
+        region:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Region
+          description: GCP region
+        force:
+          type: boolean
+          title: Force
+          description: Force redeploy even if data exists
+          default: false
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: Preview only, don't actually deploy
+          default: false
+        compute:
+          type: string
+          title: Compute
+          description: 'Compute mode: cloud_run or vm'
+          default: cloud_run
+        tag:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tag
+          description: Docker image tag
+          default: latest
+        mode:
+          type: string
+          title: Mode
+          description: batch or live
+          default: batch
+        date_granularity:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Date Granularity
+          description: Date granularity override
+        deploy_missing_only:
+          type: boolean
+          title: Deploy Missing Only
+          description: Use backend missing-shard calculation
+          default: true
+        log_level:
+          type: string
+          title: Log Level
+          description: Log level
+          default: INFO
+      type: object
+      required:
+      - service
+      - start_date
+      - end_date
+      title: DeployMissingRequest
+      description: Request to detect and deploy missing data shards.
     DeploymentResult:
       properties:
         deployment_id:
@@ -12578,6 +16956,42 @@ components:
       - symbol
       title: MockInstrumentCreate
       description: Request body for creating a mock instrument.
+    AnnualTaxSummary:
+      properties:
+        client_id:
+          type: string
+          title: Client Id
+        tax_year:
+          type: integer
+          title: Tax Year
+        total_realized_pnl:
+          type: number
+          title: Total Realized Pnl
+        total_fees:
+          type: number
+          title: Total Fees
+        net_taxable:
+          type: number
+          title: Net Taxable
+        currency:
+          type: string
+          title: Currency
+        lots:
+          items:
+            $ref: '#/components/schemas/TaxLot'
+          type: array
+          title: Lots
+      type: object
+      required:
+      - client_id
+      - tax_year
+      - total_realized_pnl
+      - total_fees
+      - net_taxable
+      - currency
+      - lots
+      title: AnnualTaxSummary
+      description: Aggregated tax summary for a given client and tax year.
     GenerateInvoiceRequest:
       properties:
         org_id:
@@ -12612,6 +17026,24 @@ components:
       - client_id
       - period_month
       title: GenerateReportRequest
+    InvoiceTransitionRequest:
+      properties:
+        action:
+          type: string
+          title: Action
+        note:
+          type: string
+          title: Note
+          default: ''
+        payment_txid:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Payment Txid
+      type: object
+      required:
+      - action
+      title: InvoiceTransitionRequest
     LoginRequest:
       properties:
         email:
@@ -12648,6 +17080,68 @@ components:
       - user
       title: LoginResponse
       description: Login response with JWT token.
+    ManualReturnRequest:
+      properties:
+        client_id:
+          type: string
+          title: Client Id
+        year:
+          type: integer
+          title: Year
+        month:
+          type: integer
+          title: Month
+        return_pct:
+          type: number
+          title: Return Pct
+        pnl_usd:
+          type: number
+          title: Pnl Usd
+        opening_equity:
+          type: number
+          title: Opening Equity
+        closing_equity:
+          type: number
+          title: Closing Equity
+        notes:
+          type: string
+          title: Notes
+          default: ''
+      type: object
+      required:
+      - client_id
+      - year
+      - month
+      - return_pct
+      - pnl_usd
+      - opening_equity
+      - closing_equity
+      title: ManualReturnRequest
+    ManualSnapshotRequest:
+      properties:
+        client_id:
+          type: string
+          title: Client Id
+        date:
+          type: string
+          title: Date
+        equity_btc:
+          type: number
+          title: Equity Btc
+        equity_usd:
+          type: number
+          title: Equity Usd
+        notes:
+          type: string
+          title: Notes
+          default: ''
+      type: object
+      required:
+      - client_id
+      - date
+      - equity_btc
+      - equity_usd
+      title: ManualSnapshotRequest
     SendForSignatureRequest:
       properties:
         signer_email:
@@ -12669,6 +17163,48 @@ components:
       - signer_email
       - signer_name
       title: SendForSignatureRequest
+    TaxLot:
+      properties:
+        symbol:
+          type: string
+          title: Symbol
+        quantity:
+          type: number
+          title: Quantity
+        buy_date:
+          type: string
+          title: Buy Date
+        buy_price:
+          type: number
+          title: Buy Price
+        sell_date:
+          type: string
+          title: Sell Date
+        sell_price:
+          type: number
+          title: Sell Price
+        realized_pnl:
+          type: number
+          title: Realized Pnl
+        holding_period_days:
+          type: integer
+          title: Holding Period Days
+        is_long_term:
+          type: boolean
+          title: Is Long Term
+      type: object
+      required:
+      - symbol
+      - quantity
+      - buy_date
+      - buy_price
+      - sell_date
+      - sell_price
+      - realized_pnl
+      - holding_period_days
+      - is_long_term
+      title: TaxLot
+      description: A single FIFO-matched tax lot (buy matched to sell).
     UploadUrlRequest:
       properties:
         org_id:
@@ -13409,6 +17945,30 @@ components:
       - client_id
       title: RiskLimits
       description: Risk limits configuration for a client.
+    StrategyRiskProfile:
+      properties:
+        strategy_type:
+          type: string
+          title: Strategy Type
+        subscribed_risks:
+          items:
+            type: string
+          type: array
+          title: Subscribed Risks
+          description: RiskType.value strings from UAC risk_taxonomy
+        custom_risk_ids:
+          items:
+            type: string
+          type: array
+          title: Custom Risk Ids
+          description: user-defined custom risk IDs
+      type: object
+      required:
+      - strategy_type
+      - subscribed_risks
+      title: StrategyRiskProfile
+      description: Which risk types a strategy subscribes to. Unsubscribed = zero
+        in matrix.
     VaRResponse:
       properties:
         var:
@@ -13483,6 +18043,61 @@ components:
       - usd_value
       title: AssetBalanceSummary
       description: Per-asset balance across all venues for a fund.
+    DeFiAggregatedHealth:
+      properties:
+        client_id:
+          type: string
+          title: Client Id
+          pii: true
+        protocols:
+          items:
+            $ref: '#/components/schemas/ProtocolHealthBreakdown'
+          type: array
+          title: Protocols
+        combined_collateral_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Combined Collateral Usd
+          default: '0'
+        combined_debt_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Combined Debt Usd
+          default: '0'
+        combined_health_factor:
+          anyOf:
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          - type: 'null'
+          title: Combined Health Factor
+        weighted_net_apy:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Weighted Net Apy
+          default: '0'
+        riskiest_protocol:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Riskiest Protocol
+        per_chain_health:
+          additionalProperties:
+            type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          type: object
+          title: Per Chain Health
+        timestamp:
+          anyOf:
+          - type: string
+            format: date-time
+          - type: 'null'
+          title: Timestamp
+      additionalProperties: false
+      type: object
+      required:
+      - client_id
+      title: DeFiAggregatedHealth
+      description: Combined DeFi lending health factor across protocols and chains.
     DeFiHealthSummary:
       properties:
         total_collateral_usd:
@@ -13707,6 +18322,48 @@ components:
       - total_realized_pnl_usd
       title: PositionSummary
       description: Aggregated position statistics for the fund.
+    ProtocolHealthBreakdown:
+      properties:
+        protocol:
+          type: string
+          title: Protocol
+        chain:
+          type: string
+          title: Chain
+        collateral_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Collateral Usd
+          default: '0'
+        debt_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Debt Usd
+          default: '0'
+        health_factor:
+          anyOf:
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          - type: 'null'
+          title: Health Factor
+        ltv_ratio:
+          anyOf:
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          - type: 'null'
+          title: Ltv Ratio
+        net_apy:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Net Apy
+          default: '0'
+      additionalProperties: false
+      type: object
+      required:
+      - protocol
+      - chain
+      title: ProtocolHealthBreakdown
+      description: Per-protocol DeFi lending health metrics.
     ReconciliationAction:
       type: string
       enum:
@@ -14203,6 +18860,24 @@ components:
       - max_concurrent
       - shards
       title: CreateDeploymentRequest
+    DeploymentServiceRollbackRequest:
+      properties:
+        service:
+          type: string
+          title: Service
+        region:
+          type: string
+          title: Region
+        target_revision:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Target Revision
+      type: object
+      required:
+      - service
+      - region
+      title: DeploymentServiceRollbackRequest
     QuotaAcquireRequest:
       properties:
         quota_shape:
@@ -14231,24 +18906,6 @@ components:
       - quota_shape
       - batch_size
       title: QuotaReleaseRequest
-    deployment_service__RollbackRequest:
-      properties:
-        service:
-          type: string
-          title: Service
-        region:
-          type: string
-          title: Region
-        target_revision:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Target Revision
-      type: object
-      required:
-      - service
-      - region
-      title: RollbackRequest
     ScheduleCreateRequest:
       properties:
         cluster:

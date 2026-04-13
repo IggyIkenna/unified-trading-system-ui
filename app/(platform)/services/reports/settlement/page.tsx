@@ -1,246 +1,28 @@
 "use client";
 
-import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
+import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/ui/data-table";
-import { CheckCircle2, Clock, AlertTriangle, Receipt, RefreshCw, FileText, ArrowDownCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSettlements } from "@/hooks/api/use-reports";
-import { ExportDropdown } from "@/components/ui/export-dropdown";
-
-type SettlementStatus = "pending" | "matched" | "disputed" | "settled";
-type Side = "buy" | "sell";
-
-interface Settlement {
-  id: string;
-  date: string;
-  venue: string;
-  instrument: string;
-  side: Side;
-  expectedAmount: number;
-  settledAmount: number;
-  status: SettlementStatus;
-  settlementDate: string;
-}
-
-interface Invoice {
-  id: string;
-  client: string;
-  amount: number;
-  status: "paid" | "unpaid";
-  date: string;
-}
-
-const MOCK_SETTLEMENTS: Settlement[] = [
-  {
-    id: "STL-a3f8e1",
-    date: "2026-03-22",
-    venue: "Binance",
-    instrument: "BTC-USDT",
-    side: "buy",
-    expectedAmount: 48250.0,
-    settledAmount: 48250.0,
-    status: "matched",
-    settlementDate: "2026-03-22",
-  },
-  {
-    id: "STL-b7c2d4",
-    date: "2026-03-22",
-    venue: "Deribit",
-    instrument: "ETH-PERP",
-    side: "sell",
-    expectedAmount: 3180.5,
-    settledAmount: 3180.5,
-    status: "matched",
-    settlementDate: "2026-03-22",
-  },
-  {
-    id: "STL-c9e0f2",
-    date: "2026-03-21",
-    venue: "OKX",
-    instrument: "SOL-USDT",
-    side: "buy",
-    expectedAmount: 142.3,
-    settledAmount: 0,
-    status: "pending",
-    settlementDate: "",
-  },
-  {
-    id: "STL-d1a3b5",
-    date: "2026-03-21",
-    venue: "Bybit",
-    instrument: "BTC-USDT",
-    side: "sell",
-    expectedAmount: 47980.0,
-    settledAmount: 47965.2,
-    status: "disputed",
-    settlementDate: "2026-03-21",
-  },
-  {
-    id: "STL-e4f6c8",
-    date: "2026-03-21",
-    venue: "Binance",
-    instrument: "ETH-USDT",
-    side: "buy",
-    expectedAmount: 3195.75,
-    settledAmount: 3195.75,
-    status: "settled",
-    settlementDate: "2026-03-21",
-  },
-  {
-    id: "STL-f2d8a0",
-    date: "2026-03-20",
-    venue: "Hyperliquid",
-    instrument: "ARB-USDT",
-    side: "buy",
-    expectedAmount: 1.82,
-    settledAmount: 1.82,
-    status: "matched",
-    settlementDate: "2026-03-20",
-  },
-  {
-    id: "STL-g5b1e3",
-    date: "2026-03-20",
-    venue: "Deribit",
-    instrument: "BTC-28MAR26-C",
-    side: "sell",
-    expectedAmount: 2450.0,
-    settledAmount: 0,
-    status: "pending",
-    settlementDate: "",
-  },
-  {
-    id: "STL-h8c4f6",
-    date: "2026-03-20",
-    venue: "OKX",
-    instrument: "DOGE-USDT",
-    side: "buy",
-    expectedAmount: 0.168,
-    settledAmount: 0.168,
-    status: "settled",
-    settlementDate: "2026-03-20",
-  },
-  {
-    id: "STL-i0d7a9",
-    date: "2026-03-19",
-    venue: "Binance",
-    instrument: "AVAX-USDT",
-    side: "sell",
-    expectedAmount: 38.42,
-    settledAmount: 38.1,
-    status: "disputed",
-    settlementDate: "2026-03-19",
-  },
-  {
-    id: "STL-j3e9b1",
-    date: "2026-03-19",
-    venue: "Bybit",
-    instrument: "ETH-USDT",
-    side: "buy",
-    expectedAmount: 3210.0,
-    settledAmount: 3210.0,
-    status: "matched",
-    settlementDate: "2026-03-19",
-  },
-  {
-    id: "STL-k6f2c4",
-    date: "2026-03-19",
-    venue: "Hyperliquid",
-    instrument: "OP-USDT",
-    side: "sell",
-    expectedAmount: 2.14,
-    settledAmount: 2.14,
-    status: "settled",
-    settlementDate: "2026-03-19",
-  },
-  {
-    id: "STL-l9a4d7",
-    date: "2026-03-18",
-    venue: "Deribit",
-    instrument: "ETH-PERP",
-    side: "buy",
-    expectedAmount: 3150.25,
-    settledAmount: 0,
-    status: "pending",
-    settlementDate: "",
-  },
-  {
-    id: "STL-m2b6e0",
-    date: "2026-03-18",
-    venue: "OKX",
-    instrument: "BTC-USDT",
-    side: "sell",
-    expectedAmount: 47500.0,
-    settledAmount: 47500.0,
-    status: "matched",
-    settlementDate: "2026-03-18",
-  },
-  {
-    id: "STL-n5c8f3",
-    date: "2026-03-17",
-    venue: "Binance",
-    instrument: "LINK-USDT",
-    side: "buy",
-    expectedAmount: 14.85,
-    settledAmount: 14.85,
-    status: "settled",
-    settlementDate: "2026-03-17",
-  },
-  {
-    id: "STL-o8d1a6",
-    date: "2026-03-17",
-    venue: "Bybit",
-    instrument: "SOL-USDT",
-    side: "sell",
-    expectedAmount: 138.9,
-    settledAmount: 138.5,
-    status: "disputed",
-    settlementDate: "2026-03-17",
-  },
-];
-
-const MOCK_INVOICES: Invoice[] = [
-  {
-    id: "INV-2026-0087",
-    client: "Alpha Capital",
-    amount: 12500,
-    status: "paid",
-    date: "2026-03-15",
-  },
-  {
-    id: "INV-2026-0088",
-    client: "Meridian Fund",
-    amount: 8750,
-    status: "unpaid",
-    date: "2026-03-18",
-  },
-  {
-    id: "INV-2026-0089",
-    client: "Apex Trading Co",
-    amount: 21000,
-    status: "paid",
-    date: "2026-03-10",
-  },
-  {
-    id: "INV-2026-0090",
-    client: "Quantum Strategies",
-    amount: 15300,
-    status: "unpaid",
-    date: "2026-03-20",
-  },
-  {
-    id: "INV-2026-0091",
-    client: "Vertex Partners",
-    amount: 9800,
-    status: "paid",
-    date: "2026-03-12",
-  },
-];
+import {
+  MOCK_INVOICES,
+  MOCK_SETTLEMENTS,
+  type Invoice,
+  type Settlement,
+  type SettlementStatus,
+  type Side,
+} from "@/lib/mocks/fixtures/reports-pages";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { formatNumber } from "@/lib/utils/formatters";
+import { type ColumnDef } from "@tanstack/react-table";
+import { AlertTriangle, ArrowDownCircle, CheckCircle2, Clock, FileText, Receipt, RefreshCw } from "lucide-react";
+import * as React from "react";
 
 function formatVenue(venue: string): string {
   if (!venue) return "—";
@@ -299,8 +81,8 @@ function normalizeSettlementRow(row: unknown): Settlement {
 function formatAmount(amount: number | undefined | null): string {
   const n = typeof amount === "number" && Number.isFinite(amount) ? amount : 0;
   if (n >= 10000) return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  if (n >= 1) return `$${n.toFixed(2)}`;
-  return `$${n.toFixed(4)}`;
+  if (n >= 1) return `$${formatNumber(n, 2)}`;
+  return `$${formatNumber(n, 4)}`;
 }
 
 function statusBadge(status: SettlementStatus) {
@@ -448,6 +230,7 @@ function LoadingSkeleton() {
 }
 
 export default function SettlementPage() {
+  const mockDataMode = isMockDataMode();
   const { data: apiData, isLoading, isError, refetch } = useSettlements();
 
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
@@ -462,13 +245,13 @@ export default function SettlementPage() {
     if (list?.length) {
       return list.map(normalizeSettlementRow);
     }
-    return MOCK_SETTLEMENTS;
-  }, [apiData]);
+    return mockDataMode ? MOCK_SETTLEMENTS : [];
+  }, [apiData, mockDataMode]);
 
   const rawInvoices: Invoice[] = React.useMemo(() => {
     const apiInvoices = (apiData as Record<string, unknown>)?.invoices as Invoice[] | undefined;
-    return apiInvoices ?? MOCK_INVOICES;
-  }, [apiData]);
+    return apiInvoices ?? (mockDataMode ? MOCK_INVOICES : []);
+  }, [apiData, mockDataMode]);
 
   const settlements = React.useMemo(() => {
     let filtered = rawSettlements;
@@ -518,22 +301,30 @@ export default function SettlementPage() {
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        {/* Header */}
-        <div className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Settlement Status</h1>
-          <p className="text-sm text-muted-foreground">
-            Trade settlement tracking, matching, and dispute resolution
-          </p>
-          <p className="text-[10px] text-muted-foreground/60 font-mono">
-            {rawSettlements.length} records &middot; Last updated {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-          </p>
-        </div>
+        <PageHeader
+          title="Settlement Status"
+          description={
+            <>
+              <p>Trade settlement tracking, matching, and dispute resolution</p>
+              <p className="text-[10px] text-muted-foreground/60 font-mono">
+                {rawSettlements.length} records &middot; Last updated{" "}
+                {new Date().toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </p>
+            </>
+          }
+        />
 
         {/* Summary — premium institutional KPI cards */}
         <div className="grid grid-cols-4 gap-4">
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Settlements</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Total Settlements
+              </p>
               <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{totalCount}</p>
               <p className="text-[10px] text-muted-foreground/60">Across {venues.length} venues</p>
             </CardContent>
@@ -541,21 +332,27 @@ export default function SettlementPage() {
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Pending</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-warning)]">{pendingCount}</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-warning)]">
+                {pendingCount}
+              </p>
               <p className="text-[10px] text-muted-foreground/60">Awaiting confirmation</p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Matched</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-live)]">{matchedCount}</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-[var(--status-live)]">
+                {matchedCount}
+              </p>
               <p className="text-[10px] text-muted-foreground/60">Successfully reconciled</p>
             </CardContent>
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
               <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Disputed</p>
-              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-destructive">{disputedCount}</p>
+              <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-destructive">
+                {disputedCount}
+              </p>
               <p className="text-[10px] text-muted-foreground/60">Requires investigation</p>
             </CardContent>
           </Card>
@@ -672,9 +469,8 @@ export default function SettlementPage() {
               >
                 <div className="flex items-center gap-4">
                   <Receipt
-                    className={`size-5 ${
-                      invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
-                    }`}
+                    className={`size-5 ${invoice.status === "paid" ? "text-[var(--status-live)]" : "text-[var(--status-warning)]"
+                      }`}
                   />
                   <div>
                     <p className="font-medium font-mono text-sm">{invoice.id}</p>

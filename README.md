@@ -66,6 +66,7 @@ This lifecycle guides service naming, navigation, and feature organization.
 | [docs/STRUCTURE_HOOKS.md](docs/STRUCTURE_HOOKS.md)                                       | hooks/api/ and hooks/deployment/ — patterns                                                                          |
 | [docs/STRUCTURE_CONTEXT.md](docs/STRUCTURE_CONTEXT.md)                                   | context/ folder — backend reference material                                                                         |
 | [docs/STRUCTURE_REFERENCE.md](docs/STRUCTURE_REFERENCE.md)                               | \_reference/ Python services                                                                                         |
+| [docs/DATA_MODE_IDEOLOGY.md](docs/DATA_MODE_IDEOLOGY.md)                                 | Mock vs real data contract — single switch, helper usage, fallback rules                                            |
 | [ROUTES.md](./ROUTES.md)                                                                 | Full route reference with redirect map                                                                               |
 | [SERVICE_COMPLETION_STATUS.md](./SERVICE_COMPLETION_STATUS.md)                           | Per-service completion matrix                                                                                        |
 | [UX_FLOW_SPEC.md](./UX_FLOW_SPEC.md)                                                     | Canonical user journeys                                                                                              |

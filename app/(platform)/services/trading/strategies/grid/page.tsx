@@ -1,14 +1,13 @@
 "use client";
 
-import {
-  DimensionalGrid,
-  type DimensionDef,
-  type MetricDef,
-} from "@/components/trading/dimensional-grid";
+import { PageHeader } from "@/components/shared/page-header";
+import { DimensionalGrid, type DimensionDef, type MetricDef } from "@/components/trading/dimensional-grid";
 import { PromoteFlowModal } from "@/components/promote/promote-flow-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { ApiError } from "@/components/shared/api-error";
+import { Spinner } from "@/components/shared/spinner";
 import { Download, Grid3X3, Rocket } from "lucide-react";
 import * as React from "react";
 
@@ -138,11 +137,9 @@ const METRICS: MetricDef[] = [
 ];
 
 export default function StrategyGridPage() {
-  const { data: perfData, isLoading } = useStrategyPerformance();
-  const perfRaw: any[] =
-    (perfData as any)?.data ?? (perfData as any)?.backtests ?? [];
-  const mockBacktestResults =
-    perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RESULTS;
+  const { data: perfData, isLoading, isError, error, refetch } = useStrategyPerformance();
+  const perfRaw: any[] = (perfData as any)?.data ?? (perfData as any)?.backtests ?? [];
+  const mockBacktestResults = perfRaw.length > 0 ? perfRaw : DEFAULT_BACKTEST_RESULTS;
 
   const dimensions: DimensionDef[] = React.useMemo(
     () => [
@@ -172,13 +169,9 @@ export default function StrategyGridPage() {
 
   const metrics = METRICS;
 
-  const [pinnedDimensions, setPinnedDimensions] = React.useState<
-    Record<string, string[]>
-  >({});
+  const [pinnedDimensions, setPinnedDimensions] = React.useState<Record<string, string[]>>({});
   const [promoteModalOpen, setPromoteModalOpen] = React.useState(false);
-  const [selectedForPromotion, setSelectedForPromotion] = React.useState<
-    string[]
-  >([]);
+  const [selectedForPromotion, setSelectedForPromotion] = React.useState<string[]>([]);
 
   const handleDimensionPin = (dimension: string, values: string[]) => {
     setPinnedDimensions((prev) => ({
@@ -192,23 +185,32 @@ export default function StrategyGridPage() {
     setPromoteModalOpen(true);
   };
 
-  if (isLoading)
+  if (isLoading) {
     return (
-      <div className="p-8 text-center text-muted-foreground">Loading...</div>
+      <div className="flex min-h-[40vh] items-center justify-center p-8">
+        <Spinner size="lg" className="text-muted-foreground" />
+      </div>
     );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6">
+        <ApiError error={error as Error} onRetry={() => void refetch()} title="Failed to load strategy performance" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">DimensionalGrid</h1>
-            <p className="text-sm text-muted-foreground">
-              Compare backtest results across strategies, venues, and time
-              periods
-            </p>
-          </div>
+          <PageHeader
+            title="DimensionalGrid"
+            description="Compare backtest results across strategies, venues, and time
+              periods"
+          />
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="gap-2">
               <Grid3X3 className="size-4" />
@@ -224,9 +226,7 @@ export default function StrategyGridPage() {
         {/* Grid */}
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">
-              Backtest Results — {mockBacktestResults.length} configs
-            </CardTitle>
+            <CardTitle className="text-base">Backtest Results — {mockBacktestResults.length} configs</CardTitle>
           </CardHeader>
           <CardContent>
             <DimensionalGrid
@@ -241,11 +241,7 @@ export default function StrategyGridPage() {
               rowKey="id"
               selectionToolbar={(selectedIds) => (
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    className="gap-2"
-                    onClick={() => handlePromote(selectedIds)}
-                  >
+                  <Button size="sm" className="gap-2" onClick={() => handlePromote(selectedIds)}>
                     <Rocket className="size-4" />
                     Promote to Live
                   </Button>
@@ -272,10 +268,8 @@ export default function StrategyGridPage() {
               <div className="space-y-1">
                 <p className="text-sm font-medium">Promotion Flow</p>
                 <p className="text-xs text-muted-foreground">
-                  Select the best-performing configs, then click &quot;Promote
-                  to Live&quot; to generate a cross-link to Operations Hub. The
-                  deploy form will be pre-filled with your selected
-                  configurations for review.
+                  Select the best-performing configs, then click &quot;Promote to Live&quot; to generate a cross-link to
+                  Operations Hub. The deploy form will be pre-filled with your selected configurations for review.
                 </p>
               </div>
             </div>
@@ -286,8 +280,7 @@ export default function StrategyGridPage() {
           <PromoteFlowModal
             strategyId={selectedForPromotion[0]}
             strategyName={
-              mockBacktestResults.find((r) => r.id === selectedForPromotion[0])
-                ?.strategy || "Selected Strategies"
+              mockBacktestResults.find((r) => r.id === selectedForPromotion[0])?.strategy || "Selected Strategies"
             }
             currentStage="STAGING"
             onPromote={async () => {

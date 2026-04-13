@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface ChatMessage {
   id: string;
@@ -11,6 +11,10 @@ export interface ChatMessage {
 
 interface UseChatOptions {
   apiBase?: string;
+  /** localStorage key — defaults to "unified-chat-history". Pass null to disable persistence. */
+  persistKey?: string | null;
+  /** Max messages to persist (oldest truncated first). Default 50. */
+  maxPersistedMessages?: number;
 }
 
 interface UseChatReturn {
@@ -21,6 +25,32 @@ interface UseChatReturn {
   error: string | null;
 }
 
+const DEFAULT_PERSIST_KEY = "unified-chat-history";
+const DEFAULT_MAX_MESSAGES = 50;
+
+// Serialise/deserialise — Date objects need JSON reviver
+function loadFromStorage(key: string): ChatMessage[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as Array<{ id: string; role: "user" | "assistant"; content: string; timestamp: string }>;
+    return parsed.map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
+  } catch {
+    return [];
+  }
+}
+
+function saveToStorage(key: string, messages: ChatMessage[], max: number): void {
+  if (typeof window === "undefined") return;
+  try {
+    const toSave = messages.slice(-max);
+    localStorage.setItem(key, JSON.stringify(toSave));
+  } catch {
+    // ignore quota errors
+  }
+}
+
 let _msgId = 0;
 function nextId(): string {
   _msgId += 1;
@@ -29,10 +59,21 @@ function nextId(): string {
 
 export function useChat(options?: UseChatOptions): UseChatReturn {
   const apiBase = options?.apiBase ?? "/api/chat";
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const persistKey = options?.persistKey === undefined ? DEFAULT_PERSIST_KEY : options.persistKey;
+  const maxMessages = options?.maxPersistedMessages ?? DEFAULT_MAX_MESSAGES;
+
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    persistKey ? loadFromStorage(persistKey) : [],
+  );
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Persist to localStorage whenever messages change
+  useEffect(() => {
+    if (!persistKey || messages.length === 0) return;
+    saveToStorage(persistKey, messages, maxMessages);
+  }, [messages, persistKey, maxMessages]);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -144,7 +185,10 @@ export function useChat(options?: UseChatOptions): UseChatReturn {
     setMessages([]);
     setError(null);
     setIsStreaming(false);
-  }, []);
+    if (persistKey && typeof window !== "undefined") {
+      try { localStorage.removeItem(persistKey); } catch { /* ignore */ }
+    }
+  }, [persistKey]);
 
   return { messages, isStreaming, sendMessage, clearHistory, error };
 }

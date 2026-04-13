@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight, Calendar, TrendingUp, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { useEconomicResults, useCorporateActions } from "@/hooks/api/use-calendar";
 import type { EconomicResultItem, CorporateActionItem } from "@/hooks/api/use-calendar";
 
@@ -18,8 +19,8 @@ function formatValue(value: number | null, unit: string): string {
   if (value === null) return "—";
   if (unit.includes("thousands")) return `${value.toLocaleString()}K`;
   if (unit.includes("billions")) return `$${value.toLocaleString()}B`;
-  if (unit.includes("percent")) return `${value.toFixed(2)}%`;
-  if (unit.includes("index")) return value.toFixed(1);
+  if (unit.includes("percent")) return formatPercent(value, 2);
+  if (unit.includes("index")) return formatNumber(value, 1);
   return String(value);
 }
 
@@ -30,7 +31,7 @@ function formatDelta(actual: number | null, previous: number | null): React.Reac
   return (
     <span className={cn("text-xs ml-1", isPositive ? "text-green-500" : "text-red-500")}>
       {isPositive ? "+" : ""}
-      {delta.toFixed(2)}
+      {formatNumber(delta, 2)}
     </span>
   );
 }
@@ -53,7 +54,7 @@ function formatCountdown(releaseDate: string, releaseTime: string): string {
 function surprisePct(actual: number | null, estimated: number | null): string | null {
   if (actual === null || estimated === null || estimated === 0) return null;
   const pct = ((actual - estimated) / Math.abs(estimated)) * 100;
-  return `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
+  return `${pct >= 0 ? "+" : ""}${formatNumber(pct, 1)}%`;
 }
 
 // ---------------------------------------------------------------------------
@@ -192,12 +193,12 @@ function CorporateActionRow({ item }: { item: CorporateActionItem }) {
         )}
       </div>
       <div className="text-right font-mono text-xs">
-        {item.event_type === "dividend" && item.amount !== null && <span>${item.amount.toFixed(2)}</span>}
+        {item.event_type === "dividend" && item.amount !== null && <span>{formatCurrency(item.amount, "USD", 2)}</span>}
         {item.event_type === "earnings" && (
           <>
             {item.actual_eps !== null ? (
               <span>
-                EPS {item.actual_eps.toFixed(2)}
+                EPS {formatNumber(item.actual_eps, 2)}
                 {surprise && (
                   <span className={cn("ml-1", surprise.startsWith("+") ? "text-green-500" : "text-red-500")}>
                     ({surprise})
@@ -205,7 +206,7 @@ function CorporateActionRow({ item }: { item: CorporateActionItem }) {
                 )}
               </span>
             ) : item.estimated_eps !== null ? (
-              <span className="text-muted-foreground">est. {item.estimated_eps.toFixed(2)}</span>
+              <span className="text-muted-foreground">est. {formatNumber(item.estimated_eps, 2)}</span>
             ) : null}
           </>
         )}

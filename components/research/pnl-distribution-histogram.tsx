@@ -1,17 +1,8 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ReferenceLine,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, ResponsiveContainer, Cell } from "recharts";
 import { cn } from "@/lib/utils";
-import type { PnlBucket } from "@/lib/backtest-analytics-types";
+import type { PnlBucket } from "@/lib/types/backtest-analytics";
 
 interface PnlDistributionHistogramProps {
   buckets: PnlBucket[];
@@ -30,10 +21,7 @@ export function PnlDistributionHistogram({
     <div className={cn("space-y-2", className)}>
       <div className="h-[200px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={buckets}
-            margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
-          >
+          <BarChart data={buckets} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
             <XAxis
               dataKey="bucket"
               tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
@@ -66,9 +54,7 @@ export function PnlDistributionHistogram({
               {buckets.map((b) => (
                 <Cell
                   key={b.bucket}
-                  fill={
-                    b.max_pct <= 0 ? "var(--destructive)" : "var(--chart-2)"
-                  }
+                  fill={b.max_pct <= 0 ? "var(--destructive)" : "var(--chart-2)"}
                   fillOpacity={0.75}
                 />
               ))}

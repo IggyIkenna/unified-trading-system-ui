@@ -1,15 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { DataTableWidget, KpiStrip, type DataTableColumn, type KpiMetric } from "@/components/widgets/shared";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { DeFiRatesRow } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 function formatTvl(usd: number): string {
-  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(1)}B`;
-  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
-  return `$${usd.toFixed(0)}`;
+  if (usd >= 1e9) return `$${formatNumber(usd / 1e9, 1)}B`;
+  if (usd >= 1e6) return `$${formatNumber(usd / 1e6, 0)}M`;
+  return `$${formatNumber(usd, 0)}`;
 }
 
 export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
@@ -30,6 +32,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `lend-s-${n++}`,
         protocol: p.name,
+        venue_id: p.venue_id,
         category: "Lending supply",
         detail: `Best: ${bestSupply.asset}`,
         apyPct: bestSupply.apy,
@@ -38,6 +41,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `lend-b-${n++}`,
         protocol: p.name,
+        venue_id: p.venue_id,
         category: "Lending borrow",
         detail: `Best: ${bestBorrow.asset}`,
         apyPct: bestBorrow.apy,
@@ -48,6 +52,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `stake-${n++}`,
         protocol: s.name,
+        venue_id: s.venue_id,
         category: "Staking",
         detail: s.asset,
         apyPct: s.apy,
@@ -58,6 +63,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       out.push({
         id: `lp-${n++}`,
         protocol: lp.name,
+        venue_id: lp.venue_id,
         category: "LP",
         detail: `${lp.token0}/${lp.token1}`,
         apyPct: lp.apr24h,
@@ -71,7 +77,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
 
   const headerMetrics: KpiMetric[] = [
     { label: "Rows", value: String(rows.length), sentiment: "neutral" },
-    { label: "Max APY / APR (mock)", value: `${maxApy.toFixed(1)}%`, sentiment: "positive" },
+    { label: "Max APY / APR (mock)", value: `${formatPercent(maxApy, 1)}`, sentiment: "positive" },
   ];
 
   const columns: DataTableColumn<DeFiRatesRow>[] = [
@@ -81,7 +87,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
     {
       key: "apy",
       label: "APY / APR %",
-      accessor: (r) => <span className="font-mono">{r.apyPct.toFixed(2)}</span>,
+      accessor: (r) => <span className="font-mono">{formatNumber(r.apyPct, 2)}</span>,
       align: "right",
     },
     {

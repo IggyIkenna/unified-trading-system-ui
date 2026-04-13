@@ -1,6 +1,6 @@
 "use client";
 
-import type { SignalOverlapMetrics } from "@/lib/strategy-platform-types";
+import type { SignalOverlapMetrics } from "@/lib/types/strategy-platform";
 import { cn } from "@/lib/utils";
 
 interface SignalOverlapPanelProps {
@@ -10,26 +10,12 @@ interface SignalOverlapPanelProps {
   className?: string;
 }
 
-export function SignalOverlapPanel({
-  metrics,
-  labelA,
-  labelB,
-  className,
-}: SignalOverlapPanelProps) {
+export function SignalOverlapPanel({ metrics, labelA, labelB, className }: SignalOverlapPanelProps) {
   return (
-    <div
-      className={cn(
-        "rounded-lg border border-border/50 bg-muted/10 p-3 space-y-3",
-        className,
-      )}
-    >
+    <div className={cn("rounded-lg border border-border/50 bg-muted/10 p-3 space-y-3", className)}>
       <div className="flex items-baseline justify-between gap-2">
-        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Signal overlap
-        </h4>
-        <span className="text-lg font-bold tabular-nums text-primary">
-          {metrics.overlap_pct}%
-        </span>
+        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Signal overlap</h4>
+        <span className="text-lg font-bold tabular-nums text-primary">{metrics.overlap_pct}%</span>
       </div>
       <p className="text-[11px] text-muted-foreground leading-relaxed">
         Directional signals within tolerance window, same instrument. Comparing{" "}
@@ -38,9 +24,7 @@ export function SignalOverlapPanel({
       </p>
       {metrics.confluence_zones.length > 0 && (
         <div>
-          <p className="text-[10px] font-medium text-emerald-400/90 mb-1">
-            Confluence zones
-          </p>
+          <p className="text-[10px] font-medium text-emerald-400/90 mb-1">Confluence zones</p>
           <ul className="text-[10px] text-muted-foreground space-y-1">
             {metrics.confluence_zones.map((z, i) => (
               <li key={i}>
@@ -55,9 +39,7 @@ export function SignalOverlapPanel({
       )}
       {metrics.divergence_zones.length > 0 && (
         <div>
-          <p className="text-[10px] font-medium text-amber-400/90 mb-1">
-            Divergence zones
-          </p>
+          <p className="text-[10px] font-medium text-amber-400/90 mb-1">Divergence zones</p>
           <ul className="text-[10px] text-muted-foreground space-y-1">
             {metrics.divergence_zones.map((z, i) => (
               <li key={i}>

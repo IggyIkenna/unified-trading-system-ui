@@ -1,21 +1,12 @@
 "use client";
 
 import * as React from "react";
-import {
-  createChart,
-  LineSeries,
-  HistogramSeries,
-  ColorType,
-} from "lightweight-charts";
+import { createChart, LineSeries, HistogramSeries, ColorType } from "lightweight-charts";
 import type { IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import type {
-  EquityPoint,
-  TradeMarker,
-  EquityChartLayers,
-} from "@/lib/backtest-analytics-types";
-import { DEFAULT_EQUITY_LAYERS } from "@/lib/backtest-analytics-types";
+import type { EquityPoint, TradeMarker, EquityChartLayers } from "@/lib/types/backtest-analytics";
+import { DEFAULT_EQUITY_LAYERS } from "@/lib/types/backtest-analytics";
 import { bumpDuplicateTimes } from "@/lib/lightweight-charts-series";
 
 interface EquityChartWithLayersProps {
@@ -158,8 +149,7 @@ export function EquityChartWithLayers({
           tradeMarkers.map((m) => ({
             time: m.time as Time,
             value: Math.abs(m.pnl) * 10,
-            color:
-              m.pnl >= 0 ? "rgba(16, 185, 129, 0.6)" : "rgba(239, 68, 68, 0.6)",
+            color: m.pnl >= 0 ? "rgba(16, 185, 129, 0.6)" : "rgba(239, 68, 68, 0.6)",
           })),
         ),
       );
@@ -205,22 +195,14 @@ export function EquityChartWithLayers({
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-4 px-1">
         {toggles.map((t) => (
-          <label
-            key={t.key}
-            className="flex items-center gap-1.5 cursor-pointer text-xs"
-          >
+          <label key={t.key} className="flex items-center gap-1.5 cursor-pointer text-xs">
             <Checkbox
               checked={layers[t.key]}
-              onCheckedChange={(checked) =>
-                setLayers((prev) => ({ ...prev, [t.key]: !!checked }))
-              }
+              onCheckedChange={(checked) => setLayers((prev) => ({ ...prev, [t.key]: !!checked }))}
               className="size-3.5"
             />
             <span className="flex items-center gap-1">
-              <span
-                className="inline-block size-2 rounded-full"
-                style={{ backgroundColor: t.color }}
-              />
+              <span className="inline-block size-2 rounded-full" style={{ backgroundColor: t.color }} />
               {t.label}
             </span>
           </label>

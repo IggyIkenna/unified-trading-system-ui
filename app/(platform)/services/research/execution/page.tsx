@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -8,24 +9,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Plus, GitCompare, Grid3X3, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EXECUTION_BACKTESTS } from "@/lib/build-mock-data";
-import type { ExecutionBacktest } from "@/lib/build-mock-data";
+import { EXECUTION_BACKTESTS } from "@/lib/mocks/fixtures/build-data";
+import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  NewExecutionBacktestDialog,
-  CandidateDialog,
-} from "@/components/research/execution/new-execution-dialog";
+import { NewExecutionBacktestDialog, CandidateDialog } from "@/components/research/execution/new-execution-dialog";
 import { ExecutionListPanel } from "@/components/research/execution/execution-list-panel";
-import {
-  ExecutionComparePanel,
-  ExecutionDetailView,
-} from "@/components/research/execution/execution-detail-view";
-import {
-  CandidateBasket,
-  useCandidateBasket,
-} from "@/components/platform/candidate-basket";
+import { ExecutionComparePanel, ExecutionDetailView } from "@/components/research/execution/execution-detail-view";
+import { CandidateBasket, useCandidateBasket } from "@/components/platform/candidate-basket";
 import { GridSearchDialog } from "@/components/research/shared";
+import { formatNumber } from "@/lib/utils/formatters";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -39,25 +32,17 @@ export default function ExecutionResearchPage() {
   );
   const [compareSelected, setCompareSelected] = React.useState<string[]>([]);
   const [showCompare, setShowCompare] = React.useState(false);
-  const [candidateDialogBt, setCandidateDialogBt] =
-    React.useState<ExecutionBacktest | null>(null);
+  const [candidateDialogBt, setCandidateDialogBt] = React.useState<ExecutionBacktest | null>(null);
   const basket = useCandidateBasket();
   // Backward-compat shim: child components still expect Set<string>
-  const candidates = React.useMemo(
-    () => new Set(basket.candidates.map((c) => c.id)),
-    [basket.candidates],
-  );
+  const candidates = React.useMemo(() => new Set(basket.candidates.map((c) => c.id)), [basket.candidates]);
 
   const complete = EXECUTION_BACKTESTS.filter((b) => b.status === "complete");
   const running = EXECUTION_BACKTESTS.filter((b) => b.status === "running");
 
   const toggleCompare = (id: string) => {
     setCompareSelected((prev) =>
-      prev.includes(id)
-        ? prev.filter((x) => x !== id)
-        : prev.length < 3
-          ? [...prev, id]
-          : prev,
+      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 3 ? [...prev, id] : prev,
     );
   };
 
@@ -81,16 +66,12 @@ export default function ExecutionResearchPage() {
     setCandidateDialogBt(null);
   };
 
-  const bestSharpe = complete.reduce(
-    (max, b) => Math.max(max, b.results?.sharpe_ratio ?? 0),
-    0,
-  );
+  const bestSharpe = complete.reduce((max, b) => Math.max(max, b.results?.sharpe_ratio ?? 0), 0);
 
   const fromStrategies = searchParams.get("from") === "strategies";
   const handoffSingle = searchParams.get("strategyBacktestId");
   const handoffMulti = searchParams.get("strategyBacktestIds");
-  const showStrategiesHandoffBanner =
-    fromStrategies && Boolean(handoffSingle || handoffMulti);
+  const showStrategiesHandoffBanner = fromStrategies && Boolean(handoffSingle || handoffMulti);
 
   return (
     <div className="space-y-6 p-6">
@@ -101,20 +82,14 @@ export default function ExecutionResearchPage() {
           <AlertDescription className="space-y-2">
             {handoffMulti ? (
               <p>
-                Compare mode: {handoffMulti.split(",").filter(Boolean).length}{" "}
-                strategy backtest(s). Primary selection:{" "}
-                <span className="font-mono text-foreground">
-                  {handoffSingle ?? "—"}
-                </span>
-                . Connect to execution API when available.
+                Compare mode: {handoffMulti.split(",").filter(Boolean).length} strategy backtest(s). Primary selection:{" "}
+                <span className="font-mono text-foreground">{handoffSingle ?? "—"}</span>. Connect to execution API when
+                available.
               </p>
             ) : (
               <p>
-                Single strategy backtest:{" "}
-                <span className="font-mono text-foreground">
-                  {handoffSingle ?? "—"}
-                </span>
-                . Signals will attach here when the pipeline is wired.
+                Single strategy backtest: <span className="font-mono text-foreground">{handoffSingle ?? "—"}</span>.
+                Signals will attach here when the pipeline is wired.
               </p>
             )}
             <Link
@@ -129,23 +104,14 @@ export default function ExecutionResearchPage() {
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Execution Backtests
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Simulate order execution using strategy signals — compare TWAP,
-            VWAP, and other algos. Analyse slippage, fill rates, and P&amp;L.
-          </p>
-        </div>
+        <PageHeader
+          title="Execution Backtests"
+          description="Simulate order execution using strategy signals — compare TWAP,
+            VWAP, and other algos. Analyse slippage, fill rates, and P&amp;L."
+        />
         <div className="flex gap-2">
           {compareSelected.length >= 2 && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-1"
-              onClick={() => setShowCompare(!showCompare)}
-            >
+            <Button variant="outline" size="sm" className="gap-1" onClick={() => setShowCompare(!showCompare)}>
               <GitCompare className="size-4" />
               Compare ({compareSelected.length})
             </Button>
@@ -177,20 +143,17 @@ export default function ExecutionResearchPage() {
           {
             label: "Running",
             value: String(running.length),
-            color:
-              running.length > 0 ? "text-blue-400" : "text-muted-foreground",
+            color: running.length > 0 ? "text-blue-400" : "text-muted-foreground",
           },
           {
             label: "Best Sharpe",
-            value: bestSharpe.toFixed(2),
+            value: formatNumber(bestSharpe, 2),
             color: "text-primary",
           },
         ].map((s) => (
           <Card key={s.label}>
             <CardContent className="p-4">
-              <p className={cn("text-2xl font-bold tabular-nums", s.color)}>
-                {s.value}
-              </p>
+              <p className={cn("text-2xl font-bold tabular-nums", s.color)}>{s.value}</p>
               <p className="text-sm font-medium mt-0.5">{s.label}</p>
             </CardContent>
           </Card>
@@ -230,22 +193,9 @@ export default function ExecutionResearchPage() {
       </div>
 
       {/* Dialogs */}
-      <NewExecutionBacktestDialog
-        open={newBtOpen}
-        onClose={() => setNewBtOpen(false)}
-      />
-      <GridSearchDialog
-        open={gridSearchOpen}
-        onClose={() => setGridSearchOpen(false)}
-        domain="execution"
-      />
-      {candidateDialogBt && (
-        <CandidateDialog
-          bt={candidateDialogBt}
-          open={true}
-          onClose={handlePromote}
-        />
-      )}
+      <NewExecutionBacktestDialog open={newBtOpen} onClose={() => setNewBtOpen(false)} />
+      <GridSearchDialog open={gridSearchOpen} onClose={() => setGridSearchOpen(false)} domain="execution" />
+      {candidateDialogBt && <CandidateDialog bt={candidateDialogBt} open={true} onClose={handlePromote} />}
 
       {/* Shared Candidate Basket — same component across Strategy/ML/Execution */}
       <CandidateBasket
@@ -254,8 +204,12 @@ export default function ExecutionResearchPage() {
         onRemove={basket.removeCandidate}
         onClearAll={basket.clearAll}
         onUpdateNote={basket.updateNote}
-        onSendToReview={() => {/* navigate to promote pipeline */}}
-        onPreparePackage={() => {/* generate promotion package */}}
+        onSendToReview={() => {
+          /* navigate to promote pipeline */
+        }}
+        onPreparePackage={() => {
+          /* generate promotion package */
+        }}
       />
     </div>
   );

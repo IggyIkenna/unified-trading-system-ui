@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, BarChart3, Database, LayoutGrid, LineChart, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 import { useMarketsData } from "./markets-data-context";
 
 export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
@@ -133,7 +134,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                   <>
                     <div className="text-center">
                       <div className="text-[9px] text-muted-foreground">p50</div>
-                      <div className="font-mono text-[10px]">{metric.p50.toFixed(1)}</div>
+                      <div className="font-mono text-[10px]">{formatNumber(metric.p50, 1)}</div>
                       <div
                         className={cn(
                           "text-[9px] font-mono",
@@ -141,12 +142,12 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                         )}
                       >
                         {deltaP50 > 0 ? "+" : ""}
-                        {deltaP50.toFixed(1)}
+                        {formatNumber(deltaP50, 1)}
                       </div>
                     </div>
                     <div className="text-center">
                       <div className="text-[9px] text-muted-foreground">p95</div>
-                      <div className="font-mono text-[10px]">{metric.p95.toFixed(1)}</div>
+                      <div className="font-mono text-[10px]">{formatNumber(metric.p95, 1)}</div>
                       <div
                         className={cn(
                           "text-[9px] font-mono",
@@ -154,7 +155,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                         )}
                       >
                         {deltaP95 > 0 ? "+" : ""}
-                        {deltaP95.toFixed(1)}
+                        {formatNumber(deltaP95, 1)}
                       </div>
                     </div>
                     <div className="text-center">
@@ -162,7 +163,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                       <div
                         className={cn("font-mono text-[10px]", metric.p99 > 30 ? "text-[var(--status-warning)]" : "")}
                       >
-                        {metric.p99.toFixed(1)}
+                        {formatNumber(metric.p99, 1)}
                       </div>
                       <div
                         className={cn(
@@ -171,7 +172,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                         )}
                       >
                         {deltaP99 > 0 ? "+" : ""}
-                        {deltaP99.toFixed(1)}
+                        {formatNumber(deltaP99, 1)}
                       </div>
                     </div>
                   </>
@@ -179,18 +180,18 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                   <>
                     <div className="text-center">
                       <div className="text-[9px] text-muted-foreground">p50</div>
-                      <div className="font-mono text-[10px]">{displayP50.toFixed(1)}</div>
+                      <div className="font-mono text-[10px]">{formatNumber(displayP50, 1)}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-[9px] text-muted-foreground">p95</div>
-                      <div className="font-mono text-[10px]">{displayP95.toFixed(1)}</div>
+                      <div className="font-mono text-[10px]">{formatNumber(displayP95, 1)}</div>
                     </div>
                     <div className="text-center">
                       <div className="text-[9px] text-muted-foreground">p99</div>
                       <div
                         className={cn("font-mono text-[10px]", displayP99 > 30 ? "text-[var(--status-warning)]" : "")}
                       >
-                        {displayP99.toFixed(1)}
+                        {formatNumber(displayP99, 1)}
                       </div>
                     </div>
                   </>

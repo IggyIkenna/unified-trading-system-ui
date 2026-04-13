@@ -1,9 +1,10 @@
 "use client";
 
-import { KpiStrip, type KpiMetric } from "@/components/widgets/shared";
+import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { fmtUsdPrecise } from "@/components/trading/predictions/helpers";
 import { usePredictionsData } from "./predictions-data-context";
+import { formatPercent } from "@/lib/utils/formatters";
 
 export function PredPortfolioKpisWidget(_props: WidgetComponentProps) {
   const { openPositions, settledPositions, portfolioKpis } = usePredictionsData();
@@ -27,10 +28,10 @@ export function PredPortfolioKpisWidget(_props: WidgetComponentProps) {
     },
     {
       label: `Win Rate (${winCount}/${settledPositions.length})`,
-      value: `${winRate.toFixed(0)}%`,
+      value: `${formatPercent(winRate, 0)}`,
       sentiment: portfolioKpis.totalRealisedPnl >= 0 ? "positive" : "negative",
     },
   ];
 
-  return <KpiStrip metrics={metrics} columns={4} />;
+  return <KpiSummaryWidget metrics={metrics} storageKey="uts-predictions-portfolio-kpi-layout" />;
 }

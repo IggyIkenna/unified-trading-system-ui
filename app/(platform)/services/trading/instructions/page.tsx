@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { InstructionsDataProvider } from "@/components/widgets/instructions/instructions-data-context";
 
-import "@/components/widgets/instructions/register";
-
 function InstructionsPageContent() {
   return (
     <InstructionsDataProvider>

@@ -24,7 +24,7 @@ export function LiveAsOfToggle({ className }: { className?: string }) {
   const showWarning = scope.mode === "batch" && selectedDateTime > yesterday8am;
 
   return (
-    <div className={cn("flex items-center gap-2", className)}>
+    <div className={cn("flex flex-wrap items-center gap-2", className)}>
       <div className="flex items-center border border-border rounded-md overflow-hidden">
         <button
           onClick={() => setMode("live")}

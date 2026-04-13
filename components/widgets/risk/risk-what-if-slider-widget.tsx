@@ -3,6 +3,7 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, formatCurrency } from "./risk-data-context";
 import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
   const { btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData } = useRiskData();
@@ -58,7 +59,7 @@ export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
           {formatCurrency(estimatedPnl)}
         </div>
         <div className="text-[9px] text-muted-foreground mt-0.5">
-          dS={formatCurrency(dS)} | Δ={greeks.delta.toFixed(2)} | Γ={greeks.gamma.toFixed(4)}
+          dS={formatCurrency(dS)} | Δ={formatNumber(greeks.delta, 2)} | Γ={formatNumber(greeks.gamma, 4)}
         </div>
       </div>
     </div>

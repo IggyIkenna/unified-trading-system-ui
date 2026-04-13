@@ -1,13 +1,14 @@
 "use client";
 
-import * as React from "react";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { getQueryClient } from "./query-client";
-import { AuthProvider } from "@/hooks/use-auth";
 import { AppAccessProvider } from "@/hooks/use-app-access";
+import { AuthProvider } from "@/hooks/use-auth";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { QueryClientProvider } from "@tanstack/react-query";
+import * as React from "react";
+import { getQueryClient } from "./query-client";
 
 function clientMockModeEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_MOCK_API === "true" || process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo";
+  return isMockDataMode();
 }
 
 /**

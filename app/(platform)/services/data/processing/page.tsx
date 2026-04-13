@@ -2,22 +2,21 @@
 
 /**
  * /services/data/processing — Processed candle data status.
- * FinderBrowser layout: Category → Venue → Instrument Type → Timeframe
+ * FinderBrowser layout: Category → Venue → Instrument Type → Instrument → Timeframe
  * Shows completion % per timeframe (1m → 5m → 15m → 1h → 4h → 1d).
  */
 
-import * as React from "react";
+import { PROCESSING_COLUMNS, getProcessingContextStats } from "@/components/data/processing-finder-config";
+import { PageHeader } from "@/components/shared/page-header";
+import type { FinderSelections } from "@/components/shared/finder";
+import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/mocks/fixtures/data-service";
+import type { InstrumentEntry, Timeframe } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
-import { RefreshCw, Cpu, AlertTriangle, CheckCircle2, Clock } from "lucide-react";
-import { FinderBrowser, finderText } from "@/components/shared/finder";
-import type { FinderSelections } from "@/components/shared/finder";
-import { PROCESSING_COLUMNS, getProcessingContextStats } from "@/components/data/processing-finder-config";
-import { MOCK_PIPELINE_STAGES, MOCK_TIMEFRAME_STATUS } from "@/lib/data-service-mock-data";
-import type { Timeframe } from "@/lib/data-service-types";
-import { Progress } from "@/components/ui/progress";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { AlertTriangle, CheckCircle2, Clock, Cpu, RefreshCw } from "lucide-react";
 
 const TIMEFRAME_LABELS: Record<Timeframe, string> = {
   "1m": "1 min",
@@ -34,13 +33,15 @@ const ALL_TIMEFRAMES: Timeframe[] = ["1m", "5m", "15m", "1h", "4h", "1d"];
 
 function ProcessingDetail({ selections }: { selections: FinderSelections }) {
   const tfItem = selections["timeframe"];
+  const instItem = selections["instrument"];
   const folderData = selections["folder"]?.data as { folder: string; venue: string; cat: string } | undefined;
 
   if (tfItem) {
-    const { tf, venue, folder, completionPct } = tfItem.data as {
+    const { tf, venue, folder, symbol, completionPct } = tfItem.data as {
       tf: Timeframe;
       venue: string;
       folder: string;
+      symbol?: string;
       completionPct: number;
     };
     const color = completionPct >= 50 ? "text-emerald-400" : completionPct >= 20 ? "text-yellow-400" : "text-red-400";
@@ -54,6 +55,7 @@ function ProcessingDetail({ selections }: { selections: FinderSelections }) {
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Timeframe</p>
           <p className="text-sm font-semibold font-mono">{tf}</p>
           <p className="text-xs text-muted-foreground">
+            {symbol ? `${symbol} · ` : ""}
             {venue.replace(/_/g, " ")} / {folder.replace(/_/g, " ")} / {TIMEFRAME_LABELS[tf]} candles
           </p>
         </div>
@@ -118,11 +120,24 @@ function ProcessingDetail({ selections }: { selections: FinderSelections }) {
     );
   }
 
+  if (instItem) {
+    const inst = instItem.data as InstrumentEntry | null;
+    return (
+      <div className="p-4 space-y-3">
+        <p className="text-sm font-semibold font-mono">{inst?.symbol ?? instItem.label}</p>
+        {inst?.instrumentKey && (
+          <p className="text-xs text-muted-foreground font-mono break-all">{inst.instrumentKey}</p>
+        )}
+        <p className="text-xs text-muted-foreground">Select a timeframe to see OHLCV completion details</p>
+      </div>
+    );
+  }
+
   if (folderData) {
     return (
       <div className="p-4 space-y-3">
         <p className="text-sm font-semibold capitalize">{folderData.folder.replace(/_/g, " ")}</p>
-        <p className="text-xs text-muted-foreground">Select a timeframe to see completion details</p>
+        <p className="text-xs text-muted-foreground">Select an instrument, then a timeframe</p>
       </div>
     );
   }
@@ -131,7 +146,9 @@ function ProcessingDetail({ selections }: { selections: FinderSelections }) {
     <div className="flex flex-col items-center justify-center h-full px-6 text-center">
       <Cpu className="size-8 mb-2 opacity-20" />
       <p className="text-sm font-medium text-muted-foreground">No timeframe selected</p>
-      <p className="text-xs text-muted-foreground/60 mt-1">Drill down to see OHLCV completion per timeframe</p>
+      <p className="text-xs text-muted-foreground/60 mt-1">
+        Drill down by venue, type, and instrument to see OHLCV completion per timeframe
+      </p>
     </div>
   );
 }
@@ -149,17 +166,15 @@ export default function ProcessingPage() {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 pt-4 pb-3 border-b border-border/50">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight">Processing</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {processingStage
-              ? `${processingStage.completionPct.toFixed(1)}% overall · raw ticks → OHLCV candles`
-              : "Processed candle status — raw ticks converted to OHLCV timeframes"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+      <div className="border-b border-border/50 px-6 pt-4 pb-3">
+        <PageHeader
+          title="Processing"
+          description={
+            processingStage
+              ? `${formatNumber(processingStage.completionPct, 1)}% overall · raw ticks → OHLCV candles`
+              : "Processed candle status — raw ticks converted to OHLCV timeframes"
+          }
+        >
           {processingStage && processingStage.failedShards > 0 && (
             <Badge variant="outline" className="text-xs gap-1.5 border-red-400/30 text-red-400">
               <AlertTriangle className="size-3" />
@@ -175,7 +190,7 @@ export default function ProcessingPage() {
             <RefreshCw className="size-4 mr-2" />
             Refresh
           </Button>
-        </div>
+        </PageHeader>
       </div>
 
       {/* Timeframe summary strip */}
@@ -198,7 +213,7 @@ export default function ProcessingPage() {
                 pct >= 95 ? "text-emerald-400" : pct >= 80 ? "text-yellow-400" : "text-red-400",
               )}
             >
-              {pct.toFixed(0)}%
+              {formatPercent(pct, 0)}
             </span>
           </div>
         ))}

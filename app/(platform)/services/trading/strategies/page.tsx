@@ -4,8 +4,6 @@ import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { StrategiesDataProvider } from "@/components/widgets/strategies/strategies-data-context";
 import { StrategiesPageHeader } from "@/components/widgets/strategies/strategies-page-header";
 
-import "@/components/widgets/strategies/register";
-
 function StrategiesPageContent() {
   return (
     <StrategiesDataProvider>

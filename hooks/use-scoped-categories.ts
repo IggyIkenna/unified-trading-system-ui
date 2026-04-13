@@ -15,10 +15,7 @@
 
 import { useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  CATEGORY_ENTITLEMENT_MAP,
-  type DataCategory,
-} from "@/lib/data-service-types";
+import { CATEGORY_ENTITLEMENT_MAP, type DataCategory } from "@/lib/types/data-service";
 
 const ALL_CATEGORIES = Object.keys(CATEGORY_ENTITLEMENT_MAP) as DataCategory[];
 
@@ -42,9 +39,7 @@ export function useScopedCategories(): ScopedCategories {
 
     // Internal and admin see everything
     const isUnrestricted =
-      user.role === "internal" ||
-      user.role === "admin" ||
-      (user.entitlements as readonly string[]).includes("*");
+      user.role === "internal" || user.role === "admin" || (user.entitlements as readonly string[]).includes("*");
 
     if (isUnrestricted) {
       return {

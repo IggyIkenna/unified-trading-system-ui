@@ -4,13 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -26,15 +20,12 @@ import {
   Globe,
   Zap,
 } from "lucide-react";
-import { DATA_CATEGORY_LABELS } from "@/lib/data-service-types";
-import type { DataCategory } from "@/lib/data-service-types";
-import { VENUE_DISPLAY, ADMIN_SUMMARY } from "@/lib/data-service-mock-data";
+import { DATA_CATEGORY_LABELS } from "@/lib/types/data-service";
+import type { DataCategory } from "@/lib/types/data-service";
+import { VENUE_DISPLAY, ADMIN_SUMMARY } from "@/lib/mocks/fixtures/data-service";
 
 // Category colours consistent with rest of platform
-const CATEGORY_COLORS: Record<
-  DataCategory,
-  { text: string; bg: string; border: string }
-> = {
+const CATEGORY_COLORS: Record<DataCategory, { text: string; bg: string; border: string }> = {
   cefi: {
     text: "text-sky-400",
     bg: "bg-sky-400/10",
@@ -69,18 +60,14 @@ const CATEGORY_COLORS: Record<
 
 // Deterministic mock freshness data for the demo heatmap (avoids hydration mismatch)
 // Uses a seeded pattern instead of Math.random()
-function generateMockHeatmap(
-  weeks: number = 8,
-): { date: string; status: "complete" | "partial" | "missing" }[] {
-  const days: { date: string; status: "complete" | "partial" | "missing" }[] =
-    [];
+function generateMockHeatmap(weeks: number = 8): { date: string; status: "complete" | "partial" | "missing" }[] {
+  const days: { date: string; status: "complete" | "partial" | "missing" }[] = [];
   // Use fixed base date to ensure consistency between server and client
   const baseDate = new Date("2026-03-19");
   // Deterministic pattern: most complete, occasional partial/missing based on day index
   const pattern = [
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
   ];
   for (let i = weeks * 7 - 1; i >= 0; i--) {
     const d = new Date(baseDate);
@@ -88,12 +75,7 @@ function generateMockHeatmap(
     const patternVal = pattern[i % pattern.length];
     days.push({
       date: d.toISOString().split("T")[0],
-      status:
-        patternVal === 0
-          ? "complete"
-          : patternVal === 1
-            ? "partial"
-            : "missing",
+      status: patternVal === 0 ? "complete" : patternVal === 1 ? "partial" : "missing",
     });
   }
   return days;
@@ -123,8 +105,7 @@ const ACCESS_TIERS = [
     id: "client",
     name: "Organisation Portal",
     icon: Building2,
-    description:
-      "Your data subscriptions, query history, and real-time availability.",
+    description: "Your data subscriptions, query history, and real-time availability.",
     color: "text-emerald-400",
     bgColor: "bg-emerald-400/10",
     borderColor: "border-emerald-400/30",
@@ -142,8 +123,7 @@ const ACCESS_TIERS = [
     id: "admin",
     name: "Internal Platform",
     icon: Layers,
-    description:
-      "Aggregated view of all client subscriptions and pipeline health.",
+    description: "Aggregated view of all client subscriptions and pipeline health.",
     color: "text-amber-400",
     bgColor: "bg-amber-400/10",
     borderColor: "border-amber-400/30",
@@ -172,60 +152,39 @@ export function DataServicesShowcase() {
             <Database className="mr-1 size-3" />
             Data Provision Service
           </Badge>
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Institutional Market Data
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Institutional Market Data</h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            128 venues across 5 asset classes, normalised to a single schema.
-            Query in our cloud or export to yours.
+            128 venues across 5 asset classes, normalised to a single schema. Query in our cloud or export to yours.
           </p>
         </div>
 
         {/* Key metrics row */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 max-w-4xl mx-auto mb-12">
           <div className="text-center p-4 rounded-lg border border-border bg-card/50">
-            <div className="text-2xl md:text-3xl font-bold text-sky-400">
-              128
-            </div>
+            <div className="text-2xl md:text-3xl font-bold text-sky-400">128</div>
             <div className="text-xs text-muted-foreground mt-1">Venues</div>
           </div>
           <div className="text-center p-4 rounded-lg border border-border bg-card/50">
-            <div className="text-2xl md:text-3xl font-bold text-violet-400">
-              5
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Asset Classes
-            </div>
+            <div className="text-2xl md:text-3xl font-bold text-violet-400">5</div>
+            <div className="text-xs text-muted-foreground mt-1">Asset Classes</div>
           </div>
           <div className="text-center p-4 rounded-lg border border-border bg-card/50">
-            <div className="text-2xl md:text-3xl font-bold text-emerald-400">
-              6+
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Years History
-            </div>
+            <div className="text-2xl md:text-3xl font-bold text-emerald-400">6+</div>
+            <div className="text-xs text-muted-foreground mt-1">Years History</div>
           </div>
           <div className="text-center p-4 rounded-lg border border-border bg-card/50">
-            <div className="text-2xl md:text-3xl font-bold text-amber-400">
-              18+
-            </div>
+            <div className="text-2xl md:text-3xl font-bold text-amber-400">18+</div>
             <div className="text-xs text-muted-foreground mt-1">Data Types</div>
           </div>
           <div className="text-center p-4 rounded-lg border border-border bg-card/50 col-span-2 md:col-span-1">
-            <div className="text-2xl md:text-3xl font-bold text-rose-400">
-              97%
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              Avg Freshness
-            </div>
+            <div className="text-2xl md:text-3xl font-bold text-rose-400">97%</div>
+            <div className="text-xs text-muted-foreground mt-1">Avg Freshness</div>
           </div>
         </div>
 
         {/* Category breakdown */}
         <div className="mb-12">
-          <h3 className="text-sm font-semibold text-center text-muted-foreground mb-4">
-            Asset Class Coverage
-          </h3>
+          <h3 className="text-sm font-semibold text-center text-muted-foreground mb-4">Asset Class Coverage</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {categories.map((cat) => {
               const color = CATEGORY_COLORS[cat];
@@ -239,15 +198,9 @@ export function DataServicesShowcase() {
                     color.border,
                   )}
                 >
-                  <div className={cn("text-xs font-semibold", color.text)}>
-                    {DATA_CATEGORY_LABELS[cat]}
-                  </div>
-                  <div className="mt-1 text-lg font-bold">
-                    {count?.toLocaleString() || "—"}
-                  </div>
-                  <div className="text-[10px] text-muted-foreground">
-                    instruments
-                  </div>
+                  <div className={cn("text-xs font-semibold", color.text)}>{DATA_CATEGORY_LABELS[cat]}</div>
+                  <div className="mt-1 text-lg font-bold">{count?.toLocaleString() || "—"}</div>
+                  <div className="text-[10px] text-muted-foreground">instruments</div>
                 </div>
               );
             })}
@@ -260,15 +213,10 @@ export function DataServicesShowcase() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="text-sky-400 border-sky-400/30"
-                  >
+                  <Badge variant="outline" className="text-sky-400 border-sky-400/30">
                     Live Preview
                   </Badge>
-                  <span className="text-sm text-muted-foreground">
-                    Data Freshness Heatmap
-                  </span>
+                  <span className="text-sm text-muted-foreground">Data Freshness Heatmap</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Cloud className="size-3 text-blue-400" />
@@ -315,18 +263,8 @@ export function DataServicesShowcase() {
                   </span>
                 </div>
                 <div className="flex gap-2 flex-wrap">
-                  {[
-                    "binance",
-                    "deribit",
-                    "databento",
-                    "uniswap_v3",
-                    "hyperliquid",
-                  ].map((venue) => (
-                    <Badge
-                      key={venue}
-                      variant="secondary"
-                      className="text-[10px]"
-                    >
+                  {["binance", "deribit", "databento", "uniswap_v3", "hyperliquid"].map((venue) => (
+                    <Badge key={venue} variant="secondary" className="text-[10px]">
                       {VENUE_DISPLAY[venue]?.label || venue}
                     </Badge>
                   ))}
@@ -338,12 +276,9 @@ export function DataServicesShowcase() {
 
         {/* Three access tiers */}
         <div className="mb-12">
-          <h3 className="text-xl font-bold text-center mb-2">
-            Three Ways to Access
-          </h3>
+          <h3 className="text-xl font-bold text-center mb-2">Three Ways to Access</h3>
           <p className="text-sm text-muted-foreground text-center mb-8 max-w-lg mx-auto">
-            Same platform, different permission levels. Demo for preview, Portal
-            for clients, Internal for Odum team.
+            Same platform, different permission levels. Demo for preview, Portal for clients, Internal for Odum team.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -352,19 +287,11 @@ export function DataServicesShowcase() {
               return (
                 <Card
                   key={tier.id}
-                  className={cn(
-                    "relative overflow-hidden transition-all hover:shadow-lg",
-                    `hover:${tier.borderColor}`,
-                  )}
+                  className={cn("relative overflow-hidden transition-all hover:shadow-lg", `hover:${tier.borderColor}`)}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
-                      <div
-                        className={cn(
-                          "flex size-11 items-center justify-center rounded-lg",
-                          tier.bgColor,
-                        )}
-                      >
+                      <div className={cn("flex size-11 items-center justify-center rounded-lg", tier.bgColor)}>
                         <Icon className={cn("size-5", tier.color)} />
                       </div>
                       <Badge variant="outline" className="text-[10px]">
@@ -372,20 +299,13 @@ export function DataServicesShowcase() {
                       </Badge>
                     </div>
                     <CardTitle className="mt-3 text-lg">{tier.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      {tier.description}
-                    </CardDescription>
+                    <CardDescription className="text-sm">{tier.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 mb-6">
                       {tier.features.map((feature) => (
-                        <li
-                          key={feature}
-                          className="flex items-center gap-2 text-sm text-muted-foreground"
-                        >
-                          <CheckCircle2
-                            className={cn("size-3.5 shrink-0", tier.color)}
-                          />
+                        <li key={feature} className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <CheckCircle2 className={cn("size-3.5 shrink-0", tier.color)} />
                           {feature}
                         </li>
                       ))}
@@ -421,21 +341,14 @@ export function DataServicesShowcase() {
                 <div className="p-4 rounded-lg border border-emerald-400/30 bg-emerald-400/5">
                   <div className="flex items-center gap-2 mb-2">
                     <Zap className="size-4 text-emerald-400" />
-                    <span className="font-semibold text-emerald-400">
-                      In-System
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="text-[10px] bg-emerald-400/10 text-emerald-400"
-                    >
+                    <span className="font-semibold text-emerald-400">In-System</span>
+                    <Badge variant="secondary" className="text-[10px] bg-emerald-400/10 text-emerald-400">
                       Recommended
                     </Badge>
                   </div>
                   <div className="text-2xl font-bold">
                     $0.50
-                    <span className="text-sm font-normal text-muted-foreground">
-                      /GB
-                    </span>
+                    <span className="text-sm font-normal text-muted-foreground">/GB</span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Query via our API. Data stays in Odum cloud. Best value.
@@ -446,31 +359,20 @@ export function DataServicesShowcase() {
                 <div className="p-4 rounded-lg border border-amber-400/30 bg-amber-400/5">
                   <div className="flex items-center gap-2 mb-2">
                     <Cloud className="size-4 text-amber-400" />
-                    <span className="font-semibold text-amber-400">
-                      Download / Egress
-                    </span>
+                    <span className="font-semibold text-amber-400">Download / Egress</span>
                   </div>
                   <div className="text-2xl font-bold">
                     $2.50
-                    <span className="text-sm font-normal text-muted-foreground">
-                      /GB
-                    </span>
+                    <span className="text-sm font-normal text-muted-foreground">/GB</span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Export to your S3/GCS bucket. You own the copy.
-                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">Export to your S3/GCS bucket. You own the copy.</p>
                 </div>
               </div>
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  Plans from{" "}
-                  <span className="text-foreground font-semibold">£250/mo</span>{" "}
-                  (Starter) to{" "}
-                  <span className="text-foreground font-semibold">
-                    Enterprise
-                  </span>{" "}
-                  (custom)
+                  Plans from <span className="text-foreground font-semibold">£250/mo</span> (Starter) to{" "}
+                  <span className="text-foreground font-semibold">Enterprise</span> (custom)
                 </div>
                 <Button variant="outline" size="sm" asChild>
                   <Link href="/services/data?tab=pricing">

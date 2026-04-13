@@ -1,25 +1,36 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
-import { typedFetch } from "@/lib/api/typed-fetch";
+import { typedFetch, type GatewayApiResponse } from "@/lib/api/typed-fetch";
+import { withMode } from "@/lib/api/with-mode";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+
+type AlertsListResponse = GatewayApiResponse<"/api/alerts/list">;
+type AlertsSummaryResponse = GatewayApiResponse<"/api/alerts/summary">;
 
 export function useAlerts() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
-  return useQuery({
-    queryKey: ["alerts", user?.id],
-    queryFn: () => apiFetch("/api/alerts/list", token),
+  return useQuery<AlertsListResponse>({
+    queryKey: ["alerts", user?.id, scope.mode],
+    queryFn: () =>
+      typedFetch<AlertsListResponse>(withMode("/api/alerts/list", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 
 export function useAlertsSummary() {
   const { user, token } = useAuth();
+  const { scope } = useGlobalScope();
 
-  return useQuery({
-    queryKey: ["alerts-summary", user?.id],
-    queryFn: () => apiFetch("/api/alerts/summary", token),
+  return useQuery<AlertsSummaryResponse>({
+    queryKey: ["alerts-summary", user?.id, scope.mode],
+    queryFn: () =>
+      typedFetch<AlertsSummaryResponse>(withMode("/api/alerts/summary", scope.mode, scope.asOfDatetime), token),
     enabled: !!user,
+    refetchInterval: scope.mode === "batch" ? false : undefined,
   });
 }
 

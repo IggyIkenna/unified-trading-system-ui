@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DataTableWidget, type DataTableColumn } from "@/components/widgets/shared";
+import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import { Badge } from "@/components/ui/badge";
 import { useMarketsData, type OrderFlowEntry } from "./markets-data-context";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
   const { orderFlowData, assetClass, orderFlowRange } = useMarketsData();
@@ -64,7 +65,7 @@ export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
         key: "size",
         label: "Size",
         align: "right",
-        accessor: (row) => <span className="font-mono">{row.size.toFixed(4)}</span>,
+        accessor: (row) => <span className="font-mono">{formatNumber(row.size, 4)}</span>,
       },
       {
         key: "venue",

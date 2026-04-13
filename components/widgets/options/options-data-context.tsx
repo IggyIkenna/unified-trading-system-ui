@@ -34,6 +34,7 @@ import {
 } from "@/lib/mocks/fixtures/options-futures-mock";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { toast } from "@/hooks/use-toast";
+import { formatNumber } from "@/lib/utils/formatters";
 
 export interface OptionsDataContextValue {
   assetClass: AssetClass;
@@ -266,7 +267,7 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
   }, [selectedInstrument, orderQty, orderPrice, tradeDirection, orderType]);
 
   React.useEffect(() => {
-    if (selectedInstrument) setOrderPrice(selectedInstrument.price.toFixed(2));
+    if (selectedInstrument) setOrderPrice(formatNumber(selectedInstrument.price, 2));
   }, [selectedInstrument]);
 
   const scopedWatchlists = React.useMemo(

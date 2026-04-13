@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 interface PnLValueProps {
   value: number;
@@ -41,12 +42,12 @@ export function PnLValue({
   const formatValue = (val: number) => {
     const absVal = Math.abs(val);
     if (absVal >= 1_000_000) {
-      return `${(absVal / 1_000_000).toFixed(2)}m`;
+      return `${formatNumber(absVal / 1_000_000, 2)}m`;
     }
     if (absVal >= 1_000) {
-      return `${(absVal / 1_000).toFixed(1)}k`;
+      return `${formatNumber(absVal / 1_000, 1)}k`;
     }
-    return absVal.toFixed(2);
+    return formatNumber(absVal, 2);
   };
 
   const Icon = isPositive ? TrendingUp : TrendingDown;
@@ -98,7 +99,7 @@ export function PnLChange({
       )}
     >
       {isPositive ? "+" : ""}
-      {value.toFixed(2)}%
+      {formatPercent(value, 2)}
     </span>
   );
 }

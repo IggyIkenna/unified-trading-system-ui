@@ -12,6 +12,7 @@ export interface GlobalScopeState {
   organizationIds: string[];
   clientIds: string[];
   strategyIds: string[];
+  strategyFamilyIds: string[];
   underlyingIds: string[];
   mode: "live" | "batch";
   asOfDatetime?: string;
@@ -22,6 +23,7 @@ interface GlobalScopeActions {
   setOrganizationIds: (ids: string[]) => void;
   setClientIds: (ids: string[]) => void;
   setStrategyIds: (ids: string[]) => void;
+  setStrategyFamilyIds: (ids: string[]) => void;
   setUnderlyingIds: (ids: string[]) => void;
   setMode: (mode: "live" | "batch") => void;
   setAsOfDatetime: (dt: string | undefined) => void;
@@ -35,6 +37,7 @@ const INITIAL_SCOPE: GlobalScopeState = {
   organizationIds: [],
   clientIds: [],
   strategyIds: [],
+  strategyFamilyIds: [],
   underlyingIds: [],
   mode: "live",
   asOfDatetime: undefined,
@@ -44,28 +47,20 @@ export const useGlobalScope = create<GlobalScopeActions>()(
   persist(
     (set) => ({
       scope: { ...INITIAL_SCOPE },
-      setOrganizationIds: (ids) =>
-        set((s) => ({ scope: { ...s.scope, organizationIds: ids } })),
-      setClientIds: (ids) =>
-        set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
-      setStrategyIds: (ids) =>
-        set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
-      setUnderlyingIds: (ids) =>
-        set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
+      setOrganizationIds: (ids) => set((s) => ({ scope: { ...s.scope, organizationIds: ids } })),
+      setClientIds: (ids) => set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
+      setStrategyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
+      setStrategyFamilyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyFamilyIds: ids } })),
+      setUnderlyingIds: (ids) => set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
       setMode: (mode) =>
         set((s) => ({
           scope: {
             ...s.scope,
             mode,
-            asOfDatetime:
-              mode === "live"
-                ? undefined
-                : (s.scope.asOfDatetime ??
-                  new Date().toISOString().slice(0, 16)),
+            asOfDatetime: mode === "live" ? undefined : (s.scope.asOfDatetime ?? new Date().toISOString().slice(0, 16)),
           },
         })),
-      setAsOfDatetime: (dt) =>
-        set((s) => ({ scope: { ...s.scope, asOfDatetime: dt } })),
+      setAsOfDatetime: (dt) => set((s) => ({ scope: { ...s.scope, asOfDatetime: dt } })),
       clearAll: () => {
         localStorage.removeItem(STORAGE_KEY);
         set({ scope: { ...INITIAL_SCOPE } });
@@ -75,6 +70,33 @@ export const useGlobalScope = create<GlobalScopeActions>()(
         set({ scope: { ...INITIAL_SCOPE } });
       },
     }),
-    { name: STORAGE_KEY },
+    {
+      name: STORAGE_KEY,
+      version: 1,
+      migrate: (persistedState: unknown, version: number) => {
+        if (version < 1) {
+          const s = (persistedState ?? {}) as { scope?: Partial<GlobalScopeState> };
+          const saved = s.scope ?? {};
+          return {
+            scope: {
+              ...INITIAL_SCOPE,
+              mode: saved.mode === "live" || saved.mode === "batch" ? saved.mode : INITIAL_SCOPE.mode,
+              organizationIds: Array.isArray(saved.organizationIds) ? saved.organizationIds : [],
+              clientIds: Array.isArray(saved.clientIds) ? saved.clientIds : [],
+              strategyIds: Array.isArray(saved.strategyIds) ? saved.strategyIds : [],
+              strategyFamilyIds: Array.isArray(saved.strategyFamilyIds) ? saved.strategyFamilyIds : [],
+              underlyingIds: Array.isArray(saved.underlyingIds) ? saved.underlyingIds : [],
+            },
+          };
+        }
+        return persistedState;
+      },
+      onRehydrateStorage: () => (_state, error) => {
+        if (error) {
+          console.warn("[global-scope-store] rehydration error — resetting", error);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      },
+    },
   ),
 );

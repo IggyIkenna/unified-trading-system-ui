@@ -14,6 +14,7 @@ import {
   Archive,
 } from "lucide-react";
 import { useEpics, useEpicDetail } from "@/hooks/deployment/useEpics";
+import { Spinner } from "@/components/shared/spinner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,20 +31,12 @@ interface RadialProgressProps {
   strokeWidth?: number;
 }
 
-function RadialProgress({
-  pct,
-  size = 56,
-  strokeWidth = 5,
-}: RadialProgressProps) {
+function RadialProgress({ pct, size = 56, strokeWidth = 5 }: RadialProgressProps) {
   const r = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * r;
   const offset = circumference - (pct / 100) * circumference;
   const color =
-    pct === 100
-      ? "var(--color-accent-green)"
-      : pct >= 50
-        ? "var(--color-accent-cyan)"
-        : "var(--color-accent-orange)";
+    pct === 100 ? "var(--color-accent-green)" : pct >= 50 ? "var(--color-accent-cyan)" : "var(--color-accent-orange)";
 
   return (
     <svg width={size} height={size} className="rotate-[-90deg]">
@@ -92,9 +85,7 @@ const EPIC_BORDER: Record<string, string> = {
 function crColor(current: string | null, required: string): string {
   if (!current) return "text-[var(--color-text-muted)]";
   const ord = (s: string) => parseInt(s.replace(/[^0-9]/g, "") || "0", 10);
-  return ord(current) >= ord(required)
-    ? "text-[var(--color-accent-green)]"
-    : "text-[var(--color-accent-red)]";
+  return ord(current) >= ord(required) ? "text-[var(--color-accent-green)]" : "text-[var(--color-accent-red)]";
 }
 
 function DataChips({ data }: { data: EpicRepoStatus["data"] }) {
@@ -106,9 +97,7 @@ function DataChips({ data }: { data: EpicRepoStatus["data"] }) {
           <Archive className="h-2.5 w-2.5" />
           hist
           {data.historical_start_date && (
-            <span className="text-[var(--color-text-muted)]">
-              {data.historical_start_date.slice(0, 7)}
-            </span>
+            <span className="text-[var(--color-text-muted)]">{data.historical_start_date.slice(0, 7)}</span>
           )}
         </span>
       )}
@@ -145,10 +134,8 @@ interface EpicCardProps {
 }
 
 function EpicCard({ epic, selected, onClick }: EpicCardProps) {
-  const colorClass =
-    EPIC_COLORS[epic.epic_id] ?? "text-[var(--color-text-primary)]";
-  const borderClass =
-    EPIC_BORDER[epic.epic_id] ?? "border-[var(--color-border-default)]";
+  const colorClass = EPIC_COLORS[epic.epic_id] ?? "text-[var(--color-text-primary)]";
+  const borderClass = EPIC_BORDER[epic.epic_id] ?? "border-[var(--color-border-default)]";
 
   return (
     <Button
@@ -165,16 +152,12 @@ function EpicCard({ epic, selected, onClick }: EpicCardProps) {
         <div className="relative flex-shrink-0">
           <RadialProgress pct={epic.epic_pct} />
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-xs font-semibold text-[var(--color-text-primary)]">
-              {epic.epic_pct}%
-            </span>
+            <span className="text-xs font-semibold text-[var(--color-text-primary)]">{epic.epic_pct}%</span>
           </div>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className={cn("font-semibold text-sm", colorClass)}>
-              {epic.display_name}
-            </span>
+            <span className={cn("font-semibold text-sm", colorClass)}>{epic.display_name}</span>
             {epic.epic_complete ? (
               <Badge
                 variant="outline"
@@ -191,9 +174,7 @@ function EpicCard({ epic, selected, onClick }: EpicCardProps) {
           <div className="text-xs text-[var(--color-text-muted)]">
             {epic.completed} / {epic.total_required} repos ready
             {epic.blocking_count > 0 && (
-              <span className="ml-2 text-[var(--color-accent-red)]">
-                · {epic.blocking_count} blocking
-              </span>
+              <span className="ml-2 text-[var(--color-accent-red)]">· {epic.blocking_count} blocking</span>
             )}
           </div>
         </div>
@@ -211,20 +192,12 @@ function EpicCard({ epic, selected, onClick }: EpicCardProps) {
 // Repo row in the expanded detail table
 // ---------------------------------------------------------------------------
 
-function RepoRow({
-  repo,
-  blocking,
-}: {
-  repo: EpicRepoStatus;
-  blocking: boolean;
-}) {
+function RepoRow({ repo, blocking }: { repo: EpicRepoStatus; blocking: boolean }) {
   return (
     <tr
       className={cn(
         "border-b border-[var(--color-border-subtle)] last:border-0",
-        blocking
-          ? "bg-[var(--color-accent-red)]/4"
-          : "bg-[var(--color-accent-green)]/4",
+        blocking ? "bg-[var(--color-accent-red)]/4" : "bg-[var(--color-accent-green)]/4",
       )}
     >
       <td className="py-2 px-3 text-xs font-mono text-[var(--color-text-primary)]">
@@ -237,31 +210,17 @@ function RepoRow({
           {repo.repo}
         </div>
       </td>
-      <td className="py-2 px-3 text-xs text-[var(--color-text-muted)]">
-        {repo.asset_class}
-      </td>
-      <td
-        className={cn(
-          "py-2 px-3 text-xs font-mono",
-          crColor(repo.cr_current, repo.cr_required),
-        )}
-      >
-        {repo.cr_current ?? "—"}{" "}
-        <span className="text-[var(--color-text-muted)]">
-          / {repo.cr_required}
-        </span>
+      <td className="py-2 px-3 text-xs text-[var(--color-text-muted)]">{repo.asset_class}</td>
+      <td className={cn("py-2 px-3 text-xs font-mono", crColor(repo.cr_current, repo.cr_required))}>
+        {repo.cr_current ?? "—"} <span className="text-[var(--color-text-muted)]">/ {repo.cr_required}</span>
       </td>
       <td className="py-2 px-3 text-xs font-mono text-[var(--color-text-secondary)]">
         {repo.br_required === "na" ? (
           <span className="text-[var(--color-text-muted)]">n/a</span>
         ) : (
           <>
-            <span className={crColor(repo.br_current, repo.br_required)}>
-              {repo.br_current ?? "—"}
-            </span>{" "}
-            <span className="text-[var(--color-text-muted)]">
-              / {repo.br_required}
-            </span>
+            <span className={crColor(repo.br_current, repo.br_required)}>{repo.br_current ?? "—"}</span>{" "}
+            <span className="text-[var(--color-text-muted)]">/ {repo.br_required}</span>
           </>
         )}
       </td>
@@ -278,11 +237,7 @@ function RepoRow({
       <td className="py-2 px-3">
         <DataChips data={repo.data} />
       </td>
-      {blocking && (
-        <td className="py-2 px-3 text-xs text-[var(--color-accent-red)]">
-          {repo.blocking_reason ?? ""}
-        </td>
-      )}
+      {blocking && <td className="py-2 px-3 text-xs text-[var(--color-accent-red)]">{repo.blocking_reason ?? ""}</td>}
     </tr>
   );
 }
@@ -301,7 +256,7 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[var(--color-accent-cyan)]" />
+        <Spinner className="size-6 text-[var(--color-accent-cyan)]" size="md" />
       </div>
     );
   }
@@ -331,36 +286,18 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
             <table className="w-full text-left min-w-[600px]">
               <thead>
                 <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)]">
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    Repo
-                  </th>
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    Class
-                  </th>
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    CR
-                  </th>
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    BR
-                  </th>
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    Main
-                  </th>
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    Data
-                  </th>
-                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">
-                    Reason
-                  </th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">Repo</th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">Class</th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">CR</th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">BR</th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">Main</th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">Data</th>
+                  <th className="py-1.5 px-3 text-[10px] text-[var(--color-text-muted)] uppercase">Reason</th>
                 </tr>
               </thead>
               <tbody>
                 {epic.blocking_repos.map((r) => (
-                  <RepoRow
-                    key={`${r.repo}-${r.asset_class}`}
-                    repo={r}
-                    blocking={true}
-                  />
+                  <RepoRow key={`${r.repo}-${r.asset_class}`} repo={r} blocking={true} />
                 ))}
               </tbody>
             </table>
@@ -405,9 +342,7 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
                 title={r.note || undefined}
               >
                 {r.repo}
-                <span className="text-[var(--color-text-muted)]">
-                  ·{r.asset_class}
-                </span>
+                <span className="text-[var(--color-text-muted)]">·{r.asset_class}</span>
               </span>
             ))}
           </div>
@@ -448,7 +383,7 @@ export function EpicReadinessView() {
       <CardContent>
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--color-accent-cyan)]" />
+            <Spinner className="size-8 text-[var(--color-accent-cyan)]" size="lg" />
           </div>
         )}
 
@@ -462,10 +397,7 @@ export function EpicReadinessView() {
         {!loading && !error && epics.length === 0 && (
           <div className="py-8 text-center text-sm text-[var(--color-text-muted)]">
             No epics configured. Ensure{" "}
-            <code className="text-xs">
-              unified-trading-codex/11-project-management/epics/
-            </code>{" "}
-            is accessible.
+            <code className="text-xs">unified-trading-codex/11-project-management/epics/</code> is accessible.
           </div>
         )}
 

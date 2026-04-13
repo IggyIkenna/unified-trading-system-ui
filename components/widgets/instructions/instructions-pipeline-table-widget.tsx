@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { FilterBar } from "@/components/platform/filter-bar";
+import { FilterBar } from "@/components/shared/filter-bar";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Filter } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
@@ -15,7 +15,10 @@ export function InstructionsPipelineTableWidget(_props: WidgetComponentProps) {
   return (
     <div className="flex flex-col h-full min-h-0 border border-border rounded-md overflow-hidden bg-card">
       <div className="flex items-center justify-between gap-2 px-2 py-1 border-b border-border shrink-0">
-        <button onClick={() => setShowFilters(f => !f)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => setShowFilters((f) => !f)}
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        >
           <Filter className="size-3" />
           {showFilters ? "Hide Filters" : "Show Filters"}
         </button>

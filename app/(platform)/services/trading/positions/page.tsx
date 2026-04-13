@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { PositionsDataProvider } from "@/components/widgets/positions/positions-data-context";
 
-import "@/components/widgets/positions/register";
-
 function PositionsPageContent() {
   return (
     <PositionsDataProvider>

@@ -14,5 +14,8 @@ export default defineConfig({
     setupFiles: [],
     include: ["__tests__/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["**/node_modules/**", "**/.git/**", "**/.next/**"],
+    coverage: {
+      reporter: ["text", "json-summary"],
+    },
   },
 });

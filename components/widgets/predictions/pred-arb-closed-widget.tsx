@@ -1,6 +1,6 @@
 "use client";
 
-import { CollapsibleSection } from "@/components/widgets/shared";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { PredClosedArbCard } from "./pred-arb-ui";
 import { usePredictionsData } from "./predictions-data-context";

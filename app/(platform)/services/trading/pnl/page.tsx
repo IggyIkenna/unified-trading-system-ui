@@ -4,8 +4,6 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { PnLDataProvider } from "@/components/widgets/pnl/pnl-data-context";
 
-import "@/components/widgets/pnl/register";
-
 function PnlPageContent() {
   return (
     <PnLDataProvider>
