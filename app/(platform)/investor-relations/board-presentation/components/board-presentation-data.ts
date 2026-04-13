@@ -256,7 +256,7 @@ export const slides = [
         risk: "low",
       },
       {
-        name: "Decentralised \u2014 Leveraged",
+        name: "Decentralised \u2014 Recursive",
         returns: "20-50% annual",
         drawdown: "15%",
         capacity: "$5M/pool",
@@ -264,11 +264,11 @@ export const slides = [
         risk: "medium",
       },
       {
-        name: "Crypto Trading",
-        returns: "Market-dependent",
+        name: "Crypto Long/Short ML",
+        returns: "30%+",
         drawdown: "5-10%",
         capacity: "$2M/pair",
-        character: "Momentum, mean reversion, arbitrage",
+        character: "Machine learning long/short, mean reversion, arbitrage",
         risk: "medium",
       },
       {
@@ -281,7 +281,7 @@ export const slides = [
       },
       {
         name: "Sports",
-        returns: "Market-dependent",
+        returns: "50%+",
         drawdown: "20%",
         capacity: "$100K-$1M",
         character: "Machine learning prediction, arbitrage",
