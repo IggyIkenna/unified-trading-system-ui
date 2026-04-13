@@ -12,6 +12,7 @@ import {
 import {
   AlertTriangle,
   ArrowRight,
+  BarChart3,
   CheckCircle2,
   Clock,
   Scale,
@@ -36,7 +37,7 @@ export default function RegulatoryServicePage() {
             </Badge>
             <h1 className="text-3xl font-bold">Regulatory Umbrella</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              FCA Appointed Representative services for Professional clients.
+              FCA regulatory coverage client services for Professional clients.
               Operational in weeks, not the 12-24 months of direct
               authorisation.
             </p>
@@ -86,7 +87,7 @@ export default function RegulatoryServicePage() {
           </Card>
 
           {/* Key Benefits */}
-          <div className="grid gap-4 md:grid-cols-3 mb-8">
+          <div className="grid gap-4 md:grid-cols-4 mb-8">
             <Card>
               <CardHeader className="pb-2">
                 <Clock className="size-8 text-emerald-400 mb-2" />
@@ -118,7 +119,19 @@ export default function RegulatoryServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  MLRO services and ongoing regulatory supervision
+                  Reporting officer services and ongoing regulatory supervision
+                </CardDescription>
+              </CardContent>
+            </Card>
+            <Card className="border-primary/20 bg-primary/5">
+              <CardHeader className="pb-2">
+                <BarChart3 className="size-8 text-primary mb-2" />
+                <CardTitle className="text-base">Reporting Included</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Full client portal with trade history, settlement tracking,
+                  compliance reports, and audit trail documentation
                 </CardDescription>
               </CardContent>
             </Card>
@@ -260,13 +273,13 @@ export default function RegulatoryServicePage() {
             <Card className="border-emerald-400/30">
               <CardHeader>
                 <Badge variant="outline" className="w-fit mb-2">
-                  Appointed Representative
+                  regulatory coverage client
                 </Badge>
                 <CardTitle>AR Setup</CardTitle>
                 <div className="text-xl font-bold">From £4,000/mo</div>
                 <CardDescription>
                   Plus one-time setup fee. Operate under our FCA authorisation
-                  as an Appointed Representative.
+                  under our regulatory coverage.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -383,7 +396,7 @@ export default function RegulatoryServicePage() {
                 Included with Full Platform
               </div>
               <CardDescription>
-                Ongoing compliance services for Appointed Representatives
+                Ongoing compliance services for regulatory coverage clients
               </CardDescription>
             </CardHeader>
             <CardContent>

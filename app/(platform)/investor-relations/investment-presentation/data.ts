@@ -6,7 +6,7 @@ export const slides = [
     type: "cover",
     title: "Investment Management",
     subtitle:
-      "FCA-authorised discretionary management. Built for our own capital. Now available to you.",
+      "Allocate to strategies we already run with our own capital. Co-invest at identical terms \u2014 same infrastructure, same risk controls, same reporting.",
     tagline: "FCA Authorised",
     stats: [
       { value: "$7.5M", label: "Under Management" },
@@ -44,9 +44,9 @@ export const slides = [
       },
     ],
     differentiators: [
-      "We built this for ourselves first \u2014 same infrastructure runs our own capital",
-      "Clients for every service \u2014 investment management, regulatory coverage, and the trading platform",
-      "Nothing ships that we would not trust with our own money",
+      "$7.5M of our own capital through the same strategies \u2014 alignment is structural, not promised",
+      "0% management fee, 20\u201340% performance above high watermark \u2014 we only earn when you earn",
+      "10-factor returns waterfall, full trade audit trail, monthly reporting \u2014 transparency is the default, not an add-on",
     ],
     conclusion:
       "Co-invest at identical terms as company principals.",
@@ -178,7 +178,7 @@ export const slides = [
       },
     ],
     callout:
-      "The same reporting tools we use for our own capital. Full transparency through institutional-grade tools.",
+      "Institutional-grade reporting \u2014 the same tools tracking our own $7.5M. You see exactly what we see.",
     metrics: [
       { value: "10", label: "Attribution Factors" },
       { value: "0%", label: "Management Fee" },
@@ -206,7 +206,7 @@ export const slides = [
       },
       {
         q: "Why should I trust you with my capital?",
-        a: "We built this for ourselves first. $7.5M of our own capital runs through the same infrastructure. We have clients for every service. Nothing ships that we would not trust with our own money. We will never front-run you or build strategies that overlap with yours.",
+        a: "Our $7.5M runs through the same strategies you would invest in \u2014 co-investment at identical terms. 0% management fee means we only earn on performance above the high watermark. Full transparency through the investor portal \u2014 10-factor attribution, trade-level audit trail, monthly reporting. Every new strategy is validated on our own capital before reaching a client.",
       },
     ],
   },
@@ -215,28 +215,29 @@ export const slides = [
     type: "ask",
     title: "Get Started",
     subtitle:
-      "Co-invest alongside us at identical terms. Same infrastructure, same strategies, full transparency.",
+      "Start with a mandate discussion. Review our reporting and track record before committing capital.",
     asks: [
       {
-        title: "Step 1 \u2014 Conversation",
+        title: "Mandate Discussion",
         items: [
-          "Discuss your mandate \u2014 risk appetite, asset class preferences, allocation size",
-          "Managed or bring-your-own-thesis",
+          "Risk appetite, asset class preferences, allocation size",
+          "Managed discretionary or bring-your-own-thesis",
+          "Review our reporting pack \u2014 returns attribution, drawdown analysis, fee modelling",
         ],
       },
       {
-        title: "Step 2 \u2014 Suitability",
+        title: "Suitability & Documentation",
         items: [
-          "Professional client assessment",
-          "Documentation and subscription agreement",
+          "Professional client or eligible counterparty assessment",
+          "Know-your-client documentation and subscription agreement",
         ],
       },
       {
-        title: "Step 3 \u2014 Invest",
+        title: "Capital Deployed",
         items: [
-          "Capital deployed",
-          "Portal access live",
-          "Monthly reporting begins",
+          "Allocation live through the same infrastructure as our own capital",
+          "Investor portal access from day one",
+          "Monthly reporting and full audit trail",
         ],
       },
     ],

@@ -6,7 +6,7 @@ export const slides = [
     type: "cover",
     title: "Regulatory Umbrella",
     subtitle:
-      "FCA regulatory coverage for Professional clients. Operational in weeks, not the 12\u201324 months of direct authorisation.",
+      "Operate under FCA coverage without waiting for direct authorisation. Live in weeks \u2014 dealing, arranging, advising, and managing permissions included.",
     tagline: "FCA Authorised",
     stats: [
       { value: "FCA 975797", label: "Authorisation" },
@@ -43,9 +43,9 @@ export const slides = [
       },
     ],
     differentiators: [
-      "We built this for ourselves first \u2014 same compliance infrastructure we use for our own capital",
-      "Clients for every service we offer \u2014 trust is established through demonstrated delivery",
-      "Nothing we deploy goes through without the same vetting we apply to our own money",
+      "FCA authorised since January 2023 with dedicated MLRO \u2014 live compliance operations, not a new setup",
+      "1 regulatory coverage client live, 3 in pipeline \u2014 onboarding process is proven and repeatable",
+      "Full permissions scope \u2014 dealing, arranging, advising, managing \u2014 across all regulated asset classes",
     ],
     conclusion:
       "Getting properly authorised does not have to be complicated or expensive.",
@@ -161,12 +161,12 @@ export const slides = [
       },
     ],
     callout:
-      "The same reporting tools we use for our own $7.5M under management. Not a stripped-down version.",
+      "Institutional-grade compliance tooling \u2014 automated transaction reporting, best execution monitoring, and MLRO oversight built into the platform.",
     metrics: [
-      { value: "10", label: "Attribution Factors" },
-      { value: "Days", label: "To Go Live" },
-      { value: "$7.5M", label: "Our Own Capital" },
       { value: "FCA 975797", label: "Authorisation" },
+      { value: "Weeks", label: "To Go Live" },
+      { value: "1 Live", label: "Coverage Client" },
+      { value: "3", label: "In Pipeline" },
     ],
   },
   {
@@ -189,7 +189,7 @@ export const slides = [
       },
       {
         q: "Why should I trust you?",
-        a: "We built this for ourselves first. The same compliance infrastructure runs our own $7.5M. We have clients for every service. Nothing ships that we would not trust with our own money.",
+        a: "FCA authorised since January 2023 with a dedicated MLRO and live compliance operations. One regulatory coverage client already onboarded, three more in pipeline \u2014 the process is tested and repeatable. We carry the same regulatory obligations for our own $7.5M under management, so the compliance infrastructure is not a side project.",
       },
     ],
   },
@@ -198,30 +198,30 @@ export const slides = [
     type: "ask",
     title: "Get Started",
     subtitle:
-      "Apply online, upload documents at your own pace, and get operational in weeks.",
+      "Start with an eligibility assessment. We scope the coverage, handle the FCA notification, and get you operational.",
     asks: [
       {
-        title: "Step 1 \u2014 Apply",
+        title: "Eligibility Assessment",
         items: [
-          "Complete the online application",
-          "Strategy questionnaire",
-          "Upload documentation at your own pace",
+          "What regulated activities do you need coverage for?",
+          "Regulatory coverage, advisory, or fund structure?",
+          "We assess fit and scope the engagement before any commitment",
         ],
       },
       {
-        title: "Step 2 \u2014 Review",
+        title: "Onboarding & FCA Notification",
         items: [
-          "Due diligence review",
-          "Compliance sign-off",
-          "FCA notification",
+          "Due diligence review and compliance sign-off",
+          "FCA notification filed on your behalf",
+          "Compliance manual and staff training provided",
         ],
       },
       {
-        title: "Step 3 \u2014 Operate",
+        title: "Operational",
         items: [
-          "Your clients get their own portal",
-          "Portfolio performance, trade history",
-          "Compliance reports, settlement tracking",
+          "Your clients receive dedicated portal access",
+          "Compliance reporting, settlement tracking, best execution documentation",
+          "Ongoing MLRO services and annual regulatory review included",
         ],
       },
     ],

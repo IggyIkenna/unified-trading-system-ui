@@ -6,7 +6,7 @@ export const slides = [
     type: "cover",
     title: "Trading Infrastructure Without the Build",
     subtitle:
-      "The same platform we use for our own capital \u2014 available to you. We built it for ourselves first. It runs our own money. Now you can use it too.",
+      "Access the trading stack without building it. Five asset classes, one normalised schema, live in weeks \u2014 not the 18\u201324 months it takes to build from scratch.",
     tagline: "FCA Authorised",
     stats: [
       { value: "5", label: "Asset Classes" },
@@ -40,9 +40,9 @@ export const slides = [
       },
     ],
     differentiators: [
-      "We have been building for three years with a team that has traded all five asset classes",
-      "The platform runs $7.5M of our own capital \u2014 this is not a prototype",
-      "We have clients for every service we offer \u2014 trust is established",
+      "First platform client already live at $125K \u2014 operational, not theoretical",
+      "12,000+ instruments normalised across 80+ venues \u2014 breadth you would need years to replicate",
+      "Expanding is adding access, not migrating systems \u2014 switching cost is low by design",
     ],
     conclusion: "You can build it yourself. Or you can start trading in weeks.",
   },
@@ -51,7 +51,7 @@ export const slides = [
     type: "lifecycle-new",
     title: "One Platform, Your Scope",
     subtitle:
-      "The same system powering our investment management business \u2014 available to you. Enter at any layer, expand over time.",
+      "Enter at any layer. Expand over time. Every layer runs on shared infrastructure \u2014 expanding is adding access, not migrating systems.",
     stages: [
       { name: "Instruments & Data", desc: "Discover, normalise, validate" },
       { name: "Research & Modelling", desc: "Features, ML, simulate" },
@@ -286,9 +286,9 @@ export const slides = [
       },
     ],
     differentiators: [
-      "We built this for ourselves first \u2014 it had to work",
-      "We have clients for every service we offer \u2014 it is proven",
-      "Nothing we deploy goes through without the same vetting we apply to our own capital",
+      "Modular access \u2014 use data, research, or execution independently without exposing your edge",
+      "No contractual lock-in \u2014 bespoke strategy logic is yours; switching cost is operational familiarity, not a contract",
+      "22 microservices, 24,500+ automated tests \u2014 institutional-grade reliability before your first trade",
     ],
     conclusion: "The infrastructure is shared. The alpha is not. That is the design.",
   },
@@ -391,9 +391,9 @@ export const slides = [
       },
     ],
     differentiators: [
-      "12-month annual contracts \u2014 the first conversation is always about scope",
-      "We can have you looking at live data within days of signing",
-      "First platform client already live and growing \u2014 this is proven, not theoretical",
+      "12-month annual contracts \u2014 scoped to the layers and asset classes you actually need",
+      "Data access within days of signing \u2014 research environment immediately after",
+      "No minimum commitment to explore \u2014 trial the data and research layers first, expand when ready",
     ],
     conclusion: "We do not do off-the-shelf pricing because no two engagements are the same.",
   },
@@ -402,28 +402,27 @@ export const slides = [
     type: "ask",
     title: "How to Start",
     subtitle:
-      "The next step is a conversation about what you are trying to do \u2014 which asset classes, what kind of strategies, what your current setup looks like, and where the gaps are.",
+      "Start with a scoping call to map your infrastructure gaps. Follow with a hands-on trial before committing to anything broader.",
     asks: [
       {
-        title: "Scoping Conversation",
+        title: "Scoping Call",
         items: [
-          "Which asset classes are you focused on?",
-          "What does your current infrastructure look like?",
-          "Where are the gaps \u2014 data, research, execution, monitoring?",
-          "Are you looking for platform access or bespoke strategy development?",
+          "Which asset classes and venues matter to you?",
+          "What does your current infrastructure cover \u2014 and where are the gaps?",
+          "Platform access or bespoke strategy development?",
+          "We scope the engagement to exactly what you need",
         ],
       },
       {
-        title: "Trial Period",
+        title: "Limited Trial",
         items: [
-          "We are happy to set up a trial on data and research layers",
-          "See the normalisation quality, coverage, and backtesting environment",
-          "Evaluate before committing to anything broader",
-          "No commitment required to explore",
+          "Hands-on trial on data and research layers \u2014 no commitment required",
+          "See normalisation quality, coverage depth, and backtesting environment",
+          "Evaluate the platform with your own use cases before expanding",
         ],
       },
       {
-        title: "Timeline",
+        title: "Go Live",
         items: [
           "Data access: days",
           "Research environment: days",

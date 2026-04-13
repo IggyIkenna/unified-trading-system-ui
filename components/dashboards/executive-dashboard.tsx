@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Download } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 import { availableStrategies, nlDemoQuestions, nlDemoResponse } from "./executive/executive-dashboard-data";
 import type { NlDemoResponse } from "./executive/executive-dashboard-data";
 import { ExecutiveNaturalLanguageCard } from "./executive/executive-natural-language-card";
@@ -24,6 +25,19 @@ interface ExecutiveDashboardProps {
 }
 
 export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
+  const { hasEntitlement, isAdmin, isInternal } = useAuth();
+  const dashboardTitle = (() => {
+    if (isAdmin() || isInternal()) return "Executive Dashboard";
+    if (hasEntitlement("investor-im")) return "Investment Portfolio";
+    if (hasEntitlement("investor-regulatory")) return "Compliance Portal";
+    return "Executive Dashboard";
+  })();
+  const dashboardSubtitle = (() => {
+    if (isAdmin() || isInternal()) return "Portfolio performance and investor reporting";
+    if (hasEntitlement("investor-im")) return "Your portfolio performance, returns attribution, and trade history";
+    if (hasEntitlement("investor-regulatory")) return "Compliance reports, audit trail, and regulatory documentation";
+    return "Portfolio performance and investor reporting";
+  })();
   const [reportPeriod, setReportPeriod] = React.useState("ytd");
   const [selectedStrategies, setSelectedStrategies] = React.useState<string[]>(() =>
     availableStrategies.map((s) => s.id),
@@ -81,8 +95,8 @@ export function ExecutiveDashboard({ className }: ExecutiveDashboardProps) {
     <div className={className}>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold">Executive Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Portfolio performance and investor reporting</p>
+          <h1 className="text-2xl font-semibold">{dashboardTitle}</h1>
+          <p className="text-sm text-muted-foreground">{dashboardSubtitle}</p>
         </div>
         <div className="flex items-center gap-3">
           <Select value={reportPeriod} onValueChange={setReportPeriod}>

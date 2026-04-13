@@ -132,12 +132,12 @@ export const slides = [
         ],
       },
       {
-        title: "Built for Ourselves First",
+        title: "Proven Commercially",
         items: [
-          "$7.5M of our own capital through the same system",
-          "Clients for every service we offer \u2014 trust is established",
-          "Nothing we deploy for clients goes without the same vetting we apply to our own capital",
-          "We never build strategies that overlap with what we\u2019ve built for you",
+          "$7.5M of our own capital through the same system \u2014 alignment is structural",
+          "First platform client at $125K, growing to $250K+ \u2014 commercial traction, not just capability",
+          "1 regulatory coverage client live, 3 in pipeline \u2014 repeatable onboarding",
+          "Every service has paying clients \u2014 not a prototype",
         ],
       },
       {
@@ -377,22 +377,22 @@ export const slides = [
           "Governance",
         ],
         model: "Subscription \u2014 scoped to client need",
-        desc: "Bespoke access from data feeds to research to the full trading platform. Same system, configurable scope.",
+        desc: "Access the trading stack without building it. Enter at data, research, or execution \u2014 expand over time. Live in weeks, not years.",
       },
       {
         name: "Investment Management",
         stages: ["Decision", "Execution", "Governance"],
         model: "20-40% performance (strategy-dependent)",
-        desc: "We run capital. $7.5M under management across two mandates. Lower-yielding strategies carry lower fees.",
+        desc: "Allocate to strategies we already run with our own capital. Co-invest at identical terms. 0% management fee \u2014 performance only.",
       },
       {
         name: "Regulatory Umbrella",
         stages: ["Governance"],
         model: "Onboarding fee + monthly retainer",
-        desc: "FCA regulatory coverage. Compliance, reporting officer coverage, best execution reporting. 1 live, 3 in pipeline.",
+        desc: "Operate under FCA coverage without waiting for direct authorisation. Full permissions scope. Operational in weeks. 1 live, 3 in pipeline.",
       },
     ],
-    note: "Three wrappers. One system. A regulatory coverage client who needs execution uses the same algorithms. An investment management mandate that outgrows managed capital graduates to platform access.",
+    note: "Three distinct buyer outcomes \u2014 capability, exposure, or regulatory coverage \u2014 all on one shared system. A platform client buys infrastructure. An IM client buys returns. A regulatory client buys speed to market. Each deepens naturally into the others.",
   },
 
   // ── Slide 9: The Flywheel ─────────────────────────────────
@@ -428,27 +428,25 @@ export const slides = [
       {
         title: "Investment Management",
         items: [
-          "Current strategies (crypto, Bitcoin): ready today",
-          "Additional strategies, new asset classes: coming through",
-          "Who in your network allocates to alternative strategies?",
-          "What would they need \u2014 track record, reporting format, minimum ticket?",
+          "Who allocates to alternative strategies \u2014 crypto, DeFi yield, quant?",
+          "Next step: mandate discussion and reporting pack review",
+          "What matters most \u2014 track record depth, fee structure, minimum ticket?",
         ],
       },
       {
         title: "Trading Platform as a Service",
         items: [
-          "First sale: $125K contract revenue (75% received), growing to $250K+ annual revenue",
-          "Ready for broader deployment across additional clients",
           "Who needs trading infrastructure but doesn\u2019t want to build it?",
-          "What would land \u2014 data-only entry, full demo, specific asset class?",
+          "Next step: scoping call and limited trial on data + research layers",
+          "What would land \u2014 data-only entry, full demo, or specific asset class?",
         ],
       },
       {
         title: "Regulatory Umbrella",
         items: [
-          "Ready today \u2014 1 client live, 3 in pipeline",
-          "Who in your network is entering UK regulation or needs FCA coverage?",
-          "What would move them \u2014 pricing, scope, onboarding speed?",
+          "Who is entering UK regulation or needs FCA coverage quickly?",
+          "Next step: eligibility assessment \u2014 we scope fit before any commitment",
+          "What matters most \u2014 onboarding speed, permissions scope, or pricing?",
         ],
       },
     ],
