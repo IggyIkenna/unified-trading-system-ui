@@ -1,24 +1,24 @@
 "use client";
 
+import { DataTable } from "@/components/shared/data-table";
+import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { FilterBar } from "@/components/shared/filter-bar";
+import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTable } from "@/components/shared/data-table";
-import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
-import { AlertCircle, ArrowDownRight, ArrowUpRight, ChevronDown, Pencil, RefreshCw, XCircle } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, ChevronDown, Pencil, RefreshCw, XCircle } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { classifyInstrument, useOrdersData, type AssetClassFilter, type OrderRecord } from "./orders-data-context";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 const STATUS_COLORS: Record<string, string> = {
   FILLED: "border-[var(--status-live)] text-[var(--status-live)]",
@@ -310,102 +310,86 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
 
   const columns = React.useMemo(() => buildColumns(cancelOrder, openAmendDialog), [cancelOrder, openAmendDialog]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-full gap-2 text-muted-foreground">
-        <Spinner className="size-5" />
-        <span>Loading orders...</span>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
-        <AlertCircle className="size-8 text-destructive" />
-        <p>Failed to load orders</p>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
-          <RefreshCw className="size-3.5 mr-1.5" />
-          Retry
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <div className="h-full flex flex-col overflow-hidden min-h-0">
-      <div className="flex items-center justify-end px-3 py-1.5 border-b border-border/40">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => refetch()}>
-            <RefreshCw className="size-3" />
-            Refresh
-          </Button>
-          <ExportDropdown
-            data={filteredOrders as unknown as Record<string, unknown>[]}
-            columns={ORDER_EXPORT_COLUMNS}
-            filename="orders"
-          />
-        </div>
-      </div>
-      <div className="px-3 py-2 border-b border-border/30 bg-muted/20 shrink-0">
-        <FilterBar
-          filters={filterDefs}
-          values={filterValues}
-          onChange={handleFilterChange}
-          onReset={resetFilters}
-          className="border-b-0 px-0 py-0"
-        />
-        <div className="flex items-center gap-2 mt-2 flex-wrap">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
-                {assetClassLabel}
-                <ChevronDown className="size-3.5 opacity-60" />
+    <LiveFeedWidget
+      isLoading={isLoading}
+      error={error ? "Failed to load orders" : null}
+      onRetry={refetch}
+      header={
+        <>
+          <div className="flex items-center justify-end px-3 py-1.5 border-b border-border/40">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" className="h-7 gap-1.5 text-xs" onClick={() => refetch()}>
+                <RefreshCw className="size-3" />
+                Refresh
               </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-56 p-3" align="start">
-              <p className="text-[10px] text-muted-foreground mb-2">Asset class (multi-select)</p>
-              <div className="space-y-2">
-                {assetClassOptions.map((opt: AssetClassFilter) => (
-                  <div key={opt} className="flex items-center gap-2">
-                    <Checkbox
-                      id={`orders-asset-${opt}`}
-                      checked={instrumentTypeFilters.includes(opt)}
-                      onCheckedChange={() => toggleInstrumentTypeFilter(opt)}
-                    />
-                    <Label htmlFor={`orders-asset-${opt}`} className="text-xs font-normal cursor-pointer">
-                      {opt}
-                    </Label>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/40">
-                Empty selection = all classes
-              </p>
-            </PopoverContent>
-          </Popover>
-          {strategyFilter !== "all" && (
-            <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
-              <Button variant="outline" size="sm" className="h-8 text-xs">
-                View Strategy Details
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-      <div className="flex-1 overflow-auto min-h-0">
-        <Card className="border-0 rounded-none h-full">
-          <CardContent className="p-0 overflow-x-auto">
-            <DataTable
-              columns={columns}
-              data={filteredOrders}
-              enableSorting
-              enableColumnVisibility
-              emptyMessage="No orders match your filters"
+              <ExportDropdown
+                data={filteredOrders as unknown as Record<string, unknown>[]}
+                columns={ORDER_EXPORT_COLUMNS}
+                filename="orders"
+              />
+            </div>
+          </div>
+          <div className="px-3 py-2 border-b border-border/30 bg-muted/20">
+            <FilterBar
+              filters={filterDefs}
+              values={filterValues}
+              onChange={handleFilterChange}
+              onReset={resetFilters}
+              className="border-b-0 px-0 py-0"
             />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 gap-1 text-xs">
+                    {assetClassLabel}
+                    <ChevronDown className="size-3.5 opacity-60" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-3" align="start">
+                  <p className="text-[10px] text-muted-foreground mb-2">Asset class (multi-select)</p>
+                  <div className="space-y-2">
+                    {assetClassOptions.map((opt: AssetClassFilter) => (
+                      <div key={opt} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`orders-asset-${opt}`}
+                          checked={instrumentTypeFilters.includes(opt)}
+                          onCheckedChange={() => toggleInstrumentTypeFilter(opt)}
+                        />
+                        <Label htmlFor={`orders-asset-${opt}`} className="text-xs font-normal cursor-pointer">
+                          {opt}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/40">
+                    Empty selection = all classes
+                  </p>
+                </PopoverContent>
+              </Popover>
+              {strategyFilter !== "all" && (
+                <Link href={`/services/trading/strategies/${strategyFilter}`} className="ml-auto">
+                  <Button variant="outline" size="sm" className="h-8 text-xs">
+                    View Strategy Details
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+        </>
+      }
+    >
+      <Card className="border-0 rounded-none h-full">
+        <CardContent className="p-0 overflow-x-auto">
+          <DataTable
+            columns={columns}
+            data={filteredOrders}
+            enableSorting
+            enableColumnVisibility
+            emptyMessage="No orders match your filters"
+          />
+        </CardContent>
+      </Card>
+    </LiveFeedWidget>
   );
 }

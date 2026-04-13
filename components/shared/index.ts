@@ -15,9 +15,10 @@ export { FilterBar, useFilterState, type FilterDefinition, type FilterOption } f
 export { FilterBarWidget } from "./filter-bar-widget";
 export * from "./finder";
 export { GateCheckRow, type GateCheckRowProps } from "./gate-check-row";
-export { StatusIcon, statusBg, statusColor, type GateStatus } from "./gate-status";
-export { KpiStrip, type KpiMetric, type KpiLayoutMode } from "./kpi-strip";
-export { KpiSummaryWidget, KPI_SUMMARY_LAYOUT_OPTIONS, type KpiSummaryWidgetProps } from "./kpi-summary-widget";
+export { statusBg, statusColor, StatusIcon, type GateStatus } from "./gate-status";
+export { KpiStrip, type KpiLayoutMode, type KpiMetric } from "./kpi-strip";
+export { KPI_SUMMARY_LAYOUT_OPTIONS, KpiSummaryWidget, type KpiSummaryWidgetProps } from "./kpi-summary-widget";
+export { LiveFeedWidget, useLiveFeed, type LiveFeedWidgetProps } from "./live-feed-widget";
 export {
   MetricCard,
   type MetricCardProps,

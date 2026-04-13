@@ -1,14 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Spinner } from "@/components/shared/spinner";
 import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
+import { Badge } from "@/components/ui/badge";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { TransferHistoryEntry } from "@/lib/types/accounts";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
-import { Button } from "@/components/ui/button";
 import { useAccountsData } from "./accounts-data-context";
 
 export function AccountsTransferHistoryWidget(_props: WidgetComponentProps) {
@@ -53,33 +52,20 @@ export function AccountsTransferHistoryWidget(_props: WidgetComponentProps) {
     [],
   );
 
-  if (transferHistoryLoading) {
-    return (
-      <div className="flex items-center justify-center py-6 gap-2 text-muted-foreground text-xs">
-        <Spinner size="sm" className="size-3.5" />
-        Loading transfer history…
-      </div>
-    );
-  }
-
-  if (transferHistoryError) {
-    return (
-      <div className="flex flex-col items-center justify-center py-6 gap-2 text-center text-xs text-muted-foreground">
-        <p>Could not load transfer history</p>
-        <Button variant="outline" size="sm" className="h-7 text-[10px]" onClick={() => refetchTransferHistory()}>
-          Retry
-        </Button>
-      </div>
-    );
-  }
-
   return (
-    <DataTableWidget<TransferHistoryEntry>
-      columns={columns}
-      data={transferHistory}
-      rowKey={(r, i) => `${r.txHash}-${i}`}
+    <LiveFeedWidget
+      isLoading={transferHistoryLoading}
+      error={transferHistoryError ? "Could not load transfer history" : null}
+      onRetry={refetchTransferHistory}
+      isEmpty={transferHistory.length === 0}
       emptyMessage="No transfers yet"
-      compact
-    />
+    >
+      <DataTableWidget<TransferHistoryEntry>
+        columns={columns}
+        data={transferHistory}
+        rowKey={(r, i) => `${r.txHash}-${i}`}
+        compact
+      />
+    </LiveFeedWidget>
   );
 }

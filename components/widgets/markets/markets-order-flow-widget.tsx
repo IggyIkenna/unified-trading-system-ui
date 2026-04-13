@@ -1,15 +1,16 @@
 "use client";
 
-import * as React from "react";
-import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
+import { LiveFeedWidget, useLiveFeed } from "@/components/shared/live-feed-widget";
 import { Badge } from "@/components/ui/badge";
-import { useMarketsData, type OrderFlowEntry } from "./markets-data-context";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { formatNumber } from "@/lib/utils/formatters";
+import * as React from "react";
+import { useMarketsData, type OrderFlowEntry } from "./markets-data-context";
 
 export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
   const { orderFlowData, assetClass, orderFlowRange } = useMarketsData();
-  const rows = React.useMemo(() => orderFlowData.slice(0, 100), [orderFlowData]);
+  const rows = useLiveFeed(orderFlowData, 500);
 
   const columns: DataTableColumn<OrderFlowEntry>[] = React.useMemo(
     () => [
@@ -91,23 +92,29 @@ export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
   );
 
   return (
-    <div className="p-2 space-y-2">
-      <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground">
-        <Badge variant="outline" className="text-[10px]">
-          {assetClass === "crypto" ? "Crypto" : assetClass === "tradfi" ? "TradFi" : "DeFi"}
-        </Badge>
-        <span>
-          {orderFlowRange.toUpperCase()} · {orderFlowData.length} orders · showing 100
-        </span>
+    <LiveFeedWidget
+      isEmpty={rows.length === 0}
+      emptyMessage="No order flow data yet"
+      header={
+        <div className="flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground p-2">
+          <Badge variant="outline" className="text-[10px]">
+            {assetClass === "crypto" ? "Crypto" : assetClass === "tradfi" ? "TradFi" : "DeFi"}
+          </Badge>
+          <span>
+            {orderFlowRange.toUpperCase()} · {orderFlowData.length} orders
+          </span>
+        </div>
+      }
+    >
+      <div className="px-2 pb-2">
+        <DataTableWidget
+          columns={columns}
+          data={rows}
+          rowKey={(row) => row.id}
+          getRowClassName={(row) => (row.isOwn ? "bg-yellow-500/10" : undefined)}
+          compact
+        />
       </div>
-      <DataTableWidget
-        columns={columns}
-        data={rows}
-        rowKey={(row) => row.id}
-        getRowClassName={(row) => (row.isOwn ? "bg-yellow-500/10" : undefined)}
-        compact
-        className="max-h-[min(420px,50vh)]"
-      />
-    </div>
+    </LiveFeedWidget>
   );
 }

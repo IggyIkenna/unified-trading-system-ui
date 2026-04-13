@@ -1,39 +1,63 @@
 "use client";
 
-import * as React from "react";
-import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { LiveFeedWidget, useLiveFeed } from "@/components/shared/live-feed-widget";
 import { Badge } from "@/components/ui/badge";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { CRYPTO_VENUES, TRADFI_VENUES } from "@/lib/config/services/markets.config";
-import { useMarketsData } from "./markets-data-context";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
+import { useMarketsData } from "./markets-data-context";
 
 export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
   const { liveBookUpdates, assetClass, bookDepth } = useMarketsData();
-  const rows = React.useMemo(() => liveBookUpdates.slice(0, 100), [liveBookUpdates]);
+  const rows = useLiveFeed(liveBookUpdates, 500);
 
   const venueLabel =
     assetClass === "crypto" ? CRYPTO_VENUES.join(", ") : assetClass === "tradfi" ? TRADFI_VENUES.join(", ") : "";
 
-  if (assetClass === "defi") {
-    return (
-      <div className="p-4 text-sm text-muted-foreground">
-        Switch asset to Crypto or TradFi for the order book, or add the DeFi Pool Activity widget for AMM data.
-      </div>
-    );
-  }
+  const isDefi = assetClass === "defi";
 
   return (
-    <div className="p-2 space-y-2">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline" className="text-[10px] max-w-full truncate font-normal">
-          {venueLabel}
-        </Badge>
-        <Badge variant="outline" className="text-[10px]">
-          {liveBookUpdates.length} updates
-        </Badge>
-      </div>
-      <div className="border rounded-md overflow-hidden bg-black/20">
+    <LiveFeedWidget
+      isEmpty={isDefi || rows.length === 0}
+      emptyMessage={
+        isDefi
+          ? "Switch asset to Crypto or TradFi for the order book, or add the DeFi Pool Activity widget for AMM data."
+          : "No book updates yet"
+      }
+      header={
+        !isDefi ? (
+          <div className="flex flex-wrap items-center gap-2 p-2">
+            <Badge variant="outline" className="text-[10px] max-w-full truncate font-normal">
+              {venueLabel}
+            </Badge>
+            <Badge variant="outline" className="text-[10px]">
+              {liveBookUpdates.length} updates
+            </Badge>
+          </div>
+        ) : undefined
+      }
+      footer={
+        !isDefi ? (
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground p-2">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-cyan-500/40 rounded shrink-0" /> Market Trade
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-yellow-500/40 rounded shrink-0" /> Own (*)
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-[var(--pnl-positive)]/40 rounded shrink-0" /> Updated Bid
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-[var(--pnl-negative)]/40 rounded shrink-0" /> Updated Ask
+            </span>
+            <span className="ml-auto">Trade: B/S = side; last letter = aggressor</span>
+          </div>
+        ) : undefined
+      }
+    >
+      <div className="border rounded-md overflow-hidden bg-black/20 mx-2 mb-2">
         <div className="overflow-x-auto">
           <table className="w-full text-[10px] font-mono">
             <thead className="bg-muted/30 sticky top-0 z-[1]">
@@ -157,21 +181,6 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
           </table>
         </div>
       </div>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 bg-cyan-500/40 rounded shrink-0" /> Market Trade
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 bg-yellow-500/40 rounded shrink-0" /> Own (*)
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 bg-[var(--pnl-positive)]/40 rounded shrink-0" /> Updated Bid
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 bg-[var(--pnl-negative)]/40 rounded shrink-0" /> Updated Ask
-        </span>
-        <span className="ml-auto">Trade: B/S = side; last letter = aggressor</span>
-      </div>
-    </div>
+    </LiveFeedWidget>
   );
 }
