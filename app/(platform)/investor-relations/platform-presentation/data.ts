@@ -63,8 +63,8 @@ export const slides = [
   {
     id: 4,
     type: "packaging",
-    title: "Start Where It Fits",
-    subtitle: "Five engagement levels. You choose how deep you go.",
+    title: "One Service, Flexible Scope",
+    subtitle: "Every engagement is bespoke. You choose which capabilities you need \u2014 we scope the platform accordingly.",
     services: [
       {
         name: "Data Only",
@@ -97,7 +97,7 @@ export const slides = [
         desc: "We build specific strategies to your requirements. You operate them. Commercial terms bespoke per engagement.",
       },
     ],
-    note: "Every level uses the same underlying infrastructure. Expanding is adding access, not migrating systems.",
+    note: "This is one service with flexible scope \u2014 not five separate products. Every engagement uses the same underlying infrastructure. Expanding is adding capabilities, not migrating systems.",
   },
   {
     id: 5,

@@ -66,7 +66,22 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (!loading && user) {
-      router.replace(redirectTo || "/dashboard");
+      if (redirectTo) {
+        router.replace(redirectTo);
+      } else {
+        // Service-context-aware default landing
+        const ents = (user as Record<string, unknown>).entitlements as string[] | undefined;
+        const hasEnt = (e: string) => ents?.includes(e) || ents?.includes("*");
+        if (hasEnt("investor-platform") || hasEnt("data-pro") || hasEnt("execution-full")) {
+          router.replace("/dashboard");
+        } else if (hasEnt("investor-im") || hasEnt("investor-regulatory")) {
+          router.replace("/services/reports/executive");
+        } else if (hasEnt("investor-board") || hasEnt("investor-plan") || hasEnt("investor-relations")) {
+          router.replace("/investor-relations");
+        } else {
+          router.replace("/dashboard");
+        }
+      }
     }
   }, [loading, user, router, redirectTo]);
 

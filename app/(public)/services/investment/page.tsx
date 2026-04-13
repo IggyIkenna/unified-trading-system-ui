@@ -643,6 +643,9 @@ export default function InvestmentServicePage() {
               <Button size="lg" variant="ghost" asChild>
                 <Link href="/signup?service=investment">Apply Now</Link>
               </Button>
+              <Button size="lg" variant="ghost" asChild>
+                <Link href="/login?redirect=/investor-relations/investment-presentation">View Presentation</Link>
+              </Button>
             </div>
           </div>
         </div>
