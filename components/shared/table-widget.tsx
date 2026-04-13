@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
-import type { ColumnDef, Table as TanstackTable } from "@tanstack/react-table";
+import type { ColumnDef, VisibilityState } from "@tanstack/react-table";
 import { ChevronDown, Columns, RefreshCw, RotateCcw, Search } from "lucide-react";
 import * as React from "react";
 
@@ -116,7 +116,24 @@ function TableWidget<TData>({
   tableFooter,
   className,
 }: TableWidgetProps<TData>) {
-  const [tableInstance, setTableInstance] = React.useState<TanstackTable<TData> | null>(null);
+  // columnVisibility is owned here so the Columns dropdown always reflects live state.
+  // DataTable receives it as a controlled prop — no stale tableInstance snapshot needed.
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+
+  // Derive the hideable column list directly from the columns prop.
+  // accessorKey is the most reliable ID; fall back to the explicit id field.
+  // header is used as the display label when it is a plain string.
+  const hideableColumns = React.useMemo(() => {
+    return columns
+      .filter((col) => col.enableHiding !== false && col.meta?.type !== "actions")
+      .map((col) => {
+        const colDef = col as { accessorKey?: string; id?: string };
+        const id = colDef.accessorKey ?? col.id ?? "";
+        const label = typeof col.header === "string" ? col.header : id.replace(/_/g, " ");
+        return { id, label };
+      })
+      .filter(({ id }) => id !== "");
+  }, [columns]);
 
   const { search, selectFilters, assetClass, activeFilterCount = 0, onReset } = filterConfig ?? {};
 
@@ -133,7 +150,7 @@ function TableWidget<TData>({
     !!actions?.extraActions ||
     !!actions?.dataFreshness ||
     !!actions?.onRefresh ||
-    (enableColumnVisibility && !!tableInstance) ||
+    (enableColumnVisibility && hideableColumns.length > 0) ||
     !!actions?.export;
 
   const toolbar = (
@@ -239,7 +256,7 @@ function TableWidget<TData>({
         </Button>
       )}
 
-      {enableColumnVisibility && tableInstance && (
+      {enableColumnVisibility && hideableColumns.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="h-7 gap-1 text-xs shrink-0">
@@ -248,19 +265,16 @@ function TableWidget<TData>({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {tableInstance
-              .getAllColumns()
-              .filter((col) => col.getCanHide())
-              .map((col) => (
-                <DropdownMenuCheckboxItem
-                  key={col.id}
-                  className="capitalize text-xs"
-                  checked={col.getIsVisible()}
-                  onCheckedChange={(v) => col.toggleVisibility(!!v)}
-                >
-                  {col.id.replace(/_/g, " ")}
-                </DropdownMenuCheckboxItem>
-              ))}
+            {hideableColumns.map(({ id, label }) => (
+              <DropdownMenuCheckboxItem
+                key={id}
+                className="capitalize text-xs"
+                checked={columnVisibility[id] !== false}
+                onCheckedChange={(v) => setColumnVisibility((prev) => ({ ...prev, [id]: !!v }))}
+              >
+                {label}
+              </DropdownMenuCheckboxItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       )}
@@ -278,14 +292,15 @@ function TableWidget<TData>({
   return (
     <LiveFeedWidget isLoading={isLoading} error={error} onRetry={onRetry} header={toolbar} className={className}>
       <Card className="border-0 rounded-none h-full">
-        <CardContent className="p-0 overflow-x-auto">
+        <CardContent className="p-0">
           <DataTable
             columns={columns}
             data={data}
             enableSorting={enableSorting}
             enableColumnVisibility={enableColumnVisibility}
             hideColumnToggle
-            onTableReady={(t) => setTableInstance(t as TanstackTable<TData>)}
+            columnVisibility={columnVisibility}
+            onColumnVisibilityChange={setColumnVisibility}
             emptyMessage={emptyMessage}
             tableFooter={tableFooter}
           />
