@@ -135,10 +135,10 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
   const { scope: globalScope } = useGlobalScope();
 
-  // Check if selected org has a DeFi desk
+  // Check if selected org has DeFi access (internal defi-desk OR any external DeFi client)
   const hasDefiDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
-    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk");
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId));
   }, [globalScope.organizationIds]);
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
@@ -156,9 +156,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
     // If strategy filter is active, only include ledger orders matching selected strategies
     if (scopeStrategyIds.length > 0) {
-      ledgerOrders = ledgerOrders.filter(
-        (o: MockOrder) => o.strategy_id && scopeStrategyIds.includes(o.strategy_id),
-      );
+      ledgerOrders = ledgerOrders.filter((o: MockOrder) => o.strategy_id && scopeStrategyIds.includes(o.strategy_id));
     }
 
     // Convert ledger orders to TradeHistoryRow format
@@ -166,11 +164,12 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       .filter((o: MockOrder) => !seedRows.some((s) => s.timestamp === o.timestamp && s.venue === o.venue))
       .map((o: MockOrder, idx: number): TradeHistoryRow => {
         const instrUpper = o.instrument_id.toUpperCase();
-        const gas = instrUpper.includes("FLASH") || instrUpper.includes("MORPHO")
-          ? 25
-          : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") || instrUpper.includes("CURVE")
-            ? 15
-            : 5;
+        const gas =
+          instrUpper.includes("FLASH") || instrUpper.includes("MORPHO")
+            ? 25
+            : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") || instrUpper.includes("CURVE")
+              ? 15
+              : 5;
         // Slippage = difference between expected price and actual fill price × quantity
         const expectedPrice = o.price;
         const fillPrice = o.average_fill_price ?? o.price;
@@ -178,13 +177,19 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
         return {
           seq: seedRows.length + idx + 1,
           timestamp: o.timestamp,
-          instruction_type: instrUpper.includes("FLASH") ? "FLASH_BORROW"
-            : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") ? "SWAP"
-            : instrUpper.includes("A_TOKEN") || instrUpper.includes("LEND") ? "LEND"
-            : instrUpper.includes("DEBT_TOKEN") || instrUpper.includes("BORROW") ? "BORROW"
-            : instrUpper.includes("LST") || instrUpper.includes("STAKE") ? "STAKE"
-            : instrUpper.includes("PERP") || instrUpper.includes("PERPETUAL") ? "TRADE"
-            : "TRANSFER",
+          instruction_type: instrUpper.includes("FLASH")
+            ? "FLASH_BORROW"
+            : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP")
+              ? "SWAP"
+              : instrUpper.includes("A_TOKEN") || instrUpper.includes("LEND")
+                ? "LEND"
+                : instrUpper.includes("DEBT_TOKEN") || instrUpper.includes("BORROW")
+                  ? "BORROW"
+                  : instrUpper.includes("LST") || instrUpper.includes("STAKE")
+                    ? "STAKE"
+                    : instrUpper.includes("PERP") || instrUpper.includes("PERPETUAL")
+                      ? "TRADE"
+                      : "TRANSFER",
           algo_type: (o.algo_type ?? "DIRECT") as TradeHistoryRow["algo_type"],
           instrument_id: o.instrument_id,
           venue: o.venue,
@@ -206,9 +211,10 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
           // Alpha P&L: execution fill price vs strategy reference/benchmark price
           // Reference = mid-market at signal time (what strategy-service saw)
           reference_price: expectedPrice,
-          alpha_pnl_usd: slippage > 0
-            ? -slippage // negative alpha = execution worse than benchmark
-            : 0,
+          alpha_pnl_usd:
+            slippage > 0
+              ? -slippage // negative alpha = execution worse than benchmark
+              : 0,
         };
       });
 
@@ -278,39 +284,42 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
-  const claimAndSellReward = React.useCallback((token: string) => {
-    setStakingRewards((prev) =>
-      prev.map((r) => {
-        if (r.token !== token) return r;
-        const totalSold = r.sold_amount + r.accrued_amount;
-        const totalSoldValue = r.sold_value_usd + r.accrued_value_usd;
+  const claimAndSellReward = React.useCallback(
+    (token: string) => {
+      setStakingRewards((prev) =>
+        prev.map((r) => {
+          if (r.token !== token) return r;
+          const totalSold = r.sold_amount + r.accrued_amount;
+          const totalSoldValue = r.sold_value_usd + r.accrued_value_usd;
+          return {
+            ...r,
+            sold_amount: totalSold,
+            sold_value_usd: totalSoldValue,
+            claimed_amount: r.claimed_amount + r.accrued_amount,
+            accrued_amount: 0,
+            accrued_value_usd: 0,
+          };
+        }),
+      );
+      // Update reward P&L
+      setRewardPnl((prev) => {
+        const reward = stakingRewards.find((r) => r.token === token);
+        if (!reward) return prev;
         return {
-          ...r,
-          sold_amount: totalSold,
-          sold_value_usd: totalSoldValue,
-          claimed_amount: r.claimed_amount + r.accrued_amount,
-          accrued_amount: 0,
-          accrued_value_usd: 0,
+          ...prev,
+          restaking_reward: {
+            ...prev.restaking_reward,
+            amount: prev.restaking_reward.amount + reward.accrued_value_usd,
+          },
+          reward_unrealised: {
+            ...prev.reward_unrealised,
+            amount: Math.max(0, prev.reward_unrealised.amount - reward.accrued_value_usd),
+          },
         };
-      }),
-    );
-    // Update reward P&L
-    setRewardPnl((prev) => {
-      const reward = stakingRewards.find((r) => r.token === token);
-      if (!reward) return prev;
-      return {
-        ...prev,
-        restaking_reward: {
-          ...prev.restaking_reward,
-          amount: prev.restaking_reward.amount + reward.accrued_value_usd,
-        },
-        reward_unrealised: {
-          ...prev.reward_unrealised,
-          amount: Math.max(0, prev.reward_unrealised.amount - reward.accrued_value_usd),
-        },
-      };
-    });
-  }, [stakingRewards]);
+      });
+    },
+    [stakingRewards],
+  );
   const [rebalancePreview, setRebalancePreview] = React.useState<RebalancePreview | null>(null);
 
   const triggerRebalance = React.useCallback(() => {
@@ -365,15 +374,12 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
   const bridgeRoutes = React.useMemo<BridgeRouteQuote[]>(() => [], []);
 
-  const executeDeFiOrder = React.useCallback(
-    (params: DeFiOrderParams) => {
-      // Write to persistent mock ledger — the trade history is derived from it
-      placeMockOrder(params);
-      // The mock-order-filled event (fired after 200ms fill) triggers ledgerVersion++
-      // which recomputes tradeHistory from the ledger automatically
-    },
-    [],
-  );
+  const executeDeFiOrder = React.useCallback((params: DeFiOrderParams) => {
+    // Write to persistent mock ledger — the trade history is derived from it
+    placeMockOrder(params);
+    // The mock-order-filled event (fired after 200ms fill) triggers ledgerVersion++
+    // which recomputes tradeHistory from the ledger automatically
+  }, []);
 
   // Paper mode: 10x testnet balances; Batch mode: read-only flag
   // When an org without a DeFi desk is selected, show zero balances
