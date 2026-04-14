@@ -675,6 +675,7 @@ export interface FilterContext {
   organizationIds: string[];
   clientIds: string[];
   strategyIds: string[];
+  assetClasses?: string[];
   mode: "live" | "batch";
   date: string;
 }
@@ -696,6 +697,11 @@ export function getFilteredStrategies(filter: FilterContext): TradingStrategy[] 
   // Filter by strategy
   if (filter.strategyIds.length > 0) {
     result = result.filter((s) => filter.strategyIds.includes(s.id));
+  }
+
+  // Filter by asset class (entitlement-driven)
+  if (filter.assetClasses && filter.assetClasses.length > 0) {
+    result = result.filter((s) => filter.assetClasses!.includes(s.assetClass));
   }
 
   return result;

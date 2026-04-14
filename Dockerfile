@@ -16,7 +16,9 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-# Firebase config must be available at build time for Next.js NEXT_PUBLIC_* inlining
+# NEXT_PUBLIC_* must be available at build time — Next.js inlines them into the JS bundle.
+# .env.production is gitignored so it never reaches Cloud Build; set all values here.
+ENV NEXT_PUBLIC_MOCK_API=true
 ENV NEXT_PUBLIC_AUTH_PROVIDER=firebase
 ENV NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAd6_p1UIGPY2Va5yGzLOR4DyxyHJ8QCzo
 ENV NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=central-element-323112.firebaseapp.com

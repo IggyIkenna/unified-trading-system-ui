@@ -115,9 +115,18 @@ export class FirebaseAuthProvider implements AuthProvider {
       return this.user;
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
+      const message = (err as { message?: string })?.message;
+      console.error("[FirebaseAuth] Login failed:", { code, message });
       if (code === "auth/user-disabled") {
         this.lastLoginError = "user-disabled";
-        return null;
+      } else if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
+        this.lastLoginError = "Invalid email or password.";
+      } else if (code === "auth/user-not-found") {
+        this.lastLoginError = "No account found with this email.";
+      } else if (code === "auth/too-many-requests") {
+        this.lastLoginError = "Too many attempts. Please try again later.";
+      } else {
+        this.lastLoginError = message || "Login failed. Please try again.";
       }
       return null;
     }

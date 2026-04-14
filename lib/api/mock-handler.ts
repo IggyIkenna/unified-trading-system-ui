@@ -170,13 +170,76 @@ function jsonStatus(status: number, data: unknown, delay = 50): Promise<Response
   });
 }
 
-const defaultFilter = {
+/**
+ * Build a persona-aware filter based on the logged-in user's entitlements.
+ * If the user only has defi-trading, they only see DeFi strategies/positions.
+ * Admin/internal users (wildcard entitlements) see everything.
+ */
+function buildPersonaFilter(): typeof _defaultFilter {
+  const base = { ..._defaultFilter };
+  try {
+    const raw = localStorage.getItem("portal_user");
+    if (!raw) return base;
+    const user = JSON.parse(raw);
+    const ents: string[] = user.entitlements ?? [];
+    // Wildcard = see everything
+    if (ents.includes("*")) return base;
+    // Map entitlements to asset classes
+    const assetClasses: string[] = [];
+    if (ents.includes("defi-trading")) assetClasses.push("DeFi");
+    if (ents.includes("sports-trading")) assetClasses.push("Sports");
+    if (ents.includes("predictions-trading")) assetClasses.push("Prediction");
+    if (ents.includes("options-trading")) assetClasses.push("TradFi");
+    // If user has execution-full or strategy-full but no specific trading entitlement,
+    // they see CeFi + whatever else they have
+    if (ents.includes("execution-full") || ents.includes("strategy-full")) {
+      if (!assetClasses.includes("CeFi")) assetClasses.push("CeFi");
+    }
+    // If we found specific asset classes, filter to those
+    if (assetClasses.length > 0) {
+      base.assetClasses = assetClasses;
+    }
+  } catch { /* fallback to no filter */ }
+  return base;
+}
+
+const _defaultFilter = {
   organizationIds: [] as string[],
   clientIds: [] as string[],
   strategyIds: [] as string[],
+  assetClasses: undefined as string[] | undefined,
   mode: "live" as const,
   date: getToday(),
 };
+
+// Compute once per page load, refreshed on login
+const defaultFilter = buildPersonaFilter();
+
+/** Classify an instrument/venue combo into an asset class for filtering */
+function classifyAssetClass(instrument: string, venue: string): string {
+  const i = instrument.toUpperCase();
+  const v = venue.toUpperCase();
+  if (v.includes("AAVE") || v.includes("UNISWAP") || v.includes("MORPHO") || v.includes("CURVE") || v.includes("LIDO") || i.includes("AAVE") || i.includes("UNISWAP") || i.includes(":LP:") || i.includes(":SUPPLY:"))
+    return "DeFi";
+  if (v.includes("POLYMARKET") || v.includes("KALSHI") || i.includes("POLYMARKET") || i.includes("KALSHI") || i.includes("BINARY"))
+    return "Prediction";
+  if (v.includes("BETFAIR") || v.includes("PINNACLE") || v.includes("SMARKETS") || i.includes("BETFAIR") || i.includes("EPL") || i.includes("NFL"))
+    return "Sports";
+  if (v.includes("CME") || v.includes("ICE") || v.includes("CBOE") || v.includes("NASDAQ") || v.includes("NYSE") || i.includes("SPY") || i.includes("ES-") || i.includes("TLT"))
+    return "TradFi";
+  return "CeFi";
+}
+
+/** Filter an array of items with instrument/venue by the persona's asset classes */
+function filterByPersonaAssetClass<T extends { instrument?: string; venue?: string; instrument_id?: string }>(items: T[]): T[] {
+  const ac = defaultFilter.assetClasses;
+  if (!ac || ac.length === 0) return items;
+  return items.filter((item) => {
+    const inst = item.instrument ?? item.instrument_id ?? "";
+    const venue = item.venue ?? "";
+    return ac.includes(classifyAssetClass(inst, venue));
+  });
+}
 
 function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // Pass through to real Next.js API routes that need server-side execution (file I/O)
@@ -714,7 +777,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       tca: null,
     }));
 
-    const allOrders = [...ledgerOrders, ...tcaOrders];
+    const allOrders = filterByPersonaAssetClass([...ledgerOrders, ...tcaOrders]);
     const pgOrders = parsePaginationParams(path);
     return json({
       ...paginatedMockResponse(allOrders, pgOrders),
@@ -1109,7 +1172,11 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Alerts ---
   if (route === "/api/alerts/active") {
     // Notification bell uses this — return unacknowledged alerts
-    const unacked = STRATEGY_ALERTS.filter((a) => !a.acknowledgedAt);
+    const ac = defaultFilter.assetClasses;
+    const filteredAlerts = ac && ac.length > 0
+      ? STRATEGY_ALERTS.filter((a) => !a.assetClass || ac.includes(a.assetClass))
+      : STRATEGY_ALERTS;
+    const unacked = filteredAlerts.filter((a) => !a.acknowledgedAt);
     return json({
       alerts: unacked.map((a) => ({
         id: a.id,
@@ -1122,7 +1189,11 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   if (route === "/api/alerts/list") {
-    const alertList = STRATEGY_ALERTS.map((a) => ({
+    const ac2 = defaultFilter.assetClasses;
+    const scopedAlerts = ac2 && ac2.length > 0
+      ? STRATEGY_ALERTS.filter((a) => !a.assetClass || ac2.includes(a.assetClass))
+      : STRATEGY_ALERTS;
+    const alertList = scopedAlerts.map((a) => ({
       id: a.id,
       severity: a.severity === "critical" ? "critical" : a.severity === "warning" ? "high" : "medium",
       status: a.resolvedAt ? "resolved" : a.acknowledgedAt ? "acknowledged" : "active",

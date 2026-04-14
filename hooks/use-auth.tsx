@@ -66,13 +66,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const result = await provider.login(email, password);
 
       if (!result) {
-        if (
-          provider instanceof FirebaseAuthProvider &&
-          provider.getLastLoginError() === "user-disabled"
-        ) {
-          setLoginError(
-            "Your account is currently under review. You will receive an email once it has been approved.",
-          );
+        if (provider instanceof FirebaseAuthProvider) {
+          const lastErr = provider.getLastLoginError();
+          if (lastErr === "user-disabled") {
+            setLoginError(
+              "Your account is currently under review. You will receive an email once it has been approved.",
+            );
+          } else if (lastErr) {
+            setLoginError(lastErr);
+          }
         }
         return false;
       }
