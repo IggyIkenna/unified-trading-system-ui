@@ -952,14 +952,29 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const defiAmount = (body.amount ?? 1) as number;
     const defiPrice = (body.price ?? 1) as number;
     // Position-update-on-trade: DeFi executions create positions
+    const defiSide = opType === "WITHDRAW" || opType === "UNSTAKE" ? "sell" : "buy";
     applyFilledOrder({
       instrument_id: defiInstrument,
       venue: defiVenue,
-      side: opType === "WITHDRAW" || opType === "UNSTAKE" ? "sell" : "buy",
+      side: defiSide,
       quantity: defiAmount,
       price: defiPrice,
       strategy_id: (body.strategy_id ?? null) as string | null,
       asset_class: "DeFi",
+    });
+    // Also record in trade ledger so it appears in trade history
+    placeMockOrder({
+      strategy_id: (body.strategy_id ?? null) as string | null,
+      client_id: "elysium-defi",
+      instrument_id: defiInstrument,
+      venue: defiVenue,
+      side: defiSide as "buy" | "sell",
+      order_type: "market",
+      quantity: defiAmount,
+      price: defiPrice,
+      asset_class: "DeFi",
+      lane: "defi",
+      algo_type: opType,
     });
     return json({
       data: {
