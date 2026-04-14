@@ -86,7 +86,7 @@ export const MODEL_FAMILIES: ModelFamily[] = [
     currentChampion: "mv-funding-v2.0.0",
     currentChallenger: null,
     totalVersions: 5,
-    linkedStrategies: ["CEFI_BTC_BASIS_SCE_1H", "DEFI_ETH_RSB_SCE_8H"],
+    linkedStrategies: ["CEFI_BTC_BASIS_SCE_1H", "DEFI_ETH_RSB_HUF_8H"],
     createdAt: "2025-09-10T11:00:00Z",
     updatedAt: "2026-03-16T19:30:00Z",
   },

@@ -406,8 +406,9 @@ export default function TradingPage() {
   const isMockMode = isMockDataMode();
   const mockPriceTickRef = React.useRef(0);
 
+  // Price simulation: ticks every 500ms with volatility + drift.
+  // Runs in BOTH mock and live mode so the demo always has moving prices.
   React.useEffect(() => {
-    if (isMockMode) return;
     const interval = setInterval(() => {
       mockPriceTickRef.current += 1;
       const t = mockPriceTickRef.current;
@@ -419,7 +420,7 @@ export default function TradingPage() {
       setTickCount((prev) => prev + 1);
     }, 500);
     return () => clearInterval(interval);
-  }, [selectedInstrument.midPrice, isMockMode]);
+  }, [selectedInstrument.midPrice]);
 
   const livePriceRef = React.useRef(livePrice);
   React.useEffect(() => {
@@ -427,8 +428,10 @@ export default function TradingPage() {
   }, [livePrice]);
   const liveTradeSeqRef = React.useRef(0);
 
+  // Recent trades stream: new trade every 1.2s with price pegged to livePrice.
+  // Runs in both mock and live mode for demo realism.
   React.useEffect(() => {
-    if (!isClient || isMockMode) return;
+    if (!isClient) return;
     const interval = setInterval(() => {
       const currentPrice = livePriceRef.current;
       setRecentTrades((prev) => {
@@ -448,7 +451,7 @@ export default function TradingPage() {
       });
     }, 1200);
     return () => clearInterval(interval);
-  }, [isClient, isMockMode]);
+  }, [isClient]);
 
   const { bids, asks } = React.useMemo(() => {
     const apiOb = orderbookApiData as Record<string, unknown> | undefined;

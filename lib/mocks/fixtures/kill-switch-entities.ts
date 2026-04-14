@@ -9,7 +9,7 @@ export const MOCK_ENTITIES = {
     { id: "quantedge", name: "QuantEdge HK" },
   ],
   strategies: [
-    { id: "DEFI_ETH_BASIS_SCE_1H", name: "ETH Basis Trade" },
+    { id: "DEFI_ETH_BASIS_HUF_1H", name: "ETH Basis Trade" },
     { id: "CEFI_BTC_MM_EVT_TICK", name: "BTC Market Making" },
     { id: "CEFI_ETH_OPT_MM_EVT_TICK", name: "ETH Options MM" },
   ],

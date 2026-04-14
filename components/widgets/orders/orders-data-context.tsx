@@ -13,6 +13,8 @@ import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { getOrders as getLedgerOrders } from "@/lib/api/mock-trade-ledger";
+import type { MockOrder } from "@/lib/api/mock-trade-ledger";
 import type { FilterDefinition } from "@/components/shared/filter-bar";
 import * as React from "react";
 
@@ -145,6 +147,18 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
   const [strategyFilter, setStrategyFilter] = React.useState("all");
   const [sideFilter, setSideFilter] = React.useState<"all" | "BUY" | "SELL">("all");
   const [instrumentTypeFilters, setInstrumentTypeFilters] = React.useState<AssetClassFilter[]>([]);
+  const [ledgerVersion, setLedgerVersion] = React.useState(0);
+
+  // Listen for mock ledger changes so DeFi/Book orders appear in this tab
+  React.useEffect(() => {
+    const refresh = () => setLedgerVersion((v) => v + 1);
+    window.addEventListener("mock-order-filled", refresh);
+    window.addEventListener("mock-ledger-reset", refresh);
+    return () => {
+      window.removeEventListener("mock-order-filled", refresh);
+      window.removeEventListener("mock-ledger-reset", refresh);
+    };
+  }, []);
 
   const scopeStrategyIds = React.useMemo(
     () =>
@@ -169,7 +183,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     // Only fall back to seed data in mock mode; in live mode return empty
     if (!isMockDataMode()) return [];
     const seed = getOrdersForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds);
-    return seed.map((s, idx) => {
+    const seedOrders: OrderRecord[] = seed.map((s, idx) => {
       const strat = SEED_STRATEGIES.find((st) => st.id === s.strategyId);
       return {
         order_id: s.id,
@@ -189,7 +203,34 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
         created_at: s.timestamp,
       };
     });
-  }, [ordersRaw, globalScope]);
+
+    // Merge orders from the mock trade ledger (DeFi + any other lane)
+    const seedIds = new Set(seedOrders.map((o) => o.order_id));
+    const ledgerOrders: OrderRecord[] = getLedgerOrders()
+      .filter((lo: MockOrder) => !seedIds.has(lo.id))
+      .map((lo: MockOrder, idx: number): OrderRecord => ({
+        order_id: lo.id,
+        instrument: lo.instrument_id,
+        side: lo.side.toUpperCase() as "BUY" | "SELL",
+        type: lo.order_type,
+        price: lo.price,
+        mark_price: lo.average_fill_price ?? lo.price,
+        quantity: lo.quantity,
+        filled: lo.filled_quantity,
+        status: lo.status.toUpperCase(),
+        venue: lo.venue,
+        strategy_id: lo.strategy_id ?? "",
+        strategy_name: lo.strategy_id ?? lo.asset_class,
+        edge_bps: Math.round((mock01(idx, 801) * 10 - 2) * 10) / 10,
+        instant_pnl: lo.status === "filled"
+          ? -Math.round((lo.quantity * lo.price * 0.0005 + 5) * 100) / 100
+          : 0,
+        created_at: lo.created_at,
+      }));
+
+    return [...seedOrders, ...ledgerOrders];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ordersRaw, globalScope, ledgerVersion]);
 
   const scopedOrders = React.useMemo(() => {
     let result = orders;

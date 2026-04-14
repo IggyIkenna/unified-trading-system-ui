@@ -1,10 +1,10 @@
 export const MOCK_STRATEGIES = [
-  { id: "s1", name: "ETH Basis Trade", archetype: "BASIS_TRADE", strategyIdPattern: "DEFI_ETH_BASIS_SCE_1H" },
+  { id: "s1", name: "ETH Basis Trade", archetype: "BASIS_TRADE", strategyIdPattern: "DEFI_ETH_BASIS_HUF_1H" },
   { id: "s2", name: "BTC Market Making", archetype: "MARKET_MAKING", strategyIdPattern: "CEFI_BTC_MM_EVT_TICK" },
   { id: "s3", name: "ETH Options MM", archetype: "OPTIONS", strategyIdPattern: "CEFI_ETH_OPT_MM_EVT_TICK" },
   { id: "s4", name: "SPY Momentum", archetype: "DIRECTIONAL", strategyIdPattern: "TRADFI_SPY_MOM_HUF_1D" },
   { id: "s5", name: "Football Arb", archetype: "ARBITRAGE", strategyIdPattern: "SPORTS_FOOTBALL_ARB_EVT" },
-  { id: "s6", name: "Aave Yield", archetype: "YIELD", strategyIdPattern: "DEFI_AAVE_YIELD_SCE_1H" },
+  { id: "s6", name: "Aave Yield", archetype: "YIELD", strategyIdPattern: "DEFI_AAVE_YIELD_HUF_1H" },
   { id: "s7", name: "Statistical Arb", archetype: "STATISTICAL_ARB", strategyIdPattern: "CEFI_STAT_ARB_HUF_5M" },
 ] as const;
 

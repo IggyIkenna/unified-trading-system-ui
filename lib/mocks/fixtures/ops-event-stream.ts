@@ -18,8 +18,8 @@ export const MOCK_EVENTS: StreamEvent[] = [
     eventType: "STRATEGY_SIGNAL_GENERATED",
     service: "strategy-service",
     severity: "INFO",
-    details: "strategy=DEFI_ETH_BASIS_SCE_1H, signal=ENTRY, confidence=0.82",
-    strategyId: "DEFI_ETH_BASIS_SCE_1H",
+    details: "strategy=DEFI_ETH_BASIS_HUF_1H, signal=ENTRY, confidence=0.82",
+    strategyId: "DEFI_ETH_BASIS_HUF_1H",
   },
   {
     id: "e002",
@@ -120,7 +120,7 @@ export const MOCK_EVENTS: StreamEvent[] = [
     service: "position-service",
     severity: "INFO",
     details: "instrument=ETH-PERP, size=100, entry=2450.25",
-    strategyId: "DEFI_ETH_BASIS_SCE_1H",
+    strategyId: "DEFI_ETH_BASIS_HUF_1H",
   },
   {
     id: "e014",
@@ -163,8 +163,8 @@ export const MOCK_EVENTS: StreamEvent[] = [
     eventType: "REBALANCE_TRIGGERED",
     service: "strategy-service",
     severity: "INFO",
-    details: "strategy=DEFI_AAVE_LEND_EVT_1D, reason=health_factor_drift",
-    strategyId: "DEFI_AAVE_LEND_EVT_1D",
+    details: "strategy=DEFI_AAVE_LEND_HUF_1D, reason=health_factor_drift",
+    strategyId: "DEFI_AAVE_LEND_HUF_1D",
   },
   {
     id: "e019",

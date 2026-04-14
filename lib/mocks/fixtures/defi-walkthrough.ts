@@ -137,9 +137,15 @@ export const MOCK_EMERGENCY_EXIT: EmergencyExitEstimate = {
 // 6. Reward P&L Breakdown
 // ---------------------------------------------------------------------------
 
+/**
+ * Reward P&L breakdown — realistic for ~$750K NAV over ~30 days.
+ * Staking yield: $750K × 3.4% APY / 365 × 30 = ~$2,100/month (not per day)
+ * EIGEN rewards: ~$420/month at current distribution rate
+ * Seasonal: ETHFI airdrop pending (quarterly)
+ */
 export const MOCK_REWARD_PNL: RewardPnLBreakdown = {
-  staking_yield: { amount: 1050, label: "Staking Yield (weETH appreciation)" },
-  restaking_reward: { amount: 420, label: "Restaking Rewards (EIGEN)" },
-  seasonal_reward: { amount: 0, label: "Seasonal Rewards (pending)" },
+  staking_yield: { amount: 2100, label: "Staking Yield — 30d (weETH appreciation, 3.4% APY)" },
+  restaking_reward: { amount: 420, label: "Restaking Rewards — 30d (EIGEN)" },
+  seasonal_reward: { amount: 0, label: "Seasonal Rewards (ETHFI airdrop pending Q2)" },
   reward_unrealised: { amount: 42, label: "Unclaimed Rewards (M2M)" },
 };

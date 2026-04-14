@@ -3474,7 +3474,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         actor: "system",
         action: "strategy.deployed",
         entity_type: "strategy",
-        entity_id: "DEFI_ETH_BASIS_SCE_1H",
+        entity_id: "DEFI_ETH_BASIS_HUF_1H",
         correlation_id: "corr-strat-001",
         details: "ETH Basis strategy promoted to live",
       },

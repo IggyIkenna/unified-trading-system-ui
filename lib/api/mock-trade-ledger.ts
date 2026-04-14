@@ -264,6 +264,10 @@ export interface PlaceOrderParams {
   asset_class: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
   lane: "book" | "sports" | "defi" | "options" | "predictions";
   algo_type?: string | null;
+  /** Max slippage tolerance in bps — used for realistic fill simulation */
+  max_slippage_bps?: number;
+  /** Strategy reference/benchmark price at signal time */
+  benchmark_price?: number;
 }
 
 export function placeMockOrder(params: PlaceOrderParams): MockOrder {
@@ -298,11 +302,19 @@ export function placeMockOrder(params: PlaceOrderParams): MockOrder {
     const state = getState();
     const idx = state.orders.findIndex((o) => o.id === id);
     if (idx !== -1 && state.orders[idx].status === "pending") {
+      // Simulate realistic fill price with slippage based on order params
+      // Slippage = random fraction of max tolerance (30-80% of max_slippage_bps)
+      const maxSlipBps = params.max_slippage_bps ?? 5; // default 0.5 bps if not set
+      const slipFraction = 0.3 + (Math.sin(Date.now() * 0.001) + 1) * 0.25; // 0.3–0.8
+      const actualSlipBps = maxSlipBps * slipFraction;
+      const slipMultiplier = params.side === "buy" ? (1 + actualSlipBps / 10000) : (1 - actualSlipBps / 10000);
+      const fillPrice = params.price * slipMultiplier;
+
       state.orders[idx] = {
         ...state.orders[idx],
         status: "filled",
         filled_quantity: params.quantity,
-        average_fill_price: params.price,
+        average_fill_price: Math.round(fillPrice * 1e8) / 1e8,
         updated_at: new Date().toISOString(),
       };
       persist();
@@ -348,4 +360,62 @@ export function amendMockOrder(
 export function resetMockOrders(): void {
   _state = defaultState();
   persist();
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("mock-ledger-reset"));
+  }
+}
+
+/**
+ * Get filled DeFi orders from the ledger, optionally filtered by strategy.
+ * Used by contexts that need to derive state from DeFi trades.
+ */
+export function getFilledDefiOrders(strategyId?: string): MockOrder[] {
+  return getState().orders.filter(
+    (o) =>
+      o.asset_class === "DeFi" &&
+      o.status === "filled" &&
+      (!strategyId || o.strategy_id === strategyId),
+  );
+}
+
+/**
+ * Compute aggregate P&L from filled DeFi orders.
+ * Returns per-strategy and total P&L based on order costs.
+ */
+export function computeDefiLedgerPnL(): {
+  totalGasCost: number;
+  totalSlippage: number;
+  totalNetCost: number;
+  byStrategy: Record<string, { orderCount: number; totalCost: number; gasEstimate: number }>;
+} {
+  const filled = getState().orders.filter(
+    (o) => o.asset_class === "DeFi" && o.status === "filled",
+  );
+
+  const byStrategy: Record<string, { orderCount: number; totalCost: number; gasEstimate: number }> = {};
+  let totalGasCost = 0;
+  let totalSlippage = 0;
+
+  for (const order of filled) {
+    const stratId = order.strategy_id ?? "UNKNOWN";
+    if (!byStrategy[stratId]) {
+      byStrategy[stratId] = { orderCount: 0, totalCost: 0, gasEstimate: 0 };
+    }
+    const entry = byStrategy[stratId];
+    entry.orderCount += 1;
+    // Mock gas: ~$5 per simple tx, ~$25 for flash loans, ~$15 for swaps
+    const instrUpper = order.instrument_id.toUpperCase();
+    const gas = instrUpper.includes("FLASH") || instrUpper.includes("MORPHO")
+      ? 25
+      : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") || instrUpper.includes("CURVE")
+        ? 15
+        : 5;
+    entry.gasEstimate += gas;
+    entry.totalCost += order.quantity * order.price;
+    totalGasCost += gas;
+    // Mock slippage: ~0.05% of notional
+    totalSlippage += order.quantity * order.price * 0.0005;
+  }
+
+  return { totalGasCost, totalSlippage, totalNetCost: totalGasCost + totalSlippage, byStrategy };
 }

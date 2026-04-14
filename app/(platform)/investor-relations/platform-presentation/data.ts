@@ -99,8 +99,57 @@ export const slides = [
     ],
     note: "This is one service with flexible scope \u2014 not five separate products. Every engagement uses the same underlying infrastructure. Expanding is adding capabilities, not migrating systems.",
   },
+  // ── Slide 5: How You Plug In ──────────────────────────────
   {
     id: 5,
+    type: "operations",
+    title: "How You Plug In",
+    columns: [
+      {
+        title: "You Have Signals \u2014 We Execute",
+        items: [
+          "You have built your own research and generate your own signals",
+          "Send them to us via API \u2014 we execute across 80+ venues",
+          "Advanced execution algorithms: time-weighted, volume-weighted, smart order routing, optimal execution",
+          "Best execution reporting included \u2014 slippage, fill quality, venue analysis",
+          "Alpha-based fees on execution outperformance",
+          "You never touch our research layer \u2014 your intellectual property stays yours",
+        ],
+      },
+      {
+        title: "You Build Strategies on Our Infrastructure",
+        items: [
+          "Use our data, feature library, and backtesting environment to develop strategies",
+          "When ready, promote to live \u2014 same code, same data, same risk controls",
+          "No rewrite between backtest and production \u2014 that is the core value",
+          "Use our frontend or build your own \u2014 the backend API is the same either way",
+          "Rigorous testing: 24,500+ automated tests, quality gates on every change",
+          "The benefit: backtest-to-live cohesion that would take 18 months to build yourself",
+        ],
+      },
+      {
+        title: "We Build Strategies for You",
+        items: [
+          "Tell us what you want: decentralised finance yield, crypto long/short, sports prediction",
+          "We build it, test it on our own capital first, then deploy it for you",
+          "You operate it through our frontend or your own \u2014 API-first architecture",
+          "Bespoke commercial terms: development fee plus retainer or performance share",
+          "Built by a team with decades of institutional trading experience",
+          "Nothing ships that we would not trust with our own money",
+        ],
+      },
+    ],
+    callout:
+      "The frontend can be ours or yours \u2014 the platform is API-first. You can use the full web interface, connect via API with your own tools, or combine both. The backend infrastructure is the same regardless.",
+    metrics: [
+      { value: "API", label: "First Architecture" },
+      { value: "80+", label: "Venues Connected" },
+      { value: "24,500+", label: "Automated Tests" },
+      { value: "Same", label: "Backtest = Live" },
+    ],
+  },
+  {
+    id: 6,
     type: "breadth-matrix",
     title: "What the Platform Covers",
     subtitle: "Every cell runs on shared infrastructure.",
@@ -165,7 +214,7 @@ export const slides = [
   },
   // ── Slide 6: Strategy Catalog ──────────────────────────────
   {
-    id: 6,
+    id: 7,
     type: "breadth-matrix",
     title: "Strategies Available on the Platform",
     subtitle: "35 strategies across 5 asset classes. Bespoke builds can combine any of these or create new ones.",
@@ -229,7 +278,7 @@ export const slides = [
     ],
   },
   {
-    id: 7,
+    id: 8,
     type: "doctrine",
     title: "The Gap That Does Not Exist Here",
     subtitle:
@@ -261,7 +310,7 @@ export const slides = [
       "The research-to-production handoff is a configuration change. That is the single most important thing about this platform.",
   },
   {
-    id: 8,
+    id: 9,
     type: "doctrine",
     title: "Your Alpha Stays Yours",
     subtitle: "We do not need your edge. We have our own.",
@@ -293,7 +342,7 @@ export const slides = [
     conclusion: "The infrastructure is shared. The alpha is not. That is the design.",
   },
   {
-    id: 9,
+    id: 10,
     type: "operations",
     title: "Why Not Build It Yourself?",
     columns: [
@@ -338,7 +387,7 @@ export const slides = [
     ],
   },
   {
-    id: 10,
+    id: 11,
     type: "traction",
     title: "Proof Points",
     achieved: [
@@ -368,7 +417,7 @@ export const slides = [
       "The platform you would be using is the same one running real capital and serving real clients today.",
   },
   {
-    id: 11,
+    id: 12,
     type: "doctrine",
     title: "Commercial Terms",
     subtitle: "Annual contracts, scoped to what you need. Every engagement is bespoke.",
@@ -398,7 +447,7 @@ export const slides = [
     conclusion: "We do not do off-the-shelf pricing because no two engagements are the same.",
   },
   {
-    id: 12,
+    id: 13,
     type: "ask",
     title: "How to Start",
     subtitle:
@@ -434,7 +483,7 @@ export const slides = [
     contact: "ikenna@odum-research.com",
   },
   {
-    id: 13,
+    id: 14,
     type: "demo",
     title: "See It Live",
     subtitle: "Click any section to navigate directly.",
