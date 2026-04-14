@@ -12,7 +12,7 @@ import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
 import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { placeMockOrder, getOrders as getLedgerOrders } from "@/lib/api/mock-trade-ledger";
 
 export type { BookAlgoType, BookCategoryTab } from "@/lib/config/services/trading.config";
 export type { BookTrade };
@@ -410,7 +410,28 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
         tradeType: s.tradeType,
       }));
     }
-    return MOCK_TRADES;
+    // Merge static mock trades with live ledger trades (from order entry / DeFi operations)
+    const ledgerTrades: BookTrade[] = getLedgerOrders()
+      .filter((o) => o.status === "filled")
+      .map((o) => ({
+        id: o.id,
+        timestamp: o.updated_at || o.created_at,
+        instrument: o.instrument_id,
+        venue: o.venue,
+        side: o.side as "buy" | "sell",
+        quantity: o.filled_quantity,
+        price: o.average_fill_price ?? o.price,
+        fees: o.quantity * (o.average_fill_price ?? o.price) * 0.001,
+        total: o.filled_quantity * (o.average_fill_price ?? o.price),
+        status: "filled" as const,
+        counterparty: o.venue,
+        settlementDate: o.updated_at || o.created_at,
+        tradeType: (o.asset_class === "DeFi" ? "DeFi" : o.asset_class === "Sports" ? "OTC" : "Exchange") as BookTrade["tradeType"],
+      }));
+    const merged = [...ledgerTrades, ...MOCK_TRADES];
+    // Sort newest first
+    merged.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return merged;
   }, [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const value = React.useMemo(
