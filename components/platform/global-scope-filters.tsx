@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/hooks/use-auth";
+import type { Entitlement } from "@/lib/config/auth";
 import {
   CLIENTS as TRADING_CLIENTS,
   ORGANIZATIONS as TRADING_ORGS,
@@ -308,20 +309,62 @@ function CompactMultiSelect<T extends { id: string }>({
   );
 }
 
+/** Asset classes a user is entitled to see, derived from their entitlements. */
+function entitlementAssetClasses(hasEntitlement: (e: Entitlement) => boolean): Set<string> {
+  const allowed = new Set<string>();
+  if (hasEntitlement("defi-trading")) allowed.add("DeFi");
+  if (hasEntitlement("sports-trading")) allowed.add("Sports");
+  if (hasEntitlement("predictions-trading")) allowed.add("Prediction");
+  // CeFi / TradFi are gated on execution entitlements (the common trading tier)
+  if (hasEntitlement("execution-basic") || hasEntitlement("execution-full")) {
+    allowed.add("CeFi");
+    allowed.add("TradFi");
+  }
+  return allowed;
+}
+
 export function GlobalScopeFilters({ className }: { className?: string }) {
-  const { isInternal, user } = useAuth();
+  const { isInternal, user, hasEntitlement } = useAuth();
   const { scope, setOrganizationIds, setClientIds, setStrategyIds, setStrategyFamilyIds, clearAll } = useGlobalScope();
 
   const internalUser = isInternal();
   const isClientScoped = !internalUser && !!user?.org;
 
-  /** Strategies visible to external clients: same mock list, restricted to the signed-in org. */
+  /**
+   * Auto-initialize scope for client-scoped users whose org is in the mock
+   * data hierarchy. This ensures all data contexts (positions, orders, etc.)
+   * filter to the client's org on first mount rather than showing all data.
+   */
+  React.useEffect(() => {
+    if (!isClientScoped || !user?.org?.id) return;
+    const orgId = user.org.id;
+    const orgExists = organizations.some((o) => o.id === orgId);
+    if (!orgExists) return;
+    // Only set if not already scoped to this org (avoid overwriting user selection)
+    if (!scope.organizationIds.includes(orgId)) {
+      setOrganizationIds([orgId]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClientScoped, user?.org?.id]);
+
+  /**
+   * Strategies visible to external clients.
+   *
+   * Primary: filter by org membership in the mock trading-data hierarchy.
+   * Fallback: if the persona's org isn't in the mock hierarchy (e.g. "elysium"),
+   * filter by the entitlement-derived asset classes so DeFi-only clients see only
+   * DeFi strategies, sports-only clients see only sports strategies, etc.
+   */
   const clientOrgStrategies = React.useMemo(() => {
     const orgId = user?.org?.id;
     if (!isClientScoped || !orgId) return [];
     const orgClientIds = clients.filter((c) => c.orgId === orgId).map((c) => c.id);
-    return strategies.filter((s) => orgClientIds.includes(s.clientId));
-  }, [isClientScoped, user?.org?.id]);
+    const orgStrategies = strategies.filter((s) => orgClientIds.includes(s.clientId));
+    if (orgStrategies.length > 0) return orgStrategies;
+    // Fallback: org not in mock hierarchy — scope by entitlement asset classes
+    const allowed = entitlementAssetClasses(hasEntitlement);
+    return strategies.filter((s) => allowed.has(s.assetClass));
+  }, [isClientScoped, user?.org?.id, hasEntitlement]);
 
   const filteredClients = React.useMemo(() => {
     if (scope.organizationIds.length === 0) return clients;
@@ -352,6 +395,8 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
 
   if (isClientScoped && user?.org) {
     const clientScopeActiveFilters = scope.strategyIds.length > 0 ? 1 : 0;
+    const allowedClasses = entitlementAssetClasses(hasEntitlement);
+    const strategyAllLabel = allowedClasses.size === 1 ? `All ${[...allowedClasses][0]} Strategies` : "All Strategies";
     return (
       <div className={cn("flex items-center gap-0.5", className)}>
         <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-secondary/50 text-xs text-muted-foreground">
@@ -364,7 +409,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
           items={clientOrgStrategies}
           selectedIds={scope.strategyIds}
           onSelectionChange={setStrategyIds}
-          allLabel="All Strategies"
+          allLabel={strategyAllLabel}
           groupBy={(s) => s.assetClass}
           getGroupLabel={(g) => g}
           renderItem={(strategy) => (

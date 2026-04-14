@@ -164,14 +164,14 @@ function TableWidget<TData>({
             value={search.query}
             onChange={(e) => search.onChange(e.target.value)}
             placeholder={search.placeholder ?? "Search…"}
-            className="h-7 pl-7 pr-2 text-xs w-40"
+            className="h-8 pl-7 pr-2 text-xs w-40"
           />
         </div>
       )}
 
       {selectFilters?.map((f, idx) => (
         <Select key={idx} value={f.value} onValueChange={f.onChange}>
-          <SelectTrigger className={cn("h-7 text-xs shrink-0", f.width ?? "w-32")}>
+          <SelectTrigger size="sm" className={cn("text-xs shrink-0", f.width ?? "w-32")}>
             <SelectValue placeholder={f.placeholder} />
           </SelectTrigger>
           <SelectContent>
@@ -193,10 +193,7 @@ function TableWidget<TData>({
             <Button
               variant="outline"
               size="sm"
-              className={cn(
-                "h-7 gap-1 text-xs shrink-0",
-                assetClass.active.length > 0 && "border-primary/50 text-primary",
-              )}
+              className={cn("gap-1 text-xs shrink-0", assetClass.active.length > 0 && "border-primary/50 text-primary")}
             >
               {assetClassLabel}
               <ChevronDown className="size-3 opacity-60" />
@@ -223,12 +220,7 @@ function TableWidget<TData>({
       )}
 
       {onReset && activeFilterCount > 0 && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 text-xs gap-1 text-muted-foreground shrink-0"
-          onClick={onReset}
-        >
+        <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground shrink-0" onClick={onReset}>
           <RotateCcw className="size-3" />
           Reset ({activeFilterCount})
         </Button>
@@ -250,7 +242,7 @@ function TableWidget<TData>({
       )}
 
       {actions?.onRefresh && (
-        <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs shrink-0" onClick={actions.onRefresh}>
+        <Button variant="ghost" size="sm" className="gap-1 text-xs shrink-0" onClick={actions.onRefresh}>
           <RefreshCw className="size-3" />
           Refresh
         </Button>
@@ -259,7 +251,7 @@ function TableWidget<TData>({
       {enableColumnVisibility && hideableColumns.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-7 gap-1 text-xs shrink-0">
+            <Button variant="outline" size="sm" className="gap-1 text-xs shrink-0">
               <Columns className="size-3.5" />
               Columns
             </Button>

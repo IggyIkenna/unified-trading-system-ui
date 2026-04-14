@@ -8,21 +8,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { STRATEGY_DISPLAY_NAMES, SHARE_CLASSES, SHARE_CLASS_LABELS, type DeFiStrategyId, type ShareClass } from "@/lib/types/defi";
+import {
+  STRATEGY_DISPLAY_NAMES,
+  SHARE_CLASSES,
+  SHARE_CLASS_LABELS,
+  type DeFiStrategyId,
+  type ShareClass,
+} from "@/lib/types/defi";
 import { saveDefiStrategyConfig, deployDefiStrategy, getDefiStrategyConfig } from "@/lib/stores/defi-strategy-store";
 
 // ---------------------------------------------------------------------------
 // Demo strategy subset
 // ---------------------------------------------------------------------------
 
-const DEMO_STRATEGIES: DeFiStrategyId[] = [
-  "AAVE_LENDING",
-  "BASIS_TRADE",
-  "STAKED_BASIS",
-  "RECURSIVE_STAKED_BASIS",
-];
+const DEMO_STRATEGIES: DeFiStrategyId[] = ["AAVE_LENDING", "BASIS_TRADE", "STAKED_BASIS", "RECURSIVE_STAKED_BASIS"];
 
 // ---------------------------------------------------------------------------
 // Per-strategy config shapes and realistic defaults
@@ -259,13 +260,7 @@ function AaveLendingForm({
   );
 }
 
-function BasisTradeForm({
-  config,
-  onChange,
-}: {
-  config: BasisTradeConfig;
-  onChange: (c: BasisTradeConfig) => void;
-}) {
+function BasisTradeForm({ config, onChange }: { config: BasisTradeConfig; onChange: (c: BasisTradeConfig) => void }) {
   return (
     <div className="space-y-3">
       <CheckboxGroup
@@ -369,10 +364,7 @@ function RecursiveStakedBasisForm({
       />
       <div className="flex items-center justify-between">
         <label className="text-xs text-muted-foreground">Hedged</label>
-        <Switch
-          checked={config.hedged}
-          onCheckedChange={(v) => onChange({ ...config, hedged: v })}
-        />
+        <Switch checked={config.hedged} onCheckedChange={(v) => onChange({ ...config, hedged: v })} />
       </div>
       <DropdownField
         label="Reward Mode"
@@ -465,7 +457,9 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
         </div>
       </div>
       {/* Share class info banner */}
-      <div className={`rounded-md border px-3 py-1.5 text-xs flex items-center gap-1.5 ${shareClass === "ETH" ? "border-blue-500/30 bg-blue-500/5 text-blue-400" : shareClass === "BTC" ? "border-amber-500/30 bg-amber-500/5 text-amber-400" : "border-emerald-500/30 bg-emerald-500/5 text-emerald-400"}`}>
+      <div
+        className={`rounded-md border px-3 py-1.5 text-xs flex items-center gap-1.5 ${shareClass === "ETH" ? "border-blue-500/30 bg-blue-500/5 text-blue-400" : shareClass === "BTC" ? "border-amber-500/30 bg-amber-500/5 text-amber-400" : "border-emerald-500/30 bg-emerald-500/5 text-emerald-400"}`}
+      >
         <span className="font-mono font-medium">{shareClass}</span>
         <span className="text-muted-foreground">— {SHARE_CLASS_LABELS[shareClass]}</span>
         <span className="ml-auto text-muted-foreground text-[10px]">P&L denominated in {shareClass}</span>
@@ -487,10 +481,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           />
         )}
         {current?.type === "BASIS_TRADE" && (
-          <BasisTradeForm
-            config={current.config}
-            onChange={(c) => updateConfig({ type: "BASIS_TRADE", config: c })}
-          />
+          <BasisTradeForm config={current.config} onChange={(c) => updateConfig({ type: "BASIS_TRADE", config: c })} />
         )}
         {current?.type === "STAKED_BASIS" && (
           <StakedBasisForm
@@ -510,7 +501,9 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
       <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Client Config</span>
-          <Badge variant="outline" className="text-[9px] h-4 px-1">DeFi Client</Badge>
+          <Badge variant="outline" className="text-[9px] h-4 px-1">
+            DeFi Client
+          </Badge>
         </div>
         <div className="grid grid-cols-2 gap-1.5 text-[11px]">
           <div className="flex items-center gap-1.5">
@@ -547,7 +540,9 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
             <div key={label} className="flex items-center justify-between text-[11px]">
               <span className="text-muted-foreground">{label}</span>
               <div className="flex items-center gap-1.5">
-                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status === "green" ? "bg-emerald-400" : status === "amber" ? "bg-amber-400" : "bg-rose-400"}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${status === "green" ? "bg-emerald-400" : status === "amber" ? "bg-amber-400" : "bg-rose-400"}`}
+                />
                 <span className="font-mono tabular-nums">{value}</span>
               </div>
             </div>
@@ -563,8 +558,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           onClick={() => {
             if (current) {
               saveDefiStrategyConfig(selectedStrategy, current as unknown as Record<string, unknown>);
-              toast({
-                title: "Config saved",
+              toast.success("Config saved", {
                 description: `${STRATEGY_DISPLAY_NAMES[selectedStrategy]} configuration persisted. Survives reload.`,
               });
             }
@@ -578,8 +572,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           size="sm"
           onClick={() => {
             deployDefiStrategy(selectedStrategy);
-            toast({
-              title: "Strategy deployed",
+            toast.success("Strategy deployed", {
               description: `${STRATEGY_DISPLAY_NAMES[selectedStrategy]} deployed. Yield generation active.`,
             });
           }}
@@ -591,8 +584,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           size="sm"
           onClick={() => {
             const runId = Math.floor(Math.random() * 9000) + 1000;
-            toast({
-              title: "Promoted from backtest",
+            toast.success("Promoted from backtest", {
               description: `Promoted from backtest run #${runId} for ${STRATEGY_DISPLAY_NAMES[selectedStrategy]}.`,
             });
           }}

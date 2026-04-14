@@ -16,7 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { getMockPrice } from "@/lib/mocks/fixtures/defi-swap";
 
 export function DeFiTransferWidget(_props: WidgetComponentProps) {
@@ -167,7 +167,16 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 <Fuel className="size-3" />
                 Gas estimate
               </span>
-              <span className="font-mono">~{selectedChain === "SOLANA" ? "0.00025 SOL ($0.05)" : selectedChain === "POLYGON" ? "0.008 MATIC ($0.07)" : selectedChain === "ARBITRUM" ? "0.00004 ETH ($0.14)" : "0.0012 ETH ($4.08)"}</span>
+              <span className="font-mono">
+                ~
+                {selectedChain === "SOLANA"
+                  ? "0.00025 SOL ($0.05)"
+                  : selectedChain === "POLYGON"
+                    ? "0.008 MATIC ($0.07)"
+                    : selectedChain === "ARBITRUM"
+                      ? "0.00004 ETH ($0.14)"
+                      : "0.0012 ETH ($4.08)"}
+              </span>
             </div>
           </div>
 
@@ -211,8 +220,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 asset_class: "DeFi",
                 lane: "defi",
               });
-              toast({
-                title: "Transfer submitted",
+              toast.success("Transfer submitted", {
                 description: `${amountNum} ${token} → ${toAddress.slice(0, 10)}... on ${selectedChain}`,
               });
               setAmount("");
@@ -383,8 +391,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 asset_class: "DeFi",
                 lane: "defi",
               });
-              toast({
-                title: "Bridge submitted",
+              toast.success("Bridge submitted", {
                 description: `${amountNum} ${token}: ${fromChain} → ${toChain} via ${selectedRoute}`,
               });
               setAmount("");

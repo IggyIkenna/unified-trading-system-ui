@@ -15,6 +15,7 @@ import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { placeMockOrder, getOrders } from "@/lib/api/mock-trade-ledger";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { Strategy } from "@/lib/strategy-registry";
 import { STRATEGIES } from "@/lib/strategy-registry";
@@ -320,7 +321,8 @@ export default function TradingPage() {
         ws.unsubscribe([selectedInstrument.symbol]);
       };
     }
-  }, [ws.status, selectedInstrument?.symbol, ws.subscribe, ws.unsubscribe]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ws.status, selectedInstrument?.symbol]);
 
   const [ownTrades, setOwnTrades] = React.useState<
     Array<{
@@ -353,6 +355,8 @@ export default function TradingPage() {
   }, [balancesApiData]);
 
   const isContextComplete = React.useMemo(() => {
+    // In mock mode the global scope is never populated — allow order submission regardless
+    if (isMockDataMode()) return true;
     return context.organizationIds.length > 0 && context.clientIds.length > 0 && selectedAccount !== null;
   }, [context.organizationIds, context.clientIds, selectedAccount]);
 
@@ -408,7 +412,7 @@ export default function TradingPage() {
         }
       }
     }
-  }, [context.strategyIds]);
+  }, [context.strategyIds, instruments]);
 
   const [tickCount, setTickCount] = React.useState(0);
   const wallClockMs = useTickingNowMs(1000);
@@ -710,25 +714,101 @@ export default function TradingPage() {
   const spread = asks[0]?.price - bids[0]?.price || 0;
   const spreadBps = (spread / livePrice) * 10000;
 
+  // Sync ownTrades from ledger when an order is filled
+  const syncOwnTradesFromLedger = React.useCallback(() => {
+    const orders = getOrders();
+    const filled = orders.filter(
+      (o) =>
+        o.client_id === "internal-trader" &&
+        (o.status === "filled" || o.status === "open") &&
+        o.average_fill_price !== null,
+    );
+    setOwnTrades(
+      filled
+        .slice()
+        .reverse()
+        .slice(0, 20)
+        .map((o) => ({
+          id: o.id,
+          time: new Date(o.updated_at).toLocaleTimeString("en-US", { hour12: false, timeZone: "UTC" }),
+          side: o.side,
+          price: o.average_fill_price ?? o.price,
+          size: o.filled_quantity,
+          status: "filled" as const,
+        })),
+    );
+  }, []);
+
+  React.useEffect(() => {
+    const handler = () => {
+      syncOwnTradesFromLedger();
+    };
+    window.addEventListener("mock-order-filled", handler);
+    return () => window.removeEventListener("mock-order-filled", handler);
+  }, [syncOwnTradesFromLedger]);
+
   const handleSubmitOrder = React.useCallback(() => {
     const size = parseFloat(orderSize);
     if (!size || size <= 0 || !isContextComplete) return;
-    const price =
-      orderType === "market" ? livePrice + (orderSide === "buy" ? 0.5 : -0.5) : parseFloat(orderPrice) || livePrice;
-    const now = new Date();
-    const newTrade = {
-      id: `user-${Date.now()}`,
-      time: now.toLocaleTimeString("en-US", { hour12: false, timeZone: "UTC" }),
+
+    const currentBid = bids[0]?.price ?? livePrice * 0.9999;
+    const currentAsk = asks[0]?.price ?? livePrice * 1.0001;
+
+    // For limit orders, check if it crosses the current spread for immediate fill
+    // Buy limit: fills immediately if limit price >= current ask
+    // Sell limit: fills immediately if limit price <= current bid
+    const limitPrice = parseFloat(orderPrice);
+    const isLimitCrossing =
+      orderType === "limit" &&
+      limitPrice > 0 &&
+      ((orderSide === "buy" && limitPrice >= currentAsk) || (orderSide === "sell" && limitPrice <= currentBid));
+
+    const useMarketFill = orderType === "market" || isLimitCrossing;
+    const submitPrice = orderType === "market" ? livePrice : limitPrice > 0 ? limitPrice : livePrice;
+
+    placeMockOrder({
+      client_id: "internal-trader",
+      instrument_id: selectedInstrument.instrumentKey,
+      venue: selectedInstrument.venue,
       side: orderSide,
-      price,
-      size,
-      status: "filled" as const,
-    };
-    setOwnTrades((prev) => [newTrade, ...prev]);
-    setRecentTrades((prev) => [{ ...newTrade, status: undefined } as (typeof prev)[0], ...prev.slice(0, 11)]);
+      order_type: useMarketFill ? "market" : "limit",
+      quantity: size,
+      price: submitPrice,
+      asset_class: "CeFi",
+      lane: "book",
+      max_slippage_bps: 10,
+    });
+
+    // For limit orders that don't cross the spread, add to ownTrades immediately as "pending"
+    if (orderType === "limit" && !isLimitCrossing && limitPrice > 0) {
+      const now = new Date();
+      setOwnTrades((prev) => [
+        {
+          id: `user-${Date.now()}`,
+          time: now.toLocaleTimeString("en-US", { hour12: false, timeZone: "UTC" }),
+          side: orderSide,
+          price: limitPrice,
+          size,
+          status: "pending" as const,
+        },
+        ...prev,
+      ]);
+    }
+    // Market orders and crossing limits will be synced via mock-order-filled event after 200ms
+
+    setRecentTrades((prev) => [
+      {
+        id: `user-${Date.now()}`,
+        time: new Date().toLocaleTimeString("en-US", { hour12: false, timeZone: "UTC" }),
+        side: orderSide,
+        price: submitPrice,
+        size,
+      },
+      ...prev.slice(0, 11),
+    ]);
     setOrderSize("");
     setOrderPrice("");
-  }, [orderSize, orderPrice, orderType, orderSide, livePrice, isContextComplete]);
+  }, [orderSize, orderPrice, orderType, orderSide, livePrice, isContextComplete, bids, asks, selectedInstrument]);
 
   const terminalData: TerminalData = React.useMemo(
     () => ({

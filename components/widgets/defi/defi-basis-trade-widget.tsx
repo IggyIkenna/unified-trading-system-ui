@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { ArrowDown, TrendingUp } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import {
@@ -56,10 +56,8 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
 
   const handleExecute = () => {
     if (!capitalNum || capitalNum <= 0) {
-      toast({
-        title: "Invalid input",
+      toast.error("Invalid input", {
         description: "Please enter a capital amount greater than 0",
-        variant: "destructive",
       });
       return;
     }
@@ -84,12 +82,26 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
 
     setBasisTradeHistory([...basisTradeHistory, newEntry]);
 
-    // Also execute via context (simplified - context stores it)
-    // Full DeFiOrderParams would require more fields
-    // For now, just store in local state above
+    executeDeFiOrder({
+      client_id: "internal-trader",
+      strategy_id: "BASIS_TRADE",
+      instruction_type: operation,
+      algo_type: "BENCHMARK_FILL",
+      instrument_id: `BASIS:${asset}:${operation}`,
+      venue: `${asset}-PERP`,
+      side: "buy",
+      order_type: "market",
+      quantity: capitalNum,
+      price: marketData?.spotPrice ?? 0,
+      max_slippage_bps: slippageBps,
+      expected_output: expectedOutput,
+      benchmark_price: marketData?.spotPrice ?? 0,
+      asset_class: "DeFi",
+      lane: "defi",
+      description: `${operation} basis trade on ${asset} — ${slippageBps} bps slippage`,
+    });
 
-    toast({
-      title: "Trade Executed",
+    toast.success("Trade Executed", {
       description: `${operation} order executed successfully`,
     });
 

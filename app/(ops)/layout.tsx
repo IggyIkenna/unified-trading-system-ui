@@ -24,7 +24,10 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const router = useRouter();
 
-  const isAuthorized = user?.role === "admin";
+  // Admin or internal users get full access. Client users with execution-full
+  // can see devops pages (topology, schemas, config) for demo purposes.
+  const isAuthorized = user?.role === "admin" || user?.role === "internal" ||
+    (user?.entitlements as string[] | undefined)?.includes("execution-full");
 
   React.useEffect(() => {
     if (user && !isAuthorized) {
