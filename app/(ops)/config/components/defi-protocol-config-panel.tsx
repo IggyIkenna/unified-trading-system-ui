@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,18 +29,36 @@ const DEFI_INSTRUMENT_TYPES = [
   { type: "PERPETUAL", desc: "On-chain perpetual contract" },
 ];
 
-interface VenueProtocol {
-  protocol: string;
-  chain: string | null;
-}
+interface VenueProtocol { protocol: string; chain: string | null }
+type Registries = { defi_venue_to_protocol: Record<string, VenueProtocol>; chain_rpc_templates: Record<string, string> };
 
-type Registries = {
-  defi_venue_to_protocol: Record<string, VenueProtocol>;
-  chain_rpc_templates: Record<string, string>;
-};
+const TESTNET_IDS = new Set(["11155111","11155420","84532","421614","80002","43113","300","168587773","534351","59141"]);
 
 function maskUrl(url: string): string {
   return url.replace(/\{api_key\}/g, "****").replace(/\/v2\/.*$/, "/v2/****");
+}
+
+function RpcTable({ chains }: { chains: [string, string][] }) {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[80px]">Chain ID</TableHead>
+          <TableHead className="w-[150px]">Network</TableHead>
+          <TableHead>RPC Endpoint (masked)</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {chains.sort(([a], [b]) => Number(a) - Number(b)).map(([id, url]) => (
+          <TableRow key={id}>
+            <TableCell className="font-mono text-sm">{id}</TableCell>
+            <TableCell className="font-medium text-sm">{CHAIN_NAMES[id] ?? `Chain ${id}`}</TableCell>
+            <TableCell className="font-mono text-xs text-muted-foreground truncate max-w-[400px]">{maskUrl(url)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
 }
 
 function groupByProtocol(mapping: Record<string, VenueProtocol>) {
@@ -63,12 +80,8 @@ export default function DefiProtocolConfigPanel() {
   const rpcTemplates = registries.chain_rpc_templates;
   const protocolGroups = groupByProtocol(venueMap);
 
-  const mainnetChains = Object.entries(rpcTemplates).filter(
-    ([id]) => !["11155111", "11155420", "84532", "421614", "80002", "43113", "300", "168587773", "534351", "59141"].includes(id)
-  );
-  const testnetChains = Object.entries(rpcTemplates).filter(
-    ([id]) => ["11155111", "11155420", "84532", "421614", "80002", "43113", "300", "168587773", "534351", "59141"].includes(id)
-  );
+  const mainnetChains = Object.entries(rpcTemplates).filter(([id]) => !TESTNET_IDS.has(id));
+  const testnetChains = Object.entries(rpcTemplates).filter(([id]) => TESTNET_IDS.has(id));
 
   return (
     <Tabs defaultValue="protocols" className="space-y-4">
@@ -138,26 +151,7 @@ export default function DefiProtocolConfigPanel() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">Chain ID</TableHead>
-                  <TableHead className="w-[150px]">Network</TableHead>
-                  <TableHead>RPC Endpoint (masked)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mainnetChains.sort(([a], [b]) => Number(a) - Number(b)).map(([id, url]) => (
-                  <TableRow key={id}>
-                    <TableCell className="font-mono text-sm">{id}</TableCell>
-                    <TableCell className="font-medium text-sm">{CHAIN_NAMES[id] ?? `Chain ${id}`}</TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground truncate max-w-[400px]">
-                      {maskUrl(url)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <RpcTable chains={mainnetChains} />
           </CardContent>
         </Card>
         <Card>
@@ -168,26 +162,7 @@ export default function DefiProtocolConfigPanel() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">Chain ID</TableHead>
-                  <TableHead className="w-[150px]">Network</TableHead>
-                  <TableHead>RPC Endpoint (masked)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {testnetChains.sort(([a], [b]) => Number(a) - Number(b)).map(([id, url]) => (
-                  <TableRow key={id}>
-                    <TableCell className="font-mono text-sm">{id}</TableCell>
-                    <TableCell className="font-medium text-sm">{CHAIN_NAMES[id] ?? `Chain ${id}`}</TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground truncate max-w-[400px]">
-                      {maskUrl(url)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <RpcTable chains={testnetChains} />
           </CardContent>
         </Card>
       </TabsContent>

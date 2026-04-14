@@ -94,7 +94,7 @@ export const slides = [
         name: "Bespoke Strategy Build",
         stages: ["Instruments & Data", "Research", "Decision", "Execution", "Governance"],
         model: "$100K\u2013$250K development + retainer",
-        desc: "We build specific strategies to your requirements. You operate them. Commercial terms bespoke per engagement.",
+        desc: "We build specific strategies to your requirements. Either of us can operate them. Commercial terms bespoke per engagement.",
       },
     ],
     note: "This is one service with flexible scope \u2014 not five separate products. Every engagement uses the same underlying infrastructure. Expanding is adding capabilities, not migrating systems.",
@@ -124,7 +124,7 @@ export const slides = [
           "No rewrite between backtest and production \u2014 that is the core value",
           "Use our frontend or build your own \u2014 the backend API is the same either way",
           "Rigorous testing: 24,500+ automated tests, quality gates on every change",
-          "The benefit: backtest-to-live cohesion that would take 18 months to build yourself",
+          "The benefit: backtest-to-live cohesion that would take a team of 4+ engineers 18 months to build",
         ],
       },
       {
@@ -132,7 +132,7 @@ export const slides = [
         items: [
           "Tell us what you want: decentralised finance yield, crypto long/short, sports prediction",
           "We build it, test it on our own capital first, then deploy it for you",
-          "You operate it through our frontend or your own \u2014 API-first architecture",
+          "Either of us can operate it \u2014 through our frontend or through the backend API",
           "Bespoke commercial terms: development fee plus retainer or performance share",
           "Built by a team with decades of institutional trading experience",
           "Nothing ships that we would not trust with our own money",
@@ -472,11 +472,11 @@ export const slides = [
       },
       {
         problem: "How does that compare to building in-house?",
-        solution: "An in-house team to build and operate equivalent infrastructure would be 5\u201310 engineers at $150K\u2013$250K each, plus 12\u201318 months before you can trade. Our platform gets you live in weeks at a fraction of the cost.",
+        solution: "Building and operating equivalent infrastructure in-house would require 5\u201310 engineers at $150K\u2013$250K each, plus a team of 4+ engineers for 12\u201318 months before you can trade. Our platform gets you live in weeks at a fraction of the cost.",
       },
       {
         problem: "What about bespoke strategy builds?",
-        solution: "Development fee plus an ongoing retainer or performance share, scoped to complexity. We build the strategies, you operate them. Terms are negotiated per engagement.",
+        solution: "Development fee plus an ongoing retainer or performance share, scoped to complexity. We build the strategies. Either of us can operate them. Terms are negotiated per engagement.",
       },
       {
         problem: "Can I start small and expand?",

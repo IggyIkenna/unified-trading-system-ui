@@ -103,7 +103,7 @@ function PropertyRow({ name, prop, isRequired }: { name: string; prop: Record<st
       <span className="text-zinc-300 min-w-[160px] shrink-0">{name}</span>
       <span className="text-blue-400">{typeStr}</span>
       {isRequired && <Badge variant="outline" className="text-[9px] px-1 py-0 border-amber-500 text-amber-400">req</Badge>}
-      {prop.description && <span className="text-zinc-500 truncate">{prop.description as string}</span>}
+      {prop.description != null ? <span className="text-zinc-500 truncate">{String(prop.description)}</span> : null}
     </div>
   );
 }
@@ -137,12 +137,12 @@ function EndpointRow({ op }: { op: PathOp }) {
           <span>Response: <span className="text-blue-400">{op.responseSchema}</span></span>
           {reqSchema && <span>Body: <span className="text-amber-400">{reqSchema}</span></span>}
         </div>
-        {op.detail.parameters && (
+        {op.detail.parameters != null && (
           <div className="mt-1">
             <span className="text-zinc-500">Parameters:</span>
             {(op.detail.parameters as Array<Record<string, unknown>>).map((p, i) => (
               <span key={i} className="ml-2 text-zinc-300">
-                {p.name as string}<span className="text-zinc-600">({p.in as string})</span>
+                {String(p.name)}<span className="text-zinc-600">({String(p.in)})</span>
               </span>
             ))}
           </div>

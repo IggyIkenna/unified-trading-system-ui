@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,20 +11,8 @@ import configRegistry from "@/lib/registry/config-registry.json";
 
 const DEFI_KEYWORDS = ["defi", "chain", "venue", "protocol", "flash", "lending", "aave"];
 
-interface ConfigField {
-  type: string;
-  default: string | number | boolean | null;
-  required: boolean;
-}
-
-interface ConfigClass {
-  class_name: string;
-  module: string;
-  bases: string[];
-  field_count: number;
-  fields: Record<string, ConfigField>;
-}
-
+interface ConfigField { type: string; default: string | number | boolean | null; required: boolean }
+interface ConfigClass { class_name: string; module: string; bases: string[]; field_count: number; fields: Record<string, ConfigField> }
 type ConfigsByRepo = Record<string, ConfigClass[]>;
 
 function isDefiField(name: string): boolean {
@@ -45,7 +32,7 @@ function formatType(raw: string): string {
 }
 
 export default function ServiceConfigPanel() {
-  const configsByRepo = (configRegistry as { configs_by_repo: ConfigsByRepo }).configs_by_repo;
+  const configsByRepo = (configRegistry as unknown as { configs_by_repo: ConfigsByRepo }).configs_by_repo;
   const repos = Object.keys(configsByRepo).sort();
 
   const [selectedRepo, setSelectedRepo] = React.useState(repos[0] ?? "");
