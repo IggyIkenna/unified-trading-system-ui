@@ -93,14 +93,17 @@ const generateCandleData = (basePrice: number, tf: string, points = 200) => {
     seed = (seed * 16807 + 0) % 2147483647;
     return (seed - 1) / 2147483646;
   };
-  const baseTimestamp = 1774008000;
+  // End at the last fully-completed interval so the live candle attaches with no gap.
+  const nowSec = Math.floor(Date.now() / 1000);
+  // Last completed candle boundary (e.g. for 5m: the 5-min slot that just closed)
+  const lastCandleTime = Math.floor(nowSec / secondsPerCandle) * secondsPerCandle - secondsPerCandle;
   return Array.from({ length: points }, (_, i) => {
     const open = basePrice + (seededRandom() - 0.5) * volatility * 2;
     const close = open + (seededRandom() - 0.5) * volatility * 2;
     const high = Math.max(open, close) + seededRandom() * volatility;
     const low = Math.min(open, close) - seededRandom() * volatility;
     const volume = seededRandom() * 100 + 20;
-    const timestamp = baseTimestamp - (points - i - 1) * secondsPerCandle;
+    const timestamp = lastCandleTime - (points - i - 1) * secondsPerCandle;
     return { time: timestamp, open, close, high, low, volume, isUp: close >= open };
   });
 };
@@ -120,6 +123,12 @@ export default function TradingPage() {
   const [wsAsk, setWsAsk] = React.useState<number | null>(null);
 
   const instruments = React.useMemo(() => {
+    // In mock mode the snapshot returns 127k instruments without prices (no midPrice/price field)
+    // and tickers use `last` not `midPrice`. Rather than extracting prices incorrectly and
+    // ending up with midPrice=0, use DEFAULT_INSTRUMENTS directly — they have the correct
+    // seed prices for the five demo instruments the plan requires.
+    if (isMockDataMode()) return DEFAULT_INSTRUMENTS.map((d) => ({ ...d }));
+
     const instData = instrumentsApiData as Record<string, unknown> | undefined;
     const instArr = (instData?.data ?? instData?.instruments ?? []) as Array<Record<string, unknown>>;
 
@@ -405,6 +414,36 @@ export default function TradingPage() {
   const wallClockMs = useTickingNowMs(1000);
   const isMockMode = isMockDataMode();
   const mockPriceTickRef = React.useRef(0);
+  // livePriceRef + its sync effect must be declared BEFORE any effect that reads it,
+  // so the immutability rule ("modifying a value used previously") is satisfied.
+  const livePriceRef = React.useRef(livePrice);
+  React.useEffect(() => {
+    livePriceRef.current = livePrice;
+  }, [livePrice]);
+  // Keep timeframe current inside the price-simulation interval without stale closure
+  const timeframeRef = React.useRef(timeframe);
+  React.useEffect(() => {
+    timeframeRef.current = timeframe;
+  }, [timeframe]);
+  // Tracks the current candle's OHLC as state (not a ref) so useMemo can read it during render.
+  const [liveCandle, setLiveCandle] = React.useState<{
+    time: number;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+  } | null>(null);
+
+  // Reset live-candle tracking and seed livePrice from last historical close when instrument or
+  // timeframe changes. This eliminates the gap between historical mock candles and the live candle.
+  React.useEffect(() => {
+    setLiveCandle(null);
+    const basePrice = selectedInstrument.midPrice > 0 ? selectedInstrument.midPrice : DEFAULT_INSTRUMENTS[0].midPrice;
+    const data = generateCandleData(basePrice, timeframe);
+    if (data.length > 0) {
+      setLivePrice(data[data.length - 1].close);
+    }
+  }, [selectedInstrument.midPrice, timeframe]);
 
   // Price simulation: ticks every 500ms with volatility + drift.
   // Runs in BOTH mock and live mode so the demo always has moving prices.
@@ -412,20 +451,38 @@ export default function TradingPage() {
     const interval = setInterval(() => {
       mockPriceTickRef.current += 1;
       const t = mockPriceTickRef.current;
-      setLivePrice((prev: number) => {
-        const volatility = (mock01(t, 51) - 0.5) * selectedInstrument.midPrice * 0.0002;
-        const drift = selectedInstrument.midPrice * 0.00001;
-        return prev + volatility + drift;
+      const prev = livePriceRef.current;
+      const volatility = (mock01(t, 51) - 0.5) * selectedInstrument.midPrice * 0.0002;
+      const drift = selectedInstrument.midPrice * 0.00001;
+      const next = prev + volatility + drift;
+
+      setLivePrice(next);
+
+      // Accumulate OHLC so the live candle builds real wicks as price moves
+      const tf = timeframeRef.current;
+      const intervalSec =
+        tf === "1m" ? 60 : tf === "5m" ? 300 : tf === "15m" ? 900 : tf === "1H" ? 3600 : tf === "4H" ? 14400 : 86400;
+      const nowUnix = Math.floor(Date.now() / 1000);
+      const candleTime = Math.floor(nowUnix / intervalSec) * intervalSec;
+      setLiveCandle((lc) => {
+        if (!lc || candleTime !== lc.time) {
+          // New interval — open is the previous close
+          return { time: candleTime, open: prev, high: Math.max(prev, next), low: Math.min(prev, next), close: next };
+        }
+        return {
+          time: lc.time,
+          open: lc.open,
+          high: Math.max(lc.high, next),
+          low: Math.min(lc.low, next),
+          close: next,
+        };
       });
-      setTickCount((prev) => prev + 1);
+
+      setTickCount((c) => c + 1);
     }, 500);
     return () => clearInterval(interval);
   }, [selectedInstrument.midPrice]);
 
-  const livePriceRef = React.useRef(livePrice);
-  React.useEffect(() => {
-    livePriceRef.current = livePrice;
-  }, [livePrice]);
   const liveTradeSeqRef = React.useRef(0);
 
   // Recent trades stream: new trade every 1.2s with price pegged to livePrice.
@@ -454,23 +511,40 @@ export default function TradingPage() {
   }, [isClient]);
 
   const { bids, asks } = React.useMemo(() => {
-    const apiOb = orderbookApiData as Record<string, unknown> | undefined;
-    const apiBids = apiOb?.bids as Array<Record<string, number>> | undefined;
-    const apiAsks = apiOb?.asks as Array<Record<string, number>> | undefined;
-    if (apiBids && apiAsks && apiBids.length > 0) {
-      const mappedBids = apiBids.map((b) => ({ price: b.price, size: b.size ?? b.quantity ?? 0, total: b.total ?? 0 }));
-      const mappedAsks = apiAsks.map((a) => ({ price: a.price, size: a.size ?? a.quantity ?? 0, total: a.total ?? 0 }));
-      if (wsBid !== null && mappedBids.length > 0) mappedBids[0] = { ...mappedBids[0], price: wsBid };
-      if (wsAsk !== null && mappedAsks.length > 0) mappedAsks[0] = { ...mappedAsks[0], price: wsAsk };
-      return { bids: mappedBids, asks: mappedAsks };
+    // In mock mode the API returns a static snapshot around a hardcoded mid price.
+    // wsBid/wsAsk stay null (WebSocket is live-only), so the book never updates.
+    // Always generate from livePrice in mock mode so the book ticks every 500ms.
+    if (!isMockMode) {
+      const apiOb = orderbookApiData as Record<string, unknown> | undefined;
+      const apiBids = apiOb?.bids as Array<Record<string, number>> | undefined;
+      const apiAsks = apiOb?.asks as Array<Record<string, number>> | undefined;
+      if (apiBids && apiAsks && apiBids.length > 0) {
+        const mappedBids = apiBids.map((b) => ({
+          price: b.price,
+          size: b.size ?? b.quantity ?? 0,
+          total: b.total ?? 0,
+        }));
+        const mappedAsks = apiAsks.map((a) => ({
+          price: a.price,
+          size: a.size ?? a.quantity ?? 0,
+          total: a.total ?? 0,
+        }));
+        if (wsBid !== null && mappedBids.length > 0) mappedBids[0] = { ...mappedBids[0], price: wsBid };
+        if (wsAsk !== null && mappedAsks.length > 0) mappedAsks[0] = { ...mappedAsks[0], price: wsAsk };
+        return { bids: mappedBids, asks: mappedAsks };
+      }
     }
     return generateMockOrderBook(selectedInstrument.symbol, livePrice, tickCount);
-  }, [orderbookApiData, selectedInstrument.symbol, livePrice, tickCount, wsBid, wsAsk]);
+  }, [orderbookApiData, selectedInstrument.symbol, livePrice, tickCount, wsBid, wsAsk, isMockMode]);
 
   const candleData = React.useMemo(() => {
-    const apiCandles = (candlesApiData as Record<string, unknown>)?.candles as
-      | Array<Record<string, unknown>>
-      | undefined;
+    // In mock mode, skip the API candles entirely. The mock candles API returns 1H BTC-range
+    // candles regardless of the selected instrument and timeframe, which causes wrong price scales
+    // and a large time gap before the live candle. generateCandleData produces correct per-instrument
+    // prices and ends exactly one interval before "now" so the live candle attaches with no gap.
+    const apiCandles = isMockMode
+      ? undefined
+      : ((candlesApiData as Record<string, unknown>)?.candles as Array<Record<string, unknown>> | undefined);
     if (apiCandles && Array.isArray(apiCandles) && apiCandles.length > 0) {
       const mapped = apiCandles
         .map((c) => {
@@ -500,19 +574,27 @@ export default function TradingPage() {
       } else {
         if (isClient && livePrice > 0) {
           const last = mapped[mapped.length - 1];
-          const intervalSeconds = timeframe === "1m" ? 60 : timeframe === "5m" ? 300 : timeframe === "15m" ? 900 : 3600;
-          const nowUnix = Math.floor(wallClockMs / 1000);
-          if (nowUnix >= last.time + intervalSeconds) {
-            mapped.push({
-              time: Math.floor(nowUnix / intervalSeconds) * intervalSeconds,
-              open: livePrice,
-              high: livePrice,
-              low: livePrice,
-              close: livePrice,
-              volume: 0,
-              isUp: true,
-            });
+          if (liveCandle) {
+            if (liveCandle.time > last.time) {
+              // Live tracking has moved into a new candle interval — append it
+              mapped.push({
+                time: liveCandle.time,
+                open: liveCandle.open,
+                high: liveCandle.high,
+                low: liveCandle.low,
+                close: liveCandle.close,
+                volume: 0,
+                isUp: liveCandle.close >= liveCandle.open,
+              });
+            } else {
+              // Same interval — replace pre-generated extremes with live-tracked OHLC
+              last.close = liveCandle.close;
+              last.high = liveCandle.high;
+              last.low = liveCandle.low;
+              last.isUp = liveCandle.close >= liveCandle.open;
+            }
           } else {
+            // Before the first 500ms tick — simple close-only update
             last.close = livePrice;
             last.high = Math.max(last.high, livePrice);
             last.low = Math.min(last.low, livePrice);
@@ -525,17 +607,36 @@ export default function TradingPage() {
     // Guard: if midPrice is 0 (e.g. instrumentsApiData cached without prices), fall back to DEFAULT price
     const basePrice = selectedInstrument.midPrice > 0 ? selectedInstrument.midPrice : DEFAULT_INSTRUMENTS[0].midPrice;
     const data = generateCandleData(basePrice, timeframe);
-    // Only animate the last candle when we have a valid live price (no backend = livePrice stays 0)
+    // Animate the last candle using live-tracked OHLC (real wicks, not just close)
     if (data.length > 0 && isClient && livePrice > 0) {
       const lastCandle = data[data.length - 1];
-      const variation = (tickCount % 10) * 0.0001 * livePrice;
-      lastCandle.close = livePrice + Math.sin(tickCount * 0.5) * variation;
-      lastCandle.high = Math.max(lastCandle.high, lastCandle.close);
-      lastCandle.low = Math.min(lastCandle.low, lastCandle.close);
-      lastCandle.isUp = lastCandle.close >= lastCandle.open;
+      if (liveCandle) {
+        if (liveCandle.time > lastCandle.time) {
+          data.push({
+            time: liveCandle.time,
+            open: liveCandle.open,
+            high: liveCandle.high,
+            low: liveCandle.low,
+            close: liveCandle.close,
+            volume: 0,
+            isUp: liveCandle.close >= liveCandle.open,
+          });
+        } else {
+          lastCandle.close = liveCandle.close;
+          lastCandle.high = liveCandle.high;
+          lastCandle.low = liveCandle.low;
+          lastCandle.isUp = liveCandle.close >= liveCandle.open;
+        }
+      } else {
+        // Before first tick
+        lastCandle.close = livePrice;
+        lastCandle.high = Math.max(lastCandle.high, lastCandle.close);
+        lastCandle.low = Math.min(lastCandle.low, lastCandle.close);
+        lastCandle.isUp = lastCandle.close >= lastCandle.open;
+      }
     }
     return data;
-  }, [candlesApiData, selectedInstrument.midPrice, timeframe, tickCount, livePrice, isClient, wallClockMs]);
+  }, [candlesApiData, selectedInstrument.midPrice, timeframe, livePrice, isClient, isMockMode, liveCandle]);
 
   const indicatorOverlays = React.useMemo(() => {
     if (!candleData || candleData.length === 0) return [];
