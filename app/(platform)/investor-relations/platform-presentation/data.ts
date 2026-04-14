@@ -159,7 +159,7 @@ export const slides = [
         name: "Scenario 1: Execution",
         desc: "You send signals \u2014 see how we execute across venues, with fill quality and slippage analysis",
         link: "/services/trading/positions",
-        image: "/screenshots/dashboard.png",
+        image: "/screenshots/positions.png",
       },
       {
         name: "Scenario 2: Research & Backtest",
@@ -177,11 +177,13 @@ export const slides = [
         name: "Returns Attribution",
         desc: "10-factor waterfall \u2014 see exactly where returns come from across all scenarios",
         link: "/services/trading/pnl",
+        image: "/screenshots/pnl.png",
       },
       {
         name: "Risk & Scenarios",
         desc: "Stress testing, historical replay, scenario analysis \u2014 shared across all engagement types",
         link: "/services/observe/scenarios",
+        image: "/screenshots/scenarios.png",
       },
       {
         name: "Executive Reporting",

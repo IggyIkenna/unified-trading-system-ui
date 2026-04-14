@@ -502,6 +502,7 @@ export const slides = [
         name: "Trading & Positions",
         desc: "Live positions, orders, returns attribution",
         link: "/services/trading/positions",
+        image: "/screenshots/positions.png",
       },
       {
         name: "Instruments & Coverage",
@@ -525,6 +526,7 @@ export const slides = [
         name: "Risk & Scenarios",
         desc: "Scenario analysis, stress testing, historical replay",
         link: "/services/observe/scenarios",
+        image: "/screenshots/scenarios.png",
       },
     ],
     note: "All views use the same underlying system. Demo data is representative of production output.",
