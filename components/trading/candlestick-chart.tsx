@@ -59,6 +59,9 @@ export function CandlestickChart({
   // Only call fitContent() on the first data load per chart instance so that user scroll
   // position is preserved during live updates and when new candles form.
   const hasInitializedViewRef = React.useRef(false);
+  // Track previous data shape to detect live ticks (same length + same last-bar time)
+  // vs full reloads (initial data, new symbol, new timeframe, new candle appended).
+  const prevLastBarRef = React.useRef<{ time: number; len: number } | null>(null);
 
   // Initialize chart + keep size in sync (autoSize breaks inside flex + Radix ScrollArea)
   React.useLayoutEffect(() => {
@@ -221,6 +224,33 @@ export function CandlestickChart({
     const validData = data.filter((d) => typeof d.time === "number" && !isNaN(d.time));
     if (validData.length === 0) return;
 
+    const prev = prevLastBarRef.current;
+    const lastD = validData[validData.length - 1];
+    const isLiveTick = prev !== null && validData.length === prev.len && lastD.time === prev.time;
+
+    if (isLiveTick) {
+      // Live tick — only the last bar changed. Use update() for smooth animation
+      // without a full chart repaint on every 500ms tick.
+      candlestickSeriesRef.current.update({
+        time: lastD.time as Time,
+        open: lastD.open,
+        high: lastD.high,
+        low: lastD.low,
+        close: lastD.close,
+      });
+      volumeSeriesRef.current.update({
+        time: lastD.time as Time,
+        value: lastD.volume || 0,
+        color: lastD.close >= lastD.open ? "rgba(16, 185, 129, 0.5)" : "rgba(239, 68, 68, 0.5)",
+      });
+      if (areaSeriesRef.current) {
+        areaSeriesRef.current.update({ time: lastD.time as Time, value: lastD.close });
+      }
+      return;
+    }
+
+    // Full reload: initial data, new symbol/timeframe (chart remounts via key prop),
+    // or a new candle was appended.
     const candlestickData: CandlestickData[] = validData.map((d) => ({
       time: d.time as Time,
       open: d.open,
@@ -246,12 +276,13 @@ export function CandlestickChart({
       areaSeriesRef.current.setData(areaData);
     }
 
-    // Only auto-fit on the very first data load. After that, preserve the user's
-    // scroll position so panning into history isn't interrupted by live updates.
+    // Only auto-fit on the very first data load per chart instance. After that,
+    // preserve scroll position so panning history isn't interrupted by live updates.
     if (chartRef.current && !hasInitializedViewRef.current) {
       chartRef.current.timeScale().fitContent();
       hasInitializedViewRef.current = true;
     }
+    prevLastBarRef.current = { time: lastD.time, len: validData.length };
   }, [data]);
 
   // Update indicator overlays

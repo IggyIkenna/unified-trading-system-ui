@@ -16,7 +16,10 @@ export const ENTITLEMENTS = [
   "ml-full",
   "strategy-full",
   "strategy-families",
+  "markets-data",
   "defi-trading",
+  "defi-bundles",
+  "defi-staking",
   "sports-trading",
   "predictions-trading",
   "options-trading",
@@ -150,13 +153,7 @@ export const SUBSCRIPTION_TIERS = [
  *  - Data Basic      = data-basic only
  *  - Custom          = anything else
  */
-export type ClientTier =
-  | "Client Full"
-  | "Client Premium"
-  | "DeFi Client"
-  | "Data Pro"
-  | "Data Basic"
-  | "Custom";
+export type ClientTier = "Client Full" | "Client Premium" | "DeFi Client" | "Data Pro" | "Data Basic" | "Custom";
 
 export function deriveClientTier(entitlements: readonly EntitlementOrWildcard[]): ClientTier {
   const set = new Set(entitlements);
@@ -178,10 +175,16 @@ export function deriveClientTier(entitlements: readonly EntitlementOrWildcard[])
  * What each tier unlocks (for display in tier badge tooltips / settings pages).
  */
 export const CLIENT_TIER_FEATURES: Record<ClientTier, string[]> = {
-  "Client Full": ["Data (all classes)", "Execution (full SOR + algos)", "ML Research", "Strategy Families", "Reporting & Attribution"],
+  "Client Full": [
+    "Data (all classes)",
+    "Execution (full SOR + algos)",
+    "ML Research",
+    "Strategy Families",
+    "Reporting & Attribution",
+  ],
   "Client Premium": ["Data (all classes)", "Execution (full SOR + algos)", "Strategy Families"],
   "DeFi Client": ["DeFi Trading (lending, basis, staking)", "Data Pro", "Execution Full", "Reports"],
   "Data Pro": ["Data (2400+ instruments, all classes)", "Features & signals (read-only)"],
   "Data Basic": ["Data (180 instruments, CEFI only)"],
-  "Custom": ["Custom entitlement bundle — contact support"],
+  Custom: ["Custom entitlement bundle — contact support"],
 };

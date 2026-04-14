@@ -81,7 +81,7 @@ registerPresets("markets", [
   },
 ]);
 
-const MARKETS_ENTITLEMENTS = ["execution-basic", "execution-full"] as const;
+const MARKETS_ENTITLEMENTS = ["markets-data"] as const;
 
 registerWidget({
   id: "markets-controls",
