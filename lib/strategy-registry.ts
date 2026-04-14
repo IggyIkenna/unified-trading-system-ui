@@ -304,10 +304,10 @@ export const STRATEGIES: Strategy[] = [
   // DeFi Basis Trade
   // ============================================
   {
-    id: "DEFI_ETH_BASIS_SCE_1H",
+    id: "DEFI_ETH_BASIS_HUF_1H",
     name: "ETH Basis Trade",
-    description: "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage.",
-    strategyIdPattern: "DEFI_ETH_BASIS_SCE_1H",
+    description: "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage. HUF: hold until funding flips negative.",
+    strategyIdPattern: "DEFI_ETH_BASIS_HUF_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Basis Trade",
@@ -514,10 +514,10 @@ export const STRATEGIES: Strategy[] = [
   // DeFi Recursive Staked Basis
   // ============================================
   {
-    id: "DEFI_ETH_REC_STAKE_EVT_1H",
+    id: "DEFI_ETH_REC_STAKE_HUF_1H",
     name: "ETH Recursive Staked Basis",
-    description: "Flash loan leveraged weETH staking yield + short perp hedge. 2.5x leveraged LST yield.",
-    strategyIdPattern: "DEFI_ETH_RECURSIVE_BASIS_SCE_1H",
+    description: "Flash loan leveraged weETH staking yield + short perp hedge. 2.5x leveraged LST yield. HUF: hold until HF warning or yield signal change.",
+    strategyIdPattern: "DEFI_ETH_RECURSIVE_BASIS_HUF_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Leveraged Basis",
@@ -759,9 +759,9 @@ export const STRATEGIES: Strategy[] = [
   // DeFi Market Making (AMM LP)
   // ============================================
   {
-    id: "DEFI_UNI_LP_EVT_1H",
+    id: "DEFI_UNI_LP_HUF_1H",
     name: "Uniswap V3 LP (ETH-USDT)",
-    description: "Concentrated liquidity provision on Uniswap V3. Earn swap fees with active range management.",
+    description: "Concentrated liquidity provision on Uniswap V3. Earn swap fees with active range management. HUF: hold until price exits range.",
     strategyIdPattern: "DEFI_ETH_MM_LP_V3_EVT",
     clientId: "defi-desk",
     assetClass: "DeFi",
@@ -2273,9 +2273,9 @@ export const STRATEGIES: Strategy[] = [
   // AAVE Lending Strategy
   // ============================================
   {
-    id: "DEFI_AAVE_LEND_EVT_1D",
+    id: "DEFI_AAVE_LEND_HUF_1D",
     name: "AAVE Lending (USDT)",
-    description: "Supply USDT to Aave V3. Zero-alpha yield capture with liquidity index growth.",
+    description: "Supply USDT to Aave V3. Zero-alpha yield capture with liquidity index growth. HUF: hold until APY drops below threshold.",
     strategyIdPattern: "DEFI_AAVE_LENDING_ETH",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -2651,10 +2651,10 @@ export const STRATEGIES: Strategy[] = [
 
   // Morpho Lending
   {
-    id: "DEFI_MORPHO_LEND_EVT_1D",
+    id: "DEFI_MORPHO_LEND_HUF_1D",
     name: "Morpho Lending",
-    description: "Supply USDC to Morpho protocol for enhanced yield with peer-to-peer matching.",
-    strategyIdPattern: "DEFI_MORPHO_LEND_EVT_1D",
+    description: "Supply USDC to Morpho protocol for enhanced yield with peer-to-peer matching. HUF: hold until rate drops below Aave.",
+    strategyIdPattern: "DEFI_MORPHO_LEND_HUF_1D",
     clientId: "defi-desk",
     assetClass: "DeFi",
     strategyType: "Lending",
@@ -4874,13 +4874,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-034: DEFI_WBTC_BASIS_SCE_4H
+  // strat-034: DEFI_WBTC_BASIS_HUF_4H
   // ============================================
   {
-    id: "DEFI_WBTC_BASIS_SCE_4H",
+    id: "DEFI_WBTC_BASIS_HUF_4H",
     name: "WBTC Basis Trade",
     description: "Long WBTC on Uniswap V3 + short BTC perp. DeFi basis trade on wrapped BTC.",
-    strategyIdPattern: "DEFI_WBTC_BASIS_SCE_4H",
+    strategyIdPattern: "DEFI_WBTC_BASIS_HUF_4H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Basis Trade",
@@ -5004,13 +5004,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-035: DEFI_STETH_STAKED_BASIS_EVT_1D
+  // strat-035: DEFI_STETH_STAKED_BASIS_HUF_1D
   // ============================================
   {
-    id: "DEFI_STETH_STAKED_BASIS_EVT_1D",
+    id: "DEFI_STETH_STAKED_BASIS_HUF_1D",
     name: "stETH Staked Basis",
     description: "Long stETH/wstETH staking yield + short ETH perp hedge. LST basis trade via Lido.",
-    strategyIdPattern: "DEFI_STETH_STAKED_BASIS_EVT_1D",
+    strategyIdPattern: "DEFI_STETH_STAKED_BASIS_HUF_1D",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Staked Basis",
@@ -5131,13 +5131,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-036: DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK
+  // strat-036: DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK
   // ============================================
   {
-    id: "DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK",
+    id: "DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK",
     name: "ETH Recursive Staked (Acme)",
     description: "Recursive staked basis via Aave V3. Flash loan leveraged wstETH/WETH looping.",
-    strategyIdPattern: "DEFI_ETH_RECURSIVE_STAKED_EVT_BLOCK",
+    strategyIdPattern: "DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK",
     clientId: "quant-fund",
     assetClass: "DeFi",
     strategyType: "Recursive Staked Basis",
@@ -5246,13 +5246,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-037: DEFI_USDC_AAVE_LEND_EVT_1H
+  // strat-037: DEFI_USDC_AAVE_LEND_HUF_1H
   // ============================================
   {
-    id: "DEFI_USDC_AAVE_LEND_EVT_1H",
+    id: "DEFI_USDC_AAVE_LEND_HUF_1H",
     name: "USDC Aave Lending",
     description: "Multi-stablecoin lending on Aave V3. Supply USDC/USDT/DAI for yield optimization.",
-    strategyIdPattern: "DEFI_USDC_AAVE_LEND_EVT_1H",
+    strategyIdPattern: "DEFI_USDC_AAVE_LEND_HUF_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Lending",
@@ -5360,13 +5360,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-038: DEFI_ARB_AMM_LP_SCE_4H
+  // strat-038: DEFI_ARB_AMM_LP_HUF_4H
   // ============================================
   {
-    id: "DEFI_ARB_AMM_LP_SCE_4H",
+    id: "DEFI_ARB_AMM_LP_HUF_4H",
     name: "ARB AMM LP",
     description: "Concentrated liquidity provision on Uniswap V3 for ARB/USDC and ARB/ETH pairs.",
-    strategyIdPattern: "DEFI_ARB_AMM_LP_SCE_4H",
+    strategyIdPattern: "DEFI_ARB_AMM_LP_HUF_4H",
     clientId: "defi-desk",
     assetClass: "DeFi",
     strategyType: "AMM LP",
@@ -5477,13 +5477,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-039: DEFI_MATIC_AMM_LP_SCE_2H
+  // strat-039: DEFI_MATIC_AMM_LP_HUF_2H
   // ============================================
   {
-    id: "DEFI_MATIC_AMM_LP_SCE_2H",
+    id: "DEFI_MATIC_AMM_LP_HUF_2H",
     name: "MATIC AMM LP",
     description: "Concentrated liquidity provision for MATIC/USDC on Uniswap V3. Development phase.",
-    strategyIdPattern: "DEFI_MATIC_AMM_LP_SCE_2H",
+    strategyIdPattern: "DEFI_MATIC_AMM_LP_HUF_2H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "AMM LP",
@@ -5575,13 +5575,13 @@ export const STRATEGIES: Strategy[] = [
   },
 
   // ============================================
-  // strat-040: DEFI_DAI_AAVE_LEND_EVT_8H
+  // strat-040: DEFI_DAI_AAVE_LEND_HUF_8H
   // ============================================
   {
-    id: "DEFI_DAI_AAVE_LEND_EVT_8H",
+    id: "DEFI_DAI_AAVE_LEND_HUF_8H",
     name: "DAI Aave Lending",
     description: "Supply DAI/USDC to Aave V3 for yield. Conservative stablecoin lending.",
-    strategyIdPattern: "DEFI_DAI_AAVE_LEND_EVT_8H",
+    strategyIdPattern: "DEFI_DAI_AAVE_LEND_HUF_8H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Lending",
@@ -6957,11 +6957,11 @@ export const STRATEGIES: Strategy[] = [
   // DeFi Staked Basis (LST + short perp)
   // ============================================
   {
-    id: "DEFI_ETH_STAKED_BASIS_SCE_1H",
+    id: "DEFI_ETH_STAKED_BASIS_HUF_1H",
     name: "ETH Staked Basis (weETH + Short Perp)",
     description:
       "Long weETH (liquid staking token) for staking yield, short ETH perpetual on Hyperliquid for delta hedge. Captures LST yield + funding rate spread.",
-    strategyIdPattern: "DEFI_ETH_STAKED_BASIS_SCE_1H",
+    strategyIdPattern: "DEFI_ETH_STAKED_BASIS_HUF_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
     strategyType: "Staked Basis",
@@ -7140,11 +7140,11 @@ export const STRATEGIES: Strategy[] = [
   // DeFi Aave V3 Pure Supply (USDC)
   // ============================================
   {
-    id: "DEFI_AAVE_SUPPLY_USDC_SCE_1H",
+    id: "DEFI_AAVE_SUPPLY_USDC_HUF_1H",
     name: "Aave V3 USDC Supply",
     description:
       "Pure supply of USDC to Aave V3 for lending yield. No perp leg, no leverage. Monitor utilization and APY for optimal capital deployment.",
-    strategyIdPattern: "DEFI_AAVE_SUPPLY_USDC_SCE_1H",
+    strategyIdPattern: "DEFI_AAVE_SUPPLY_USDC_HUF_1H",
     clientId: "defi-desk",
     assetClass: "DeFi",
     strategyType: "Lending",

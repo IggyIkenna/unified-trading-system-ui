@@ -28,7 +28,7 @@ export const MOCK_DECISIONS: StrategyDecision[] = [
   {
     id: "dec-001",
     timestamp: "14:32:01",
-    strategyId: "DEFI_ETH_BASIS_SCE_1H",
+    strategyId: "DEFI_ETH_BASIS_HUF_1H",
     strategyName: "ETH Basis Trade",
     decisionType: "ENTRY",
     signalSource: "ML_MODEL",
@@ -147,7 +147,7 @@ export const MOCK_DECISIONS: StrategyDecision[] = [
   {
     id: "dec-005",
     timestamp: "13:42:00",
-    strategyId: "DEFI_AAVE_LEND_EVT_1D",
+    strategyId: "DEFI_AAVE_LEND_HUF_1D",
     strategyName: "Aave Lending",
     decisionType: "REBALANCE",
     signalSource: "ML_MODEL",

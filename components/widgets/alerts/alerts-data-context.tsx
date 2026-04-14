@@ -9,6 +9,7 @@ import { getAlertsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { toast } from "sonner";
+import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
 
 export type AlertSeverity = "critical" | "high" | "medium" | "low" | "info";
 export type AlertStatus = "active" | "acknowledged" | "resolved" | "muted";
@@ -69,17 +70,95 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
   const { data: alertsData, isLoading, isError, refetch } = useAlerts();
   const { scope } = useGlobalScope();
   const isBatchMode = scope.mode === "batch";
+  const [ledgerVersion, setLedgerVersion] = React.useState(0);
+
+  // Listen for ledger changes to generate reactive DeFi alerts
+  React.useEffect(() => {
+    const refresh = () => setLedgerVersion((v) => v + 1);
+    window.addEventListener("mock-order-filled", refresh);
+    window.addEventListener("mock-ledger-reset", refresh);
+    return () => {
+      window.removeEventListener("mock-order-filled", refresh);
+      window.removeEventListener("mock-ledger-reset", refresh);
+    };
+  }, []);
+
+  // Generate reactive DeFi alerts from trade ledger state
+  const defiAlerts: Alert[] = React.useMemo(() => {
+    const filledDefi = getFilledDefiOrders();
+    const alerts: Alert[] = [];
+
+    // Check for recursive strategies (HF alert)
+    const hasRecursive = filledDefi.some(
+      (o) => o.strategy_id === "RECURSIVE_STAKED_BASIS" || o.instrument_id.toUpperCase().includes("DEBT_TOKEN"),
+    );
+    if (hasRecursive) {
+      alerts.push({
+        id: "defi-alert-hf-monitor",
+        severity: "medium",
+        status: "active",
+        title: "Health Factor Monitoring Active",
+        description: "Recursive position active. Health Factor = 1.42 (target: 1.50). Alert if HF < 1.25.",
+        source: "risk-engine",
+        entity: "RECURSIVE_STAKED_BASIS",
+        entityType: "strategy",
+        timestamp: new Date().toISOString(),
+        value: "1.42",
+        threshold: "1.25",
+      });
+    }
+
+    // Check for basis trades (funding rate alert)
+    const hasBasis = filledDefi.some(
+      (o) => o.strategy_id === "BASIS_TRADE" || (o.instrument_id.toUpperCase().includes("PERP") && o.side === "sell"),
+    );
+    if (hasBasis) {
+      alerts.push({
+        id: "defi-alert-funding-positive",
+        severity: "info",
+        status: "active",
+        title: "Funding Rate Positive",
+        description: "Basis trade collecting funding: BTC 0.012%/8h, ETH 0.008%/8h. All venues positive.",
+        source: "market-data",
+        entity: "BASIS_TRADE",
+        entityType: "strategy",
+        timestamp: new Date().toISOString(),
+        value: "0.012%/8h",
+      });
+    }
+
+    // Check for large positions (treasury alert)
+    if (filledDefi.length > 5) {
+      alerts.push({
+        id: "defi-alert-treasury-high",
+        severity: "low",
+        status: "active",
+        title: "Treasury Allocation Above Target",
+        description: "Treasury at 35% of AUM (target: 20%). Consider rebalancing to increase yield generation.",
+        source: "treasury-monitor",
+        entity: "PORTFOLIO",
+        entityType: "strategy",
+        timestamp: new Date().toISOString(),
+        value: "35%",
+        threshold: "20%",
+        recommendedAction: "Trigger rebalance from DeFi → Wallet Summary widget.",
+      });
+    }
+
+    return alerts;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ledgerVersion]);
 
   const allAlerts: Alert[] = React.useMemo(() => {
     const raw = alertsData as Record<string, unknown> | undefined;
     const fromData = raw?.data as Alert[] | undefined;
     const fromAlerts = raw?.alerts as Alert[] | undefined;
     const apiResult = fromData ?? fromAlerts ?? [];
-    if (apiResult.length > 0) return apiResult;
+    if (apiResult.length > 0) return [...apiResult, ...defiAlerts];
 
-    // Fall back to seed data
+    // Fall back to seed data + reactive DeFi alerts
     const seed = getAlertsForScope(scope.organizationIds, scope.clientIds, scope.strategyIds);
-    return seed.map((s) => ({
+    const seedAlerts = seed.map((s) => ({
       id: s.id,
       severity: s.severity as AlertSeverity,
       status: (s.acknowledged ? "acknowledged" : "active") as AlertStatus,
@@ -90,7 +169,8 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       entityType: "strategy" as const,
       timestamp: s.timestamp,
     }));
-  }, [alertsData, scope.organizationIds, scope.clientIds, scope.strategyIds]);
+    return [...seedAlerts, ...defiAlerts];
+  }, [alertsData, scope.organizationIds, scope.clientIds, scope.strategyIds, defiAlerts]);
 
   const acknowledgeMutation = useAcknowledgeAlert();
   const escalateMutation = useEscalateAlert();

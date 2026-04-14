@@ -8,6 +8,7 @@ import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { computeDefiLedgerPnL } from "@/lib/api/mock-trade-ledger";
 import { DEFAULT_RESIDUAL_PNL, DEFAULT_STRUCTURAL_PNL } from "@/lib/mocks/fixtures/pnl-attribution";
 import {
   generateClientPnL,
@@ -122,15 +123,27 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const [selectedOrgIds, setSelectedOrgIds] = React.useState<string[]>([]);
   const [selectedClientIds, setSelectedClientIds] = React.useState<string[]>([]);
   const [selectedStrategyIds, setSelectedStrategyIds] = React.useState<string[]>([]);
+  const [ledgerVersion, setLedgerVersion] = React.useState(0);
 
-  // Sync local P&L scope selectors with the global scope bar
+  // Listen for mock ledger changes to recompute P&L from DeFi trades
+  React.useEffect(() => {
+    const refresh = () => setLedgerVersion((v) => v + 1);
+    window.addEventListener("mock-order-filled", refresh);
+    window.addEventListener("mock-ledger-reset", refresh);
+    return () => {
+      window.removeEventListener("mock-order-filled", refresh);
+      window.removeEventListener("mock-ledger-reset", refresh);
+    };
+  }, []);
+
+  // Sync local P&L scope selectors with the global scope bar (re-syncs on every change)
   React.useEffect(() => {
     setSelectedOrgIds(globalScope.organizationIds);
     const derivedClients =
       globalScope.clientIds.length > 0 ? globalScope.clientIds : getClientIdsForOrgs(globalScope.organizationIds);
     setSelectedClientIds(derivedClients);
     setSelectedStrategyIds(getStrategyIdsForScope(globalScope));
-  }, [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
+  }, [globalScope, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const filterMultiplier = React.useMemo(() => {
     let m = 1;
@@ -140,10 +153,31 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
     return m;
   }, [selectedOrgIds, selectedClientIds, selectedStrategyIds]);
 
-  const pnlComponents = React.useMemo(
-    () => generatePnLComponents(selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode === "batch"),
-    [selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode],
-  );
+  // Compute DeFi trade costs from mock ledger (reactive to ledgerVersion)
+  const defiLedgerPnl = React.useMemo(() => computeDefiLedgerPnL(), [ledgerVersion]);
+
+  const pnlComponents = React.useMemo(() => {
+    const base = generatePnLComponents(selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode === "batch");
+
+    // Inject DeFi trading costs from mock ledger as additional P&L factors
+    if (defiLedgerPnl.totalGasCost > 0) {
+      // Find or create a "DeFi Gas" component
+      const gasIdx = base.findIndex((c) => c.name === "DeFi Gas");
+      if (gasIdx !== -1) {
+        base[gasIdx] = { ...base[gasIdx], value: -defiLedgerPnl.totalGasCost };
+      } else {
+        base.push({ name: "DeFi Gas", value: -defiLedgerPnl.totalGasCost, percentage: 0, isNegative: true, category: "factor" });
+      }
+      // Find or create "DeFi Slippage"
+      const slipIdx = base.findIndex((c) => c.name === "DeFi Slippage");
+      if (slipIdx !== -1) {
+        base[slipIdx] = { ...base[slipIdx], value: -defiLedgerPnl.totalSlippage };
+      } else {
+        base.push({ name: "DeFi Slippage", value: -defiLedgerPnl.totalSlippage, percentage: 0, isNegative: true, category: "factor" });
+      }
+    }
+    return base;
+  }, [selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode, defiLedgerPnl]);
 
   const netPnL = pnlComponents.reduce((sum, c) => sum + c.value, 0);
 

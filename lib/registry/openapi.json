@@ -5306,7 +5306,7 @@
         ],
         "summary": "Health",
         "description": "Standard Cloud Run liveness probe.",
-        "operationId": "health_health_get__2",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5331,7 +5331,7 @@
         ],
         "summary": "Readiness",
         "description": "Runtime readiness with tier detection.",
-        "operationId": "readiness_readiness_get__2",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -5356,7 +5356,7 @@
         ],
         "summary": "Version",
         "description": "Return service version information.",
-        "operationId": "version_version_get__2",
+        "operationId": "version_version_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -8610,6 +8610,313 @@
         ]
       }
     },
+    "/unified-trading-api/ml/grid-configs": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "List Grid Configs",
+        "description": "List saved ML training grid configurations.",
+        "operationId": "list_grid_configs_ml_grid_configs_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Filter by category: CEFI, TRADFI, SPORTS",
+              "title": "Category"
+            },
+            "description": "Filter by category: CEFI, TRADFI, SPORTS"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response List Grid Configs Ml Grid Configs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Create Grid Config",
+        "description": "Create a new grid configuration.\n\nBody must include ``name`` and at least one of ``instruments`` (CEFI/TRADFI)\nor ``sports_families`` (SPORTS).  Feature groups default to all available\nfor the category when omitted.",
+        "operationId": "create_grid_config_ml_grid_configs_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Create Grid Config Ml Grid Configs Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/ml/grid-configs/{config_name}": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Get Grid Config",
+        "description": "Get a specific grid config by name.",
+        "operationId": "get_grid_config_ml_grid_configs__config_name__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "config_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Config Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Grid Config Ml Grid Configs  Config Name  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Update Grid Config",
+        "description": "Update an existing grid configuration.",
+        "operationId": "update_grid_config_ml_grid_configs__config_name__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "config_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Config Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Update Grid Config Ml Grid Configs  Config Name  Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Delete Grid Config",
+        "description": "Delete a grid configuration.",
+        "operationId": "delete_grid_config_ml_grid_configs__config_name__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "config_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Config Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Grid Config Ml Grid Configs  Config Name  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/unified-trading-api/ml/feature-groups": {
+      "get": {
+        "tags": [
+          "unified-trading-api",
+          "ml"
+        ],
+        "summary": "Get Available Feature Groups",
+        "description": "Get available feature groups for a category.\n\nReturns the list of feature group names that can be used in grid configs.\nGroups are sourced from the FeatureGroupRegistry (SSOT in UTL).",
+        "operationId": "get_available_feature_groups_ml_feature_groups_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Category: CEFI, TRADFI, SPORTS, DEFI",
+              "default": "CEFI",
+              "title": "Category"
+            },
+            "description": "Category: CEFI, TRADFI, SPORTS, DEFI"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Available Feature Groups Ml Feature Groups Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/unified-trading-api/ml/models/{model_id}/promote": {
       "post": {
         "tags": [
@@ -10486,6 +10793,28 @@
               "default": "1d",
               "title": "Horizon"
             }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(live|batch)$",
+              "default": "live",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "T+1 reconciliation date for batch mode",
+              "title": "As Of"
+            },
+            "description": "T+1 reconciliation date for batch mode"
           }
         ],
         "responses": {
@@ -10537,6 +10866,28 @@
               "type": "string",
               "title": "Instrument"
             }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(live|batch)$",
+              "default": "live",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "T+1 reconciliation date for batch mode",
+              "title": "As Of"
+            },
+            "description": "T+1 reconciliation date for batch mode"
           },
           {
             "name": "page",
@@ -10597,25 +10948,59 @@
         "summary": "Get Stress Tests",
         "description": "Get stress test results.",
         "operationId": "get_stress_tests_risk_stress_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(live|batch)$",
+              "default": "live",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "T+1 reconciliation date for batch mode",
+              "title": "As Of"
+            },
+            "description": "T+1 reconciliation date for batch mode"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "additionalProperties": true,
                   "type": "object",
+                  "additionalProperties": true,
                   "title": "Response Get Stress Tests Risk Stress Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "APIKeyHeader": []
-          }
-        ]
+        }
       }
     },
     "/unified-trading-api/risk/circuit-breaker": {
@@ -12603,7 +12988,7 @@
     "/client-reporting-api/health": {
       "get": {
         "summary": "Health",
-        "operationId": "health_health_get__3",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -17713,6 +18098,246 @@
         }
       }
     },
+    "/client-reporting-api/api/v1/exports/daily-equity": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Daily Equity Csv",
+        "description": "Download daily equity curve with TWR metrics as CSV.\n\nIncludes: date, equity, TWR index, drawdown %, daily return, cumulative transfers.\nUses transfer-adjusted metrics from canonical transfer store.",
+        "operationId": "export_daily_equity_csv_api_v1_exports_daily_equity_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/exports/transfers": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Transfers Csv",
+        "description": "Download canonical transfer history as CSV.",
+        "operationId": "export_transfers_csv_api_v1_exports_transfers_get",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Client identifier",
+              "title": "Client Id"
+            },
+            "description": "Client identifier"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/client-reporting-api/api/v1/exports/tear-sheet": {
+      "get": {
+        "tags": [
+          "client-reporting-api",
+          "exports"
+        ],
+        "summary": "Export Tear Sheet",
+        "description": "Generate and return an institutional tear sheet as HTML.\n\nIncludes: equity curves, monthly returns, Sharpe/Sortino/Calmar,\ndrawdown series, rolling metrics, CSV download buttons.",
+        "operationId": "export_tear_sheet_api_v1_exports_tear_sheet_get",
+        "parameters": [
+          {
+            "name": "client_ids",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated client IDs (e.g. 'PR,ODUM_PROP')",
+              "title": "Client Ids"
+            },
+            "description": "Comma-separated client IDs (e.g. 'PR,ODUM_PROP')"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Report title",
+              "default": "Odum Capital \u2014 Strategy Performance",
+              "title": "Title"
+            },
+            "description": "Report title"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "name": "x-service-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Service-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/client-reporting-api/api/v1/tax/annual-summary": {
       "get": {
         "tags": [
@@ -19168,7 +19793,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get__4",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19188,7 +19813,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get__3",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19702,7 +20327,7 @@
       "get": {
         "summary": "Health",
         "description": "Liveness probe \u2014 returns 200 when the process is running.",
-        "operationId": "health_health_get__5",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19755,7 +20380,7 @@
       "get": {
         "summary": "Readiness",
         "description": "Readiness probe \u2014 verifies critical subsystems are initialised.\n\nChecks:\n- Auth and limiter are wired (startup event has completed).\nRaises 503 if the service is not ready to handle requests.",
-        "operationId": "readiness_readiness_get__4",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -19998,7 +20623,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get__6",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20018,7 +20643,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get__5",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20035,7 +20660,7 @@
       "get": {
         "summary": "Root",
         "description": "Service info.",
-        "operationId": "root__get__2",
+        "operationId": "root__get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20422,7 +21047,7 @@
       "get": {
         "summary": "Get Var",
         "description": "Compute VaR, CVaR, and optional Stress VaR for a returns series.\n\nPhase 1: caller supplies `returns[]` in query params.\nPhase 2: fetch from position-monitor returns history.\n\nArgs:\n    client_id: Client identifier (logged with event).\n    confidence: Confidence level in (0, 1). Default 0.99.\n    horizon_days: Holding period. Default 1-day.\n    scenario: Optional stress scenario name.\n    returns: Daily P&L returns as decimals (e.g. -0.02 for -2%).\n\nReturns:\n    VaRResponse with var, cvar, stress_var, confidence, horizon_days, scenario.",
-        "operationId": "get_var_risk_var_get__2",
+        "operationId": "get_var_risk_var_get",
         "parameters": [
           {
             "name": "client_id",
@@ -20630,7 +21255,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get__7",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -20650,7 +21275,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get__6",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -21188,7 +21813,7 @@
         ],
         "summary": "Get Defi Health",
         "description": "Return DeFi health aggregation: combined_hf, per-protocol breakdown.\n\nComputes from cached lending positions. Returns 404 if no lending\npositions are available for the client.",
-        "operationId": "get_defi_health_risk_defi_health_get__2",
+        "operationId": "get_defi_health_risk_defi_health_get",
         "parameters": [
           {
             "name": "client_id",
@@ -23521,7 +24146,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get__8",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -23541,7 +24166,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get__7",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -23561,7 +24186,7 @@
           "health"
         ],
         "summary": "Health",
-        "operationId": "health_health_get__9",
+        "operationId": "health_health_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -23581,607 +24206,7 @@
           "health"
         ],
         "summary": "Readiness",
-        "operationId": "readiness_readiness_get__8",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/strategy-service/health": {
-      "get": {
-        "tags": [
-          "strategy-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__10",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/strategy-service/readiness": {
-      "get": {
-        "tags": [
-          "strategy-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__9",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/instruments-service/health": {
-      "get": {
-        "tags": [
-          "instruments-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__11",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/instruments-service/readiness": {
-      "get": {
-        "tags": [
-          "instruments-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__10",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trading-agent-service/health": {
-      "get": {
-        "tags": [
-          "trading-agent-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__12",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/trading-agent-service/readiness": {
-      "get": {
-        "tags": [
-          "trading-agent-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__11",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-calendar-service/health": {
-      "get": {
-        "tags": [
-          "features-calendar-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__13",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-calendar-service/readiness": {
-      "get": {
-        "tags": [
-          "features-calendar-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__12",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-delta-one-service/health": {
-      "get": {
-        "tags": [
-          "features-delta-one-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__14",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-delta-one-service/readiness": {
-      "get": {
-        "tags": [
-          "features-delta-one-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__13",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-onchain-service/health": {
-      "get": {
-        "tags": [
-          "features-onchain-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__15",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-onchain-service/readiness": {
-      "get": {
-        "tags": [
-          "features-onchain-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__14",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-volatility-service/health": {
-      "get": {
-        "tags": [
-          "features-volatility-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__16",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-volatility-service/readiness": {
-      "get": {
-        "tags": [
-          "features-volatility-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__15",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-sports-service/health": {
-      "get": {
-        "tags": [
-          "features-sports-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__17",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-sports-service/readiness": {
-      "get": {
-        "tags": [
-          "features-sports-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__16",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-cross-instrument-service/health": {
-      "get": {
-        "tags": [
-          "features-cross-instrument-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__18",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-cross-instrument-service/readiness": {
-      "get": {
-        "tags": [
-          "features-cross-instrument-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__17",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-multi-timeframe-service/health": {
-      "get": {
-        "tags": [
-          "features-multi-timeframe-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__19",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-multi-timeframe-service/readiness": {
-      "get": {
-        "tags": [
-          "features-multi-timeframe-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__18",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-commodity-service/health": {
-      "get": {
-        "tags": [
-          "features-commodity-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__20",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/features-commodity-service/readiness": {
-      "get": {
-        "tags": [
-          "features-commodity-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__19",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/market-data-processing-service/health": {
-      "get": {
-        "tags": [
-          "market-data-processing-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__21",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/market-data-processing-service/readiness": {
-      "get": {
-        "tags": [
-          "market-data-processing-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__20",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ml-inference-service/health": {
-      "get": {
-        "tags": [
-          "ml-inference-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__22",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ml-inference-service/readiness": {
-      "get": {
-        "tags": [
-          "ml-inference-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__21",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ml-training-service/health": {
-      "get": {
-        "tags": [
-          "ml-training-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__23",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/ml-training-service/readiness": {
-      "get": {
-        "tags": [
-          "ml-training-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__22",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/batch-live-reconciliation-service/health": {
-      "get": {
-        "tags": [
-          "batch-live-reconciliation-service",
-          "health"
-        ],
-        "summary": "Health",
-        "operationId": "health_health_get__24",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          }
-        }
-      }
-    },
-    "/batch-live-reconciliation-service/readiness": {
-      "get": {
-        "tags": [
-          "batch-live-reconciliation-service",
-          "health"
-        ],
-        "summary": "Readiness",
-        "operationId": "readiness_readiness_get__23",
+        "operationId": "readiness_readiness_get",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -28872,66 +28897,6 @@
     {
       "name": "pnl-attribution-service",
       "description": "pnl-attribution-service"
-    },
-    {
-      "name": "strategy-service",
-      "description": "strategy-service"
-    },
-    {
-      "name": "instruments-service",
-      "description": "instruments-service"
-    },
-    {
-      "name": "trading-agent-service",
-      "description": "trading-agent-service"
-    },
-    {
-      "name": "features-calendar-service",
-      "description": "features-calendar-service"
-    },
-    {
-      "name": "features-delta-one-service",
-      "description": "features-delta-one-service"
-    },
-    {
-      "name": "features-onchain-service",
-      "description": "features-onchain-service"
-    },
-    {
-      "name": "features-volatility-service",
-      "description": "features-volatility-service"
-    },
-    {
-      "name": "features-sports-service",
-      "description": "features-sports-service"
-    },
-    {
-      "name": "features-cross-instrument-service",
-      "description": "features-cross-instrument-service"
-    },
-    {
-      "name": "features-multi-timeframe-service",
-      "description": "features-multi-timeframe-service"
-    },
-    {
-      "name": "features-commodity-service",
-      "description": "features-commodity-service"
-    },
-    {
-      "name": "market-data-processing-service",
-      "description": "market-data-processing-service"
-    },
-    {
-      "name": "ml-inference-service",
-      "description": "ml-inference-service"
-    },
-    {
-      "name": "ml-training-service",
-      "description": "ml-training-service"
-    },
-    {
-      "name": "batch-live-reconciliation-service",
-      "description": "batch-live-reconciliation-service"
     }
   ]
 }

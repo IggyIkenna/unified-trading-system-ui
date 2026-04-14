@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { STRATEGY_DISPLAY_NAMES, SHARE_CLASSES, SHARE_CLASS_LABELS, type DeFiStrategyId, type ShareClass } from "@/lib/types/defi";
+import { saveDefiStrategyConfig, deployDefiStrategy, getDefiStrategyConfig } from "@/lib/stores/defi-strategy-store";
 
 // ---------------------------------------------------------------------------
 // Demo strategy subset
@@ -560,17 +561,33 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           className="flex-1"
           size="sm"
           onClick={() => {
-            toast({
-              title: "Config saved",
-              description: `${STRATEGY_DISPLAY_NAMES[selectedStrategy]} configuration updated (mock).`,
-            });
+            if (current) {
+              saveDefiStrategyConfig(selectedStrategy, current as unknown as Record<string, unknown>);
+              toast({
+                title: "Config saved",
+                description: `${STRATEGY_DISPLAY_NAMES[selectedStrategy]} configuration persisted. Survives reload.`,
+              });
+            }
           }}
         >
           Save Config
         </Button>
         <Button
-          variant="outline"
+          variant="secondary"
           className="flex-1"
+          size="sm"
+          onClick={() => {
+            deployDefiStrategy(selectedStrategy);
+            toast({
+              title: "Strategy deployed",
+              description: `${STRATEGY_DISPLAY_NAMES[selectedStrategy]} deployed. Yield generation active.`,
+            });
+          }}
+        >
+          Deploy Strategy
+        </Button>
+        <Button
+          variant="outline"
           size="sm"
           onClick={() => {
             const runId = Math.floor(Math.random() * 9000) + 1000;
@@ -580,7 +597,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
             });
           }}
         >
-          Promote from Backtest
+          Promote
         </Button>
       </div>
     </div>

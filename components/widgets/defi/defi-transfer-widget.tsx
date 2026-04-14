@@ -16,6 +16,8 @@ import {
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
+import { toast } from "@/hooks/use-toast";
+import { getMockPrice } from "@/lib/mocks/fixtures/defi-swap";
 
 export function DeFiTransferWidget(_props: WidgetComponentProps) {
   const {
@@ -26,6 +28,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
     selectedChain,
     setSelectedChain,
     getBridgeRoutes,
+    executeDeFiOrder,
   } = useDeFiData();
 
   const [toAddress, setToAddress] = React.useState("");
@@ -164,7 +167,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 <Fuel className="size-3" />
                 Gas estimate
               </span>
-              <span className="font-mono">~0.0008 ETH ($2.76)</span>
+              <span className="font-mono">~{selectedChain === "SOLANA" ? "0.00025 SOL ($0.05)" : selectedChain === "POLYGON" ? "0.008 MATIC ($0.07)" : selectedChain === "ARBITRUM" ? "0.00004 ETH ($0.14)" : "0.0012 ETH ($4.08)"}</span>
             </div>
           </div>
 
@@ -186,7 +189,35 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             return null;
           })()}
 
-          <Button className="w-full" disabled={amountNum <= 0 || amountNum > balance || !toAddress}>
+          <Button
+            className="w-full"
+            disabled={amountNum <= 0 || amountNum > balance || !toAddress}
+            onClick={() => {
+              const price = getMockPrice(token);
+              executeDeFiOrder({
+                client_id: "internal-trader",
+                strategy_id: "AAVE_LENDING",
+                instruction_type: "TRANSFER",
+                algo_type: "DIRECT",
+                instrument_id: `TRANSFER:${token}@${selectedChain}`,
+                venue: `WALLET-${selectedChain}`,
+                side: "sell",
+                order_type: "market",
+                quantity: amountNum,
+                price,
+                max_slippage_bps: 0,
+                expected_output: amountNum * price,
+                benchmark_price: price,
+                asset_class: "DeFi",
+                lane: "defi",
+              });
+              toast({
+                title: "Transfer submitted",
+                description: `${amountNum} ${token} → ${toAddress.slice(0, 10)}... on ${selectedChain}`,
+              });
+              setAmount("");
+            }}
+          >
             <Send className="size-3.5 mr-1.5" />
             Send {token}
           </Button>
@@ -333,6 +364,31 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           <Button
             className="w-full"
             disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute}
+            onClick={() => {
+              const price = getMockPrice(token);
+              executeDeFiOrder({
+                client_id: "internal-trader",
+                strategy_id: "CROSS_CHAIN_SOR",
+                instruction_type: "TRANSFER",
+                algo_type: "SOR_CROSS_CHAIN",
+                instrument_id: `BRIDGE:${token}@${fromChain}-${toChain}`,
+                venue: selectedRoute ?? "ACROSS",
+                side: "sell",
+                order_type: "market",
+                quantity: amountNum,
+                price,
+                max_slippage_bps: 50,
+                expected_output: amountNum * price * 0.9995,
+                benchmark_price: price,
+                asset_class: "DeFi",
+                lane: "defi",
+              });
+              toast({
+                title: "Bridge submitted",
+                description: `${amountNum} ${token}: ${fromChain} → ${toChain} via ${selectedRoute}`,
+              });
+              setAmount("");
+            }}
           >
             <Globe className="size-3.5 mr-1.5" />
             Bridge {token} via {selectedRoute || "..."}

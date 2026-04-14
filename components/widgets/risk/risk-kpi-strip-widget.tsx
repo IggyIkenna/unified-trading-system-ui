@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { STRATEGY_RISK_PROFILES, MOCK_PORTFOLIO_DELTA } from "@/lib/mocks/fixtures/defi-risk";
 import { STRATEGY_DISPLAY_NAMES, type RiskLevel } from "@/lib/types/defi";
+import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import { LayoutGrid, LineChart as LineChartIcon } from "lucide-react";
@@ -41,7 +42,20 @@ function RiskLevelBadge({ level }: { level: RiskLevel }) {
 
 /** Returns true when any DeFi strategy has active positions (mock: always true for demo). */
 function useHasDefiStrategies(): boolean {
-  return STRATEGY_RISK_PROFILES.length > 0;
+  const [ledgerVersion, setLedgerVersion] = React.useState(0);
+
+  React.useEffect(() => {
+    const refresh = () => setLedgerVersion((v) => v + 1);
+    window.addEventListener("mock-order-filled", refresh);
+    window.addEventListener("mock-ledger-reset", refresh);
+    return () => {
+      window.removeEventListener("mock-order-filled", refresh);
+      window.removeEventListener("mock-ledger-reset", refresh);
+    };
+  }, []);
+
+  // Show DeFi risk section if risk profiles exist OR if user has placed DeFi trades
+  return STRATEGY_RISK_PROFILES.length > 0 || getFilledDefiOrders().length > 0;
 }
 
 // ---------------------------------------------------------------------------

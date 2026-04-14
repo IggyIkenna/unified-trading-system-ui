@@ -12,6 +12,7 @@ import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
 import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 
 export type { BookAlgoType, BookCategoryTab } from "@/lib/config/services/trading.config";
 export type { BookTrade };
@@ -328,6 +329,23 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
     setOrderState("submitting");
     setErrorMessage("");
     try {
+      // For DeFi trades, also write to the mock trade ledger so all tabs see the order
+      if (category === "defi") {
+        placeMockOrder({
+          strategy_id: strategyId === "manual" ? null : strategyId,
+          client_id: clientId || orgId || user?.org?.id || "internal-trader",
+          instrument_id: instrument,
+          venue,
+          side: side as "buy" | "sell",
+          order_type: executionMode === "execute" ? "market" : "limit",
+          quantity: qty,
+          price: priceNum || 0,
+          asset_class: "DeFi",
+          lane: "defi",
+          algo_type: defiAlgo || null,
+        });
+      }
+
       await placeOrder.mutateAsync({
         instrument,
         side,
@@ -367,6 +385,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
     counterparty,
     sourceReference,
     category,
+    defiAlgo,
     resetForm,
   ]);
 

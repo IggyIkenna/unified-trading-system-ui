@@ -1,6 +1,7 @@
 "use client";
 
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { placeMockOrder, getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
+import type { MockOrder } from "@/lib/api/mock-trade-ledger";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
@@ -143,21 +144,123 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
   const [flashSteps, setFlashSteps] = React.useState<FlashLoanStep[]>(INITIAL_FLASH_STEPS);
   const [transferMode, setTransferMode] = React.useState<"send" | "bridge">("send");
-  const [tradeHistory, setTradeHistory] = React.useState<TradeHistoryRow[]>(MOCK_TRADE_HISTORY);
+  const [ledgerVersion, setLedgerVersion] = React.useState(0);
+
+  // Derive trade history from mock ledger (persistent) + seed data
+  // Respects globalScope.strategyIds when set
+  const scopeStrategyIds = globalScope.strategyIds;
+
+  const tradeHistory = React.useMemo((): TradeHistoryRow[] => {
+    const seedRows = [...MOCK_TRADE_HISTORY];
+    let ledgerOrders = getFilledDefiOrders();
+
+    // If strategy filter is active, only include ledger orders matching selected strategies
+    if (scopeStrategyIds.length > 0) {
+      ledgerOrders = ledgerOrders.filter(
+        (o: MockOrder) => o.strategy_id && scopeStrategyIds.includes(o.strategy_id),
+      );
+    }
+
+    // Convert ledger orders to TradeHistoryRow format
+    const ledgerRows: TradeHistoryRow[] = ledgerOrders
+      .filter((o: MockOrder) => !seedRows.some((s) => s.timestamp === o.timestamp && s.venue === o.venue))
+      .map((o: MockOrder, idx: number): TradeHistoryRow => {
+        const instrUpper = o.instrument_id.toUpperCase();
+        const gas = instrUpper.includes("FLASH") || instrUpper.includes("MORPHO")
+          ? 25
+          : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") || instrUpper.includes("CURVE")
+            ? 15
+            : 5;
+        // Slippage = difference between expected price and actual fill price × quantity
+        const expectedPrice = o.price;
+        const fillPrice = o.average_fill_price ?? o.price;
+        const slippage = Math.abs(fillPrice - expectedPrice) * o.quantity;
+        return {
+          seq: seedRows.length + idx + 1,
+          timestamp: o.timestamp,
+          instruction_type: instrUpper.includes("FLASH") ? "FLASH_BORROW"
+            : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") ? "SWAP"
+            : instrUpper.includes("A_TOKEN") || instrUpper.includes("LEND") ? "LEND"
+            : instrUpper.includes("DEBT_TOKEN") || instrUpper.includes("BORROW") ? "BORROW"
+            : instrUpper.includes("LST") || instrUpper.includes("STAKE") ? "STAKE"
+            : instrUpper.includes("PERP") || instrUpper.includes("PERPETUAL") ? "TRADE"
+            : "TRANSFER",
+          algo_type: (o.algo_type ?? "DIRECT") as TradeHistoryRow["algo_type"],
+          instrument_id: o.instrument_id,
+          venue: o.venue,
+          amount: o.quantity,
+          price: fillPrice,
+          expected_output: o.quantity * expectedPrice,
+          actual_output: o.quantity * fillPrice,
+          instant_pnl: {
+            gross_pnl: 0,
+            price_slippage_usd: slippage,
+            gas_cost_usd: gas,
+            trading_fee_usd: 0,
+            bridge_fee_usd: 0,
+            net_pnl: -(gas + slippage),
+            slippage_exceeded: false,
+          },
+          running_pnl: 0, // computed below
+          status: "filled",
+          // Alpha P&L: execution fill price vs strategy reference/benchmark price
+          // Reference = mid-market at signal time (what strategy-service saw)
+          reference_price: expectedPrice,
+          alpha_pnl_usd: slippage > 0
+            ? -slippage // negative alpha = execution worse than benchmark
+            : 0,
+        };
+      });
+
+    const allRows = [...seedRows, ...ledgerRows];
+    // Recompute running P&L
+    let running = 0;
+    for (const row of allRows) {
+      running += row.instant_pnl.net_pnl;
+      row.running_pnl = running;
+      row.seq = allRows.indexOf(row) + 1;
+    }
+    return allRows;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ledgerVersion, scopeStrategyIds]);
+
+  // Listen for ledger changes (new orders filled, reset)
+  React.useEffect(() => {
+    const refresh = () => setLedgerVersion((v) => v + 1);
+    window.addEventListener("mock-order-filled", refresh);
+    window.addEventListener("mock-ledger-reset", refresh);
+    return () => {
+      window.removeEventListener("mock-order-filled", refresh);
+      window.removeEventListener("mock-ledger-reset", refresh);
+    };
+  }, []);
 
   const healthFactor = React.useMemo(() => computeWeightedMockHealthFactor(MOCK_TREASURY.per_strategy_balance), []);
 
   const swapRoute = MOCK_SWAP_ROUTE;
 
+  // Flash P&L computed from actual configured steps
   const flashPnl: DeFiFlashPnl = React.useMemo(() => {
-    const grossProfit = 185.6;
-    const flashFee = 27.5;
-    const gasEstimate = 42.3;
+    // Estimate based on step count and types
+    const stepCount = flashSteps.length;
+    // Each step has gas cost: ~$15 per swap, ~$8 per lend/borrow, ~$5 per transfer
+    const gasEstimate = flashSteps.reduce((sum, step) => {
+      const op = step.operationType?.toUpperCase() ?? "";
+      if (op.includes("SWAP")) return sum + 15;
+      if (op.includes("LEND") || op.includes("BORROW")) return sum + 8;
+      return sum + 5;
+    }, 0);
+    // Flash loan fee: Morpho = 0 bps, Aave = 5 bps (0.05%)
+    const totalAmount = flashSteps.reduce((s, step) => s + (parseFloat(step.amount) || 0), 0);
+    const flashFee = totalAmount * 3400 * 0.0005; // Aave fee estimate (conservative)
+    // Gross profit estimate: recursive staking yield differential
+    // weETH/ETH spread × leverage — realistic ~0.5% per recursive loop
+    const grossProfit = totalAmount * 3400 * 0.005;
     return {
-      grossProfit,
-      flashFee,
-      gasEstimate,
-      netPnl: grossProfit - flashFee - gasEstimate,
+      grossProfit: Math.round(grossProfit * 100) / 100,
+      flashFee: Math.round(flashFee * 100) / 100,
+      gasEstimate: Math.round(gasEstimate * 100) / 100,
+      netPnl: Math.round((grossProfit - flashFee - gasEstimate) * 100) / 100,
     };
   }, []);
 
@@ -264,36 +367,12 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
   const executeDeFiOrder = React.useCallback(
     (params: DeFiOrderParams) => {
+      // Write to persistent mock ledger — the trade history is derived from it
       placeMockOrder(params);
-
-      // Add new trade to history
-      const newTrade: TradeHistoryRow = {
-        seq: (tradeHistory.length || 0) + 1,
-        timestamp: new Date().toISOString(),
-        instruction_type: params.instruction_type,
-        algo_type: params.algo_type,
-        instrument_id: params.instrument_id,
-        venue: params.venue,
-        amount: params.quantity,
-        price: params.price,
-        expected_output: params.expected_output,
-        actual_output: params.expected_output * (1 - params.max_slippage_bps / 10000),
-        instant_pnl: {
-          gross_pnl: 0,
-          price_slippage_usd: 0,
-          gas_cost_usd: 5, // Mock gas cost
-          trading_fee_usd: 0,
-          bridge_fee_usd: 0,
-          net_pnl: -5,
-          slippage_exceeded: false,
-        },
-        running_pnl: (tradeHistory[tradeHistory.length - 1]?.running_pnl ?? 0) - 5,
-        status: "filled",
-      };
-
-      setTradeHistory((prev) => [...prev, newTrade]);
+      // The mock-order-filled event (fired after 200ms fill) triggers ledgerVersion++
+      // which recomputes tradeHistory from the ledger automatically
     },
-    [tradeHistory],
+    [],
   );
 
   // Paper mode: 10x testnet balances; Batch mode: read-only flag

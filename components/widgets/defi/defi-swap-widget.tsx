@@ -21,6 +21,7 @@ import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
 import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { generateSwapRoute } from "@/lib/mocks/fixtures/defi-swap";
 
 export function DeFiSwapWidget(props: WidgetComponentProps) {
   const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
@@ -55,7 +56,12 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
   const isGasInsufficient = gasBalance < gasThreshold;
 
   const amountNum = parseFloat(amountIn) || 0;
-  const route = amountNum > 0 && swapRoute ? swapRoute : null;
+
+  // Dynamic route: recomputes on every input change (amount, tokens, algo, chain)
+  const route = React.useMemo(() => {
+    if (amountNum <= 0) return null;
+    return generateSwapRoute(tokenIn, tokenOut, amountNum, algoType, selectedChain);
+  }, [amountNum, tokenIn, tokenOut, algoType, selectedChain]);
 
   return (
     <div className="space-y-3 p-1">
@@ -234,8 +240,9 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
       )}
 
       {route && (
-        <CollapsibleSection title="Route details" defaultOpen={false}>
+        <CollapsibleSection title="Route details" defaultOpen={true}>
           <div className="px-2 pb-2 space-y-2">
+            {/* Token path */}
             <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
               <div className="flex items-center gap-1.5 text-xs font-mono">
                 {route.path.map((token, i) => (
@@ -249,22 +256,60 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
                   </React.Fragment>
                 ))}
               </div>
-              <div className="text-[10px] text-muted-foreground">{route.pools.join(" › ")}</div>
               <Separator />
               <div className="grid grid-cols-2 gap-1 text-xs">
                 <span className="text-muted-foreground">Algo</span>
                 <span className="font-mono">{swapAlgos.find((a) => a.value === algoType)?.label ?? algoType}</span>
-                <span className="text-muted-foreground">Price impact</span>
+                <span className="text-muted-foreground">Ref price</span>
+                <span className="font-mono">{route.reference_price?.toFixed(6) ?? "—"}</span>
+                <span className="text-muted-foreground">Agg. impact</span>
                 <span className={cn("font-mono", route.priceImpactPct > 0.5 ? "text-rose-400" : "text-emerald-400")}>
-                  {formatPercent(route.priceImpactPct, 2)}
+                  {(route.priceImpactPct * 100).toFixed(2)} bps
                 </span>
-                <span className="text-muted-foreground">Gas estimate</span>
+                <span className="text-muted-foreground">Total gas</span>
                 <span className="font-mono">
                   {formatNumber(route.gasEstimateEth, 4)} ETH
                   <span className="text-muted-foreground ml-1">(${formatNumber(route.gasEstimateUsd, 2)})</span>
                 </span>
               </div>
             </div>
+
+            {/* Per-venue fill breakdown */}
+            {route.venue_fills && route.venue_fills.length > 0 && (
+              <div className="rounded-lg border overflow-hidden">
+                <div className="bg-muted/50 px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                  SOR Venue Splits ({route.venue_fills.length} venues)
+                </div>
+                <table className="w-full text-[10px]">
+                  <thead>
+                    <tr className="border-b text-muted-foreground">
+                      <th className="px-2 py-1 text-left">Venue</th>
+                      <th className="px-2 py-1 text-right">Alloc</th>
+                      <th className="px-2 py-1 text-right">Amount</th>
+                      <th className="px-2 py-1 text-right">Fill Price</th>
+                      <th className="px-2 py-1 text-right">Impact</th>
+                      <th className="px-2 py-1 text-right">Fee</th>
+                      <th className="px-2 py-1 text-right">Gas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {route.venue_fills.map((f) => (
+                      <tr key={f.venue} className="border-b last:border-0 hover:bg-muted/30">
+                        <td className="px-2 py-1 font-mono">{f.venue_display}</td>
+                        <td className="px-2 py-1 text-right font-mono font-medium">{f.allocation_pct.toFixed(1)}%</td>
+                        <td className="px-2 py-1 text-right font-mono">{formatNumber(f.input_amount, 4)}</td>
+                        <td className="px-2 py-1 text-right font-mono">{f.fill_price.toFixed(6)}</td>
+                        <td className={cn("px-2 py-1 text-right font-mono", f.price_impact_bps > 5 ? "text-rose-400" : "text-emerald-400")}>
+                          {f.price_impact_bps.toFixed(2)} bps
+                        </td>
+                        <td className="px-2 py-1 text-right font-mono text-muted-foreground">{f.fee_bps} bps</td>
+                        <td className="px-2 py-1 text-right font-mono">${formatNumber(f.gas_usd, 2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </CollapsibleSection>
       )}
@@ -279,14 +324,14 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             instruction_type: "SWAP",
             algo_type: algoType,
             instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
-            venue: "UNISWAPV3-ETHEREUM",
+            venue: route?.venue_fills?.map((f) => f.venue).join("+") ?? "UNISWAPV3-ETHEREUM",
             side: "buy",
             order_type: "market",
             quantity: amountNum,
             price: route?.expectedOutput ?? 0,
             max_slippage_bps: Number(slippage) * 100,
             expected_output: route?.expectedOutput ?? 0,
-            benchmark_price: route?.expectedOutput ?? 0,
+            benchmark_price: route?.reference_price ?? 0,
             asset_class: "DeFi",
             lane: "defi",
           });

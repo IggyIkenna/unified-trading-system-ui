@@ -31,6 +31,7 @@ import { DeFiTradeHistoryWidget } from "./defi-trade-history-widget";
 import { DeFiTransferWidget } from "./defi-transfer-widget";
 import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
 import { DeFiWaterfallWeightsWidget } from "./defi-waterfall-weights-widget";
+import { DeFiYieldChartWidget } from "./defi-yield-chart-widget";
 
 registerPresets("defi", [
   {
@@ -81,7 +82,8 @@ registerPresets("defi", [
       { widgetId: "defi-waterfall-weights", instanceId: "defi-waterfall-weights-wt", x: 0, y: 13, w: 4, h: 6 },
       { widgetId: "defi-reward-pnl", instanceId: "defi-reward-pnl-wt", x: 4, y: 13, w: 4, h: 6 },
       { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-wt", x: 8, y: 10, w: 4, h: 6 },
-      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-wt", x: 0, y: 19, w: 12, h: 5 },
+      { widgetId: "defi-yield-chart", instanceId: "defi-yield-chart-wt", x: 0, y: 19, w: 12, h: 7 },
+      { widgetId: "defi-trade-history", instanceId: "defi-trade-history-wt", x: 0, y: 26, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -351,4 +353,20 @@ registerWidget({
   availableOn: ["defi"],
   singleton: true,
   component: DeFiRewardPnlWidget,
+});
+
+registerWidget({
+  id: "defi-yield-chart",
+  label: "Yield Performance",
+  description: "Time-series yield curves, cumulative P&L, and APY comparison across all DeFi strategies.",
+  icon: BarChart3,
+  minW: 6,
+  minH: 5,
+  defaultW: 12,
+  defaultH: 7,
+  requiredEntitlements: ["defi-trading"],
+  category: "DeFi",
+  availableOn: ["defi"],
+  singleton: true,
+  component: DeFiYieldChartWidget,
 });

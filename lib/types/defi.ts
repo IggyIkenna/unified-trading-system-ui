@@ -243,6 +243,16 @@ export interface TradeHistoryRow {
   running_pnl: number; // cumulative net P&L
   status: "pending" | "confirmed" | "filled" | "failed" | "reverted";
   tx_hash?: string;
+  /** Strategy reference price at signal time — for alpha P&L */
+  reference_price?: number;
+  /** Alpha P&L: difference between execution price and reference price × quantity */
+  alpha_pnl_usd?: number;
+  /** Per-venue child fills for SOR orders */
+  venue_fills?: VenueFill[];
+  /** Is this a child fill row (indented under parent SOR order)? */
+  is_child_fill?: boolean;
+  /** Parent order seq number (for child fills) */
+  parent_seq?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -390,6 +400,18 @@ export interface LendingProtocol {
   borrowApy: Record<string, number>;
 }
 
+export interface VenueFill {
+  venue: string;
+  venue_display: string;
+  allocation_pct: number;
+  input_amount: number;
+  fill_price: number;
+  fill_qty: number;
+  price_impact_bps: number;
+  gas_usd: number;
+  fee_bps: number;
+}
+
 export interface SwapRoute {
   path: string[];
   pools: string[];
@@ -398,6 +420,10 @@ export interface SwapRoute {
   gasEstimateEth: number;
   gasEstimateUsd: number;
   algo_type: AlgoType;
+  /** Per-venue fill breakdown for SOR orders */
+  venue_fills?: VenueFill[];
+  /** Reference (mid) price at time of routing — used for alpha P&L */
+  reference_price?: number;
 }
 
 export interface LiquidityPool {
