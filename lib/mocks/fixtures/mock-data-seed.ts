@@ -303,6 +303,41 @@ export const SEED_STRATEGIES: SeedStrategy[] = [
     clientId: "atlas-defi",
   },
 
+  // Elysium — DeFi demo client
+  {
+    id: "ELYSIUM_AAVE_LENDING",
+    name: "AAVE Lending",
+    archetype: "yield",
+    status: "live",
+    sharpe: 1.65,
+    mtdReturn: 5.4,
+    aum: 4800000,
+    orgId: "elysium",
+    clientId: "elysium-defi",
+  },
+  {
+    id: "ELYSIUM_BASIS_TRADE",
+    name: "Multi-Venue Basis Trade",
+    archetype: "basis",
+    status: "live",
+    sharpe: 2.14,
+    mtdReturn: 2.8,
+    aum: 5100000,
+    orgId: "elysium",
+    clientId: "elysium-defi",
+  },
+  {
+    id: "ELYSIUM_RECURSIVE_STAKED_BASIS",
+    name: "Recursive Staked Basis (Hedged)",
+    archetype: "yield",
+    status: "live",
+    sharpe: 1.88,
+    mtdReturn: 6.2,
+    aum: 2900000,
+    orgId: "elysium",
+    clientId: "elysium-defi",
+  },
+
   // Odum Internal — TradFi Desk
   {
     id: "strat-cme-basis",
@@ -1073,6 +1108,73 @@ export const SEED_POSITIONS: SeedPosition[] = [
     "strat-commodity-trend",
     "Commodity Trend",
   ),
+
+  // Elysium — DeFi demo client
+  pos(
+    "elysium-pos-001",
+    "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
+    "AAVEV3-ETHEREUM",
+    "long",
+    100000,
+    1.0,
+    1.0,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_AAVE_LENDING",
+    "AAVE Lending",
+  ),
+  pos(
+    "elysium-pos-002",
+    "WALLET:SPOT_ASSET:ETH",
+    "WALLET",
+    "long",
+    30,
+    3000,
+    3420,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_BASIS_TRADE",
+    "Multi-Venue Basis Trade",
+  ),
+  pos(
+    "elysium-pos-003",
+    "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+    "HYPERLIQUID",
+    "short",
+    30,
+    3000,
+    3420,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_BASIS_TRADE",
+    "Multi-Venue Basis Trade",
+  ),
+  pos(
+    "elysium-pos-004",
+    "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
+    "AAVEV3-ETHEREUM",
+    "long",
+    96,
+    3100,
+    3420,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_RECURSIVE_STAKED_BASIS",
+    "Recursive Staked Basis (Hedged)",
+  ),
+  pos(
+    "elysium-pos-005",
+    "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
+    "AAVEV3-ETHEREUM",
+    "short",
+    60,
+    3000,
+    3420,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_RECURSIVE_STAKED_BASIS",
+    "Recursive Staked Basis (Hedged)",
+  ),
 ];
 
 // ── Orders ───────────────────────────────────────────────────────────────────
@@ -1499,6 +1601,68 @@ export const SEED_ORDERS: SeedOrder[] = [
     "meridian-macro",
     "strat-commodity-trend",
   ),
+
+  // Elysium — DeFi demo client
+  ord(
+    "elysium-ord-001",
+    "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
+    "AAVEV3-ETHEREUM",
+    "buy",
+    100000,
+    1.0,
+    100000,
+    "filled",
+    "market",
+    3,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_AAVE_LENDING",
+  ),
+  ord(
+    "elysium-ord-002",
+    "WALLET:SPOT_ASSET:ETH",
+    "WALLET",
+    "buy",
+    30,
+    3000,
+    30,
+    "filled",
+    "market",
+    5,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_BASIS_TRADE",
+  ),
+  ord(
+    "elysium-ord-003",
+    "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+    "HYPERLIQUID",
+    "sell",
+    30,
+    3000,
+    30,
+    "filled",
+    "market",
+    5,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_BASIS_TRADE",
+  ),
+  ord(
+    "elysium-ord-004",
+    "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
+    "AAVEV3-ETHEREUM",
+    "buy",
+    10,
+    3100,
+    0,
+    "open",
+    "limit",
+    0,
+    "elysium",
+    "elysium-defi",
+    "ELYSIUM_RECURSIVE_STAKED_BASIS",
+  ),
 ];
 
 // ── Trades ───────────────────────────────────────────────────────────────────
@@ -1547,7 +1711,14 @@ function tradeTypeForVenue(venue: string): "Exchange" | "OTC" | "DeFi" | "Manual
     return "DeFi";
   }
   if (venue === "OTC Desk") return "OTC";
-  if (venue.startsWith("CME") || venue.startsWith("ICE") || venue.startsWith("NYSE") || venue.startsWith("NASDAQ") || venue.startsWith("CBOE")) return "Exchange";
+  if (
+    venue.startsWith("CME") ||
+    venue.startsWith("ICE") ||
+    venue.startsWith("NYSE") ||
+    venue.startsWith("NASDAQ") ||
+    venue.startsWith("CBOE")
+  )
+    return "Exchange";
   if (venue === "MULTI_VENUE") return "Exchange"; // Sports
   return "Exchange";
 }
