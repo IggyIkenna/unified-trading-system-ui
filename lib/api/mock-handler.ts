@@ -212,8 +212,10 @@ const _defaultFilter = {
   date: getToday(),
 };
 
-// Compute once per page load, refreshed on login
-const defaultFilter = buildPersonaFilter();
+// Lazy — recomputed on every request so it picks up the logged-in user
+function getDefaultFilter() {
+  return buildPersonaFilter();
+}
 
 /** Classify an instrument/venue combo into an asset class for filtering */
 function classifyAssetClass(instrument: string, venue: string): string {
@@ -232,7 +234,7 @@ function classifyAssetClass(instrument: string, venue: string): string {
 
 /** Filter an array of items with instrument/venue by the persona's asset classes */
 function filterByPersonaAssetClass<T extends { instrument?: string; venue?: string; instrument_id?: string }>(items: T[]): T[] {
-  const ac = defaultFilter.assetClasses;
+  const ac = getDefaultFilter().assetClasses;
   if (!ac || ac.length === 0) return items;
   return items.filter((item) => {
     const inst = item.instrument ?? item.instrument_id ?? "";
@@ -250,7 +252,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
 
   // ─── Shared computed data (single source of truth for all endpoints) ───
   // All position/PnL/exposure numbers derive from this so they're consistent
-  const perf = getStrategyPerformance(defaultFilter);
+  const perf = getStrategyPerformance(getDefaultFilter());
   const totalExposure = perf.reduce((s, p) => s + p.exposure, 0);
   const totalNav = perf.reduce((s, p) => s + p.nav, 0);
   const totalPnl = perf.reduce((s, p) => s + p.pnl, 0);
@@ -435,15 +437,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json(paginatedMockResponse(CLIENTS, pg));
   }
   if (route === "/api/trading/pnl") {
-    return json(getAggregatedPnL(defaultFilter));
+    return json(getAggregatedPnL(getDefaultFilter()));
   }
   if (route === "/api/trading/timeseries") {
-    const ts = getAggregatedTimeSeries(defaultFilter);
+    const ts = getAggregatedTimeSeries(getDefaultFilter());
     return json({ timeseries: ts });
   }
   if (route === "/api/trading/performance") {
     // Enrich with fields the strategies page needs (performance sub-object, venues, etc.)
-    const perf = getStrategyPerformance(defaultFilter);
+    const perf = getStrategyPerformance(getDefaultFilter());
     const enriched = perf.map((s, i) => ({
       ...s,
       description: `${s.archetype} strategy on ${s.assetClass}`,
@@ -464,7 +466,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json(paginatedMockResponse(enriched, pg));
   }
   if (route === "/api/trading/live-batch-delta") {
-    return json(getLiveBatchDelta(defaultFilter));
+    return json(getLiveBatchDelta(getDefaultFilter()));
   }
 
   // --- Market Data ---
@@ -1172,7 +1174,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- Alerts ---
   if (route === "/api/alerts/active") {
     // Notification bell uses this — return unacknowledged alerts
-    const ac = defaultFilter.assetClasses;
+    const ac = getDefaultFilter().assetClasses;
     const filteredAlerts = ac && ac.length > 0
       ? STRATEGY_ALERTS.filter((a) => !a.assetClass || ac.includes(a.assetClass))
       : STRATEGY_ALERTS;
@@ -1189,7 +1191,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   if (route === "/api/alerts/list") {
-    const ac2 = defaultFilter.assetClasses;
+    const ac2 = getDefaultFilter().assetClasses;
     const scopedAlerts = ac2 && ac2.length > 0
       ? STRATEGY_ALERTS.filter((a) => !a.assetClass || ac2.includes(a.assetClass))
       : STRATEGY_ALERTS;
