@@ -162,13 +162,14 @@ export const PERSONAS: readonly AuthPersona[] = [
     role: "client",
     org: { id: "elysium", name: "Elysium" },
     entitlements: [
-      "data-pro",
       "execution-full",
       "defi-trading",
       "reporting",
+      "investor-relations",
+      "investor-platform",
     ],
     description:
-      "DeFi client demo. DeFi trading tab + general terminal (overview, positions, orders, P&L, risk, alerts, book, accounts, instructions). Strategy families LOCKED. Sports/Predictions/Options LOCKED. Build/Data LOCKED. Strategies: AAVE_LENDING, BASIS_TRADE, STAKED_BASIS, RECURSIVE_STAKED_BASIS (demo only).",
+      "DeFi client. Trading (DeFi tab + terminal), Observe, Reports, and Platform presentation. Research/Data/Strategy families LOCKED. Sports/Predictions/Options LOCKED.",
   },
 ] as const;
 

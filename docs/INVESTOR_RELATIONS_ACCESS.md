@@ -17,6 +17,12 @@ https://odum-research.com/login?redirect=/investor-relations
 | **Platform prospects** | `prospect-platform@odum-research.co.uk` | `OdumPlatform2026!` | Platform deck + data/execution/research/reporting demos |
 | **Regulatory prospects** | `prospect-regulatory@odum-research.co.uk` | `OdumReg2026!` | Regulatory deck + reporting/compliance demos |
 
+## Client Demo Accounts
+
+| Account | Email | Password | Sees |
+|---|---|---|---|
+| **Patrick (DeFi client)** | `patrick@bankelysium.com` | `OdumDefi2026!` (prod) / `demo` (local) | Trading (DeFi), Observe, Reports, Platform presentation. Research/Data/other families LOCKED. |
+
 ## Presentations
 
 | URL | Deck | Slides |
