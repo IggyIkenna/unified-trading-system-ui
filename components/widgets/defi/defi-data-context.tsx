@@ -138,7 +138,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   // Check if selected org has a DeFi desk
   const hasDefiDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
-    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk");
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && (c.id === "defi-desk" || c.id.includes("defi")));
   }, [globalScope.organizationIds]);
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
