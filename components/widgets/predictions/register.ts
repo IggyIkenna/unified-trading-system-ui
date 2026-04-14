@@ -25,7 +25,7 @@ import { PredSettledPositionsWidget } from "./pred-settled-positions-widget";
 import { PredTopMarketsWidget } from "./pred-top-markets-widget";
 import { PredTradePanelWidget } from "./pred-trade-panel-widget";
 
-const PRED_ENTITLEMENTS = ["execution-basic", "execution-full"] as const;
+const PRED_ENTITLEMENTS = ["predictions-trading"] as const;
 
 registerPresets("predictions", [
   {
