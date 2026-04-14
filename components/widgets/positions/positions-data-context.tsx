@@ -103,7 +103,7 @@ interface PositionRecord {
 const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   {
     id: "defi-aave-ausdc-001",
-    strategy_id: "AAVE_LENDING",
+    strategy_id: "ELYSIUM_AAVE_LENDING",
     strategy_name: "AAVE Lending",
     instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
     side: "LONG",
@@ -124,7 +124,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-basis-eth-spot-001",
-    strategy_id: "BASIS_TRADE",
+    strategy_id: "ELYSIUM_BASIS_TRADE",
     strategy_name: "Multi-Venue Basis Trade",
     instrument: "WALLET:SPOT_ASSET:ETH",
     side: "LONG",
@@ -145,7 +145,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-basis-eth-perp-001",
-    strategy_id: "BASIS_TRADE",
+    strategy_id: "ELYSIUM_BASIS_TRADE",
     strategy_name: "Multi-Venue Basis Trade",
     instrument: "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
     side: "SHORT",
@@ -166,7 +166,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-recursive-collateral-001",
-    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_id: "ELYSIUM_RECURSIVE_STAKED_BASIS",
     strategy_name: "Recursive Staked Basis (Hedged)",
     instrument: "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
     side: "LONG",
@@ -187,7 +187,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-recursive-debt-001",
-    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_id: "ELYSIUM_RECURSIVE_STAKED_BASIS",
     strategy_name: "Recursive Staked Basis (Hedged)",
     instrument: "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
     side: "SHORT",
@@ -213,9 +213,14 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
 // ---------------------------------------------------------------------------
 
 function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
-  const filledDefi = getOrders().filter(
-    (o: MockOrder) => o.asset_class === "DeFi" && o.status === "filled" && o.lane === "defi",
-  );
+  // Transient operations (transfers, bridges, spot swaps) are balance movements,
+  // not leveraged or derivative positions — skip them so they don't show up as
+  // phantom LONG/SHORT rows in the positions tab.
+  const filledDefi = getOrders().filter((o: MockOrder) => {
+    if (o.asset_class !== "DeFi" || o.status !== "filled" || o.lane !== "defi") return false;
+    const instr = o.instrument_id.toUpperCase();
+    return !instr.startsWith("TRANSFER:") && !instr.startsWith("BRIDGE:") && !instr.startsWith("SWAP:");
+  });
 
   // Group by instrument_id to accumulate quantity changes
   const deltaMap = new Map<string, { order: MockOrder; qtyDelta: number }>();
@@ -392,7 +397,9 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
           queryClient.setQueryData(["positions", undefined], (old: unknown) => {
             if (!old) return old;
             const oldData = old as Record<string, unknown>;
-            const oldPositions = ((oldData as Record<string, unknown>).data ?? (oldData as Record<string, unknown>).positions ?? oldData) as Record<string, unknown>[];
+            const oldPositions = ((oldData as Record<string, unknown>).data ??
+              (oldData as Record<string, unknown>).positions ??
+              oldData) as Record<string, unknown>[];
             if (!Array.isArray(oldPositions)) return old;
             const updateMap = new Map(
               updatedPositions.map((p) => [
@@ -447,7 +454,11 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
 
   const positions: PositionRecord[] = React.useMemo(() => {
     const raw = positionsRaw as Record<string, unknown> | undefined;
-    const arr = raw ? (Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).positions)) : undefined;
+    const arr = raw
+      ? Array.isArray(raw)
+        ? raw
+        : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).positions)
+      : undefined;
     let result: PositionRecord[] = [];
 
     if (Array.isArray(arr) && arr.length > 0) {
@@ -504,7 +515,14 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     }
     return result;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds, ledgerRefreshCounter]);
+  }, [
+    positionsRaw,
+    scopeStrategyIds,
+    globalScope.organizationIds,
+    globalScope.clientIds,
+    globalScope.strategyIds,
+    ledgerRefreshCounter,
+  ]);
 
   const filteredPositions = React.useMemo(() => {
     let result = positions;
@@ -537,12 +555,8 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       totalNotional: filteredPositions.reduce((sum, p) => sum + getNotional(p), 0),
       unrealizedPnL: filteredPositions.reduce((sum, p) => sum + p.net_pnl, 0),
       totalMargin: filteredPositions.reduce((sum, p) => sum + p.margin, 0),
-      longExposure: filteredPositions
-        .filter((p) => p.side === "LONG")
-        .reduce((sum, p) => sum + getNotional(p), 0),
-      shortExposure: filteredPositions
-        .filter((p) => p.side === "SHORT")
-        .reduce((sum, p) => sum + getNotional(p), 0),
+      longExposure: filteredPositions.filter((p) => p.side === "LONG").reduce((sum, p) => sum + getNotional(p), 0),
+      shortExposure: filteredPositions.filter((p) => p.side === "SHORT").reduce((sum, p) => sum + getNotional(p), 0),
     };
   }, [filteredPositions]);
 

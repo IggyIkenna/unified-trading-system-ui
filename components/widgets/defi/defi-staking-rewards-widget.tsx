@@ -4,7 +4,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Gift, DollarSign, Clock } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -98,8 +98,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
                   {reward.token === "ETHFI" ? "Next airdrop" : "Next payout"}
                 </span>
                 <span className="font-mono">
-                  {formatDate(reward.next_payout)}{" "}
-                  <span className="text-muted-foreground">({days}d)</span>
+                  {formatDate(reward.next_payout)} <span className="text-muted-foreground">({days}d)</span>
                 </span>
               </div>
             </div>
@@ -112,8 +111,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
                   className="flex-1 text-xs h-7"
                   onClick={() => {
                     claimReward(reward.token);
-                    toast({
-                      title: "Reward claimed",
+                    toast.success("Reward claimed", {
                       description: `Claimed ${formatNumber(reward.accrued_amount, 2)} ${reward.token} (mock).`,
                     });
                   }}
@@ -126,8 +124,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
                   className="flex-1 text-xs h-7 bg-emerald-600 hover:bg-emerald-700"
                   onClick={() => {
                     claimAndSellReward(reward.token);
-                    toast({
-                      title: "Claimed & sold",
+                    toast.success("Claimed & sold", {
                       description: `Claimed and sold ${formatNumber(reward.accrued_amount, 2)} ${reward.token} for $${formatNumber(reward.accrued_value_usd, 2)} (mock).`,
                     });
                   }}
@@ -155,7 +152,11 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
         <div className="border-t border-border/40 pt-1 flex items-center justify-between text-xs font-medium">
           <span>Total Reward P&L</span>
           <span className="font-mono text-emerald-400">
-            +${formatNumber(Object.values(rewardPnl).reduce((s, f) => s + f.amount, 0), 0)}
+            +$
+            {formatNumber(
+              Object.values(rewardPnl).reduce((s, f) => s + f.amount, 0),
+              0,
+            )}
           </span>
         </div>
       </div>

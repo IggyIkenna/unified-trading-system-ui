@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Coins, TrendingUp } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -139,8 +139,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
             lane: "defi",
           });
           setAmount("");
-          toast({
-            title: "Staking order placed",
+          toast.success("Staking order placed", {
             description: `${operation} ${amountNum} ${selected.asset} on ${protocol} (mock ledger)`,
           });
         }}

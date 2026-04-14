@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, ArrowDown, Shield } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
 import { calculateHealthFactorDelta, getAssetParams } from "@/lib/mocks/fixtures/defi-protocol-params";
@@ -245,22 +245,21 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
             client_id: "internal-trader",
             strategy_id: "AAVE_LENDING",
             instruction_type: operation,
-            algo_type: "BENCHMARK_FILL",
+            algo_type: "DIRECT",
             instrument_id: `${selectedProtocol.venue_id}:${operation}:${asset}`,
             venue: selectedProtocol.venue_id,
             side: operation === "LEND" || operation === "REPAY" ? "buy" : "sell",
             order_type: "market",
             quantity: amountNum,
-            price: operation === "LEND" ? supplyApy : borrowApy,
+            price: 1,
             max_slippage_bps: maxSlippageBps,
             expected_output: amountNum * (1 - maxSlippageBps / 10000),
-            benchmark_price: operation === "LEND" ? supplyApy : borrowApy,
+            benchmark_price: 1,
             asset_class: "DeFi",
             lane: "defi",
           });
           setAmount("");
-          toast({
-            title: "DeFi order placed",
+          toast.success("DeFi order placed", {
             description: `${operation} ${amountNum} ${asset} on ${selectedLendingProtocol} (mock ledger)`,
           });
         }}

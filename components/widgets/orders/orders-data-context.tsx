@@ -151,14 +151,18 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
 
   // Listen for mock ledger changes so DeFi/Book orders appear in this tab
   React.useEffect(() => {
-    const refresh = () => setLedgerVersion((v) => v + 1);
+    const refresh = () => {
+      setLedgerVersion((v) => v + 1);
+      // Re-fetch from mock handler so the API response includes the new ledger order
+      refetch();
+    };
     window.addEventListener("mock-order-filled", refresh);
     window.addEventListener("mock-ledger-reset", refresh);
     return () => {
       window.removeEventListener("mock-order-filled", refresh);
       window.removeEventListener("mock-ledger-reset", refresh);
     };
-  }, []);
+  }, [refetch]);
 
   const scopeStrategyIds = React.useMemo(
     () =>
@@ -208,25 +212,25 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     const seedIds = new Set(seedOrders.map((o) => o.order_id));
     const ledgerOrders: OrderRecord[] = getLedgerOrders()
       .filter((lo: MockOrder) => !seedIds.has(lo.id))
-      .map((lo: MockOrder, idx: number): OrderRecord => ({
-        order_id: lo.id,
-        instrument: lo.instrument_id,
-        side: lo.side.toUpperCase() as "BUY" | "SELL",
-        type: lo.order_type,
-        price: lo.price,
-        mark_price: lo.average_fill_price ?? lo.price,
-        quantity: lo.quantity,
-        filled: lo.filled_quantity,
-        status: lo.status.toUpperCase(),
-        venue: lo.venue,
-        strategy_id: lo.strategy_id ?? "",
-        strategy_name: lo.strategy_id ?? lo.asset_class,
-        edge_bps: Math.round((mock01(idx, 801) * 10 - 2) * 10) / 10,
-        instant_pnl: lo.status === "filled"
-          ? -Math.round((lo.quantity * lo.price * 0.0005 + 5) * 100) / 100
-          : 0,
-        created_at: lo.created_at,
-      }));
+      .map(
+        (lo: MockOrder, idx: number): OrderRecord => ({
+          order_id: lo.id,
+          instrument: lo.instrument_id,
+          side: lo.side.toUpperCase() as "BUY" | "SELL",
+          type: lo.order_type,
+          price: lo.price,
+          mark_price: lo.average_fill_price ?? lo.price,
+          quantity: lo.quantity,
+          filled: lo.filled_quantity,
+          status: lo.status.toUpperCase(),
+          venue: lo.venue,
+          strategy_id: lo.strategy_id ?? "",
+          strategy_name: lo.strategy_id ?? lo.asset_class,
+          edge_bps: Math.round((mock01(idx, 801) * 10 - 2) * 10) / 10,
+          instant_pnl: lo.status === "filled" ? -Math.round((lo.quantity * lo.price * 0.0005 + 5) * 100) / 100 : 0,
+          created_at: lo.created_at,
+        }),
+      );
 
     return [...seedOrders, ...ledgerOrders];
     // eslint-disable-next-line react-hooks/exhaustive-deps
