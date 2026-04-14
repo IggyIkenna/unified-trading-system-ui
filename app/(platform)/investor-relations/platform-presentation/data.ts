@@ -148,8 +148,52 @@ export const slides = [
       { value: "Same", label: "Backtest = Live" },
     ],
   },
+  // ── Slide 6: See Each Scenario Live ────────────────────────
   {
     id: 6,
+    type: "demo",
+    title: "See Each Scenario Live",
+    subtitle: "Click any scenario to see the relevant part of the platform.",
+    sections: [
+      {
+        name: "Scenario 1: Execution",
+        desc: "You send signals \u2014 see how we execute across venues, with fill quality and slippage analysis",
+        link: "/services/trading/positions",
+        image: "/screenshots/dashboard.png",
+      },
+      {
+        name: "Scenario 2: Research & Backtest",
+        desc: "Build strategies on our infrastructure \u2014 feature library, backtesting, promote to live",
+        link: "/services/research/strategy/overview",
+        image: "/screenshots/strategy-overview.png",
+      },
+      {
+        name: "Scenario 3: Bespoke Build",
+        desc: "See the instruments and data coverage available for bespoke strategy development",
+        link: "/services/data/instruments",
+        image: "/screenshots/instruments.png",
+      },
+      {
+        name: "Returns Attribution",
+        desc: "10-factor waterfall \u2014 see exactly where returns come from across all scenarios",
+        link: "/services/trading/pnl",
+      },
+      {
+        name: "Risk & Scenarios",
+        desc: "Stress testing, historical replay, scenario analysis \u2014 shared across all engagement types",
+        link: "/services/observe/scenarios",
+      },
+      {
+        name: "Executive Reporting",
+        desc: "Client reporting portal included with every engagement \u2014 compliance, settlement, audit trail",
+        link: "/services/reports/executive",
+        image: "/screenshots/executive.png",
+      },
+    ],
+    note: "All views run on the same infrastructure. What you see in the demo is the same system running our own capital.",
+  },
+  {
+    id: 7,
     type: "breadth-matrix",
     title: "What the Platform Covers",
     subtitle: "Every cell runs on shared infrastructure.",
@@ -214,7 +258,7 @@ export const slides = [
   },
   // ── Slide 6: Strategy Catalog ──────────────────────────────
   {
-    id: 7,
+    id: 8,
     type: "breadth-matrix",
     title: "Strategies Available on the Platform",
     subtitle: "35 strategies across 5 asset classes. Bespoke builds can combine any of these or create new ones.",
@@ -278,7 +322,7 @@ export const slides = [
     ],
   },
   {
-    id: 8,
+    id: 9,
     type: "doctrine",
     title: "The Gap That Does Not Exist Here",
     subtitle:
@@ -310,7 +354,7 @@ export const slides = [
       "The research-to-production handoff is a configuration change. That is the single most important thing about this platform.",
   },
   {
-    id: 9,
+    id: 10,
     type: "doctrine",
     title: "Your Alpha Stays Yours",
     subtitle: "We do not need your edge. We have our own.",
@@ -342,7 +386,7 @@ export const slides = [
     conclusion: "The infrastructure is shared. The alpha is not. That is the design.",
   },
   {
-    id: 10,
+    id: 11,
     type: "operations",
     title: "Why Not Build It Yourself?",
     columns: [
@@ -387,7 +431,7 @@ export const slides = [
     ],
   },
   {
-    id: 11,
+    id: 12,
     type: "traction",
     title: "Proof Points",
     achieved: [
@@ -417,7 +461,7 @@ export const slides = [
       "The platform you would be using is the same one running real capital and serving real clients today.",
   },
   {
-    id: 12,
+    id: 13,
     type: "doctrine",
     title: "Commercial Terms",
     subtitle: "Annual contracts, scoped to what you need. Every engagement is bespoke.",
@@ -447,7 +491,7 @@ export const slides = [
     conclusion: "We do not do off-the-shelf pricing because no two engagements are the same.",
   },
   {
-    id: 13,
+    id: 14,
     type: "ask",
     title: "How to Start",
     subtitle:
@@ -483,7 +527,7 @@ export const slides = [
     contact: "ikenna@odum-research.com",
   },
   {
-    id: 14,
+    id: 15,
     type: "demo",
     title: "See It Live",
     subtitle: "Click any section to navigate directly.",

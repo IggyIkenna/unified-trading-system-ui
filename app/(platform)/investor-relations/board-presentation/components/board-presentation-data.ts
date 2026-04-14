@@ -496,6 +496,7 @@ export const slides = [
         name: "Dashboard",
         desc: "Platform overview \u2014 positions, returns, risk, alerts",
         link: "/dashboard",
+        image: "/screenshots/dashboard.png",
       },
       {
         name: "Trading & Positions",
@@ -506,16 +507,19 @@ export const slides = [
         name: "Instruments & Coverage",
         desc: "12,000+ instruments across all asset classes",
         link: "/services/data/instruments",
+        image: "/screenshots/instruments.png",
       },
       {
         name: "Strategy Research",
         desc: "Backtests, strategy comparison, machine learning analysis",
         link: "/services/research/strategy/overview",
+        image: "/screenshots/strategy-overview.png",
       },
       {
         name: "Client Reporting",
         desc: "Executive dashboard, investment book of records, reconciliation",
         link: "/services/reports/executive",
+        image: "/screenshots/executive.png",
       },
       {
         name: "Risk & Scenarios",

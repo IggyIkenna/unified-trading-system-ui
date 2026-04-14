@@ -43,96 +43,96 @@
       "LIDO": "defi",
       "ETHERFI": "defi",
       "ETHENA": "defi",
-      "DRAFTKINGS_PICK6": "sports",
-      "METABET": "sports",
-      "EVERYGAME": "sports",
-      "BETRIGHT": "sports",
-      "POINTSBET": "sports",
-      "LADBROKES": "sports",
-      "BET888SPORT": "sports",
-      "UNIBET": "sports",
-      "PROPHETX": "sports",
-      "PMU": "sports",
-      "SHARPAPI": "sports",
-      "CASUMO": "sports",
-      "WINAMAX": "sports",
-      "SBOBET": "sports",
-      "BOVADA": "sports",
-      "COOLBET": "sports",
-      "FANATICS": "sports",
-      "NOVIG": "sports",
-      "BETFAIR": "sports",
-      "TABTOUCH": "sports",
-      "SUPRABETS": "sports",
-      "DRAFTKINGS": "sports",
-      "SKYBET": "sports",
-      "BOYLESPORTS": "sports",
-      "MARATHONBET": "sports",
-      "TAB": "sports",
-      "BETOPENLY": "sports",
-      "CAESARS": "sports",
-      "CODERE": "sports",
-      "GTBETS": "sports",
-      "FOOTYSTATS": "sports",
-      "BETDAQ": "sports",
-      "LIVESCOREBET": "sports",
-      "BALLYBET": "sports",
-      "BETWAY": "sports",
-      "NORDICBET": "sports",
-      "LEOVEGAS": "sports",
-      "BETPARX": "sports",
-      "API_FOOTBALL": "sports",
-      "SOCCER_FOOTBALL_INFO": "sports",
-      "MATCHBOOK": "sports",
-      "FLIFF": "sports",
-      "HARDROCKBET": "sports",
-      "PARIONSSPORT": "sports",
-      "NEDS": "sports",
-      "NETBET": "sports",
-      "BETCLIC": "sports",
-      "ODDS_ENGINE": "sports",
-      "BET365": "sports",
-      "BETVICTOR": "sports",
-      "ODDS_API": "sports",
-      "TRANSFERMARKT": "sports",
-      "MRGREEN": "sports",
-      "PRIZEPICKS": "sports",
-      "BETSSON": "sports",
-      "REBET": "sports",
-      "VIRGINBET": "sports",
-      "UNDERSTAT": "sports",
-      "ESPNBET": "sports",
-      "BETUS": "sports",
-      "WILLIAMHILL": "sports",
       "MYBOOKIEAG": "sports",
-      "GROSVENOR": "sports",
-      "KALSHI": "sports",
-      "BETMGM": "sports",
-      "BETRIVERS": "sports",
-      "BETANYSPORTS": "sports",
-      "SVENSKASPEL": "sports",
-      "FANDUEL": "sports",
-      "PADDYPOWER": "sports",
-      "ATG": "sports",
-      "PINNACLE": "sports",
-      "LOWVIG": "sports",
-      "UNDERDOG": "sports",
-      "BETR_DFS": "sports",
-      "OPEN_METEO": "sports",
-      "BETR_AU": "sports",
-      "BWIN": "sports",
-      "BETONLINEAG": "sports",
-      "SPORTSBET_AU": "sports",
-      "SMARKETS": "sports",
-      "ONEXBET": "sports",
-      "DABBLE": "sports",
-      "POLYMARKET": "sports",
-      "PLAYUP": "sports",
-      "CORAL": "sports",
-      "BETFRED": "sports",
-      "OPTICODDS": "sports",
+      "BETPARX": "sports",
+      "BOVADA": "sports",
+      "ODDS_ENGINE": "sports",
       "TIPICO": "sports",
-      "ODDSJAM": "sports"
+      "UNDERDOG": "sports",
+      "BOYLESPORTS": "sports",
+      "SBOBET": "sports",
+      "REBET": "sports",
+      "ODDS_API": "sports",
+      "KALSHI": "sports",
+      "SHARPAPI": "sports",
+      "BETR_AU": "sports",
+      "FOOTYSTATS": "sports",
+      "ATG": "sports",
+      "BETR_DFS": "sports",
+      "TRANSFERMARKT": "sports",
+      "SVENSKASPEL": "sports",
+      "TABTOUCH": "sports",
+      "PROPHETX": "sports",
+      "BETONLINEAG": "sports",
+      "BALLYBET": "sports",
+      "BETSSON": "sports",
+      "WINAMAX": "sports",
+      "SKYBET": "sports",
+      "PARIONSSPORT": "sports",
+      "SOCCER_FOOTBALL_INFO": "sports",
+      "BETRIGHT": "sports",
+      "WILLIAMHILL": "sports",
+      "NORDICBET": "sports",
+      "SMARKETS": "sports",
+      "MRGREEN": "sports",
+      "PLAYUP": "sports",
+      "UNDERSTAT": "sports",
+      "DABBLE": "sports",
+      "NETBET": "sports",
+      "OPEN_METEO": "sports",
+      "NEDS": "sports",
+      "MARATHONBET": "sports",
+      "PINNACLE": "sports",
+      "BETRIVERS": "sports",
+      "BETWAY": "sports",
+      "LEOVEGAS": "sports",
+      "FANATICS": "sports",
+      "UNIBET": "sports",
+      "HARDROCKBET": "sports",
+      "ONEXBET": "sports",
+      "EVERYGAME": "sports",
+      "LOWVIG": "sports",
+      "FANDUEL": "sports",
+      "DRAFTKINGS_PICK6": "sports",
+      "DRAFTKINGS": "sports",
+      "GTBETS": "sports",
+      "MATCHBOOK": "sports",
+      "BET365": "sports",
+      "BETANYSPORTS": "sports",
+      "BWIN": "sports",
+      "BET888SPORT": "sports",
+      "LIVESCOREBET": "sports",
+      "PRIZEPICKS": "sports",
+      "BETVICTOR": "sports",
+      "SUPRABETS": "sports",
+      "ESPNBET": "sports",
+      "BETDAQ": "sports",
+      "TAB": "sports",
+      "POINTSBET": "sports",
+      "CAESARS": "sports",
+      "VIRGINBET": "sports",
+      "BETFAIR": "sports",
+      "CASUMO": "sports",
+      "CORAL": "sports",
+      "SPORTSBET_AU": "sports",
+      "FLIFF": "sports",
+      "OPTICODDS": "sports",
+      "BETUS": "sports",
+      "PMU": "sports",
+      "LADBROKES": "sports",
+      "BETOPENLY": "sports",
+      "GROSVENOR": "sports",
+      "API_FOOTBALL": "sports",
+      "POLYMARKET": "sports",
+      "METABET": "sports",
+      "NOVIG": "sports",
+      "CODERE": "sports",
+      "BETFRED": "sports",
+      "ODDSJAM": "sports",
+      "BETCLIC": "sports",
+      "COOLBET": "sports",
+      "BETMGM": "sports",
+      "PADDYPOWER": "sports"
     },
     "instrument_types_by_venue": {
       "BINANCE-SPOT": [
@@ -146,14 +146,14 @@
       ],
       "OKX-FUTURES": [
         "PERPETUAL",
-        "OPTION",
-        "FUTURE"
+        "FUTURE",
+        "OPTION"
       ],
       "OKX": [
         "PERPETUAL",
-        "OPTION",
+        "SPOT_PAIR",
         "FUTURE",
-        "SPOT_PAIR"
+        "OPTION"
       ],
       "BYBIT-SPOT": [
         "SPOT_PAIR"
@@ -164,8 +164,8 @@
       ],
       "BYBIT": [
         "PERPETUAL",
-        "FUTURE",
-        "SPOT_PAIR"
+        "SPOT_PAIR",
+        "FUTURE"
       ],
       "UPBIT": [
         "SPOT_PAIR"
@@ -176,8 +176,8 @@
       ],
       "DERIBIT": [
         "PERPETUAL",
-        "OPTION",
-        "FUTURE"
+        "FUTURE",
+        "OPTION"
       ],
       "HYPERLIQUID": [
         "PERPETUAL"
@@ -186,54 +186,54 @@
         "PERPETUAL"
       ],
       "NASDAQ": [
+        "INDEX",
         "ETF",
-        "EQUITY",
-        "INDEX"
+        "EQUITY"
       ],
       "NYSE": [
+        "INDEX",
         "ETF",
-        "EQUITY",
-        "INDEX"
+        "EQUITY"
       ],
       "CME": [
-        "OPTION",
         "BOND",
+        "INDEX",
         "FUTURE",
-        "INDEX"
+        "OPTION"
       ],
       "CBOT": [
-        "OPTION",
         "BOND",
-        "FUTURE"
+        "FUTURE",
+        "OPTION"
       ],
       "NYMEX": [
         "COMMODITY",
-        "OPTION",
-        "FUTURE"
+        "FUTURE",
+        "OPTION"
       ],
       "COMEX": [
         "COMMODITY",
-        "OPTION",
-        "FUTURE"
+        "FUTURE",
+        "OPTION"
       ],
       "ICE": [
         "COMMODITY",
-        "OPTION",
-        "FUTURE"
+        "FUTURE",
+        "OPTION"
       ],
       "CBOE": [
-        "ETF",
-        "EQUITY",
+        "INDEX",
         "OPTION",
-        "INDEX"
+        "ETF",
+        "EQUITY"
       ],
       "XNAS": [
-        "EQUITY",
-        "ETF"
+        "ETF",
+        "EQUITY"
       ],
       "XNYS": [
-        "EQUITY",
-        "ETF"
+        "ETF",
+        "EQUITY"
       ],
       "UNISWAPV2-ETHEREUM": [
         "POOL"
@@ -274,31 +274,31 @@
       "ETHENA": [
         "STAKING"
       ],
-      "SMARKETS": [
+      "MATCHBOOK": [
         "EXCHANGE_ODDS"
       ],
       "BETDAQ": [
         "EXCHANGE_ODDS"
       ],
+      "SMARKETS": [
+        "EXCHANGE_ODDS"
+      ],
       "BETFAIR": [
         "EXCHANGE_ODDS"
-      ],
-      "MATCHBOOK": [
-        "EXCHANGE_ODDS"
-      ],
-      "NOVIG": [
-        "PREDICTION_MARKET"
-      ],
-      "KALSHI": [
-        "PREDICTION_MARKET"
-      ],
-      "POLYMARKET": [
-        "PREDICTION_MARKET"
       ],
       "BETOPENLY": [
         "PREDICTION_MARKET"
       ],
       "PROPHETX": [
+        "PREDICTION_MARKET"
+      ],
+      "POLYMARKET": [
+        "PREDICTION_MARKET"
+      ],
+      "KALSHI": [
+        "PREDICTION_MARKET"
+      ],
+      "NOVIG": [
         "PREDICTION_MARKET"
       ],
       "ONEXBET": [
@@ -307,205 +307,205 @@
       "PINNACLE": [
         "FIXED_ODDS"
       ],
-      "BETCLIC": [
-        "FIXED_ODDS"
-      ],
-      "BET365": [
-        "FIXED_ODDS"
-      ],
-      "BETVICTOR": [
-        "FIXED_ODDS"
-      ],
-      "EVERYGAME": [
-        "FIXED_ODDS"
-      ],
-      "BETRIGHT": [
-        "FIXED_ODDS"
-      ],
-      "POINTSBET": [
-        "FIXED_ODDS"
-      ],
-      "LADBROKES": [
-        "FIXED_ODDS"
-      ],
-      "BET888SPORT": [
-        "FIXED_ODDS"
-      ],
-      "UNIBET": [
-        "FIXED_ODDS"
-      ],
-      "MRGREEN": [
-        "FIXED_ODDS"
-      ],
-      "PMU": [
-        "FIXED_ODDS"
-      ],
-      "BETSSON": [
-        "FIXED_ODDS"
-      ],
-      "REBET": [
-        "FIXED_ODDS"
-      ],
-      "VIRGINBET": [
-        "FIXED_ODDS"
-      ],
-      "ESPNBET": [
-        "FIXED_ODDS"
-      ],
-      "CASUMO": [
-        "FIXED_ODDS"
-      ],
-      "WINAMAX": [
-        "FIXED_ODDS"
-      ],
-      "BOVADA": [
-        "FIXED_ODDS"
-      ],
-      "BETUS": [
-        "FIXED_ODDS"
-      ],
-      "WILLIAMHILL": [
-        "FIXED_ODDS"
-      ],
-      "COOLBET": [
-        "FIXED_ODDS"
-      ],
-      "FANATICS": [
+      "LOWVIG": [
         "FIXED_ODDS"
       ],
       "MYBOOKIEAG": [
         "FIXED_ODDS"
       ],
-      "SBOBET": [
-        "FIXED_ODDS"
-      ],
-      "GROSVENOR": [
-        "FIXED_ODDS"
-      ],
-      "BETMGM": [
-        "FIXED_ODDS"
-      ],
-      "BETRIVERS": [
-        "FIXED_ODDS"
-      ],
-      "BETANYSPORTS": [
-        "FIXED_ODDS"
-      ],
-      "SUPRABETS": [
-        "FIXED_ODDS"
-      ],
-      "SVENSKASPEL": [
-        "FIXED_ODDS"
-      ],
-      "DRAFTKINGS": [
-        "FIXED_ODDS"
-      ],
       "FANDUEL": [
         "FIXED_ODDS"
       ],
-      "PADDYPOWER": [
-        "FIXED_ODDS"
-      ],
-      "TABTOUCH": [
-        "FIXED_ODDS"
-      ],
-      "ATG": [
-        "FIXED_ODDS"
-      ],
-      "SKYBET": [
-        "FIXED_ODDS"
-      ],
-      "BOYLESPORTS": [
-        "FIXED_ODDS"
-      ],
-      "LOWVIG": [
-        "FIXED_ODDS"
-      ],
-      "MARATHONBET": [
-        "FIXED_ODDS"
-      ],
-      "BETR_AU": [
-        "FIXED_ODDS"
-      ],
-      "TAB": [
-        "FIXED_ODDS"
-      ],
-      "CAESARS": [
-        "FIXED_ODDS"
-      ],
-      "CODERE": [
-        "FIXED_ODDS"
-      ],
-      "BWIN": [
-        "FIXED_ODDS"
-      ],
-      "BETONLINEAG": [
-        "FIXED_ODDS"
-      ],
-      "GTBETS": [
-        "FIXED_ODDS"
-      ],
-      "LIVESCOREBET": [
-        "FIXED_ODDS"
-      ],
-      "BALLYBET": [
-        "FIXED_ODDS"
-      ],
-      "BETWAY": [
-        "FIXED_ODDS"
-      ],
-      "NORDICBET": [
-        "FIXED_ODDS"
-      ],
-      "LEOVEGAS": [
+      "BOVADA": [
         "FIXED_ODDS"
       ],
       "BETPARX": [
         "FIXED_ODDS"
       ],
-      "SPORTSBET_AU": [
+      "TIPICO": [
         "FIXED_ODDS"
       ],
-      "DABBLE": [
+      "DRAFTKINGS": [
         "FIXED_ODDS"
       ],
-      "FLIFF": [
+      "GTBETS": [
         "FIXED_ODDS"
       ],
-      "HARDROCKBET": [
+      "BOYLESPORTS": [
         "FIXED_ODDS"
       ],
-      "PARIONSSPORT": [
+      "SBOBET": [
         "FIXED_ODDS"
       ],
-      "NEDS": [
+      "BET365": [
         "FIXED_ODDS"
       ],
-      "PLAYUP": [
+      "BETANYSPORTS": [
+        "FIXED_ODDS"
+      ],
+      "BWIN": [
+        "FIXED_ODDS"
+      ],
+      "REBET": [
+        "FIXED_ODDS"
+      ],
+      "BET888SPORT": [
+        "FIXED_ODDS"
+      ],
+      "LIVESCOREBET": [
+        "FIXED_ODDS"
+      ],
+      "BETR_AU": [
+        "FIXED_ODDS"
+      ],
+      "BETVICTOR": [
+        "FIXED_ODDS"
+      ],
+      "SUPRABETS": [
+        "FIXED_ODDS"
+      ],
+      "ATG": [
+        "FIXED_ODDS"
+      ],
+      "ESPNBET": [
+        "FIXED_ODDS"
+      ],
+      "SVENSKASPEL": [
+        "FIXED_ODDS"
+      ],
+      "TAB": [
+        "FIXED_ODDS"
+      ],
+      "TABTOUCH": [
+        "FIXED_ODDS"
+      ],
+      "POINTSBET": [
+        "FIXED_ODDS"
+      ],
+      "CAESARS": [
+        "FIXED_ODDS"
+      ],
+      "BETONLINEAG": [
+        "FIXED_ODDS"
+      ],
+      "BALLYBET": [
+        "FIXED_ODDS"
+      ],
+      "VIRGINBET": [
+        "FIXED_ODDS"
+      ],
+      "CASUMO": [
         "FIXED_ODDS"
       ],
       "CORAL": [
         "FIXED_ODDS"
       ],
-      "BETFRED": [
+      "SPORTSBET_AU": [
+        "FIXED_ODDS"
+      ],
+      "BETSSON": [
+        "FIXED_ODDS"
+      ],
+      "FLIFF": [
+        "FIXED_ODDS"
+      ],
+      "WINAMAX": [
+        "FIXED_ODDS"
+      ],
+      "SKYBET": [
+        "FIXED_ODDS"
+      ],
+      "PARIONSSPORT": [
+        "FIXED_ODDS"
+      ],
+      "BETRIGHT": [
+        "FIXED_ODDS"
+      ],
+      "BETUS": [
+        "FIXED_ODDS"
+      ],
+      "PMU": [
+        "FIXED_ODDS"
+      ],
+      "WILLIAMHILL": [
+        "FIXED_ODDS"
+      ],
+      "LADBROKES": [
+        "FIXED_ODDS"
+      ],
+      "NORDICBET": [
+        "FIXED_ODDS"
+      ],
+      "GROSVENOR": [
+        "FIXED_ODDS"
+      ],
+      "MRGREEN": [
+        "FIXED_ODDS"
+      ],
+      "PLAYUP": [
+        "FIXED_ODDS"
+      ],
+      "DABBLE": [
         "FIXED_ODDS"
       ],
       "NETBET": [
         "FIXED_ODDS"
       ],
-      "TIPICO": [
+      "CODERE": [
         "FIXED_ODDS"
       ],
-      "UNDERDOG": [
-        "PROP"
+      "BETFRED": [
+        "FIXED_ODDS"
+      ],
+      "NEDS": [
+        "FIXED_ODDS"
+      ],
+      "BETCLIC": [
+        "FIXED_ODDS"
+      ],
+      "MARATHONBET": [
+        "FIXED_ODDS"
+      ],
+      "BETRIVERS": [
+        "FIXED_ODDS"
+      ],
+      "BETWAY": [
+        "FIXED_ODDS"
+      ],
+      "COOLBET": [
+        "FIXED_ODDS"
+      ],
+      "LEOVEGAS": [
+        "FIXED_ODDS"
+      ],
+      "BETMGM": [
+        "FIXED_ODDS"
+      ],
+      "FANATICS": [
+        "FIXED_ODDS"
+      ],
+      "UNIBET": [
+        "FIXED_ODDS"
+      ],
+      "HARDROCKBET": [
+        "FIXED_ODDS"
+      ],
+      "PADDYPOWER": [
+        "FIXED_ODDS"
+      ],
+      "EVERYGAME": [
+        "FIXED_ODDS"
       ],
       "BETR_DFS": [
         "PROP"
       ],
-      "DRAFTKINGS_PICK6": [
+      "PRIZEPICKS": [
         "PROP"
       ],
-      "PRIZEPICKS": [
+      "UNDERDOG": [
+        "PROP"
+      ],
+      "DRAFTKINGS_PICK6": [
         "PROP"
       ]
     },
@@ -663,6 +663,300 @@
       "FLUID-PLASMA",
       "LIDO",
       "MORPHO-ETHEREUM"
+    ],
+    "defi_venue_to_protocol": {
+      "HYPERLIQUID": {
+        "protocol": "hyperliquid",
+        "chain": null
+      },
+      "ASTER": {
+        "protocol": "aster",
+        "chain": null
+      },
+      "UNISWAPV2-ETHEREUM": {
+        "protocol": "uniswap_v2",
+        "chain": "ETHEREUM"
+      },
+      "UNISWAPV3-ETHEREUM": {
+        "protocol": "uniswap_v3",
+        "chain": "ETHEREUM"
+      },
+      "UNISWAPV4-ETHEREUM": {
+        "protocol": "uniswap_v4",
+        "chain": "ETHEREUM"
+      },
+      "CURVE-ETHEREUM": {
+        "protocol": "curve",
+        "chain": "ETHEREUM"
+      },
+      "AAVEV3-ETHEREUM": {
+        "protocol": "aave_v3",
+        "chain": "ETHEREUM"
+      },
+      "ETHERFI": {
+        "protocol": "etherfi",
+        "chain": "ETHEREUM"
+      },
+      "LIDO": {
+        "protocol": "lido",
+        "chain": "ETHEREUM"
+      },
+      "MORPHO-ETHEREUM": {
+        "protocol": "morpho",
+        "chain": "ETHEREUM"
+      },
+      "FLUID-PLASMA": {
+        "protocol": "fluid_plasma",
+        "chain": null
+      },
+      "AAVE-PLASMA": {
+        "protocol": "aave_plasma",
+        "chain": null
+      },
+      "ETHENA": {
+        "protocol": "ethena",
+        "chain": "ETHEREUM"
+      },
+      "PANCAKESWAPV3-BSC": {
+        "protocol": "pancakeswap_v3",
+        "chain": "BSC"
+      },
+      "PANCAKESWAPV3-ETHEREUM": {
+        "protocol": "pancakeswap_v3",
+        "chain": "ETHEREUM"
+      },
+      "PANCAKESWAPV3-BASE": {
+        "protocol": "pancakeswap_v3",
+        "chain": "BASE"
+      },
+      "SUSHISWAPV3-ETHEREUM": {
+        "protocol": "sushiswap_v3",
+        "chain": "ETHEREUM"
+      },
+      "SUSHISWAPV3-AVALANCHE": {
+        "protocol": "sushiswap_v3",
+        "chain": "AVALANCHE"
+      },
+      "SUSHISWAP-ARBITRUM": {
+        "protocol": "sushiswap",
+        "chain": "ARBITRUM"
+      },
+      "AERODROMEV3-BASE": {
+        "protocol": "aerodrome_v3",
+        "chain": "BASE"
+      },
+      "VELODROMEV2-OPTIMISM": {
+        "protocol": "velodrome_v2",
+        "chain": "OPTIMISM"
+      },
+      "CAMELOTV3-ARBITRUM": {
+        "protocol": "camelot_v3",
+        "chain": "ARBITRUM"
+      },
+      "TRADERJOEV2-AVALANCHE": {
+        "protocol": "trader_joe_v2",
+        "chain": "AVALANCHE"
+      },
+      "GMX-ARBITRUM": {
+        "protocol": "gmx",
+        "chain": "ARBITRUM"
+      },
+      "GMX-AVALANCHE": {
+        "protocol": "gmx",
+        "chain": "AVALANCHE"
+      },
+      "SPARK-ETHEREUM": {
+        "protocol": "spark",
+        "chain": "ETHEREUM"
+      }
+    },
+    "defi_protocols": [
+      {
+        "protocol": "uniswap_v2",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "uniswap_v3",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "uniswap_v4",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "curve",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "balancer",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "aave_v3",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "etherfi",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "lido",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "morpho",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "fluid_plasma",
+        "chain": null
+      },
+      {
+        "protocol": "aave_plasma",
+        "chain": null
+      },
+      {
+        "protocol": "hyperliquid",
+        "chain": null
+      },
+      {
+        "protocol": "aster",
+        "chain": null
+      },
+      {
+        "protocol": "ethena",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "pancakeswap_v3",
+        "chain": "BSC"
+      },
+      {
+        "protocol": "sushiswap_v3",
+        "chain": "ETHEREUM"
+      },
+      {
+        "protocol": "aerodrome_v3",
+        "chain": "BASE"
+      },
+      {
+        "protocol": "velodrome_v2",
+        "chain": "OPTIMISM"
+      },
+      {
+        "protocol": "camelot_v3",
+        "chain": "ARBITRUM"
+      },
+      {
+        "protocol": "trader_joe_v2",
+        "chain": "AVALANCHE"
+      },
+      {
+        "protocol": "gmx",
+        "chain": "ARBITRUM"
+      },
+      {
+        "protocol": "spark",
+        "chain": "ETHEREUM"
+      }
+    ],
+    "chain_rpc_templates": {
+      "1": "https://eth-mainnet.g.alchemy.com/v2/{api_key}",
+      "10": "https://opt-mainnet.g.alchemy.com/v2/{api_key}",
+      "8453": "https://base-mainnet.g.alchemy.com/v2/{api_key}",
+      "42161": "https://arb-mainnet.g.alchemy.com/v2/{api_key}",
+      "56": "https://bnb-mainnet.g.alchemy.com/v2/{api_key}",
+      "137": "https://polygon-mainnet.g.alchemy.com/v2/{api_key}",
+      "43114": "https://avax-mainnet.g.alchemy.com/v2/{api_key}",
+      "100": "https://gnosis-mainnet.g.alchemy.com/v2/{api_key}",
+      "130": "https://unichain-mainnet.g.alchemy.com/v2/{api_key}",
+      "324": "https://zksync-mainnet.g.alchemy.com/v2/{api_key}",
+      "480": "https://worldchain-mainnet.g.alchemy.com/v2/{api_key}",
+      "1101": "https://polygonzkevm-mainnet.g.alchemy.com/v2/{api_key}",
+      "2741": "https://abstract-mainnet.g.alchemy.com/v2/{api_key}",
+      "34443": "https://mode-mainnet.g.alchemy.com/v2/{api_key}",
+      "57073": "https://ink-mainnet.g.alchemy.com/v2/{api_key}",
+      "59144": "https://linea-mainnet.g.alchemy.com/v2/{api_key}",
+      "81457": "https://blast-mainnet.g.alchemy.com/v2/{api_key}",
+      "534352": "https://scroll-mainnet.g.alchemy.com/v2/{api_key}",
+      "7777777": "https://zora-mainnet.g.alchemy.com/v2/{api_key}",
+      "11155111": "https://eth-sepolia.g.alchemy.com/v2/{api_key}",
+      "11155420": "https://opt-sepolia.g.alchemy.com/v2/{api_key}",
+      "84532": "https://base-sepolia.g.alchemy.com/v2/{api_key}",
+      "421614": "https://arb-sepolia.g.alchemy.com/v2/{api_key}",
+      "80002": "https://polygon-amoy.g.alchemy.com/v2/{api_key}",
+      "43113": "https://avax-fuji.g.alchemy.com/v2/{api_key}",
+      "300": "https://zksync-sepolia.g.alchemy.com/v2/{api_key}",
+      "168587773": "https://blast-sepolia.g.alchemy.com/v2/{api_key}",
+      "534351": "https://scroll-sepolia.g.alchemy.com/v2/{api_key}",
+      "59141": "https://linea-sepolia.g.alchemy.com/v2/{api_key}"
+    },
+    "solana_defi_protocols": {
+      "drift": {
+        "name": "Drift Protocol",
+        "type": "perps_dex",
+        "program_id": "dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
+        "api_url": "https://data.api.drift.trade",
+        "dlob_url": "https://dlob.drift.trade",
+        "ws_url": "wss://dlob.drift.trade/ws",
+        "s3_historical_url": "https://drift-historical-data-v2.s3.eu-west-1.amazonaws.com/program/dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH",
+        "data_source": "drift_api"
+      },
+      "raydium": {
+        "name": "Raydium",
+        "type": "dex",
+        "program_id": "675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8",
+        "api_url": "https://api-v3.raydium.io",
+        "data_source": "raydium_api"
+      },
+      "orca": {
+        "name": "Orca (Whirlpool)",
+        "type": "dex",
+        "program_id": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "api_url": "https://api.mainnet.orca.so",
+        "data_source": "orca_api"
+      },
+      "marinade": {
+        "name": "Marinade Finance",
+        "type": "liquid_staking",
+        "program_id": "MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD",
+        "api_url": "https://api.marinade.finance",
+        "data_source": "marinade_api"
+      },
+      "kamino": {
+        "name": "Kamino Finance",
+        "type": "lending",
+        "program_id": "KLend2g3cP87ber41GXWsSZQhDqc7juFGkhGJk2HRFUj",
+        "api_url": "https://api.kamino.finance",
+        "data_source": "kamino_api"
+      },
+      "jupiter": {
+        "name": "Jupiter",
+        "type": "aggregator",
+        "api_url": "https://lite-api.jup.ag/swap/v1",
+        "data_source": "jupiter_api"
+      },
+      "jito": {
+        "name": "Jito",
+        "type": "liquid_staking",
+        "api_url": "https://kobe.mainnet.jito.network",
+        "program_id": "Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P3eg9gB",
+        "data_source": "helius"
+      }
+    },
+    "defi_pool_pairs": [
+      {
+        "base": "USDT",
+        "quote": "ETH"
+      },
+      {
+        "base": "USDC",
+        "quote": "ETH"
+      },
+      {
+        "base": "DAI",
+        "quote": "USDC"
+      }
     ],
     "endpoint_registry": {
       "kalshi": {

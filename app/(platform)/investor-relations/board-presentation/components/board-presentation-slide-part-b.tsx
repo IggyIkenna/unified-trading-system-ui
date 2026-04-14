@@ -285,14 +285,14 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
         </div>
       )}
 
-      {/* Demo Slide — clickable section cards */}
+      {/* Demo Slide — clickable section cards with optional screenshot previews */}
       {slide.type === "demo" && (
         <div>
           <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
           <p className="text-muted-foreground mb-8 max-w-3xl">{slide.subtitle}</p>
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
             {slide.sections?.map(
-              (section: { name: string; desc: string; link?: string }, i: number) => (
+              (section: { name: string; desc: string; link?: string; image?: string }, i: number) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
@@ -303,18 +303,36 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
                     <Link
                       href={section.link}
                       target="_blank"
-                      className="block p-6 rounded-lg border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                      className="block rounded-lg border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all group overflow-hidden"
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="text-sm font-semibold text-primary">{section.name}</div>
-                        <ArrowRight className="size-4 text-primary/50 group-hover:text-primary transition-colors" />
+                      {section.image && (
+                        <div className="relative h-32 w-full overflow-hidden border-b border-border bg-background">
+                          <img
+                            src={section.image}
+                            alt={section.name}
+                            className="w-full h-full object-cover object-top opacity-70 group-hover:opacity-100 transition-opacity"
+                          />
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="text-sm font-semibold text-primary">{section.name}</div>
+                          <ArrowRight className="size-4 text-primary/50 group-hover:text-primary transition-colors" />
+                        </div>
+                        <div className="text-xs text-muted-foreground">{section.desc}</div>
                       </div>
-                      <div className="text-xs text-muted-foreground">{section.desc}</div>
                     </Link>
                   ) : (
-                    <div className="p-6 rounded-lg border border-border bg-card">
-                      <div className="text-sm font-semibold text-primary mb-1">{section.name}</div>
-                      <div className="text-xs text-muted-foreground">{section.desc}</div>
+                    <div className="rounded-lg border border-border bg-card overflow-hidden">
+                      {section.image && (
+                        <div className="relative h-32 w-full overflow-hidden border-b border-border bg-background">
+                          <img src={section.image} alt={section.name} className="w-full h-full object-cover object-top opacity-70" />
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <div className="text-sm font-semibold text-primary mb-1">{section.name}</div>
+                        <div className="text-xs text-muted-foreground">{section.desc}</div>
+                      </div>
                     </div>
                   )}
                 </motion.div>
