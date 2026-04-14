@@ -167,6 +167,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       "reporting",
       "investor-relations",
       "investor-platform",
+      "data-pro",
     ],
     description:
       "DeFi client. Trading (DeFi tab + terminal), Observe, Reports, and Platform presentation. Research/Data/Strategy families LOCKED. Sports/Predictions/Options LOCKED.",
