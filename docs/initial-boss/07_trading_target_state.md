@@ -289,7 +289,7 @@ The current pattern is one `*-data-context.tsx` per domain (17 total), each wrap
 
 Rule in practice: widgets **in the same domain** share the fetch via that domain's context. Widgets **across domains** on the same tab use their own domain's context — no cross-domain sharing.
 
-Yesterday's regression (2026-04-14) came from `components/widgets/orders/orders-data-context.tsx` — it's currently modified in `git status`, still uncommitted. This is BP-7's load-bearing evidence and should be the first example Layer C tests should protect.
+Yesterday's regression (2026-04-14) came from `components/widgets/orders/orders-data-context.tsx` — it's currently modified in `git status`, still uncommitted. This is BP-5's load-bearing evidence and should be the first example Layer C tests should protect.
 
 ### Confirmed target state (2026-04-16)
 
@@ -332,7 +332,7 @@ The confirmed target behaviour, cross-cutting every level:
 - **Backend enforces independently** — the frontend lock is UX only. The API returns an entitlement error when an unentitled user requests a gated endpoint.
 - This means the 3-level gate today (whole-tab / per-sub-tab / per-widget) keeps its **structure**, but the behaviour shifts from "hide if not entitled" → "render locked if not entitled, backend refuses data".
 
-**Implication for the Patrick-persona lockdown work:** those commits probably need to be revisited — the current pattern may be hiding rather than locking. Not a BP-1 change, but worth flagging for BP-4/BP-5 when the entitlement matrix is captured.
+**Implication for the Patrick-persona lockdown work:** those commits probably need to be revisited — the current pattern may be hiding rather than locking. Not a BP-1 change, but worth flagging for BP-6/BP-7 when the entitlement matrix is captured.
 
 ### Backend status code for entitlement failure — `402 Payment Required`
 
@@ -376,12 +376,12 @@ export interface WidgetDefinition {
 ```
 
 - **Every widget is `basic` today.** The field exists so the split happens by editing registration calls later, not by reshaping the type.
-- **Actual split is deferred** to the dedicated entitlements BP (likely BP-4/BP-5) — Harsh will decide which widgets go premium once the full product exists and the boundary is clear.
+- **Actual split is deferred** to the dedicated entitlements BP (likely BP-6/BP-7) — Harsh will decide which widgets go premium once the full product exists and the boundary is clear.
 - Runtime behaviour matches the show+lock model: a `premium` widget in the catalogue will render with a padlock for `basic`-tier users, backend refuses data.
 
 **Open (not in code):**
 
-- The exact audience × tier × persona matrix. BP-4 + BP-5 will capture this properly — this section just confirms the mechanism is correct.
+- The exact audience × tier × persona matrix. BP-6 + BP-7 will capture this properly — this section just confirms the mechanism is correct.
 - Which entitlements are deprecated / should be renamed / should be merged — deferred to entitlement matrix work.
 
 ---
@@ -419,7 +419,7 @@ _(Only the genuine ones — things the code doesn't answer.)_
 
 1. **BP-2 extraction priority** — of the bespoke classes without a base (time-series chart, order book, heatmap, etc.), which does Harsh want extracted first? See Section 4.
 2. ~~**Entitlement data-scoping vs widget-scoping**~~ — **RESOLVED**: it's data-scoping. Same widget for everyone, backend filters by user scope. See Section 7.
-3. **Canonical data layer** — is `hooks/api/`_ or `_-data-context.tsx` the SSOT for BP-7, or do both remain? See Section 6.
+3. **Canonical data layer** — is `hooks/api/`_ or `_-data-context.tsx` the SSOT for BP-5, or do both remain? See Section 6.
 4. **Standalone pages** — should any be pulled into the widget grid, or any widget-grid tabs pushed out to standalone? See Section 2.
 
 ---

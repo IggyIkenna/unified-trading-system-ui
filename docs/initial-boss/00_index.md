@@ -30,8 +30,8 @@ It captures the 7 real pain points Harsh surfaced on 2026-04-15 and proposes the
 | ------------------------------------ | ---------------------------------------------------------------------- | -------------------------------------- |
 | **`boss_points.md`**                 | **Canonical list of 7 pain points + discussion order**                 | **DISCUSSING — primary doc**           |
 | `02_codebase_facts.md`               | What actually exists in the repo (test infra, widgets, mocks, hooks)   | REFERENCE — widget counts need refresh |
-| `03_test_strategy_options.md`        | Test layer brainstorm (Layers A-H). Feeds BP-2 and BP-7                | STALE — revisit when discussing BP-2   |
-| `04_mock_data_and_backend_gap.md`    | Mock-data thinking. Feeds BP-7                                         | STALE — revisit when discussing BP-7   |
+| `03_test_strategy_options.md`        | Test layer brainstorm (Layers A-H). Feeds BP-2 and BP-5                | STALE — revisit when discussing BP-2   |
+| `04_mock_data_and_backend_gap.md`    | Mock-data thinking. Feeds BP-5                                         | STALE — revisit when discussing BP-5   |
 | `05_repo_structure_question.md`      | Single repo vs split — captured rationale for not splitting            | **FINALIZED** — do not split           |
 | `06_agent_workflow_and_gates.md`     | Agent gate thinking. Feeds BP-2                                        | STALE — revisit when discussing BP-2   |
 | **`07_trading_target_state.md`**     | **BP-1 Stream B — trading tab target state. All 8 sections confirmed** | **STABLE — all sections confirmed**    |

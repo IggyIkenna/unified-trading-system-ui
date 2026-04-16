@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-16
 **Status:** DEFERRED — hooks extracted, global mounting reverted
-**Related:** BP-2 (widget foundation), BP-6 (mock data / real API wiring)
+**Related:** BP-2 (widget foundation), BP-5 (mock data / real API wiring)
 
 ---
 
@@ -39,7 +39,7 @@ This is an unacceptable performance trade-off for a feature that only matters fo
 - **Hook extractions** — all three hooks remain. The page components now use them instead of inline data construction. This is a strict improvement (thinner pages, reusable logic, testable hooks).
 - **Bespoke panel** added to audit profile (Risk/Terminal/Overview widgets there will show context guard placeholders — acceptable for now).
 
-## Right Solution (Deferred to BP-6)
+## Right Solution (Deferred to BP-5)
 
 When the real API/WebSocket wiring lands, implement **lazy provider activation**:
 

@@ -72,10 +72,20 @@
 - **DECIDED:** BP-1 Stream A (doc hygiene) is **complete**. Doc inventory done, active trading docs promoted to `docs/trading/`, stale docs deleted or kept in `docs/under-review/`, ROUTES.md fully updated. Widget catalogue updated with 10 new widgets (124 total).
 - **DECIDED:** BP-2 (widget foundation) is **complete**. Foundation audit, 10 widget class audits, cross-tab providers, chrome presets. Artifacts in `docs/audits/BP2-*` and `docs/audits/findings/`.
 - **DECIDED:** Former BP-3 (multi-repo/per-layer testing) **removed** — was a design constraint, not a pain point. Useful parts absorbed into BP-3 (audience), BP-4 (tiers), and BP-6 (mock data). Boss-points renumbered from 7 to 6.
-- **DECIDED:** New execution order: BP-1 ✓ → BP-2 ✓ → BP-6 (mock data, next) → BP-3+BP-4 (audience+tiers) → BP-5 (dead code).
+- **DECIDED:** New execution order: BP-1 ✓ → BP-2 ✓ → BP-6 (mock data, next) → BP-3+BP-4 (audience+tiers) → BP-5 (dead code). _Superseded 2026-04-16 — see below._
 - **DECIDED:** `converstaion.md` (repo-splitting transcript) deleted — decision captured in 05.
 - **DECIDED:** 25 stale/output docs deleted from under-review (audit outputs, old plans, stale trackers, unused handbooks).
 - **DECIDED:** `01_problem_and_context.md` superseded by boss_points.md + 07.
+
+### 2026-04-16 (roadmap restructure)
+
+- **DECIDED:** Two new boss points added: Per-widget certification pipeline (L0–L6) and Cosmetic & Theming Foundation. Boss-points list expanded from 6 to 8.
+- **DECIDED:** BPs renumbered to match execution order. Final numbering: BP-1 ✓ → BP-2 ✓ → BP-3 (widget certification) → BP-4 (cosmetic, parallel) → BP-5 (mock data) → BP-6+BP-7 (audience+tiers) → BP-8 (dead code).
+- **DECIDED:** Backend wiring (BP-5, was BP-6) deferred — not ready to jump to it. Widget-level quality (BP-3) comes first.
+- **DECIDED:** Entitlement system audit confirms production-ready: 23 entitlements, 7 tiers, show+lock at tab/widget/page levels, all 122 widgets set `requiredEntitlements`. Gap: paper mode not yet exposed in trading UI.
+- **DECIDED:** Filter/scoping system audit confirms functional: org/client/strategy cascade filtering works against mock data. Gap: `asOfDatetime` not consumed, `strategyFamilyIds` not fully integrated downstream.
+- **DECIDED:** Live/batch modes production-ready. Paper mode 20% done (defined, not wired). Two parallel mode systems (GlobalScope vs ExecutionMode) need consolidation.
+- **DECIDED:** Widget functional readiness healthy: zero dead buttons, all 122 widgets set entitlements+availableOn, toast notifications used legitimately. 65+ strategy types have UI support.
 
 ### 2026-04-15
 
