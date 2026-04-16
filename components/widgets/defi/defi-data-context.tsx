@@ -135,10 +135,10 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
   const { isPaper, isBatch, mode } = useExecutionMode();
   const { scope: globalScope } = useGlobalScope();
 
-  // Check if selected org has a DeFi desk
+  // Check if selected org has DeFi access (internal defi-desk OR any external DeFi client)
   const hasDefiDesk = React.useMemo(() => {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
-    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId) && c.id === "defi-desk");
+    return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId));
   }, [globalScope.organizationIds]);
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");

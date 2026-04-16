@@ -126,7 +126,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
             strategy_id: "ETHENA_BENCHMARK",
             instruction_type: operation,
             algo_type: "BENCHMARK_FILL",
-            instrument_id: `${selected.venue_id}:LST:ST${selected.asset}@ETHEREUM`,
+            instrument_id: `${selected.venue_id}:${operation}:${selected.asset}`,
             venue: selected.venue_id,
             side: operation === "STAKE" ? "buy" : "sell",
             order_type: "market",

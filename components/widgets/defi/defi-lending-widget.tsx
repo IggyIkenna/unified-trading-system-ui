@@ -246,9 +246,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
             strategy_id: "AAVE_LENDING",
             instruction_type: operation,
             algo_type: "DIRECT",
-            instrument_id: operation === "LEND" || operation === "WITHDRAW"
-              ? `${selectedProtocol.venue_id}:A_TOKEN:A${asset}@${selectedProtocol.chain ?? "ETHEREUM"}`
-              : `${selectedProtocol.venue_id}:DEBT_TOKEN:DEBT${asset}@${selectedProtocol.chain ?? "ETHEREUM"}`,
+            instrument_id: `${selectedProtocol.venue_id}:${operation}:${asset}`,
             venue: selectedProtocol.venue_id,
             side: operation === "LEND" || operation === "REPAY" ? "buy" : "sell",
             order_type: "market",
