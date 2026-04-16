@@ -171,6 +171,72 @@ export function useBacktestDetail(id: string) {
   });
 }
 
+export interface StrategyCatalogEntry {
+  id: string;
+  domain: string;
+  family: string;
+  label: string;
+  params: string[];
+}
+
+export interface ExecutionInstruction {
+  step: number;
+  type: string;
+  timestamp: string;
+  input: Record<string, unknown>;
+  output: Record<string, unknown>;
+  status: string;
+}
+
+export interface ExecutionAnalysis {
+  execution_id: string;
+  strategy_id: string;
+  instrument: string;
+  instructions: ExecutionInstruction[];
+  fills: Record<string, unknown>[];
+  summary: {
+    total_steps: number;
+    all_passed: boolean;
+    total_fills: number;
+    algo_used: string;
+  };
+}
+
+interface CatalogResponse {
+  strategies: StrategyCatalogEntry[];
+  families: Record<string, StrategyCatalogEntry[]>;
+  total: number;
+}
+
+export function useStrategyCatalog(domain?: string) {
+  const { user, token } = useAuth();
+  const domainParam = domain ? `?domain=${domain}` : "";
+
+  return useQuery({
+    queryKey: ["strategy-catalog", user?.id, domain],
+    queryFn: async (): Promise<CatalogResponse> => {
+      const raw = await apiFetch(`/api/analytics/strategies/catalog${domainParam}`, token);
+      const envelope = raw as Record<string, unknown>;
+      return (envelope?.data ?? envelope) as CatalogResponse;
+    },
+    enabled: !!user,
+  });
+}
+
+export function useExecutionAnalysis(executionId: string) {
+  const { user, token } = useAuth();
+
+  return useQuery({
+    queryKey: ["execution-analysis", executionId, user?.id],
+    queryFn: async (): Promise<ExecutionAnalysis> => {
+      const raw = await apiFetch(`/api/execution/analysis/${executionId}`, token);
+      const envelope = raw as Record<string, unknown>;
+      return (envelope?.data ?? envelope) as ExecutionAnalysis;
+    },
+    enabled: !!user && !!executionId,
+  });
+}
+
 export function useStrategyHealth() {
   const { user, token } = useAuth();
   const isMock = isMockDataMode();

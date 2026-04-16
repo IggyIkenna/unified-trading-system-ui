@@ -7,7 +7,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useSportsData } from "./sports-data-context";
 
 export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
-  const { filteredFixtures, setSelectedFixtureId } = useSportsData();
+  const { filteredFixtures, setSelectedFixtureId, wsStatus } = useSportsData();
 
   const liveRows = React.useMemo(() => {
     return filteredFixtures.filter((f) => isLive(f.status) || f.status === "HT" || f.status === "SUSP");
@@ -23,6 +23,14 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="flex items-stretch h-full min-h-[2rem] overflow-x-auto gap-px bg-border/30 rounded border border-border">
+      {/* Connection status */}
+      <div className="shrink-0 flex items-center px-2 border-r border-border/50">
+        <span className={cn(
+          "size-1.5 rounded-full",
+          wsStatus === "connected" ? "bg-emerald-400" : wsStatus === "connecting" ? "bg-amber-400 animate-pulse" : "bg-red-400"
+        )} />
+        <span className="text-[8px] text-muted-foreground ml-1 uppercase">{wsStatus === "connected" ? "live" : wsStatus ?? "off"}</span>
+      </div>
       {liveRows.map((f) => (
         <button
           key={f.id}

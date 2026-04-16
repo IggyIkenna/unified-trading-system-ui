@@ -1,13 +1,13 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GateCheckRow } from "@/components/shared/gate-check-row";
 import { MetricCard } from "@/components/shared/metric-card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FeatureStabilityPanel } from "./feature-stability-panel";
 import { fmtNum, fmtPct, statusBg } from "./helpers";
 import { PromoteWorkflowActions } from "./promote-workflow-actions";
 import { RegimeAnalysisPanel } from "./regime-analysis-panel";
-import { WalkForwardPanel } from "./walk-forward-panel";
 import type { CandidateStrategy, GateCheck } from "./types";
+import { WalkForwardPanel } from "./walk-forward-panel";
 
 export function ModelAssessmentTab({
   strategy,
@@ -221,6 +221,73 @@ export function ModelAssessmentTab({
           />
         ))}
       </div>
+
+      {strategy.sportsMetrics && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Fixture-Based Backtest (Sports)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+              <MetricCard tone="grid" density="compact" label="Fixtures" primary={`${strategy.sportsMetrics.totalFixtures}`} />
+              <MetricCard tone="grid" density="compact" label="Actioned" primary={`${strategy.sportsMetrics.fixturesActioned}`} />
+              <MetricCard tone="grid" density="compact" label="Avg CLV" primary={`${strategy.sportsMetrics.avgClvBps} bps`} primaryClassName="text-emerald-400" />
+              <MetricCard tone="grid" density="compact" label="CLV Hit" primary={fmtPct(strategy.sportsMetrics.clvHitRate)} primaryClassName="text-emerald-400" />
+              <MetricCard tone="grid" density="compact" label="ROI" primary={`${strategy.sportsMetrics.roiPct}%`} primaryClassName="text-emerald-400" />
+              <MetricCard tone="grid" density="compact" label="Avg Stake" primary={`£${strategy.sportsMetrics.avgStakeGbp}`} />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <h4 className="text-xs font-semibold text-muted-foreground mb-2">League Breakdown</h4>
+                <div className="space-y-1">
+                  {strategy.sportsMetrics.leagueBreakdown.map((l) => (
+                    <div key={l.league} className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50">
+                      <span className="font-medium">{l.league}</span>
+                      <div className="flex gap-3">
+                        <span className="text-muted-foreground">{l.fixtures} fix</span>
+                        <span className={l.roi >= 5 ? "text-emerald-400" : l.roi >= 0 ? "text-amber-400" : "text-rose-400"}>{l.roi}% ROI</span>
+                        <span className="text-muted-foreground">{l.clvBps} bps</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="text-xs font-semibold text-muted-foreground mb-2">Market Breakdown</h4>
+                <div className="space-y-1">
+                  {strategy.sportsMetrics.marketBreakdown.map((mk) => (
+                    <div key={mk.market} className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50">
+                      <span className="font-medium">{mk.market}</span>
+                      <div className="flex gap-3">
+                        <span className="text-muted-foreground">{mk.bets} bets</span>
+                        <span className={mk.roi >= 5 ? "text-emerald-400" : mk.roi >= 0 ? "text-amber-400" : "text-rose-400"}>{mk.roi}% ROI</span>
+                        <span className="text-muted-foreground">{fmtPct(mk.hitRate)} hit</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2">Top Edge Fixtures</h4>
+              <div className="space-y-1">
+                {strategy.sportsMetrics.topEdgeFixtures.map((f, i) => (
+                  <div key={i} className="flex items-center justify-between text-xs px-2 py-1 rounded bg-muted/50">
+                    <span className="font-medium">{f.fixture}</span>
+                    <div className="flex gap-3">
+                      <span className="text-muted-foreground">{f.date}</span>
+                      <span className="text-emerald-400">{f.clvBps} bps CLV</span>
+                      <span className="font-mono text-emerald-400">£{f.pnlGbp}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {Object.entries(groupedGates).map(([category, gates]) => (
         <Card key={category}>

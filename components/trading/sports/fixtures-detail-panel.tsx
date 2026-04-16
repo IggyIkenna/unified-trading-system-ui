@@ -1,16 +1,16 @@
 "use client";
 
-import * as React from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import { Play, Pause, RotateCcw, X } from "lucide-react";
-import type { Fixture, OddsMarket } from "./types";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { CloudSun, Pause, Play, RotateCcw, ShieldAlert, TrendingUp, Users, X } from "lucide-react";
+import * as React from "react";
+import { Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { isCompleted } from "./helpers";
-import { LeagueBadge, StatusPill, MatchStatsPanel } from "./shared";
-import { formatNumber } from "@/lib/utils/formatters";
+import { FormDots, LeagueBadge, MatchStatsPanel, StatusPill } from "./shared";
+import type { Fixture, OddsMarket } from "./types";
 
 // ─── Stats Tab (readable type scale) ─────────────────────────────────────────
 
@@ -327,11 +327,219 @@ function ReplayTab({ fixture }: { fixture: Fixture }) {
   );
 }
 
+// ─── Results Tab (completed fixtures: predicted vs actual, P&L) ─────────────
+
+function ResultsTab({ fixture }: { fixture: Fixture }) {
+  if (!fixture.score) {
+    return (
+      <div className="flex items-center justify-center py-16 text-base text-zinc-500 px-4 text-center">
+        Results available for completed fixtures only
+      </div>
+    );
+  }
+
+  const totalGoals = fixture.score.home + fixture.score.away;
+  const result = fixture.score.home > fixture.score.away ? "Home Win" : fixture.score.away > fixture.score.home ? "Away Win" : "Draw";
+  const btts = fixture.score.home > 0 && fixture.score.away > 0;
+  const over25 = totalGoals > 2;
+
+  const pm = fixture.preMatch;
+  const predicted = pm
+    ? pm.forecastProbs.homeWin > pm.forecastProbs.awayWin
+      ? "Home Win"
+      : pm.forecastProbs.awayWin > pm.forecastProbs.homeWin
+        ? "Away Win"
+        : "Draw"
+    : null;
+
+  return (
+    <div className="flex flex-col gap-5 p-4 overflow-auto">
+      <div className="grid grid-cols-3 gap-2">
+        <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+          <span className="text-xs text-zinc-500">Result</span>
+          <span className="text-lg font-black text-white">{result}</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+          <span className="text-xs text-zinc-500">Total Goals</span>
+          <span className="text-lg font-black text-white tabular-nums">{totalGoals}</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+          <span className="text-xs text-zinc-500">BTTS</span>
+          <span className={cn("text-lg font-black", btts ? "text-[#4ade80]" : "text-red-400")}>{btts ? "Yes" : "No"}</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+          <span className="text-xs text-zinc-500">Over 2.5</span>
+          <span className={cn("text-lg font-black", over25 ? "text-[#4ade80]" : "text-red-400")}>{over25 ? "Yes" : "No"}</span>
+        </div>
+        <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+          <span className="text-xs text-zinc-500">HT Score</span>
+          <span className="text-lg font-black text-white tabular-nums">
+            {fixture.score.ht ? `${fixture.score.ht.home} - ${fixture.score.ht.away}` : "N/A"}
+          </span>
+        </div>
+      </div>
+
+      {pm && (
+        <div className="flex flex-col gap-3">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Predicted vs Actual</p>
+          <div className="flex flex-col gap-2">
+            {[
+              {
+                label: "Result",
+                predicted: predicted ?? "N/A",
+                actual: result,
+                correct: predicted === result,
+              },
+              {
+                label: "BTTS",
+                predicted: pm.forecastProbs.homeWin > 0 ? "Likely" : "Unlikely",
+                actual: btts ? "Yes" : "No",
+                correct: null,
+              },
+              {
+                label: "xG Home",
+                predicted: formatNumber(pm.xgModel.home, 2),
+                actual: fixture.stats ? formatNumber(fixture.stats.home.xg, 2) : "N/A",
+                correct: null,
+              },
+              {
+                label: "xG Away",
+                predicted: formatNumber(pm.xgModel.away, 2),
+                actual: fixture.stats ? formatNumber(fixture.stats.away.xg, 2) : "N/A",
+                correct: null,
+              },
+            ].map((row) => (
+              <div
+                key={row.label}
+                className="grid grid-cols-[1fr_1fr_1fr] items-center gap-2 py-1.5 border-b border-zinc-800/50 last:border-0"
+              >
+                <span className="text-xs text-zinc-500 uppercase tracking-wider">{row.label}</span>
+                <span className="text-sm text-zinc-400 text-center">{row.predicted}</span>
+                <span className={cn("text-sm font-bold text-center", row.correct === true ? "text-[#4ade80]" : row.correct === false ? "text-red-400" : "text-zinc-200")}>
+                  {row.actual}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Pre-Match Tab (NS fixtures: forecast, weather, injuries, form) ─────────
+
+function PreMatchTab({ fixture }: { fixture: Fixture }) {
+  const pm = fixture.preMatch;
+  if (!pm) {
+    return (
+      <div className="flex items-center justify-center py-16 text-base text-zinc-500 px-4 text-center">
+        Pre-match data available for upcoming fixtures only
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-5 p-4 overflow-auto">
+      {/* Model Probabilities */}
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+          <TrendingUp className="size-3" />
+          Model forecast
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {[
+            { label: fixture.home.shortName, prob: pm.forecastProbs.homeWin },
+            { label: "Draw", prob: pm.forecastProbs.draw },
+            { label: fixture.away.shortName, prob: pm.forecastProbs.awayWin },
+          ].map(({ label, prob }) => (
+            <div
+              key={label}
+              className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3"
+            >
+              <span className="text-xs text-zinc-500">{label}</span>
+              <span className="text-xl font-black text-white tabular-nums">{formatPercent(prob, 0)}</span>
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+            <span className="text-xs text-zinc-500">xG Home</span>
+            <span className="text-lg font-black text-[#22d3ee] tabular-nums">{formatNumber(pm.xgModel.home, 2)}</span>
+          </div>
+          <div className="flex flex-col items-center gap-1 rounded-lg bg-zinc-900/60 border border-zinc-800 px-2 py-3">
+            <span className="text-xs text-zinc-500">xG Away</span>
+            <span className="text-lg font-black text-[#a78bfa] tabular-nums">{formatNumber(pm.xgModel.away, 2)}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Form */}
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-black uppercase tracking-widest text-zinc-500">Recent form (last 5)</p>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{fixture.home.shortName}</span>
+            <FormDots form={pm.homeForm} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{fixture.away.shortName}</span>
+            <FormDots form={pm.awayForm} />
+          </div>
+        </div>
+      </div>
+
+      {/* Weather */}
+      {pm.weather && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+            <CloudSun className="size-3" />
+            Weather
+          </p>
+          <div className="flex items-center gap-3 rounded-lg bg-zinc-900/60 border border-zinc-800 px-4 py-3">
+            <span className="text-2xl font-black text-white tabular-nums">{pm.weather.tempC}°C</span>
+            <span className="text-sm text-zinc-400 capitalize">{pm.weather.condition}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Injuries */}
+      {pm.injuries.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs font-black uppercase tracking-widest text-zinc-500 flex items-center gap-1.5">
+            <ShieldAlert className="size-3" />
+            Injuries & absences ({pm.injuries.length})
+          </p>
+          <div className="flex flex-col gap-1">
+            {pm.injuries.map((inj, i) => (
+              <div key={i} className="flex items-center gap-2 py-1.5 border-b border-zinc-800/50 last:border-0">
+                <span
+                  className={cn(
+                    "text-xs font-bold uppercase w-10 text-center",
+                    inj.team === "home" ? "text-[#22d3ee]" : "text-[#a78bfa]",
+                  )}
+                >
+                  {inj.team === "home" ? fixture.home.shortName : fixture.away.shortName}
+                </span>
+                <span className="text-sm text-zinc-200">{inj.player}</span>
+                <span className="text-xs text-zinc-500 ml-auto">{inj.reason}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── In-page panel (no overlay — sits beside fixture list on lg+) ───────────
 
 export interface FixtureDetailPanelProps {
   fixture: Fixture;
-  initialTab?: "stats" | "odds-history" | "replay";
+  initialTab?: "stats" | "pre-match" | "results" | "odds-history" | "replay";
   onClose?: () => void;
   /** When false, omit header X (e.g. dialog already has a close control). */
   showHeaderClose?: boolean;
@@ -347,6 +555,7 @@ export function FixtureDetailPanel({
 }: FixtureDetailPanelProps) {
   const completed = isCompleted(fixture.status);
   const hasProgressiveData = (fixture.progressiveOdds?.length ?? 0) > 0;
+  const hasPreMatch = !!fixture.preMatch;
 
   const [tab, setTab] = React.useState(initialTab);
   React.useEffect(() => {
@@ -396,7 +605,18 @@ export function FixtureDetailPanel({
             </div>
           )}
 
-          <p className="text-sm text-zinc-500 mt-2">{fixture.venue}</p>
+          <div className="flex items-center gap-3 text-sm text-zinc-500 mt-2">
+            <span>{fixture.venue}</span>
+            {fixture.referee && (
+              <>
+                <span className="text-zinc-700">·</span>
+                <span className="flex items-center gap-1">
+                  <Users className="size-3" />
+                  {fixture.referee}
+                </span>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -409,6 +629,22 @@ export function FixtureDetailPanel({
             >
               Stats
             </TabsTrigger>
+            {hasPreMatch && (
+              <TabsTrigger
+                value="pre-match"
+                className="flex-1 min-w-[5.5rem] text-sm font-bold data-[state=active]:border-b-2 data-[state=active]:border-[#4ade80] data-[state=active]:text-[#4ade80] data-[state=active]:bg-transparent rounded-none h-11 px-2"
+              >
+                Pre-Match
+              </TabsTrigger>
+            )}
+            {completed && (
+              <TabsTrigger
+                value="results"
+                className="flex-1 min-w-[5rem] text-sm font-bold data-[state=active]:border-b-2 data-[state=active]:border-[#4ade80] data-[state=active]:text-[#4ade80] data-[state=active]:bg-transparent rounded-none h-11 px-2"
+              >
+                Results
+              </TabsTrigger>
+            )}
             {completed && (
               <TabsTrigger
                 value="odds-history"
@@ -432,6 +668,16 @@ export function FixtureDetailPanel({
           <TabsContent value="stats" className="mt-0 h-full">
             <StatsTab fixture={fixture} />
           </TabsContent>
+          {hasPreMatch && (
+            <TabsContent value="pre-match" className="mt-0 h-full">
+              <PreMatchTab fixture={fixture} />
+            </TabsContent>
+          )}
+          {completed && (
+            <TabsContent value="results" className="mt-0 h-full">
+              <ResultsTab fixture={fixture} />
+            </TabsContent>
+          )}
           {completed && (
             <TabsContent value="odds-history" className="mt-0 h-full">
               <OddsHistoryTab fixture={fixture} />

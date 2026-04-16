@@ -249,6 +249,18 @@ export interface CandidateStrategy {
   featureStability: FeatureStabilityRow[];
   modelDrift: ModelDriftInfo;
   compliance: ComplianceInfo;
+  sportsMetrics?: {
+    totalFixtures: number;
+    fixturesActioned: number;
+    avgClvBps: number;
+    clvHitRate: number;
+    roiPct: number;
+    avgStakeGbp: number;
+    leagueBreakdown: { league: string; fixtures: number; roi: number; clvBps: number }[];
+    marketBreakdown: { market: string; bets: number; roi: number; hitRate: number }[];
+    monthlyPnl: { month: string; pnlGbp: number; fixtures: number }[];
+    topEdgeFixtures: { fixture: string; clvBps: number; pnlGbp: number; date: string }[];
+  };
   configDiff?: {
     parameter: string;
     currentValue: string;

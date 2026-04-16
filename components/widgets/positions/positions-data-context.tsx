@@ -1,17 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { useSearchParams } from "next/navigation";
-import { usePositions } from "@/hooks/api/use-positions";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
-import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useWebSocket } from "@/hooks/use-websocket";
-import { useQueryClient } from "@tanstack/react-query";
-import { getOrders } from "@/lib/api/mock-trade-ledger";
-import type { MockOrder } from "@/lib/api/mock-trade-ledger";
 import type { FilterDefinition } from "@/components/shared/filter-bar";
+import { usePositions } from "@/hooks/api/use-positions";
+import { useWebSocket } from "@/hooks/use-websocket";
+import type { MockOrder } from "@/lib/api/mock-trade-ledger";
+import { getOrders } from "@/lib/api/mock-trade-ledger";
+import { useExecutionMode } from "@/lib/execution-mode-context";
+import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
 
 export type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
 
@@ -103,7 +103,7 @@ interface PositionRecord {
 const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   {
     id: "defi-aave-ausdc-001",
-    strategy_id: "AAVE_LENDING",
+    strategy_id: "ELYSIUM_AAVE_LENDING",
     strategy_name: "AAVE Lending",
     instrument: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM",
     side: "LONG",
@@ -124,7 +124,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-basis-eth-spot-001",
-    strategy_id: "BASIS_TRADE",
+    strategy_id: "ELYSIUM_BASIS_TRADE",
     strategy_name: "Multi-Venue Basis Trade",
     instrument: "WALLET:SPOT_ASSET:ETH",
     side: "LONG",
@@ -145,7 +145,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-basis-eth-perp-001",
-    strategy_id: "BASIS_TRADE",
+    strategy_id: "ELYSIUM_BASIS_TRADE",
     strategy_name: "Multi-Venue Basis Trade",
     instrument: "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
     side: "SHORT",
@@ -166,7 +166,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-recursive-collateral-001",
-    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_id: "ELYSIUM_RECURSIVE_STAKED_BASIS",
     strategy_name: "Recursive Staked Basis (Hedged)",
     instrument: "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM",
     side: "LONG",
@@ -187,7 +187,7 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
   {
     id: "defi-recursive-debt-001",
-    strategy_id: "RECURSIVE_STAKED_BASIS",
+    strategy_id: "ELYSIUM_RECURSIVE_STAKED_BASIS",
     strategy_name: "Recursive Staked Basis (Hedged)",
     instrument: "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM",
     side: "SHORT",
@@ -208,18 +208,93 @@ const DEFI_MOCK_POSITIONS: PositionRecord[] = [
   },
 ];
 
+const STRATEGY_ID_NAMES: Record<string, string> = {
+  AAVE_LENDING: "AAVE Lending",
+  BASIS_TRADE: "Multi-Venue Basis Trade",
+  STAKED_BASIS: "Staked Basis (weETH)",
+  RECURSIVE_STAKED_BASIS: "Recursive Staked Basis",
+  USDT_HEDGED_RECURSIVE: "USDT Hedged Recursive",
+  ETHENA_BENCHMARK: "Ethena Benchmark",
+};
+
 // ---------------------------------------------------------------------------
 // Derive position deltas from filled DeFi orders in the mock ledger
 // ---------------------------------------------------------------------------
 
-function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
-  const filledDefi = getOrders().filter(
-    (o: MockOrder) => o.asset_class === "DeFi" && o.status === "filled" && o.lane === "defi",
-  );
+function makePosition(
+  id: string,
+  order: MockOrder,
+  instrumentId: string,
+  side: "LONG" | "SHORT",
+  qty: number,
+  price: number,
+  opts: { leverage?: number; health_factor?: number } = {},
+): PositionRecord {
+  const stratName = STRATEGY_ID_NAMES[order.strategy_id ?? ""] ?? order.strategy_id ?? "DeFi Order";
+  return {
+    id,
+    strategy_id: order.strategy_id ?? "UNKNOWN",
+    strategy_name: stratName,
+    instrument: instrumentId,
+    side,
+    quantity: qty,
+    entry_price: price,
+    current_price: price,
+    net_pnl: 0,
+    net_pnl_pct: 0,
+    today_pnl: 0,
+    today_pnl_pct: 0,
+    unrealized_pnl: 0,
+    venue: order.venue,
+    margin: 0,
+    leverage: opts.leverage ?? 1,
+    net_delta: side === "LONG" ? qty * price : -(qty * price),
+    health_factor: opts.health_factor,
+    updated_at: order.updated_at,
+  };
+}
 
-  // Group by instrument_id to accumulate quantity changes
-  const deltaMap = new Map<string, { order: MockOrder; qtyDelta: number }>();
+function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
+  const filledDefi = getOrders().filter((o: MockOrder) => {
+    if (o.asset_class !== "DeFi" || o.status !== "filled" || o.lane !== "defi") return false;
+    const instr = o.instrument_id.toUpperCase();
+    return !instr.startsWith("TRANSFER:") && !instr.startsWith("BRIDGE:") && !instr.startsWith("SWAP:");
+  });
+
+  // Flash loan orders get decomposed into collateral + debt pair
+  const derived: PositionRecord[] = [];
+  const nonFlash: MockOrder[] = [];
   for (const order of filledDefi) {
+    const instrUpper = order.instrument_id.toUpperCase();
+    if (instrUpper.startsWith("FLASH_LOAN:")) {
+      const collatId = `defi-ledger-flash-collat-${order.id}`;
+      const debtId = `defi-ledger-flash-debt-${order.id}`;
+      if (!existingIds.has(collatId)) {
+        const collateralVenue = order.venue || "AAVEV3-ETHEREUM";
+        derived.push(
+          makePosition(collatId, order, `${collateralVenue}:A_TOKEN:AWEETH@ETHEREUM`, "LONG", order.quantity, 3400, {
+            leverage: 2.5,
+            health_factor: 1.38,
+          }),
+        );
+      }
+      if (!existingIds.has(debtId)) {
+        const debtVenue = order.venue || "AAVEV3-ETHEREUM";
+        derived.push(
+          makePosition(debtId, order, `${debtVenue}:DEBT_TOKEN:DEBTWETH@ETHEREUM`, "SHORT", order.quantity * 0.8, 3400, {
+            leverage: 2.5,
+            health_factor: 1.38,
+          }),
+        );
+      }
+    } else {
+      nonFlash.push(order);
+    }
+  }
+
+  // Group remaining by instrument_id to accumulate quantity deltas
+  const deltaMap = new Map<string, { order: MockOrder; qtyDelta: number }>();
+  for (const order of nonFlash) {
     const existing = deltaMap.get(order.instrument_id);
     const delta = order.side === "buy" ? order.quantity : -order.quantity;
     if (existing) {
@@ -229,34 +304,21 @@ function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
     }
   }
 
-  const derived: PositionRecord[] = [];
   for (const [instrumentId, { order, qtyDelta }] of deltaMap) {
-    // Skip if there's already a hardcoded position with the same instrument
     const matchId = `defi-ledger-${instrumentId}`;
     if (existingIds.has(matchId)) continue;
-    // Also skip if qty is zero (fully closed)
     if (Math.abs(qtyDelta) < 0.000001) continue;
 
     const price = order.average_fill_price ?? order.price;
-    derived.push({
-      id: matchId,
-      strategy_id: order.strategy_id ?? "UNKNOWN",
-      strategy_name: order.strategy_id ?? "DeFi Order",
-      instrument: instrumentId,
-      side: qtyDelta > 0 ? "LONG" : "SHORT",
-      quantity: Math.abs(qtyDelta),
-      entry_price: price,
-      current_price: price,
-      net_pnl: 0,
-      net_pnl_pct: 0,
-      today_pnl: 0,
-      today_pnl_pct: 0,
-      unrealized_pnl: 0,
-      venue: order.venue,
-      margin: 0,
-      leverage: 1,
-      updated_at: order.updated_at,
-    });
+    const instrUpper = instrumentId.toUpperCase();
+    const isLending = instrUpper.includes("DEBT_TOKEN") || instrUpper.includes("A_TOKEN");
+    const side: "LONG" | "SHORT" = qtyDelta > 0 ? "LONG" : "SHORT";
+    derived.push(
+      makePosition(matchId, order, instrumentId, side, Math.abs(qtyDelta), price, {
+        leverage: isLending ? 2.5 : 1,
+        health_factor: isLending ? 1.38 : undefined,
+      }),
+    );
   }
   return derived;
 }
@@ -392,7 +454,9 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
           queryClient.setQueryData(["positions", undefined], (old: unknown) => {
             if (!old) return old;
             const oldData = old as Record<string, unknown>;
-            const oldPositions = ((oldData as Record<string, unknown>).data ?? (oldData as Record<string, unknown>).positions ?? oldData) as Record<string, unknown>[];
+            const oldPositions = ((oldData as Record<string, unknown>).data ??
+              (oldData as Record<string, unknown>).positions ??
+              oldData) as Record<string, unknown>[];
             if (!Array.isArray(oldPositions)) return old;
             const updateMap = new Map(
               updatedPositions.map((p) => [
@@ -447,7 +511,11 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
 
   const positions: PositionRecord[] = React.useMemo(() => {
     const raw = positionsRaw as Record<string, unknown> | undefined;
-    const arr = raw ? (Array.isArray(raw) ? raw : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).positions)) : undefined;
+    const arr = raw
+      ? Array.isArray(raw)
+        ? raw
+        : ((raw as Record<string, unknown>).data ?? (raw as Record<string, unknown>).positions)
+      : undefined;
     let result: PositionRecord[] = [];
 
     if (Array.isArray(arr) && arr.length > 0) {
@@ -504,7 +572,14 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     }
     return result;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [positionsRaw, scopeStrategyIds, globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds, ledgerRefreshCounter]);
+  }, [
+    positionsRaw,
+    scopeStrategyIds,
+    globalScope.organizationIds,
+    globalScope.clientIds,
+    globalScope.strategyIds,
+    ledgerRefreshCounter,
+  ]);
 
   const filteredPositions = React.useMemo(() => {
     let result = positions;
@@ -537,12 +612,8 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       totalNotional: filteredPositions.reduce((sum, p) => sum + getNotional(p), 0),
       unrealizedPnL: filteredPositions.reduce((sum, p) => sum + p.net_pnl, 0),
       totalMargin: filteredPositions.reduce((sum, p) => sum + p.margin, 0),
-      longExposure: filteredPositions
-        .filter((p) => p.side === "LONG")
-        .reduce((sum, p) => sum + getNotional(p), 0),
-      shortExposure: filteredPositions
-        .filter((p) => p.side === "SHORT")
-        .reduce((sum, p) => sum + getNotional(p), 0),
+      longExposure: filteredPositions.filter((p) => p.side === "LONG").reduce((sum, p) => sum + getNotional(p), 0),
+      shortExposure: filteredPositions.filter((p) => p.side === "SHORT").reduce((sum, p) => sum + getNotional(p), 0),
     };
   }, [filteredPositions]);
 
@@ -685,4 +756,4 @@ export function usePositionsData(): PositionsDataContextValue {
   return ctx;
 }
 
-export type { PositionRecord, PositionsSummary, AssetClassFilter };
+export type { AssetClassFilter, PositionRecord, PositionsSummary };

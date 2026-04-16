@@ -1,13 +1,13 @@
 "use client";
 
+import { EmptyState } from "@/components/shared/empty-state";
 import type { FilterDefinition } from "@/components/shared/filter-bar";
 import { FilterBar } from "@/components/shared/filter-bar";
 import { FixtureSection, groupFixtures } from "@/components/trading/sports/fixtures-tab";
-import { FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
 import { LeagueBadge } from "@/components/trading/sports/shared";
 import type { Fixture, FootballLeague } from "@/components/trading/sports/types";
-import { EmptyState } from "@/components/shared/empty-state";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
 import { cn } from "@/lib/utils";
 import { Filter } from "lucide-react";
 import * as React from "react";
@@ -18,6 +18,12 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
     useSportsData();
   const [showFilters, setShowFilters] = React.useState(true);
 
+  const matchdays = React.useMemo(() => {
+    const rounds = new Set<string>();
+    filteredFixtures.forEach((f) => rounds.add(f.round));
+    return Array.from(rounds).sort();
+  }, [filteredFixtures]);
+
   const filterDefs = React.useMemo<FilterDefinition[]>(
     () => [
       {
@@ -27,9 +33,31 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
         options: [
           { value: "today", label: "Today" },
           { value: "week", label: "This Week" },
+          { value: "matchday", label: "By Matchday" },
+          { value: "custom", label: "Pick Date" },
           { value: "all", label: "All" },
         ],
       },
+      ...(filters.dateRange === "matchday"
+        ? [
+          {
+            key: "matchday",
+            label: "Round",
+            type: "select" as const,
+            options: matchdays.map((md) => ({ value: md, label: md })),
+          },
+        ]
+        : []),
+      ...(filters.dateRange === "custom"
+        ? [
+          {
+            key: "customDate",
+            label: "Date",
+            type: "search" as const,
+            placeholder: "YYYY-MM-DD",
+          },
+        ]
+        : []),
       {
         key: "statusFilter",
         label: "Status",
@@ -43,16 +71,18 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
       },
       { key: "search", label: "Search", type: "search", placeholder: "Search teams..." },
     ],
-    [],
+    [filters.dateRange, matchdays],
   );
 
   const filterValues = React.useMemo(
     () => ({
       dateRange: filters.dateRange,
+      matchday: filters.matchday,
+      customDate: filters.customDate,
       statusFilter: filters.statusFilter,
       search: filters.search || undefined,
     }),
-    [filters.dateRange, filters.statusFilter, filters.search],
+    [filters.dateRange, filters.matchday, filters.customDate, filters.statusFilter, filters.search],
   );
 
   const handleFilterChange = React.useCallback(
@@ -61,6 +91,10 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
         switch (key) {
           case "dateRange":
             return { ...prev, dateRange: value as string as GlobalFilters["dateRange"] };
+          case "matchday":
+            return { ...prev, matchday: (value as string) || undefined };
+          case "customDate":
+            return { ...prev, customDate: (value as string) || undefined };
           case "statusFilter":
             return { ...prev, statusFilter: value as string as GlobalFilters["statusFilter"] };
           case "search":

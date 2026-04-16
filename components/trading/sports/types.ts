@@ -31,25 +31,33 @@ export type OddsMarket =
   | "HT Result"
   | "DNB";
 
-// Aligned with backend bookmaker_registry.py — execution-capable bookmakers
+// Aligned with backend VENUE_EXECUTION_REGISTRY — 78+ bookmakers across 4 categories
 export type Bookmaker =
   // Exchanges (API execution)
   | "betfair_exchange"
+  | "betfair_ex_uk"
+  | "betfair_ex_eu"
+  | "betfair_ex_au"
   | "smarkets"
   | "matchbook"
   | "betdaq"
   | "kalshi"
   | "polymarket"
+  | "novig"
+  | "prophetx"
   // Bookmaker APIs (API execution)
   | "pinnacle"
   | "onexbet"
-  // Odds API / scraper bookmakers (browser execution or odds-only)
+  // International scrapers
   | "bet365"
   | "unibet"
+  | "unibet_uk"
+  | "unibet_fr"
   | "marathon"
   | "williamhill"
   | "paddypower"
   | "ladbrokes"
+  | "ladbrokes_uk"
   | "coral"
   | "skybet"
   | "betway"
@@ -57,36 +65,72 @@ export type Bookmaker =
   | "betvictor"
   | "boylesports"
   | "bwin"
+  | "sport888"
+  | "betsson"
+  | "coolbet"
+  | "virginbet"
+  | "livescorebet"
+  | "bovada"
+  | "betonlineag"
+  | "mybookieag"
+  // Australia
+  | "sportsbet"
+  | "tab"
+  | "neds"
+  | "pointsbetau"
+  | "ladbrokes_au"
+  | "bet365_au"
+  // Regional
+  | "winamax_fr"
+  | "tipico_de"
+  | "leovegas"
   // US sportsbooks
   | "draftkings"
   | "fanduel"
   | "betmgm"
   | "caesars"
-  | "bovada";
+  | "williamhill_us"
+  | "betrivers"
+  | "espnbet"
+  | "hardrockbet"
+  | "fanatics"
+  // US DFS/Social
+  | "prizepicks"
+  | "underdog"
+  | "fliff";
 
 /** Bookmakers that can execute bets (not just odds) */
 export const EXECUTION_CAPABLE_BOOKMAKERS: Bookmaker[] = [
-  "betfair_exchange", "smarkets", "matchbook", "betdaq", "kalshi", "polymarket",
-  "pinnacle", "onexbet",
+  "betfair_exchange", "betfair_ex_uk", "betfair_ex_eu", "smarkets", "matchbook", "betdaq",
+  "kalshi", "polymarket", "pinnacle", "onexbet",
   "bet365", "williamhill", "paddypower", "ladbrokes", "coral", "skybet", "betway",
-  "betfred", "betvictor", "boylesports",
+  "betfred", "betvictor", "boylesports", "sport888",
+  "draftkings", "fanduel", "betmgm", "betrivers", "espnbet",
 ];
 
 export const BOOKMAKER_DISPLAY_NAMES: Record<Bookmaker, string> = {
   betfair_exchange: "Betfair Exchange",
+  betfair_ex_uk: "Betfair Exchange UK",
+  betfair_ex_eu: "Betfair Exchange EU",
+  betfair_ex_au: "Betfair Exchange AU",
   smarkets: "Smarkets",
   matchbook: "Matchbook",
   betdaq: "Betdaq",
   kalshi: "Kalshi",
   polymarket: "Polymarket",
+  novig: "Novig",
+  prophetx: "ProphetX",
   pinnacle: "Pinnacle",
   onexbet: "1xBet",
   bet365: "bet365",
   unibet: "Unibet",
-  marathon: "Marathon Bet",
+  unibet_uk: "Unibet UK",
+  unibet_fr: "Unibet FR",
+  marathon: "Marathonbet",
   williamhill: "William Hill",
   paddypower: "Paddy Power",
   ladbrokes: "Ladbrokes",
+  ladbrokes_uk: "Ladbrokes UK",
   coral: "Coral",
   skybet: "Sky Bet",
   betway: "Betway",
@@ -94,11 +138,35 @@ export const BOOKMAKER_DISPLAY_NAMES: Record<Bookmaker, string> = {
   betvictor: "BetVictor",
   boylesports: "BoyleSports",
   bwin: "bwin",
+  sport888: "888sport",
+  betsson: "Betsson",
+  coolbet: "Coolbet",
+  virginbet: "Virgin Bet",
+  livescorebet: "LiveScore Bet",
+  bovada: "Bovada",
+  betonlineag: "BetOnline",
+  mybookieag: "MyBookie",
+  sportsbet: "Sportsbet",
+  tab: "TAB",
+  neds: "Neds",
+  pointsbetau: "PointsBet AU",
+  ladbrokes_au: "Ladbrokes AU",
+  bet365_au: "bet365 AU",
+  winamax_fr: "Winamax",
+  tipico_de: "Tipico",
+  leovegas: "LeoVegas",
   draftkings: "DraftKings",
   fanduel: "FanDuel",
   betmgm: "BetMGM",
   caesars: "Caesars",
-  bovada: "Bovada",
+  williamhill_us: "William Hill US",
+  betrivers: "BetRivers",
+  espnbet: "ESPN Bet",
+  hardrockbet: "Hard Rock Bet",
+  fanatics: "Fanatics",
+  prizepicks: "PrizePicks",
+  underdog: "Underdog Fantasy",
+  fliff: "Fliff",
 };
 
 export type OddsMovement = "UP" | "DOWN" | "STABLE";
@@ -143,12 +211,12 @@ export interface MatchStats {
 export interface MatchEvent {
   minute: number;
   type:
-    | "goal"
-    | "yellow_card"
-    | "red_card"
-    | "substitution"
-    | "var"
-    | "penalty";
+  | "goal"
+  | "yellow_card"
+  | "red_card"
+  | "substitution"
+  | "var"
+  | "penalty";
   team: "home" | "away";
   player: string;
   detail?: string; // "pen", "og", "assist: Salah"
@@ -274,4 +342,106 @@ export interface Bet {
   isAccumulator: boolean;
   accumulatorLegs?: AccumulatorLeg[];
   kellyStake?: number; // suggested by Kelly criterion
+}
+
+// ─── Standings (from CanonicalStanding) ──────────────────────────────────────
+
+export interface Standing {
+  leagueId: string;
+  season: string;
+  rank: number;
+  teamId: string;
+  teamName: string;
+  points: number;
+  goalsDiff: number;
+  form: string;
+  played: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+}
+
+// ─── Predictions (from CanonicalPrediction) ─────────────────────────────────
+
+export interface Prediction {
+  fixtureId: string;
+  source: string;
+  kickoffUtc: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeWinProb: number;
+  drawProb: number;
+  awayWinProb: number;
+  bttsProb: number;
+  over25Prob: number;
+  under25Prob: number;
+  xgHome: number;
+  xgAway: number;
+  modelVersion?: string;
+  confidence?: number;
+}
+
+// ─── Player Performance (from CanonicalPlayerPerformance) ────────────────────
+
+export interface PlayerPerformance {
+  fixtureId: string;
+  playerId: string;
+  playerName: string;
+  teamId: string;
+  position: string;
+  minutesPlayed: number;
+  rating?: number;
+  goals: number;
+  assists: number;
+  shots: number;
+  shotsOnTarget: number;
+  passes: number;
+  passAccuracy: number;
+  tackles: number;
+  interceptions: number;
+  yellowCards: number;
+  redCards: number;
+}
+
+// ─── Weather Detail (from CanonicalWeather) ──────────────────────────────────
+
+export interface WeatherDetail {
+  temperatureCelsius: number;
+  windSpeedMs: number;
+  humidityPct: number;
+  precipitationMm: number;
+  cloudCoverPct: number;
+  condition: string;
+}
+
+// ─── CLV Record (from CLVRecord) ─────────────────────────────────────────────
+
+export interface CLVRecord {
+  modelVersion: string;
+  marketType: OddsMarket;
+  bookmakerKey: Bookmaker;
+  periodStart: string;
+  periodEnd: string;
+  totalBets: number;
+  betsBeatClose: number;
+  meanClvPct: number;
+  clvHitRate: number;
+  totalStake: number;
+  totalPnl: number;
+  roiPct: number;
+}
+
+// ─── Bookmaker Tier (from VenueExecutionProfile) ────────────────────────────
+
+export type BookmakerTier = "exchange" | "api_bookmaker" | "scraper" | "us_sportsbook" | "prediction_market";
+
+export interface BookmakerProfile {
+  key: Bookmaker;
+  displayName: string;
+  tier: BookmakerTier;
+  supportsLive: boolean;
+  supportsCashOut: boolean;
+  executionCapable: boolean;
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { placeMockOrder, getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
 import type { MockOrder } from "@/lib/api/mock-trade-ledger";
+import { getFilledDefiOrders, placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
@@ -17,6 +17,14 @@ import {
 import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { DEFI_CHAINS, MOCK_TOKEN_BALANCES, getMockBridgeRoutes } from "@/lib/mocks/fixtures/defi-transfer";
+import {
+  MOCK_EMERGENCY_EXIT,
+  MOCK_FUNDING_RATES,
+  MOCK_HEALTH_FACTOR,
+  MOCK_REWARD_PNL,
+  MOCK_STAKING_REWARDS,
+  MOCK_WATERFALL_WEIGHTS_PATRICK,
+} from "@/lib/mocks/fixtures/defi-walkthrough";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type {
@@ -41,14 +49,6 @@ import type {
   TreasurySnapshot,
   WaterfallWeights,
 } from "@/lib/types/defi";
-import {
-  MOCK_STAKING_REWARDS,
-  MOCK_FUNDING_RATES,
-  MOCK_WATERFALL_WEIGHTS_PATRICK,
-  MOCK_HEALTH_FACTOR,
-  MOCK_EMERGENCY_EXIT,
-  MOCK_REWARD_PNL,
-} from "@/lib/mocks/fixtures/defi-walkthrough";
 import * as React from "react";
 
 const MOCK_WALLET = "0x7a23c0ffeebee4f91deadbeef1234567890abcd";
@@ -180,11 +180,11 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
           timestamp: o.timestamp,
           instruction_type: instrUpper.includes("FLASH") ? "FLASH_BORROW"
             : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") ? "SWAP"
-            : instrUpper.includes("A_TOKEN") || instrUpper.includes("LEND") ? "LEND"
-            : instrUpper.includes("DEBT_TOKEN") || instrUpper.includes("BORROW") ? "BORROW"
-            : instrUpper.includes("LST") || instrUpper.includes("STAKE") ? "STAKE"
-            : instrUpper.includes("PERP") || instrUpper.includes("PERPETUAL") ? "TRADE"
-            : "TRANSFER",
+              : instrUpper.includes("A_TOKEN") || instrUpper.includes("LEND") ? "LEND"
+                : instrUpper.includes("DEBT_TOKEN") || instrUpper.includes("BORROW") ? "BORROW"
+                  : instrUpper.includes("LST") || instrUpper.includes("STAKE") ? "STAKE"
+                    : instrUpper.includes("PERP") || instrUpper.includes("PERPETUAL") ? "TRADE"
+                      : "TRANSFER",
           algo_type: (o.algo_type ?? "DIRECT") as TradeHistoryRow["algo_type"],
           instrument_id: o.instrument_id,
           venue: o.venue,
@@ -207,18 +207,50 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
           // Reference = mid-market at signal time (what strategy-service saw)
           reference_price: expectedPrice,
           alpha_pnl_usd: slippage > 0
-            ? -slippage // negative alpha = execution worse than benchmark
+            ? -slippage
             : 0,
+          strategy_id: o.strategy_id,
+          execution_chain: [
+            { label: "Signal", detail: "Strategy generated instruction", duration_ms: 2 },
+            { label: "Risk Check", detail: "Pre-trade exposure validation", duration_ms: 5 },
+            { label: "Algo Select", detail: `Selected ${o.algo_type ?? "DIRECT"}`, duration_ms: 1 },
+            { label: "Route", detail: `Best route → ${o.venue}`, duration_ms: 12 },
+            { label: "Execute", detail: `Fill @ ${fillPrice.toFixed(2)}`, duration_ms: 180 },
+          ],
         };
       });
 
     const allRows = [...seedRows, ...ledgerRows];
-    // Recompute running P&L
     let running = 0;
-    for (const row of allRows) {
+    for (let i = 0; i < allRows.length; i++) {
+      const row = allRows[i];
       running += row.instant_pnl.net_pnl;
       row.running_pnl = running;
-      row.seq = allRows.indexOf(row) + 1;
+      row.seq = i + 1;
+
+      if (!row.strategy_id) {
+        if (row.instruction_type === "FLASH_BORROW" || row.instruction_type === "FLASH_REPAY") {
+          row.strategy_id = "RECURSIVE_STAKED_BASIS";
+        } else if (row.instruction_type === "LEND" || row.instruction_type === "BORROW") {
+          row.strategy_id = "AAVE_LENDING";
+        } else if (row.instruction_type === "TRADE") {
+          row.strategy_id = "BASIS_TRADE";
+        } else if (row.instruction_type === "STAKE") {
+          row.strategy_id = "STAKED_BASIS";
+        } else if (row.instruction_type === "ADD_LIQUIDITY" || row.instruction_type === "REMOVE_LIQUIDITY") {
+          row.strategy_id = "AMM_LP";
+        }
+      }
+
+      if (!row.execution_chain && !row.is_child_fill) {
+        row.execution_chain = [
+          { label: "Signal", detail: `${row.strategy_id ?? "manual"}`, duration_ms: 2 },
+          { label: "Risk Check", detail: "Pre-trade validation", duration_ms: 4 },
+          { label: "Algo Select", detail: row.algo_type, duration_ms: 1 },
+          { label: "Route", detail: row.venue, duration_ms: 10 },
+          { label: "Fill", detail: row.status, duration_ms: 150 },
+        ];
+      }
     }
     return allRows;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -262,11 +294,31 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       gasEstimate: Math.round(gasEstimate * 100) / 100,
       netPnl: Math.round((grossProfit - flashFee - gasEstimate) * 100) / 100,
     };
-  }, []);
+  }, [flashSteps]);
 
   const [treasury, setTreasury] = React.useState<TreasurySnapshot>(MOCK_TREASURY);
   const [stakingRewards, setStakingRewards] = React.useState<StakingReward[]>(MOCK_STAKING_REWARDS);
   const [rewardPnl, setRewardPnl] = React.useState<RewardPnLBreakdown>(MOCK_REWARD_PNL);
+
+  // Simulate real-time reward accrual — every 10s, accrue a small amount to tokens
+  // with weekly frequency, reflecting continuous yield generation
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setStakingRewards((prev) =>
+        prev.map((r) => {
+          if (r.frequency !== "WEEKLY" || r.accrued_amount <= 0) return r;
+          const tickAmount = r.accrued_amount * 0.001;
+          const pricePerToken = r.accrued_value_usd / r.accrued_amount;
+          return {
+            ...r,
+            accrued_amount: Math.round((r.accrued_amount + tickAmount) * 10000) / 10000,
+            accrued_value_usd: Math.round((r.accrued_value_usd + tickAmount * pricePerToken) * 100) / 100,
+          };
+        }),
+      );
+    }, 10_000);
+    return () => clearInterval(timer);
+  }, []);
 
   const claimReward = React.useCallback((token: string) => {
     setStakingRewards((prev) =>
@@ -377,6 +429,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
   // Paper mode: 10x testnet balances; Batch mode: read-only flag
   // When an org without a DeFi desk is selected, show zero balances
+  // Reactive: subtract filled DeFi orders from base balances
   const adjustedTokenBalances = React.useMemo(() => {
     if (!hasDefiDesk) {
       const zeroed: Record<string, number> = {};
@@ -385,13 +438,28 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       }
       return zeroed;
     }
-    if (!isPaper) return MOCK_TOKEN_BALANCES;
-    const scaled: Record<string, number> = {};
+    const base: Record<string, number> = {};
+    const multiplier = isPaper ? 10 : 1;
     for (const [key, val] of Object.entries(MOCK_TOKEN_BALANCES)) {
-      scaled[key] = val * 10;
+      base[key] = val * multiplier;
     }
-    return scaled;
-  }, [isPaper, hasDefiDesk]);
+    // Adjust balances based on filled ledger orders
+    const filled = getFilledDefiOrders();
+    for (const order of filled) {
+      const asset = order.instrument_id.split(":").pop()?.split("@")[0]?.toUpperCase() ?? "";
+      const qty = order.filled_quantity ?? order.quantity;
+      if (order.side === "buy") {
+        base[asset] = (base[asset] ?? 0) + qty;
+      } else {
+        base[asset] = (base[asset] ?? 0) - qty;
+      }
+    }
+    // Clamp all balances to zero — no negatives from large demo trades
+    for (const key of Object.keys(base)) {
+      if (base[key] < 0) base[key] = 0;
+    }
+    return base;
+  }, [isPaper, hasDefiDesk, ledgerVersion]);
 
   // Batch mode: mark protocols as historical; org scope: empty if no DeFi desk
   const adjustedLendingProtocols = React.useMemo(() => {

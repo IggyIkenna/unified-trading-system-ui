@@ -237,15 +237,29 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
           </div>
         </div>
       )}
-      {Object.entries(groupedStrategies).map(([assetClass, strategies]) => (
+      {Object.entries(groupedStrategies).map(([assetClass, strategies]) => {
+        const byArchetype: Record<string, Strategy[]> = {};
+        for (const s of strategies) {
+          const arch = s.archetype ?? "OTHER";
+          if (!byArchetype[arch]) byArchetype[arch] = [];
+          byArchetype[arch].push(s);
+        }
+        const archetypeLabel = (a: string) => ARCHETYPES.find((x) => x.id === a)?.label ?? a;
+        return (
         <div
           key={assetClass}
           className="rounded-md border border-border/60 pl-2"
           style={{ borderLeftWidth: 3, borderLeftColor: ASSET_CLASS_COLORS[assetClass] ?? "var(--border)" }}
         >
           <CollapsibleSection title={assetClass} defaultOpen count={strategies.length} className="space-y-2">
+            {Object.entries(byArchetype).map(([arch, archStrategies]) => (
+              <div key={arch} className="space-y-1.5">
+                <div className="flex items-center gap-2 px-1 pt-1">
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{archetypeLabel(arch)}</span>
+                  <span className="text-[10px] text-muted-foreground">({archStrategies.length})</span>
+                </div>
             <div className={cn("grid gap-3 pb-2", narrow ? "grid-cols-1" : "grid-cols-2")}>
-              {strategies.map((strategy) => {
+              {archStrategies.map((strategy) => {
                 const exec = executionModeShort(strategy);
                 const inst = strategy.instructionTypes ?? [];
                 return (
@@ -361,9 +375,12 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                 );
               })}
             </div>
+              </div>
+            ))}
           </CollapsibleSection>
         </div>
-      ))}
+        );
+      })}
 
       {filteredStrategies.length === 0 && (
         <div className="text-center py-12 text-muted-foreground text-sm">

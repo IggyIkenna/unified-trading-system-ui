@@ -1,12 +1,15 @@
 import type {
-  Fixture,
-  BookmakerOdds,
   ArbOpportunity,
   Bet,
-  OddsMarket,
   Bookmaker,
-  ProgressiveStatsSnapshot,
+  BookmakerOdds,
+  CLVRecord,
+  Fixture,
+  OddsMarket,
+  Prediction,
   ProgressiveOddsSnapshot,
+  ProgressiveStatsSnapshot,
+  Standing,
 } from "@/components/trading/sports/types";
 import { SUBSCRIBED_BOOKMAKERS } from "@/lib/mocks/fixtures/sports-fixtures";
 
@@ -1481,3 +1484,123 @@ export function getOddsByMarket(fixtureId: string, market: OddsMarket): Map<stri
   }
   return result;
 }
+
+// ─── Standings ─────────────────────────────────────────────────────────────────
+
+export const MOCK_STANDINGS: Record<string, Standing[]> = {
+  EPL: [
+    { leagueId: "EPL", season: "2025/26", rank: 1, teamId: "ars", teamName: "Arsenal", points: 71, goalsDiff: 43, form: "WWDWL", played: 28, wins: 23, draws: 2, losses: 3, goalsFor: 65, goalsAgainst: 22 },
+    { leagueId: "EPL", season: "2025/26", rank: 2, teamId: "mci", teamName: "Man City", points: 67, goalsDiff: 37, form: "WDWWW", played: 28, wins: 20, draws: 7, losses: 1, goalsFor: 62, goalsAgainst: 25 },
+    { leagueId: "EPL", season: "2025/26", rank: 3, teamId: "liv", teamName: "Liverpool", points: 65, goalsDiff: 37, form: "WWWDW", played: 28, wins: 20, draws: 5, losses: 3, goalsFor: 58, goalsAgainst: 21 },
+    { leagueId: "EPL", season: "2025/26", rank: 4, teamId: "che", teamName: "Chelsea", points: 52, goalsDiff: 13, form: "LWDWW", played: 28, wins: 15, draws: 7, losses: 6, goalsFor: 48, goalsAgainst: 35 },
+    { leagueId: "EPL", season: "2025/26", rank: 5, teamId: "tot", teamName: "Tottenham", points: 50, goalsDiff: 14, form: "WDLWW", played: 28, wins: 15, draws: 5, losses: 8, goalsFor: 52, goalsAgainst: 38 },
+    { leagueId: "EPL", season: "2025/26", rank: 6, teamId: "mun", teamName: "Man United", points: 45, goalsDiff: 7, form: "DLWWD", played: 28, wins: 13, draws: 6, losses: 9, goalsFor: 39, goalsAgainst: 32 },
+    { leagueId: "EPL", season: "2025/26", rank: 7, teamId: "new", teamName: "Newcastle", points: 44, goalsDiff: 7, form: "WDWLW", played: 28, wins: 13, draws: 5, losses: 10, goalsFor: 42, goalsAgainst: 35 },
+    { leagueId: "EPL", season: "2025/26", rank: 8, teamId: "avl", teamName: "Aston Villa", points: 43, goalsDiff: 6, form: "WLWDW", played: 28, wins: 12, draws: 7, losses: 9, goalsFor: 40, goalsAgainst: 34 },
+    { leagueId: "EPL", season: "2025/26", rank: 9, teamId: "bha", teamName: "Brighton", points: 40, goalsDiff: 1, form: "DLWWL", played: 28, wins: 11, draws: 7, losses: 10, goalsFor: 38, goalsAgainst: 37 },
+    { leagueId: "EPL", season: "2025/26", rank: 10, teamId: "whu", teamName: "West Ham", points: 38, goalsDiff: -5, form: "LWDLW", played: 28, wins: 10, draws: 8, losses: 10, goalsFor: 35, goalsAgainst: 40 },
+  ],
+};
+
+// ─── Predictions ────────────────────────────────────────────────────────────────
+
+export const MOCK_PREDICTIONS: Record<string, Prediction> = {
+  "fix-003": {
+    fixtureId: "fix-003",
+    source: "unified-ml-v2",
+    kickoffUtc: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
+    homeTeam: "Tottenham",
+    awayTeam: "Man United",
+    homeWinProb: 0.48,
+    drawProb: 0.26,
+    awayWinProb: 0.26,
+    bttsProb: 0.62,
+    over25Prob: 0.58,
+    under25Prob: 0.42,
+    xgHome: 1.6,
+    xgAway: 1.2,
+    modelVersion: "sports-v2.3.1",
+    confidence: 0.72,
+  },
+  "fix-004": {
+    fixtureId: "fix-004",
+    source: "unified-ml-v2",
+    kickoffUtc: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(),
+    homeTeam: "Barcelona",
+    awayTeam: "Real Madrid",
+    homeWinProb: 0.38,
+    drawProb: 0.28,
+    awayWinProb: 0.34,
+    bttsProb: 0.71,
+    over25Prob: 0.67,
+    under25Prob: 0.33,
+    xgHome: 1.4,
+    xgAway: 1.5,
+    modelVersion: "sports-v2.3.1",
+    confidence: 0.68,
+  },
+  "fix-005": {
+    fixtureId: "fix-005",
+    source: "unified-ml-v2",
+    kickoffUtc: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
+    homeTeam: "Liverpool",
+    awayTeam: "PSG",
+    homeWinProb: 0.44,
+    drawProb: 0.27,
+    awayWinProb: 0.29,
+    bttsProb: 0.65,
+    over25Prob: 0.61,
+    under25Prob: 0.39,
+    xgHome: 1.7,
+    xgAway: 1.3,
+    modelVersion: "sports-v2.3.1",
+    confidence: 0.65,
+  },
+};
+
+// ─── CLV Records ────────────────────────────────────────────────────────────────
+
+export const MOCK_CLV_RECORDS: CLVRecord[] = [
+  {
+    modelVersion: "sports-v2.3.1",
+    marketType: "FT Result",
+    bookmakerKey: "bet365",
+    periodStart: "2026-03-01",
+    periodEnd: "2026-04-15",
+    totalBets: 142,
+    betsBeatClose: 89,
+    meanClvPct: 2.4,
+    clvHitRate: 0.627,
+    totalStake: 71000,
+    totalPnl: 4260,
+    roiPct: 6.0,
+  },
+  {
+    modelVersion: "sports-v2.3.1",
+    marketType: "Over/Under 2.5",
+    bookmakerKey: "pinnacle",
+    periodStart: "2026-03-01",
+    periodEnd: "2026-04-15",
+    totalBets: 98,
+    betsBeatClose: 65,
+    meanClvPct: 1.8,
+    clvHitRate: 0.663,
+    totalStake: 49000,
+    totalPnl: 2940,
+    roiPct: 6.0,
+  },
+  {
+    modelVersion: "sports-v2.3.1",
+    marketType: "BTTS",
+    bookmakerKey: "unibet",
+    periodStart: "2026-03-01",
+    periodEnd: "2026-04-15",
+    totalBets: 76,
+    betsBeatClose: 44,
+    meanClvPct: 1.2,
+    clvHitRate: 0.579,
+    totalStake: 38000,
+    totalPnl: 1520,
+    roiPct: 4.0,
+  },
+];

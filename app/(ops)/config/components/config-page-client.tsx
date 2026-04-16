@@ -20,9 +20,11 @@ import {
   ArrowRight,
   BarChart3,
   Building2,
+  Database,
   Globe,
   History,
   Key,
+  Layers,
   Plus,
   RefreshCw,
   Save,
@@ -39,6 +41,8 @@ import { useTabParam } from "@/hooks/use-tab-param";
 import { toast } from "sonner";
 import { clients, riskLimits, strategyConfigs, strategySchemas, venues } from "./config-page-schema";
 import { formatNumber } from "@/lib/utils/formatters";
+import ServiceConfigPanel from "./service-config-panel";
+import DefiProtocolConfigPanel from "./defi-protocol-config-panel";
 
 export default function ConfigPageClient() {
   const { token } = useAuth();
@@ -105,6 +109,9 @@ export default function ConfigPageClient() {
         return "New Risk Config";
       case "credentials":
         return "New Credential";
+      case "service-config":
+      case "defi-protocol":
+        return "";
       default:
         return "New";
     }
@@ -167,6 +174,14 @@ export default function ConfigPageClient() {
             <TabsTrigger value="credentials" className="gap-2">
               <Key className="size-4" />
               Credentials
+            </TabsTrigger>
+            <TabsTrigger value="service-config" className="gap-2">
+              <Database className="size-4" />
+              Service Config
+            </TabsTrigger>
+            <TabsTrigger value="defi-protocol" className="gap-2">
+              <Layers className="size-4" />
+              DeFi Protocols
             </TabsTrigger>
           </TabsList>
 
@@ -445,6 +460,16 @@ export default function ConfigPageClient() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Service Config Tab */}
+          <TabsContent value="service-config">
+            <ServiceConfigPanel />
+          </TabsContent>
+
+          {/* DeFi Protocol Config Tab */}
+          <TabsContent value="defi-protocol">
+            <DefiProtocolConfigPanel />
           </TabsContent>
         </Tabs>
       </div>

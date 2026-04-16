@@ -4,11 +4,12 @@
  * DeFi Trade History Widget — shows all executed instructions with instant P&L
  * decomposition, alpha P&L (vs reference price), and per-venue child fills for SOR orders.
  *
- * Columns: #, Time, Type, Algo, Venue, Amount, Expected, Actual, Slippage, Gas, Fees, Alpha, Net P&L, Running
+ * Columns: #, Time, Strategy, Type, Algo, Venue, Amount, Expected, Actual, Slippage, Gas, Fees, Alpha, Net P&L, Running
  */
 
 import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
 import { Badge } from "@/components/ui/badge";
+import * as React from "react";
 import { useDeFiData } from "./defi-data-context";
 
 const TYPE_COLORS: Record<string, string> = {
@@ -45,6 +46,16 @@ function formatTime(ts: string): string {
 
 export function DeFiTradeHistoryWidget() {
   const { tradeHistory } = useDeFiData();
+  const [expandedRows, setExpandedRows] = React.useState<Set<number>>(new Set());
+
+  const toggleExpand = React.useCallback((seq: number) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(seq)) next.delete(seq);
+      else next.add(seq);
+      return next;
+    });
+  }, []);
 
   return (
     <LiveFeedWidget
@@ -92,8 +103,10 @@ export function DeFiTradeHistoryWidget() {
       <table className="w-full text-xs px-2">
         <thead className="sticky top-0 bg-background">
           <tr className="border-b text-left text-muted-foreground">
+            <th className="px-1 py-1 w-4"></th>
             <th className="px-1 py-1">#</th>
             <th className="px-1 py-1">Time</th>
+            <th className="px-1 py-1">Strategy</th>
             <th className="px-1 py-1">Type</th>
             <th className="px-1 py-1">Algo</th>
             <th className="px-1 py-1">Venue</th>
@@ -114,14 +127,27 @@ export function DeFiTradeHistoryWidget() {
             const pnl = row.instant_pnl;
             const isChild = row.is_child_fill;
             return (
+              <React.Fragment key={`${row.seq}-${isChild ? "child" : "parent"}-wrap`}>
               <tr
-                key={`${row.seq}-${isChild ? "child" : "parent"}`}
-                className={`border-b hover:bg-muted/50 ${isChild ? "bg-muted/20" : ""}`}
+                className={`border-b hover:bg-muted/50 ${isChild ? "bg-muted/20" : ""} cursor-pointer`}
+                onClick={() => !isChild && row.execution_chain && toggleExpand(row.seq)}
               >
+                <td className="px-1 py-1 text-muted-foreground text-center">
+                  {!isChild && row.execution_chain ? (
+                    <span className="text-[10px]">{expandedRows.has(row.seq) ? "▾" : "▸"}</span>
+                  ) : null}
+                </td>
                 <td className="px-1 py-1 text-muted-foreground">
                   {isChild ? <span className="pl-3 text-muted-foreground/50">↳</span> : row.seq}
                 </td>
                 <td className="px-1 py-1">{isChild ? "" : formatTime(row.timestamp)}</td>
+                <td className="px-1 py-1">
+                  {!isChild && row.strategy_id ? (
+                    <span className="font-mono text-[10px] text-muted-foreground truncate max-w-[80px] inline-block" title={row.strategy_id}>
+                      {row.strategy_id}
+                    </span>
+                  ) : null}
+                </td>
                 <td className="px-1 py-1">
                   {isChild ? (
                     <span className="text-[10px] text-muted-foreground">fill</span>
@@ -189,6 +215,27 @@ export function DeFiTradeHistoryWidget() {
                   )}
                 </td>
               </tr>
+              {!isChild && expandedRows.has(row.seq) && row.execution_chain && (
+                <tr key={`${row.seq}-chain`} className="bg-muted/30">
+                  <td colSpan={16} className="px-3 py-2">
+                    <div className="flex items-center gap-1 text-[10px]">
+                      {row.execution_chain.map((step, i) => (
+                        <React.Fragment key={step.label}>
+                          <div className="flex flex-col items-center gap-0.5 min-w-[60px]">
+                            <span className="font-semibold text-foreground">{step.label}</span>
+                            {step.detail && <span className="text-muted-foreground text-center">{step.detail}</span>}
+                            {step.duration_ms != null && <span className="text-muted-foreground/60">{step.duration_ms}ms</span>}
+                          </div>
+                          {i < (row.execution_chain?.length ?? 0) - 1 && (
+                            <span className="text-muted-foreground/40 mx-0.5">→</span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              )}
+              </React.Fragment>
             );
           })}
         </tbody>

@@ -1,15 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
+import { isCompleted, isLive, isUpcoming } from "@/components/trading/sports/helpers";
 import type { Bet, Fixture, FootballLeague } from "@/components/trading/sports/types";
-import { MOCK_FIXTURES, MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
+import { useSportsLiveUpdates } from "@/hooks/use-sports-live-updates";
+import { useExecutionMode } from "@/lib/execution-mode-context";
+import { MOCK_BETS, MOCK_FIXTURES } from "@/lib/mocks/fixtures/sports-data";
 import { DEFAULT_ARB_THRESHOLD } from "@/lib/mocks/fixtures/sports-fixtures";
-import { isLive, isCompleted, isUpcoming } from "@/components/trading/sports/helpers";
+import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import * as React from "react";
 
-export type SportsDateRange = "today" | "week" | "all";
+export type SportsDateRange = "today" | "week" | "all" | "matchday" | "custom";
 export type SportsStatusFilter = "all" | "live" | "upcoming" | "completed";
 
 export interface GlobalFilters {
@@ -17,6 +19,8 @@ export interface GlobalFilters {
   dateRange: SportsDateRange;
   statusFilter: SportsStatusFilter;
   search: string;
+  matchday?: string;
+  customDate?: string;
 }
 
 export type SportsWorkspaceTab = "fixtures" | "arb" | "my-bets";
@@ -34,7 +38,17 @@ function applyFilters(fixtures: Fixture[], filters: GlobalFilters): Fixture[] {
     if (filters.statusFilter === "upcoming" && !isUpcoming(f.status)) return false;
     if (filters.statusFilter === "completed" && !isCompleted(f.status)) return false;
 
-    if (filters.dateRange !== "all") {
+    if (filters.dateRange === "matchday" && filters.matchday) {
+      if (f.round !== filters.matchday) return false;
+    } else if (filters.dateRange === "custom" && filters.customDate) {
+      const kickoff = new Date(f.kickoff);
+      const target = new Date(filters.customDate);
+      target.setHours(0, 0, 0, 0);
+      const targetEnd = new Date(target.getTime() + 24 * 60 * 60 * 1000);
+      if (kickoff < target || kickoff >= targetEnd) {
+        if (!isLive(f.status) && f.status !== "HT" && f.status !== "SUSP") return false;
+      }
+    } else if (filters.dateRange !== "all") {
       const kickoff = new Date(f.kickoff);
       if (
         filters.dateRange === "today" &&
@@ -75,6 +89,7 @@ interface SportsDataContextValue {
   setActiveTab: (t: SportsWorkspaceTab) => void;
   handleViewArb: (fixtureId?: string) => void;
   mode?: string;
+  wsStatus?: string;
 }
 
 const SportsDataContext = React.createContext<SportsDataContextValue | null>(null);
@@ -98,7 +113,30 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
   const [arbThreshold, setArbThreshold] = React.useState(DEFAULT_ARB_THRESHOLD);
   const [activeTab, setActiveTab] = React.useState<SportsWorkspaceTab>("fixtures");
 
-  const allFixtures = MOCK_FIXTURES;
+  const isMock = typeof window !== "undefined" && isMockDataMode();
+  const { updates: liveUpdates, status: wsStatus } = useSportsLiveUpdates({ enabled: !isMock });
+
+  const allFixtures = React.useMemo(() => {
+    // Start with mock fixtures as base (in all modes -- real mode will overlay with API data)
+    const base = [...MOCK_FIXTURES];
+
+    // Overlay WebSocket live updates onto fixtures
+    if (liveUpdates.size > 0) {
+      for (const [fixtureId, update] of liveUpdates) {
+        const idx = base.findIndex((f) => f.id === fixtureId);
+        if (idx >= 0) {
+          // Update existing fixture with live data
+          base[idx] = {
+            ...base[idx],
+            status: update.status as typeof base[0]["status"],
+            minute: update.minute ?? base[idx].minute,
+            score: update.score ?? base[idx].score,
+          };
+        }
+      }
+    }
+    return base;
+  }, [liveUpdates]);
   // Batch mode: only show settled/completed fixtures
   // Org scope: show all fixtures (they're global) but mark as view-only if no sports desk
   const filteredFixtures = React.useMemo(() => {
@@ -109,8 +147,8 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
 
   const selectedFixture = React.useMemo(() => {
     if (!selectedFixtureId) return null;
-    return MOCK_FIXTURES.find((f) => f.id === selectedFixtureId) ?? null;
-  }, [selectedFixtureId]);
+    return allFixtures.find((f) => f.id === selectedFixtureId) ?? null;
+  }, [selectedFixtureId, allFixtures]);
 
   const allBets = MOCK_BETS;
   // Paper mode: zero out all bet amounts (simulated, no real stakes)
@@ -146,6 +184,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       mode,
       setActiveTab,
       handleViewArb,
+      wsStatus,
     }),
     [
       filters,
@@ -162,6 +201,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       isBatch,
       mode,
       handleViewArb,
+      wsStatus,
     ],
   );
 

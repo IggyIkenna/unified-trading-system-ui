@@ -10,12 +10,19 @@ export const ASSET_CLASS_COLORS: Record<string, string> = {
 
 export const ARCHETYPES = [
   { id: "BASIS_TRADE", label: "Basis Trade" },
+  { id: "RECURSIVE_STAKED_BASIS", label: "Recursive Staked Basis" },
   { id: "MARKET_MAKING", label: "Market Making" },
+  { id: "AMM_LP", label: "AMM LP" },
   { id: "ARBITRAGE", label: "Arbitrage" },
   { id: "YIELD", label: "Yield" },
   { id: "DIRECTIONAL", label: "Directional" },
-  { id: "OPTIONS", label: "Options" },
   { id: "MOMENTUM", label: "Momentum" },
+  { id: "MEAN_REVERSION", label: "Mean Reversion" },
+  { id: "ML_DIRECTIONAL", label: "ML Directional" },
+  { id: "STATISTICAL_ARB", label: "Statistical Arb" },
+  { id: "OPTIONS", label: "Options" },
+  { id: "PREDICTION_ARB", label: "Prediction Arb" },
+  { id: "SPORTS_ARB", label: "Sports Arb" },
 ] as const;
 
 export const STATUSES = [

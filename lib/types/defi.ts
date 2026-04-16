@@ -228,6 +228,12 @@ export interface InstantPnL {
 // Trade History (running totals)
 // ---------------------------------------------------------------------------
 
+export interface ExecutionStep {
+  label: string;
+  detail?: string;
+  duration_ms?: number;
+}
+
 export interface TradeHistoryRow {
   seq: number;
   timestamp: string;
@@ -240,19 +246,16 @@ export interface TradeHistoryRow {
   expected_output: number;
   actual_output: number;
   instant_pnl: InstantPnL;
-  running_pnl: number; // cumulative net P&L
+  running_pnl: number;
   status: "pending" | "confirmed" | "filled" | "failed" | "reverted";
   tx_hash?: string;
-  /** Strategy reference price at signal time — for alpha P&L */
   reference_price?: number;
-  /** Alpha P&L: difference between execution price and reference price × quantity */
   alpha_pnl_usd?: number;
-  /** Per-venue child fills for SOR orders */
   venue_fills?: VenueFill[];
-  /** Is this a child fill row (indented under parent SOR order)? */
   is_child_fill?: boolean;
-  /** Parent order seq number (for child fills) */
   parent_seq?: number;
+  strategy_id?: string;
+  execution_chain?: ExecutionStep[];
 }
 
 // ---------------------------------------------------------------------------

@@ -111,9 +111,43 @@ export default function GapsPage() {
     }
   }
 
-  function handleBatchBackfill() {
-    // In real implementation: dispatch backfill jobs for selected gap IDs
-    alert(`Backfill queued for ${selected.size} gaps`);
+  async function handleBatchBackfill() {
+    const selectedGaps = MOCK_ENHANCED_GAPS.filter((g) => selected.has(g.id));
+    if (selectedGaps.length === 0) return;
+
+    // Group gaps by service+category to batch API calls
+    const groups = new Map<string, { service: string; category: string; dates: string[] }>();
+    for (const gap of selectedGaps) {
+      const key = `${gap.service}:${gap.category}`;
+      const existing = groups.get(key);
+      if (existing) {
+        existing.dates.push(gap.date);
+      } else {
+        groups.set(key, { service: gap.service, category: gap.category, dates: [gap.date] });
+      }
+    }
+
+    // Fire batch run for each service+category group
+    for (const [, group] of groups) {
+      try {
+        const res = await fetch("/deployment-api/api/batch/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            cluster: group.category.toLowerCase(),
+            as_of_date: group.dates[0],
+            service: group.service,
+            category: group.category,
+          }),
+        });
+        if (!res.ok) {
+          console.error("Backfill failed for %s: %s", group.service, await res.text());
+        }
+      } catch (err) {
+        console.error("Backfill request failed for %s: %s", group.service, err);
+      }
+    }
+
     setSelected(new Set());
   }
 

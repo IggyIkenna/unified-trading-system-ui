@@ -282,6 +282,7 @@ export const STRATEGY_SUB_TABS: ServiceTab[] = [
   { label: "Heatmap", href: "/services/research/strategy/heatmap" },
   { label: "Candidates", href: "/services/research/strategy/candidates" },
   { label: "Handoff", href: "/services/research/strategy/handoff" },
+  { label: "Sports", href: "/services/research/strategy/sports" },
 ];
 
 // ── Run (Trader — Live) ──────────────────────────────────────────────────────

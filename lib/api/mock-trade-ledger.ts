@@ -17,12 +17,12 @@ export interface MockOrder {
   quantity: number;
   price: number;
   status:
-    | "pending"
-    | "open"
-    | "partially_filled"
-    | "filled"
-    | "cancelled"
-    | "rejected";
+  | "pending"
+  | "open"
+  | "partially_filled"
+  | "filled"
+  | "cancelled"
+  | "rejected";
   filled_quantity: number;
   average_fill_price: number | null;
   asset_class: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
@@ -418,4 +418,30 @@ export function computeDefiLedgerPnL(): {
   }
 
   return { totalGasCost, totalSlippage, totalNetCost: totalGasCost + totalSlippage, byStrategy };
+}
+
+export function computeCeFiLedgerPnL(): {
+  totalCommission: number;
+  totalSlippage: number;
+  totalNotional: number;
+  orderCount: number;
+} {
+  const filled = getState().orders.filter(
+    (o) => o.asset_class === "CeFi" && o.status === "filled",
+  );
+
+  let totalCommission = 0;
+  let totalSlippage = 0;
+  let totalNotional = 0;
+
+  for (const order of filled) {
+    const notional = order.quantity * (order.average_fill_price ?? order.price);
+    totalNotional += notional;
+    totalCommission += notional * 0.0004;
+    if (order.average_fill_price && order.price > 0) {
+      totalSlippage += Math.abs(order.average_fill_price - order.price) * order.quantity;
+    }
+  }
+
+  return { totalCommission, totalSlippage, totalNotional, orderCount: filled.length };
 }

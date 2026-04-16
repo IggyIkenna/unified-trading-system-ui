@@ -1,14 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { useTickers } from "@/hooks/api/use-market-data";
-import { useStrategyPerformance } from "@/hooks/api/use-strategies";
-import { useOrganizationsList } from "@/hooks/api/use-organizations";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, RefreshCw } from "lucide-react";
-import { computeDefiLedgerPnL } from "@/lib/api/mock-trade-ledger";
+import { useTickers } from "@/hooks/api/use-market-data";
+import { useOrganizationsList } from "@/hooks/api/use-organizations";
+import { useStrategyPerformance } from "@/hooks/api/use-strategies";
+import { computeCeFiLedgerPnL, computeDefiLedgerPnL } from "@/lib/api/mock-trade-ledger";
 import { DEFAULT_RESIDUAL_PNL, DEFAULT_STRUCTURAL_PNL } from "@/lib/mocks/fixtures/pnl-attribution";
 import {
   generateClientPnL,
@@ -17,6 +13,9 @@ import {
   generateStrategyBreakdown,
   generateTimeSeriesData,
 } from "@/lib/mocks/generators/pnl-generators";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getClientIdsForOrgs, getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import { type ShareClass } from "@/lib/types/defi";
 import type {
   ClientPnLRow,
   ClientRecord,
@@ -25,9 +24,10 @@ import type {
   PnLComponent,
   StrategyRecord,
 } from "@/lib/types/pnl";
-import { type ShareClass, SHARE_CLASSES } from "@/lib/types/defi";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import * as React from "react";
 
-export type { PnLComponent, ClientPnLRow, FactorDrilldown } from "@/lib/types/pnl";
+export type { ClientPnLRow, FactorDrilldown, PnLComponent } from "@/lib/types/pnl";
 
 export interface PnLData {
   pnlComponents: PnLComponent[];
@@ -153,31 +153,38 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
     return m;
   }, [selectedOrgIds, selectedClientIds, selectedStrategyIds]);
 
-  // Compute DeFi trade costs from mock ledger (reactive to ledgerVersion)
+  // Compute trade costs from mock ledger (reactive to ledgerVersion)
   const defiLedgerPnl = React.useMemo(() => computeDefiLedgerPnL(), [ledgerVersion]);
+  const cefiLedgerPnl = React.useMemo(() => computeCeFiLedgerPnL(), [ledgerVersion]);
 
   const pnlComponents = React.useMemo(() => {
     const base = generatePnLComponents(selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode === "batch");
 
-    // Inject DeFi trading costs from mock ledger as additional P&L factors
-    if (defiLedgerPnl.totalGasCost > 0) {
-      // Find or create a "DeFi Gas" component
-      const gasIdx = base.findIndex((c) => c.name === "DeFi Gas");
-      if (gasIdx !== -1) {
-        base[gasIdx] = { ...base[gasIdx], value: -defiLedgerPnl.totalGasCost };
+    // Helper: upsert a P&L factor into the base array
+    const upsertFactor = (name: string, value: number) => {
+      const idx = base.findIndex((c) => c.name === name);
+      if (idx !== -1) {
+        base[idx] = { ...base[idx], value };
       } else {
-        base.push({ name: "DeFi Gas", value: -defiLedgerPnl.totalGasCost, percentage: 0, isNegative: true, category: "factor" });
+        base.push({ name, value, percentage: 0, isNegative: value < 0, category: "factor" });
       }
-      // Find or create "DeFi Slippage"
-      const slipIdx = base.findIndex((c) => c.name === "DeFi Slippage");
-      if (slipIdx !== -1) {
-        base[slipIdx] = { ...base[slipIdx], value: -defiLedgerPnl.totalSlippage };
-      } else {
-        base.push({ name: "DeFi Slippage", value: -defiLedgerPnl.totalSlippage, percentage: 0, isNegative: true, category: "factor" });
+    };
+
+    // DeFi trading costs
+    if (defiLedgerPnl.totalGasCost > 0) {
+      upsertFactor("DeFi Gas", -defiLedgerPnl.totalGasCost);
+      upsertFactor("DeFi Slippage", -defiLedgerPnl.totalSlippage);
+    }
+
+    // CeFi trading costs (commission + slippage from Terminal/Book orders)
+    if (cefiLedgerPnl.orderCount > 0) {
+      upsertFactor("CeFi Commission", -cefiLedgerPnl.totalCommission);
+      if (cefiLedgerPnl.totalSlippage > 0) {
+        upsertFactor("CeFi Slippage", -cefiLedgerPnl.totalSlippage);
       }
     }
     return base;
-  }, [selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode, defiLedgerPnl]);
+  }, [selectedOrgIds, selectedClientIds, selectedStrategyIds, dataMode, defiLedgerPnl, cefiLedgerPnl]);
 
   const netPnL = pnlComponents.reduce((sum, c) => sum + c.value, 0);
 

@@ -171,6 +171,12 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
           </span>
         </div>
         <div className="flex items-center gap-1.5 text-xs">
+          <span className="text-muted-foreground">Trading</span>
+          <span className="font-mono text-muted-foreground">
+            ${formatNumber(treasury.total_trading_balance_usd, 0)} ({100 - treasury.treasury_pct}%)
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs">
           <span className="text-muted-foreground">Net Delta</span>
           <span
             className={cn("font-mono", deltaComposite.total_delta_usd !== 0 ? "text-amber-400" : "text-emerald-400")}

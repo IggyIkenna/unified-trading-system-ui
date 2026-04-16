@@ -1,4 +1,4 @@
-// Board Presentation — data for 11-slide strategic advisor deck
+// Board Presentation — data for 10-slide core deck + 2 appendix slides (FAQ, Demo)
 // Last updated: April 2026
 
 // Venue list for scrolling display - color-coded by asset class
@@ -60,8 +60,8 @@ export const slides = [
     stats: [
       { value: "5", label: "Asset Classes" },
       { value: "12,000+", label: "Live Instruments" },
-      { value: "22", label: "Microservices" },
       { value: "$7.5M", label: "Under Management" },
+      { value: "3", label: "Commercial Wrappers" },
     ],
   },
 
@@ -71,7 +71,7 @@ export const slides = [
     type: "doctrine",
     title: "The Market Is Still Stitched Together",
     subtitle:
-      "To replicate what we have, a firm would need to integrate 80+ venues across 5 asset classes, 28 decentralised finance protocols on 11 blockchains, and 65+ sports data sources \u2014 each with different schemas, settlement logic, and connectivity. Most firms stitch together fragments. We built the unified layer.",
+      "Most firms stitch together fragmented systems across venues, asset classes, and workflows. We built one unified operating layer instead.",
     points: [
       {
         problem: "80+ venues, 5 asset classes, dozens of schemas",
@@ -120,7 +120,7 @@ export const slides = [
   {
     id: 4,
     type: "operations",
-    title: "Why This Is Hard to Replicate",
+    title: "Why This Is Structurally Hard to Copy",
     columns: [
       {
         title: "One Shared Instrument Layer",
@@ -132,12 +132,11 @@ export const slides = [
         ],
       },
       {
-        title: "Built for Ourselves First",
+        title: "Proven Commercially",
         items: [
-          "$7.5M of our own capital through the same system",
-          "Clients for every service we offer \u2014 trust is established",
-          "Nothing we deploy for clients goes without the same vetting we apply to our own capital",
-          "We never build strategies that overlap with what we\u2019ve built for you",
+          "$7.5M of our own capital through the same system \u2014 alignment is structural",
+          "First platform client at $125K, growing to $250K+ annual revenue",
+          "Each service now has live commercial traction",
         ],
       },
       {
@@ -151,7 +150,7 @@ export const slides = [
       },
     ],
     callout:
-      "Rebuilding this from scratch would be a significant multi-year, multi-team effort. We operate it with a small team \u2014 AI-assisted workflows handle routine operations, with human approval gates at critical decisions.",
+      "We operate this with a small team. AI-assisted workflows handle routine operations, with human approval gates at critical decisions.",
     metrics: [
       { value: "5", label: "Asset Classes" },
       { value: "24,500+", label: "Automated Tests" },
@@ -240,23 +239,23 @@ export const slides = [
     subtitle: "Same infrastructure, configurable risk appetite.",
     families: [
       {
-        name: "Decentralised \u2014 Stable Yield",
+        name: "Stable Yield",
         returns: "3-12% annual",
         drawdown: "<1%",
         capacity: "$50M-$100M+",
-        character: "Lending, stablecoin yield",
+        character: "DeFi lending, stablecoin yield",
         risk: "low",
       },
       {
-        name: "Decentralised \u2014 Basis Trades",
+        name: "Relative Value",
         returns: "10-30% annual",
         drawdown: "5%",
         capacity: "$5M-$20M",
-        character: "Delta-neutral, funding capture",
+        character: "Delta-neutral basis trades, funding capture",
         risk: "low",
       },
       {
-        name: "Decentralised \u2014 Leveraged",
+        name: "Leveraged Yield",
         returns: "20-50% annual",
         drawdown: "15%",
         capacity: "$5M/pool",
@@ -264,27 +263,27 @@ export const slides = [
         risk: "medium",
       },
       {
-        name: "Crypto Trading",
-        returns: "Market-dependent",
+        name: "Crypto Long/Short",
+        returns: "30%+",
         drawdown: "5-10%",
         capacity: "$2M/pair",
-        character: "Momentum, mean reversion, arbitrage",
+        character: "ML long/short, mean reversion, arbitrage",
         risk: "medium",
       },
       {
-        name: "Traditional Finance Quant",
+        name: "TradFi Quant",
         returns: "12-18%",
         drawdown: "8-10%",
         capacity: "$5M/name",
-        character: "Machine learning directional, options, volatility",
+        character: "ML directional, options, volatility",
         risk: "medium",
       },
       {
-        name: "Sports",
-        returns: "Market-dependent",
+        name: "Sports Strategies",
+        returns: "50%+",
         drawdown: "20%",
         capacity: "$100K-$1M",
-        character: "Machine learning prediction, arbitrage",
+        character: "ML prediction, cross-bookmaker arbitrage",
         risk: "high",
       },
     ],
@@ -377,22 +376,22 @@ export const slides = [
           "Governance",
         ],
         model: "Subscription \u2014 scoped to client need",
-        desc: "Bespoke access from data feeds to research to the full trading platform. Same system, configurable scope.",
+        desc: "Access the trading stack without building it. Enter at data, research, or execution \u2014 expand over time. Live in weeks, not years.",
       },
       {
         name: "Investment Management",
         stages: ["Decision", "Execution", "Governance"],
         model: "20-40% performance (strategy-dependent)",
-        desc: "We run capital. $7.5M under management across two mandates. Lower-yielding strategies carry lower fees.",
+        desc: "Allocate to strategies we already run with our own capital. Co-invest at identical terms. 0% management fee \u2014 performance only.",
       },
       {
         name: "Regulatory Umbrella",
         stages: ["Governance"],
         model: "Onboarding fee + monthly retainer",
-        desc: "FCA regulatory coverage. Compliance, reporting officer coverage, best execution reporting. 1 live, 3 in pipeline.",
+        desc: "Operate under FCA coverage without waiting for direct authorisation. Full permissions scope. Operational in weeks. 1 live, 3 in pipeline.",
       },
     ],
-    note: "Three wrappers. One system. A regulatory coverage client who needs execution uses the same algorithms. An investment management mandate that outgrows managed capital graduates to platform access.",
+    note: "Three distinct buyer outcomes \u2014 capability, exposure, or regulatory coverage \u2014 all on one shared system. A platform client buys infrastructure. An IM client buys returns. A regulatory client buys speed to market. Each deepens naturally into the others.",
   },
 
   // ── Slide 9: The Flywheel ─────────────────────────────────
@@ -407,7 +406,7 @@ export const slides = [
       { name: "Research", sub: "validate ideas", active: false },
       { name: "Live Trading", sub: "same code, live capital", active: false },
       { name: "Full Platform", sub: "complete operating layer", active: false },
-      { name: "Managed", sub: "we run or regulate it", active: true },
+      { name: "Managed / Regulated", sub: "we run the capital or the compliance", active: true },
     ],
     examples: [
       "Data subscriber discovers signal quality \u2192 starts backtesting",
@@ -428,27 +427,25 @@ export const slides = [
       {
         title: "Investment Management",
         items: [
-          "Current strategies (crypto, Bitcoin): ready today",
-          "Additional strategies, new asset classes: coming through",
-          "Who in your network allocates to alternative strategies?",
-          "What would they need \u2014 track record, reporting format, minimum ticket?",
+          "Who allocates to alternative strategies \u2014 crypto, DeFi yield, quant?",
+          "Next step: mandate discussion and reporting pack review",
+          "What matters most \u2014 track record depth, fee structure, minimum ticket?",
         ],
       },
       {
         title: "Trading Platform as a Service",
         items: [
-          "First sale: $125K contract revenue (75% received), growing to $250K+ annual revenue",
-          "Ready for broader deployment across additional clients",
           "Who needs trading infrastructure but doesn\u2019t want to build it?",
-          "What would land \u2014 data-only entry, full demo, specific asset class?",
+          "Next step: scoping call and limited trial on data + research layers",
+          "What would land \u2014 data-only entry, full demo, or specific asset class?",
         ],
       },
       {
         title: "Regulatory Umbrella",
         items: [
-          "Ready today \u2014 1 client live, 3 in pipeline",
-          "Who in your network is entering UK regulation or needs FCA coverage?",
-          "What would move them \u2014 pricing, scope, onboarding speed?",
+          "Who is entering UK regulation or needs FCA coverage quickly?",
+          "Next step: eligibility assessment \u2014 we scope fit before any commitment",
+          "What matters most \u2014 onboarding speed, permissions scope, or pricing?",
         ],
       },
     ],
@@ -498,31 +495,37 @@ export const slides = [
         name: "Dashboard",
         desc: "Platform overview \u2014 positions, returns, risk, alerts",
         link: "/dashboard",
+        image: "/screenshots/dashboard.png",
       },
       {
         name: "Trading & Positions",
         desc: "Live positions, orders, returns attribution",
         link: "/services/trading/positions",
+        image: "/screenshots/positions.png",
       },
       {
         name: "Instruments & Coverage",
         desc: "12,000+ instruments across all asset classes",
         link: "/services/data/instruments",
+        image: "/screenshots/instruments.png",
       },
       {
         name: "Strategy Research",
         desc: "Backtests, strategy comparison, machine learning analysis",
         link: "/services/research/strategy/overview",
+        image: "/screenshots/strategy-overview.png",
       },
       {
         name: "Client Reporting",
         desc: "Executive dashboard, investment book of records, reconciliation",
         link: "/services/reports/executive",
+        image: "/screenshots/executive.png",
       },
       {
         name: "Risk & Scenarios",
         desc: "Scenario analysis, stress testing, historical replay",
         link: "/services/observe/scenarios",
+        image: "/screenshots/scenarios.png",
       },
     ],
     note: "All views use the same underlying system. Demo data is representative of production output.",

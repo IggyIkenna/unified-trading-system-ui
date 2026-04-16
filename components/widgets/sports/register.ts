@@ -1,11 +1,15 @@
-import { Activity, FileText, Trophy, Wallet, Zap } from "lucide-react";
+import { Activity, BarChart3, Brain, FileText, Table2, Target, Trophy, Wallet, Zap } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { SportsArbWidget } from "./sports-arb-widget";
+import { SportsCLVWidget } from "./sports-clv-widget";
 import { SportsFixtureDetailWidget } from "./sports-fixture-detail-widget";
 import { SportsFixturesWidget } from "./sports-fixtures-widget";
 import { SportsLiveScoresWidget } from "./sports-live-scores-widget";
+import { SportsMLStatusWidget } from "./sports-ml-status-widget";
 import { SportsMyBetsWidget } from "./sports-my-bets-widget";
+import { SportsPredictionsWidget } from "./sports-predictions-widget";
+import { SportsStandingsWidget } from "./sports-standings-widget";
 
 registerPresets("sports", [
   {
@@ -44,8 +48,12 @@ registerPresets("sports", [
       { widgetId: "sports-live-scores", instanceId: "sports-live-scores-full", x: 0, y: 0, w: 12, h: 1 },
       { widgetId: "sports-fixtures", instanceId: "sports-fixtures-full", x: 0, y: 1, w: 8, h: 10 },
       { widgetId: "sports-fixture-detail", instanceId: "sports-fixture-detail-full", x: 8, y: 1, w: 4, h: 8 },
-      { widgetId: "sports-arb", instanceId: "sports-arb-full", x: 0, y: 11, w: 12, h: 6 },
-      { widgetId: "sports-my-bets", instanceId: "sports-my-bets-full", x: 0, y: 17, w: 12, h: 5 },
+      { widgetId: "sports-standings", instanceId: "sports-standings-full", x: 8, y: 9, w: 4, h: 6 },
+      { widgetId: "sports-predictions", instanceId: "sports-predictions-full", x: 8, y: 15, w: 4, h: 8 },
+      { widgetId: "sports-arb", instanceId: "sports-arb-full", x: 0, y: 11, w: 8, h: 6 },
+      { widgetId: "sports-clv", instanceId: "sports-clv-full", x: 0, y: 17, w: 8, h: 4 },
+      { widgetId: "sports-ml-status", instanceId: "sports-ml-status-full", x: 0, y: 23, w: 12, h: 6 },
+      { widgetId: "sports-my-bets", instanceId: "sports-my-bets-full", x: 0, y: 29, w: 12, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -130,4 +138,68 @@ registerWidget({
   availableOn: ["sports"],
   singleton: false,
   component: SportsLiveScoresWidget,
+});
+
+registerWidget({
+  id: "sports-standings",
+  label: "Standings",
+  description: "League table with form, goal difference, and qualification zones.",
+  icon: Table2,
+  minW: 4,
+  minH: 5,
+  defaultW: 4,
+  defaultH: 8,
+  requiredEntitlements: ["sports-trading"],
+  category: "Sports",
+  availableOn: ["sports"],
+  singleton: true,
+  component: SportsStandingsWidget,
+});
+
+registerWidget({
+  id: "sports-clv",
+  label: "CLV Performance",
+  description: "Closing line value tracking — hit rate, mean CLV, P&L by market and bookmaker.",
+  icon: BarChart3,
+  minW: 4,
+  minH: 3,
+  defaultW: 12,
+  defaultH: 4,
+  requiredEntitlements: ["sports-trading"],
+  category: "Sports",
+  availableOn: ["sports"],
+  singleton: true,
+  component: SportsCLVWidget,
+});
+
+registerWidget({
+  id: "sports-predictions",
+  label: "Model Predictions",
+  description: "ML model predictions for upcoming fixtures — 1X2, xG, BTTS, O/U probabilities.",
+  icon: Target,
+  minW: 4,
+  minH: 5,
+  defaultW: 4,
+  defaultH: 8,
+  requiredEntitlements: ["sports-trading"],
+  category: "Sports",
+  availableOn: ["sports"],
+  singleton: true,
+  component: SportsPredictionsWidget,
+});
+
+registerWidget({
+  id: "sports-ml-status",
+  label: "ML Pipeline",
+  description: "Training status, model families, feature freshness, and accuracy metrics.",
+  icon: Brain,
+  minW: 4,
+  minH: 4,
+  defaultW: 12,
+  defaultH: 6,
+  requiredEntitlements: ["sports-trading"],
+  category: "Sports",
+  availableOn: ["sports"],
+  singleton: true,
+  component: SportsMLStatusWidget,
 });

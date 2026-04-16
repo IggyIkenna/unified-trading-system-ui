@@ -1,18 +1,18 @@
 "use client";
 
-import * as React from "react";
-import { useSearchParams } from "next/navigation";
 import { usePlaceOrder, usePreTradeCheck } from "@/hooks/api/use-orders";
 import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import { useAuth, type AuthUser } from "@/hooks/use-auth";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
-import { getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
+import { getOrders as getLedgerOrders, placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@/lib/config/services/trading.config";
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
-import type { InstructionType, AlgoType } from "@/lib/types/defi";
+import { getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
+import type { AlgoType, InstructionType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { useSearchParams } from "next/navigation";
+import * as React from "react";
 
 export type { BookAlgoType, BookCategoryTab } from "@/lib/config/services/trading.config";
 export type { BookTrade };
@@ -329,22 +329,21 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
     setOrderState("submitting");
     setErrorMessage("");
     try {
-      // For DeFi trades, also write to the mock trade ledger so all tabs see the order
-      if (category === "defi") {
-        placeMockOrder({
-          strategy_id: strategyId === "manual" ? null : strategyId,
-          client_id: clientId || orgId || user?.org?.id || "internal-trader",
-          instrument_id: instrument,
-          venue,
-          side: side as "buy" | "sell",
-          order_type: executionMode === "execute" ? "market" : "limit",
-          quantity: qty,
-          price: priceNum || 0,
-          asset_class: "DeFi",
-          lane: "defi",
-          algo_type: defiAlgo || null,
-        });
-      }
+      // Write to mock trade ledger so all tabs (Orders, Positions, P&L) see the order
+      const isDeFi = category === "defi";
+      placeMockOrder({
+        strategy_id: strategyId === "manual" ? null : strategyId,
+        client_id: clientId || orgId || user?.org?.id || "internal-trader",
+        instrument_id: instrument,
+        venue,
+        side: side as "buy" | "sell",
+        order_type: executionMode === "execute" ? "market" : "limit",
+        quantity: qty,
+        price: priceNum || 0,
+        asset_class: isDeFi ? "DeFi" : "CeFi",
+        lane: isDeFi ? "defi" : "book",
+        algo_type: isDeFi ? defiAlgo || null : algoType || null,
+      });
 
       await placeOrder.mutateAsync({
         instrument,
@@ -410,7 +409,28 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
         tradeType: s.tradeType,
       }));
     }
-    return MOCK_TRADES;
+    // Merge static mock trades with live ledger trades (from order entry / DeFi operations)
+    const ledgerTrades: BookTrade[] = getLedgerOrders()
+      .filter((o) => o.status === "filled")
+      .map((o) => ({
+        id: o.id,
+        timestamp: o.updated_at || o.created_at,
+        instrument: o.instrument_id,
+        venue: o.venue,
+        side: o.side as "buy" | "sell",
+        quantity: o.filled_quantity,
+        price: o.average_fill_price ?? o.price,
+        fees: o.quantity * (o.average_fill_price ?? o.price) * 0.001,
+        total: o.filled_quantity * (o.average_fill_price ?? o.price),
+        status: "filled" as const,
+        counterparty: o.venue,
+        settlementDate: o.updated_at || o.created_at,
+        tradeType: (o.asset_class === "DeFi" ? "DeFi" : o.asset_class === "Sports" ? "OTC" : "Exchange") as BookTrade["tradeType"],
+      }));
+    const merged = [...ledgerTrades, ...MOCK_TRADES];
+    // Sort newest first
+    merged.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    return merged;
   }, [globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds]);
 
   const value = React.useMemo(

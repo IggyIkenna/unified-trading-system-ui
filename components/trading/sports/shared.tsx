@@ -6,11 +6,11 @@
  */
 
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { Lock, Minus, TrendingDown, TrendingUp, Zap } from "lucide-react";
 import * as React from "react";
 import { formResultColour, getStatusLabel, isLive } from "./helpers";
 import type { FixtureStatus, FootballLeague, OddsMovement, TeamStats } from "./types";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Status Pill ──────────────────────────────────────────────────────────────
 
@@ -128,26 +128,26 @@ export function MatchStatsPanel({ home, away, compact = false, className }: Matc
     invert?: boolean;
     format?: (v: number) => string;
   }> = [
-    {
-      label: "xG",
-      homeVal: home.xg,
-      awayVal: away.xg,
-      format: (v) => formatNumber(v, 1),
-    },
-    {
-      label: "Shots OT",
-      homeVal: home.shotsOnTarget,
-      awayVal: away.shotsOnTarget,
-    },
-    {
-      label: "Possession",
-      homeVal: home.possession,
-      awayVal: away.possession,
-      format: (v) => `${v}%`,
-    },
-    { label: "Corners", homeVal: home.corners, awayVal: away.corners },
-    ...(!compact
-      ? [
+      {
+        label: "xG",
+        homeVal: home.xg,
+        awayVal: away.xg,
+        format: (v) => formatNumber(v, 1),
+      },
+      {
+        label: "Shots OT",
+        homeVal: home.shotsOnTarget,
+        awayVal: away.shotsOnTarget,
+      },
+      {
+        label: "Possession",
+        homeVal: home.possession,
+        awayVal: away.possession,
+        format: (v) => `${v}%`,
+      },
+      { label: "Corners", homeVal: home.corners, awayVal: away.corners },
+      ...(!compact
+        ? [
           {
             label: "Shots",
             homeVal: home.shotsTotal,
@@ -170,9 +170,15 @@ export function MatchStatsPanel({ home, away, compact = false, className }: Matc
             homeVal: home.dangerousAttacks,
             awayVal: away.dangerousAttacks,
           },
+          {
+            label: "Reds",
+            homeVal: home.redCards,
+            awayVal: away.redCards,
+            invert: true,
+          },
         ]
-      : []),
-  ];
+        : []),
+    ];
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>

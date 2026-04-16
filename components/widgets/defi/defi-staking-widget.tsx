@@ -1,15 +1,15 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Coins, TrendingUp } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { useDeFiData } from "./defi-data-context";
+import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { Coins, TrendingUp } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+import { useDeFiData } from "./defi-data-context";
 
 export function DeFiStakingWidget(_props: WidgetComponentProps) {
   const { stakingProtocols, tokenBalances, executeDeFiOrder } = useDeFiData();
@@ -126,7 +126,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
             strategy_id: "ETHENA_BENCHMARK",
             instruction_type: operation,
             algo_type: "BENCHMARK_FILL",
-            instrument_id: `${selected.venue_id}:${operation}:${selected.asset}`,
+            instrument_id: `${selected.venue_id}:LST:ST${selected.asset}@ETHEREUM`,
             venue: selected.venue_id,
             side: operation === "STAKE" ? "buy" : "sell",
             order_type: "market",
@@ -139,8 +139,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
             lane: "defi",
           });
           setAmount("");
-          toast({
-            title: "Staking order placed",
+          toast.success("Staking order placed", {
             description: `${operation} ${amountNum} ${selected.asset} on ${protocol} (mock ledger)`,
           });
         }}

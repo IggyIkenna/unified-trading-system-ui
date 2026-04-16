@@ -11,6 +11,7 @@ import { ArbBadge, LeagueBadge } from "./shared";
 import { useToast } from "@/hooks/use-toast";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatPercent } from "@/lib/utils/formatters";
+import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 // ─── Decay timer for active arbs ─────────────────────────────────────────────
 // Shows a countdown visual — arbs are time-sensitive
@@ -43,11 +44,69 @@ function DecayBar({ detectedAt, maxLifetimeMs = 120_000 }: { detectedAt: string;
 
 function ActiveArbCard({ arb, isNew }: { arb: ArbOpportunity; isNew?: boolean }) {
   const { toast } = useToast();
+  const [placing, setPlacing] = React.useState(false);
 
   // Profit per £10k total stake
   const totalStake = 10_000;
   const impliedSum = arb.legs.reduce((s, l) => s + 1 / l.odds, 0);
   const profit = totalStake / impliedSum - totalStake;
+
+  const handlePlaceBet = React.useCallback(async () => {
+    const isMock = typeof window !== "undefined" && isMockDataMode();
+    if (isMock) {
+      toast({
+        title: "Arb placed",
+        description: `${arb.fixtureName} · ${arb.market}`,
+        duration: 3000,
+      });
+      return;
+    }
+
+    setPlacing(true);
+    try {
+      const res = await fetch("/api/sports/bets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fixture: arb.fixtureName,
+          market: arb.market,
+          arbPct: arb.arbPct,
+          legs: arb.legs.map((l) => ({
+            outcome: l.outcome,
+            odds: l.odds,
+            bookmaker: l.bookmaker,
+            stake: l.suggestedStake,
+          })),
+          totalStake,
+        }),
+      });
+
+      if (res.ok) {
+        toast({
+          title: "Arb placed",
+          description: `${arb.fixtureName} · ${arb.market}`,
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Bet failed",
+          description: `Server returned ${res.status}`,
+          variant: "destructive",
+          duration: 5000,
+        });
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown error";
+      toast({
+        title: "Bet failed",
+        description: message,
+        variant: "destructive",
+        duration: 5000,
+      });
+    } finally {
+      setPlacing(false);
+    }
+  }, [arb, toast, totalStake]);
 
   return (
     <div
@@ -104,16 +163,11 @@ function ActiveArbCard({ arb, isNew }: { arb: ArbOpportunity; isNew?: boolean })
           <Button
             size="sm"
             className="ml-auto h-8 px-3 font-black text-xs bg-[#4ade80] text-black hover:bg-[#4ade80]/90"
-            onClick={() =>
-              toast({
-                title: "Arb placed",
-                description: `${arb.fixtureName} · ${arb.market}`,
-                duration: 3000,
-              })
-            }
+            disabled={placing}
+            onClick={() => void handlePlaceBet()}
           >
             <Zap className="size-3 mr-1" />
-            Place Arb
+            {placing ? "Placing..." : "Place Arb"}
           </Button>
         </div>
       </div>

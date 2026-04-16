@@ -2,21 +2,20 @@ import type { CandidateStrategy, PromotionStage } from "@/components/promote/typ
 import {
   buildDocumentationChecklist,
   CHAMPION_BTC_V2,
-  CHAMPION_ETH_VOL_V2,
   CHAMPION_EPL_V1,
+  CHAMPION_ETH_VOL_V2,
   CHAMPION_MM_V1,
   CHAMPION_MOM_V1,
   championRegimes,
   compliance,
   CRYPTO_FEATURES,
+  SPORTS_FEATURES,
   STANDARD_DRIFT,
-  STANDARD_FEATURES,
   STANDARD_REGIMES,
   STANDARD_WALK_FORWARD,
-  SPORTS_FEATURES,
   TRADFI_FEATURES,
   WALK_FORWARD_LONG,
-  WALK_FORWARD_SHORT,
+  WALK_FORWARD_SHORT
 } from "@/lib/mocks/fixtures/promote-fixtures";
 
 function stages(
@@ -1340,6 +1339,43 @@ export const MOCK_CANDIDATES: CandidateStrategy[] = [
     featureStability: SPORTS_FEATURES,
     modelDrift: { ...STANDARD_DRIFT, signalHalfLifeDays: 62 },
     compliance: compliance(2, "Sports Quant Lead", "Trading model"),
+    sportsMetrics: {
+      totalFixtures: 2840,
+      fixturesActioned: 1426,
+      avgClvBps: 2.4,
+      clvHitRate: 0.627,
+      roiPct: 6.0,
+      avgStakeGbp: 485,
+      leagueBreakdown: [
+        { league: "EPL", fixtures: 760, roi: 7.2, clvBps: 3.1 },
+        { league: "La Liga", fixtures: 380, roi: 5.8, clvBps: 2.2 },
+        { league: "Bundesliga", fixtures: 306, roi: 4.9, clvBps: 1.8 },
+        { league: "Serie A", fixtures: 380, roi: 5.1, clvBps: 1.9 },
+        { league: "Ligue 1", fixtures: 380, roi: 3.2, clvBps: 1.1 },
+        { league: "UCL", fixtures: 125, roi: 8.4, clvBps: 4.2 },
+        { league: "UEL", fixtures: 95, roi: 6.1, clvBps: 2.8 },
+      ],
+      marketBreakdown: [
+        { market: "FT Result", bets: 612, roi: 5.8, hitRate: 0.56 },
+        { market: "Over/Under 2.5", bets: 398, roi: 7.1, hitRate: 0.59 },
+        { market: "BTTS", bets: 284, roi: 4.2, hitRate: 0.54 },
+        { market: "Asian Handicap", bets: 132, roi: 8.5, hitRate: 0.58 },
+      ],
+      monthlyPnl: [
+        { month: "2025-10", pnlGbp: 3200, fixtures: 142 },
+        { month: "2025-11", pnlGbp: -1800, fixtures: 155 },
+        { month: "2025-12", pnlGbp: 5100, fixtures: 168 },
+        { month: "2026-01", pnlGbp: 4800, fixtures: 150 },
+        { month: "2026-02", pnlGbp: 2200, fixtures: 138 },
+        { month: "2026-03", pnlGbp: 6100, fixtures: 162 },
+      ],
+      topEdgeFixtures: [
+        { fixture: "ARS vs MCI (EPL MD27)", clvBps: 12.4, pnlGbp: 890, date: "2026-03-18" },
+        { fixture: "BAR vs RMA (La Liga MD27)", clvBps: 9.8, pnlGbp: 720, date: "2026-03-15" },
+        { fixture: "LIV vs CHE (EPL MD26)", clvBps: 8.6, pnlGbp: 650, date: "2026-03-09" },
+        { fixture: "BAY vs BVB (Bund MD25)", clvBps: 7.2, pnlGbp: 580, date: "2026-03-15" },
+      ],
+    },
     configDiff: [
       {
         parameter: "min_odds_value",

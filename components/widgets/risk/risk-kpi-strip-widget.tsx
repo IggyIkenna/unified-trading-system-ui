@@ -1,19 +1,17 @@
 "use client";
 
-import * as React from "react";
-import type { WidgetComponentProps } from "../widget-registry";
-import { KpiSummaryWidget, type KpiMetric, CollapsibleSection } from "@/components/shared";
-import { useRiskData, formatCurrency } from "./risk-data-context";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { CollapsibleSection, KpiSummaryWidget, type KpiMetric } from "@/components/shared";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { STRATEGY_RISK_PROFILES, MOCK_PORTFOLIO_DELTA } from "@/lib/mocks/fixtures/defi-risk";
-import { STRATEGY_DISPLAY_NAMES, type RiskLevel } from "@/lib/types/defi";
 import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { MOCK_PORTFOLIO_DELTA, STRATEGY_RISK_PROFILES } from "@/lib/mocks/fixtures/defi-risk";
+import { STRATEGY_DISPLAY_NAMES, type RiskLevel } from "@/lib/types/defi";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { LayoutGrid, LineChart as LineChartIcon } from "lucide-react";
+import * as React from "react";
 import {
   CartesianGrid,
   Legend,
@@ -24,6 +22,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { WidgetComponentProps } from "../widget-registry";
+import { formatCurrency, useRiskData } from "./risk-data-context";
 
 const RISK_LEVEL_COLORS: Record<RiskLevel, string> = {
   low: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
@@ -40,12 +40,12 @@ function RiskLevelBadge({ level }: { level: RiskLevel }) {
   );
 }
 
-/** Returns true when any DeFi strategy has active positions (mock: always true for demo). */
-function useHasDefiStrategies(): boolean {
-  const [ledgerVersion, setLedgerVersion] = React.useState(0);
+import type { PortfolioDeltaComposite } from "@/lib/types/defi";
 
+function useLedgerVersion(): number {
+  const [v, setV] = React.useState(0);
   React.useEffect(() => {
-    const refresh = () => setLedgerVersion((v) => v + 1);
+    const refresh = () => setV((n) => n + 1);
     window.addEventListener("mock-order-filled", refresh);
     window.addEventListener("mock-ledger-reset", refresh);
     return () => {
@@ -53,9 +53,35 @@ function useHasDefiStrategies(): boolean {
       window.removeEventListener("mock-ledger-reset", refresh);
     };
   }, []);
+  return v;
+}
 
-  // Show DeFi risk section if risk profiles exist OR if user has placed DeFi trades
+function useHasDefiStrategies(): boolean {
+  useLedgerVersion();
   return STRATEGY_RISK_PROFILES.length > 0 || getFilledDefiOrders().length > 0;
+}
+
+function useLiveDelta(): PortfolioDeltaComposite {
+  const ledgerVersion = useLedgerVersion();
+  return React.useMemo(() => {
+    const filled = getFilledDefiOrders();
+    let additionalDeltaUsd = 0;
+    let additionalDeltaEth = 0;
+    for (const order of filled) {
+      const notional = order.quantity * (order.average_fill_price ?? order.price);
+      const sign = order.side === "buy" ? 1 : -1;
+      additionalDeltaUsd += sign * notional;
+      const instrUpper = order.instrument_id.toUpperCase();
+      if (instrUpper.includes("ETH") || instrUpper.includes("WEETH")) {
+        additionalDeltaEth += sign * order.quantity;
+      }
+    }
+    return {
+      ...MOCK_PORTFOLIO_DELTA,
+      total_delta_usd: MOCK_PORTFOLIO_DELTA.total_delta_usd + additionalDeltaUsd,
+      total_delta_eth: MOCK_PORTFOLIO_DELTA.total_delta_eth + additionalDeltaEth,
+    };
+  }, [ledgerVersion]);
 }
 
 // ---------------------------------------------------------------------------
@@ -217,6 +243,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
   } = useRiskData();
 
   const hasDefi = useHasDefiStrategies();
+  const liveDelta = useLiveDelta();
   const [defiRiskView, setDefiRiskView] = React.useState<"table" | "chart">("table");
 
   const baseMetrics: KpiMetric[] = [
@@ -253,10 +280,10 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
 
   const extendedMetrics: KpiMetric[] = varSummary
     ? [
-        { label: "Hist VaR 99%", value: formatCurrency(-Number(varSummary.historical_var_99 ?? 0)), sentiment: "negative" },
-        { label: "Param VaR 99%", value: formatCurrency(-Number(varSummary.parametric_var_99 ?? 0)), sentiment: "negative" },
-        { label: "CVaR 99%", value: formatCurrency(-Number(varSummary.cvar_99 ?? 0)), sentiment: "negative" },
-      ]
+      { label: "Hist VaR 99%", value: formatCurrency(-Number(varSummary.historical_var_99 ?? 0)), sentiment: "negative" },
+      { label: "Param VaR 99%", value: formatCurrency(-Number(varSummary.parametric_var_99 ?? 0)), sentiment: "negative" },
+      { label: "CVaR 99%", value: formatCurrency(-Number(varSummary.cvar_99 ?? 0)), sentiment: "negative" },
+    ]
     : [];
 
   const metrics = [...baseMetrics, ...extendedMetrics].slice(0, 9);
@@ -273,21 +300,21 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
               <div className="rounded-lg border border-border bg-muted/30 p-2">
                 <span className="text-[10px] text-muted-foreground block">Delta USD</span>
                 <span className="text-sm font-mono font-semibold">
-                  {MOCK_PORTFOLIO_DELTA.total_delta_usd > 0 ? "+" : ""}
-                  {formatCurrency(MOCK_PORTFOLIO_DELTA.total_delta_usd)}
+                  {liveDelta.total_delta_usd > 0 ? "+" : ""}
+                  {formatCurrency(liveDelta.total_delta_usd)}
                 </span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
                 <span className="text-[10px] text-muted-foreground block">Delta ETH</span>
                 <span className="text-sm font-mono font-semibold">
-                  {MOCK_PORTFOLIO_DELTA.total_delta_eth > 0 ? "+" : ""}
-                  {formatNumber(MOCK_PORTFOLIO_DELTA.total_delta_eth, 1)}
+                  {liveDelta.total_delta_eth > 0 ? "+" : ""}
+                  {formatNumber(liveDelta.total_delta_eth, 1)}
                 </span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
                 <span className="text-[10px] text-muted-foreground block">Delta SOL</span>
                 <span className="text-sm font-mono font-semibold">
-                  {formatNumber(MOCK_PORTFOLIO_DELTA.total_delta_sol, 1)}
+                  {formatNumber(liveDelta.total_delta_sol, 1)}
                 </span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
@@ -295,14 +322,14 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
                 <span
                   className={cn(
                     "text-sm font-mono font-semibold",
-                    MOCK_PORTFOLIO_DELTA.total_liquidation_cost_pct > 1
+                    liveDelta.total_liquidation_cost_pct > 1
                       ? "text-rose-400"
-                      : MOCK_PORTFOLIO_DELTA.total_liquidation_cost_pct > 0.5
+                      : liveDelta.total_liquidation_cost_pct > 0.5
                         ? "text-amber-400"
                         : "text-emerald-400",
                   )}
                 >
-                  {formatPercent(MOCK_PORTFOLIO_DELTA.total_liquidation_cost_pct, 2)}
+                  {formatPercent(liveDelta.total_liquidation_cost_pct, 2)}
                 </span>
               </div>
             </div>
