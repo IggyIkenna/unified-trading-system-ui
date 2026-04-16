@@ -11,6 +11,12 @@ export function PredTopMarketsWidget(_props: WidgetComponentProps) {
 
   const topMarkets = React.useMemo(() => [...markets].sort((a, b) => b.volume - a.volume).slice(0, 6), [markets]);
 
+  if (topMarkets.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No markets available</div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2 h-full min-h-0 overflow-auto">
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 shrink-0">

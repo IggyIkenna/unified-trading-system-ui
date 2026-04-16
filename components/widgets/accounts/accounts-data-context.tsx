@@ -6,8 +6,11 @@ import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { useBalances } from "@/hooks/api/use-positions";
 import { useTransferHistory } from "@/hooks/api/use-transfer-history";
 import { ACCOUNTS } from "@/lib/mocks/fixtures/trading-data";
+import { MOCK_SAFTS } from "@/lib/mocks/fixtures/trading-pages";
 import type { BalanceRecord, TransferHistoryEntry } from "@/lib/types/accounts";
 import type { VenueMargin } from "@/components/trading/margin-utilization";
+
+export type { SAFTRecord } from "@/lib/mocks/fixtures/trading-pages";
 
 export interface AccountsData {
   balances: BalanceRecord[];
@@ -22,6 +25,8 @@ export interface AccountsData {
 
   transferOpen: boolean;
   setTransferOpen: (open: boolean) => void;
+
+  saftRecords: typeof MOCK_SAFTS;
 }
 
 export interface AccountsDataContextValue extends AccountsData {
@@ -135,6 +140,7 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
       transferHistoryError,
       refetchTransferHistory,
       addTransferEntry,
+      saftRecords: MOCK_SAFTS,
       mode,
     }),
     [

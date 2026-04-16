@@ -3,14 +3,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useStrategyCatalog, type StrategyCatalogEntry } from "@/hooks/api/use-strategies";
 import { Spinner } from "@/components/shared/spinner";
 
@@ -23,7 +17,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 
 const DOMAINS = ["all", "defi", "cefi", "tradfi", "sports"] as const;
 
-export function StrategyFamilyBrowserWidget() {
+export function StrategyFamilyBrowserWidget(_props: WidgetComponentProps) {
   const [selectedDomain, setSelectedDomain] = useState<string>("all");
   const domain = selectedDomain === "all" ? undefined : selectedDomain;
   const { data, isLoading } = useStrategyCatalog(domain);
@@ -36,6 +30,12 @@ export function StrategyFamilyBrowserWidget() {
       <div className="flex items-center justify-center h-48">
         <Spinner />
       </div>
+    );
+  }
+
+  if (strategies.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No strategies found</div>
     );
   }
 

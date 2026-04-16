@@ -3,11 +3,20 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData } from "./risk-data-context";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function RiskCircuitBreakersWidget(_props: WidgetComponentProps) {
-  const { venueCircuitBreakers } = useRiskData();
+  const { venueCircuitBreakers, isLoading } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
 
   if (!venueCircuitBreakers || venueCircuitBreakers.length === 0) {
     return (

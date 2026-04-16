@@ -9,21 +9,27 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Clock, DollarSign, TrendingUp, Calendar, Plus, Lock, Unlock } from "lucide-react";
-import { formatNumber } from "@/lib/utils/formatters";
-import { MOCK_SAFTS, type SAFTRecord } from "@/lib/mocks/fixtures/trading-pages";
+import { formatNumber, formatCurrency, formatCompact } from "@/lib/utils/formatters";
+import { useAccountsData, type SAFTRecord } from "./accounts-data-context";
+import { Spinner } from "@/components/shared/spinner";
 import type { WidgetComponentProps } from "../widget-registry";
 
 export function SaftPortfolioWidget(_props: WidgetComponentProps) {
+  const { saftRecords, isLoading } = useAccountsData();
   const now = React.useMemo(() => new Date(), []);
 
-  const TOTAL_COMMITTED = React.useMemo(() => MOCK_SAFTS.reduce((acc, s) => acc + s.committedAmount, 0), []);
+  const TOTAL_COMMITTED = React.useMemo(
+    () => saftRecords.reduce((acc, s) => acc + s.committedAmount, 0),
+    [saftRecords],
+  );
   const TOTAL_VESTED_VALUE = React.useMemo(
-    () => MOCK_SAFTS.reduce((acc, s) => acc + (s.currentValue * s.vestedPct) / 100, 0),
-    [],
+    () => saftRecords.reduce((acc, s) => acc + (s.currentValue * s.vestedPct) / 100, 0),
+    [saftRecords],
   );
 
   const nextUnlock = React.useMemo(() => {
-    return MOCK_SAFTS.filter((s) => s.vestedPct < 100)
+    return saftRecords
+      .filter((s) => s.vestedPct < 100)
       .map((s) => {
         const cliff = new Date(s.cliffDate);
         const diffDays = Math.ceil((cliff.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -31,9 +37,21 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
       })
       .filter((s) => s.daysToUnlock > 0)
       .sort((a, b) => a.daysToUnlock - b.daysToUnlock)[0];
-  }, [now]);
+  }, [saftRecords, now]);
 
   const [addDialogOpen, setAddDialogOpen] = React.useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center text-muted-foreground">
+        <Spinner className="size-5" />
+      </div>
+    );
+  }
+
+  if (saftRecords.length === 0) {
+    return <div className="flex h-full items-center justify-center text-xs text-muted-foreground">No SAFT records</div>;
+  }
 
   return (
     <div className="space-y-4 p-1">
@@ -55,7 +73,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                 <FileText className="size-5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-semibold font-mono">{MOCK_SAFTS.length}</p>
+                <p className="text-2xl font-semibold font-mono">{saftRecords.length}</p>
                 <p className="text-xs text-muted-foreground">Total SAFTs</p>
               </div>
             </div>
@@ -68,7 +86,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                 <DollarSign className="size-5" style={{ color: "var(--accent-blue)" }} />
               </div>
               <div>
-                <p className="text-2xl font-semibold font-mono">{formatCurrency(TOTAL_COMMITTED)}</p>
+                <p className="text-2xl font-semibold font-mono">{formatCurrencyCompact(TOTAL_COMMITTED)}</p>
                 <p className="text-xs text-muted-foreground">Total Committed</p>
               </div>
             </div>
@@ -81,7 +99,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                 <TrendingUp className="size-5" style={{ color: "var(--pnl-positive)" }} />
               </div>
               <div>
-                <p className="text-2xl font-semibold font-mono">{formatCurrency(TOTAL_VESTED_VALUE)}</p>
+                <p className="text-2xl font-semibold font-mono">{formatCurrencyCompact(TOTAL_VESTED_VALUE)}</p>
                 <p className="text-xs text-muted-foreground">Vested Value</p>
               </div>
             </div>
@@ -123,11 +141,13 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {MOCK_SAFTS.map((saft) => (
+              {saftRecords.map((saft) => (
                 <TableRow key={saft.id}>
                   <TableCell className="text-sm font-medium">{saft.token}</TableCell>
                   <TableCell>{roundBadge(saft.round)}</TableCell>
-                  <TableCell className="text-right font-mono text-sm">{formatCurrency(saft.committedAmount)}</TableCell>
+                  <TableCell className="text-right font-mono text-sm">
+                    {formatCurrencyCompact(saft.committedAmount)}
+                  </TableCell>
                   <TableCell className="text-right font-mono text-sm">${formatNumber(saft.tokenPrice, 3)}</TableCell>
                   <TableCell className="text-right font-mono text-sm">{formatTokens(saft.tokensAllocated)}</TableCell>
                   <TableCell>
@@ -159,9 +179,9 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm text-[var(--pnl-positive)]">
-                    {formatCurrency(saft.currentValue)}
+                    {formatCurrencyCompact(saft.currentValue)}
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm">{formatCurrency(saft.npv)}</TableCell>
+                  <TableCell className="text-right font-mono text-sm">{formatCurrencyCompact(saft.npv)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -175,7 +195,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {MOCK_SAFTS.map((saft) => {
+            {saftRecords.map((saft) => {
               const cliffPct = ((new Date(saft.cliffDate).getTime() - timelineStart) / totalSpan) * 100;
               const vestPct = ((new Date(saft.fullVestDate).getTime() - timelineStart) / totalSpan) * 100;
               const nowTime = now.getTime();
@@ -292,17 +312,13 @@ const timelineStart = new Date("2025-06-01").getTime();
 const timelineEnd = new Date("2028-09-01").getTime();
 const totalSpan = timelineEnd - timelineStart;
 
-function formatCurrency(v: number): string {
-  const abs = Math.abs(v);
-  if (abs >= 1_000_000) return `$${formatNumber(v / 1_000_000, 2)}M`;
-  if (abs >= 1_000) return `$${v.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-  return `$${formatNumber(v, 2)}`;
+function formatCurrencyCompact(v: number): string {
+  if (Math.abs(v) >= 1_000_000) return `$${formatCompact(v)}`;
+  return formatCurrency(v, "USD", 0);
 }
 
 function formatTokens(v: number): string {
-  if (v >= 1_000_000) return `${formatNumber(v / 1_000_000, 2)}M`;
-  if (v >= 1_000) return `${formatNumber(v / 1_000, 0)}K`;
-  return formatNumber(v, 0);
+  return formatCompact(v);
 }
 
 function roundBadge(round: SAFTRecord["round"]) {
