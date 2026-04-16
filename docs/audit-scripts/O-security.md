@@ -1,7 +1,5 @@
 # Module O — Security Patterns Audit
 
-**Output:** `docs/UI-shared-components-Issues/15-SECURITY-AUDIT.md`
-
 ## Search Patterns
 
 1. `dangerouslySetInnerHTML` usage — is input sanitized?

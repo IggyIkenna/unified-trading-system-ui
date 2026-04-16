@@ -1,7 +1,5 @@
 # Module N — Internationalization Readiness (i18n) Audit
 
-**Output:** `docs/UI-shared-components-Issues/14-I18N-AUDIT.md`
-
 ## Search Patterns
 
 1. Hardcoded English strings in JSX (user-visible text not in a constants file or i18n system)

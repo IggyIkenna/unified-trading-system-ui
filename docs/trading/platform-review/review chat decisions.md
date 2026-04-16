@@ -1,7 +1,7 @@
 # Platform Review — Meeting Chat (2026-03-25)
 
 > **Status:** All messages categorized into structured docs (2026-03-26).
-> **Promote lifecycle tab** is already in progress — see `docs/promote lifecycle tab/PROMOTE_LIFECYCLE_DESIGN.md`.
+> **Promote lifecycle tab** — see `docs/under-review/promote lifecycle tab/PROMOTE_LIFECYCLE_DESIGN.md`.
 > Everything else below is captured in the docs listed at the bottom.
 
 ---
@@ -10,7 +10,7 @@
 
 ### Message 1 — Research/Build: Grid Search, Features, Strategy Comparison, Execution Decision
 
-**→ Captured in:** `docs/platform review/research-build-enhancements.md` (Sections 1-6)
+**→ Captured in:** `research-build-enhancements.md` (Sections 1-6) — moved to `docs/under-review/`
 
 [3/25/26 5:22 PM] Upwork Ikenna: Okay so multi-tab execution, keeping the high-level tab the same, multi-tab for strategy machine learning strategy and execution. All the while allowing the user to quickly filter through a lot of information to less information to get their fixed config set up and then hyperparameter is their grid search for all of the dynamic stuff with UI-based grid searching. If you have the grid fixed to one point then you're just using one point for that particular part of the config. It will tell you how many backtests you're going to spin up, tell you a projected compute hours and cost or whatever. That's the same for everything.
 
@@ -28,8 +28,8 @@ Execution: what do we split into the execution build or what do we put execution
 
 ### Message 2 — Promote Lifecycle + Investment Management Graduation
 
-**→ Promote part:** Already in progress — see `docs/promote lifecycle tab/PROMOTE_LIFECYCLE_DESIGN.md`
-**→ Investment Management / Graduation:** Captured in `docs/platform review/trading-asset-class-navigation.md` (Section 7)
+**→ Promote part:** See `docs/under-review/promote lifecycle tab/PROMOTE_LIFECYCLE_DESIGN.md`
+**→ Investment Management / Graduation:** Captured in `trading-asset-class-navigation.md` (Section 7)
 
 completing promote
 
@@ -42,7 +42,7 @@ The investment management candidate strategies would be potentially different fr
 
 ### Message 3 — Trading Terminal: Sports & Predictions
 
-**→ Captured in:** `docs/platform review/trading-sports-predictions.md` (All sections)
+**→ Captured in:** `trading-sports-predictions.md` (All sections)
 
 [3/25/26 5:35 PM] Upwork Ikenna: Yeah, trading terminal, the main additions probably are around the enhancements around sports and predictions. For both it's trying to figure out what the high-level information is that's nice. There's nothing wrong with seeing all of the product market predictions that exist. There's nothing wrong with being able to drop down and see in a nice visual way that Arsenal are playing Chelsea so you can see your latest fixtures or your up-and-coming fixtures.
 
@@ -54,7 +54,7 @@ You probably need another tab, which is more like an arbitrage tab, and that's j
 
 ### Message 4 — Predictions: Polymarket, Arb Streaming, Historical Replay
 
-**→ Captured in:** `docs/platform review/trading-sports-predictions.md` (Sections 2.1–2.5)
+**→ Captured in:** `trading-sports-predictions.md` (Sections 2.1–2.5)
 
 [3/25/26 5:40 PM] Upwork Ikenna: For predictions it's fine to focus on football right now because we're not doing anything else anytime soon so no point overboasting on that side. We've got crossover with sports so naturally, market fixtures should just match and results and odds are not market-specific; they're generic, hence the canonical IDs but market odds should be just another venue in sports, right? Market should just be viewable in sports for the arb and stuff like that but for the predictions actual tab we can have one tab which is a little bit like what we have now, very high level, covering everything, streaming straight from polymarket; that's easy enough.
 Historically, the one where we can look at historical and live and everything, when it comes to arbitrage, when we can actually trade, needs to be filtered to our instrument ID. We have:
@@ -71,7 +71,7 @@ Yeah so the historical synthetic arb trades that you could have done. Yeah, stre
 
 ### Message 5 — Quick View on Every Tab
 
-**→ Captured in:** `docs/platform review/cross-cutting-quickview-news-liveasof.md` (Section 1)
+**→ Captured in:** `cross-cutting-quickview-news-liveasof.md` (Section 1)
 
 [3/25/26 5:41 PM] Upwork Ikenna: Make sure that quick view exists on every tab because it doesn't currently, I think, exist on every tab on the trading terminal. That way the user can always see the high level so they don't need to always worry about whether they're on the alerts tab that always sees the important stuff there
 
@@ -79,7 +79,7 @@ Yeah so the historical synthetic arb trades that you could have done. Yeah, stre
 
 ### Message 6 — News Section Enhancement
 
-**→ Captured in:** `docs/platform review/cross-cutting-quickview-news-liveasof.md` (Section 2)
+**→ Captured in:** `cross-cutting-quickview-news-liveasof.md` (Section 2)
 
 [3/25/26 5:41 PM] Upwork Ikenna: Yeah add a new section, put some jargon in there, just some ability to filter it down by category so they see the news that's relevant for sports, see the news that's relevant for TradFi, DeFi. A lot of it is overlapping for non-sport stuff but for sport stuff and crypto stuff, especially, there's gonna be specific stuff for commodities; there's gonna be specific stuff. Maybe like a category and then for TradFi you want one more breakdown, just on the actual asset classes:
 
@@ -92,7 +92,7 @@ Yeah so the historical synthetic arb trades that you could have done. Yeah, stre
 
 ### Message 7 — Accounts, Risk, P&L, Positions, Reconciliation, Scenario Analysis
 
-**→ Captured in:** `docs/platform review/trading-accounts-risk-pnl-reconciliation.md` (All sections)
+**→ Captured in:** `trading-accounts-risk-pnl-reconciliation.md` (All sections)
 
 [3/25/26 5:47 PM] Upwork Ikenna: Yeah, accounts need to definitely filter by clients and filter by venues. The actual account. Filtering by clients and filtering by venues makes sense but I think there's no time series. You want to have time series here as well so we can plot not just snapshots. So we can pretty much borrow time series concepts from positions for the accounts tab as well. Accounts tab effectively is also acting as the positions tab and more generally just high level.
 
@@ -109,7 +109,7 @@ Everything on P&L attribution is also a risk type, right? Basis is a risk type, 
 
 ### Message 8 — Activity Dots (Workflow Indicators)
 
-**→ Captured in:** `docs/platform review/trading-asset-class-navigation.md` (Section 4)
+**→ Captured in:** `trading-asset-class-navigation.md` (Section 4)
 
 [3/25/26 5:49 PM] Upwork Ikenna: Those little coloured dots, I guess, would be these: monitoring, trading, configuring, reconciliation, analysing
 
@@ -117,7 +117,7 @@ Everything on P&L attribution is also a risk type, right? Basis is a risk type, 
 
 ### Message 9 — Too Many Tabs, Orientation Problem
 
-**→ Captured in:** `docs/platform review/trading-asset-class-navigation.md` (Section 1)
+**→ Captured in:** `trading-asset-class-navigation.md` (Section 1)
 
 [3/25/26 5:50 PM] Upwork Ikenna: Using the terminal for the first time and there's way too many tabs so you're like, 'There's gonna be, because it's complex.' You're like, 'Roughly where am I? What kind of? You know, what's my starting point? What's my ending point and they all need to map to the dot.'
 
@@ -125,7 +125,7 @@ Everything on P&L attribution is also a risk type, right? Basis is a risk type, 
 
 ### Message 10 — Position Health, Quick Reconcile, Trade Matching, P&L Residual
 
-**→ Captured in:** `docs/platform review/trading-accounts-risk-pnl-reconciliation.md` (Sections 4-5)
+**→ Captured in:** `trading-accounts-risk-pnl-reconciliation.md` (Sections 4-5)
 
 [3/25/26 5:54 PM] Upwork Ikenna: If, for example, in the position tab health, it said "health is reconciled", does that mean that the position that we're showing is the same as what the exchange is showing? If it's not healthy then we can sort by health. Obviously there'll be alerts around that as well but this is just another way of viewing it. Once you see something's unhealthy, like you said, you want to then click on it and go to the quick reconcile tab, because it's going to be a frequent thing. And then if you do want to deep dive because you're like, I don't want to reconcile without figuring out what all the trades we did versus the exchange did in case we booked a fake trade and we're reconciling to that (but we want that fake trade to exist because it's an OTC trade or because the exchange gave us a position). We want to just deep dive a little bit into how they gave us a position without giving us the fill. You can quickly click into that instrument. See all of the exchange trades in the list and see all of our own trades in a list and then you can just visually match them. It can already try to do some kind of algorithmic matching because we have a backend trade matching reconciliation process anyway so we're going to be like, good trade, good trade, good trade, and this is the one that we couldn't reconcile. Sometimes it's going to be more than trades, right? The trades will match but it's just that we got some staking rewards or our interest rate on our debt wasn't exactly the same as what we projected, right? Our position is our trades are actually the same; our position is the differentiator, right?
 
@@ -135,7 +135,7 @@ Finally on that same topic, P&L reconciliation. The P&L attribution tab breakdow
 
 ### Message 11 — Live vs As-Of (Batch) Mode
 
-**→ Captured in:** `docs/platform review/cross-cutting-quickview-news-liveasof.md` (Section 3)
+**→ Captured in:** `cross-cutting-quickview-news-liveasof.md` (Section 3)
 
 [3/25/26 5:55 PM] Upwork Ikenna: So this one I'm going to do this actually being used so I'm just going to mock it like it's still in mock but it can still have the functionality because the only difference is going to be doing backend calls, right so we just want still all the calls but live/simulated and as of l vs live should feed through to every possible tab
 
@@ -143,7 +143,7 @@ Finally on that same topic, P&L reconciliation. The P&L attribution tab breakdow
 
 ### Message 12 — Static UI vs Mock Data Source Distinction
 
-**→ Captured in:** `docs/platform review/cross-cutting-quickview-news-liveasof.md` (Section 3.2-3.3)
+**→ Captured in:** `cross-cutting-quickview-news-liveasof.md` (Section 3.2-3.3)
 
 [3/25/26 5:57 PM] Upwork Ikenna: Where the UI is doing static views, that's not a backend integration. That's a UI functionality that needs to improve, right? Whereas fake data, yeah, that's a mock source versus reality. Make sure that frees through every single tab where it logically wouldn't, like maybe the trading terminal to trade in the past; in that way it is potentially a bit weird. I don't really know what that means.
 
@@ -153,7 +153,7 @@ From an audit perspective you don't want to be booking trades historically like 
 
 ### Message 13 — DeFi Ops & Combo Builder
 
-**→ Captured in:** `docs/platform review/trading-defi-ops-combo-builder.md` (All sections)
+**→ Captured in:** `trading-defi-ops-combo-builder.md` (All sections)
 
 [3/25/26 6:05 PM] Upwork Ikenna: There are two distinctions that we can do in DeFi Ops:
 
@@ -171,7 +171,7 @@ Yeah I think it's fine to split combos by theme:
 
 ### Message 14 — Asset-Class Navigation Restructure + FOMO + Strategy Families
 
-**→ Captured in:** `docs/platform review/trading-asset-class-navigation.md` (Sections 2-6)
+**→ Captured in:** `trading-asset-class-navigation.md` (Sections 2-6)
 
 I mean to be honest you might even just have that be the top right, like:
 
@@ -195,13 +195,13 @@ I mean to be honest you might even just have that be the top right, like:
 
 ## Structured Docs Created
 
-| Doc                                          | File                                                   | Covers Messages                                                                                        |
-| -------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| Research/Build Enhancements                  | `research-build-enhancements.md`                       | 1 (grid search, features, comparison, execution, correlation)                                          |
-| Sports & Predictions                         | `trading-sports-predictions.md`                        | 3, 4 (fixtures, arb grid, Polymarket, historical replay, arb streaming)                                |
-| Accounts, Risk, P&L, Reconciliation          | `trading-accounts-risk-pnl-reconciliation.md`          | 7, 10 (accounts time series, Greeks, scenario analysis, position health, trade matching, P&L residual) |
-| DeFi Ops & Combo Builder                     | `trading-defi-ops-combo-builder.md`                    | 13 (atomic bundles, combo builder, accumulators)                                                       |
-| Asset-Class Navigation                       | `trading-asset-class-navigation.md`                    | 2 (graduation), 8 (dots), 9 (too many tabs), 14 (restructure, FOMO, filters)                           |
-| Cross-Cutting (Quick View, News, Live/As-Of) | `cross-cutting-quickview-news-liveasof.md`             | 5, 6, 11, 12 (quick view, news categories, live vs as-of, static vs mock)                              |
-| Promote Lifecycle (pre-existing)             | `../promote lifecycle tab/PROMOTE_LIFECYCLE_DESIGN.md` | 2 (promote portion — already in progress)                                                              |
-| Generic Finder Browser Decisions             | `generic-finder-browser-decisions.md`                  | Follow-up discussion (2026-03-26): Finder extraction, column hierarchies, detail panel design          |
+| Doc                                          | Location                                                    | Covers Messages                                                                                        |
+| -------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Research/Build Enhancements                  | `docs/under-review/` (research-build-enhancements.md)       | 1 (grid search, features, comparison, execution, correlation)                                          |
+| Sports & Predictions                         | `trading-sports-predictions.md` (this folder)               | 3, 4 (fixtures, arb grid, Polymarket, historical replay, arb streaming)                                |
+| Accounts, Risk, P&L, Reconciliation          | `trading-accounts-risk-pnl-reconciliation.md` (this folder) | 7, 10 (accounts time series, Greeks, scenario analysis, position health, trade matching, P&L residual) |
+| DeFi Ops & Combo Builder                     | `trading-defi-ops-combo-builder.md` (this folder)           | 13 (atomic bundles, combo builder, accumulators)                                                       |
+| Asset-Class Navigation                       | `trading-asset-class-navigation.md` (this folder)           | 2 (graduation), 8 (dots), 9 (too many tabs), 14 (restructure, FOMO, filters)                           |
+| Cross-Cutting (Quick View, News, Live/As-Of) | `cross-cutting-quickview-news-liveasof.md` (this folder)    | 5, 6, 11, 12 (quick view, news categories, live vs as-of, static vs mock)                              |
+| Promote Lifecycle (pre-existing)             | `docs/under-review/promote lifecycle tab/`                  | 2 (promote portion)                                                                                    |
+| Generic Finder Browser Decisions             | `docs/under-review/` (generic-finder-browser-decisions.md)  | Follow-up discussion (2026-03-26): Finder extraction, column hierarchies, detail panel design          |

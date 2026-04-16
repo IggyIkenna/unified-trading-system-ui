@@ -2,7 +2,7 @@
 
 > **Source:** Platform review meeting 2026-03-25 + tab audit (2026-03-26)
 > **Purpose:** Define the ordering, grouping, and asset-class relevance of all trading service tabs.
-> **Not yet implemented** — this is a planning document.
+> **Status:** Partially implemented. The actual code (`components/shell/service-tabs.tsx`) has evolved beyond this flat structure — asset-specific tabs now use `familyGroup`/`group` properties with sub-tabs (DeFi: DeFi + Bundles + Staking; Sports: Sports + Place Bets + Accumulators; Options: Options + Combo Builder + Pricing; Predictions: Predictions + Aggregators). The common tabs ordering and the entitlement model described here remain accurate. See `service-tabs.tsx` for the authoritative implementation.
 
 ---
 
@@ -132,32 +132,32 @@ export const TRADING_TABS: ServiceTab[] = [
   {
     label: "Combos",
     href: "/services/trading/bundles",
-    requiredEntitlement: "combos-access",
+    requiredEntitlement: "execution-basic",
   },
   {
     label: "DeFi Ops",
     href: "/services/trading/defi",
-    requiredEntitlement: "defi-basic",
+    requiredEntitlement: "defi-trading",
   },
   {
     label: "Options & Futures",
     href: "/services/trading/options",
-    requiredEntitlement: "options-basic",
+    requiredEntitlement: "options-trading",
   },
   {
     label: "Sports",
     href: "/services/trading/sports",
-    requiredEntitlement: "sports-basic",
+    requiredEntitlement: "sports-trading",
   },
   {
     label: "Predictions",
     href: "/services/trading/predictions",
-    requiredEntitlement: "predictions-basic",
+    requiredEntitlement: "predictions-trading",
   },
 ];
 ```
 
-**Note:** Exact entitlement strings need alignment with the auth/entitlements system. The structure above shows intent.
+**Note:** Entitlement strings aligned with finalized three-level entitlement model (see `docs/initial-boss/07_trading_target_state.md` § 7).
 
 ---
 

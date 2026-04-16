@@ -1,7 +1,5 @@
 # Module J — Performance Patterns Audit
 
-**Output:** `docs/UI-shared-components-Issues/10-PERFORMANCE-AUDIT.md`
-
 ## Search Patterns
 
 1. Large component files (>500 lines) — candidates for splitting

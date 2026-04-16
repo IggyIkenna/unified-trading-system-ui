@@ -1,7 +1,5 @@
 # Module B — Color Tokens, Theming & Theme-Readiness Audit
 
-**Output:** `docs/UI-shared-components-Issues/02-COLOR-TOKEN-AUDIT.md`
-
 ---
 
 ## SSOT Principle

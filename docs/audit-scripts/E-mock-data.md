@@ -1,8 +1,5 @@
 # Module E — Mock Data Placement, Duplication & Alignment Audit
 
-**Output:** `docs/UI-shared-components-Issues/05-MOCK-DATA-AUDIT.md`
-**Maps to:** WORK_TRACKER §5 (Mock Data Centralization), §6 (Mock Data Alignment)
-
 This is the most detailed audit module. It has 4 sub-parts that can be run independently.
 
 ---
@@ -95,10 +92,6 @@ Check that IDs referenced across domains actually exist:
 - Greeks: reasonable for the option characteristics?
 
 ---
-
-## Previous Audit Reference
-
-Read `docs/UI-shared-components-Issues/05-MOCK-DATA-AUDIT.md` (from 2026-03-27) before running. Compare findings to see what has changed since then. Flag any new violations introduced since the last audit.
 
 ## Output Expectations
 

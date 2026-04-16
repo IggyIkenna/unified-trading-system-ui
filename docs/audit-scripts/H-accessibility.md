@@ -1,7 +1,5 @@
 # Module H — Accessibility (a11y) Audit
 
-**Output:** `docs/UI-shared-components-Issues/08-ACCESSIBILITY-AUDIT.md`
-
 ## Search Patterns
 
 1. Images without `alt` attributes: `<img` without `alt=`

@@ -1,20 +1,16 @@
-# docs/trading/ — Active reference for trading lifecycle tab
+# docs/trading/ — Trading lifecycle tab reference
 
 **Last updated:** 2026-04-16
 
-These docs are actively referenced during trading tab development. Stale or unused docs have been removed or moved to `docs/under-review/`.
+Trading-tab-specific docs. Platform-wide docs (routes, UX rules, data mode, audit scripts) live in `docs/`.
 
 ---
 
-## Core reference
+## Widget catalogue
 
-| File                                           | What                                                                                        | Status                      |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------- |
-| [WIDGET_CATALOGUE.md](WIDGET_CATALOGUE.md)     | 124 widgets across 17 domains — class taxonomy, preset audit, base widget candidates        | Active — updated 2026-04-16 |
-| [ROUTES.md](ROUTES.md)                         | Full route inventory (generated from `page.tsx` files)                                      | Active — updated 2026-04-16 |
-| [DATA_MODE_IDEOLOGY.md](DATA_MODE_IDEOLOGY.md) | Rules for mock vs real data mode (`isMockDataMode()`)                                       | Active — short, still valid |
-| [UX_OPERATING_RULES.md](UX_OPERATING_RULES.md) | Hard UX rules: same page different permissions, batch/live structural, taxonomy drift = bug | Active — still valid        |
-| [UX_FLOW_SPEC.md](UX_FLOW_SPEC.md)             | Canonical user journeys: login, signup, role-based views, subscription layer                | Active — design spec        |
+| File                                       | What                                                                                 | Status                      |
+| ------------------------------------------ | ------------------------------------------------------------------------------------ | --------------------------- |
+| [WIDGET_CATALOGUE.md](WIDGET_CATALOGUE.md) | 124 widgets across 17 domains — class taxonomy, preset audit, base widget candidates | Active — updated 2026-04-16 |
 
 ## DeFi (current priority)
 
@@ -37,8 +33,14 @@ These docs are actively referenced during trading tab development. Stale or unus
 | [platform-review/cross-cutting-quickview-news-liveasof.md](platform-review/cross-cutting-quickview-news-liveasof.md)             | Quick view panel, news feed, live/as-of mode                      |
 | [platform-review/review chat decisions.md](platform-review/review%20chat%20decisions.md)                                         | Decisions from review chat sessions                               |
 
-## Audit scripts (reusable templates)
+## Platform-wide docs (in `docs/`)
 
-15 audit script templates (A through O) covering: typography, color tokens, spacing/layout, shared components, mock data, widget audit, nav shell, accessibility, responsive, performance, code org, error handling, naming, i18n, security.
+These apply across all services, not just trading:
 
-Located in [audit-scripts/](audit-scripts/).
+| File                                                 | What                                                         |
+| ---------------------------------------------------- | ------------------------------------------------------------ |
+| [../ROUTES.md](../ROUTES.md)                         | Full route inventory (generated from `page.tsx` files)       |
+| [../UX_OPERATING_RULES.md](../UX_OPERATING_RULES.md) | Hard UX rules: permissions, batch/live, taxonomy drift = bug |
+| [../UX_FLOW_SPEC.md](../UX_FLOW_SPEC.md)             | Canonical user journeys: login, signup, role-based views     |
+| [../DATA_MODE_IDEOLOGY.md](../DATA_MODE_IDEOLOGY.md) | Rules for mock vs real data mode (`isMockDataMode()`)        |
+| [../audit-scripts/](../audit-scripts/)               | 15 audit script templates (A-O): typography, tokens, a11y... |

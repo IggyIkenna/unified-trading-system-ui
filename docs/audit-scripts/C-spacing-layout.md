@@ -1,7 +1,5 @@
 # Module C — Spacing, Layout & Structural Consistency Audit
 
-**Output:** `docs/UI-shared-components-Issues/03-SPACING-LAYOUT-AUDIT.md`
-
 ---
 
 ## SSOT Principle

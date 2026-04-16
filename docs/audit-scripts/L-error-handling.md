@@ -1,7 +1,5 @@
 # Module L — Error Handling & Edge Cases Audit
 
-**Output:** `docs/UI-shared-components-Issues/12-ERROR-HANDLING-AUDIT.md`
-
 ## Search Patterns
 
 1. API error states: do pages handle loading, error, and empty states for every `useQuery`?

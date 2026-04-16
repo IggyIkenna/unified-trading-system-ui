@@ -1,7 +1,5 @@
 # Module I — Responsive Design & Mobile Audit
 
-**Output:** `docs/UI-shared-components-Issues/09-RESPONSIVE-AUDIT.md`
-
 ## Search Patterns
 
 1. Responsive breakpoints: `sm:`, `md:`, `lg:`, `xl:`, `2xl:` — usage patterns

@@ -1,7 +1,5 @@
 # Module K — Code Organization & File Structure Audit
 
-**Output:** `docs/UI-shared-components-Issues/11-CODE-ORG-AUDIT.md`
-
 ## Search Patterns
 
 1. Files > 500 lines — should be split

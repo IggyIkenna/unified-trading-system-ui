@@ -1,8 +1,5 @@
 # Module F — Widget Registry, Merging & Preset Audit
 
-**Output:** `docs/UI-shared-components-Issues/06-WIDGET-AUDIT.md`
-**Maps to:** WORK_TRACKER §4 (Widget Merging)
-
 ---
 
 ## Part 1: Widget Registry Inventory

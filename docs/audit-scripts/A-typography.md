@@ -1,7 +1,5 @@
 # Module A — Typography & Type Scale Audit
 
-**Output:** `docs/UI-shared-components-Issues/01-TYPOGRAPHY-AUDIT.md`
-
 ---
 
 ## SSOT Principle

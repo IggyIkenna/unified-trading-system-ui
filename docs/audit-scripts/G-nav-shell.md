@@ -1,8 +1,5 @@
 # Module G — Navigation, Shell & Filter Propagation Audit
 
-**Output:** `docs/UI-shared-components-Issues/07-NAV-SHELL-AUDIT.md`
-**Maps to:** WORK_TRACKER §1 (Nav Bugs), §7 (Cross-Page Filter Cohesion)
-
 ---
 
 ## Part 1: Route Mapping Completeness

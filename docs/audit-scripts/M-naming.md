@@ -1,7 +1,5 @@
 # Module M — Naming Conventions & Consistency Audit
 
-**Output:** `docs/UI-shared-components-Issues/13-NAMING-AUDIT.md`
-
 ## Search Patterns
 
 1. Component naming: PascalCase consistently?

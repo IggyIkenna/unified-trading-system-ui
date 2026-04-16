@@ -1,8 +1,5 @@
 # Module D — Shared Component & Utility Adoption Audit
 
-**Output:** `docs/UI-shared-components-Issues/04-SHARED-COMPONENT-REUSE-AUDIT.md`
-**Maps to:** WORK_TRACKER §3 (Component Centralization), §4.x (Widget Merging prereqs)
-
 ---
 
 ## Vision
