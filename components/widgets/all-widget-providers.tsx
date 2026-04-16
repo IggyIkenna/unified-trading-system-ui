@@ -4,18 +4,15 @@
  * Wraps all widget data providers so cross-tab widgets have access to
  * their required context regardless of which tab is active.
  *
- * Providers that accept only `children` (self-contained data fetching) are
- * included here. Providers that require a `value` prop (Overview, Terminal,
- * Risk) are NOT included — their widgets will show a friendly placeholder
- * via WidgetContextGuard when used on other tabs.
+ * All 17 domain providers are included. Overview, Terminal, and Risk
+ * use self-fetching wrappers that call the same hooks their page
+ * components use, so their widgets render with real data on any tab.
  *
- * TODO(BP-7): When the real API/WebSocket wiring lands, make these three
- * providers self-fetching with lazy activation (only run hooks when a widget
- * from that domain is actually mounted). The hooks are already extracted:
- *   - useRiskPageData     (components/widgets/risk/use-risk-page-data.ts)
- *   - useTerminalPageData (components/widgets/terminal/use-terminal-page-data.ts)
- *   - useOverviewPageData (components/widgets/overview/use-overview-page-data.ts)
- * See docs/audits/BP2-cross-tab-providers.md for full rationale.
+ * TODO(BP-7): Replace the always-on self-fetching wrappers with lazy
+ * activation (only run hooks when a widget from that domain is actually
+ * mounted on the current tab). This avoids Terminal's 500ms price sim
+ * and WebSocket running on tabs that don't need them.
+ * See docs/audits/BP2-cross-tab-providers.md for the implementation sketch.
  */
 
 import * as React from "react";
@@ -28,17 +25,37 @@ import { InstructionsDataProvider } from "./instructions/instructions-data-conte
 import { MarketsDataProvider } from "./markets/markets-data-context";
 import { OptionsDataProvider } from "./options/options-data-context";
 import { OrdersDataProvider } from "./orders/orders-data-context";
+import { OverviewDataProvider } from "./overview/overview-data-context";
+import { useOverviewPageData } from "./overview/use-overview-page-data";
 import { PnLDataProvider } from "./pnl/pnl-data-context";
 import { PositionsDataProvider } from "./positions/positions-data-context";
 import { PredictionsDataProvider } from "./predictions/predictions-data-context";
+import { RiskDataProvider } from "./risk/risk-data-context";
+import { useRiskPageData } from "./risk/use-risk-page-data";
 import { SportsDataProvider } from "./sports/sports-data-context";
 import { StrategiesDataProvider } from "./strategies/strategies-data-context";
+import { TerminalDataProvider } from "./terminal/terminal-data-context";
+import { useTerminalPageData } from "./terminal/use-terminal-page-data";
 
-// NOTE: OverviewDataProvider, TerminalDataProvider, and RiskDataProvider
-// require a `value` prop and are mounted by their respective page components.
-// Widgets from those categories will show a WidgetContextGuard placeholder
-// when added to other tabs. Hooks have been extracted for future lazy
-// integration — see TODO above.
+// ---------------------------------------------------------------------------
+// Self-fetching wrappers for providers that require a value prop.
+// BP-7 will replace these with lazy-activated versions.
+// ---------------------------------------------------------------------------
+
+function SelfFetchingRiskProvider({ children }: { children: React.ReactNode }) {
+  const { riskData } = useRiskPageData();
+  return <RiskDataProvider value={riskData}>{children}</RiskDataProvider>;
+}
+
+function SelfFetchingTerminalProvider({ children }: { children: React.ReactNode }) {
+  const { terminalData } = useTerminalPageData();
+  return <TerminalDataProvider value={terminalData}>{children}</TerminalDataProvider>;
+}
+
+function SelfFetchingOverviewProvider({ children }: { children: React.ReactNode }) {
+  const { overviewData } = useOverviewPageData();
+  return <OverviewDataProvider value={overviewData}>{children}</OverviewDataProvider>;
+}
 
 export function AllWidgetProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -55,7 +72,13 @@ export function AllWidgetProviders({ children }: { children: React.ReactNode }) 
                         <BookTradeDataProvider>
                           <BundlesDataProvider>
                             <AccountsDataProvider>
-                              <OptionsDataProvider>{children}</OptionsDataProvider>
+                              <OptionsDataProvider>
+                                <SelfFetchingRiskProvider>
+                                  <SelfFetchingTerminalProvider>
+                                    <SelfFetchingOverviewProvider>{children}</SelfFetchingOverviewProvider>
+                                  </SelfFetchingTerminalProvider>
+                                </SelfFetchingRiskProvider>
+                              </OptionsDataProvider>
                             </AccountsDataProvider>
                           </BundlesDataProvider>
                         </BookTradeDataProvider>
