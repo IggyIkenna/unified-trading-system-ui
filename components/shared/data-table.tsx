@@ -84,6 +84,8 @@ interface DataTableProps<TData> {
   onColumnVisibilityChange?: (v: VisibilityState) => void;
   enableVirtualization?: boolean;
   virtualRowHeight?: number;
+  /** When true, the table fills its parent height and becomes internally scrollable with sticky headers. */
+  fillHeight?: boolean;
   className?: string;
   emptyMessage?: string;
   /** Rendered after `<tbody>` (e.g. `<TableFooter><TableRow>…</TableRow></TableFooter>`). */
@@ -101,6 +103,7 @@ function DataTable<TData>({
   onColumnVisibilityChange: externalOnColumnVisibilityChange,
   enableVirtualization = false,
   virtualRowHeight = 35,
+  fillHeight = false,
   className,
   emptyMessage = "No results.",
   tableFooter,
@@ -153,6 +156,39 @@ function DataTable<TData>({
   });
 
   // ---------------------------------------------------------------------------
+  // fillHeight: measure actual available height from the WidgetScroll root.
+  //
+  // Radix ScrollArea injects <div style="display:table"> around viewport
+  // children, which breaks CSS percentage height resolution (h-full → auto).
+  // We walk up to the WidgetScroll root (data-slot="widget-scroll"), observe
+  // its size, and set an explicit pixel height on the scroll container.
+  // ---------------------------------------------------------------------------
+  const [computedHeight, setComputedHeight] = React.useState<number | undefined>(undefined);
+
+  React.useLayoutEffect(() => {
+    if (!fillHeight) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    let root: HTMLElement | null = el.parentElement;
+    while (root && root.dataset.slot !== "widget-scroll") {
+      root = root.parentElement;
+    }
+    if (!root) return;
+
+    const measure = () => {
+      const rootRect = root!.getBoundingClientRect();
+      const elRect = el.getBoundingClientRect();
+      const available = rootRect.bottom - elRect.top;
+      if (available > 0) setComputedHeight(Math.max(Math.floor(available), 80));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(root);
+    return () => ro.disconnect();
+  }, [fillHeight]);
+
+  // ---------------------------------------------------------------------------
   // Sort icon (shared between header cells)
   // ---------------------------------------------------------------------------
   function SortIcon({ column }: { column: Column<TData, unknown> }) {
@@ -166,7 +202,7 @@ function DataTable<TData>({
   // Render
   // ---------------------------------------------------------------------------
   return (
-    <div className={cn("w-full space-y-2", className)}>
+    <div className={cn("w-full", !fillHeight && "space-y-2", className)}>
       {enableColumnVisibility && !hideColumnToggle && (
         <div className="flex items-center justify-end">
           <DropdownMenu>
@@ -197,7 +233,12 @@ function DataTable<TData>({
 
       <div
         ref={scrollContainerRef}
-        className={cn("rounded-md border", enableVirtualization && "max-h-[600px] overflow-auto")}
+        className={cn(
+          "rounded-md border",
+          fillHeight && "overflow-auto",
+          !fillHeight && enableVirtualization && "max-h-[600px] overflow-auto",
+        )}
+        style={fillHeight && computedHeight != null ? { height: computedHeight } : undefined}
       >
         <Table containerClassName="overflow-x-visible">
           <TableHeader className="sticky top-0 z-10 bg-background">

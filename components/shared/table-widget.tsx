@@ -314,6 +314,7 @@ function TableWidget<TData>({
         enableSorting={enableSorting}
         enableColumnVisibility
         hideColumnToggle
+        fillHeight
         columnVisibility={columnVisibility}
         onColumnVisibilityChange={setColumnVisibility}
         emptyMessage={emptyMessage}
