@@ -110,3 +110,34 @@ export const FLASH_VENUES = [
   "BALANCER-ETHEREUM",
   "MORPHO-ETHEREUM",
 ] as const;
+
+/** Canonical DeFi chain identifiers (matches backend chain enum). */
+export const DEFI_CHAINS = [
+  "ETHEREUM",
+  "ARBITRUM",
+  "OPTIMISM",
+  "BASE",
+  "POLYGON",
+  "BSC",
+  "AVALANCHE",
+  "LINEA",
+  "SOLANA",
+] as const;
+
+/** Standard DeFi token symbols for transfers and swaps. */
+export const DEFI_TOKENS = ["ETH", "USDC", "USDT", "WETH", "WBTC", "DAI"] as const;
+
+/** Gas token minimum thresholds — below = insufficient gas warning. */
+export const GAS_TOKEN_MIN_THRESHOLDS: Record<string, number> = {
+  ETH: 0.01,
+  MATIC: 1.0,
+  BNB: 0.005,
+  AVAX: 0.1,
+  SOL: 0.05,
+};
+
+/** Funding-rate matrix venues (column headers for defi-funding-matrix widget). */
+export const FUNDING_RATE_VENUES = ["HYPERLIQUID", "OKX", "BYBIT", "BINANCE", "ASTER"] as const;
+
+/** Funding rates below this threshold (%) are greyed out in the matrix. */
+export const FUNDING_RATE_FLOOR = 2.5;

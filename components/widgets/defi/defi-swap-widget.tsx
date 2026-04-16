@@ -10,21 +10,26 @@ import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
 import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
-import {
-  BASIS_TRADE_MOCK_DATA,
-  calculateBasisTradeFundingImpact,
-  calculateBasisTradeCostOfCarry,
-} from "@/lib/mocks/fixtures/defi-basis-trade";
-import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
+import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
 import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import { generateSwapRoute, getMockPrice } from "@/lib/mocks/fixtures/defi-swap";
 
 export function DeFiSwapWidget(props: WidgetComponentProps) {
-  const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
+  const {
+    swapTokens,
+    executeDeFiOrder,
+    selectedChain,
+    setSelectedChain,
+    chainPortfolios,
+    generateSwapRoute,
+    getMockPrice,
+    calculateBasisTradeFundingImpact,
+    calculateBasisTradeCostOfCarry,
+  } = useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
   const tokens = swapTokens as string[];
 
   // Check if this widget is in basis-trade mode
@@ -49,7 +54,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
   );
 
   // Gas balance check for selected chain
-  const chainPortfolio = MOCK_CHAIN_PORTFOLIOS.find((p) => p.chain === selectedChain);
+  const chainPortfolio = chainPortfolios.find((p) => p.chain === selectedChain);
   const gasBalance = chainPortfolio?.gasTokenBalance ?? 0;
   const gasSymbol = chainPortfolio?.gasTokenSymbol ?? "ETH";
   const gasThreshold = GAS_TOKEN_MIN_THRESHOLDS[gasSymbol] ?? 0.01;
@@ -61,10 +66,10 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
   const route = React.useMemo(() => {
     if (amountNum <= 0) return null;
     return generateSwapRoute(tokenIn, tokenOut, amountNum, algoType, selectedChain);
-  }, [amountNum, tokenIn, tokenOut, algoType, selectedChain]);
+  }, [amountNum, tokenIn, tokenOut, algoType, selectedChain, generateSwapRoute]);
 
   return (
-    <div className="space-y-3 p-1">
+    <FormWidget error={error} onClearError={clearError}>
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Chain</label>
         <Select value={selectedChain} onValueChange={setSelectedChain}>
@@ -321,37 +326,39 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
 
       <Button
         className="w-full"
-        disabled={amountNum <= 0}
-        onClick={() => {
-          executeDeFiOrder({
-            client_id: "internal-trader",
-            strategy_id: isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING",
-            instruction_type: "SWAP",
-            algo_type: algoType,
-            instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
-            venue: route?.venue_fills?.map((f) => f.venue).join("+") ?? "UNISWAPV3-ETHEREUM",
-            side: "buy",
-            order_type: "market",
-            quantity: amountNum,
-            price: getMockPrice(tokenIn),
-            max_slippage_bps: Number(slippage) * 100,
-            expected_output: route?.expectedOutput ?? 0,
-            benchmark_price: route?.reference_price ?? 0,
-            asset_class: "DeFi",
-            lane: "defi",
-          });
-          setAmountIn("");
-          toast.success(
-            isStakedBasis
-              ? "Staked basis swap submitted"
-              : isBasisTrade
-                ? "Basis trade swap submitted"
-                : "Swap submitted",
-            {
-              description: `${amountNum} ${tokenIn} → ${tokenOut} (mock ledger)`,
-            },
-          );
-        }}
+        disabled={amountNum <= 0 || isSubmitting}
+        onClick={() =>
+          handleSubmit(() => {
+            executeDeFiOrder({
+              client_id: "internal-trader",
+              strategy_id: isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING",
+              instruction_type: "SWAP",
+              algo_type: algoType,
+              instrument_id: `SWAP:${tokenIn}-${tokenOut}`,
+              venue: route?.venue_fills?.map((f) => f.venue).join("+") ?? "UNISWAPV3-ETHEREUM",
+              side: "buy",
+              order_type: "market",
+              quantity: amountNum,
+              price: getMockPrice(tokenIn),
+              max_slippage_bps: Number(slippage) * 100,
+              expected_output: route?.expectedOutput ?? 0,
+              benchmark_price: route?.reference_price ?? 0,
+              asset_class: "DeFi",
+              lane: "defi",
+            });
+            setAmountIn("");
+            toast.success(
+              isStakedBasis
+                ? "Staked basis swap submitted"
+                : isBasisTrade
+                  ? "Basis trade swap submitted"
+                  : "Swap submitted",
+              {
+                description: `${amountNum} ${tokenIn} → ${tokenOut} (mock ledger)`,
+              },
+            );
+          })
+        }
       >
         <ArrowLeftRight className="size-4 mr-2" />
         {isStakedBasis
@@ -360,6 +367,6 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             ? "Execute Basis Trade Swap"
             : `Swap ${tokenIn} for ${tokenOut}`}
       </Button>
-    </div>
+    </FormWidget>
   );
 }

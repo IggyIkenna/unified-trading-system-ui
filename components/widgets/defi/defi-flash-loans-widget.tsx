@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Fuel, Plus, Trash2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import {
   FLASH_OPERATION_TYPES,
@@ -20,17 +21,18 @@ import {
 } from "@/lib/config/services/defi.config";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import type { InstructionType, AlgoType } from "@/lib/types/defi";
-import { SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
-  const { flashSteps, addFlashStep, removeFlashStep, updateFlashStep, flashPnl, executeDeFiOrder } = useDeFiData();
+  const { flashSteps, addFlashStep, removeFlashStep, updateFlashStep, flashPnl, executeDeFiOrder, swapTokens } =
+    useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const netPnl = flashPnl.netPnl;
 
   return (
-    <div className="space-y-3 p-1">
+    <FormWidget error={error} onClearError={clearError}>
       <div className="flex items-center gap-2">
         <Zap className="size-4 text-amber-400" />
         <span className="text-xs font-medium">Bundle steps</span>
@@ -152,7 +154,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {SWAP_TOKENS.map((t) => (
+                  {swapTokens.map((t) => (
                     <SelectItem key={t} value={t}>
                       <span className="font-mono">{t}</span>
                     </SelectItem>
@@ -214,35 +216,37 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         </Button>
         <Button
           className="text-xs"
-          disabled={flashSteps.length === 0}
-          onClick={() => {
-            executeDeFiOrder({
-              client_id: "internal-trader",
-              strategy_id: "AAVE_LENDING",
-              instruction_type: "FLASH_BORROW",
-              algo_type: "FLASH_LOAN_AAVE",
-              instrument_id: `FLASH_LOAN:${flashSteps.map((s) => s.operationType).join(">")}`,
-              venue: "AAVEV3-ETHEREUM",
-              side: "buy",
-              order_type: "market",
-              quantity: 100,
-              price: netPnl,
-              max_slippage_bps: 50,
-              expected_output: netPnl,
-              benchmark_price: netPnl,
-              asset_class: "DeFi",
-              lane: "defi",
-              is_atomic: true,
-            });
-            toast.success("Flash loan executed", {
-              description: `${flashSteps.length}-step bundle — net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
-            });
-          }}
+          disabled={flashSteps.length === 0 || isSubmitting}
+          onClick={() =>
+            handleSubmit(() => {
+              executeDeFiOrder({
+                client_id: "internal-trader",
+                strategy_id: "AAVE_LENDING",
+                instruction_type: "FLASH_BORROW",
+                algo_type: "FLASH_LOAN_AAVE",
+                instrument_id: `FLASH_LOAN:${flashSteps.map((s) => s.operationType).join(">")}`,
+                venue: "AAVEV3-ETHEREUM",
+                side: "buy",
+                order_type: "market",
+                quantity: 100,
+                price: netPnl,
+                max_slippage_bps: 50,
+                expected_output: netPnl,
+                benchmark_price: netPnl,
+                asset_class: "DeFi",
+                lane: "defi",
+                is_atomic: true,
+              });
+              toast.success("Flash loan executed", {
+                description: `${flashSteps.length}-step bundle — net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
+              });
+            })
+          }
         >
           <Zap className="size-3.5 mr-1.5" />
           Execute bundle
         </Button>
       </div>
-    </div>
+    </FormWidget>
   );
 }

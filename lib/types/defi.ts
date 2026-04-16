@@ -37,6 +37,7 @@ export const DEFI_STRATEGY_IDS = [
   "STAKED_BASIS",
   "RECURSIVE_STAKED_BASIS",
   "UNHEDGED_RECURSIVE",
+  "USDT_HEDGED_RECURSIVE",
   "ETHENA_BENCHMARK",
   "ETH_LENDING",
   "BTC_BASIS",
@@ -57,6 +58,7 @@ export const STRATEGY_DISPLAY_NAMES: Record<DeFiStrategyId, string> = {
   STAKED_BASIS: "Staked Basis (weETH)",
   RECURSIVE_STAKED_BASIS: "Recursive Staked Basis (Hedged)",
   UNHEDGED_RECURSIVE: "Recursive Staked Basis (Unhedged)",
+  USDT_HEDGED_RECURSIVE: "USDT Hedged Recursive",
   ETHENA_BENCHMARK: "Ethena sUSDe Benchmark",
   ETH_LENDING: "ETH Lending",
   BTC_BASIS: "BTC Basis Trade",
@@ -597,4 +599,36 @@ export interface RewardPnLBreakdown {
   restaking_reward: RewardPnLFactor;
   seasonal_reward: RewardPnLFactor;
   reward_unrealised: RewardPnLFactor;
+}
+
+// ---------------------------------------------------------------------------
+// Basis Trade
+// ---------------------------------------------------------------------------
+
+export interface BasisTradeMarketData {
+  spotPrice: number;
+  perpPrice: number;
+  fundingRate: number;
+  fundingRateAnnualized: number;
+  basis24h: number;
+  basisBps: number;
+  volume24h: number;
+  slippage: number;
+}
+
+export interface BasisTradeHistoryEntry {
+  seq: number;
+  timestamp: string;
+  operation: "SWAP" | "TRADE" | "BOTH";
+  asset: string;
+  amount: number;
+  expectedOutput: number;
+  actualOutput: number;
+  slippage: number;
+  marginUsage: number;
+  fundingRate: number;
+  fundingPnL: number;
+  basisBps: number;
+  status: "pending" | "filled" | "failed";
+  runningPnL: number;
 }

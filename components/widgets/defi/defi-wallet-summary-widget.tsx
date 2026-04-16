@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
+import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
 import type { LendingProtocol, LiquidityPool, StakingProtocol } from "@/lib/types/defi";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -101,6 +101,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     lendingProtocols,
     stakingProtocols,
     liquidityPools,
+    chainPortfolios,
   } = useDeFiData();
 
   const portfolio = React.useMemo(() => mockPortfolioUsd(tokenBalances), [tokenBalances]);
@@ -129,7 +130,10 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     [connectedWallet, portfolio, tokenBalances],
   );
 
-  const sortedPortfolios = React.useMemo(() => [...MOCK_CHAIN_PORTFOLIOS].sort((a, b) => b.totalUsd - a.totalUsd), []);
+  const sortedPortfolios = React.useMemo(
+    () => [...chainPortfolios].sort((a, b) => b.totalUsd - a.totalUsd),
+    [chainPortfolios],
+  );
 
   const totalPortfolioUsd = React.useMemo(
     () => sortedPortfolios.reduce((sum, cp) => sum + cp.totalUsd, 0),
@@ -302,16 +306,19 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
                   return (
                     <tr key={sc.share_class} className="border-b border-border/30 last:border-0">
                       <td className="py-1 font-mono font-medium">{sc.share_class}</td>
-                      <td className="py-1 text-right font-mono tabular-nums">
-                        ${formatNumber(sc.nav_usd, 0)}
-                      </td>
+                      <td className="py-1 text-right font-mono tabular-nums">${formatNumber(sc.nav_usd, 0)}</td>
                       <td className="py-1 text-right font-mono tabular-nums text-muted-foreground">
                         {formatNumber(sc.nav_denominated, sc.share_class === "USDT" ? 0 : 2)} {sc.share_class}
                       </td>
                       <td className="py-1 text-right font-mono tabular-nums text-muted-foreground">
                         {formatNumber(sc.target_delta, 2)}
                       </td>
-                      <td className={cn("py-1 text-right font-mono tabular-nums", deltaOk ? "text-emerald-400" : "text-amber-400")}>
+                      <td
+                        className={cn(
+                          "py-1 text-right font-mono tabular-nums",
+                          deltaOk ? "text-emerald-400" : "text-amber-400",
+                        )}
+                      >
                         {formatNumber(sc.actual_delta, 2)}
                       </td>
                     </tr>

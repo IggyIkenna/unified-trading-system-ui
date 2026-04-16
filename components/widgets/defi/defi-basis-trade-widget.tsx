@@ -10,21 +10,24 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowDown, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import {
-  BASIS_TRADE_MOCK_DATA,
-  calculateBasisTradeExpectedOutput,
-  calculateBasisTradeMarginUsage,
-  calculateBasisTradeFundingImpact,
-  calculateBasisTradeCostOfCarry,
-  calculateBreakenvenFundingRate,
-  type BasisTradeHistoryEntry,
-} from "@/lib/mocks/fixtures/defi-basis-trade";
+import type { BasisTradeHistoryEntry } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
-  const { executeDeFiOrder, tradeHistory: contextHistory } = useDeFiData();
+  const {
+    executeDeFiOrder,
+    basisTradeAssets,
+    basisTradeMarketData,
+    calculateBasisTradeExpectedOutput,
+    calculateBasisTradeMarginUsage,
+    calculateBasisTradeFundingImpact,
+    calculateBasisTradeCostOfCarry,
+    calculateBreakevenFundingRate,
+  } = useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   // Form state
   const [capital, setCapital] = React.useState("100000");
@@ -41,14 +44,14 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
   const hedgeRatioNum = parseFloat(hedgeRatio) || 100;
 
   // Get market data for selected asset
-  const marketData = BASIS_TRADE_MOCK_DATA.marketData[asset as keyof typeof BASIS_TRADE_MOCK_DATA.marketData];
+  const marketData = basisTradeMarketData[asset];
 
   // Calculate outputs
   const expectedOutput = calculateBasisTradeExpectedOutput(capitalNum, asset, operation, slippageBps);
   const marginUsage = calculateBasisTradeMarginUsage(capitalNum, asset, marketData?.fundingRate || 0);
   const fundingImpactAPY = calculateBasisTradeFundingImpact(asset);
   const costOfCarry = calculateBasisTradeCostOfCarry(capitalNum, asset);
-  const breakeven = calculateBreakenvenFundingRate(capitalNum, asset);
+  const breakeven = calculateBreakevenFundingRate(capitalNum, asset);
 
   // Profitability check
   const isProfitable = fundingImpactAPY > costOfCarry;
@@ -111,7 +114,7 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
   };
 
   return (
-    <div className="space-y-3 p-1">
+    <FormWidget error={error} onClearError={clearError}>
       {/* Asset Selection */}
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Asset</label>
@@ -120,7 +123,7 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {BASIS_TRADE_MOCK_DATA.assets.map((a) => (
+            {basisTradeAssets.map((a) => (
               <SelectItem key={a} value={a} className="text-xs">
                 {a}
               </SelectItem>
@@ -266,8 +269,8 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
 
       {/* Execute Button */}
       <Button
-        onClick={handleExecute}
-        disabled={!capitalNum || capitalNum <= 0}
+        onClick={() => handleSubmit(handleExecute)}
+        disabled={!capitalNum || capitalNum <= 0 || isSubmitting}
         className="w-full h-8 text-xs"
         data-testid="execute-button"
       >
@@ -307,6 +310,6 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
           </div>
         )}
       </CollapsibleSection>
-    </div>
+    </FormWidget>
   );
 }

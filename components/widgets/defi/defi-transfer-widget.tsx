@@ -7,17 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import {
-  DEFI_CHAINS,
-  DEFI_TOKENS,
-  GAS_TOKEN_MIN_THRESHOLDS,
-  MOCK_CHAIN_PORTFOLIOS,
-} from "@/lib/mocks/fixtures/defi-transfer";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
+import { DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 import { toast } from "sonner";
-import { getMockPrice } from "@/lib/mocks/fixtures/defi-swap";
 
 export function DeFiTransferWidget(_props: WidgetComponentProps) {
   const {
@@ -29,7 +24,10 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
     setSelectedChain,
     getBridgeRoutes,
     executeDeFiOrder,
+    chainPortfolios,
+    getMockPrice,
   } = useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const [toAddress, setToAddress] = React.useState("");
   const [fromChain, setFromChain] = React.useState<string>(DEFI_CHAINS[0]);
@@ -63,7 +61,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
   };
 
   return (
-    <div className="space-y-3 p-1">
+    <FormWidget error={error} onClearError={clearError}>
       <div className="grid grid-cols-2 gap-1">
         <Button
           variant={transferMode === "send" ? "default" : "outline"}
@@ -181,7 +179,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           </div>
 
           {(() => {
-            const cp = MOCK_CHAIN_PORTFOLIOS.find((p) => p.chain === selectedChain);
+            const cp = chainPortfolios.find((p) => p.chain === selectedChain);
             const gb = cp?.gasTokenBalance ?? 0;
             const gs = cp?.gasTokenSymbol ?? "ETH";
             const thr = GAS_TOKEN_MIN_THRESHOLDS[gs] ?? 0.01;
@@ -200,31 +198,33 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
 
           <Button
             className="w-full"
-            disabled={amountNum <= 0 || amountNum > balance || !toAddress}
-            onClick={() => {
-              const price = getMockPrice(token);
-              executeDeFiOrder({
-                client_id: "internal-trader",
-                strategy_id: "AAVE_LENDING",
-                instruction_type: "TRANSFER",
-                algo_type: "DIRECT",
-                instrument_id: `TRANSFER:${token}@${selectedChain}`,
-                venue: `WALLET-${selectedChain}`,
-                side: "sell",
-                order_type: "market",
-                quantity: amountNum,
-                price,
-                max_slippage_bps: 0,
-                expected_output: amountNum * price,
-                benchmark_price: price,
-                asset_class: "DeFi",
-                lane: "defi",
-              });
-              toast.success("Transfer submitted", {
-                description: `${amountNum} ${token} → ${toAddress.slice(0, 10)}... on ${selectedChain}`,
-              });
-              setAmount("");
-            }}
+            disabled={amountNum <= 0 || amountNum > balance || !toAddress || isSubmitting}
+            onClick={() =>
+              handleSubmit(() => {
+                const price = getMockPrice(token);
+                executeDeFiOrder({
+                  client_id: "internal-trader",
+                  strategy_id: "AAVE_LENDING",
+                  instruction_type: "TRANSFER",
+                  algo_type: "DIRECT",
+                  instrument_id: `TRANSFER:${token}@${selectedChain}`,
+                  venue: `WALLET-${selectedChain}`,
+                  side: "sell",
+                  order_type: "market",
+                  quantity: amountNum,
+                  price,
+                  max_slippage_bps: 0,
+                  expected_output: amountNum * price,
+                  benchmark_price: price,
+                  asset_class: "DeFi",
+                  lane: "defi",
+                });
+                toast.success("Transfer submitted", {
+                  description: `${amountNum} ${token} → ${toAddress.slice(0, 10)}... on ${selectedChain}`,
+                });
+                setAmount("");
+              })
+            }
           >
             <Send className="size-3.5 mr-1.5" />
             Send {token}
@@ -371,37 +371,39 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
 
           <Button
             className="w-full"
-            disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute}
-            onClick={() => {
-              const price = getMockPrice(token);
-              executeDeFiOrder({
-                client_id: "internal-trader",
-                strategy_id: "CROSS_CHAIN_SOR",
-                instruction_type: "TRANSFER",
-                algo_type: "SOR_CROSS_CHAIN",
-                instrument_id: `BRIDGE:${token}@${fromChain}-${toChain}`,
-                venue: selectedRoute ?? "ACROSS",
-                side: "sell",
-                order_type: "market",
-                quantity: amountNum,
-                price,
-                max_slippage_bps: 50,
-                expected_output: amountNum * price * 0.9995,
-                benchmark_price: price,
-                asset_class: "DeFi",
-                lane: "defi",
-              });
-              toast.success("Bridge submitted", {
-                description: `${amountNum} ${token}: ${fromChain} → ${toChain} via ${selectedRoute}`,
-              });
-              setAmount("");
-            }}
+            disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute || isSubmitting}
+            onClick={() =>
+              handleSubmit(() => {
+                const price = getMockPrice(token);
+                executeDeFiOrder({
+                  client_id: "internal-trader",
+                  strategy_id: "CROSS_CHAIN_SOR",
+                  instruction_type: "TRANSFER",
+                  algo_type: "SOR_CROSS_CHAIN",
+                  instrument_id: `BRIDGE:${token}@${fromChain}-${toChain}`,
+                  venue: selectedRoute ?? "ACROSS",
+                  side: "sell",
+                  order_type: "market",
+                  quantity: amountNum,
+                  price,
+                  max_slippage_bps: 50,
+                  expected_output: amountNum * price * 0.9995,
+                  benchmark_price: price,
+                  asset_class: "DeFi",
+                  lane: "defi",
+                });
+                toast.success("Bridge submitted", {
+                  description: `${amountNum} ${token}: ${fromChain} → ${toChain} via ${selectedRoute}`,
+                });
+                setAmount("");
+              })
+            }
           >
             <Globe className="size-3.5 mr-1.5" />
             Bridge {token} via {selectedRoute || "..."}
           </Button>
         </div>
       )}
-    </div>
+    </FormWidget>
   );
 }
