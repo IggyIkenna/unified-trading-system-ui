@@ -12,6 +12,7 @@ import {
   Send,
   Settings,
   Wallet,
+  TrendingUp,
   Zap,
 } from "lucide-react";
 import { registerPresets } from "../preset-registry";
@@ -32,6 +33,7 @@ import { DeFiTransferWidget } from "./defi-transfer-widget";
 import { DeFiWalletSummaryWidget } from "./defi-wallet-summary-widget";
 import { DeFiWaterfallWeightsWidget } from "./defi-waterfall-weights-widget";
 import { DeFiYieldChartWidget } from "./defi-yield-chart-widget";
+import { EnhancedBasisWidget } from "./enhanced-basis-widget";
 
 registerPresets("defi", [
   {
@@ -64,6 +66,8 @@ registerPresets("defi", [
       { widgetId: "defi-transfer", instanceId: "defi-transfer-adv", x: 0, y: 15, w: 4, h: 5 },
       { widgetId: "defi-trade-history", instanceId: "defi-trade-history-adv", x: 4, y: 15, w: 8, h: 5 },
       { widgetId: "defi-strategy-config", instanceId: "defi-strategy-config-adv", x: 0, y: 20, w: 12, h: 5 },
+      { widgetId: "enhanced-basis-dashboard", instanceId: "enhanced-basis-adv", x: 0, y: 25, w: 6, h: 6 },
+      { widgetId: "active-lp-dashboard", instanceId: "active-lp-adv", x: 6, y: 25, w: 6, h: 6 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -109,6 +113,8 @@ registerPresets("defi", [
       { widgetId: "defi-waterfall-weights", instanceId: "defi-waterfall-weights-full", x: 8, y: 35, w: 4, h: 6 },
       { widgetId: "defi-health-factor", instanceId: "defi-health-factor-full", x: 0, y: 41, w: 4, h: 8 },
       { widgetId: "defi-reward-pnl", instanceId: "defi-reward-pnl-full", x: 4, y: 41, w: 4, h: 6 },
+      { widgetId: "enhanced-basis-dashboard", instanceId: "enhanced-basis-full", x: 0, y: 47, w: 6, h: 6 },
+      { widgetId: "active-lp-dashboard", instanceId: "active-lp-full", x: 6, y: 47, w: 6, h: 6 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -369,4 +375,20 @@ registerWidget({
   availableOn: ["defi"],
   singleton: true,
   component: DeFiYieldChartWidget,
+});
+
+registerWidget({
+  id: "enhanced-basis-dashboard",
+  label: "Enhanced Basis Dashboard",
+  description: "Cross-venue spot/perp basis comparison with funding rates, annualised yield, and best opportunity highlighting.",
+  icon: TrendingUp,
+  minW: 4,
+  minH: 4,
+  defaultW: 6,
+  defaultH: 6,
+  requiredEntitlements: ["defi-trading"],
+  category: "DeFi",
+  availableOn: ["defi", "strategies"],
+  singleton: true,
+  component: EnhancedBasisWidget,
 });

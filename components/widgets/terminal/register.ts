@@ -6,11 +6,13 @@ import {
   ChartArea,
   Layers2,
   LineChart,
+  Radio,
   ShoppingCart,
 } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { CalendarEventsWidget } from "./calendar-events-widget";
+import { EventsFeedWidget } from "./events-feed-widget";
 import { DepthChartWidget } from "./depth-chart-widget";
 import { InstrumentBarWidget } from "./instrument-bar-widget";
 import { MarketTradesWidget } from "./market-trades-widget";
@@ -50,6 +52,7 @@ registerPresets("terminal", [
       { widgetId: "calendar-events", instanceId: "calendar-events-full", x: 6, y: 9, w: 6, h: 3 },
       { widgetId: "depth-chart", instanceId: "depth-chart-full", x: 0, y: 12, w: 6, h: 6 },
       { widgetId: "terminal-options", instanceId: "terminal-options-full", x: 0, y: 18, w: 8, h: 8 },
+      { widgetId: "events-feed", instanceId: "events-feed-full", x: 0, y: 26, w: 6, h: 6 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -182,4 +185,20 @@ registerWidget({
   availableOn: ["terminal", "overview"],
   singleton: true,
   component: CalendarEventsWidget,
+});
+
+registerWidget({
+  id: "events-feed",
+  label: "Events Feed",
+  description: "Real-time system event stream with execution, risk, data, strategy, and system domain events.",
+  icon: Radio,
+  minW: 4,
+  minH: 3,
+  defaultW: 6,
+  defaultH: 6,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Terminal",
+  availableOn: ["terminal", "overview", "strategies"],
+  singleton: true,
+  component: EventsFeedWidget,
 });
