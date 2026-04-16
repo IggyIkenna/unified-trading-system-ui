@@ -8,10 +8,16 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Fuel, Plus, Trash2, Zap } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { FLASH_OPERATION_TYPES, FLASH_VENUES, DEFI_INSTRUCTION_TYPES, DEFI_ALGO_TYPES, SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
+import {
+  FLASH_OPERATION_TYPES,
+  FLASH_VENUES,
+  DEFI_INSTRUCTION_TYPES,
+  DEFI_ALGO_TYPES,
+  SLIPPAGE_OPTIONS,
+} from "@/lib/config/services/defi.config";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import { SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
@@ -71,13 +77,16 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
               </Button>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <Select value={step.operationType} onValueChange={(v) => {
-                updateFlashStep(step.id, "operationType", v);
-                const allowed = INSTRUCTION_ALGO_MAP[v as InstructionType];
-                if (allowed && !allowed.includes(step.algo_type as AlgoType)) {
-                  updateFlashStep(step.id, "algo_type", allowed[0]);
-                }
-              }}>
+              <Select
+                value={step.operationType}
+                onValueChange={(v) => {
+                  updateFlashStep(step.id, "operationType", v);
+                  const allowed = INSTRUCTION_ALGO_MAP[v as InstructionType];
+                  if (allowed && !allowed.includes(step.algo_type as AlgoType)) {
+                    updateFlashStep(step.id, "algo_type", allowed[0]);
+                  }
+                }}
+              >
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -225,8 +234,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
               lane: "defi",
               is_atomic: true,
             });
-            toast({
-              title: "Flash loan executed",
+            toast.success("Flash loan executed", {
               description: `${flashSteps.length}-step bundle — net P&L $${formatNumber(netPnl, 2)} (mock ledger)`,
             });
           }}

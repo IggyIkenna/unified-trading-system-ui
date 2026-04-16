@@ -22,8 +22,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     role: "admin",
     org: { id: "odum-internal", name: "Odum Internal" },
     entitlements: ["*"],
-    description:
-      "Full system admin. Sees everything: platform, ops, deployments, user management.",
+    description: "Full system admin. Sees everything: platform, ops, deployments, user management.",
   },
   {
     id: "internal-trader",
@@ -33,8 +32,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     role: "internal",
     org: { id: "odum-internal", name: "Odum Internal" },
     entitlements: ["*"],
-    description:
-      "Internal trading desk. All platform features, no ops/admin pages.",
+    description: "Internal trading desk. All platform features, no ops/admin pages.",
   },
   {
     id: "client-full",
@@ -49,9 +47,12 @@ export const PERSONAS: readonly AuthPersona[] = [
       "ml-full",
       "strategy-full",
       "reporting",
+      "markets-data",
+      "sports-trading",
+      "options-trading",
+      "predictions-trading",
     ],
-    description:
-      "External client with full subscription. Sees own org data only.",
+    description: "External client with full subscription. Sees own org data only.",
   },
   {
     id: "client-data-only",
@@ -61,8 +62,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     role: "client",
     org: { id: "beta", name: "Beta Fund" },
     entitlements: ["data-basic"],
-    description:
-      "External client with basic data tier. 180 instruments, CEFI only.",
+    description: "External client with basic data tier. 180 instruments, CEFI only.",
   },
   {
     id: "client-premium",
@@ -71,9 +71,16 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "CIO",
     role: "client",
     org: { id: "vertex", name: "Vertex Partners" },
-    entitlements: ["data-pro", "execution-full", "strategy-full"],
-    description:
-      "Premium execution client. Data + strategy + Smart Alpha execution, no ML.",
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "strategy-full",
+      "markets-data",
+      "sports-trading",
+      "options-trading",
+      "predictions-trading",
+    ],
+    description: "Premium execution client. Data + strategy + Smart Alpha execution, no ML.",
   },
   {
     id: "investor",
@@ -90,8 +97,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       "investor-im",
       "investor-regulatory",
     ],
-    description:
-      "Investor / board member. Sees all investor relations presentations and demos.",
+    description: "Investor / board member. Sees all investor relations presentations and demos.",
   },
   {
     id: "advisor",
@@ -100,13 +106,8 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Strategic Advisor",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
-    entitlements: [
-      "investor-relations",
-      "investor-board",
-      "investor-plan",
-    ],
-    description:
-      "Strategic advisor. Sees board presentation and plan deck only.",
+    entitlements: ["investor-relations", "investor-board", "investor-plan"],
+    description: "Strategic advisor. Sees board presentation and plan deck only.",
   },
   {
     id: "prospect-im",
@@ -115,12 +116,8 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Investment Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
-    entitlements: [
-      "investor-relations",
-      "investor-im",
-    ],
-    description:
-      "Investment management prospect. Sees investment management presentation and demo.",
+    entitlements: ["investor-relations", "investor-im"],
+    description: "Investment management prospect. Sees investment management presentation and demo.",
   },
   {
     id: "prospect-platform",
@@ -129,15 +126,8 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Platform Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
-    entitlements: [
-      "investor-relations",
-      "investor-platform",
-      "data-pro",
-      "execution-full",
-      "reporting",
-    ],
-    description:
-      "Platform prospect. Sees platform presentation, demo, and data/execution/reporting pages.",
+    entitlements: ["investor-relations", "investor-platform", "data-pro", "execution-full", "reporting"],
+    description: "Platform prospect. Sees platform presentation, demo, and data/execution/reporting pages.",
   },
   {
     id: "prospect-regulatory",
@@ -146,13 +136,8 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Regulatory Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
-    entitlements: [
-      "investor-relations",
-      "investor-regulatory",
-      "reporting",
-    ],
-    description:
-      "Regulatory umbrella prospect. Sees regulatory presentation, demo, and reporting pages.",
+    entitlements: ["investor-relations", "investor-regulatory", "reporting"],
+    description: "Regulatory umbrella prospect. Sees regulatory presentation, demo, and reporting pages.",
   },
   {
     id: "elysium-defi",
@@ -161,12 +146,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Patrick",
     role: "client",
     org: { id: "elysium", name: "Elysium" },
-    entitlements: [
-      "data-pro",
-      "execution-full",
-      "defi-trading",
-      "reporting",
-    ],
+    entitlements: ["data-pro", "execution-full", "defi-trading", "reporting"],
     description:
       "DeFi client demo. DeFi trading tab + general terminal (overview, positions, orders, P&L, risk, alerts, book, accounts, instructions). Strategy families LOCKED. Sports/Predictions/Options LOCKED. Build/Data LOCKED. Strategies: AAVE_LENDING, BASIS_TRADE, STAKED_BASIS, RECURSIVE_STAKED_BASIS (demo only).",
   },

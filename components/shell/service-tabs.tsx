@@ -296,7 +296,6 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: LayoutDashboard,
   },
   { label: "Terminal", href: "/services/trading/terminal", icon: MonitorDot },
-  { label: "Markets", href: "/services/trading/markets", icon: Activity },
   { label: "Book", href: "/services/trading/book", icon: BookMarked },
   { label: "Orders", href: "/services/trading/orders", icon: ClipboardList },
   { label: "Positions", href: "/services/trading/positions", icon: BookOpen },
@@ -304,8 +303,9 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "Risk", href: "/services/trading/risk", icon: ShieldAlert },
   { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
   { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
-  { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
   { label: "Instructions", href: "/services/trading/instructions", icon: ScrollText },
+  { label: "Markets", href: "/services/trading/markets", icon: Activity, requiredEntitlement: "markets-data" },
+  { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
     label: "DeFi",
@@ -323,6 +323,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "DeFi",
     familyGroup: "DeFi",
+    requiredEntitlement: "defi-bundles",
   },
   {
     label: "Staking",
@@ -330,6 +331,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: Layers,
     group: "DeFi",
     familyGroup: "DeFi",
+    requiredEntitlement: "defi-staking",
   },
   // ── Sports family ─────────────────────────────────────────────────────────
   {
@@ -348,6 +350,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: Zap,
     group: "Sports",
     familyGroup: "Sports",
+    requiredEntitlement: "sports-trading",
   },
   {
     label: "Accumulators",
@@ -355,6 +358,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "Sports",
     familyGroup: "Sports",
+    requiredEntitlement: "sports-trading",
   },
   // ── Options & Futures family ──────────────────────────────────────────────
   {
@@ -373,6 +377,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "Options & Futures",
     familyGroup: "Options & Futures",
+    requiredEntitlement: "options-trading",
   },
   {
     label: "Pricing",
@@ -381,6 +386,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: LineChart,
     group: "Options & Futures",
     familyGroup: "Options & Futures",
+    requiredEntitlement: "options-trading",
   },
   // ── Predictions family ────────────────────────────────────────────────────
   {
@@ -399,6 +405,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "Predictions",
     familyGroup: "Predictions",
+    requiredEntitlement: "predictions-trading",
   },
 ];
 

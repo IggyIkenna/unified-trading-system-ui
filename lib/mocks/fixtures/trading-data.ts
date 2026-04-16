@@ -296,6 +296,7 @@ export const ORGANIZATIONS: TradingOrganization[] = [
   { id: "vertex-partners", name: "Zenith Partners", type: "external" },
   { id: "meridian-fund", name: "Meridian Fund", type: "external" },
   { id: "atlas-ventures", name: "Atlas Ventures", type: "external" },
+  { id: "elysium", name: "Elysium", type: "external" },
 ];
 
 export const CLIENTS: TradingClient[] = [
@@ -375,6 +376,13 @@ export const CLIENTS: TradingClient[] = [
     orgId: "atlas-ventures",
     status: "onboarding",
     capitalAllocation: 4000000,
+  },
+  {
+    id: "elysium-defi",
+    name: "Elysium DeFi",
+    orgId: "elysium",
+    status: "active",
+    capitalAllocation: 5000000,
   },
 ];
 

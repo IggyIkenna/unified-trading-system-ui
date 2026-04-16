@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, MOCK_CHAIN_PORTFOLIOS } from "@/lib/mocks/fixtures/defi-transfer";
@@ -21,7 +21,7 @@ import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
 import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import { generateSwapRoute } from "@/lib/mocks/fixtures/defi-swap";
+import { generateSwapRoute, getMockPrice } from "@/lib/mocks/fixtures/defi-swap";
 
 export function DeFiSwapWidget(props: WidgetComponentProps) {
   const { swapTokens, swapRoute, executeDeFiOrder, selectedChain, setSelectedChain } = useDeFiData();
@@ -299,7 +299,12 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
                         <td className="px-2 py-1 text-right font-mono font-medium">{f.allocation_pct.toFixed(1)}%</td>
                         <td className="px-2 py-1 text-right font-mono">{formatNumber(f.input_amount, 4)}</td>
                         <td className="px-2 py-1 text-right font-mono">{f.fill_price.toFixed(6)}</td>
-                        <td className={cn("px-2 py-1 text-right font-mono", f.price_impact_bps > 5 ? "text-rose-400" : "text-emerald-400")}>
+                        <td
+                          className={cn(
+                            "px-2 py-1 text-right font-mono",
+                            f.price_impact_bps > 5 ? "text-rose-400" : "text-emerald-400",
+                          )}
+                        >
                           {f.price_impact_bps.toFixed(2)} bps
                         </td>
                         <td className="px-2 py-1 text-right font-mono text-muted-foreground">{f.fee_bps} bps</td>
@@ -328,7 +333,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             side: "buy",
             order_type: "market",
             quantity: amountNum,
-            price: route?.expectedOutput ?? 0,
+            price: getMockPrice(tokenIn),
             max_slippage_bps: Number(slippage) * 100,
             expected_output: route?.expectedOutput ?? 0,
             benchmark_price: route?.reference_price ?? 0,
@@ -336,14 +341,16 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             lane: "defi",
           });
           setAmountIn("");
-          toast({
-            title: isStakedBasis
+          toast.success(
+            isStakedBasis
               ? "Staked basis swap submitted"
               : isBasisTrade
                 ? "Basis trade swap submitted"
                 : "Swap submitted",
-            description: `${amountNum} ${tokenIn} → ${tokenOut} (mock ledger)`,
-          });
+            {
+              description: `${amountNum} ${tokenIn} → ${tokenOut} (mock ledger)`,
+            },
+          );
         }}
       >
         <ArrowLeftRight className="size-4 mr-2" />

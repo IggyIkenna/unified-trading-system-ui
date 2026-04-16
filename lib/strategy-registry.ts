@@ -306,7 +306,8 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_ETH_BASIS_HUF_1H",
     name: "ETH Basis Trade",
-    description: "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage. HUF: hold until funding flips negative.",
+    description:
+      "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage. HUF: hold until funding flips negative.",
     strategyIdPattern: "DEFI_ETH_BASIS_HUF_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -516,7 +517,8 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_ETH_REC_STAKE_HUF_1H",
     name: "ETH Recursive Staked Basis",
-    description: "Flash loan leveraged weETH staking yield + short perp hedge. 2.5x leveraged LST yield. HUF: hold until HF warning or yield signal change.",
+    description:
+      "Flash loan leveraged weETH staking yield + short perp hedge. 2.5x leveraged LST yield. HUF: hold until HF warning or yield signal change.",
     strategyIdPattern: "DEFI_ETH_RECURSIVE_BASIS_HUF_1H",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -761,7 +763,8 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_UNI_LP_HUF_1H",
     name: "Uniswap V3 LP (ETH-USDT)",
-    description: "Concentrated liquidity provision on Uniswap V3. Earn swap fees with active range management. HUF: hold until price exits range.",
+    description:
+      "Concentrated liquidity provision on Uniswap V3. Earn swap fees with active range management. HUF: hold until price exits range.",
     strategyIdPattern: "DEFI_ETH_MM_LP_V3_EVT",
     clientId: "defi-desk",
     assetClass: "DeFi",
@@ -2275,7 +2278,8 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_AAVE_LEND_HUF_1D",
     name: "AAVE Lending (USDT)",
-    description: "Supply USDT to Aave V3. Zero-alpha yield capture with liquidity index growth. HUF: hold until APY drops below threshold.",
+    description:
+      "Supply USDT to Aave V3. Zero-alpha yield capture with liquidity index growth. HUF: hold until APY drops below threshold.",
     strategyIdPattern: "DEFI_AAVE_LENDING_ETH",
     clientId: "delta-one",
     assetClass: "DeFi",
@@ -2653,7 +2657,8 @@ export const STRATEGIES: Strategy[] = [
   {
     id: "DEFI_MORPHO_LEND_HUF_1D",
     name: "Morpho Lending",
-    description: "Supply USDC to Morpho protocol for enhanced yield with peer-to-peer matching. HUF: hold until rate drops below Aave.",
+    description:
+      "Supply USDC to Morpho protocol for enhanced yield with peer-to-peer matching. HUF: hold until rate drops below Aave.",
     strategyIdPattern: "DEFI_MORPHO_LEND_HUF_1D",
     clientId: "defi-desk",
     assetClass: "DeFi",
@@ -7283,6 +7288,267 @@ export const STRATEGIES: Strategy[] = [
     },
     sparklineData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     instructionTypes: ["LEND"],
+  },
+
+  // ==========================================================================
+  // Elysium — DeFi demo client strategies
+  // IDs intentionally match SEED_STRATEGIES / DEFI_MOCK_POSITIONS so that
+  // mock-data-index scope resolution and positions filter stay consistent.
+  // ==========================================================================
+  {
+    id: "ELYSIUM_AAVE_LENDING",
+    name: "AAVE Lending",
+    description: "USDC lending on Aave v3 Ethereum mainnet. Earns yield from borrower interest plus AAVE rewards.",
+    strategyIdPattern: "ELYSIUM_AAVE_LENDING",
+    clientId: "elysium-defi",
+    assetClass: "DeFi",
+    strategyType: "Yield Lending",
+    archetype: "YIELD",
+    executionMode: "HUF",
+    status: "live",
+    version: "1.0.0",
+    deployedAt: "2026-03-01 09:00:00",
+    instruments: [
+      { key: "AAVEV3-ETHEREUM:A_TOKEN:AUSDC@ETHEREUM", venue: "Aave v3", type: "SPOT_ASSET", role: "Supply (aUSDC)" },
+    ],
+    featuresConsumed: [
+      { name: "aave_supply_rate", source: "features-delta-one", sla: "60s", usedFor: "APY monitoring" },
+    ],
+    dataArchitecture: {
+      rawDataSource: "CloudDataProvider (live)",
+      processedData: ["aave_supply_rate"],
+      interval: "Block-driven",
+      lowestGranularity: "1H",
+      executionMode: "hold_until_funding",
+    },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        {
+          id: "yield_pnl",
+          label: "Yield P&L",
+          settlementType: "ACCRUAL",
+          description: "Interest accrued",
+          color: "#4ade80",
+        },
+      ],
+    },
+    configParams: [{ key: "supply_token", value: "USDC", description: "Token to supply on Aave" }],
+    venues: ["AAVEV3-ETHEREUM"],
+    performance: {
+      pnlTotal: 310000,
+      pnlMTD: 21000,
+      sharpe: 1.65,
+      maxDrawdown: 1.2,
+      returnPct: 6.1,
+      positions: 1,
+      netExposure: 100000,
+    },
+    sparklineData: [5, 5.1, 5.2, 5.3, 5.2, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.1],
+    riskProfile: {
+      targetReturn: "5–8% APY",
+      targetSharpe: "1.5+",
+      maxDrawdown: "2%",
+      maxLeverage: "1x",
+      capitalScalability: "High",
+    },
+    latencyProfile: {
+      dataToSignal: "60s",
+      signalToInstruction: "1s",
+      instructionToFill: "5s",
+      endToEnd: "66s",
+      coLocationNeeded: false,
+    },
+    riskSubscriptions: [{ riskType: "AAVE_HEALTH_FACTOR", subscribed: true, threshold: "1.2", action: "UNWIND" }],
+    testingStatus: [
+      { stage: "MOCK", status: "done" },
+      { stage: "HISTORICAL", status: "done" },
+      { stage: "LIVE_REAL", status: "done" },
+    ],
+    instructionTypes: ["LEND"],
+  },
+  {
+    id: "ELYSIUM_BASIS_TRADE",
+    name: "Multi-Venue Basis Trade",
+    description: "Long spot ETH + short ETH perpetual on Hyperliquid. Delta-neutral funding rate arbitrage.",
+    strategyIdPattern: "ELYSIUM_BASIS_TRADE",
+    clientId: "elysium-defi",
+    assetClass: "DeFi",
+    strategyType: "Basis Trade",
+    archetype: "BASIS_TRADE",
+    executionMode: "SCE",
+    status: "live",
+    version: "2.0.0",
+    deployedAt: "2026-03-01 09:00:00",
+    instruments: [
+      { key: "WALLET:SPOT_ASSET:ETH", venue: "Wallet", type: "SPOT_ASSET", role: "Long leg" },
+      {
+        key: "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+        venue: "Hyperliquid",
+        type: "Perp",
+        role: "Short leg (hedge)",
+      },
+    ],
+    featuresConsumed: [
+      {
+        name: "funding_rate",
+        source: "features-delta-one",
+        sla: "10s",
+        usedFor: "Signal: entry when funding > threshold",
+      },
+    ],
+    dataArchitecture: {
+      rawDataSource: "CloudDataProvider (live)",
+      processedData: ["eth_price", "funding_rate"],
+      interval: "Time-driven",
+      lowestGranularity: "1H",
+      executionMode: "same_candle_exit",
+    },
+    sorEnabled: true,
+    sorConfig: {
+      legs: [
+        { name: "USDT→ETH swap", sorEnabled: true, allowedVenues: ["UNISWAPV3-ETHEREUM"] },
+        { name: "Short perp", sorEnabled: false },
+      ],
+    },
+    pnlAttribution: {
+      components: [
+        {
+          id: "funding_pnl",
+          label: "Funding P&L",
+          settlementType: "FUNDING_8H",
+          description: "Positive when rate > 0",
+          color: "#4ade80",
+        },
+        {
+          id: "basis_spread_pnl",
+          label: "Basis Spread",
+          settlementType: "MARK_TO_MARKET",
+          description: "Premium change",
+          color: "#60a5fa",
+        },
+      ],
+    },
+    configParams: [{ key: "funding_threshold", value: "10", description: "Min funding rate (bps) to enter" }],
+    venues: ["WALLET", "HYPERLIQUID", "UNISWAPV3-ETHEREUM"],
+    performance: {
+      pnlTotal: 632000,
+      pnlMTD: 47000,
+      sharpe: 2.14,
+      maxDrawdown: 3.1,
+      returnPct: 12.4,
+      positions: 2,
+      netExposure: 0,
+    },
+    sparklineData: [10, 12, 11, 14, 13, 15, 14, 16, 15, 17, 16, 18],
+    riskProfile: {
+      targetReturn: "10–15% APY",
+      targetSharpe: "2.0+",
+      maxDrawdown: "5%",
+      maxLeverage: "2x",
+      capitalScalability: "Medium",
+    },
+    latencyProfile: {
+      dataToSignal: "10s",
+      signalToInstruction: "1s",
+      instructionToFill: "3s",
+      endToEnd: "14s",
+      coLocationNeeded: false,
+    },
+    riskSubscriptions: [{ riskType: "FUNDING_RATE_FLIP", subscribed: true, threshold: "0", action: "EXIT" }],
+    testingStatus: [
+      { stage: "MOCK", status: "done" },
+      { stage: "HISTORICAL", status: "done" },
+      { stage: "LIVE_REAL", status: "done" },
+    ],
+    instructionTypes: ["SPOT_BUY", "SHORT"],
+  },
+  {
+    id: "ELYSIUM_RECURSIVE_STAKED_BASIS",
+    name: "Recursive Staked Basis (Hedged)",
+    description:
+      "Deposit weETH as collateral on Aave, borrow ETH, swap to weETH, repeat. Short perp hedge on Hyperliquid.",
+    strategyIdPattern: "ELYSIUM_RECURSIVE_STAKED_BASIS",
+    clientId: "elysium-defi",
+    assetClass: "DeFi",
+    strategyType: "Recursive Yield",
+    archetype: "RECURSIVE_STAKED_BASIS",
+    executionMode: "HUF",
+    status: "live",
+    version: "1.1.0",
+    deployedAt: "2026-03-01 09:00:00",
+    instruments: [
+      { key: "AAVEV3-ETHEREUM:A_TOKEN:AWEETH@ETHEREUM", venue: "Aave v3", type: "SPOT_ASSET", role: "Collateral" },
+      { key: "AAVEV3-ETHEREUM:DEBT_TOKEN:DEBTWETH@ETHEREUM", venue: "Aave v3", type: "SPOT_ASSET", role: "Debt" },
+      {
+        key: "HYPERLIQUID:PERPETUAL:ETH-USDC@LIN@HYPERLIQUID",
+        venue: "Hyperliquid",
+        type: "Perp",
+        role: "Delta hedge",
+      },
+    ],
+    featuresConsumed: [
+      { name: "aave_health_factor", source: "features-delta-one", sla: "10s", usedFor: "Liquidation risk monitoring" },
+    ],
+    dataArchitecture: {
+      rawDataSource: "CloudDataProvider (live)",
+      processedData: ["health_factor", "eth_price", "staking_yield"],
+      interval: "Block-driven",
+      lowestGranularity: "1H",
+      executionMode: "hold_until_funding",
+    },
+    sorEnabled: false,
+    pnlAttribution: {
+      components: [
+        {
+          id: "staking_yield",
+          label: "Staking Yield",
+          settlementType: "ACCRUAL",
+          description: "weETH staking APR",
+          color: "#4ade80",
+        },
+        {
+          id: "funding_pnl",
+          label: "Funding P&L",
+          settlementType: "FUNDING_8H",
+          description: "Perp hedge cost",
+          color: "#f87171",
+        },
+      ],
+    },
+    configParams: [{ key: "target_ltv", value: "0.625", description: "Target loan-to-value ratio for recursion" }],
+    venues: ["AAVEV3-ETHEREUM", "HYPERLIQUID"],
+    performance: {
+      pnlTotal: 470000,
+      pnlMTD: 37000,
+      sharpe: 1.88,
+      maxDrawdown: 5.8,
+      returnPct: 16.2,
+      positions: 3,
+      netExposure: 880000,
+    },
+    sparklineData: [14, 15, 16, 15, 17, 18, 17, 19, 20, 19, 21, 22],
+    riskProfile: {
+      targetReturn: "12–20% APY",
+      targetSharpe: "1.8+",
+      maxDrawdown: "8%",
+      maxLeverage: "2.5x",
+      capitalScalability: "Low",
+    },
+    latencyProfile: {
+      dataToSignal: "10s",
+      signalToInstruction: "2s",
+      instructionToFill: "5s",
+      endToEnd: "17s",
+      coLocationNeeded: false,
+    },
+    riskSubscriptions: [{ riskType: "AAVE_HEALTH_FACTOR", subscribed: true, threshold: "1.15", action: "DELEVERAGE" }],
+    testingStatus: [
+      { stage: "MOCK", status: "done" },
+      { stage: "HISTORICAL", status: "done" },
+      { stage: "LIVE_REAL", status: "done" },
+    ],
+    instructionTypes: ["LEND", "BORROW", "SHORT"],
   },
 ];
 

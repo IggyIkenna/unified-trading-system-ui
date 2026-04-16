@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, Activity, Eye, ShieldAlert } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -51,9 +51,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
       {/* Main HF display */}
       <div className={cn("rounded-lg border p-4 text-center space-y-1", hfBgColor(hf.current_hf))}>
         <p className="text-xs text-muted-foreground">Health Factor</p>
-        <p className={cn("text-3xl font-mono font-bold", hfColor(hf.current_hf))}>
-          {formatNumber(hf.current_hf, 2)}
-        </p>
+        <p className={cn("text-3xl font-mono font-bold", hfColor(hf.current_hf))}>{formatNumber(hf.current_hf, 2)}</p>
         <Badge variant="outline" className={cn("text-[10px]", hfColor(hf.current_hf))}>
           {hfLabel(hf.current_hf)}
         </Badge>
@@ -63,15 +61,9 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
       <div className="space-y-1">
         <div className="relative h-4 bg-muted/30 rounded overflow-hidden">
           {/* Liquidation marker */}
-          <div
-            className="absolute top-0 bottom-0 w-0.5 bg-rose-500 z-10"
-            style={{ left: `${liquidationPct}%` }}
-          />
+          <div className="absolute top-0 bottom-0 w-0.5 bg-rose-500 z-10" style={{ left: `${liquidationPct}%` }} />
           {/* Warning marker */}
-          <div
-            className="absolute top-0 bottom-0 w-0.5 bg-amber-500 z-10"
-            style={{ left: `${warningPct}%` }}
-          />
+          <div className="absolute top-0 bottom-0 w-0.5 bg-amber-500 z-10" style={{ left: `${warningPct}%` }} />
           {/* Current HF bar */}
           <div
             className={cn(
@@ -212,8 +204,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
               size="sm"
               onClick={() => {
                 setExitOpen(false);
-                toast({
-                  title: "Emergency exit initiated",
+                toast.success("Emergency exit initiated", {
                   description: `Unwinding position. Estimated ${emergencyExit.estimated_time_minutes} min, cost $${formatNumber(emergencyExit.total_cost_usd, 0)} (mock).`,
                 });
               }}

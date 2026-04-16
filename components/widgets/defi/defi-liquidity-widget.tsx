@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Droplets, Plus, Trash2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
@@ -170,8 +170,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             lane: "defi",
           });
           setAmount("");
-          toast({
-            title: "Liquidity order placed",
+          toast.success("Liquidity order placed", {
             description: `${operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} ${amountNum} ${pool.token0} in ${pool.name} (mock ledger)`,
           });
         }}
