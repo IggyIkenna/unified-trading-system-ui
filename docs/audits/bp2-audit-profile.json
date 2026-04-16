@@ -243,6 +243,33 @@
         ],
         "createdAt": "2026-04-16T00:00:00Z",
         "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-bespoke": {
+        "id": "bp2-bespoke",
+        "name": "Bespoke Widgets",
+        "tab": "custom-bespoke",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "pnl-chart", "instanceId": "audit-bsp-pnl-chart", "x": 0, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "defi-wallet-summary", "instanceId": "audit-bsp-wallet", "x": 6, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "terminal-options", "instanceId": "audit-bsp-term-opts", "x": 0, "y": 5, "w": 6, "h": 5 },
+          { "widgetId": "sports-arb", "instanceId": "audit-bsp-sports-arb", "x": 6, "y": 5, "w": 6, "h": 5 },
+          { "widgetId": "sports-predictions", "instanceId": "audit-bsp-sports-pred", "x": 0, "y": 10, "w": 6, "h": 5 },
+          { "widgetId": "pred-odum-focus", "instanceId": "audit-bsp-odum", "x": 6, "y": 10, "w": 6, "h": 5 },
+          { "widgetId": "pred-arb-stream", "instanceId": "audit-bsp-arb-stream", "x": 0, "y": 15, "w": 6, "h": 5 },
+          { "widgetId": "options-strategies", "instanceId": "audit-bsp-opt-strat", "x": 6, "y": 15, "w": 6, "h": 5 },
+          {
+            "widgetId": "options-greek-surface",
+            "instanceId": "audit-bsp-greek-surf",
+            "x": 0,
+            "y": 20,
+            "w": 6,
+            "h": 5
+          },
+          { "widgetId": "risk-what-if-slider", "instanceId": "audit-bsp-what-if", "x": 6, "y": 20, "w": 6, "h": 4 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
       }
     },
     "customPanels": [
@@ -254,7 +281,8 @@
       { "id": "card-grids", "name": "§6 Card Grids (10)" },
       { "id": "heatmaps", "name": "§7 Heatmaps (3)" },
       { "id": "order-books", "name": "§8 Order Books (3)" },
-      { "id": "waterfalls", "name": "§9 Waterfalls (4)" }
+      { "id": "waterfalls", "name": "§9 Waterfalls (4)" },
+      { "id": "bespoke", "name": "Bespoke (10)" }
     ],
     "createdAt": "2026-04-16T00:00:00Z",
     "updatedAt": "2026-04-16T00:00:00Z"
