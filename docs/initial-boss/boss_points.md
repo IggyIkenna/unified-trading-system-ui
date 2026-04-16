@@ -133,7 +133,6 @@ I will NOT start creating in-depth docs for any boss-point until we've discussed
 ## Links
 
 - [00_index.md](00_index.md) — folder index
-- [01_problem_and_context.md](01_problem_and_context.md) — earlier context doc (needs revision after boss-points)
 - [02_codebase_facts.md](02_codebase_facts.md) — still mostly valid, kept as reference
 - [03_test_strategy_options.md](03_test_strategy_options.md) — earlier test layer brainstorm (needs revision)
 - [04_mock_data_and_backend_gap.md](04_mock_data_and_backend_gap.md) — earlier mock-data thinking (feeds BP-7 discussion)

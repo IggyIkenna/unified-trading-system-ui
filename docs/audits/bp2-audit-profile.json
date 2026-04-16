@@ -1,0 +1,262 @@
+{
+  "version": 2,
+  "profile": {
+    "id": "bp2-widget-audit",
+    "name": "BP-2 Widget Audit",
+    "isPreset": false,
+    "tabs": {
+      "custom-recharts": {
+        "id": "bp2-recharts",
+        "name": "§1 Recharts",
+        "tab": "custom-recharts",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "risk-kpi-strip", "instanceId": "audit-recharts-risk-kpi", "x": 0, "y": 0, "w": 12, "h": 2 },
+          { "widgetId": "risk-var-chart", "instanceId": "audit-recharts-var", "x": 0, "y": 2, "w": 6, "h": 4 },
+          { "widgetId": "risk-term-structure", "instanceId": "audit-recharts-term", "x": 6, "y": 2, "w": 6, "h": 4 },
+          {
+            "widgetId": "risk-exposure-attribution",
+            "instanceId": "audit-recharts-exposure",
+            "x": 0,
+            "y": 6,
+            "w": 12,
+            "h": 5
+          },
+          { "widgetId": "risk-greeks-summary", "instanceId": "audit-recharts-greeks", "x": 0, "y": 11, "w": 6, "h": 5 },
+          { "widgetId": "risk-margin", "instanceId": "audit-recharts-margin", "x": 6, "y": 11, "w": 6, "h": 5 },
+          { "widgetId": "pnl-time-series", "instanceId": "audit-recharts-pnl-ts", "x": 0, "y": 16, "w": 6, "h": 5 },
+          {
+            "widgetId": "pnl-factor-drilldown",
+            "instanceId": "audit-recharts-pnl-fd",
+            "x": 6,
+            "y": 16,
+            "w": 6,
+            "h": 5
+          },
+          {
+            "widgetId": "markets-latency-detail",
+            "instanceId": "audit-recharts-latency",
+            "x": 0,
+            "y": 21,
+            "w": 6,
+            "h": 5
+          },
+          { "widgetId": "defi-yield-chart", "instanceId": "audit-recharts-yield", "x": 6, "y": 21, "w": 6, "h": 7 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-forms": {
+        "id": "bp2-forms",
+        "name": "§2 Forms",
+        "tab": "custom-forms",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "order-entry", "instanceId": "audit-form-order-entry", "x": 0, "y": 0, "w": 4, "h": 5 },
+          { "widgetId": "book-order-form", "instanceId": "audit-form-book-order", "x": 4, "y": 0, "w": 4, "h": 6 },
+          { "widgetId": "book-algo-config", "instanceId": "audit-form-book-algo", "x": 8, "y": 0, "w": 4, "h": 5 },
+          { "widgetId": "book-record-details", "instanceId": "audit-form-book-record", "x": 0, "y": 6, "w": 4, "h": 5 },
+          { "widgetId": "defi-lending", "instanceId": "audit-form-lending", "x": 4, "y": 6, "w": 4, "h": 6 },
+          { "widgetId": "defi-swap", "instanceId": "audit-form-swap", "x": 8, "y": 6, "w": 4, "h": 6 },
+          { "widgetId": "defi-liquidity", "instanceId": "audit-form-liquidity", "x": 0, "y": 12, "w": 4, "h": 7 },
+          { "widgetId": "defi-staking", "instanceId": "audit-form-staking", "x": 4, "y": 12, "w": 4, "h": 6 },
+          { "widgetId": "defi-flash-loans", "instanceId": "audit-form-flash", "x": 8, "y": 12, "w": 4, "h": 7 },
+          { "widgetId": "defi-transfer", "instanceId": "audit-form-transfer", "x": 0, "y": 19, "w": 4, "h": 6 },
+          {
+            "widgetId": "defi-strategy-config",
+            "instanceId": "audit-form-defi-config",
+            "x": 4,
+            "y": 19,
+            "w": 4,
+            "h": 6
+          },
+          { "widgetId": "defi-staking-rewards", "instanceId": "audit-form-rewards", "x": 8, "y": 19, "w": 4, "h": 6 },
+          {
+            "widgetId": "accounts-transfer",
+            "instanceId": "audit-form-acct-transfer",
+            "x": 0,
+            "y": 25,
+            "w": 4,
+            "h": 6
+          },
+          { "widgetId": "options-trade-panel", "instanceId": "audit-form-opt-trade", "x": 4, "y": 25, "w": 4, "h": 5 },
+          { "widgetId": "futures-trade-panel", "instanceId": "audit-form-fut-trade", "x": 8, "y": 25, "w": 4, "h": 5 },
+          { "widgetId": "pred-trade-panel", "instanceId": "audit-form-pred-trade", "x": 0, "y": 31, "w": 4, "h": 5 },
+          {
+            "widgetId": "cefi-strategy-config",
+            "instanceId": "audit-form-cefi-config",
+            "x": 4,
+            "y": 31,
+            "w": 8,
+            "h": 6
+          }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-tables": {
+        "id": "bp2-tables",
+        "name": "§3 Tables",
+        "tab": "custom-tables",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "orders-table", "instanceId": "audit-tbl-orders", "x": 0, "y": 0, "w": 12, "h": 5 },
+          { "widgetId": "positions-table", "instanceId": "audit-tbl-positions", "x": 0, "y": 5, "w": 12, "h": 5 },
+          { "widgetId": "alerts-table", "instanceId": "audit-tbl-alerts", "x": 0, "y": 10, "w": 12, "h": 5 },
+          { "widgetId": "book-trade-history", "instanceId": "audit-tbl-book-hist", "x": 0, "y": 15, "w": 6, "h": 4 },
+          { "widgetId": "accounts-balance-table", "instanceId": "audit-tbl-acct-bal", "x": 6, "y": 15, "w": 6, "h": 4 },
+          {
+            "widgetId": "accounts-transfer-history",
+            "instanceId": "audit-tbl-acct-hist",
+            "x": 0,
+            "y": 19,
+            "w": 6,
+            "h": 4
+          },
+          { "widgetId": "risk-stress-table", "instanceId": "audit-tbl-stress", "x": 6, "y": 19, "w": 6, "h": 4 },
+          { "widgetId": "risk-limits-hierarchy", "instanceId": "audit-tbl-limits", "x": 0, "y": 23, "w": 12, "h": 5 },
+          { "widgetId": "pnl-by-client", "instanceId": "audit-tbl-pnl-client", "x": 0, "y": 28, "w": 6, "h": 4 },
+          { "widgetId": "markets-my-orders", "instanceId": "audit-tbl-mkt-orders", "x": 6, "y": 28, "w": 6, "h": 4 },
+          { "widgetId": "markets-recon", "instanceId": "audit-tbl-recon", "x": 0, "y": 32, "w": 6, "h": 4 },
+          { "widgetId": "markets-latency-summary", "instanceId": "audit-tbl-lat-sum", "x": 6, "y": 32, "w": 6, "h": 4 },
+          { "widgetId": "options-watchlist", "instanceId": "audit-tbl-watchlist", "x": 0, "y": 36, "w": 4, "h": 4 },
+          { "widgetId": "options-chain", "instanceId": "audit-tbl-chain", "x": 4, "y": 36, "w": 4, "h": 4 },
+          { "widgetId": "futures-table", "instanceId": "audit-tbl-futures", "x": 8, "y": 36, "w": 4, "h": 4 },
+          { "widgetId": "pred-open-positions", "instanceId": "audit-tbl-pred-open", "x": 0, "y": 40, "w": 6, "h": 4 },
+          { "widgetId": "pred-arb-closed", "instanceId": "audit-tbl-pred-arb", "x": 6, "y": 40, "w": 6, "h": 4 },
+          { "widgetId": "defi-rates-overview", "instanceId": "audit-tbl-defi-rates", "x": 0, "y": 44, "w": 6, "h": 4 },
+          { "widgetId": "sports-standings", "instanceId": "audit-tbl-standings", "x": 6, "y": 44, "w": 6, "h": 4 },
+          {
+            "widgetId": "lending-arb-dashboard",
+            "instanceId": "audit-tbl-lending-arb",
+            "x": 0,
+            "y": 48,
+            "w": 6,
+            "h": 4
+          },
+          { "widgetId": "liquidation-monitor", "instanceId": "audit-tbl-liq-mon", "x": 6, "y": 48, "w": 6, "h": 4 },
+          { "widgetId": "active-lp-dashboard", "instanceId": "audit-tbl-lp-dash", "x": 0, "y": 52, "w": 12, "h": 4 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-detail-panels": {
+        "id": "bp2-detail-panels",
+        "name": "§4 Detail Panels",
+        "tab": "custom-detail-panels",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "book-preview-compliance", "instanceId": "audit-dp-book-prev", "x": 0, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "instr-detail-panel", "instanceId": "audit-dp-instr", "x": 6, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "sports-fixture-detail", "instanceId": "audit-dp-sports-fix", "x": 0, "y": 5, "w": 6, "h": 5 },
+          { "widgetId": "sports-clv", "instanceId": "audit-dp-sports-clv", "x": 6, "y": 5, "w": 6, "h": 5 },
+          { "widgetId": "sports-ml-status", "instanceId": "audit-dp-ml-status", "x": 0, "y": 10, "w": 6, "h": 5 },
+          { "widgetId": "pred-market-detail", "instanceId": "audit-dp-pred-detail", "x": 6, "y": 10, "w": 6, "h": 5 },
+          { "widgetId": "options-scenario", "instanceId": "audit-dp-opt-scenario", "x": 0, "y": 15, "w": 6, "h": 5 },
+          { "widgetId": "bundle-steps", "instanceId": "audit-dp-bundle-steps", "x": 6, "y": 15, "w": 6, "h": 5 },
+          { "widgetId": "defi-health-factor", "instanceId": "audit-dp-health", "x": 0, "y": 20, "w": 4, "h": 8 },
+          { "widgetId": "defi-reward-pnl", "instanceId": "audit-dp-reward-pnl", "x": 4, "y": 20, "w": 4, "h": 6 },
+          { "widgetId": "commodity-regime", "instanceId": "audit-dp-commodity", "x": 8, "y": 20, "w": 4, "h": 6 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-control-bars": {
+        "id": "bp2-control-bars",
+        "name": "§5 Control Bars",
+        "tab": "custom-control-bars",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "scope-summary", "instanceId": "audit-cb-scope", "x": 0, "y": 0, "w": 12, "h": 2 },
+          { "widgetId": "instrument-bar", "instanceId": "audit-cb-instrument", "x": 0, "y": 2, "w": 12, "h": 2 },
+          { "widgetId": "book-hierarchy-bar", "instanceId": "audit-cb-hierarchy", "x": 0, "y": 4, "w": 12, "h": 2 },
+          { "widgetId": "markets-controls", "instanceId": "audit-cb-markets", "x": 0, "y": 6, "w": 12, "h": 2 },
+          { "widgetId": "options-control-bar", "instanceId": "audit-cb-options", "x": 0, "y": 8, "w": 12, "h": 2 },
+          { "widgetId": "sports-live-scores", "instanceId": "audit-cb-live-scores", "x": 0, "y": 10, "w": 12, "h": 2 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-card-grids": {
+        "id": "bp2-card-grids",
+        "name": "§6 Card Grids",
+        "tab": "custom-card-grids",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "alerts-preview", "instanceId": "audit-cg-alerts", "x": 0, "y": 0, "w": 4, "h": 4 },
+          { "widgetId": "recent-fills", "instanceId": "audit-cg-fills", "x": 4, "y": 0, "w": 4, "h": 4 },
+          { "widgetId": "health-grid", "instanceId": "audit-cg-health", "x": 8, "y": 0, "w": 4, "h": 4 },
+          { "widgetId": "risk-circuit-breakers", "instanceId": "audit-cg-cb", "x": 0, "y": 4, "w": 6, "h": 3 },
+          { "widgetId": "saft-portfolio", "instanceId": "audit-cg-saft", "x": 6, "y": 4, "w": 6, "h": 4 },
+          { "widgetId": "bundle-templates", "instanceId": "audit-cg-templates", "x": 0, "y": 8, "w": 6, "h": 5 },
+          { "widgetId": "defi-atomic-bundle", "instanceId": "audit-cg-atomic", "x": 6, "y": 8, "w": 6, "h": 5 },
+          { "widgetId": "strategies-catalogue", "instanceId": "audit-cg-strat-cat", "x": 0, "y": 13, "w": 6, "h": 5 },
+          { "widgetId": "pred-top-markets", "instanceId": "audit-cg-top-mkts", "x": 6, "y": 13, "w": 6, "h": 4 },
+          {
+            "widgetId": "strategy-family-browser",
+            "instanceId": "audit-cg-fam-browser",
+            "x": 0,
+            "y": 18,
+            "w": 12,
+            "h": 5
+          }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-heatmaps": {
+        "id": "bp2-heatmaps",
+        "name": "§7 Heatmaps",
+        "tab": "custom-heatmaps",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "risk-strategy-heatmap", "instanceId": "audit-hm-strategy", "x": 0, "y": 0, "w": 12, "h": 4 },
+          { "widgetId": "risk-correlation-heatmap", "instanceId": "audit-hm-corr", "x": 0, "y": 4, "w": 6, "h": 4 },
+          { "widgetId": "defi-funding-matrix", "instanceId": "audit-hm-funding", "x": 6, "y": 4, "w": 6, "h": 5 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-order-books": {
+        "id": "bp2-order-books",
+        "name": "§8 Order Books",
+        "tab": "custom-order-books",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "order-book", "instanceId": "audit-ob-main", "x": 0, "y": 0, "w": 4, "h": 5 },
+          { "widgetId": "depth-chart", "instanceId": "audit-ob-depth", "x": 4, "y": 0, "w": 4, "h": 5 },
+          { "widgetId": "markets-live-book", "instanceId": "audit-ob-live-book", "x": 8, "y": 0, "w": 4, "h": 5 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      },
+      "custom-waterfalls": {
+        "id": "bp2-waterfalls",
+        "name": "§9 Waterfalls",
+        "tab": "custom-waterfalls",
+        "isPreset": false,
+        "layouts": [
+          { "widgetId": "pnl-waterfall", "instanceId": "audit-wf-pnl", "x": 0, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "pnl-attribution", "instanceId": "audit-wf-attr", "x": 6, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "defi-waterfall-weights", "instanceId": "audit-wf-defi", "x": 0, "y": 5, "w": 6, "h": 6 },
+          { "widgetId": "risk-utilization", "instanceId": "audit-wf-util", "x": 6, "y": 5, "w": 6, "h": 3 }
+        ],
+        "createdAt": "2026-04-16T00:00:00Z",
+        "updatedAt": "2026-04-16T00:00:00Z"
+      }
+    },
+    "customPanels": [
+      { "id": "recharts", "name": "§1 Recharts (10)" },
+      { "id": "forms", "name": "§2 Forms (16)" },
+      { "id": "tables", "name": "§3 Tables (22)" },
+      { "id": "detail-panels", "name": "§4 Detail Panels (11)" },
+      { "id": "control-bars", "name": "§5 Control Bars (6)" },
+      { "id": "card-grids", "name": "§6 Card Grids (10)" },
+      { "id": "heatmaps", "name": "§7 Heatmaps (3)" },
+      { "id": "order-books", "name": "§8 Order Books (3)" },
+      { "id": "waterfalls", "name": "§9 Waterfalls (4)" }
+    ],
+    "createdAt": "2026-04-16T00:00:00Z",
+    "updatedAt": "2026-04-16T00:00:00Z"
+  }
+}

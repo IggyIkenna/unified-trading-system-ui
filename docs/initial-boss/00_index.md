@@ -37,9 +37,9 @@ It captures the 7 real pain points Harsh surfaced on 2026-04-15 and proposes the
 | **`07_trading_target_state.md`**     | **BP-1 Stream B — trading tab target state. All 8 sections confirmed** | **STABLE — all sections confirmed**    |
 | `99_open_questions_and_decisions.md` | Cross-doc open questions and a global decisions log                    | NEEDS UPDATE — many Qs answered        |
 
-**Archived (superseded):**
+**Deleted (superseded):**
 
-- `01_problem_and_context.md` — superseded by `boss_points.md` + `07_trading_target_state.md`. Incident context and success criteria are captured better in those docs.
+- ~~`01_problem_and_context.md`~~ — deleted. Superseded by `boss_points.md` + `07_trading_target_state.md`.
 
 ## Conventions
 
