@@ -1,7 +1,7 @@
 # 05 — Repo structure question (split or not?)
 
-**Status:** TENTATIVE — leaning strongly toward "do not split", capturing rationale so we don't re-litigate
-**Last updated:** 2026-04-15
+**Status:** FINALIZED — do not split
+**Last updated:** 2026-04-16
 
 ---
 
@@ -94,16 +94,17 @@ We'd revisit splitting if, after the testing layers from `03_test_strategy_optio
 - Test runtimes blowing past the 3-minute budget because they have to scan the whole tree (mitigatable with smart test selection)
 - A genuine need to ship pieces of the UI independently (e.g., a separate "trading terminal" deployment vs an "analytics dashboard" deployment) — currently NOT a requirement
 
-## Tentative decision [TENTATIVE]
+## Decision [FINALIZED]
 
-**Do not split the repo.** Solve the regression problem with tests + a gate. Revisit only if Phase 0-4 work fails to address the pain.
+**Do not split the repo.** Solve the regression problem with tests + a gate. Revisit only if testing layers fail to address the pain.
 
-## Open questions for Harsh
+Open questions resolved:
 
-1. Confirm: do you ever ship pieces of the UI independently? Or is it always a single deploy of the whole thing?
-2. Confirm: are agents hitting file-level merge conflicts today, or is silent regression really the only pain?
-3. Is there any pressure from anyone else (other developers, leadership) to split the repo, or is this purely a "what's the right architecture" question?
+1. **Single deploy** — always a single deploy of the whole UI. No independent shipping.
+2. **No file-level conflicts** — the pain is silent regressions, not merge conflicts. Splitting solves the wrong problem.
+3. **No external pressure** — purely an architecture question, answered by the evidence above.
 
 ## Decisions log
 
-- 2026-04-15: Captured rationale for not splitting. Status TENTATIVE pending Harsh confirming the open questions above.
+- 2026-04-15: Captured rationale for not splitting. Status TENTATIVE pending Harsh confirming.
+- 2026-04-16: FINALIZED. All open questions resolved — single deploy, no conflicts, no pressure to split. Widget registry provides sufficient isolation. `converstaion.md` (transcript of agent that recommended splitting) deleted.

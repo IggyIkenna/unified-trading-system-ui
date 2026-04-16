@@ -26,17 +26,20 @@ It captures the 7 real pain points Harsh surfaced on 2026-04-15 and proposes the
 
 ## Current docs
 
-| File                                 | Topic                                                                      | Status                               |
-| ------------------------------------ | -------------------------------------------------------------------------- | ------------------------------------ |
-| **`boss_points.md`**                 | **Canonical list of 7 pain points + discussion order**                     | **DISCUSSING — primary doc**         |
-| `01_problem_and_context.md`          | Earlier context doc (needs revision after boss-points)                     | STALE — revisit                      |
-| `02_codebase_facts.md`               | What actually exists in the repo (test infra, widgets, mocks, hooks)       | DISCUSSING — still reference         |
-| `03_test_strategy_options.md`        | Earlier test layer brainstorm (needs revision)                             | STALE — revisit                      |
-| `04_mock_data_and_backend_gap.md`    | Earlier mock-data thinking (feeds BP-7)                                    | STALE — revisit when discussing BP-7 |
-| `05_repo_structure_question.md`      | Single repo vs split — captured rationale for not splitting                | TENTATIVE — still valid              |
-| `06_agent_workflow_and_gates.md`     | Earlier agent gate thinking (revisit after boss-points)                    | STALE — revisit                      |
-| `07_trading_target_state.md`         | **BP-1 Stream B — pre-filled findings from code, Harsh confirms/corrects** | **DISCUSSING — pre-filled draft**    |
-| `99_open_questions_and_decisions.md` | Cross-doc open questions and a global decisions log                        | DISCUSSING — authoritative           |
+| File                                 | Topic                                                                  | Status                                 |
+| ------------------------------------ | ---------------------------------------------------------------------- | -------------------------------------- |
+| **`boss_points.md`**                 | **Canonical list of 7 pain points + discussion order**                 | **DISCUSSING — primary doc**           |
+| `02_codebase_facts.md`               | What actually exists in the repo (test infra, widgets, mocks, hooks)   | REFERENCE — widget counts need refresh |
+| `03_test_strategy_options.md`        | Test layer brainstorm (Layers A-H). Feeds BP-2 and BP-7                | STALE — revisit when discussing BP-2   |
+| `04_mock_data_and_backend_gap.md`    | Mock-data thinking. Feeds BP-7                                         | STALE — revisit when discussing BP-7   |
+| `05_repo_structure_question.md`      | Single repo vs split — captured rationale for not splitting            | **FINALIZED** — do not split           |
+| `06_agent_workflow_and_gates.md`     | Agent gate thinking. Feeds BP-2                                        | STALE — revisit when discussing BP-2   |
+| **`07_trading_target_state.md`**     | **BP-1 Stream B — trading tab target state. All 8 sections confirmed** | **STABLE — all sections confirmed**    |
+| `99_open_questions_and_decisions.md` | Cross-doc open questions and a global decisions log                    | NEEDS UPDATE — many Qs answered        |
+
+**Archived (superseded):**
+
+- `01_problem_and_context.md` — superseded by `boss_points.md` + `07_trading_target_state.md`. Incident context and success criteria are captured better in those docs.
 
 ## Conventions
 
@@ -46,7 +49,10 @@ It captures the 7 real pain points Harsh surfaced on 2026-04-15 and proposes the
 - **Trace every recommendation to a piece of evidence** in the codebase, not just intuition
 - **When in doubt, mark it OPEN** — false certainty is worse than no answer
 
+## Active trading docs
+
+The `docs/trading/` folder contains docs that are actively referenced for trading tab work. See [docs/trading/INDEX.md](../trading/INDEX.md) for contents.
+
 ## Related but separate
 
 - `unified-trading-pm/plans/ai/ui_testing_strategy_2026_04_15.plan.md` — premature plan draft from earlier in the same session. **Do not treat as authoritative.** Once these scoping docs converge, a real plan will be written from scratch in `unified-trading-pm/plans/` and that draft will be deleted.
-- `unified-trading-system-ui/converstaion.md` — transcript of an earlier conversation with another agent that suggested splitting the repo. We are NOT going down that path; rationale captured in `05_repo_structure_question.md`.
