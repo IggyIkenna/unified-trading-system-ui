@@ -28,6 +28,9 @@ import {
   STRATEGY_RISK_MAP,
   COMPONENT_TO_RISK_TYPE,
 } from "./risk-data-context";
+import { MOCK_PORTFOLIO_DELTA, STRATEGY_RISK_PROFILES } from "@/lib/mocks/fixtures/defi-risk";
+import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
+import type { PortfolioDeltaComposite } from "@/lib/types/defi";
 
 const VAR_METHOD_MULTIPLIERS: Record<string, number> = {
   historical: 1.0,
@@ -288,6 +291,59 @@ export function useRiskPageData(): {
   const anyKillSwitchActive =
     killedStrategies.size > 0 || (venueCircuitBreakers ?? []).some((v) => v.kill_switch_active);
 
+  // ---------------------------------------------------------------------------
+  // DeFi risk data for risk-kpi-strip (moved from widget to context)
+  // ---------------------------------------------------------------------------
+  const [defiLedgerVersion, setDefiLedgerVersion] = React.useState(0);
+  React.useEffect(() => {
+    const refresh = () => setDefiLedgerVersion((n) => n + 1);
+    window.addEventListener("mock-order-filled", refresh);
+    window.addEventListener("mock-ledger-reset", refresh);
+    return () => {
+      window.removeEventListener("mock-order-filled", refresh);
+      window.removeEventListener("mock-ledger-reset", refresh);
+    };
+  }, []);
+
+  const hasDefiStrategies = React.useMemo(() => {
+    return STRATEGY_RISK_PROFILES.length > 0 || getFilledDefiOrders().length > 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defiLedgerVersion]);
+
+  const defiDeltaComposite = React.useMemo((): PortfolioDeltaComposite => {
+    const filled = getFilledDefiOrders();
+    let additionalDeltaUsd = 0;
+    let additionalDeltaEth = 0;
+    for (const order of filled) {
+      const notional = order.quantity * (order.average_fill_price ?? order.price);
+      const sign = order.side === "buy" ? 1 : -1;
+      additionalDeltaUsd += sign * notional;
+      const instrUpper = order.instrument_id.toUpperCase();
+      if (instrUpper.includes("ETH") || instrUpper.includes("WEETH")) {
+        additionalDeltaEth += sign * order.quantity;
+      }
+    }
+    return {
+      ...MOCK_PORTFOLIO_DELTA,
+      total_delta_usd: MOCK_PORTFOLIO_DELTA.total_delta_usd + additionalDeltaUsd,
+      total_delta_eth: MOCK_PORTFOLIO_DELTA.total_delta_eth + additionalDeltaEth,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defiLedgerVersion]);
+
+  const defiRiskTimeSeries = React.useMemo(
+    () => [
+      { time: "03-24", healthFactor: 1.85, netDeltaUsd: 360000, treasuryPct: 17.5 },
+      { time: "03-25", healthFactor: 1.62, netDeltaUsd: 345000, treasuryPct: 18.2 },
+      { time: "03-26", healthFactor: 1.35, netDeltaUsd: 310000, treasuryPct: 16.8 },
+      { time: "03-27", healthFactor: 1.18, netDeltaUsd: 380000, treasuryPct: 15.1 },
+      { time: "03-28", healthFactor: 1.28, netDeltaUsd: 355000, treasuryPct: 16.5 },
+      { time: "03-29", healthFactor: 1.42, netDeltaUsd: 340000, treasuryPct: 17.0 },
+      { time: "03-30", healthFactor: 1.52, netDeltaUsd: 360000, treasuryPct: 17.5 },
+    ],
+    [],
+  );
+
   const greeksForSlider = portfolioGreeksData?.portfolio ?? portfolioGreeks;
   const btcSpot = 65000;
   const dS = btcSpot * (btcPriceChangePct / 100);
@@ -353,6 +409,10 @@ export function useRiskPageData(): {
       anyKillSwitchActive,
       isBatchMode,
       circuitBreakerPending: circuitBreakerMutation.isPending,
+      defiRiskProfiles: STRATEGY_RISK_PROFILES,
+      defiDeltaComposite,
+      hasDefiStrategies,
+      defiRiskTimeSeries,
     }),
     [
       riskLimits,
@@ -406,6 +466,9 @@ export function useRiskPageData(): {
       anyKillSwitchActive,
       isBatchMode,
       circuitBreakerMutation.isPending,
+      defiDeltaComposite,
+      hasDefiStrategies,
+      defiRiskTimeSeries,
     ],
   );
 

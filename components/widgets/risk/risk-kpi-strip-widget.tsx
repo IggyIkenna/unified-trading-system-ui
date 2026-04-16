@@ -5,23 +5,12 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
-import { MOCK_PORTFOLIO_DELTA, STRATEGY_RISK_PROFILES } from "@/lib/mocks/fixtures/defi-risk";
 import { STRATEGY_DISPLAY_NAMES, type RiskLevel } from "@/lib/types/defi";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { LayoutGrid, LineChart as LineChartIcon } from "lucide-react";
 import * as React from "react";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { WidgetComponentProps } from "../widget-registry";
 import { formatCurrency, useRiskData } from "./risk-data-context";
 
@@ -40,71 +29,13 @@ function RiskLevelBadge({ level }: { level: RiskLevel }) {
   );
 }
 
-import type { PortfolioDeltaComposite } from "@/lib/types/defi";
-
-function useLedgerVersion(): number {
-  const [v, setV] = React.useState(0);
-  React.useEffect(() => {
-    const refresh = () => setV((n) => n + 1);
-    window.addEventListener("mock-order-filled", refresh);
-    window.addEventListener("mock-ledger-reset", refresh);
-    return () => {
-      window.removeEventListener("mock-order-filled", refresh);
-      window.removeEventListener("mock-ledger-reset", refresh);
-    };
-  }, []);
-  return v;
-}
-
-function useHasDefiStrategies(): boolean {
-  useLedgerVersion();
-  return STRATEGY_RISK_PROFILES.length > 0 || getFilledDefiOrders().length > 0;
-}
-
-function useLiveDelta(): PortfolioDeltaComposite {
-  const ledgerVersion = useLedgerVersion();
-  return React.useMemo(() => {
-    const filled = getFilledDefiOrders();
-    let additionalDeltaUsd = 0;
-    let additionalDeltaEth = 0;
-    for (const order of filled) {
-      const notional = order.quantity * (order.average_fill_price ?? order.price);
-      const sign = order.side === "buy" ? 1 : -1;
-      additionalDeltaUsd += sign * notional;
-      const instrUpper = order.instrument_id.toUpperCase();
-      if (instrUpper.includes("ETH") || instrUpper.includes("WEETH")) {
-        additionalDeltaEth += sign * order.quantity;
-      }
-    }
-    return {
-      ...MOCK_PORTFOLIO_DELTA,
-      total_delta_usd: MOCK_PORTFOLIO_DELTA.total_delta_usd + additionalDeltaUsd,
-      total_delta_eth: MOCK_PORTFOLIO_DELTA.total_delta_eth + additionalDeltaEth,
-    };
-  }, [ledgerVersion]);
-}
-
-// ---------------------------------------------------------------------------
-// DeFi Risk Time Series Mock Data (7 data points each)
-// ---------------------------------------------------------------------------
-
-const DEFI_RISK_TIME_SERIES = [
-  { time: "03-24", healthFactor: 1.85, netDeltaUsd: 360000, treasuryPct: 17.5 },
-  { time: "03-25", healthFactor: 1.62, netDeltaUsd: 345000, treasuryPct: 18.2 },
-  { time: "03-26", healthFactor: 1.35, netDeltaUsd: 310000, treasuryPct: 16.8 },
-  { time: "03-27", healthFactor: 1.18, netDeltaUsd: 380000, treasuryPct: 15.1 },
-  { time: "03-28", healthFactor: 1.28, netDeltaUsd: 355000, treasuryPct: 16.5 },
-  { time: "03-29", healthFactor: 1.42, netDeltaUsd: 340000, treasuryPct: 17.0 },
-  { time: "03-30", healthFactor: 1.52, netDeltaUsd: 360000, treasuryPct: 17.5 },
-];
-
 const RISK_CHART_COLORS = {
   healthFactor: "#10b981",
   netDeltaUsd: "#3b82f6",
   treasuryPct: "#f59e0b",
 };
 
-function DeFiRiskTimeSeriesChart() {
+function DeFiRiskTimeSeriesChart({ data }: { data: Array<Record<string, number | string>> }) {
   return (
     <div className="space-y-3">
       {/* Health Factor */}
@@ -112,7 +43,7 @@ function DeFiRiskTimeSeriesChart() {
         <p className="text-[10px] text-muted-foreground mb-1 px-1">Health Factor</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={DEFI_RISK_TIME_SERIES}>
+            <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
               <XAxis dataKey="time" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
               <YAxis
@@ -159,7 +90,7 @@ function DeFiRiskTimeSeriesChart() {
         <p className="text-[10px] text-muted-foreground mb-1 px-1">Net Delta USD</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={DEFI_RISK_TIME_SERIES}>
+            <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
               <XAxis dataKey="time" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
               <YAxis
@@ -195,7 +126,7 @@ function DeFiRiskTimeSeriesChart() {
         <p className="text-[10px] text-muted-foreground mb-1 px-1">Treasury %</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={DEFI_RISK_TIME_SERIES}>
+            <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
               <XAxis dataKey="time" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
               <YAxis
@@ -240,10 +171,14 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
     killedStrategies,
     regimeMultiplier,
     varSummary,
+    defiRiskProfiles,
+    defiDeltaComposite,
+    hasDefiStrategies,
+    defiRiskTimeSeries,
   } = useRiskData();
 
-  const hasDefi = useHasDefiStrategies();
-  const liveDelta = useLiveDelta();
+  const hasDefi = hasDefiStrategies;
+  const liveDelta = defiDeltaComposite;
   const [defiRiskView, setDefiRiskView] = React.useState<"table" | "chart">("table");
 
   const baseMetrics: KpiMetric[] = [
@@ -280,10 +215,18 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
 
   const extendedMetrics: KpiMetric[] = varSummary
     ? [
-      { label: "Hist VaR 99%", value: formatCurrency(-Number(varSummary.historical_var_99 ?? 0)), sentiment: "negative" },
-      { label: "Param VaR 99%", value: formatCurrency(-Number(varSummary.parametric_var_99 ?? 0)), sentiment: "negative" },
-      { label: "CVaR 99%", value: formatCurrency(-Number(varSummary.cvar_99 ?? 0)), sentiment: "negative" },
-    ]
+        {
+          label: "Hist VaR 99%",
+          value: formatCurrency(-Number(varSummary.historical_var_99 ?? 0)),
+          sentiment: "negative",
+        },
+        {
+          label: "Param VaR 99%",
+          value: formatCurrency(-Number(varSummary.parametric_var_99 ?? 0)),
+          sentiment: "negative",
+        },
+        { label: "CVaR 99%", value: formatCurrency(-Number(varSummary.cvar_99 ?? 0)), sentiment: "negative" },
+      ]
     : [];
 
   const metrics = [...baseMetrics, ...extendedMetrics].slice(0, 9);
@@ -313,9 +256,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
                 <span className="text-[10px] text-muted-foreground block">Delta SOL</span>
-                <span className="text-sm font-mono font-semibold">
-                  {formatNumber(liveDelta.total_delta_sol, 1)}
-                </span>
+                <span className="text-sm font-mono font-semibold">{formatNumber(liveDelta.total_delta_sol, 1)}</span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
                 <span className="text-[10px] text-muted-foreground block">Liq. Cost %</span>
@@ -336,11 +277,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
           </CollapsibleSection>
 
           {/* DeFi Strategy Risk — Table/Chart Toggle */}
-          <CollapsibleSection
-            title="DeFi Strategy Risk Profiles"
-            defaultOpen={true}
-            count={STRATEGY_RISK_PROFILES.length}
-          >
+          <CollapsibleSection title="DeFi Strategy Risk Profiles" defaultOpen={true} count={defiRiskProfiles.length}>
             <div className="flex items-center gap-1 p-1 bg-muted rounded-lg w-fit mb-2">
               <Button
                 variant={defiRiskView === "table" ? "secondary" : "ghost"}
@@ -375,7 +312,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {STRATEGY_RISK_PROFILES.map((profile) => (
+                  {defiRiskProfiles.map((profile) => (
                     <TableRow key={profile.strategy_id}>
                       <TableCell className="text-[11px] font-medium">
                         {STRATEGY_DISPLAY_NAMES[profile.strategy_id]}
@@ -411,7 +348,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
                 </TableBody>
               </Table>
             ) : (
-              <DeFiRiskTimeSeriesChart />
+              <DeFiRiskTimeSeriesChart data={defiRiskTimeSeries} />
             )}
           </CollapsibleSection>
         </div>

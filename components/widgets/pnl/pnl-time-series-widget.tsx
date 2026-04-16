@@ -104,27 +104,6 @@ const FACTORS: Array<{ key: string; label: string; isNegative: boolean }> = [
 ];
 
 // ---------------------------------------------------------------------------
-// Backtest vs Live mock data (14 days cumulative NAV)
-// ---------------------------------------------------------------------------
-
-const BACKTEST_VS_LIVE_DATA = [
-  { day: "03-17", backtest: 1020000, live: 1018000 },
-  { day: "03-18", backtest: 1035000, live: 1031000 },
-  { day: "03-19", backtest: 1042000, live: 1046000 },
-  { day: "03-20", backtest: 1058000, live: 1052000 },
-  { day: "03-21", backtest: 1071000, live: 1065000 },
-  { day: "03-22", backtest: 1080000, live: 1082000 },
-  { day: "03-23", backtest: 1094000, live: 1088000 },
-  { day: "03-24", backtest: 1105000, live: 1097000 },
-  { day: "03-25", backtest: 1112000, live: 1115000 },
-  { day: "03-26", backtest: 1125000, live: 1120000 },
-  { day: "03-27", backtest: 1136000, live: 1128000 },
-  { day: "03-28", backtest: 1142000, live: 1139000 },
-  { day: "03-29", backtest: 1150000, live: 1145000 },
-  { day: "03-30", backtest: 1160000, live: 1155000 },
-];
-
-// ---------------------------------------------------------------------------
 // Multi-line factor chart
 // ---------------------------------------------------------------------------
 
@@ -215,13 +194,13 @@ function FactorLinesChart({ data }: { data: Array<Record<string, number | string
 // Backtest vs Live chart
 // ---------------------------------------------------------------------------
 
-function BacktestVsLiveChart() {
+function BacktestVsLiveChart({ data }: { data: Array<Record<string, number | string>> }) {
   const [anchorRef, chartHeight] = useWidgetChartHeight(BACKTEST_CHROME_PX);
 
   return (
     <div ref={anchorRef} className="flex-1">
       <ResponsiveContainer width="100%" height={chartHeight}>
-        <LineChart data={BACKTEST_VS_LIVE_DATA}>
+        <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} />
           <XAxis dataKey="day" tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
           <YAxis
@@ -252,8 +231,16 @@ function BacktestVsLiveChart() {
 // ---------------------------------------------------------------------------
 
 export function PnlTimeSeriesWidget(_props: WidgetComponentProps) {
-  const { timeSeriesData, timeSeriesNetPnL } = usePnLData();
+  const { timeSeriesData, timeSeriesNetPnL, backtestVsLive } = usePnLData();
   const [overlay, setOverlay] = React.useState<"factors" | "backtest">("factors");
+
+  if (timeSeriesData.length === 0 && backtestVsLive.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+        No P&L time series data available
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full p-2 gap-2">
@@ -291,7 +278,7 @@ export function PnlTimeSeriesWidget(_props: WidgetComponentProps) {
         <FactorLinesChart data={timeSeriesData} />
       ) : (
         <>
-          <BacktestVsLiveChart />
+          <BacktestVsLiveChart data={backtestVsLive} />
           <p className="text-[10px] text-muted-foreground shrink-0">
             Blue = backtest prediction · Green = live result · Shaded gap = tracking error
           </p>

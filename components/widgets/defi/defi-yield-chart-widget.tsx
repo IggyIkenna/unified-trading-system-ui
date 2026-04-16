@@ -14,12 +14,8 @@ import {
   AreaChart,
 } from "recharts";
 import { formatNumber } from "@/lib/utils/formatters";
-import {
-  generateAllYieldSeries,
-  generateYieldSummary,
-  type StrategyYieldSeries,
-} from "@/lib/mocks/generators/defi-yield-generators";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { useDeFiData } from "./defi-data-context";
 
 type ViewMode = "apy" | "cumulative_pnl" | "daily_pnl" | "comparison";
 
@@ -29,19 +25,13 @@ type ViewMode = "apy" | "cumulative_pnl" | "daily_pnl" | "comparison";
  * Yields match the presentation_defi.html exactly.
  */
 export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
+  const { yieldSeries: allSeries, yieldSummary: summary, yieldDays: days, setYieldDays: setDays } = useDeFiData();
   const [viewMode, setViewMode] = React.useState<ViewMode>("cumulative_pnl");
-  const [days, setDays] = React.useState(90);
   const [selectedStrategies, setSelectedStrategies] = React.useState<Set<string>>(new Set());
-
-  const allSeries = React.useMemo(() => generateAllYieldSeries(days), [days]);
-  const summary = React.useMemo(() => generateYieldSummary(days), [days]);
 
   // Default: show all strategies
   const visibleSeries = React.useMemo(
-    () =>
-      selectedStrategies.size === 0
-        ? allSeries
-        : allSeries.filter((s) => selectedStrategies.has(s.strategy_id)),
+    () => (selectedStrategies.size === 0 ? allSeries : allSeries.filter((s) => selectedStrategies.has(s.strategy_id))),
     [allSeries, selectedStrategies],
   );
 
@@ -70,10 +60,15 @@ export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
     return [...dateMap.values()].sort((a, b) => String(a.date).localeCompare(String(b.date)));
   }, [visibleSeries, viewMode]);
 
-  const yAxisLabel = viewMode === "apy" ? "APY %" : "USD";
-  const yFormatter = viewMode === "apy"
-    ? (v: number) => `${v.toFixed(1)}%`
-    : (v: number) => `$${formatNumber(v)}`;
+  const yFormatter = viewMode === "apy" ? (v: number) => `${v.toFixed(1)}%` : (v: number) => `$${formatNumber(v)}`;
+
+  if (allSeries.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+        No yield data available
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full gap-3 p-1">
@@ -115,10 +110,13 @@ export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
       <div className="grid grid-cols-4 gap-2 text-xs">
         {summary.slice(0, 4).map((s) => (
           <div key={s.strategy_id} className="rounded-md border p-2 space-y-0.5">
-            <div className="font-medium truncate" style={{ color: s.color }}>{s.strategy_name}</div>
+            <div className="font-medium truncate" style={{ color: s.color }}>
+              {s.strategy_name}
+            </div>
             <div className="text-lg font-bold">{s.target_apy_pct}%</div>
             <div className={`text-xs ${s.vs_ethena >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-              {s.vs_ethena >= 0 ? "+" : ""}{s.vs_ethena}% vs Ethena
+              {s.vs_ethena >= 0 ? "+" : ""}
+              {s.vs_ethena}% vs Ethena
             </div>
             <div className="text-muted-foreground">${formatNumber(s.cumulative_pnl_usd)} cum.</div>
           </div>
@@ -139,14 +137,14 @@ export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
               }}
               className="text-muted-foreground"
             />
-            <YAxis
-              tick={{ fontSize: 10 }}
-              tickFormatter={yFormatter}
-              className="text-muted-foreground"
-              width={70}
-            />
+            <YAxis tick={{ fontSize: 10 }} tickFormatter={yFormatter} className="text-muted-foreground" width={70} />
             <Tooltip
-              contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 11 }}
+              contentStyle={{
+                background: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: 6,
+                fontSize: 11,
+              }}
               labelFormatter={(d: string) => new Date(d).toLocaleDateString()}
               formatter={(value: number, name: string) => {
                 const series = allSeries.find((s) => s.strategy_id === name);
@@ -183,9 +181,7 @@ export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
             <button
               key={s.strategy_id}
               className={`px-2 py-0.5 text-[10px] rounded-full border transition-all ${
-                active
-                  ? "border-current opacity-100"
-                  : "border-border opacity-40 hover:opacity-70"
+                active ? "border-current opacity-100" : "border-border opacity-40 hover:opacity-70"
               }`}
               style={{ color: s.color }}
               onClick={() => toggleStrategy(s.strategy_id)}

@@ -116,6 +116,12 @@ export interface RiskData {
   anyKillSwitchActive: boolean;
   isBatchMode: boolean;
   circuitBreakerPending: boolean;
+
+  // DeFi risk data (consumed by risk-kpi-strip, sourced from defi mocks)
+  defiRiskProfiles: import("@/lib/types/defi").StrategyRiskProfile[];
+  defiDeltaComposite: import("@/lib/types/defi").PortfolioDeltaComposite;
+  hasDefiStrategies: boolean;
+  defiRiskTimeSeries: Array<Record<string, number | string>>;
 }
 
 // ---------------------------------------------------------------------------

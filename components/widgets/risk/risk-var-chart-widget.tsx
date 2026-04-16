@@ -19,6 +19,12 @@ export function RiskVarChartWidget(_props: WidgetComponentProps) {
 
   const methods = ["historical", "parametric", "monte_carlo", "filtered_historical"] as const;
 
+  if (adjustedVarData.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">No VaR data available</div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center gap-1 px-1 pb-1 shrink-0">

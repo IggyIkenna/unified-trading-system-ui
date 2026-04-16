@@ -9,10 +9,11 @@ import { WidgetHeaderEndSlotContext } from "@/components/widgets/widget-chrome-c
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
-import { GripHorizontal, Maximize2, Minimize2, Plus, X } from "lucide-react";
+import { GripHorizontal, Maximize2, Minimize2, Plus, RefreshCw, X } from "lucide-react";
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { WidgetContextGuard } from "./widget-context-guard";
+import { getActivePreset } from "./widget-chrome-presets";
 import { type WidgetDefinition, type WidgetPlacement, getAllWidgets, getWidget } from "./widget-registry";
 
 interface WidgetWrapperProps {
@@ -36,13 +37,24 @@ class WidgetErrorBoundary extends React.Component<
     return { error };
   }
 
+  private handleRetry = () => {
+    this.setState({ error: null });
+  };
+
   render() {
     if (this.state.error) {
       return (
         <div className="flex h-full items-center justify-center p-4">
-          <div className="text-center space-y-1">
+          <div className="text-center space-y-2">
             <p className="text-xs font-medium text-rose-400">{this.props.widgetLabel} failed to load</p>
             <p className="text-[10px] text-muted-foreground">{this.state.error.message}</p>
+            <button
+              onClick={this.handleRetry}
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-md border border-border bg-muted hover:bg-accent transition-colors"
+            >
+              <RefreshCw className="size-3" />
+              Retry
+            </button>
           </div>
         </div>
       );
@@ -194,6 +206,7 @@ export function WidgetWrapper({
 
   const [addWidgetOpen, setAddWidgetOpen] = React.useState(false);
   const [headerEndSlot, setHeaderEndSlot] = React.useState<React.ReactNode>(null);
+  const chromePreset = getActivePreset();
 
   React.useEffect(() => {
     if (!expanded) return;
@@ -214,7 +227,8 @@ export function WidgetWrapper({
   const headerRow = (
     <div
       className={cn(
-        "widget-drag-handle group/header flex items-center gap-0 px-1 border-b border-border bg-card/80 shrink-0",
+        "widget-drag-handle group/header flex items-center gap-0 px-1 shrink-0",
+        chromePreset.header,
         editMode && !expanded ? "cursor-grab active:cursor-grabbing" : "cursor-default",
       )}
     >
@@ -370,7 +384,8 @@ export function WidgetWrapper({
       <>
         <div
           className={cn(
-            "flex flex-col h-full rounded-lg border border-border bg-card overflow-hidden relative z-[1]",
+            "flex flex-col h-full overflow-hidden relative z-[1]",
+            chromePreset.container,
             editMode && "hover:border-border/80",
             expanded && "invisible",
           )}

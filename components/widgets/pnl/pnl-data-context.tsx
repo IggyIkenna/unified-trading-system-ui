@@ -29,6 +29,23 @@ import * as React from "react";
 
 export type { ClientPnLRow, FactorDrilldown, PnLComponent } from "@/lib/types/pnl";
 
+export interface DeFiPnLCategory {
+  name: string;
+  value: number;
+  color: string;
+}
+
+const DEFI_PNL_ATTRIBUTION: DeFiPnLCategory[] = [
+  { name: "Interest Income", value: 5860, color: "#10b981" },
+  { name: "Funding Income", value: 4120, color: "#3b82f6" },
+  { name: "Staking Yield", value: 2850, color: "#8b5cf6" },
+  { name: "Rewards (EIGEN/ETHFI)", value: 1240, color: "#14b8a6" },
+  { name: "Gas Costs", value: -345, color: "#6b7280" },
+  { name: "Swap Slippage", value: -128, color: "#f59e0b" },
+  { name: "Impermanent Loss", value: -520, color: "#ef4444" },
+  { name: "Bridge Fees", value: -85, color: "#94a3b8" },
+];
+
 export interface PnLData {
   pnlComponents: PnLComponent[];
   structuralPnL: PnLComponent[];
@@ -63,11 +80,34 @@ export interface PnLData {
   residualThresholdPct: number;
 
   isLoading: boolean;
+
+  defiPnlAttribution: DeFiPnLCategory[];
+  defiPnlNet: number;
+
+  /** Backtest vs live overlay data for PnL time-series widget */
+  backtestVsLive: Array<Record<string, number | string>>;
 }
 
 const PnLDataContext = React.createContext<PnLData | null>(null);
 
 const RESIDUAL_ALERT_THRESHOLD = 0.1; // 10%
+
+const BACKTEST_VS_LIVE_DATA: Array<Record<string, number | string>> = [
+  { day: "03-17", backtest: 1020000, live: 1018000 },
+  { day: "03-18", backtest: 1035000, live: 1031000 },
+  { day: "03-19", backtest: 1042000, live: 1046000 },
+  { day: "03-20", backtest: 1058000, live: 1052000 },
+  { day: "03-21", backtest: 1071000, live: 1065000 },
+  { day: "03-22", backtest: 1080000, live: 1082000 },
+  { day: "03-23", backtest: 1094000, live: 1088000 },
+  { day: "03-24", backtest: 1105000, live: 1097000 },
+  { day: "03-25", backtest: 1112000, live: 1115000 },
+  { day: "03-26", backtest: 1125000, live: 1120000 },
+  { day: "03-27", backtest: 1136000, live: 1128000 },
+  { day: "03-28", backtest: 1142000, live: 1139000 },
+  { day: "03-29", backtest: 1150000, live: 1145000 },
+  { day: "03-30", backtest: 1160000, live: 1155000 },
+];
 
 export function PnLDataProvider({ children }: { children: React.ReactNode }) {
   const { data: tickersData, isLoading: tickersLoading, error: tickersError, refetch: refetchTickers } = useTickers();
@@ -261,6 +301,9 @@ export function PnLDataProvider({ children }: { children: React.ReactNode }) {
       isResidualAlert,
       residualThresholdPct: RESIDUAL_ALERT_THRESHOLD * 100,
       isLoading: tickersLoading,
+      defiPnlAttribution: DEFI_PNL_ATTRIBUTION,
+      defiPnlNet: DEFI_PNL_ATTRIBUTION.reduce((s, c) => s + c.value, 0),
+      backtestVsLive: BACKTEST_VS_LIVE_DATA,
     }),
     [
       pnlComponents,
