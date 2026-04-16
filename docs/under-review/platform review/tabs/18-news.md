@@ -122,12 +122,7 @@ _Region filter is most useful for TradFi and Regulation news. Deemphasise or col
 The `use-news.ts` hook's `NewsItem` interface needs to be extended:
 
 ```typescript
-export type NewsAssetClass =
-  | "cefi"
-  | "defi"
-  | "tradfi"
-  | "sports_predictions"
-  | "cross";
+export type NewsAssetClass = "cefi" | "defi" | "tradfi" | "sports_predictions" | "cross";
 export type NewsTopic =
   | "macro"
   | "regulation"

@@ -81,8 +81,7 @@ export function useStrategies(filters?: StrategyFilters) {
 export function useUpdateStrategy() {
   return useMutation({
     mutationFn: (data: UpdateStrategyInput) => updateStrategy(data),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["strategies"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["strategies"] }),
   });
 }
 ```

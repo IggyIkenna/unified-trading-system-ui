@@ -141,11 +141,7 @@ Should I proceed?"
     "components": {
       // Describe component structure after refactor
     },
-    "changes": [
-      "What will move",
-      "What will be renamed",
-      "What will be deleted"
-    ]
+    "changes": ["What will move", "What will be renamed", "What will be deleted"]
   },
 
   "refactor_history": [

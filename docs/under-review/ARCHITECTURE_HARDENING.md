@@ -81,7 +81,7 @@ sees nearly the same thing as internal — minus the ops/admin surfaces.
 | 2. Subscribe | Clicks "Subscribe" → registration → chooses package                                  | Already done                                   | N/A (wildcard)                                |
 | 3. Hub       | Logs in → `/overview` → sees Investment Management as "Available"                    | Same — sees it as "Available" with quick stats | Same — sees all services                      |
 | 4. Detail    | Clicks card → `/reports` → sees own org's strategies, P&L, settlements               | Same page, own org data                        | Same page, can switch between all client orgs |
-| 5. Deep dive | Clicks a strategy → sees detailed returns, attribution, backtest↔live diff          | Same                                           | Same, plus admin actions                      |
+| 5. Deep dive | Clicks a strategy → sees detailed returns, attribution, backtest↔live diff           | Same                                           | Same, plus admin actions                      |
 | 6. Billing   | Sees invoices for their org                                                          | Same                                           | Can generate invoices for any org             |
 ```
 

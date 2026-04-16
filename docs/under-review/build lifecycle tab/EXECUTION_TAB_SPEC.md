@@ -618,19 +618,13 @@ Data types: `lib/backtest-analytics-types.ts` — all interfaces documented inli
 `lib/execution-analytics-adapter.ts` exports:
 
 ```typescript
-function executionResultsToAnalytics(
-  r: ExecutionBacktestResults,
-  equityCurve: ExecEquityPoint[],
-): BacktestAnalytics;
+function executionResultsToAnalytics(r: ExecutionBacktestResults, equityCurve: ExecEquityPoint[]): BacktestAnalytics;
 ```
 
 The adapter is used in `ResultsView` via:
 
 ```typescript
-const analytics = React.useMemo(
-  () => executionResultsToAnalytics(r, equityCurve),
-  [r, equityCurve],
-);
+const analytics = React.useMemo(() => executionResultsToAnalytics(r, equityCurve), [r, equityCurve]);
 ```
 
 To extend: add fields to `BacktestAnalytics` (in `backtest-analytics-types.ts`), populate them in the adapter, and consume them in the relevant shared component or page-level component.

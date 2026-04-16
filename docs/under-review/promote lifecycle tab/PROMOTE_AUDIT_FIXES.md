@@ -193,9 +193,7 @@ Populate for each strategy in mock data. When undefined, fall back to the curren
 
 ```typescript
 const weeks = ca.rampWeeks;
-const ramp = Array.from({ length: weeks }, (_, i) =>
-  Math.round(((i + 1) / weeks) * 100),
-);
+const ramp = Array.from({ length: weeks }, (_, i) => Math.round(((i + 1) / weeks) * 100));
 ```
 
 This produces `[17, 33, 50, 67, 83, 100]` for 6 weeks and `[13, 25, 38, 50, 63, 75, 88, 100]` for 8 weeks.

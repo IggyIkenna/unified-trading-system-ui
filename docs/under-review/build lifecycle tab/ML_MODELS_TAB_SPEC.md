@@ -832,13 +832,7 @@ interface FeatureImportance {
 
 ```typescript
 interface RegimePerformance {
-  regime:
-    | "trending"
-    | "ranging"
-    | "volatile"
-    | "crisis"
-    | "low_vol"
-    | "high_vol";
+  regime: "trending" | "ranging" | "volatile" | "crisis" | "low_vol" | "high_vol";
   sample_count: number;
   sharpe_ratio: number;
   directional_accuracy: number;

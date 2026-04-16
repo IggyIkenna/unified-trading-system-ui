@@ -698,39 +698,21 @@
     <div class="top-bar">
       <span class="lifecycle-badge">Build</span>
       <h1>Research & Backtesting</h1>
-      <div style="color: var(--text-muted); font-size: 12px; margin-left: 8px">
-        / services / research
-      </div>
+      <div style="color: var(--text-muted); font-size: 12px; margin-left: 8px">/ services / research</div>
       <div class="mode-toggle">
-        <button class="mode-btn active" onclick="setView('wireframe')">
-          Wireframe
-        </button>
-        <button class="mode-btn" onclick="setView('flow')">
-          Navigation Flow
-        </button>
+        <button class="mode-btn active" onclick="setView('wireframe')">Wireframe</button>
+        <button class="mode-btn" onclick="setView('flow')">Navigation Flow</button>
       </div>
     </div>
 
     <!-- Main Tab Bar -->
     <div class="tab-bar" id="mainTabs">
-      <div class="tab active" data-tab="features">
-        <span class="tab-num">1</span>Features
-      </div>
-      <div class="tab" data-tab="feature-etl">
-        <span class="tab-num">2</span>Feature ETL
-      </div>
-      <div class="tab" data-tab="models">
-        <span class="tab-num">3</span>Models
-      </div>
-      <div class="tab" data-tab="strategies">
-        <span class="tab-num">4</span>Strategies
-      </div>
-      <div class="tab" data-tab="execution">
-        <span class="tab-num">5</span>Execution
-      </div>
-      <div class="tab" data-tab="quant-workspace">
-        <span class="tab-num">6</span>Quant Workspace
-      </div>
+      <div class="tab active" data-tab="features"><span class="tab-num">1</span>Features</div>
+      <div class="tab" data-tab="feature-etl"><span class="tab-num">2</span>Feature ETL</div>
+      <div class="tab" data-tab="models"><span class="tab-num">3</span>Models</div>
+      <div class="tab" data-tab="strategies"><span class="tab-num">4</span>Strategies</div>
+      <div class="tab" data-tab="execution"><span class="tab-num">5</span>Execution</div>
+      <div class="tab" data-tab="quant-workspace"><span class="tab-num">6</span>Quant Workspace</div>
     </div>
 
     <!-- ============================================================= -->
@@ -738,10 +720,9 @@
     <!-- ============================================================= -->
     <div class="content tab-content" id="tab-features">
       <div class="page-desc">
-        <strong>Feature Catalogue</strong> — Browse, define, configure, and
-        version all features. Features are computed indicators (EMA, RSI,
-        funding rate, etc.) that feed ML models. Every config change creates a
-        new version. Features can depend on other features.
+        <strong>Feature Catalogue</strong> — Browse, define, configure, and version all features. Features are computed
+        indicators (EMA, RSI, funding rate, etc.) that feed ML models. Every config change creates a new version.
+        Features can depend on other features.
       </div>
 
       <div class="grid-sidebar">
@@ -795,20 +776,11 @@
               <div class="stat-label">Total Features</div>
               <div class="stat-value" style="font-size: 28px">847</div>
             </div>
-            <div
-              style="
-                margin-top: 10px;
-                font-size: 11px;
-                color: var(--text-muted);
-              "
-            >
-              CeFi: 312 &bull; DeFi: 198 &bull; TradFi: 156<br />Sports: 124
-              &bull; Prediction: 57
+            <div style="margin-top: 10px; font-size: 11px; color: var(--text-muted)">
+              CeFi: 312 &bull; DeFi: 198 &bull; TradFi: 156<br />Sports: 124 &bull; Prediction: 57
             </div>
             <div class="section-divider"></div>
-            <div class="filter-label" style="margin-bottom: 8px">
-              Quick Presets
-            </div>
+            <div class="filter-label" style="margin-bottom: 8px">Quick Presets</div>
             <div class="preset-chips">
               <span class="preset-chip">EMA-9</span>
               <span class="preset-chip">EMA-21</span>
@@ -827,10 +799,7 @@
           <div style="display: flex; gap: 12px; margin-bottom: 16px">
             <div class="search-bar" style="flex: 1">
               <span class="search-icon">&#128269;</span>
-              <input
-                type="text"
-                placeholder="Search features by name, type, or symbol..."
-              />
+              <input type="text" placeholder="Search features by name, type, or symbol..." />
             </div>
             <button class="btn btn-primary">+ New Feature</button>
           </div>
@@ -852,17 +821,13 @@
                 <tbody>
                   <tr style="background: rgba(79, 110, 247, 0.05)">
                     <td>
-                      <strong style="color: var(--text-primary)"
-                        >funding_rate</strong
-                      ><br /><span
+                      <strong style="color: var(--text-primary)">funding_rate</strong><br /><span
                         style="font-size: 10px; color: var(--text-muted)"
                         >Perpetual Funding Rate</span
                       >
                     </td>
                     <td>
-                      <span class="mono" style="font-size: 11px"
-                        >Delta-One</span
-                      >
+                      <span class="mono" style="font-size: 11px">Delta-One</span>
                     </td>
                     <td><span class="badge badge-blue">CeFi</span></td>
                     <td>Technical</td>
@@ -872,16 +837,13 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong style="color: var(--text-primary)">ema_50</strong
-                      ><br /><span
+                      <strong style="color: var(--text-primary)">ema_50</strong><br /><span
                         style="font-size: 10px; color: var(--text-muted)"
                         >50-Period EMA</span
                       >
                     </td>
                     <td>
-                      <span class="mono" style="font-size: 11px"
-                        >Delta-One</span
-                      >
+                      <span class="mono" style="font-size: 11px">Delta-One</span>
                     </td>
                     <td><span class="badge badge-blue">CeFi</span></td>
                     <td>Technical</td>
@@ -891,17 +853,13 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong style="color: var(--text-primary)"
-                        >iv_surface</strong
-                      ><br /><span
+                      <strong style="color: var(--text-primary)">iv_surface</strong><br /><span
                         style="font-size: 10px; color: var(--text-muted)"
                         >Implied Vol Surface</span
                       >
                     </td>
                     <td>
-                      <span class="mono" style="font-size: 11px"
-                        >Volatility</span
-                      >
+                      <span class="mono" style="font-size: 11px">Volatility</span>
                     </td>
                     <td><span class="badge badge-purple">TradFi</span></td>
                     <td>Risk</td>
@@ -911,9 +869,7 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong style="color: var(--text-primary)"
-                        >pool_tick_data</strong
-                      ><br /><span
+                      <strong style="color: var(--text-primary)">pool_tick_data</strong><br /><span
                         style="font-size: 10px; color: var(--text-muted)"
                         >DEX Pool Tick Events</span
                       >
@@ -929,9 +885,7 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong style="color: var(--text-primary)"
-                        >odds_movement</strong
-                      ><br /><span
+                      <strong style="color: var(--text-primary)">odds_movement</strong><br /><span
                         style="font-size: 10px; color: var(--text-muted)"
                         >Pre-Match Odds Drift</span
                       >
@@ -947,17 +901,13 @@
                   </tr>
                   <tr>
                     <td>
-                      <strong style="color: var(--text-primary)"
-                        >macd_12_26_9</strong
-                      ><br /><span
+                      <strong style="color: var(--text-primary)">macd_12_26_9</strong><br /><span
                         style="font-size: 10px; color: var(--text-muted)"
                         >MACD Standard</span
                       >
                     </td>
                     <td>
-                      <span class="mono" style="font-size: 11px"
-                        >Delta-One</span
-                      >
+                      <span class="mono" style="font-size: 11px">Delta-One</span>
                     </td>
                     <td><span class="badge badge-blue">CeFi</span></td>
                     <td>Technical</td>
@@ -971,22 +921,14 @@
           </div>
 
           <!-- Expanded Feature Detail -->
-          <div
-            class="card"
-            style="border-color: var(--accent-blue); border-width: 1px"
-          >
+          <div class="card" style="border-color: var(--accent-blue); border-width: 1px">
             <div class="card-header">
               <div>
                 <div class="card-title">
                   funding_rate
-                  <span class="badge badge-green" style="margin-left: 8px"
-                    >v2.1</span
-                  >
+                  <span class="badge badge-green" style="margin-left: 8px">v2.1</span>
                 </div>
-                <div class="card-subtitle">
-                  Perpetual Funding Rate &bull; Delta-One &bull; CeFi &bull;
-                  Technical
-                </div>
+                <div class="card-subtitle">Perpetual Funding Rate &bull; Delta-One &bull; CeFi &bull; Technical</div>
               </div>
               <div style="display: flex; gap: 8px">
                 <button class="btn btn-outline btn-sm">Edit Config</button>
@@ -998,71 +940,39 @@
             <div class="grid-3">
               <div>
                 <div class="filter-label">Configuration</div>
-                <div
-                  style="
-                    font-size: 12px;
-                    color: var(--text-secondary);
-                    margin-top: 6px;
-                  "
-                >
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px">
                   <div>
                     Input:
-                    <span class="mono" style="color: var(--text-primary)"
-                      >Candles (1H)</span
-                    >
+                    <span class="mono" style="color: var(--text-primary)">Candles (1H)</span>
                   </div>
                   <div style="margin-top: 4px">
                     Symbols:
-                    <span class="mono" style="color: var(--text-primary)"
-                      >BTC-PERP, ETH-PERP, SOL-PERP +139</span
-                    >
+                    <span class="mono" style="color: var(--text-primary)">BTC-PERP, ETH-PERP, SOL-PERP +139</span>
                   </div>
                   <div style="margin-top: 4px">
                     Settlement:
-                    <span class="mono" style="color: var(--text-primary)"
-                      >8h</span
-                    >
+                    <span class="mono" style="color: var(--text-primary)">8h</span>
                   </div>
                   <div style="margin-top: 4px">
                     Smoothing:
-                    <span class="mono" style="color: var(--text-primary)"
-                      >EMA-3</span
-                    >
+                    <span class="mono" style="color: var(--text-primary)">EMA-3</span>
                   </div>
                 </div>
               </div>
               <div>
                 <div class="filter-label">Consumed By Models</div>
-                <div
-                  style="
-                    font-size: 12px;
-                    color: var(--text-secondary);
-                    margin-top: 6px;
-                  "
-                >
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px">
                   <div>
                     &bull; BTC Basis Model
-                    <span
-                      class="mono"
-                      style="font-size: 10px; color: var(--accent-purple)"
-                      >(v2.3)</span
-                    >
+                    <span class="mono" style="font-size: 10px; color: var(--accent-purple)">(v2.3)</span>
                   </div>
                   <div>
                     &bull; ETH Funding Carry
-                    <span
-                      class="mono"
-                      style="font-size: 10px; color: var(--accent-purple)"
-                      >(v1.1)</span
-                    >
+                    <span class="mono" style="font-size: 10px; color: var(--accent-purple)">(v1.1)</span>
                   </div>
                   <div>
                     &bull; Multi-Asset Momentum
-                    <span
-                      class="mono"
-                      style="font-size: 10px; color: var(--accent-purple)"
-                      >(v3.0)</span
-                    >
+                    <span class="mono" style="font-size: 10px; color: var(--accent-purple)">(v3.0)</span>
                   </div>
                 </div>
               </div>
@@ -1072,22 +982,10 @@
                   <div style="font-size: 12px; color: var(--text-secondary)">
                     Last Computed: <span class="mono">14:00 UTC</span>
                   </div>
-                  <div
-                    style="
-                      font-size: 12px;
-                      color: var(--text-secondary);
-                      margin-top: 4px;
-                    "
-                  >
+                  <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px">
                     SLA: <span class="mono">&lt; 30s</span>
                   </div>
-                  <div
-                    style="
-                      font-size: 12px;
-                      color: var(--text-secondary);
-                      margin-top: 4px;
-                    "
-                  >
+                  <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px">
                     Update: <span class="mono">Every 8h</span>
                   </div>
                 </div>
@@ -1095,31 +993,24 @@
             </div>
 
             <div class="nav-hint" onclick="switchTab('feature-etl')">
-              <span class="arrow-icon">&#8594;</span> View computation jobs for
-              this feature in <strong>Feature ETL</strong>
+              <span class="arrow-icon">&#8594;</span> View computation jobs for this feature in
+              <strong>Feature ETL</strong>
             </div>
           </div>
 
           <!-- Dependency Tree Panel -->
           <div class="card">
-            <div class="card-title" style="margin-bottom: 12px">
-              Dependency Tree: macd_12_26_9
-            </div>
+            <div class="card-title" style="margin-bottom: 12px">Dependency Tree: macd_12_26_9</div>
             <div class="dep-tree">
               <span class="node">macd_12_26_9</span>
               <span class="version">(v1.3)</span><br />
-              <span class="connector">&nbsp;&nbsp;├── </span
-              ><span class="node">ema_12</span>
+              <span class="connector">&nbsp;&nbsp;├── </span><span class="node">ema_12</span>
               <span class="version">(v2.0)</span> &larr; fast EMA<br />
-              <span class="connector">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── </span
-              >raw candles (close)<br />
-              <span class="connector">&nbsp;&nbsp;├── </span
-              ><span class="node">ema_26</span>
+              <span class="connector">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── </span>raw candles (close)<br />
+              <span class="connector">&nbsp;&nbsp;├── </span><span class="node">ema_26</span>
               <span class="version">(v1.5)</span> &larr; slow EMA<br />
-              <span class="connector">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── </span
-              >raw candles (close)<br />
-              <span class="connector">&nbsp;&nbsp;└── </span>signal_line:
-              ema(macd_line, 9)
+              <span class="connector">&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── </span>raw candles (close)<br />
+              <span class="connector">&nbsp;&nbsp;└── </span>signal_line: ema(macd_line, 9)
             </div>
             <div
               style="
@@ -1131,8 +1022,8 @@
                 color: var(--accent-amber);
               "
             >
-              &#9888; ema_12 updated v1.9 → v2.0 on 2026-03-20 &bull; macd
-              auto-bumped v1.2 → v1.3 &bull; 2 models flagged for retraining
+              &#9888; ema_12 updated v1.9 → v2.0 on 2026-03-20 &bull; macd auto-bumped v1.2 → v1.3 &bull; 2 models
+              flagged for retraining
             </div>
           </div>
         </div>
@@ -1144,10 +1035,8 @@
     <!-- ============================================================= -->
     <div class="content tab-content" id="tab-feature-etl" style="display: none">
       <div class="page-desc">
-        <strong>Feature ETL Pipeline</strong> — Track computation progress,
-        trigger jobs, monitor pipeline health. This is the primary UI for
-        feature computation (not deployment-ui). Spin up VMs and manage computes
-        here.
+        <strong>Feature ETL Pipeline</strong> — Track computation progress, trigger jobs, monitor pipeline health. This
+        is the primary UI for feature computation (not deployment-ui). Spin up VMs and manage computes here.
       </div>
 
       <div class="grid-4">
@@ -1180,75 +1069,40 @@
         </div>
         <div style="display: flex; flex-direction: column; gap: 14px">
           <div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-              "
-            >
-              <span>CeFi Features</span
-              ><span class="mono">2,456 / 3,000 &bull; 82%</span>
+            <div style="display: flex; justify-content: space-between; font-size: 12px">
+              <span>CeFi Features</span><span class="mono">2,456 / 3,000 &bull; 82%</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill green" style="width: 82%"></div>
             </div>
           </div>
           <div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-              "
-            >
-              <span>DeFi Features</span
-              ><span class="mono">1,340 / 2,000 &bull; 67%</span>
+            <div style="display: flex; justify-content: space-between; font-size: 12px">
+              <span>DeFi Features</span><span class="mono">1,340 / 2,000 &bull; 67%</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill blue" style="width: 67%"></div>
             </div>
           </div>
           <div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-              "
-            >
-              <span>TradFi Features</span
-              ><span class="mono">1,420 / 1,560 &bull; 91%</span>
+            <div style="display: flex; justify-content: space-between; font-size: 12px">
+              <span>TradFi Features</span><span class="mono">1,420 / 1,560 &bull; 91%</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill green" style="width: 91%"></div>
             </div>
           </div>
           <div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-              "
-            >
-              <span>Sports Features</span
-              ><span class="mono">650 / 1,250 &bull; 52%</span>
+            <div style="display: flex; justify-content: space-between; font-size: 12px">
+              <span>Sports Features</span><span class="mono">650 / 1,250 &bull; 52%</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill amber" style="width: 52%"></div>
             </div>
           </div>
           <div>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-              "
-            >
-              <span>Prediction Features</span
-              ><span class="mono">160 / 570 &bull; 28%</span>
+            <div style="display: flex; justify-content: space-between; font-size: 12px">
+              <span>Prediction Features</span><span class="mono">160 / 570 &bull; 28%</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill amber" style="width: 28%"></div>
@@ -1301,110 +1155,39 @@
         <div class="card">
           <div class="card-header">
             <div class="card-title">Completion Heatmap</div>
-            <div style="font-size: 11px; color: var(--text-muted)">
-              Date &times; Feature Group
-            </div>
+            <div style="font-size: 11px; color: var(--text-muted)">Date &times; Feature Group</div>
           </div>
           <div class="chart-placeholder" style="min-height: 160px">
             <div style="text-align: center">
-              <div
-                style="
-                  font-size: 11px;
-                  color: var(--text-muted);
-                  margin-bottom: 8px;
-                "
-              >
+              <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px">
                 Heatmap: darker = more complete
               </div>
               <div class="heatmap-row" style="justify-content: center">
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.9"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.8"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.6"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-amber); opacity: 0.7"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.9"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.7"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-amber); opacity: 0.5"
-                ></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.9"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.8"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.6"></div>
+                <div class="heatmap-cell" style="background: var(--accent-amber); opacity: 0.7"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.9"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.7"></div>
+                <div class="heatmap-cell" style="background: var(--accent-amber); opacity: 0.5"></div>
               </div>
               <div class="heatmap-row" style="justify-content: center">
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.7"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-amber); opacity: 0.5"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-red); opacity: 0.4"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-amber); opacity: 0.6"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.8"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.6"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-red); opacity: 0.3"
-                ></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.7"></div>
+                <div class="heatmap-cell" style="background: var(--accent-amber); opacity: 0.5"></div>
+                <div class="heatmap-cell" style="background: var(--accent-red); opacity: 0.4"></div>
+                <div class="heatmap-cell" style="background: var(--accent-amber); opacity: 0.6"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.8"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.6"></div>
+                <div class="heatmap-cell" style="background: var(--accent-red); opacity: 0.3"></div>
               </div>
               <div class="heatmap-row" style="justify-content: center">
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.9"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.9"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.7"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.9"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-green); opacity: 0.9"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-amber); opacity: 0.6"
-                ></div>
-                <div
-                  class="heatmap-cell"
-                  style="background: var(--accent-amber); opacity: 0.5"
-                ></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.9"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.9"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.7"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.9"></div>
+                <div class="heatmap-cell" style="background: var(--accent-green); opacity: 0.9"></div>
+                <div class="heatmap-cell" style="background: var(--accent-amber); opacity: 0.6"></div>
+                <div class="heatmap-cell" style="background: var(--accent-amber); opacity: 0.5"></div>
               </div>
             </div>
           </div>
@@ -1417,9 +1200,8 @@
     <!-- ============================================================= -->
     <div class="content tab-content" id="tab-models" style="display: none">
       <div class="page-desc">
-        <strong>ML Models</strong> — Configure, train, evaluate, and compare
-        models. Each model pins exact feature versions used for training.
-        Training progress tracked via ETL pipeline view.
+        <strong>ML Models</strong> — Configure, train, evaluate, and compare models. Each model pins exact feature
+        versions used for training. Training progress tracked via ETL pipeline view.
       </div>
 
       <div class="sub-tab-bar">
@@ -1469,9 +1251,7 @@
           <tbody>
             <tr>
               <td>
-                <strong style="color: var(--text-primary)"
-                  >BTC Directional</strong
-                >
+                <strong style="color: var(--text-primary)">BTC Directional</strong>
               </td>
               <td class="mono" style="font-size: 11px">XGBoost</td>
               <td><span class="badge badge-blue">CeFi</span></td>
@@ -1482,9 +1262,7 @@
             </tr>
             <tr>
               <td>
-                <strong style="color: var(--text-primary)"
-                  >ETH Funding Carry</strong
-                >
+                <strong style="color: var(--text-primary)">ETH Funding Carry</strong>
               </td>
               <td class="mono" style="font-size: 11px">LSTM</td>
               <td><span class="badge badge-blue">CeFi</span></td>
@@ -1495,9 +1273,7 @@
             </tr>
             <tr>
               <td>
-                <strong style="color: var(--text-primary)"
-                  >Match Outcome</strong
-                >
+                <strong style="color: var(--text-primary)">Match Outcome</strong>
               </td>
               <td class="mono" style="font-size: 11px">LightGBM</td>
               <td><span class="badge badge-amber">Sports</span></td>
@@ -1508,9 +1284,7 @@
             </tr>
             <tr>
               <td>
-                <strong style="color: var(--text-primary)"
-                  >DeFi Yield Pred</strong
-                >
+                <strong style="color: var(--text-primary)">DeFi Yield Pred</strong>
               </td>
               <td class="mono" style="font-size: 11px">Transformer</td>
               <td><span class="badge badge-green">DeFi</span></td>
@@ -1527,101 +1301,46 @@
       <div class="card" style="border-color: var(--accent-blue)">
         <div class="card-header">
           <div>
-            <div class="card-title">
-              BTC Directional v4.0 <span class="badge badge-green">Active</span>
-            </div>
-            <div class="card-subtitle">
-              XGBoost &bull; CeFi &bull; Trained 2026-03-18
-            </div>
+            <div class="card-title">BTC Directional v4.0 <span class="badge badge-green">Active</span></div>
+            <div class="card-subtitle">XGBoost &bull; CeFi &bull; Trained 2026-03-18</div>
           </div>
           <div style="display: flex; gap: 8px">
             <button class="btn btn-outline btn-sm">Retrain</button
-            ><button class="btn btn-primary btn-sm">
-              Use in Strategy &rarr;
-            </button>
+            ><button class="btn btn-primary btn-sm">Use in Strategy &rarr;</button>
           </div>
         </div>
         <div class="grid-3">
           <div>
             <div class="filter-label">Feature Version Linkage</div>
-            <div
-              style="
-                font-size: 12px;
-                color: var(--text-secondary);
-                margin-top: 6px;
-                line-height: 1.8;
-              "
-            >
+            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px; line-height: 1.8">
               <span class="mono" style="color: var(--accent-cyan)">ema_50</span>
-              <span
-                class="mono"
-                style="font-size: 10px; color: var(--accent-purple)"
-                >v2.1</span
-              >
-              <span class="badge badge-green" style="font-size: 9px"
-                >current</span
-              ><br />
+              <span class="mono" style="font-size: 10px; color: var(--accent-purple)">v2.1</span>
+              <span class="badge badge-green" style="font-size: 9px">current</span><br />
               <span class="mono" style="color: var(--accent-cyan)">rsi_14</span>
-              <span
-                class="mono"
-                style="font-size: 10px; color: var(--accent-purple)"
-                >v1.3</span
-              >
-              <span class="badge badge-green" style="font-size: 9px"
-                >current</span
-              ><br />
-              <span class="mono" style="color: var(--accent-cyan)"
-                >funding_rate</span
-              >
-              <span
-                class="mono"
-                style="font-size: 10px; color: var(--accent-purple)"
-                >v2.1</span
-              >
-              <span class="badge badge-green" style="font-size: 9px"
-                >current</span
-              ><br />
-              <span class="mono" style="color: var(--accent-cyan)"
-                >macd_12_26_9</span
-              >
-              <span
-                class="mono"
-                style="font-size: 10px; color: var(--accent-red)"
-                >v1.2</span
-              >
-              <span class="badge badge-amber" style="font-size: 9px"
-                >stale &rarr; v1.3</span
-              >
+              <span class="mono" style="font-size: 10px; color: var(--accent-purple)">v1.3</span>
+              <span class="badge badge-green" style="font-size: 9px">current</span><br />
+              <span class="mono" style="color: var(--accent-cyan)">funding_rate</span>
+              <span class="mono" style="font-size: 10px; color: var(--accent-purple)">v2.1</span>
+              <span class="badge badge-green" style="font-size: 9px">current</span><br />
+              <span class="mono" style="color: var(--accent-cyan)">macd_12_26_9</span>
+              <span class="mono" style="font-size: 10px; color: var(--accent-red)">v1.2</span>
+              <span class="badge badge-amber" style="font-size: 9px">stale &rarr; v1.3</span>
             </div>
           </div>
           <div>
             <div class="filter-label">Hyperparameters</div>
-            <div
-              class="mono"
-              style="
-                font-size: 11px;
-                color: var(--text-secondary);
-                margin-top: 6px;
-                line-height: 1.8;
-              "
-            >
-              max_depth: 8<br />learning_rate: 0.05<br />n_estimators: 500<br />subsample:
-              0.8<br />colsample_bytree: 0.7
+            <div class="mono" style="font-size: 11px; color: var(--text-secondary); margin-top: 6px; line-height: 1.8">
+              max_depth: 8<br />learning_rate: 0.05<br />n_estimators: 500<br />subsample: 0.8<br />colsample_bytree:
+              0.7
             </div>
           </div>
           <div>
             <div class="filter-label">Training Loss Curve</div>
-            <div
-              class="chart-placeholder"
-              style="min-height: 120px; font-size: 11px"
-            >
-              Loss &darr; over 500 epochs
-            </div>
+            <div class="chart-placeholder" style="min-height: 120px; font-size: 11px">Loss &darr; over 500 epochs</div>
           </div>
         </div>
         <div class="nav-hint" onclick="switchTab('strategies')">
-          <span class="arrow-icon">&#8594;</span> Run strategy backtest with
-          this model in <strong>Strategies</strong>
+          <span class="arrow-icon">&#8594;</span> Run strategy backtest with this model in <strong>Strategies</strong>
         </div>
       </div>
     </div>
@@ -1631,9 +1350,8 @@
     <!-- ============================================================= -->
     <div class="content tab-content" id="tab-strategies" style="display: none">
       <div class="page-desc">
-        <strong>Strategies</strong> — Configure strategy backtests to generate
-        signals. Compare signals across strategies. Signals are the output here;
-        they feed into the Execution tab.
+        <strong>Strategies</strong> — Configure strategy backtests to generate signals. Compare signals across
+        strategies. Signals are the output here; they feed into the Execution tab.
       </div>
 
       <div class="sub-tab-bar">
@@ -1646,9 +1364,7 @@
       <!-- New Strategy Config -->
       <div class="grid-2">
         <div class="card">
-          <div class="card-title" style="margin-bottom: 16px">
-            Strategy Backtest Configuration
-          </div>
+          <div class="card-title" style="margin-bottom: 16px">Strategy Backtest Configuration</div>
           <div class="form-group">
             <div class="form-label">Model Selection</div>
             <select class="form-input">
@@ -1691,9 +1407,7 @@
             </div>
           </div>
           <div class="section-divider"></div>
-          <div class="filter-label" style="margin-bottom: 8px">
-            Risk Constraints
-          </div>
+          <div class="filter-label" style="margin-bottom: 8px">Risk Constraints</div>
           <div class="grid-3" style="gap: 12px">
             <div class="form-group">
               <div class="form-label">Max Position</div>
@@ -1709,19 +1423,13 @@
             </div>
           </div>
           <div class="section-divider"></div>
-          <div class="filter-label" style="margin-bottom: 8px">
-            Backtest Mode
-          </div>
+          <div class="filter-label" style="margin-bottom: 8px">Backtest Mode</div>
           <div style="display: flex; gap: 8px">
             <button class="btn btn-primary btn-sm">Single Instrument</button>
-            <button class="btn btn-outline btn-sm">
-              Portfolio (Multi-Asset)
-            </button>
+            <button class="btn btn-outline btn-sm">Portfolio (Multi-Asset)</button>
           </div>
           <div style="margin-top: 16px; display: flex; gap: 8px">
-            <button class="btn btn-green" style="flex: 1">
-              Run Strategy Backtest
-            </button>
+            <button class="btn btn-green" style="flex: 1">Run Strategy Backtest</button>
             <button class="btn btn-outline">Save Template</button>
           </div>
         </div>
@@ -1731,9 +1439,7 @@
           <div class="card-header">
             <div>
               <div class="card-title">Signal Output: BTC Momentum v4</div>
-              <div class="card-subtitle">
-                130 signals &bull; 2026-01-01 → 2026-03-23
-              </div>
+              <div class="card-subtitle">130 signals &bull; 2026-01-01 → 2026-03-23</div>
             </div>
             <span class="badge badge-green">Complete</span>
           </div>
@@ -1744,12 +1450,7 @@
             </div>
             <div class="stat">
               <div class="stat-label">Hit Rate</div>
-              <div
-                class="stat-value"
-                style="font-size: 18px; color: var(--accent-green)"
-              >
-                62.3%
-              </div>
+              <div class="stat-value" style="font-size: 18px; color: var(--accent-green)">62.3%</div>
             </div>
             <div class="stat">
               <div class="stat-label">Avg Confidence</div>
@@ -1793,22 +1494,15 @@
                 <td class="mono">0.71</td>
               </tr>
               <tr>
-                <td
-                  colspan="6"
-                  style="
-                    text-align: center;
-                    color: var(--text-muted);
-                    font-size: 11px;
-                  "
-                >
+                <td colspan="6" style="text-align: center; color: var(--text-muted); font-size: 11px">
                   ... 127 more signals
                 </td>
               </tr>
             </tbody>
           </table>
           <div class="nav-hint" onclick="switchTab('execution')">
-            <span class="arrow-icon">&#8594;</span> Send signals to
-            <strong>Execution</strong> tab for execution backtest
+            <span class="arrow-icon">&#8594;</span> Send signals to <strong>Execution</strong> tab for execution
+            backtest
           </div>
         </div>
       </div>
@@ -1821,35 +1515,20 @@
         </div>
         <div class="chart-placeholder" style="min-height: 180px">
           <div style="text-align: center">
-            <div
-              style="
-                font-size: 13px;
-                color: var(--text-secondary);
-                margin-bottom: 8px;
-              "
-            >
+            <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px">
               Price chart with signal overlays
             </div>
             <div class="signal-legend">
               <div class="signal-legend-item">
-                <div
-                  class="signal-dot"
-                  style="background: var(--accent-blue)"
-                ></div>
+                <div class="signal-dot" style="background: var(--accent-blue)"></div>
                 Strategy A (Momentum v4)
               </div>
               <div class="signal-legend-item">
-                <div
-                  class="signal-dot"
-                  style="background: var(--accent-green)"
-                ></div>
+                <div class="signal-dot" style="background: var(--accent-green)"></div>
                 Strategy B (Mean Rev v2)
               </div>
               <div class="signal-legend-item">
-                <div
-                  class="signal-dot"
-                  style="background: var(--accent-amber)"
-                ></div>
+                <div class="signal-dot" style="background: var(--accent-amber)"></div>
                 Strategy C (Vol Regime)
               </div>
             </div>
@@ -1892,18 +1571,8 @@
           </tbody>
         </table>
         <div style="display: flex; gap: 8px; margin-top: 12px">
-          <button
-            class="btn btn-primary btn-sm"
-            onclick="switchTab('execution')"
-          >
-            Send All to Execution &rarr;
-          </button>
-          <button
-            class="btn btn-outline btn-sm"
-            onclick="switchTab('execution')"
-          >
-            Send Best to Execution &rarr;
-          </button>
+          <button class="btn btn-primary btn-sm" onclick="switchTab('execution')">Send All to Execution &rarr;</button>
+          <button class="btn btn-outline btn-sm" onclick="switchTab('execution')">Send Best to Execution &rarr;</button>
         </div>
       </div>
     </div>
@@ -1913,10 +1582,8 @@
     <!-- ============================================================= -->
     <div class="content tab-content" id="tab-execution" style="display: none">
       <div class="page-desc">
-        <strong>Execution</strong> — Configure execution algo, run execution
-        backtest, view TradingView-style results. Compare execution quality
-        across different algos. Mark best results as strategy candidates for
-        Promote tab.
+        <strong>Execution</strong> — Configure execution algo, run execution backtest, view TradingView-style results.
+        Compare execution quality across different algos. Mark best results as strategy candidates for Promote tab.
       </div>
 
       <div class="sub-tab-bar">
@@ -1929,9 +1596,7 @@
       <div class="grid-2">
         <!-- Execution Config -->
         <div class="card">
-          <div class="card-title" style="margin-bottom: 16px">
-            Execution Backtest Configuration
-          </div>
+          <div class="card-title" style="margin-bottom: 16px">Execution Backtest Configuration</div>
           <div
             style="
               padding: 8px 12px;
@@ -1941,8 +1606,7 @@
               margin-bottom: 14px;
             "
           >
-            Input: <strong>130 signals</strong> from "BTC Momentum v4 Strategy
-            Backtest"
+            Input: <strong>130 signals</strong> from "BTC Momentum v4 Strategy Backtest"
           </div>
           <div class="form-group">
             <div class="form-label">Execution Algorithm</div>
@@ -1955,9 +1619,7 @@
               <option>Market Only</option>
             </select>
           </div>
-          <div class="filter-label" style="margin: 12px 0 6px">
-            TWAP Parameters
-          </div>
+          <div class="filter-label" style="margin: 12px 0 6px">TWAP Parameters</div>
           <div class="grid-3" style="gap: 12px">
             <div class="form-group">
               <div class="form-label">Window</div>
@@ -2000,9 +1662,7 @@
             </select>
           </div>
           <div style="margin-top: 16px; display: flex; gap: 8px">
-            <button class="btn btn-green" style="flex: 1">
-              Run Execution Backtest
-            </button>
+            <button class="btn btn-green" style="flex: 1">Run Execution Backtest</button>
             <button class="btn btn-outline">Save Config</button>
           </div>
         </div>
@@ -2014,42 +1674,21 @@
             <span class="badge badge-green">Complete</span>
           </div>
           <div class="sub-tab-bar" style="margin-bottom: 14px">
-            <div
-              class="sub-tab active"
-              style="font-size: 11px; padding: 5px 10px"
-            >
-              Overview
-            </div>
-            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">
-              Performance
-            </div>
-            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">
-              Trades
-            </div>
-            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">
-              Execution
-            </div>
-            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">
-              Config
-            </div>
+            <div class="sub-tab active" style="font-size: 11px; padding: 5px 10px">Overview</div>
+            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">Performance</div>
+            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">Trades</div>
+            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">Execution</div>
+            <div class="sub-tab" style="font-size: 11px; padding: 5px 10px">Config</div>
           </div>
 
-          <div
-            class="chart-placeholder"
-            style="min-height: 140px; margin-bottom: 14px"
-          >
+          <div class="chart-placeholder" style="min-height: 140px; margin-bottom: 14px">
             Equity Curve &bull; Strategy vs Buy&Hold &bull; Drawdown shading
           </div>
 
           <div class="grid-2" style="gap: 10px">
             <div class="stat">
               <div class="stat-label">Net Profit</div>
-              <div
-                class="stat-value"
-                style="font-size: 18px; color: var(--accent-green)"
-              >
-                $2,340
-              </div>
+              <div class="stat-value" style="font-size: 18px; color: var(--accent-green)">$2,340</div>
               <div class="stat-delta up">+23.4%</div>
             </div>
             <div class="stat">
@@ -2058,12 +1697,7 @@
             </div>
             <div class="stat">
               <div class="stat-label">Max Drawdown</div>
-              <div
-                class="stat-value"
-                style="font-size: 18px; color: var(--accent-red)"
-              >
-                -8.2%
-              </div>
+              <div class="stat-value" style="font-size: 18px; color: var(--accent-red)">-8.2%</div>
             </div>
             <div class="stat">
               <div class="stat-label">Win Rate</div>
@@ -2075,29 +1709,16 @@
             </div>
             <div class="stat">
               <div class="stat-label">Fill Rate</div>
-              <div
-                class="stat-value"
-                style="font-size: 18px; color: var(--accent-green)"
-              >
-                98.5%
-              </div>
+              <div class="stat-value" style="font-size: 18px; color: var(--accent-green)">98.5%</div>
             </div>
           </div>
 
           <div style="display: flex; gap: 8px; margin-top: 14px">
-            <button class="btn btn-outline btn-sm" style="flex: 1">
-              Compare with Other Algos
-            </button>
+            <button class="btn btn-outline btn-sm" style="flex: 1">Compare with Other Algos</button>
             <button class="btn btn-primary btn-sm">
               <span
                 class="candidate-marker"
-                style="
-                  border: none;
-                  padding: 0;
-                  background: none;
-                  color: white;
-                  font-size: 11px;
-                "
+                style="border: none; padding: 0; background: none; color: white; font-size: 11px"
                 >&#9734; Mark as Candidate</span
               >
             </button>
@@ -2109,9 +1730,7 @@
       <div class="card" style="margin-top: 16px">
         <div class="card-header">
           <div class="card-title">Execution Quality Comparison</div>
-          <div class="card-subtitle">
-            Same signals, different execution algos
-          </div>
+          <div class="card-subtitle">Same signals, different execution algos</div>
         </div>
         <table>
           <thead>
@@ -2155,20 +1774,15 @@
             </tr>
             <tr style="font-weight: 600">
               <td>Net Profit</td>
-              <td class="mono" style="color: var(--accent-green)">
-                $2,340 <span class="star">&#9733;</span>
-              </td>
+              <td class="mono" style="color: var(--accent-green)">$2,340 <span class="star">&#9733;</span></td>
               <td class="mono" style="color: var(--accent-green)">$2,280</td>
               <td class="mono" style="color: var(--accent-green)">$2,050</td>
             </tr>
           </tbody>
         </table>
         <div style="margin-top: 12px">
-          <button class="btn btn-primary btn-sm">
-            <span>&#9734;</span> Mark TWAP Result as Strategy Candidate
-          </button>
-          <span
-            style="font-size: 11px; color: var(--text-muted); margin-left: 12px"
+          <button class="btn btn-primary btn-sm"><span>&#9734;</span> Mark TWAP Result as Strategy Candidate</button>
+          <span style="font-size: 11px; color: var(--text-muted); margin-left: 12px"
             >Candidate appears in Promote lifecycle tab</span
           >
         </div>
@@ -2178,15 +1792,10 @@
     <!-- ============================================================= -->
     <!-- TAB 6: QUANT WORKSPACE -->
     <!-- ============================================================= -->
-    <div
-      class="content tab-content"
-      id="tab-quant-workspace"
-      style="display: none"
-    >
+    <div class="content tab-content" id="tab-quant-workspace" style="display: none">
       <div class="page-desc">
-        <strong>Quant Workspace</strong> — Research KPI dashboard aggregating
-        metrics across all features, models, strategies, and backtests.
-        High-level view of research pipeline productivity and quality.
+        <strong>Quant Workspace</strong> — Research KPI dashboard aggregating metrics across all features, models,
+        strategies, and backtests. High-level view of research pipeline productivity and quality.
       </div>
 
       <div class="grid-4">
@@ -2214,18 +1823,10 @@
 
       <div class="grid-2" style="margin-top: 16px">
         <div class="card">
-          <div class="card-title" style="margin-bottom: 12px">
-            Research Pipeline Health
-          </div>
+          <div class="card-title" style="margin-bottom: 12px">Research Pipeline Health</div>
           <div style="display: flex; flex-direction: column; gap: 10px">
             <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 12px;
-                "
-              >
+              <div style="display: flex; justify-content: space-between; font-size: 12px">
                 <span>Feature Coverage</span><span class="mono">72.9%</span>
               </div>
               <div class="progress-bar">
@@ -2233,13 +1834,7 @@
               </div>
             </div>
             <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 12px;
-                "
-              >
+              <div style="display: flex; justify-content: space-between; font-size: 12px">
                 <span>Model Freshness</span><span class="mono">87.5%</span>
               </div>
               <div class="progress-bar">
@@ -2247,30 +1842,16 @@
               </div>
             </div>
             <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 12px;
-                "
-              >
-                <span>Avg Strategy Hit Rate</span
-                ><span class="mono">62.3%</span>
+              <div style="display: flex; justify-content: space-between; font-size: 12px">
+                <span>Avg Strategy Hit Rate</span><span class="mono">62.3%</span>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill blue" style="width: 62%"></div>
               </div>
             </div>
             <div>
-              <div
-                style="
-                  display: flex;
-                  justify-content: space-between;
-                  font-size: 12px;
-                "
-              >
-                <span>Avg Execution Quality</span
-                ><span class="mono">95.8%</span>
+              <div style="display: flex; justify-content: space-between; font-size: 12px">
+                <span>Avg Execution Quality</span><span class="mono">95.8%</span>
               </div>
               <div class="progress-bar">
                 <div class="progress-fill green" style="width: 96%"></div>
@@ -2279,27 +1860,15 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-title" style="margin-bottom: 12px">
-            Data Readiness (from Acquire)
-          </div>
+          <div class="card-title" style="margin-bottom: 12px">Data Readiness (from Acquire)</div>
           <div class="grid-2" style="gap: 10px">
             <div class="stat">
               <div class="stat-label">Instruments w/ Data</div>
-              <div
-                class="stat-value"
-                style="font-size: 18px; color: var(--accent-green)"
-              >
-                2,400
-              </div>
+              <div class="stat-value" style="font-size: 18px; color: var(--accent-green)">2,400</div>
             </div>
             <div class="stat">
               <div class="stat-label">Pending Download</div>
-              <div
-                class="stat-value"
-                style="font-size: 18px; color: var(--accent-amber)"
-              >
-                180
-              </div>
+              <div class="stat-value" style="font-size: 18px; color: var(--accent-amber)">180</div>
             </div>
           </div>
           <div
@@ -2307,17 +1876,14 @@
             style="margin-top: 12px; font-size: 11px"
             onclick="alert('Navigate to Acquire/Data tab')"
           >
-            <span class="arrow-icon">&#8594;</span> View full data pipeline in
-            <strong>Acquire</strong> tab
+            <span class="arrow-icon">&#8594;</span> View full data pipeline in <strong>Acquire</strong> tab
           </div>
         </div>
       </div>
 
       <div class="grid-2" style="margin-top: 16px">
         <div class="card">
-          <div class="card-title" style="margin-bottom: 12px">
-            Best Performing Strategies (7d)
-          </div>
+          <div class="card-title" style="margin-bottom: 12px">Best Performing Strategies (7d)</div>
           <table>
             <thead>
               <tr>
@@ -2354,9 +1920,7 @@
           </table>
         </div>
         <div class="card">
-          <div class="card-title" style="margin-bottom: 12px">
-            Stale Features Alert
-          </div>
+          <div class="card-title" style="margin-bottom: 12px">Stale Features Alert</div>
           <table>
             <thead>
               <tr>
@@ -2390,24 +1954,14 @@
     <!-- ============================================================= -->
     <div class="content" id="flow-view" style="display: none">
       <div class="page-desc">
-        <strong>Navigation Flow</strong> — How users move between tabs and
-        sub-views. Arrows show cross-tab navigation hints. Users can also jump
-        freely to any tab at any time.
+        <strong>Navigation Flow</strong> — How users move between tabs and sub-views. Arrows show cross-tab navigation
+        hints. Users can also jump freely to any tab at any time.
       </div>
 
       <div class="card" style="padding: 30px">
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 20px">
-          Primary Pipeline Flow (left to right)
-        </div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 20px">Primary Pipeline Flow (left to right)</div>
 
-        <div
-          style="
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            flex-wrap: wrap;
-          "
-        >
+        <div style="display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap">
           <!-- Features -->
           <div style="flex: 1; min-width: 180px">
             <div
@@ -2418,36 +1972,17 @@
                 padding: 14px;
               "
             >
-              <div
-                style="
-                  font-size: 12px;
-                  font-weight: 700;
-                  color: var(--accent-cyan);
-                  margin-bottom: 8px;
-                "
-              >
+              <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 8px">
                 1. FEATURES
               </div>
-              <div
-                style="
-                  font-size: 11px;
-                  color: var(--text-secondary);
-                  line-height: 1.6;
-                "
-              >
+              <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6">
                 &bull; Browse catalogue<br />
                 &bull; Configure params<br />
                 &bull; Apply presets<br />
                 &bull; View dependency tree<br />
                 &bull; Track versions
               </div>
-              <div
-                style="
-                  margin-top: 8px;
-                  font-size: 10px;
-                  color: var(--text-muted);
-                "
-              >
+              <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted)">
                 <strong>Inputs:</strong> Processed data (Acquire)<br />
                 <strong>Outputs:</strong> Feature definitions
               </div>
@@ -2455,13 +1990,7 @@
           </div>
 
           <div
-            style="
-              display: flex;
-              align-items: center;
-              color: var(--accent-blue);
-              font-size: 24px;
-              padding-top: 40px;
-            "
+            style="display: flex; align-items: center; color: var(--accent-blue); font-size: 24px; padding-top: 40px"
           >
             &#8594;
           </div>
@@ -2476,36 +2005,17 @@
                 padding: 14px;
               "
             >
-              <div
-                style="
-                  font-size: 12px;
-                  font-weight: 700;
-                  color: var(--accent-blue);
-                  margin-bottom: 8px;
-                "
-              >
+              <div style="font-size: 12px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px">
                 2. FEATURE ETL
               </div>
-              <div
-                style="
-                  font-size: 11px;
-                  color: var(--text-secondary);
-                  line-height: 1.6;
-                "
-              >
+              <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6">
                 &bull; Compute features<br />
                 &bull; Progress by shard<br />
                 &bull; Trigger jobs / VMs<br />
                 &bull; Completion heatmap<br />
                 &bull; Monitor pipeline
               </div>
-              <div
-                style="
-                  margin-top: 8px;
-                  font-size: 10px;
-                  color: var(--text-muted);
-                "
-              >
+              <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted)">
                 <strong>Inputs:</strong> Feature definitions<br />
                 <strong>Outputs:</strong> Computed features
               </div>
@@ -2513,13 +2023,7 @@
           </div>
 
           <div
-            style="
-              display: flex;
-              align-items: center;
-              color: var(--accent-blue);
-              font-size: 24px;
-              padding-top: 40px;
-            "
+            style="display: flex; align-items: center; color: var(--accent-blue); font-size: 24px; padding-top: 40px"
           >
             &#8594;
           </div>
@@ -2534,36 +2038,17 @@
                 padding: 14px;
               "
             >
-              <div
-                style="
-                  font-size: 12px;
-                  font-weight: 700;
-                  color: var(--accent-green);
-                  margin-bottom: 8px;
-                "
-              >
+              <div style="font-size: 12px; font-weight: 700; color: var(--accent-green); margin-bottom: 8px">
                 3. MODELS
               </div>
-              <div
-                style="
-                  font-size: 11px;
-                  color: var(--text-secondary);
-                  line-height: 1.6;
-                "
-              >
+              <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6">
                 &bull; Model registry<br />
                 &bull; Pin feature versions<br />
                 &bull; Train (ETL view)<br />
                 &bull; Evaluate accuracy<br />
                 &bull; Compare versions
               </div>
-              <div
-                style="
-                  margin-top: 8px;
-                  font-size: 10px;
-                  color: var(--text-muted);
-                "
-              >
+              <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted)">
                 <strong>Inputs:</strong> Computed features<br />
                 <strong>Outputs:</strong> Trained models
               </div>
@@ -2571,13 +2056,7 @@
           </div>
 
           <div
-            style="
-              display: flex;
-              align-items: center;
-              color: var(--accent-blue);
-              font-size: 24px;
-              padding-top: 40px;
-            "
+            style="display: flex; align-items: center; color: var(--accent-blue); font-size: 24px; padding-top: 40px"
           >
             &#8594;
           </div>
@@ -2592,36 +2071,17 @@
                 padding: 14px;
               "
             >
-              <div
-                style="
-                  font-size: 12px;
-                  font-weight: 700;
-                  color: var(--accent-amber);
-                  margin-bottom: 8px;
-                "
-              >
+              <div style="font-size: 12px; font-weight: 700; color: var(--accent-amber); margin-bottom: 8px">
                 4. STRATEGIES
               </div>
-              <div
-                style="
-                  font-size: 11px;
-                  color: var(--text-secondary);
-                  line-height: 1.6;
-                "
-              >
+              <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6">
                 &bull; Configure strategy<br />
                 &bull; Run signal backtest<br />
                 &bull; View signal list<br />
                 &bull; Compare strategies<br />
                 &bull; Single/Portfolio mode
               </div>
-              <div
-                style="
-                  margin-top: 8px;
-                  font-size: 10px;
-                  color: var(--text-muted);
-                "
-              >
+              <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted)">
                 <strong>Inputs:</strong> Trained models<br />
                 <strong>Outputs:</strong> Signal list
               </div>
@@ -2629,13 +2089,7 @@
           </div>
 
           <div
-            style="
-              display: flex;
-              align-items: center;
-              color: var(--accent-blue);
-              font-size: 24px;
-              padding-top: 40px;
-            "
+            style="display: flex; align-items: center; color: var(--accent-blue); font-size: 24px; padding-top: 40px"
           >
             &#8594;
           </div>
@@ -2650,36 +2104,17 @@
                 padding: 14px;
               "
             >
-              <div
-                style="
-                  font-size: 12px;
-                  font-weight: 700;
-                  color: var(--accent-red);
-                  margin-bottom: 8px;
-                "
-              >
+              <div style="font-size: 12px; font-weight: 700; color: var(--accent-red); margin-bottom: 8px">
                 5. EXECUTION
               </div>
-              <div
-                style="
-                  font-size: 11px;
-                  color: var(--text-secondary);
-                  line-height: 1.6;
-                "
-              >
+              <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6">
                 &bull; Configure exec algo<br />
                 &bull; TradingView results<br />
                 &bull; 5 result sub-tabs<br />
                 &bull; Compare algos<br />
                 &bull; Mark candidates
               </div>
-              <div
-                style="
-                  margin-top: 8px;
-                  font-size: 10px;
-                  color: var(--text-muted);
-                "
-              >
+              <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted)">
                 <strong>Inputs:</strong> Signals<br />
                 <strong>Outputs:</strong> Trades / Candidates
               </div>
@@ -2688,72 +2123,41 @@
         </div>
 
         <!-- Cross-tab navigation hints -->
-        <div
-          style="
-            margin-top: 24px;
-            border-top: 1px solid var(--border);
-            padding-top: 16px;
-          "
-        >
+        <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px">
           <div style="font-size: 12px; font-weight: 600; margin-bottom: 12px">
             Cross-Tab Navigation Hints (clickable links in UI)
           </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: column;
-              gap: 6px;
-              font-size: 12px;
-              color: var(--text-secondary);
-            "
-          >
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--text-secondary)">
             <div>
-              &#8226; <strong>Features</strong> expanded row &rarr; "View
-              computation jobs" &rarr;
+              &#8226; <strong>Features</strong> expanded row &rarr; "View computation jobs" &rarr;
               <span style="color: var(--accent-blue)">Feature ETL</span>
             </div>
             <div>
-              &#8226; <strong>Models</strong> expanded row &rarr; "Use in
-              Strategy" &rarr;
+              &#8226; <strong>Models</strong> expanded row &rarr; "Use in Strategy" &rarr;
               <span style="color: var(--accent-amber)">Strategies</span>
               (pre-fills model)
             </div>
             <div>
-              &#8226; <strong>Strategies</strong> signal output &rarr; "Send to
-              Execution" &rarr;
-              <span style="color: var(--accent-red)">Execution</span> (pre-fills
-              signals)
+              &#8226; <strong>Strategies</strong> signal output &rarr; "Send to Execution" &rarr;
+              <span style="color: var(--accent-red)">Execution</span> (pre-fills signals)
             </div>
             <div>
-              &#8226; <strong>Execution</strong> results &rarr; "Mark as
-              Candidate" &rarr; appears in
-              <span style="color: var(--accent-purple)"
-                >Promote lifecycle tab</span
-              >
+              &#8226; <strong>Execution</strong> results &rarr; "Mark as Candidate" &rarr; appears in
+              <span style="color: var(--accent-purple)">Promote lifecycle tab</span>
             </div>
             <div>
-              &#8226; <strong>Quant Workspace</strong> &rarr; "Data Readiness"
-              link &rarr;
-              <span style="color: var(--accent-cyan)"
-                >Acquire lifecycle tab</span
-              >
+              &#8226; <strong>Quant Workspace</strong> &rarr; "Data Readiness" link &rarr;
+              <span style="color: var(--accent-cyan)">Acquire lifecycle tab</span>
             </div>
             <div>
-              &#8226; <strong>Quant Workspace</strong> &rarr; stale features
-              alert &rarr; click feature name &rarr;
+              &#8226; <strong>Quant Workspace</strong> &rarr; stale features alert &rarr; click feature name &rarr;
               <span style="color: var(--accent-cyan)">Features</span> tab detail
             </div>
           </div>
         </div>
 
         <!-- Quant Workspace -->
-        <div
-          style="
-            margin-top: 20px;
-            border-top: 1px solid var(--border);
-            padding-top: 16px;
-          "
-        >
+        <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px">
           <div
             style="
               background: var(--bg-tertiary);
@@ -2763,23 +2167,10 @@
               max-width: 300px;
             "
           >
-            <div
-              style="
-                font-size: 12px;
-                font-weight: 700;
-                color: var(--accent-purple);
-                margin-bottom: 8px;
-              "
-            >
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-purple); margin-bottom: 8px">
               6. QUANT WORKSPACE
             </div>
-            <div
-              style="
-                font-size: 11px;
-                color: var(--text-secondary);
-                line-height: 1.6;
-              "
-            >
+            <div style="font-size: 11px; color: var(--text-secondary); line-height: 1.6">
               Cross-cutting KPI dashboard<br />
               &bull; Feature coverage %<br />
               &bull; Model health summary<br />
@@ -2787,9 +2178,7 @@
               &bull; Candidate pipeline<br />
               &bull; Data readiness (Acquire)
             </div>
-            <div
-              style="margin-top: 8px; font-size: 10px; color: var(--text-muted)"
-            >
+            <div style="margin-top: 8px; font-size: 10px; color: var(--text-muted)">
               <strong>Reads from:</strong> All 5 tabs<br />
               <strong>Links to:</strong> Acquire, Promote
             </div>
@@ -2797,117 +2186,43 @@
         </div>
 
         <!-- Sub-tabs within each tab -->
-        <div
-          style="
-            margin-top: 24px;
-            border-top: 1px solid var(--border);
-            padding-top: 16px;
-          "
-        >
-          <div style="font-size: 12px; font-weight: 600; margin-bottom: 12px">
-            Sub-Tab Structure Within Each Tab
-          </div>
+        <div style="margin-top: 24px; border-top: 1px solid var(--border); padding-top: 16px">
+          <div style="font-size: 12px; font-weight: 600; margin-bottom: 12px">Sub-Tab Structure Within Each Tab</div>
           <div class="grid-3" style="gap: 12px">
-            <div
-              style="
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-                padding: 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 11px;
-                  font-weight: 600;
-                  color: var(--accent-cyan);
-                  margin-bottom: 6px;
-                "
-              >
+            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px">
+              <div style="font-size: 11px; font-weight: 600; color: var(--accent-cyan); margin-bottom: 6px">
                 Features
               </div>
               <div style="font-size: 11px; color: var(--text-muted)">
-                Catalogue (grid) + expanded detail panel<br />No sub-tabs, uses
-                expand/collapse
+                Catalogue (grid) + expanded detail panel<br />No sub-tabs, uses expand/collapse
               </div>
             </div>
-            <div
-              style="
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-                padding: 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 11px;
-                  font-weight: 600;
-                  color: var(--accent-blue);
-                  margin-bottom: 6px;
-                "
-              >
+            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px">
+              <div style="font-size: 11px; font-weight: 600; color: var(--accent-blue); margin-bottom: 6px">
                 Feature ETL
               </div>
               <div style="font-size: 11px; color: var(--text-muted)">
                 Single view with progress bars + heatmap + active jobs
               </div>
             </div>
-            <div
-              style="
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-                padding: 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 11px;
-                  font-weight: 600;
-                  color: var(--accent-green);
-                  margin-bottom: 6px;
-                "
-              >
+            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px">
+              <div style="font-size: 11px; font-weight: 600; color: var(--accent-green); margin-bottom: 6px">
                 Models
               </div>
               <div style="font-size: 11px; color: var(--text-muted)">
                 Registry | Training Jobs | Evaluation | Version History
               </div>
             </div>
-            <div
-              style="
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-                padding: 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 11px;
-                  font-weight: 600;
-                  color: var(--accent-amber);
-                  margin-bottom: 6px;
-                "
-              >
+            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px">
+              <div style="font-size: 11px; font-weight: 600; color: var(--accent-amber); margin-bottom: 6px">
                 Strategies
               </div>
               <div style="font-size: 11px; color: var(--text-muted)">
                 New Strategy | My Strategies | Compare | Templates
               </div>
             </div>
-            <div
-              style="
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-                padding: 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 11px;
-                  font-weight: 600;
-                  color: var(--accent-red);
-                  margin-bottom: 6px;
-                "
-              >
+            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px">
+              <div style="font-size: 11px; font-weight: 600; color: var(--accent-red); margin-bottom: 6px">
                 Execution
               </div>
               <div style="font-size: 11px; color: var(--text-muted)">
@@ -2916,21 +2231,8 @@
                 >
               </div>
             </div>
-            <div
-              style="
-                background: var(--bg-tertiary);
-                border-radius: 8px;
-                padding: 12px;
-              "
-            >
-              <div
-                style="
-                  font-size: 11px;
-                  font-weight: 600;
-                  color: var(--accent-purple);
-                  margin-bottom: 6px;
-                "
-              >
+            <div style="background: var(--bg-tertiary); border-radius: 8px; padding: 12px">
+              <div style="font-size: 11px; font-weight: 600; color: var(--accent-purple); margin-bottom: 6px">
                 Quant Workspace
               </div>
               <div style="font-size: 11px; color: var(--text-muted)">
@@ -2962,9 +2264,7 @@
         const targetContent = document.getElementById(`tab-${tabId}`);
         if (targetContent) targetContent.style.display = "block";
 
-        document
-          .querySelectorAll(".mode-btn")
-          .forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("active"));
         document.querySelectorAll(".mode-btn")[0].classList.add("active");
         currentView = "wireframe";
       }
@@ -2975,9 +2275,7 @@
 
       function setView(view) {
         currentView = view;
-        document
-          .querySelectorAll(".mode-btn")
-          .forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("active"));
 
         if (view === "wireframe") {
           document.querySelectorAll(".mode-btn")[0].classList.add("active");
@@ -2999,9 +2297,7 @@
       document.querySelectorAll(".sub-tab").forEach((st) => {
         st.addEventListener("click", function () {
           const bar = this.parentElement;
-          bar
-            .querySelectorAll(".sub-tab")
-            .forEach((s) => s.classList.remove("active"));
+          bar.querySelectorAll(".sub-tab").forEach((s) => s.classList.remove("active"));
           this.classList.add("active");
         });
       });

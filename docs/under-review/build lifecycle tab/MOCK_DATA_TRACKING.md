@@ -70,11 +70,7 @@ Currently running jobs across all Build pipeline stages.
 ```typescript
 export interface BuildActiveJob {
   id: string;
-  type:
-    | "feature_computation"
-    | "model_training"
-    | "strategy_backtest"
-    | "execution_backtest";
+  type: "feature_computation" | "model_training" | "strategy_backtest" | "execution_backtest";
   name: string;
   description: string; // e.g., "CeFi Delta-One features"
   progress_pct: number;
@@ -139,13 +135,7 @@ export interface FeatureCatalogueEntry {
     | "Multi-Timeframe"
     | "Cross-Instrument"
     | "Commodity";
-  feature_group:
-    | "Technical"
-    | "Fundamental"
-    | "Sentiment"
-    | "Microstructure"
-    | "Risk"
-    | "ML-Derived";
+  feature_group: "Technical" | "Fundamental" | "Sentiment" | "Microstructure" | "Risk" | "ML-Derived";
   source_service: string; // e.g., "features-delta-one-service"
   current_version: string; // e.g., "v2.1"
   status: "active" | "stale" | "not_computed" | "deprecated";
@@ -255,13 +245,7 @@ export interface ExecutionBacktest {
   name: string;
   strategy_backtest_id: string; // signals source
   strategy_name: string;
-  algo:
-    | "TWAP"
-    | "VWAP"
-    | "Iceberg"
-    | "Aggressive Limit"
-    | "Passive Limit"
-    | "Market Only";
+  algo: "TWAP" | "VWAP" | "Iceberg" | "Aggressive Limit" | "Passive Limit" | "Market Only";
   algo_params: Record<string, unknown>;
   order_type: "Limit" | "Market" | "Limit-then-Market";
   venues: string[];

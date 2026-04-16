@@ -129,9 +129,7 @@ describe("FilterPropagation", () => {
     const allData = [{ strategyId: "s1" }, { strategyId: "s2" }];
     const selectedIds = ["s1"];
 
-    const filtered = allData.filter(
-      (d) => selectedIds.length === 0 || selectedIds.includes(d.strategyId),
-    );
+    const filtered = allData.filter((d) => selectedIds.length === 0 || selectedIds.includes(d.strategyId));
 
     expect(filtered).toHaveLength(1);
   });
@@ -145,9 +143,7 @@ describe("ConfirmDialog", () => {
   it("should have confirm and cancel buttons", async () => {
     render(<ConfirmDialog open={true} />);
 
-    expect(
-      screen.getByRole("button", { name: /confirm/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /confirm/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 

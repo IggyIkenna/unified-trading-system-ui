@@ -137,9 +137,7 @@ Each file intercepts API calls for one domain and returns mock data.
 ```ts
 // lib/mocks/handlers/my-domain.ts
 import { http, HttpResponse } from "msw";
-export const myDomainHandlers = [
-  http.get("/api/my-domain", () => HttpResponse.json({ data: [] })),
-];
+export const myDomainHandlers = [http.get("/api/my-domain", () => HttpResponse.json({ data: [] }))];
 
 // lib/mocks/handlers/index.ts
 import { myDomainHandlers } from "./my-domain";
