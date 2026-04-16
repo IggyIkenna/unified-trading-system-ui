@@ -1,12 +1,8 @@
 "use client";
 
 import * as React from "react";
-import type {
-  PnLBreakdown,
-  TimeSeriesPoint,
-  TradingClient,
-  TradingOrganization,
-} from "@/lib/mocks/fixtures/trading-data";
+import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
+import type { PnLBreakdown, TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import type { PnLComponent } from "@/components/trading/pnl-attribution-panel";
 import type { ServiceHealth } from "@/components/trading/health-status-grid";
 

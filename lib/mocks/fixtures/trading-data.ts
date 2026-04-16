@@ -45,19 +45,10 @@ function seededRandom(seed: string): () => number {
 // ORGANIZATIONS, CLIENTS, STRATEGIES - Core hierarchy
 // =============================================================================
 
-export interface TradingOrganization {
-  id: string;
-  name: string;
-  type: "internal" | "external";
-}
-
-export interface TradingClient {
-  id: string;
-  name: string;
-  orgId: string;
-  status: "active" | "onboarding" | "inactive";
-  capitalAllocation: number; // USD
-}
+// Canonical types live in lib/types/trading.ts — re-exported here for
+// backward compatibility with existing mock-data consumers.
+export type { TradingOrganization, TradingClient } from "@/lib/types/trading";
+import type { TradingOrganization, TradingClient } from "@/lib/types/trading";
 
 export interface TradingStrategy {
   id: string;

@@ -3,12 +3,8 @@ import { apiFetch } from "@/lib/api/fetch";
 import type { PaginatedResponse } from "@/lib/api/types";
 import { withMode } from "@/lib/api/with-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type {
-  PnLBreakdown,
-  TimeSeriesPoint,
-  TradingClient,
-  TradingOrganization,
-} from "@/lib/mocks/fixtures/trading-data";
+import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
+import type { PnLBreakdown, TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import { useQuery } from "@tanstack/react-query";
 
 // ---- Response shapes ----
@@ -73,7 +69,11 @@ export function useTradingOrgs() {
 
   return useQuery<TradingOrgsResponse>({
     queryKey: ["trading-organizations", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/trading/organizations", scope.mode, scope.asOfDatetime), token) as Promise<TradingOrgsResponse>,
+    queryFn: () =>
+      apiFetch(
+        withMode("/api/trading/organizations", scope.mode, scope.asOfDatetime),
+        token,
+      ) as Promise<TradingOrgsResponse>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -85,7 +85,11 @@ export function useTradingClients() {
 
   return useQuery<TradingClientsResponse>({
     queryKey: ["trading-clients", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/trading/clients", scope.mode, scope.asOfDatetime), token) as Promise<TradingClientsResponse>,
+    queryFn: () =>
+      apiFetch(
+        withMode("/api/trading/clients", scope.mode, scope.asOfDatetime),
+        token,
+      ) as Promise<TradingClientsResponse>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -97,7 +101,8 @@ export function useTradingPnl() {
 
   return useQuery<PnLBreakdown>({
     queryKey: ["trading-pnl", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/trading/pnl", scope.mode, scope.asOfDatetime), token) as Promise<PnLBreakdown>,
+    queryFn: () =>
+      apiFetch(withMode("/api/trading/pnl", scope.mode, scope.asOfDatetime), token) as Promise<PnLBreakdown>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -109,7 +114,11 @@ export function useTradingTimeseries() {
 
   return useQuery<TradingTimeseriesResponse>({
     queryKey: ["trading-timeseries", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/trading/timeseries", scope.mode, scope.asOfDatetime), token) as Promise<TradingTimeseriesResponse>,
+    queryFn: () =>
+      apiFetch(
+        withMode("/api/trading/timeseries", scope.mode, scope.asOfDatetime),
+        token,
+      ) as Promise<TradingTimeseriesResponse>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -121,7 +130,11 @@ export function useTradingPerformance() {
 
   return useQuery<TradingPerformanceResponse>({
     queryKey: ["trading-performance", user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode("/api/trading/performance", scope.mode, scope.asOfDatetime), token) as Promise<TradingPerformanceResponse>,
+    queryFn: () =>
+      apiFetch(
+        withMode("/api/trading/performance", scope.mode, scope.asOfDatetime),
+        token,
+      ) as Promise<TradingPerformanceResponse>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });
@@ -134,7 +147,8 @@ export function useTradingLiveBatchDelta() {
   return useQuery<LiveBatchDeltaResponse>({
     queryKey: ["trading-live-batch-delta", user?.id, scope.mode],
     // This endpoint compares live vs batch internally — always send mode=live
-    queryFn: () => apiFetch(withMode("/api/trading/live-batch-delta", "live"), token) as Promise<LiveBatchDeltaResponse>,
+    queryFn: () =>
+      apiFetch(withMode("/api/trading/live-batch-delta", "live"), token) as Promise<LiveBatchDeltaResponse>,
     enabled: !!user,
     refetchInterval: scope.mode === "batch" ? false : undefined,
   });

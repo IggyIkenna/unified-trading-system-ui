@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { useOverviewDataSafe } from "./overview-data-context";
-import type { TradingOrganization, TradingClient } from "@/lib/mocks/fixtures/trading-data";
+import type { TradingOrganization, TradingClient } from "@/lib/types/trading";
 
 export function ScopeSummaryWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();

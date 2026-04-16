@@ -25,12 +25,8 @@ import {
   getStrategiesForScope,
 } from "@/lib/mocks/fixtures/mock-data-index";
 import type { SeedStrategy } from "@/lib/mocks/fixtures/mock-data-seed";
-import type {
-  PnLBreakdown,
-  TimeSeriesPoint,
-  TradingClient,
-  TradingOrganization,
-} from "@/lib/mocks/fixtures/trading-data";
+import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
+import type { PnLBreakdown, TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import { CLIENTS, ORGANIZATIONS } from "@/lib/mocks/fixtures/trading-data";
 import { SEED_SERVICES } from "@/lib/mocks/fixtures/trading-pages";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
