@@ -3,16 +3,24 @@
 import { KpiTile } from "@/components/trading/sports/shared";
 import type { Bookmaker } from "@/components/trading/sports/types";
 import { BOOKMAKER_DISPLAY_NAMES } from "@/components/trading/sports/types";
-import { MOCK_CLV_RECORDS } from "@/lib/mocks/fixtures/sports-data";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { useSportsData } from "./sports-data-context";
 
-export function SportsCLVWidget() {
-  const records = MOCK_CLV_RECORDS;
+export function SportsCLVWidget(_props: WidgetComponentProps) {
+  const { clvRecords: records } = useSportsData();
+
+  if (records.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-sm text-muted-foreground">No CLV data available</p>
+      </div>
+    );
+  }
 
   const totalBets = records.reduce((s, r) => s + r.totalBets, 0);
   const totalPnl = records.reduce((s, r) => s + r.totalPnl, 0);
-  const totalStake = records.reduce((s, r) => s + r.totalStake, 0);
   const avgClv = records.reduce((s, r) => s + r.meanClvPct * r.totalBets, 0) / (totalBets || 1);
   const avgHitRate = records.reduce((s, r) => s + r.clvHitRate * r.totalBets, 0) / (totalBets || 1);
 
@@ -20,30 +28,20 @@ export function SportsCLVWidget() {
     <div className="flex flex-col h-full min-h-0 gap-3 p-3">
       <div className="flex items-center gap-2">
         <span className="text-xs font-black uppercase tracking-widest text-zinc-500">CLV Performance</span>
-        <span className="ml-auto text-xs text-zinc-600">{records[0]?.periodStart} — {records[0]?.periodEnd}</span>
+        <span className="ml-auto text-xs text-zinc-600">
+          {records[0]?.periodStart} — {records[0]?.periodEnd}
+        </span>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-        <KpiTile
-          label="Total Bets"
-          value={totalBets}
-          valueClassName="text-white"
-        />
+        <KpiTile label="Total Bets" value={totalBets} valueClassName="text-white" />
         <KpiTile
           label="Net P&L"
           value={`£${formatNumber(totalPnl, 0)}`}
           valueClassName={totalPnl >= 0 ? "text-[#4ade80]" : "text-red-400"}
         />
-        <KpiTile
-          label="Avg CLV"
-          value={`+${formatNumber(avgClv, 1)}%`}
-          valueClassName="text-[#22d3ee]"
-        />
-        <KpiTile
-          label="CLV Hit Rate"
-          value={formatPercent(avgHitRate, 1)}
-          valueClassName="text-[#22d3ee]"
-        />
+        <KpiTile label="Avg CLV" value={`+${formatNumber(avgClv, 1)}%`} valueClassName="text-[#22d3ee]" />
+        <KpiTile label="CLV Hit Rate" value={formatPercent(avgHitRate, 1)} valueClassName="text-[#22d3ee]" />
       </div>
 
       <div className="flex-1 overflow-auto">
@@ -68,26 +66,32 @@ export function SportsCLVWidget() {
                 </td>
                 <td className="text-center px-2 py-2 text-zinc-300 tabular-nums">{r.totalBets}</td>
                 <td className="text-center px-2 py-2 tabular-nums">
-                  <span className={cn(
-                    "font-bold",
-                    r.clvHitRate >= 0.6 ? "text-[#4ade80]" : r.clvHitRate >= 0.5 ? "text-amber-400" : "text-red-400",
-                  )}>
+                  <span
+                    className={cn(
+                      "font-bold",
+                      r.clvHitRate >= 0.6 ? "text-[#4ade80]" : r.clvHitRate >= 0.5 ? "text-amber-400" : "text-red-400",
+                    )}
+                  >
                     {formatPercent(r.clvHitRate, 1)}
                   </span>
                 </td>
                 <td className="text-center px-2 py-2 text-[#22d3ee] font-bold tabular-nums">
                   +{formatNumber(r.meanClvPct, 1)}%
                 </td>
-                <td className={cn(
-                  "text-right px-2 py-2 font-bold tabular-nums",
-                  r.totalPnl >= 0 ? "text-[#4ade80]" : "text-red-400",
-                )}>
+                <td
+                  className={cn(
+                    "text-right px-2 py-2 font-bold tabular-nums",
+                    r.totalPnl >= 0 ? "text-[#4ade80]" : "text-red-400",
+                  )}
+                >
                   £{formatNumber(r.totalPnl, 0)}
                 </td>
-                <td className={cn(
-                  "text-right px-2 py-2 font-bold tabular-nums",
-                  r.roiPct >= 0 ? "text-[#4ade80]" : "text-red-400",
-                )}>
+                <td
+                  className={cn(
+                    "text-right px-2 py-2 font-bold tabular-nums",
+                    r.roiPct >= 0 ? "text-[#4ade80]" : "text-red-400",
+                  )}
+                >
                   {formatNumber(r.roiPct, 1)}%
                 </td>
               </tr>
