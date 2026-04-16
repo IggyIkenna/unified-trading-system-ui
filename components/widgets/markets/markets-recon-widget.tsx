@@ -56,7 +56,7 @@ const columns: ColumnDef<ReconRun, unknown>[] = [
 ];
 
 export function MarketsReconWidget(_props: WidgetComponentProps) {
-  const { reconRuns } = useMarketsData();
+  const { reconRuns, isLoading, isError, refetch } = useMarketsData();
 
   const actionsConfig: TableActionsConfig = {
     extraActions: (
@@ -72,6 +72,9 @@ export function MarketsReconWidget(_props: WidgetComponentProps) {
       columns={columns}
       data={reconRuns}
       actions={actionsConfig}
+      isLoading={isLoading}
+      error={isError ? "Failed to load recon data" : null}
+      onRetry={refetch}
       enableSorting
       enableColumnVisibility={false}
       emptyMessage="No recon runs available"

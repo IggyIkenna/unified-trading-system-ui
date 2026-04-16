@@ -1,10 +1,10 @@
 "use client";
 
 import { isCompleted, isLive, isUpcoming } from "@/components/trading/sports/helpers";
-import type { Bet, Fixture, FootballLeague } from "@/components/trading/sports/types";
+import type { Bet, CLVRecord, Fixture, FootballLeague, Standing } from "@/components/trading/sports/types";
 import { useSportsLiveUpdates } from "@/hooks/use-sports-live-updates";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { MOCK_BETS, MOCK_FIXTURES } from "@/lib/mocks/fixtures/sports-data";
+import { MOCK_BETS, MOCK_CLV_RECORDS, MOCK_FIXTURES, MOCK_STANDINGS } from "@/lib/mocks/fixtures/sports-data";
 import { DEFAULT_ARB_THRESHOLD } from "@/lib/mocks/fixtures/sports-fixtures";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
@@ -13,6 +13,99 @@ import * as React from "react";
 
 export type SportsDateRange = "today" | "week" | "all" | "matchday" | "custom";
 export type SportsStatusFilter = "all" | "live" | "upcoming" | "completed";
+
+// ---------------------------------------------------------------------------
+// ML Pipeline types (moved from sports-ml-status-widget per § 0.3)
+// ---------------------------------------------------------------------------
+
+export interface ModelFamily {
+  id: string;
+  name: string;
+  targets: string[];
+  lastTrained: string;
+  accuracy: number;
+  status: "healthy" | "stale" | "training" | "failed";
+  featureCount: number;
+  trainingDuration: string;
+  nextScheduled: string;
+}
+
+export interface FeatureFreshness {
+  group: string;
+  columns: number;
+  lastUpdated: string;
+  staleness: "fresh" | "ok" | "stale";
+  coverage: number;
+}
+
+const MOCK_MODEL_FAMILIES: ModelFamily[] = [
+  {
+    id: "pregame_fundamental",
+    name: "Pre-Game Fundamental",
+    targets: ["home_xg", "away_xg", "goal_diff", "total_goals", "home_win_flag"],
+    lastTrained: "2026-04-15T06:00:00Z",
+    accuracy: 0.684,
+    status: "healthy",
+    featureCount: 312,
+    trainingDuration: "14m 22s",
+    nextScheduled: "2026-04-16T06:00:00Z",
+  },
+  {
+    id: "pregame_market",
+    name: "Pre-Game Market (CLV)",
+    targets: ["home_clv_bps", "draw_clv_bps", "away_clv_bps"],
+    lastTrained: "2026-04-15T06:15:00Z",
+    accuracy: 0.627,
+    status: "healthy",
+    featureCount: 285,
+    trainingDuration: "11m 08s",
+    nextScheduled: "2026-04-16T06:00:00Z",
+  },
+  {
+    id: "ht_fundamental",
+    name: "Half-Time Fundamental",
+    targets: ["home_xg_2h", "away_xg_2h", "next_goal_team"],
+    lastTrained: "2026-04-14T06:00:00Z",
+    accuracy: 0.591,
+    status: "stale",
+    featureCount: 248,
+    trainingDuration: "9m 45s",
+    nextScheduled: "2026-04-15T18:00:00Z",
+  },
+  {
+    id: "ht_market",
+    name: "Half-Time Market (CLV)",
+    targets: ["clv_bps", "move_direction_flag"],
+    lastTrained: "2026-04-14T06:15:00Z",
+    accuracy: 0.553,
+    status: "stale",
+    featureCount: 198,
+    trainingDuration: "7m 33s",
+    nextScheduled: "2026-04-15T18:00:00Z",
+  },
+  {
+    id: "meta",
+    name: "Meta (Bet Quality)",
+    targets: ["bet_quality_score", "positive_roi_flag"],
+    lastTrained: "2026-04-15T07:00:00Z",
+    accuracy: 0.715,
+    status: "healthy",
+    featureCount: 635,
+    trainingDuration: "18m 55s",
+    nextScheduled: "2026-04-16T07:00:00Z",
+  },
+];
+
+const MOCK_FEATURE_FRESHNESS: FeatureFreshness[] = [
+  { group: "team_form", columns: 48, lastUpdated: "2026-04-15T05:30:00Z", staleness: "fresh", coverage: 1.0 },
+  { group: "team_xg", columns: 36, lastUpdated: "2026-04-15T05:30:00Z", staleness: "fresh", coverage: 0.98 },
+  { group: "odds_features", columns: 120, lastUpdated: "2026-04-15T08:00:00Z", staleness: "fresh", coverage: 0.95 },
+  { group: "h2h", columns: 28, lastUpdated: "2026-04-14T06:00:00Z", staleness: "ok", coverage: 0.92 },
+  { group: "injury_impact", columns: 18, lastUpdated: "2026-04-14T12:00:00Z", staleness: "ok", coverage: 0.88 },
+  { group: "weather", columns: 12, lastUpdated: "2026-04-13T06:00:00Z", staleness: "stale", coverage: 0.75 },
+  { group: "elo", columns: 8, lastUpdated: "2026-04-15T05:30:00Z", staleness: "fresh", coverage: 1.0 },
+  { group: "poisson_xg", columns: 24, lastUpdated: "2026-04-15T05:30:00Z", staleness: "fresh", coverage: 0.97 },
+];
 
 export interface GlobalFilters {
   leagues: FootballLeague[];
@@ -85,6 +178,12 @@ interface SportsDataContextValue {
   settledBets: Bet[];
   allBets: Bet[];
 
+  standings: Standing[];
+
+  clvRecords: CLVRecord[];
+  modelFamilies: ModelFamily[];
+  featureFreshness: FeatureFreshness[];
+
   activeTab: SportsWorkspaceTab;
   setActiveTab: (t: SportsWorkspaceTab) => void;
   handleViewArb: (fixtureId?: string) => void;
@@ -128,7 +227,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
           // Update existing fixture with live data
           base[idx] = {
             ...base[idx],
-            status: update.status as typeof base[0]["status"],
+            status: update.status as (typeof base)[0]["status"],
             minute: update.minute ?? base[idx].minute,
             score: update.score ?? base[idx].score,
           };
@@ -166,6 +265,11 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
     setActiveTab("arb");
   }, []);
 
+  const standings = React.useMemo(() => {
+    const selectedLeague = filters.leagues.length === 1 ? filters.leagues[0] : "EPL";
+    return MOCK_STANDINGS[selectedLeague] ?? MOCK_STANDINGS["EPL"] ?? [];
+  }, [filters.leagues]);
+
   const value = React.useMemo(
     () => ({
       filters,
@@ -180,6 +284,10 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       openBets,
       settledBets,
       allBets: adjustedBets,
+      standings,
+      clvRecords: MOCK_CLV_RECORDS,
+      modelFamilies: MOCK_MODEL_FAMILIES,
+      featureFreshness: MOCK_FEATURE_FRESHNESS,
       activeTab,
       mode,
       setActiveTab,
@@ -196,6 +304,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       openBets,
       settledBets,
       adjustedBets,
+      standings,
       activeTab,
       isPaper,
       isBatch,

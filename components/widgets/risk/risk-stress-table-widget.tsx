@@ -81,6 +81,8 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
     regimeData,
     regimeMultiplier,
     setRegimeMultiplier,
+    isLoading,
+    hasError,
   } = useRiskData();
 
   const extraActions = (
@@ -172,6 +174,8 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
         columns={columns}
         data={stressScenarios as unknown as StressRow[]}
         actions={actionsConfig}
+        isLoading={isLoading}
+        error={hasError ? "Failed to load stress scenarios" : null}
         enableSorting
         enableColumnVisibility={false}
         emptyMessage="No stress scenarios available"

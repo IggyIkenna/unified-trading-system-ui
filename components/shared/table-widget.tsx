@@ -5,7 +5,6 @@ import { DataTable } from "@/components/shared/data-table";
 import { ExportDropdown } from "@/components/shared/export-dropdown";
 import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -135,6 +134,44 @@ function TableWidget<TData>({
       .filter(({ id }) => id !== "");
   }, [columns]);
 
+  // Auto-generate export columns from column definitions (only accessor-key columns).
+  const autoExportColumns = React.useMemo((): ExportColumn[] => {
+    return columns
+      .filter((col) => {
+        const colDef = col as { accessorKey?: string };
+        return !!colDef.accessorKey && col.meta?.type !== "actions";
+      })
+      .map((col) => {
+        const colDef = col as { accessorKey?: string };
+        const key = colDef.accessorKey!;
+        const header =
+          typeof col.header === "string"
+            ? col.header
+            : key
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (s) => s.toUpperCase())
+                .trim();
+        const metaType = col.meta?.type;
+        const format: ExportColumn["format"] =
+          metaType === "number"
+            ? "number"
+            : metaType === "currency"
+              ? "currency"
+              : metaType === "percent"
+                ? "percent"
+                : metaType === "datetime"
+                  ? "date"
+                  : undefined;
+        return { key, header, format };
+      });
+  }, [columns]);
+
+  const exportConfig = actions?.export ?? {
+    data: data as Record<string, unknown>[],
+    columns: autoExportColumns,
+    filename: "table-export",
+  };
+
   const { search, selectFilters, assetClass, activeFilterCount = 0, onReset } = filterConfig ?? {};
 
   const assetClassLabel =
@@ -146,12 +183,8 @@ function TableWidget<TData>({
 
   const hasFilters = !!search || (selectFilters && selectFilters.length > 0) || !!assetClass;
 
-  const hasRightActions =
-    !!actions?.extraActions ||
-    !!actions?.dataFreshness ||
-    !!actions?.onRefresh ||
-    (enableColumnVisibility && hideableColumns.length > 0) ||
-    !!actions?.export;
+  // Columns, Refresh, Export are always rendered — right side always has content.
+  const hasRightActions = true;
 
   const toolbar = (
     <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/40 bg-muted/10 overflow-x-auto min-w-0">
@@ -241,14 +274,12 @@ function TableWidget<TData>({
         />
       )}
 
-      {actions?.onRefresh && (
-        <Button variant="ghost" size="sm" className="gap-1 text-xs shrink-0" onClick={actions.onRefresh}>
-          <RefreshCw className="size-3" />
-          Refresh
-        </Button>
-      )}
+      <Button variant="ghost" size="sm" className="gap-1 text-xs shrink-0" onClick={() => actions?.onRefresh?.()}>
+        <RefreshCw className="size-3" />
+        Refresh
+      </Button>
 
-      {enableColumnVisibility && hideableColumns.length > 0 && (
+      {hideableColumns.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-1 text-xs shrink-0">
@@ -271,33 +302,23 @@ function TableWidget<TData>({
         </DropdownMenu>
       )}
 
-      {actions?.export && (
-        <ExportDropdown
-          data={actions.export.data}
-          columns={actions.export.columns}
-          filename={actions.export.filename}
-        />
-      )}
+      <ExportDropdown data={exportConfig.data} columns={exportConfig.columns} filename={exportConfig.filename} />
     </div>
   );
 
   return (
     <LiveFeedWidget isLoading={isLoading} error={error} onRetry={onRetry} header={toolbar} className={className}>
-      <Card className="border-0 rounded-none h-full">
-        <CardContent className="p-0">
-          <DataTable
-            columns={columns}
-            data={data}
-            enableSorting={enableSorting}
-            enableColumnVisibility={enableColumnVisibility}
-            hideColumnToggle
-            columnVisibility={columnVisibility}
-            onColumnVisibilityChange={setColumnVisibility}
-            emptyMessage={emptyMessage}
-            tableFooter={tableFooter}
-          />
-        </CardContent>
-      </Card>
+      <DataTable
+        columns={columns}
+        data={data}
+        enableSorting={enableSorting}
+        enableColumnVisibility
+        hideColumnToggle
+        columnVisibility={columnVisibility}
+        onColumnVisibilityChange={setColumnVisibility}
+        emptyMessage={emptyMessage}
+        tableFooter={tableFooter}
+      />
     </LiveFeedWidget>
   );
 }

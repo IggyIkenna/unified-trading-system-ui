@@ -109,12 +109,15 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
 ];
 
 export function MarketsMyOrdersWidget(_props: WidgetComponentProps) {
-  const { ownOrders } = useMarketsData();
+  const { ownOrders, isLoading, isError, refetch } = useMarketsData();
 
   return (
     <TableWidget
       columns={columns}
       data={ownOrders}
+      isLoading={isLoading}
+      error={isError ? "Failed to load orders" : null}
+      onRetry={refetch}
       enableSorting
       enableColumnVisibility={false}
       emptyMessage="No own orders in the generated range"

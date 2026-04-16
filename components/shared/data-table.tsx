@@ -199,7 +199,7 @@ function DataTable<TData>({
         ref={scrollContainerRef}
         className={cn("rounded-md border", enableVirtualization && "max-h-[600px] overflow-auto")}
       >
-        <Table>
+        <Table containerClassName="overflow-x-visible">
           <TableHeader className="sticky top-0 z-10 bg-background">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

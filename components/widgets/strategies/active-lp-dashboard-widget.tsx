@@ -1,29 +1,13 @@
 "use client";
 
+import { TableWidget } from "@/components/shared/table-widget";
+import type { TableActionsConfig } from "@/components/shared/table-widget";
+import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-
-interface LPPosition {
-  pool: string;
-  rangeLow: number;
-  rangeHigh: number;
-  inRange: boolean;
-  tvl: number;
-  fees24h: number;
-  ilPct: number;
-  lastRebalance: string;
-}
-
-const MOCK_LP_POSITIONS: LPPosition[] = [
-  { pool: "ETH-USDC", rangeLow: 2800, rangeHigh: 3200, inRange: true, tvl: 1_250_000, fees24h: 3420, ilPct: -0.42, lastRebalance: "2h ago" },
-  { pool: "BTC-USDC", rangeLow: 62000, rangeHigh: 68000, inRange: true, tvl: 3_100_000, fees24h: 8150, ilPct: -0.18, lastRebalance: "6h ago" },
-  { pool: "SOL-USDC", rangeLow: 110, rangeHigh: 130, inRange: false, tvl: 820_000, fees24h: 1240, ilPct: -1.85, lastRebalance: "1d ago" },
-  { pool: "ARB-ETH", rangeLow: 0.00032, rangeHigh: 0.00042, inRange: true, tvl: 450_000, fees24h: 890, ilPct: -0.31, lastRebalance: "4h ago" },
-  { pool: "ETH-USDT", rangeLow: 2750, rangeHigh: 3100, inRange: false, tvl: 2_400_000, fees24h: 5680, ilPct: -2.10, lastRebalance: "2d ago" },
-  { pool: "MATIC-USDC", rangeLow: 0.45, rangeHigh: 0.65, inRange: true, tvl: 310_000, fees24h: 520, ilPct: -0.55, lastRebalance: "8h ago" },
-];
+import type { ColumnDef } from "@tanstack/react-table";
+import * as React from "react";
+import { useStrategiesData, type LPPosition } from "./strategies-data-context";
 
 function formatUsd(n: number): string {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(2)}M`;
@@ -37,80 +21,113 @@ function formatRange(low: number, high: number): string {
   return `${low} – ${high}`;
 }
 
+const columns: ColumnDef<LPPosition, unknown>[] = [
+  {
+    accessorKey: "pool",
+    header: "Pool",
+    enableSorting: true,
+    cell: ({ row }) => <span className="text-xs font-mono font-medium">{row.getValue<string>("pool")}</span>,
+  },
+  {
+    id: "range",
+    header: "Range",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <span className="text-xs font-mono text-muted-foreground">
+        {formatRange(row.original.rangeLow, row.original.rangeHigh)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: "inRange",
+    header: "In Range",
+    enableSorting: true,
+    cell: ({ row }) => {
+      const inRange = row.getValue<boolean>("inRange");
+      return (
+        <Badge variant={inRange ? "success" : "error"} className="text-[10px]">
+          {inRange ? "Yes" : "No"}
+        </Badge>
+      );
+    },
+  },
+  {
+    accessorKey: "tvl",
+    header: () => <span className="flex justify-end">TVL</span>,
+    enableSorting: true,
+    cell: ({ row }) => <div className="text-xs font-mono text-right">{formatUsd(row.getValue<number>("tvl"))}</div>,
+  },
+  {
+    accessorKey: "fees24h",
+    header: () => <span className="flex justify-end">Fees 24h</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-xs font-mono text-right text-emerald-400">{formatUsd(row.getValue<number>("fees24h"))}</div>
+    ),
+  },
+  {
+    accessorKey: "ilPct",
+    header: () => <span className="flex justify-end">IL %</span>,
+    enableSorting: true,
+    cell: ({ row }) => {
+      const il = row.getValue<number>("ilPct");
+      return (
+        <div className={`text-xs font-mono text-right ${il < -1 ? "text-red-400" : "text-muted-foreground"}`}>
+          {il.toFixed(2)}%
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "lastRebalance",
+    header: "Rebalance",
+    enableSorting: false,
+    cell: ({ row }) => <span className="text-xs text-muted-foreground">{row.getValue<string>("lastRebalance")}</span>,
+  },
+];
+
 export function ActiveLPDashboardWidget(_props: WidgetComponentProps) {
-  const totalTvl = MOCK_LP_POSITIONS.reduce((sum, p) => sum + p.tvl, 0);
-  const totalFees = MOCK_LP_POSITIONS.reduce((sum, p) => sum + p.fees24h, 0);
-  const avgIl = MOCK_LP_POSITIONS.reduce((sum, p) => sum + p.ilPct, 0) / MOCK_LP_POSITIONS.length;
-  const outOfRangeCount = MOCK_LP_POSITIONS.filter((p) => !p.inRange).length;
+  const { lpPositions, isLoading } = useStrategiesData();
+
+  const totalTvl = React.useMemo(() => lpPositions.reduce((sum, p) => sum + p.tvl, 0), [lpPositions]);
+  const totalFees = React.useMemo(() => lpPositions.reduce((sum, p) => sum + p.fees24h, 0), [lpPositions]);
+  const avgIl = React.useMemo(
+    () => (lpPositions.length ? lpPositions.reduce((sum, p) => sum + p.ilPct, 0) / lpPositions.length : 0),
+    [lpPositions],
+  );
+  const outOfRangeCount = React.useMemo(() => lpPositions.filter((p) => !p.inRange).length, [lpPositions]);
+
+  const headerMetrics: KpiMetric[] = [
+    { label: "Total TVL", value: formatUsd(totalTvl), sentiment: "neutral" },
+    { label: "Positions", value: String(lpPositions.length), sentiment: "neutral" },
+    { label: "24h Fees", value: formatUsd(totalFees), sentiment: "positive" },
+    { label: "IL MTD", value: `${avgIl.toFixed(2)}%`, sentiment: "negative" },
+  ];
+
+  const actionsConfig: TableActionsConfig = {
+    extraActions:
+      outOfRangeCount > 0 ? (
+        <Badge variant="warning" className="text-[10px] shrink-0">
+          {outOfRangeCount} out of range
+        </Badge>
+      ) : undefined,
+  };
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm">Active LP Dashboard</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3 pt-0">
-        <div className="grid grid-cols-4 gap-2">
-          <div className="rounded-md border px-3 py-2 text-center">
-            <div className="text-[10px] text-muted-foreground">Total TVL</div>
-            <div className="text-sm font-mono font-semibold">{formatUsd(totalTvl)}</div>
-          </div>
-          <div className="rounded-md border px-3 py-2 text-center">
-            <div className="text-[10px] text-muted-foreground">Active Positions</div>
-            <div className="text-sm font-mono font-semibold">{MOCK_LP_POSITIONS.length}</div>
-          </div>
-          <div className="rounded-md border px-3 py-2 text-center">
-            <div className="text-[10px] text-muted-foreground">24h Fees</div>
-            <div className="text-sm font-mono font-semibold text-emerald-400">{formatUsd(totalFees)}</div>
-          </div>
-          <div className="rounded-md border px-3 py-2 text-center">
-            <div className="text-[10px] text-muted-foreground">IL MTD</div>
-            <div className="text-sm font-mono font-semibold text-red-400">{avgIl.toFixed(2)}%</div>
-          </div>
-        </div>
-
-        {outOfRangeCount > 0 && (
-          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-400">
-            <span className="font-medium">Rebalance Needed:</span> {outOfRangeCount} position{outOfRangeCount > 1 ? "s" : ""} out of range
-          </div>
-        )}
-
-        <div className="overflow-auto max-h-[350px]">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-[10px]">Pool</TableHead>
-                <TableHead className="text-[10px]">Range</TableHead>
-                <TableHead className="text-[10px]">In Range</TableHead>
-                <TableHead className="text-[10px] text-right">TVL</TableHead>
-                <TableHead className="text-[10px] text-right">Fees 24h</TableHead>
-                <TableHead className="text-[10px] text-right">IL %</TableHead>
-                <TableHead className="text-[10px]">Rebalance</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {MOCK_LP_POSITIONS.map((pos) => (
-                <TableRow key={pos.pool}>
-                  <TableCell className="text-xs font-mono font-medium">{pos.pool}</TableCell>
-                  <TableCell className="text-xs font-mono text-muted-foreground">
-                    {formatRange(pos.rangeLow, pos.rangeHigh)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={pos.inRange ? "success" : "error"} className="text-[10px]">
-                      {pos.inRange ? "Yes" : "No"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-xs font-mono text-right">{formatUsd(pos.tvl)}</TableCell>
-                  <TableCell className="text-xs font-mono text-right text-emerald-400">{formatUsd(pos.fees24h)}</TableCell>
-                  <TableCell className={`text-xs font-mono text-right ${pos.ilPct < -1 ? "text-red-400" : "text-muted-foreground"}`}>
-                    {pos.ilPct.toFixed(2)}%
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{pos.lastRebalance}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col h-full">
+      <div className="px-3 py-2 border-b border-border/40 shrink-0">
+        <KpiStrip metrics={headerMetrics} columns={4} />
+      </div>
+      <TableWidget
+        columns={columns}
+        data={lpPositions}
+        actions={actionsConfig}
+        isLoading={isLoading}
+        enableSorting
+        enableColumnVisibility={false}
+        emptyMessage="No LP positions"
+        className="flex-1 min-h-0"
+      />
+    </div>
   );
 }

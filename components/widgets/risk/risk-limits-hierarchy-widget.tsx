@@ -2,24 +2,94 @@
 
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
-import { useRiskData, getUtilization, getStatusFromUtil, formatCurrency } from "./risk-data-context";
+import { useRiskData, getUtilization, getStatusFromUtil, formatCurrency, type RiskLimit } from "./risk-data-context";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { TableWidget } from "@/components/shared/table-widget";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { CollapsibleSection } from "@/components/shared";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import type { ColumnDef } from "@tanstack/react-table";
+
+function fmtVal(v: number, u: string): string {
+  if (u === "$") return `$${formatNumber(v / 1_000_000, 2)}m`;
+  if (u === "%") return `${v}%`;
+  if (u === "x") return `${v}x`;
+  return formatNumber(v, 2);
+}
+
+const detailColumns: ColumnDef<RiskLimit, unknown>[] = [
+  {
+    accessorKey: "entityType",
+    header: "Level",
+    enableSorting: true,
+    cell: ({ row }) => (
+      <span className="text-[11px] capitalize text-muted-foreground">{row.getValue<string>("entityType")}</span>
+    ),
+  },
+  {
+    accessorKey: "entity",
+    header: "Entity",
+    enableSorting: true,
+    cell: ({ row }) => <span className="text-[11px] font-medium">{row.getValue<string>("entity")}</span>,
+  },
+  {
+    accessorKey: "name",
+    header: "Type",
+    enableSorting: true,
+    cell: ({ row }) => <span className="text-[11px]">{row.getValue<string>("name")}</span>,
+  },
+  {
+    accessorKey: "value",
+    header: () => <span className="flex justify-end">Value</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-[11px] text-right font-mono tabular-nums">
+        {fmtVal(row.original.value, row.original.unit)}
+      </div>
+    ),
+  },
+  {
+    accessorKey: "limit",
+    header: () => <span className="flex justify-end">Limit</span>,
+    enableSorting: true,
+    cell: ({ row }) => (
+      <div className="text-[11px] text-right font-mono tabular-nums text-muted-foreground">
+        {fmtVal(row.original.limit, row.original.unit)}
+      </div>
+    ),
+  },
+  {
+    id: "utilization",
+    header: () => <span className="flex justify-end">Util</span>,
+    enableSorting: false,
+    cell: ({ row }) => {
+      const util = getUtilization(row.original.value, row.original.limit);
+      return <div className="text-[11px] text-right font-mono tabular-nums">{formatPercent(util, 0)}</div>;
+    },
+  },
+  {
+    id: "status",
+    header: "Status",
+    enableSorting: false,
+    cell: ({ row }) => {
+      const util = getUtilization(row.original.value, row.original.limit);
+      return <StatusBadge status={getStatusFromUtil(util)} showDot={true} />;
+    },
+  },
+];
 
 export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
-  const { riskLimits, sortedLimits, selectedNode, setSelectedNode } = useRiskData();
+  const { riskLimits, sortedLimits, selectedNode, setSelectedNode, isLoading, hasError } = useRiskData();
 
   const selectedHierarchyNode = selectedNode ? riskLimits.find((l) => l.entity === selectedNode) : null;
 
   return (
-    <WidgetScroll axes="vertical">
-      <div className="space-y-2 p-1">
+    <div className="flex flex-col h-full min-h-0">
+      {/* Hierarchy tree (domain-specific indented rendering) */}
+      <div className="space-y-2 p-1 shrink-0">
         {selectedNode && selectedHierarchyNode && (
           <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20 text-xs">
             <span className="font-medium">Scope:</span>
@@ -99,54 +169,20 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
             })}
           </TableBody>
         </Table>
-
-        <CollapsibleSection title="All Limits Detail" defaultOpen={false} count={sortedLimits.length}>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/30">
-                <TableHead className="text-[10px]">Level</TableHead>
-                <TableHead className="text-[10px]">Entity</TableHead>
-                <TableHead className="text-[10px]">Type</TableHead>
-                <TableHead className="text-[10px] text-right">Value</TableHead>
-                <TableHead className="text-[10px] text-right">Limit</TableHead>
-                <TableHead className="text-[10px] text-right">Util</TableHead>
-                <TableHead className="text-[10px]">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedLimits.map((limit) => {
-                const util = getUtilization(limit.value, limit.limit);
-                const status = getStatusFromUtil(util);
-                const fmtVal = (v: number, u: string) => {
-                  if (u === "$") return `$${formatNumber(v / 1_000_000, 2)}m`;
-                  if (u === "%") return `${v}%`;
-                  if (u === "x") return `${v}x`;
-                  return formatNumber(v, 2);
-                };
-                return (
-                  <TableRow key={limit.id}>
-                    <TableCell className="text-[11px] capitalize text-muted-foreground">{limit.entityType}</TableCell>
-                    <TableCell className="text-[11px] font-medium">{limit.entity}</TableCell>
-                    <TableCell className="text-[11px]">{limit.name}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono tabular-nums">
-                      {fmtVal(limit.value, limit.unit)}
-                    </TableCell>
-                    <TableCell className="text-[11px] text-right font-mono tabular-nums text-muted-foreground">
-                      {fmtVal(limit.limit, limit.unit)}
-                    </TableCell>
-                    <TableCell className="text-[11px] text-right font-mono tabular-nums">
-                      {formatPercent(util, 0)}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge status={status} showDot={true} />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </CollapsibleSection>
       </div>
-    </WidgetScroll>
+
+      {/* All Limits Detail — flat table via TableWidget */}
+      <CollapsibleSection title="All Limits Detail" defaultOpen={false} count={sortedLimits.length}>
+        <TableWidget
+          columns={detailColumns}
+          data={sortedLimits}
+          isLoading={isLoading}
+          error={hasError ? "Failed to load risk limits" : null}
+          enableSorting
+          enableColumnVisibility={false}
+          emptyMessage="No limits available"
+        />
+      </CollapsibleSection>
+    </div>
   );
 }
