@@ -27,9 +27,7 @@ function HorizontalBar({ label, pct, colorIdx }: { label: string; pct: number; c
           style={{ width: `${Math.max(pct * 100, 2)}%`, opacity: 0.7 }}
         />
       </div>
-      <span className="text-xs font-mono text-muted-foreground w-12 text-right">
-        {formatNumber(pct * 100, 0)}%
-      </span>
+      <span className="text-xs font-mono text-muted-foreground w-12 text-right">{formatNumber(pct * 100, 0)}%</span>
     </div>
   );
 }
@@ -46,20 +44,26 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <p className="text-xs font-medium text-muted-foreground">Pillar 1: Coin Allocation</p>
-          <Badge variant="outline" className="text-[10px]">Patrick (restricted)</Badge>
+          <Badge variant="outline" className="text-[10px]">
+            Patrick (restricted)
+          </Badge>
         </div>
-        {coins.map((coin, idx) => (
-          <button
-            key={coin}
-            className={cn(
-              "w-full text-left rounded hover:bg-muted/20 px-1 py-0.5 transition-colors",
-              selectedCoin === coin && "bg-muted/30 ring-1 ring-primary/30",
-            )}
-            onClick={() => setSelectedCoin(selectedCoin === coin ? null : coin)}
-          >
-            <HorizontalBar label={coin} pct={waterfallWeights.coin_weights[coin] ?? 0} colorIdx={idx} />
-          </button>
-        ))}
+        {coins.length === 0 ? (
+          <p className="text-xs text-muted-foreground italic py-2">No coin allocations available.</p>
+        ) : (
+          coins.map((coin, idx) => (
+            <button
+              key={coin}
+              className={cn(
+                "w-full text-left rounded hover:bg-muted/20 px-1 py-0.5 transition-colors",
+                selectedCoin === coin && "bg-muted/30 ring-1 ring-primary/30",
+              )}
+              onClick={() => setSelectedCoin(selectedCoin === coin ? null : coin)}
+            >
+              <HorizontalBar label={coin} pct={waterfallWeights.coin_weights[coin] ?? 0} colorIdx={idx} />
+            </button>
+          ))
+        )}
       </div>
 
       {/* Pillar 2: Per-coin venue weights */}
@@ -73,7 +77,9 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
               <div key={venue} className="flex items-center gap-1">
                 <HorizontalBar label={venue.slice(0, 6)} pct={weight} colorIdx={idx + 2} />
                 {waterfallWeights.restricted_venues.includes(venue) && (
-                  <Badge variant="destructive" className="text-[9px] h-4 px-1">Restricted</Badge>
+                  <Badge variant="destructive" className="text-[9px] h-4 px-1">
+                    Restricted
+                  </Badge>
                 )}
               </div>
             ))}
