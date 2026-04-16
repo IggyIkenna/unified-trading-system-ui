@@ -49,9 +49,6 @@ export const MOCK_FUNDING_RATES: FundingRateMatrix = {
   OP: { HYPERLIQUID: 6.8, OKX: 5.0, BYBIT: 4.3, BINANCE: 5.8, ASTER: null },
 };
 
-export const FUNDING_RATE_VENUES = ["HYPERLIQUID", "OKX", "BYBIT", "BINANCE", "ASTER"] as const;
-export const FUNDING_RATE_FLOOR = 2.5;
-
 // ---------------------------------------------------------------------------
 // 3. Two-Waterfall Weights
 // ---------------------------------------------------------------------------
@@ -60,18 +57,18 @@ export const MOCK_WATERFALL_WEIGHTS: WaterfallWeights = {
   coin_weights: {
     ETH: 0.35,
     BTC: 0.25,
-    SOL: 0.20,
-    DOGE: 0.10,
+    SOL: 0.2,
+    DOGE: 0.1,
     AVAX: 0.05,
     LINK: 0.05,
   },
   venue_weights: {
-    ETH: { HYPERLIQUID: 0.35, OKX: 0.25, BYBIT: 0.15, BINANCE: 0.20, ASTER: 0.05 },
-    BTC: { HYPERLIQUID: 0.30, OKX: 0.25, BYBIT: 0.20, BINANCE: 0.25, ASTER: 0.00 },
-    SOL: { HYPERLIQUID: 0.40, OKX: 0.20, BYBIT: 0.15, BINANCE: 0.25, ASTER: 0.00 },
-    DOGE: { HYPERLIQUID: 0.50, OKX: 0.25, BYBIT: 0.15, BINANCE: 0.10, ASTER: 0.00 },
-    AVAX: { HYPERLIQUID: 0.40, OKX: 0.20, BYBIT: 0.10, BINANCE: 0.30, ASTER: 0.00 },
-    LINK: { HYPERLIQUID: 0.35, OKX: 0.25, BYBIT: 0.20, BINANCE: 0.20, ASTER: 0.00 },
+    ETH: { HYPERLIQUID: 0.35, OKX: 0.25, BYBIT: 0.15, BINANCE: 0.2, ASTER: 0.05 },
+    BTC: { HYPERLIQUID: 0.3, OKX: 0.25, BYBIT: 0.2, BINANCE: 0.25, ASTER: 0.0 },
+    SOL: { HYPERLIQUID: 0.4, OKX: 0.2, BYBIT: 0.15, BINANCE: 0.25, ASTER: 0.0 },
+    DOGE: { HYPERLIQUID: 0.5, OKX: 0.25, BYBIT: 0.15, BINANCE: 0.1, ASTER: 0.0 },
+    AVAX: { HYPERLIQUID: 0.4, OKX: 0.2, BYBIT: 0.1, BINANCE: 0.3, ASTER: 0.0 },
+    LINK: { HYPERLIQUID: 0.35, OKX: 0.25, BYBIT: 0.2, BINANCE: 0.2, ASTER: 0.0 },
   },
   restricted_venues: ["ASTER"],
 };
@@ -79,16 +76,16 @@ export const MOCK_WATERFALL_WEIGHTS: WaterfallWeights = {
 // Patrick-specific: restricted to fewer venues
 export const MOCK_WATERFALL_WEIGHTS_PATRICK: WaterfallWeights = {
   coin_weights: {
-    ETH: 0.40,
-    BTC: 0.30,
-    SOL: 0.20,
-    DOGE: 0.10,
+    ETH: 0.4,
+    BTC: 0.3,
+    SOL: 0.2,
+    DOGE: 0.1,
   },
   venue_weights: {
-    ETH: { HYPERLIQUID: 0.40, OKX: 0.30, BINANCE: 0.30 },
-    BTC: { HYPERLIQUID: 0.35, OKX: 0.30, BINANCE: 0.35 },
-    SOL: { HYPERLIQUID: 0.45, OKX: 0.25, BINANCE: 0.30 },
-    DOGE: { HYPERLIQUID: 0.50, OKX: 0.25, BINANCE: 0.25 },
+    ETH: { HYPERLIQUID: 0.4, OKX: 0.3, BINANCE: 0.3 },
+    BTC: { HYPERLIQUID: 0.35, OKX: 0.3, BINANCE: 0.35 },
+    SOL: { HYPERLIQUID: 0.45, OKX: 0.25, BINANCE: 0.3 },
+    DOGE: { HYPERLIQUID: 0.5, OKX: 0.25, BINANCE: 0.25 },
   },
   restricted_venues: ["ASTER", "BYBIT"],
 };

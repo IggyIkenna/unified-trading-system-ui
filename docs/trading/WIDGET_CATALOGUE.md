@@ -25,10 +25,10 @@ Maps every registered widget to its UI tab, source file, UI class, chart library
 | **card-grid**      | Card layout (templates, status cards, portfolio)                  | none — candidate for base                   | 8     |
 | **detail-panel**   | Master-detail / drill-down panel                                  | none — candidate for base                   | 10    |
 | **control-bar**    | Toolbar / selector strip / filter controls                        | none — candidate for base                   | 7     |
-| **heatmap**        | Matrix / grid heatmap (correlation, funding, strategy)            | none — candidate for base                   | 3     |
+| **heatmap**        | Matrix / grid heatmap (correlation, funding)                      | none — no base needed (see § 7 audit)       | 2     |
 | **waterfall**      | Waterfall / stacked attribution bars                              | none — bespoke                              | 3     |
 | **action-panel**   | CTA buttons / single-action widget                                | none — bespoke                              | 2     |
-| **bespoke**        | Unique composite — no clear class match                           | none                                        | 10    |
+| **bespoke**        | Unique composite — no clear class match                           | none                                        | 11    |
 | **order-book**     | Bid/ask ladder with depth                                         | none — candidate for base                   | 3     |
 
 **Chart library policy:** `lightweight-charts` for candlestick / high-volume historical data. `recharts` for simple histograms, area, bar, pie. Final choice per widget based on rendering performance vs visual quality.
@@ -112,7 +112,7 @@ Maps every registered widget to its UI tab, source file, UI class, chart library
 | Widget ID                   | Display Name           | Class          | Chart Lib | File                                        | Description                                                                                     |
 | --------------------------- | ---------------------- | -------------- | --------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `risk-kpi-strip`            | Risk KPIs              | kpi-strip      | recharts  | `risk/risk-kpi-strip-widget.tsx`            | 9 metrics + sparklines: P&L, exposure, margin%, VaR95, ES95, alerts, VaR99, ES99, kill switches |
-| `risk-strategy-heatmap`     | Strategy Heatmap       | heatmap        | —         | `risk/risk-strategy-heatmap-widget.tsx`     | Strategy risk status with CB trip/reset, scale, and kill actions                                |
+| `risk-strategy-heatmap`     | Strategy Heatmap       | bespoke        | —         | `risk/risk-strategy-heatmap-widget.tsx`     | Strategy risk status with CB trip/reset, scale, and kill actions (reclassified from heatmap)    |
 | `risk-utilization`          | Highest Utilization    | waterfall      | —         | `risk/risk-utilization-widget.tsx`          | Top N limits ranked by utilization with limit bars                                              |
 | `risk-var-chart`            | Component VaR          | recharts-chart | recharts  | `risk/risk-var-chart-widget.tsx`            | Horizontal bar chart: marginal VaR contribution by position                                     |
 | `risk-stress-table`         | Stress Scenarios       | inline-table   | —         | `risk/risk-stress-table-widget.tsx`         | Historical stress scenario table with multiplier, P&L, breaches, on-demand stress test          |

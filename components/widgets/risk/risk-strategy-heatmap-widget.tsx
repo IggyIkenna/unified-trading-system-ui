@@ -20,6 +20,7 @@ import {
 import { Zap, RotateCcw, ArrowDownToLine, Power } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
   const {
@@ -29,11 +30,22 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
     scaledStrategies,
     isBatchMode,
     circuitBreakerPending,
+    isLoading,
     handleTripCircuitBreaker,
     handleResetCircuitBreaker,
     handleKillSwitch,
     handleScale,
   } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-1.5 p-1">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-10 w-full rounded-lg" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <WidgetScroll axes="vertical">

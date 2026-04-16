@@ -20,7 +20,7 @@ Each **Work Unit** below is a self-contained task for one agent. The agent shoul
 4. **Implement the migration** — create or update the base, migrate children, delete duplicated code
 5. **Apply all cross-cutting requirements** from § 0 to every widget touched
 
-**Bespoke widgets (10 total) are OUT OF SCOPE.** After all migrations are complete, we review whether any bespoke widget fits a base. Don't force it.
+**Bespoke widgets (11 total — 10 original + `risk-strategy-heatmap` reclassified from heatmap) are OUT OF SCOPE.** After all migrations are complete, we review whether any bespoke widget fits a base. Don't force it.
 
 **Thin shell widgets (<50 lines that delegate to a domain component) should NOT be migrated to a base.** They are already correctly structured. Only apply the cross-cutting requirements (§ 0) to them.
 
@@ -411,41 +411,32 @@ The base should provide:
 
 ---
 
-## § 7 — HeatmapWidget (heatmap class)
+## § 7 — HeatmapWidget (heatmap class) — NO BASE NEEDED
 
-**Base file:** `components/shared/heatmap-widget.tsx` (NEW)
-**Child count:** 3
+**Base file:** None — base creation skipped after audit
+**Child count:** 2 (was 3 — `risk-strategy-heatmap` reclassified as bespoke)
+**Findings:** [`heatmap-findings.md`](findings/heatmap-findings.md)
 
-### Children
+### Audit Outcome
 
-| Widget ID                  | File                                       | Lines | Domain |
-| -------------------------- | ------------------------------------------ | ----- | ------ |
-| `risk-strategy-heatmap`    | `risk/risk-strategy-heatmap-widget.tsx`    | ~200  | Risk   |
-| `risk-correlation-heatmap` | `risk/risk-correlation-heatmap-widget.tsx` | 27    | Risk   |
-| `defi-funding-matrix`      | `defi/defi-funding-matrix-widget.tsx`      | ~200  | DeFi   |
+After auditing all 3 original children, no shared base is justified:
 
-### What should go in the base
+- **`risk-strategy-heatmap`** (212 lines) is **misclassified** — it's a row-based strategy status list with action buttons (Trip/Reset/Scale/Kill), not a matrix/heatmap. Reclassified as **bespoke**. Loading state added (skeleton via `isLoading` from risk context).
+- **`risk-correlation-heatmap`** (27 lines) is a **thin shell** delegating to a self-contained `CorrelationHeatmap` domain component that already handles loading, empty, hover, and rendering. Per spec rule, thin shells skip base migration.
+- **`defi-funding-matrix`** (141 lines) is the only true matrix widget. Creating a base for a single consumer adds indirection without deduplication. § 0.3 violation fixed (constants moved to `lib/config/services/defi.config.ts`). Empty state guard added.
 
-| Feature      | Base provides                                      |
-| ------------ | -------------------------------------------------- |
-| Grid layout  | Row × column matrix with configurable axis labels  |
-| Colour scale | Configurable gradient (e.g., red → yellow → green) |
-| Tooltip      | Cell hover tooltip with row/col/value              |
-| Empty state  | "No data" message                                  |
-| Cell click   | Optional `onCellClick` handler                     |
-| Loading      | Skeleton grid placeholder                          |
+### Remaining Children (cross-cutting only)
 
-### What stays in each child
+| Widget ID                  | File                                       | Lines | Domain | Status                         |
+| -------------------------- | ------------------------------------------ | ----- | ------ | ------------------------------ |
+| `risk-correlation-heatmap` | `risk/risk-correlation-heatmap-widget.tsx` | 27    | Risk   | Thin shell — no changes needed |
+| `defi-funding-matrix`      | `defi/defi-funding-matrix-widget.tsx`      | ~150  | DeFi   | § 0.3 fixed, empty state added |
 
-- Data shape and transformation
-- Custom colour scales (each heatmap has different semantics)
-- Action buttons per cell (risk heatmap has CB trip/reset actions)
+### Reclassified to Bespoke
 
-### Agent notes
-
-- `risk-correlation-heatmap` (27 lines) is a thin shell with dynamic import. The base may wrap the dynamic import pattern.
-- **Mock import cleanup (§ 0.3):** `defi-funding-matrix` imports `FUNDING_RATE_VENUES` and `FUNDING_RATE_FLOOR`. Move to config constants or data context.
-- Small scope — 3 widgets. Quick win.
+| Widget ID               | File                                    | Lines | Domain | Reason                                      |
+| ----------------------- | --------------------------------------- | ----- | ------ | ------------------------------------------- |
+| `risk-strategy-heatmap` | `risk/risk-strategy-heatmap-widget.tsx` | ~220  | Risk   | Row list with action buttons, not a heatmap |
 
 ---
 
@@ -534,7 +525,7 @@ Both waterfall widgets render bars as plain `div` elements with inline `width` s
 | **4**    | DetailPanelWidget       | 4   | 10      | Medium                                                         | Low        | All except § 4           |
 | **5**    | CardGridWidget          | 6   | 8       | Medium                                                         | Low        | All except § 6           |
 | **6**    | ControlBarWidget        | 5   | 7       | Low                                                            | Low        | All except § 5           |
-| **7**    | HeatmapWidget           | 7   | 3       | Low                                                            | Low        | All except § 7           |
+| **7**    | HeatmapWidget           | 7   | 2       | ~~Low~~ No base — cross-cutting only                           | Done       | All except § 7           |
 | **8**    | OrderBookWidget         | 8   | 3       | Low                                                            | Low        | All except § 8           |
 | **9**    | WaterfallWidget         | 9   | 3       | Low                                                            | Low        | All except § 9           |
 

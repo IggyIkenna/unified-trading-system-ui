@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
-import { FUNDING_RATE_VENUES, FUNDING_RATE_FLOOR } from "@/lib/mocks/fixtures/defi-walkthrough";
+import { FUNDING_RATE_VENUES, FUNDING_RATE_FLOOR } from "@/lib/config/services/defi.config";
 
 function rateColor(rate: number | null): string {
   if (rate === null) return "text-muted-foreground/50";
@@ -62,6 +62,14 @@ export function DeFiFundingMatrixWidget(_props: WidgetComponentProps) {
     return result;
   }, [fundingRates, coins]);
 
+  if (coins.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">No funding rate data</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2 p-1">
       <div className="flex items-center justify-between">
@@ -90,14 +98,7 @@ export function DeFiFundingMatrixWidget(_props: WidgetComponentProps) {
                   const rate = fundingRates[coin]?.[venue] ?? null;
                   const isBest = bestVenuePerCoin[coin] === venue;
                   return (
-                    <td
-                      key={venue}
-                      className={cn(
-                        "text-right py-1.5 px-2 font-mono",
-                        rateColor(rate),
-                        rateBg(rate),
-                      )}
-                    >
+                    <td key={venue} className={cn("text-right py-1.5 px-2 font-mono", rateColor(rate), rateBg(rate))}>
                       {rate !== null ? (
                         <span className={cn(isBest && "font-bold underline underline-offset-2")}>
                           {formatNumber(rate, 1)}%
