@@ -97,7 +97,7 @@ All 17 domains have a `*-data-context.tsx`. Total: 5,539 lines of context code.
 
 **Every widget receives exactly `WidgetComponentProps` (`instanceId`, `config?`).** No widget fetches data via inline `useQuery` or direct API calls. This is consistent and correct.
 
-**Three providers are NOT in `AllWidgetProviders`:** `OverviewDataProvider`, `TerminalDataProvider`, `RiskDataProvider` — they require a `value` prop. Widgets from these domains placed on other tabs hit `WidgetContextGuard` and show a placeholder. This is known and by design.
+**All 17 providers are now in `AllWidgetProviders`.** Three (`OverviewDataProvider`, `TerminalDataProvider`, `RiskDataProvider`) use self-fetching wrappers that call extracted hooks. Performance optimization (lazy activation) deferred to BP-6. See `docs/audits/BP2-cross-tab-providers.md`.
 
 ---
 

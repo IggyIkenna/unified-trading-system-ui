@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, ChevronRight, Shield, Target, Zap, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STRATEGIES } from "@/lib/strategy-registry";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { useTerminalData } from "./terminal-data-context";
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -35,6 +36,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
     isContextComplete,
     isBatchMode,
   } = useTerminalData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const [constraintsOpen, setConstraintsOpen] = React.useState(false);
   const sizeNum = parseFloat(orderSize) || 0;
@@ -49,7 +51,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
 
   return (
     <Card className="h-full border-0 rounded-none flex flex-col">
-      <CardContent className="flex-1 overflow-auto px-3 pb-3 pt-2 space-y-3">
+      <FormWidget error={error} onClearError={clearError} className="flex-1 overflow-auto px-3 pb-3 pt-2">
         {/* Buy / Sell toggle */}
         <div className="grid grid-cols-2 gap-1">
           <Button
@@ -197,8 +199,8 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
             "w-full h-9 font-medium",
             orderSide === "buy" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700",
           )}
-          disabled={!isContextComplete || sizeNum <= 0 || isBatchMode}
-          onClick={handleSubmitOrder}
+          disabled={!isContextComplete || sizeNum <= 0 || isBatchMode || isSubmitting}
+          onClick={() => handleSubmit(handleSubmitOrder)}
         >
           {orderSide === "buy" ? "Buy" : "Sell"} {selectedInstrument.symbol}
         </Button>
@@ -206,7 +208,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
         {isBatchMode && (
           <p className="text-[10px] text-amber-500 text-center">Order submission disabled in batch mode</p>
         )}
-      </CardContent>
+      </FormWidget>
     </Card>
   );
 }

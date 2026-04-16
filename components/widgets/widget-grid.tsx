@@ -5,6 +5,7 @@ import * as React from "react";
 import type { Layout, LayoutItem, ResponsiveLayouts } from "react-grid-layout";
 import { ResponsiveGridLayout, useContainerWidth, verticalCompactor } from "react-grid-layout";
 import { AllWidgetProviders } from "./all-widget-providers";
+import { getActivePreset } from "./widget-chrome-presets";
 import { getWidget, type WidgetPlacement } from "./widget-registry";
 import { WidgetWrapper } from "./widget-wrapper";
 
@@ -13,7 +14,7 @@ import "react-grid-layout/css/styles.css";
 const ROW_HEIGHT = 80;
 const COLS = { lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 };
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
-const MARGIN: [number, number] = [2, 2];
+const MARGIN: [number, number] = getActivePreset().margin;
 const CONTAINER_PADDING: [number, number] = [0, 0];
 const RESIZE_HANDLES = ["se", "e", "s"] as const;
 

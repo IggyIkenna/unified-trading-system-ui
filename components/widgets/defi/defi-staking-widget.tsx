@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Coins, TrendingUp } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -13,6 +14,7 @@ import { useDeFiData } from "./defi-data-context";
 
 export function DeFiStakingWidget(_props: WidgetComponentProps) {
   const { stakingProtocols, tokenBalances, executeDeFiOrder } = useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const [protocol, setProtocol] = React.useState(stakingProtocols[0]?.name ?? "Lido");
   const [operation, setOperation] = React.useState<"STAKE" | "UNSTAKE">("STAKE");
@@ -28,7 +30,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="space-y-3 p-1">
+    <FormWidget error={error} onClearError={clearError}>
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant={operation === "STAKE" ? "default" : "outline"}
@@ -119,34 +121,36 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
 
       <Button
         className="w-full"
-        disabled={amountNum <= 0}
-        onClick={() => {
-          executeDeFiOrder({
-            client_id: "internal-trader",
-            strategy_id: "ETHENA_BENCHMARK",
-            instruction_type: operation,
-            algo_type: "BENCHMARK_FILL",
-            instrument_id: `${selected.venue_id}:${operation}:${selected.asset}`,
-            venue: selected.venue_id,
-            side: operation === "STAKE" ? "buy" : "sell",
-            order_type: "market",
-            quantity: amountNum,
-            price: selected.apy,
-            max_slippage_bps: 50,
-            expected_output: amountNum,
-            benchmark_price: selected.apy,
-            asset_class: "DeFi",
-            lane: "defi",
-          });
-          setAmount("");
-          toast.success("Staking order placed", {
-            description: `${operation} ${amountNum} ${selected.asset} on ${protocol} (mock ledger)`,
-          });
-        }}
+        disabled={amountNum <= 0 || isSubmitting}
+        onClick={() =>
+          handleSubmit(() => {
+            executeDeFiOrder({
+              client_id: "internal-trader",
+              strategy_id: "ETHENA_BENCHMARK",
+              instruction_type: operation,
+              algo_type: "BENCHMARK_FILL",
+              instrument_id: `${selected.venue_id}:${operation}:${selected.asset}`,
+              venue: selected.venue_id,
+              side: operation === "STAKE" ? "buy" : "sell",
+              order_type: "market",
+              quantity: amountNum,
+              price: selected.apy,
+              max_slippage_bps: 50,
+              expected_output: amountNum,
+              benchmark_price: selected.apy,
+              asset_class: "DeFi",
+              lane: "defi",
+            });
+            setAmount("");
+            toast.success("Staking order placed", {
+              description: `${operation} ${amountNum} ${selected.asset} on ${protocol} (mock ledger)`,
+            });
+          })
+        }
       >
         <Coins className="size-4 mr-2" />
         {operation} {selected.asset} on {protocol}
       </Button>
-    </div>
+    </FormWidget>
   );
 }

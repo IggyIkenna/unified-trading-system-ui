@@ -69,7 +69,10 @@
 ### 2026-04-16 (new)
 
 - **DECIDED:** BP-1 Stream B (target-state brain-dump) is **complete**. All 8 sections in 07_trading_target_state.md confirmed [STABLE].
-- **DECIDED:** BP-1 Stream A (doc hygiene) is **in progress**. Doc inventory done, active trading docs promoted to `docs/trading/`, stale docs deleted or kept in `docs/under-review/`, ROUTES.md fully updated. Widget catalogue updated with 10 new widgets (124 total).
+- **DECIDED:** BP-1 Stream A (doc hygiene) is **complete**. Doc inventory done, active trading docs promoted to `docs/trading/`, stale docs deleted or kept in `docs/under-review/`, ROUTES.md fully updated. Widget catalogue updated with 10 new widgets (124 total).
+- **DECIDED:** BP-2 (widget foundation) is **complete**. Foundation audit, 10 widget class audits, cross-tab providers, chrome presets. Artifacts in `docs/audits/BP2-*` and `docs/audits/findings/`.
+- **DECIDED:** Former BP-3 (multi-repo/per-layer testing) **removed** — was a design constraint, not a pain point. Useful parts absorbed into BP-3 (audience), BP-4 (tiers), and BP-6 (mock data). Boss-points renumbered from 7 to 6.
+- **DECIDED:** New execution order: BP-1 ✓ → BP-2 ✓ → BP-6 (mock data, next) → BP-3+BP-4 (audience+tiers) → BP-5 (dead code).
 - **DECIDED:** `converstaion.md` (repo-splitting transcript) deleted — decision captured in 05.
 - **DECIDED:** 25 stale/output docs deleted from under-review (audit outputs, old plans, stale trackers, unused handbooks).
 - **DECIDED:** `01_problem_and_context.md` superseded by boss_points.md + 07.
@@ -78,7 +81,7 @@
 
 - **DECIDED:** `lint` and `typecheck` scripts in [package.json](../../package.json) are stubbed to no-ops. This is the load-bearing root cause of the regression problem. _(Source: 02_codebase_facts.md)_
 - **DECIDED:** Seven boss-points canonical, captured in [boss_points.md](boss_points.md). Earlier docs (01, 03, 04, 06) marked STALE pending revision after boss-point discussions. _(Source: boss_points.md)_
-- **DECIDED:** Boss-point discussion order is BP-1 → BP-2 → BP-7 → BP-4+BP-5 → BP-6, with BP-3 absorbed as a design constraint on the test framework. _(Source: boss_points.md)_
+- **DECIDED:** Boss-point discussion order is BP-1 → BP-2 → BP-6 → BP-3+BP-4 → BP-5. Former BP-3 removed and absorbed (see 2026-04-16 decisions). _(Source: boss_points.md)_
 - **DECIDED:** Backend not being ready is NOT a blocker for any of the proposed test layers — they all work against mocks. _(Source: 04_mock_data_and_backend_gap.md)_
 - **DECIDED:** Layer A (un-stub typecheck + lint) is the highest-leverage first action.
 - **DECIDED:** Visual regression and Storybook are out of scope for now.

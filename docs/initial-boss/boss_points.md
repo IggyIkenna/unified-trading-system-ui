@@ -1,8 +1,8 @@
 # Boss-Points — the canonical pain-point list
 
-**Status:** DISCUSSING
-**Last updated:** 2026-04-15
-**Purpose:** short, terse capture of the 7 real pain points Harsh experiences daily. Each point gets its own in-depth doc AFTER we discuss it, not before. This file is the navigation root — everything else links back here.
+**Status:** IN PROGRESS — BP-1 and BP-2 complete, BP-7 next
+**Last updated:** 2026-04-16
+**Purpose:** short, terse capture of the 6 real pain points Harsh experiences daily. Each point gets its own in-depth doc AFTER we discuss it, not before. This file is the navigation root — everything else links back here.
 
 **This supersedes** the assumptions in `01_problem_and_context.md` and `03_test_strategy_options.md`. Those earlier docs were written before Harsh surfaced the real boss-points and should be revised (or replaced) once we work through the boss-points in order.
 
@@ -18,7 +18,7 @@ Backend has an SSOT in `unified-trading-pm`; the UI has nothing equivalent. Exis
 
 There are audit scripts already; they may need updating too.
 
-**Status:** OPEN — to discuss.
+**Status:** COMPLETE — Stream A (doc hygiene) done, Stream B (trading target state in `07_trading_target_state.md`) all 8 sections confirmed.
 
 ---
 
@@ -32,24 +32,11 @@ Harsh has already built root widgets for ~2-3 widget types (tables, summary, pos
 - Confirm base widgets exist for every widget class
 - Formalise the extension pattern so new widgets always build on a base
 
-**Status:** OPEN — to discuss. **Highest urgency — directly under today's work.**
+**Status:** COMPLETE — Foundation audited and confirmed solid. 10 widget class audits done (9 findings + bespoke). Cross-tab providers enabled. Chrome presets created. See `docs/audits/BP2-*` for artifacts.
 
 ---
 
-## BP-3 — Multi-repo UI future + tests must be per-layer
-
-Currently only the trading lifecycle tab lives here. Other tabs live in separate repos (e.g. `deployment-ui`, used by team members for deploying backend services + data backfills). Research and promote tabs are in other repos too. All of those will be migrated _into_ this repo later.
-
-The testing framework must be:
-
-- Extensible to each part of the UI as it lands
-- Layered, so we do NOT run the whole suite every time — define the layers and run only what's needed for a given change
-
-**Status:** OPEN — more of a design constraint than a discussion topic.
-
----
-
-## BP-4 — Multi-audience UI (same codebase, different entitlements)
+## BP-3 — Multi-audience UI (same codebase, different entitlements)
 
 One codebase serves:
 
@@ -60,11 +47,13 @@ One codebase serves:
 
 Most filtering is backend-enforced (AWS/GCP rejects unauthorised requests, or data simply isn't there). For now we have to **mimic this with mock data + tests** so these access paths are covered before the real API is wired in.
 
-**Status:** OPEN — to discuss, tightly coupled with BP-5.
+**Note:** Other lifecycle tabs (deployment, research, promote) currently live in separate repos and will migrate into this repo over time. The test framework built here must be extensible to each tab as it lands.
+
+**Status:** OPEN — to discuss, tightly coupled with BP-4.
 
 ---
 
-## BP-5 — Subscription tiers (per-service × standard/premium/ultra)
+## BP-4 — Subscription tiers (per-service × standard/premium/ultra)
 
 Subscription layers exist on two dimensions:
 
@@ -73,13 +62,13 @@ Subscription layers exist on two dimensions:
 
 Features and data visibility depend on this matrix. The matrix isn't fully defined yet — when it is, changing it should ideally be a **single config change** that propagates everywhere. Services are pretty well defined; tier contents are not.
 
-Tests must cover this matrix dimension alongside the audience dimension from BP-4.
+Tests must cover this matrix dimension alongside the audience dimension from BP-3. The test layer must also be per-layer (not run-everything-every-time) so it scales as new tabs/services land.
 
-**Status:** OPEN — discuss alongside BP-4.
+**Status:** OPEN — discuss alongside BP-3.
 
 ---
 
-## BP-6 — Dead code / dead components
+## BP-5 — Dead code / dead components
 
 Some components and pages are left over from earlier pivots. They're not in use, they bloat the codebase, and they get in the way of audits and agents (who read them and get confused about what's current). Need an audit → archive/remove pass.
 
@@ -87,46 +76,42 @@ Some components and pages are left over from earlier pivots. They're not in use,
 
 ---
 
-## BP-7 — Fragmented mock data
+## BP-6 — Fragmented mock data
 
 Mock data lives in many places: backend scripts, UI `lib/mocks/fixtures/`, UI `lib/mocks/generators/`, inline inside component `.tsx` files, probably more. Need:
 
 - A central way to generate, store, and use mock data
 - A discipline for updating it without breaking consumers
 - Type checking as the first-line drift detector (per Harsh: "type checking would be the first one to highlight breakage")
+- Test layers must be extensible per-tab and per-change (not run-everything-every-time)
 
-**Status:** OPEN — prerequisite for any meaningful test layer.
+Also includes deferred work from BP-2: lazy provider activation for cross-tab widget sharing (see `docs/audits/BP2-cross-tab-providers.md`), and the real API/WebSocket wiring strategy.
 
----
-
-## Proposed discussion order
-
-**Revised 2026-04-15 after Harsh pushed back:** in an agent-primary workflow (Harsh + Ikenna mostly review UI, not code; agents do most of the implementation), docs ARE the specification. Stale/missing docs actively mislead agents and an agent cannot "audit the foundation" if there's no target state written down. So BP-1 moves to first. Previous ordering (BP-2 first) assumed humans learning from code, which is not this team's workflow.
-
-| Order | BP                                                             | Why this order                                                                                                                                                                                                                                                              |
-| ----- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1st   | **BP-1 — SSOT docs + audit scripts**                           | Agents are the primary workforce; they read docs, not code. Without a target state written down, every agent session operates from different assumptions. Split into two parallel streams: (a) doc hygiene (fast, mechanical), (b) target-state brain-dump (high-leverage). |
-| 2nd   | **BP-2 — Widget foundation**                                   | With BP-1's target state in place, "is the foundation good?" becomes answerable — it's an audit _against something_ rather than a vibes check. Directly under today's work on the trading tab.                                                                              |
-| 3rd   | **BP-7 — Mock data consolidation**                             | Prerequisite for any meaningful test layer. Can't lock down widget behaviour if the data underneath keeps shifting. Relatively contained.                                                                                                                                   |
-| 4th   | **BP-4 + BP-5 together — Multi-audience + subscription tiers** | Same domain (who sees what). Defines a test matrix dimension. Must be understood before we write tests that claim coverage.                                                                                                                                                 |
-| 5th   | **BP-6 — Dead code audit**                                     | Cleanup. The audit framework from BP-1 makes this tractable. Not urgent.                                                                                                                                                                                                    |
-| 6th   | **BP-3 — Multi-repo / per-layer testing**                      | A design constraint on the testing framework, not a discussion topic in its own right. Absorbed into the test layer design as a requirement.                                                                                                                                |
-
-### Why not BP-1 first (even though it sounds foundational)
-
-BP-1 is the _container_ for everything else. Starting with it risks weeks of meta-discussion about what should be in the SSOT before we make progress on any concrete pain. Starting with BP-2 and BP-7 produces real artifacts (a widget foundation spec, a mock data spec) that become the _first entries_ in the SSOT — so BP-1 is built incrementally rather than designed from scratch.
-
-### Why BP-4 + BP-5 go together
-
-They are the same thing from two angles: BP-4 asks "who is the audience?", BP-5 asks "what did this audience pay for?". The tests need to cover both dimensions simultaneously. Discussing them separately would mean redoing the same matrix work twice.
+**Status:** OPEN — next up, prerequisite for any meaningful test layer.
 
 ---
 
-## What I need from Harsh before the first discussion
+## Execution order
 
-Nothing formal — just agreement on the order above (or a different order if you disagree), then we start BP-2 with questions I'll draft once you confirm.
+| Order | BP                                                             | Status       | Notes                                                                                                    |
+| ----- | -------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------- |
+| 1st   | **BP-1 — SSOT docs + audit scripts**                           | **COMPLETE** | Stream A (doc hygiene) + Stream B (target state) done.                                                   |
+| 2nd   | **BP-2 — Widget foundation**                                   | **COMPLETE** | Foundation audit, 10 class audits, cross-tab providers, chrome presets.                                  |
+| 3rd   | **BP-6 — Mock data + API wiring**                              | **NEXT**     | Prerequisite for any meaningful test layer. Includes lazy provider activation deferred from BP-2.        |
+| 4th   | **BP-3 + BP-4 together — Multi-audience + subscription tiers** | OPEN         | Same domain (who sees what + what they paid for). Test framework must be per-layer and per-tab scalable. |
+| 5th   | **BP-5 — Dead code audit**                                     | OPEN         | Cleanup. The audit framework from BP-1 makes this tractable.                                             |
 
-I will NOT start creating in-depth docs for any boss-point until we've discussed it and agreed on what it contains.
+### Why BP-3 + BP-4 go together
+
+They are the same thing from two angles: BP-3 asks "who is the audience?", BP-4 asks "what did this audience pay for?". The tests need to cover both dimensions simultaneously. Discussing them separately would mean redoing the same matrix work twice.
+
+### Former BP-3 (Multi-repo UI / per-layer testing) — REMOVED
+
+Was a design constraint, not a standalone pain point. Its useful parts absorbed into:
+
+- **BP-3 (audience):** "other tabs will migrate in" → test framework must be extensible per-tab
+- **BP-4 (tiers):** "tests must be per-layer" → don't run everything every time
+- **BP-6 (mock data):** test layer extensibility is a design constraint on the mock/API wiring
 
 ---
 

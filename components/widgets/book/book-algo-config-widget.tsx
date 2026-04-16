@@ -9,6 +9,7 @@ import { BOOK_ALGO_OPTIONS } from "@/lib/config/services/trading.config";
 import { DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
 import type { BookAlgoType } from "./book-data-context";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { FormWidget } from "@/components/shared/form-widget";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { useBookTradeData } from "./book-data-context";
 
@@ -35,7 +36,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
   if (isDefiCategory) {
     const algoMeta = DEFI_ALGO_TYPES.find((a) => a.value === defiAlgo);
     return (
-      <div className="p-2">
+      <FormWidget className="p-2">
         <CollapsibleSection title="DeFi execution parameters" defaultOpen>
           <Card className="border-0 shadow-none">
             <CardContent className="space-y-3 pt-1 px-2 pb-2">
@@ -52,17 +53,17 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
                     {availableDefiAlgos.length} available
                   </Badge>
                 </div>
-                {algoMeta && (
-                  <p className="text-[10px] text-muted-foreground">{algoMeta.description}</p>
-                )}
+                {algoMeta && <p className="text-[10px] text-muted-foreground">{algoMeta.description}</p>}
               </div>
 
               <div className="space-y-1">
                 <label className="text-[10px] text-muted-foreground">Max Slippage</label>
-                <div className="text-xs font-mono">{(maxSlippageBps / 100).toFixed(2)}% ({maxSlippageBps} bps)</div>
+                <div className="text-xs font-mono">
+                  {(maxSlippageBps / 100).toFixed(2)}% ({maxSlippageBps} bps)
+                </div>
               </div>
 
-              {(defiAlgo === "SOR_TWAP") && (
+              {defiAlgo === "SOR_TWAP" && (
                 <>
                   <div className="space-y-1">
                     <label className="text-[10px] text-muted-foreground">Duration (seconds)</label>
@@ -106,13 +107,13 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
             </CardContent>
           </Card>
         </CollapsibleSection>
-      </div>
+      </FormWidget>
     );
   }
 
   // CeFi algo config (unchanged)
   return (
-    <div className="p-2">
+    <FormWidget className="p-2">
       <CollapsibleSection title="TWAP, VWAP & routing parameters" defaultOpen>
         <Card className="border-0 shadow-none">
           <CardContent className="space-y-3 pt-1 px-2 pb-2">
@@ -189,6 +190,6 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
           </CardContent>
         </Card>
       </CollapsibleSection>
-    </div>
+    </FormWidget>
   );
 }

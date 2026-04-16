@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Droplets, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
@@ -15,6 +16,7 @@ import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   const { liquidityPools, executeDeFiOrder } = useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const [selectedPool, setSelectedPool] = React.useState(liquidityPools[0]?.name ?? "");
   const [feeTier, setFeeTier] = React.useState("0.05");
@@ -30,7 +32,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="space-y-3 p-1">
+    <FormWidget error={error} onClearError={clearError}>
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant={operation === "ADD_LIQUIDITY" ? "default" : "outline"}
@@ -149,35 +151,37 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
 
       <Button
         className="w-full"
-        disabled={!amount || parseFloat(amount) <= 0}
+        disabled={!amount || parseFloat(amount) <= 0 || isSubmitting}
         onClick={() => {
           const amountNum = parseFloat(amount) || 0;
-          executeDeFiOrder({
-            client_id: "internal-trader",
-            strategy_id: "AMM_LP",
-            instruction_type: operation,
-            algo_type: "AMM_CONCENTRATED",
-            instrument_id: `${pool.venue_id}:LP:${pool.name}`,
-            venue: pool.venue_id,
-            side: operation === "ADD_LIQUIDITY" ? "buy" : "sell",
-            order_type: "market",
-            quantity: amountNum,
-            price: pool.apr24h,
-            max_slippage_bps: 50,
-            expected_output: amountNum,
-            benchmark_price: pool.apr24h,
-            asset_class: "DeFi",
-            lane: "defi",
-          });
-          setAmount("");
-          toast.success("Liquidity order placed", {
-            description: `${operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} ${amountNum} ${pool.token0} in ${pool.name} (mock ledger)`,
+          handleSubmit(() => {
+            executeDeFiOrder({
+              client_id: "internal-trader",
+              strategy_id: "AMM_LP",
+              instruction_type: operation,
+              algo_type: "AMM_CONCENTRATED",
+              instrument_id: `${pool.venue_id}:LP:${pool.name}`,
+              venue: pool.venue_id,
+              side: operation === "ADD_LIQUIDITY" ? "buy" : "sell",
+              order_type: "market",
+              quantity: amountNum,
+              price: pool.apr24h,
+              max_slippage_bps: 50,
+              expected_output: amountNum,
+              benchmark_price: pool.apr24h,
+              asset_class: "DeFi",
+              lane: "defi",
+            });
+            setAmount("");
+            toast.success("Liquidity order placed", {
+              description: `${operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} ${amountNum} ${pool.token0} in ${pool.name} (mock ledger)`,
+            });
           });
         }}
       >
         <Droplets className="size-4 mr-2" />
         {operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} liquidity
       </Button>
-    </div>
+    </FormWidget>
   );
 }

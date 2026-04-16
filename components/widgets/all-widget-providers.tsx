@@ -8,7 +8,7 @@
  * use self-fetching wrappers that call the same hooks their page
  * components use, so their widgets render with real data on any tab.
  *
- * TODO(BP-7): Replace the always-on self-fetching wrappers with lazy
+ * TODO(BP-6): Replace the always-on self-fetching wrappers with lazy
  * activation (only run hooks when a widget from that domain is actually
  * mounted on the current tab). This avoids Terminal's 500ms price sim
  * and WebSocket running on tabs that don't need them.
@@ -39,7 +39,7 @@ import { useTerminalPageData } from "./terminal/use-terminal-page-data";
 
 // ---------------------------------------------------------------------------
 // Self-fetching wrappers for providers that require a value prop.
-// BP-7 will replace these with lazy-activated versions.
+// BP-6 will replace these with lazy-activated versions.
 // ---------------------------------------------------------------------------
 
 function SelfFetchingRiskProvider({ children }: { children: React.ReactNode }) {

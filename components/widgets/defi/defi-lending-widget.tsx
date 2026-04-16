@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
-import { calculateHealthFactorDelta, getAssetParams } from "@/lib/mocks/fixtures/defi-protocol-params";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { AlertTriangle, ArrowDown, Shield } from "lucide-react";
@@ -20,7 +20,10 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
     setSelectedLendingProtocol,
     healthFactor: currentHf,
     executeDeFiOrder,
+    getAssetParams,
+    calculateHealthFactorDelta,
   } = useDeFiData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const [operation, setOperation] = React.useState<"LEND" | "BORROW" | "WITHDRAW" | "REPAY">("LEND");
   const [asset, setAsset] = React.useState("ETH");
@@ -52,7 +55,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="space-y-3 p-1" data-testid="defi-lending-widget">
+    <FormWidget error={error} onClearError={clearError}>
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Protocol</label>
         <Select value={selectedLendingProtocol} onValueChange={setSelectedLendingProtocol}>
@@ -239,34 +242,36 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
 
       <Button
         className="w-full"
-        disabled={amountNum <= 0}
-        onClick={() => {
-          executeDeFiOrder({
-            client_id: "internal-trader",
-            strategy_id: "AAVE_LENDING",
-            instruction_type: operation,
-            algo_type: "DIRECT",
-            instrument_id: `${selectedProtocol.venue_id}:${operation}:${asset}`,
-            venue: selectedProtocol.venue_id,
-            side: operation === "LEND" || operation === "REPAY" ? "buy" : "sell",
-            order_type: "market",
-            quantity: amountNum,
-            price: 1,
-            max_slippage_bps: maxSlippageBps,
-            expected_output: amountNum * (1 - maxSlippageBps / 10000),
-            benchmark_price: 1,
-            asset_class: "DeFi",
-            lane: "defi",
-          });
-          setAmount("");
-          toast.success("DeFi order placed", {
-            description: `${operation} ${amountNum} ${asset} on ${selectedLendingProtocol} (mock ledger)`,
-          });
-        }}
+        disabled={amountNum <= 0 || isSubmitting}
+        onClick={() =>
+          handleSubmit(() => {
+            executeDeFiOrder({
+              client_id: "internal-trader",
+              strategy_id: "AAVE_LENDING",
+              instruction_type: operation,
+              algo_type: "DIRECT",
+              instrument_id: `${selectedProtocol.venue_id}:${operation}:${asset}`,
+              venue: selectedProtocol.venue_id,
+              side: operation === "LEND" || operation === "REPAY" ? "buy" : "sell",
+              order_type: "market",
+              quantity: amountNum,
+              price: 1,
+              max_slippage_bps: maxSlippageBps,
+              expected_output: amountNum * (1 - maxSlippageBps / 10000),
+              benchmark_price: 1,
+              asset_class: "DeFi",
+              lane: "defi",
+            });
+            setAmount("");
+            toast.success("DeFi order placed", {
+              description: `${operation} ${amountNum} ${asset} on ${selectedLendingProtocol} (mock ledger)`,
+            });
+          })
+        }
         data-testid="execute-button"
       >
         {operation} {asset}
       </Button>
-    </div>
+    </FormWidget>
   );
 }

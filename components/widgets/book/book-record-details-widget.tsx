@@ -4,6 +4,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { FormWidget } from "@/components/shared/form-widget";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { useBookTradeData } from "./book-data-context";
 
@@ -20,7 +21,7 @@ export function BookRecordDetailsWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="p-2">
+    <FormWidget className="p-2">
       <CollapsibleSection title="Off-book reference & fees" defaultOpen>
         <Card className="border-0 shadow-none">
           <CardContent className="space-y-3 pt-1 px-2 pb-2">
@@ -55,6 +56,6 @@ export function BookRecordDetailsWidget(_props: WidgetComponentProps) {
           </CardContent>
         </Card>
       </CollapsibleSection>
-    </div>
+    </FormWidget>
   );
 }

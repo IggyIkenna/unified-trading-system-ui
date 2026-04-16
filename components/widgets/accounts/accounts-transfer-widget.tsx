@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import {
   CEFI_VENUES,
   NETWORKS,
@@ -32,6 +33,7 @@ const TYPE_PILLS: { id: TransferType; label: string }[] = [
 
 export function AccountsTransferWidget(_props: WidgetComponentProps) {
   const { balances, addTransferEntry } = useAccountsData();
+  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
   const [transferType, setTransferType] = React.useState<TransferType>("venue-to-venue");
   const [fromVenue, setFromVenue] = React.useState<string>(CEFI_VENUES[0]);
   const [toVenue, setToVenue] = React.useState<string>(CEFI_VENUES[1]);
@@ -82,7 +84,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
   };
 
   return (
-    <div className="space-y-3 px-1 pb-1">
+    <FormWidget error={error} onClearError={clearError} className="px-1 pb-1">
       <div className="space-y-1">
         <span className="text-xs text-muted-foreground">Transfer type</span>
         <div className="grid grid-cols-4 gap-1">
@@ -176,8 +178,8 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
           </div>
           <Button
             className="w-full h-8 text-xs"
-            disabled={amountNum <= 0 || fromVenue === toVenue}
-            onClick={handleVenueTransfer}
+            disabled={amountNum <= 0 || fromVenue === toVenue || isSubmitting}
+            onClick={() => handleSubmit(handleVenueTransfer)}
           >
             Initiate Transfer
           </Button>
@@ -267,7 +269,11 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               <span className="text-emerald-400">Instant</span>
             </div>
           </div>
-          <Button className="w-full h-8 text-xs" disabled={amountNum <= 0} onClick={handleSubAccountTransfer}>
+          <Button
+            className="w-full h-8 text-xs"
+            disabled={amountNum <= 0 || isSubmitting}
+            onClick={() => handleSubmit(handleSubAccountTransfer)}
+          >
             Transfer
           </Button>
         </div>
@@ -356,7 +362,11 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
             </div>
           </div>
 
-          <Button className="w-full h-8 text-xs" disabled={amountNum <= 0 || !toAddress} onClick={handleWithdraw}>
+          <Button
+            className="w-full h-8 text-xs"
+            disabled={amountNum <= 0 || !toAddress || isSubmitting}
+            onClick={() => handleSubmit(handleWithdraw)}
+          >
             Withdraw
           </Button>
         </div>
@@ -416,11 +426,11 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               <span className="text-[10px] text-muted-foreground">QR</span>
             </div>
           </div>
-          <Button variant="outline" className="w-full h-8 text-xs" onClick={handleDepositConfirm}>
+          <Button variant="outline" className="w-full h-8 text-xs" onClick={() => handleSubmit(handleDepositConfirm)}>
             I&apos;ve sent the deposit
           </Button>
         </div>
       )}
-    </div>
+    </FormWidget>
   );
 }
