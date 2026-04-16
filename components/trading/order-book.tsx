@@ -4,11 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import { DollarSign } from "lucide-react";
-import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import * as React from "react";
 
 interface OrderBookLevel {
@@ -301,54 +299,3 @@ export function DepthChart({ bids, asks, midPrice, symbol, height = 200, classNa
     </Card>
   );
 }
-
-// Combined order book with depth view
-interface OrderBookWithDepthProps {
-  symbol: string;
-  venue?: string;
-  midPrice?: number;
-  className?: string;
-}
-
-export function OrderBookWithDepth({
-  symbol = "BTC/USDT",
-  venue = "Binance",
-  midPrice: initialMidPrice,
-  className,
-}: OrderBookWithDepthProps) {
-  // Default mid prices by symbol
-  const defaultMidPrices: Record<string, number> = {
-    "BTC/USDT": 67234.5,
-    "ETH/USDT": 3456.78,
-    "SOL/USDT": 156.42,
-    BTC: 67234.5,
-    ETH: 3456.78,
-    SOL: 156.42,
-  };
-
-  const midPrice = initialMidPrice || defaultMidPrices[symbol] || 100;
-  const { bids, asks } = React.useMemo(() => generateMockOrderBook(symbol, midPrice), [symbol, midPrice]);
-
-  const spread = asks[0]?.price - bids[0]?.price || 0;
-  const spreadBps = (spread / midPrice) * 10000;
-  const symbolSalt = symbol.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const lastPrice = midPrice + (mock01(0, symbolSalt) - 0.5) * spread;
-
-  return (
-    <div className={cn("grid grid-cols-1 lg:grid-cols-2 gap-4", className)}>
-      <OrderBook
-        symbol={symbol}
-        bids={bids}
-        asks={asks}
-        lastPrice={lastPrice}
-        spread={spread}
-        spreadBps={spreadBps}
-        midPrice={midPrice}
-        venue={venue}
-      />
-      <DepthChart bids={bids} asks={asks} midPrice={midPrice} symbol={symbol} height={400} />
-    </div>
-  );
-}
-
-export { generateMockOrderBook } from "@/lib/mocks/generators/order-book";

@@ -9,7 +9,7 @@ import { formatNumber } from "@/lib/utils/formatters";
 import { useMarketsData } from "./markets-data-context";
 
 export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
-  const { liveBookUpdates, assetClass, bookDepth } = useMarketsData();
+  const { liveBookUpdates, assetClass, bookDepth, isLoading } = useMarketsData();
   const rows = useLiveFeed(liveBookUpdates, 500);
 
   const venueLabel =
@@ -19,6 +19,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
 
   return (
     <LiveFeedWidget
+      isLoading={isLoading}
       isEmpty={isDefi || rows.length === 0}
       emptyMessage={
         isDefi
