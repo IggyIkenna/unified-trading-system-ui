@@ -1,17 +1,22 @@
 /**
  * Strategy Registry - Comprehensive strategy definitions from actual system configs
  *
- * Based on the strategy documentation from:
- * - DeFi Basis Trade
- * - DeFi Recursive Staked Basis
- * - DeFi Market Making (AMM LP)
- * - CeFi Market Making
- * - TradFi ML Directional
- * - TradFi Options Market Making
- * - Sports Arbitrage
+ * @deprecated Phase 9 of the Strategy Architecture v2 rollout — this
+ * hand-maintained registry is being retired. Replacements:
+ *   - Family / archetype / allocator / Unity / venue-capability enums and
+ *     metadata → `@/lib/architecture-v2` (mirror of UAC
+ *     `unified_api_contracts.internal.architecture_v2`).
+ *   - Per-strategy instance rows → the API gateway's
+ *     `/api/v1/strategies/instances` endpoint once phase 11 (strategy
+ *     migration) lands. The mock catalog in
+ *     `lib/mocks/fixtures/strategy-catalog-data.ts` stands in until then.
  *
- * NOTE: Core enumerations (AssetClass, StrategyExecutionMode, TestingStage, etc.)
- * are defined in ./taxonomy.ts as the single source of truth.
+ * Do NOT add new strategies or taxonomy here. Edit UAC, regenerate
+ * `lib/registry/generated.ts` via `generate_ui_reference_data.py`, and import
+ * from `@/lib/architecture-v2` instead.
+ *
+ * Tracking: `unified-trading-pm/plans/active/strategy_architecture_v2_phase3_11_handoff_2026_04_17.plan.md`
+ * phase 9 todo "Strategy registry is auto-generated from UAC".
  */
 
 import {

@@ -299,10 +299,17 @@ export const ML_SUB_TABS: ServiceTab[] = [
   },
 ];
 
-// Strategy sub-tabs — shown inside Strategy section pages
+// Strategy sub-tabs — shown inside Strategy section pages.
+// v2 family/archetype/allocator/unity/venues tabs are appended after the
+// legacy catalog/backtest tabs so existing links keep working.
 export const STRATEGY_SUB_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/research/strategy/overview" },
+  { label: "Families", href: "/services/research/strategy/families", matchPrefix: "/services/research/strategy/families" },
   { label: "Catalog", href: "/services/research/strategy/catalog", matchPrefix: "/services/research/strategy/catalog" },
+  { label: "Allocator", href: "/services/research/strategy/allocator" },
+  { label: "Unity", href: "/services/research/strategy/unity" },
+  { label: "Venues", href: "/services/research/strategy/venues" },
+  { label: "Policies", href: "/services/research/strategy/execution-policies" },
   { label: "Backtests", href: "/services/research/strategy/backtests" },
   { label: "Compare", href: "/services/research/strategy/compare" },
   { label: "Results", href: "/services/research/strategy/results" },

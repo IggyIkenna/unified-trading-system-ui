@@ -284,16 +284,38 @@ function StrategyListRow({ strategy }: { strategy: StrategyCatalogEntry }) {
 
 export default function StrategyCatalogPage() {
   const [search, setSearch] = React.useState("");
-  const [categoryFilter, setCategoryFilter] = React.useState<StrategyCategory | "All">("All");
+  // Multi-select: empty set === "All". Categories are DERIVED from venue mix
+  // per the v2 architecture, so the filter must allow the union of categories.
+  const [selectedCategories, setSelectedCategories] = React.useState<Set<StrategyCategory>>(
+    () => new Set(),
+  );
   const [sortKey, setSortKey] = React.useState<SortKey>("apy");
   const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
   const [view, setView] = React.useState<ViewMode>("grid");
 
+  const toggleCategory = React.useCallback((id: StrategyCategory | "All") => {
+    if (id === "All") {
+      setSelectedCategories(new Set());
+      return;
+    }
+    setSelectedCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const allSelected = selectedCategories.size === 0;
+
   // Filter
   const filtered = React.useMemo(() => {
     let items: StrategyCatalogEntry[] = STRATEGY_CATALOG;
-    if (categoryFilter !== "All") {
-      items = items.filter((s) => s.category === categoryFilter);
+    if (!allSelected) {
+      items = items.filter((s) => selectedCategories.has(s.category));
     }
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -305,7 +327,7 @@ export default function StrategyCatalogPage() {
       );
     }
     return sortStrategies(items, sortKey, sortDir);
-  }, [categoryFilter, search, sortKey, sortDir]);
+  }, [allSelected, selectedCategories, search, sortKey, sortDir]);
 
   // Group by category (for "All" grid view)
   const grouped = React.useMemo(() => {
@@ -343,28 +365,38 @@ export default function StrategyCatalogPage() {
 
         {/* Toolbar */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* Category Tabs */}
-          <div className="flex flex-wrap items-center gap-1 rounded-lg bg-muted/40 p-1">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategoryFilter(cat.id)}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
-                  categoryFilter === cat.id
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                )}
-              >
-                {cat.icon}
-                <span className="hidden sm:inline">{cat.label}</span>
-                {cat.id !== "All" && (
-                  <span className="text-[10px] text-muted-foreground">
-                    ({STRATEGY_CATALOG.filter((s) => s.category === cat.id).length})
-                  </span>
-                )}
-              </button>
-            ))}
+          {/* Category Tabs — multi-select. "All" clears selection. */}
+          <div
+            className="flex flex-wrap items-center gap-1 rounded-lg bg-muted/40 p-1"
+            role="group"
+            aria-label="Category filter (multi-select)"
+          >
+            {CATEGORIES.map((cat) => {
+              const isActive = cat.id === "All" ? allSelected : selectedCategories.has(cat.id);
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => toggleCategory(cat.id)}
+                  aria-pressed={isActive}
+                  data-testid={`category-filter-${cat.id}`}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
+                    isActive
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50",
+                  )}
+                >
+                  {cat.icon}
+                  <span className="hidden sm:inline">{cat.label}</span>
+                  {cat.id !== "All" && (
+                    <span className="text-[10px] text-muted-foreground">
+                      ({STRATEGY_CATALOG.filter((s) => s.category === cat.id).length})
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <div className="flex-1" />
@@ -427,7 +459,7 @@ export default function StrategyCatalogPage() {
           </div>
         ) : view === "grid" ? (
           <div className="space-y-8">
-            {categoryFilter === "All" ? (
+            {allSelected ? (
               Array.from(grouped.entries()).map(([cat, strategies]) => (
                 <CategorySection key={cat} category={cat} strategies={strategies} />
               ))
