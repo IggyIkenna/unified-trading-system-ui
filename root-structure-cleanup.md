@@ -38,7 +38,7 @@ Currently `app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/` all sit
 
 ### 2. Centralize all tests under `tests/`
 
-Current state: `__tests__/` (old Jest), `tests/` (Vitest), `e2e/` (Playwright) — three locations.
+Current state: `__tests__/` (Vitest, 34 files), `tests/` (Vitest, 1 file — `api.integration.test.ts` from PM SSOT template), `e2e/` (Playwright, 42 files) — three locations.
 
 **DECIDED: Single `tests/` folder with `e2e/` nested inside.**
 
@@ -48,10 +48,11 @@ tests/
   integration/  ← Vitest: API/store/hook integration tests
   audit/        ← Vitest: existing audit tests
   e2e/          ← Playwright: moved from root e2e/
+  helpers/      ← shared utilities (persona-wrapper.tsx, test-wrapper.tsx)
 ```
 
 **On test output artifacts (`test-results/`, `coverage/`, `playwright-report/`):**
-These are generated OUTPUT, not source — they must NOT live inside `tests/`. They stay gitignored at root (or wherever the tool drops them). Do not move them.
+These are generated OUTPUT, not source — they must NOT live inside `tests/`. They route into `build-artifacts/` (see item 9). Gitignored.
 
 **What needs updating after the move:**
 
@@ -61,13 +62,42 @@ These are generated OUTPUT, not source — they must NOT live inside `tests/`. T
 
 **Actions (when instructed):**
 
-- [ ] Create `tests/unit/`, `tests/integration/`, `tests/audit/`, `tests/e2e/`
+- [ ] Create `tests/unit/`, `tests/integration/`, `tests/audit/`, `tests/e2e/`, `tests/helpers/`
 - [ ] Move `e2e/` content → `tests/e2e/`
 - [ ] Move existing `tests/` content into appropriate subdirs
-- [ ] Migrate valid `__tests__/` content → `tests/unit/` or `tests/integration/`
+- [ ] Migrate valid `__tests__/` content → `tests/unit/` / `tests/integration/` / `tests/audit/` / `tests/helpers/`
 - [ ] Update all three Playwright configs: `testDir` + any path references
 - [ ] Update `vitest.config.ts` include paths
 - [ ] Delete `__tests__/` and root `e2e/` once migrated
+
+---
+
+### 2a. Test audit findings (gates Phase C of execution)
+
+Audit run 2026-04-17. Vitest: **34 test files, 6 failing, 273 tests passing / 50 failing**.
+
+**Decisions per failing file (delete recent-broken, update salvageable):**
+
+| File                                                                             | Age (git log) | Decision                 | Reason                                                                                                                                                                                                            |
+| -------------------------------------------------------------------------------- | ------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `__tests__/components/strategy-platform/active-lp-dashboard.test.tsx`            | 2026-04-16    | **Delete**               | Created yesterday in commit `9011f6f`; broken by concurrent `StrategiesDataProvider` refactor. Shallow smoke test.                                                                                                |
+| `__tests__/components/strategy-platform/commodity-regime-dashboard.test.tsx`     | 2026-04-16    | **Delete**               | Same commit, same cause.                                                                                                                                                                                          |
+| `__tests__/components/strategy-platform/enhanced-basis-dashboard.test.tsx`       | 2026-04-16    | **Delete**               | Same commit, same cause.                                                                                                                                                                                          |
+| `__tests__/components/strategy-platform/events-feed-dashboard.test.tsx`          | 2026-04-16    | **Delete**               | Same commit, same cause.                                                                                                                                                                                          |
+| `__tests__/components/strategy-platform/lending-protocol-arb-dashboard.test.tsx` | 2026-04-16    | **Delete**               | Same commit, same cause.                                                                                                                                                                                          |
+| `__tests__/components/strategy-platform/liquidation-monitor-dashboard.test.tsx`  | 2026-04-16    | **Delete**               | Same commit, same cause.                                                                                                                                                                                          |
+| `__tests__/audit/static-marketing-pages.test.ts`                                 | 2026-04-17    | **Update (1 assertion)** | 18/19 pass. Only `"advisory agreement"` / `"AR appointment"` check drifted vs current `regulatory.html` copy. Update test to match current copy. Real value — covers FCA ref 975797, brand, no-stale-venue-count. |
+
+**Replacement coverage (write new properly-wrapped tests):**
+
+The 6 strategy-platform widgets are production code — deletion leaves a coverage gap. Write new tests that wrap widgets in `StrategiesDataProvider` (using `__tests__/helpers/test-wrapper.tsx` harness pattern) with mocked strategies data. Prioritise by production traffic, not all 6 mechanically.
+
+**Actions (when instructed):**
+
+- [ ] Update `static-marketing-pages.test.ts` regulatory-page assertion to match current copy
+- [ ] Delete 6 `__tests__/components/strategy-platform/*.test.tsx` files
+- [ ] Write replacement tests with `StrategiesDataProvider` wrapper (scope TBD per widget priority)
+- [ ] Verify `pnpm test -- --run` exits 0 after cleanup
 
 ---
 
@@ -152,17 +182,36 @@ These are generated OUTPUT, not source — they must NOT live inside `tests/`. T
 
 ---
 
-### 9. Build/test output artifacts
+### 9. Build/test output artifacts → route into `build-artifacts/`
 
-- `tsconfig.tsbuildinfo`, `coverage/`, `playwright-report/`, `test-results/`
+Current: `tsconfig.tsbuildinfo`, `coverage/`, `playwright-report/`, `test-results/` all land at repo root — polluting the top-level listing and making it hard to tell source from generated output.
 
-These are generated output — must be gitignored, not committed.
+**DECIDED: Route ALL generated test/build output into single `build-artifacts/` folder.**
+
+```
+build-artifacts/
+  coverage/           ← vitest coverage (istanbul/v8 reports)
+  playwright-report/  ← playwright HTML reporter output
+  test-results/       ← playwright trace / screenshots / videos
+  tsbuildinfo         ← tsc incremental build info
+```
+
+**What needs updating:**
+
+- `vitest.config.ts` — `test.coverage.reportsDirectory: "./build-artifacts/coverage"`
+- `playwright.config.ts` + `playwright.e2e.config.ts` + `playwright.static.config.ts`:
+  - `outputDir: "./build-artifacts/test-results"` (trace/screenshots)
+  - `reporter: [["html", { outputFolder: "./build-artifacts/playwright-report", open: "never" }]]`
+- `tsconfig.json` — `compilerOptions.tsBuildInfoFile: "./build-artifacts/tsbuildinfo"`
+- `.gitignore` — add `/build-artifacts/` (replace individual entries for coverage/, playwright-report/, test-results/, tsconfig.tsbuildinfo)
+- `next.config.mjs` — verify `.next/` isn't redirected (keep `.next/` as-is; it's a Next.js convention and separate concern)
 
 **Actions (when instructed):**
 
-- [ ] Check `.gitignore` — confirm which are already excluded
-- [ ] Add any missing entries
-- [ ] Delete local copies if accidentally committed
+- [ ] Update configs to emit into `build-artifacts/`
+- [ ] Replace gitignore entries with `/build-artifacts/`
+- [ ] Delete any committed local copies (`git rm -r --cached coverage playwright-report test-results tsconfig.tsbuildinfo` if tracked)
+- [ ] Run `pnpm test:ci` + `pnpm exec playwright test --list` to confirm outputs land in new folder
 
 ---
 
@@ -208,12 +257,19 @@ Standard Next.js pattern — acceptable.
 
 ## Recommended execution order
 
-When ready to execute, do in this order to avoid compounding breakage:
+Phased. Each phase = one commit. Do not batch phases.
 
-1. **Lockfile + `setup.sh`** (item 4) — isolated, low risk
-2. **Delete Jest files** (item 3) — isolated, no deps
-3. **`src/` migration** (item 1) — biggest change, do standalone with full build verify
-4. **Test folder consolidation** (item 2) — after `src/` is stable
-5. **Gitignore + artifact cleanup** (item 9) — quick housekeeping
-6. **AI files + `issues.md`** (items 8, 11) — trivial moves
-7. **Deployment configs** (item 10) — after confirming active target
+1. **Phase A — Lockfile + `setup.sh`** (item 4) — isolated, low risk
+2. **Phase B — Delete Jest files** (item 3) — isolated, no deps
+3. **Phase C — Test audit actions** (item 2a) — delete 6 stale strategy-platform tests, fix 1 drifted assertion in `static-marketing-pages.test.ts`. Makes test suite green before moving anything.
+4. **Phase D — Test folder consolidation** (item 2) — `__tests__/` + `tests/` + `e2e/` → unified `tests/{unit,integration,audit,e2e,helpers}/`. Requires Phase C (don't move broken tests).
+5. **Phase E — Test/build output routing** (item 9) — route outputs into `build-artifacts/`, update `.gitignore`
+6. **Phase F — `src/` migration** (item 1) — biggest change, standalone commit with full `tsc --noEmit` + `pnpm build` verify. Deferred until after test suite + outputs are clean, so any import breakage surfaces in a clean test run.
+7. **Phase G — AI files + `issues.md`** (items 8, 11) — trivial moves
+8. **Phase H — Deployment configs** (item 10) — after confirming active target
+
+**Why this order (diff from earlier draft):**
+
+- Phase C moved up: green tests before consolidation. Moving a broken test suite obscures which failures are from moves vs existing.
+- Phase E moved before Phase F: clean output folders make post-`src/` verification readable.
+- Phase F (`src/` migration) deferred: was originally Phase 3, but with fresh evidence that recent refactors (widget providers) produced fragile tests, doing `src/` _after_ test cleanup lets us re-verify imports against a stable suite.
