@@ -282,3 +282,61 @@ Phased. Each phase = one commit. Do not batch phases.
 - Phase C moved up: green tests before consolidation. Moving a broken test suite obscures which failures are from moves vs existing.
 - Phase E moved before Phase F: clean output folders make post-`src/` verification readable.
 - Phase F (`src/` migration) deferred: was originally Phase 3, but with fresh evidence that recent refactors (widget providers) produced fragile tests, doing `src/` _after_ test cleanup lets us re-verify imports against a stable suite.
+
+---
+
+## Follow-ups surfaced during Phases A–E
+
+Items flagged while executing the phased refactor but not part of the original item list. Track here so they're not lost.
+
+### FU-1. PM SSOT `setup.sh` template — npm → pnpm propagation
+
+- `scripts/setup.sh` in this repo was rewritten in Phase A to use `pnpm install --frozen-lockfile` instead of `npm install`.
+- The source-of-truth template lives in `unified-trading-pm/codex/` and is rolled out to all repos via `rollout-quality-gates-unified.py` (or the equivalent setup-template rollout script).
+- **Risk:** next template rollout will overwrite this repo's `setup.sh` back to `npm`.
+- [ ] Update the codex setup-template SSOT to reflect pnpm for UI repos (or carve a UI-specific template), then re-roll.
+
+### FU-2. Broken `test:unit` / `test:integration` / `test:audit` scripts
+
+`package.json` declares:
+
+```json
+"test:unit": "vitest --project unit",
+"test:integration": "vitest --project integration",
+"test:audit": "vitest --project audit",
+```
+
+But `vitest.config.ts` has no `projects` array — these flags reference nothing. The scripts fail with "No matching projects found."
+
+**Two options:**
+
+- (A) Declare `test.projects` in `vitest.config.ts` with entries for `unit` (`tests/unit/**`), `integration` (`tests/integration/**`), `audit` (`tests/audit/**`).
+- (B) Replace the `--project` flag with a directory filter: `vitest tests/unit`, etc.
+
+- [ ] Pick A or B; fix scripts so `pnpm test:unit` etc. work.
+
+### FU-3. Replacement coverage for 6 deleted strategy-platform widget tests
+
+Phase C deleted 6 strategy-platform dashboard tests (1-day-old shallow smoke tests broken by concurrent `StrategiesDataProvider` refactor). Per audit, they provided no meaningful coverage.
+
+Widgets needing fresh coverage (in priority order TBD per production traffic):
+
+- `active-lp-dashboard`
+- `commodity-regime-dashboard`
+- `enhanced-basis-dashboard`
+- `events-feed-dashboard`
+- `lending-protocol-arb-dashboard`
+- `liquidation-monitor-dashboard`
+
+- [ ] Write new integration tests with proper `StrategiesDataProvider` wrapper (use `tests/helpers/test-wrapper.tsx`).
+- [ ] Scope per widget — don't re-create as shallow smoke tests.
+
+### FU-4. Stale doc references to `__tests__/` and `e2e/`
+
+Phase D moved tests to `tests/{unit,integration,audit,e2e,helpers}/` but these docs still point at the old paths:
+
+- `docs/initial-boss/02_codebase_facts.md`
+- `docs/initial-boss/03_test_strategy_options.md`
+- `docs/under-review/FRONTEND_PRIMER_FOR_BACKEND_ENGINEERS.md`
+
+- [ ] Grep for `__tests__/` and `^e2e/` in `docs/`; update to `tests/...` paths.
