@@ -192,3 +192,43 @@ export const DEPLOYMENT_TIERS = deploymentEnums.DeploymentTier ?? [];
 export const DEPLOYMENT_OPERATION_MODES =
   deploymentEnums.DeploymentOperationMode ?? [];
 // DEPLOYMENT_STATUSES already exported from uicEnums above (line 88)
+
+// ---------------------------------------------------------------------------
+// Venue Data Availability (provider timing — when data arrives post-T)
+// ---------------------------------------------------------------------------
+
+export const VENUE_DATA_AVAILABILITY = (data.venue_data_availability ??
+  {}) as Record<
+  string,
+  {
+    venue_name: string;
+    category: string;
+    availability_lag_hours: number;
+    available_after_utc_hour: number;
+    is_t_plus_one: boolean;
+    notes: string;
+  }
+>;
+
+// ---------------------------------------------------------------------------
+// Venue Coordinates (stadium geographic positions)
+// ---------------------------------------------------------------------------
+
+export const VENUE_COORDINATES = (data.venue_coordinates ?? {}) as Record<
+  string,
+  { latitude: number; longitude: number }
+>;
+
+// ---------------------------------------------------------------------------
+// TradFi Tick Data Windows (Databento expensive tick collection dates)
+// ---------------------------------------------------------------------------
+
+export const TRADFI_TICK_DATA_WINDOWS = (data.tradfi_tick_data_windows ??
+  []) as Array<{ start: string; end: string }>;
+
+// ---------------------------------------------------------------------------
+// MVP CME Exchange Codes
+// ---------------------------------------------------------------------------
+
+export const MVP_CME_EXCHANGE_CODES = (data.mvp_cme_exchange_codes ??
+  []) as string[];

@@ -104,6 +104,9 @@ export function TradesDashboard() {
               { key: "notional_usd", header: "Notional" },
               { key: "fee", header: "Fee" },
               { key: "realized_pnl", header: "Realized P&L" },
+              { key: "strategy_id", header: "Strategy" },
+              { key: "client_name", header: "Client" },
+              { key: "category", header: "Category" },
             ]}
             filename={`${selectedClientId}_trades`}
           />
@@ -198,6 +201,9 @@ export function TradesDashboard() {
                     <TableHead className="text-right">Notional</TableHead>
                     <TableHead className="text-right">Fee</TableHead>
                     <TableHead className="text-right">Realized P&L</TableHead>
+                    <TableHead>Strategy</TableHead>
+                    <TableHead>Client</TableHead>
+                    <TableHead>Category</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -224,11 +230,14 @@ export function TradesDashboard() {
                       <TableCell className="text-right">
                         {t.realized_pnl !== 0 ? <PnLValue value={t.realized_pnl} size="sm" showSign /> : <span className="text-muted-foreground">—</span>}
                       </TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{t.strategy_id ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{t.client_name ?? "—"}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{t.category ?? "—"}</TableCell>
                     </TableRow>
                   ))}
                   {trades.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={14} className="text-center py-8 text-muted-foreground">
                         No trades found
                       </TableCell>
                     </TableRow>

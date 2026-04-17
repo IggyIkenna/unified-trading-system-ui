@@ -26,6 +26,10 @@ const EXPORT_COLUMNS: ExportColumn[] = [
   { key: "net_pnl", header: "Net P&L", format: "currency" },
   { key: "net_delta", header: "Net Delta", format: "number" },
   { key: "health_factor", header: "Health Factor", format: "number" },
+  { key: "client_name", header: "Client" },
+  { key: "category", header: "Category" },
+  { key: "strategy_family", header: "Family" },
+  { key: "chain", header: "Chain" },
   { key: "venue", header: "Venue" },
   { key: "updated_at", header: "Updated" },
 ];
@@ -285,6 +289,60 @@ function buildColumns(
         ) : (
           <span className="text-muted-foreground text-[10px] block text-right">--</span>
         );
+      },
+    },
+    {
+      accessorKey: "client_name",
+      header: "Client",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("client_name");
+        return val ? (
+          <span className="text-[11px]">{val}</span>
+        ) : (
+          <span className="text-muted-foreground text-[10px]">--</span>
+        );
+      },
+    },
+    {
+      accessorKey: "category",
+      header: "Category",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("category");
+        return val ? (
+          <span className="text-[11px]">{val}</span>
+        ) : (
+          <span className="text-muted-foreground text-[10px]">--</span>
+        );
+      },
+    },
+    {
+      accessorKey: "strategy_family",
+      header: "Family",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("strategy_family");
+        return val ? (
+          <span className="text-[11px]">{val}</span>
+        ) : (
+          <span className="text-muted-foreground text-[10px]">--</span>
+        );
+      },
+    },
+    {
+      accessorKey: "chain",
+      header: "Chain",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("chain");
+        return val ? (
+          <span className="text-[11px]">{val}</span>
+        ) : null;
       },
     },
     {

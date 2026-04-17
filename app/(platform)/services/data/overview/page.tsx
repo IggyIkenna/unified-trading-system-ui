@@ -14,8 +14,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  useDataPipelineAlerts,
+  useDataPipelineJobs,
+  useDataPipelineStages,
+} from "@/hooks/api/use-data-pipeline";
 import { useScopedCategories } from "@/hooks/use-scoped-categories";
-import { MOCK_ACTIVE_JOBS, MOCK_ALERTS, MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
 import {
   DATA_CATEGORY_LABELS,
   type DataCategory,
@@ -23,6 +27,7 @@ import {
   type PipelineStageSummary,
 } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
+import { formatPercent } from "@/lib/utils/formatters";
 import {
   Activity,
   ArrowRight,
@@ -37,7 +42,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
-import { formatPercent } from "@/lib/utils/formatters";
 
 const STAGE_HREFS: Record<string, string> = {
   instruments: "/services/data/instruments",
@@ -228,9 +232,9 @@ function ActiveJobRow({ job }: { job: JobInfo }) {
 }
 
 export default function AcquireOverviewPage() {
-  const stages = MOCK_PIPELINE_STAGES;
-  const jobs = MOCK_ACTIVE_JOBS;
-  const alerts = MOCK_ALERTS;
+  const { data: stages = [] } = useDataPipelineStages();
+  const { data: jobs = [] } = useDataPipelineJobs();
+  const { data: alerts = [] } = useDataPipelineAlerts();
   const { subscribed, locked } = useScopedCategories();
 
   // Use scoped categories if available; fall back to all categories for internal users

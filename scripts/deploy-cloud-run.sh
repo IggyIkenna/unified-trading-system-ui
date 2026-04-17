@@ -18,10 +18,9 @@ if [[ "${1:-}" == "--cloud" ]]; then
     --timeout=1200 \
     --project="${PROJECT_ID}"
 else
-  echo "=== Local Docker Build ==="
+  echo "=== Local Docker Build (linux/amd64) ==="
   gcloud auth configure-docker europe-west4-docker.pkg.dev --quiet 2>/dev/null || true
-  docker pull "${IMAGE}:latest" 2>/dev/null || true
-  docker build --cache-from "${IMAGE}:latest" -t "${IMAGE}:latest" .
+  docker buildx build --platform linux/amd64 -t "${IMAGE}:latest" --load .
   echo "=== Pushing image ==="
   docker push "${IMAGE}:latest"
 fi

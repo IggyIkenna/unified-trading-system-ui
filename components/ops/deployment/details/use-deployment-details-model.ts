@@ -625,7 +625,7 @@ export function useDeploymentDetailsModel({ deploymentId, onClose }: DeploymentD
     setShardLogsMessage(null);
   };
 
-  const { prevStatusRef } = useDeploymentDetailsStatusSync({
+  const { prevStatusRef, sseConnected } = useDeploymentDetailsStatusSync({
     deploymentId,
     setStatus,
     setError,
@@ -757,6 +757,7 @@ export function useDeploymentDetailsModel({ deploymentId, onClose }: DeploymentD
     isFetchingStatus,
     isFetchingLogs,
     prevStatusRef,
+    sseConnected,
   };
 }
 

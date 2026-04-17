@@ -7,93 +7,89 @@
  * Install once at app startup via installMockHandler().
  */
 
+import type { DocumentArtifact, OnboardingApplication } from "@/lib/api/mock-onboarding-state";
+import { addApplication, addDocument, getOnboardingState, updateApplication } from "@/lib/api/mock-onboarding-state";
+import { applyFilledOrder, getPositions as getLedgerPositions } from "@/lib/api/mock-position-ledger";
+import type { MockOrganization, MockUser, MockVenueApiKey } from "@/lib/api/mock-provisioning-state";
 import {
-  ORGANIZATIONS,
-  CLIENTS,
-  STRATEGIES,
-  ACCOUNTS,
-  getAggregatedPnL,
-  getAggregatedTimeSeries,
-  getLiveBatchDelta,
-  getStrategyPerformance,
-} from "@/lib/mocks/fixtures/trading-data";
+  addApiKey,
+  addOrganization,
+  addRequest,
+  addUser,
+  getState as getProvisioningState,
+  persist,
+  removeApiKey,
+  updateOrganization,
+  updateRequest,
+  updateUser,
+} from "@/lib/api/mock-provisioning-state";
 import {
-  MOCK_EXECUTION_ALGOS,
-  MOCK_VENUES,
-  MOCK_RECENT_ORDERS,
-  MOCK_ALGO_BACKTESTS,
-  MOCK_EXECUTION_METRICS,
-  MOCK_EXECUTION_CANDIDATES,
-} from "@/lib/mocks/fixtures/execution-platform";
+  amendMockOrder,
+  cancelMockOrder,
+  getOrders as getLedgerOrders,
+  placeMockOrder,
+} from "@/lib/api/mock-trade-ledger";
 import {
-  MODEL_FAMILIES,
-  EXPERIMENTS,
-  TRAINING_RUNS,
-  MODEL_VERSIONS,
-  DATASET_SNAPSHOTS,
-  FEATURE_SET_VERSIONS,
-  VALIDATION_PACKAGES,
-  DEPLOYMENT_CANDIDATES,
-  LIVE_DEPLOYMENTS,
-  UNIFIED_TRAINING_RUNS,
-  GPU_QUEUE_STATUS,
-  ML_PIPELINE_STATUS,
-  RUN_COMPARISONS,
-  ML_ALERTS,
-  buildSyntheticRunComparisons,
-} from "@/lib/mocks/fixtures/ml-data";
-import {
-  STRATEGY_TEMPLATES,
-  BACKTEST_RUNS,
-  STRATEGY_CANDIDATES,
-  STRATEGY_ALERTS,
-} from "@/lib/mocks/fixtures/strategy-platform";
-import {
-  MOCK_CLIENTS as PERF_MOCK_CLIENTS,
-  MOCK_ORGANISATIONS as PERF_MOCK_ORGANISATIONS,
-  MOCK_STRATEGIES as PERF_MOCK_STRATEGIES,
-  MOCK_POSITIONS as PERF_MOCK_POSITIONS,
-  MOCK_COIN_BREAKDOWN as PERF_MOCK_COINS,
-  MOCK_TRADES as PERF_MOCK_TRADES,
   MOCK_BALANCE_BREAKDOWN as PERF_MOCK_BALANCES,
+  MOCK_CLIENTS as PERF_MOCK_CLIENTS,
+  MOCK_COIN_BREAKDOWN as PERF_MOCK_COINS,
+  MOCK_ORGANISATIONS as PERF_MOCK_ORGANISATIONS,
+  MOCK_POSITIONS as PERF_MOCK_POSITIONS,
+  MOCK_STRATEGIES as PERF_MOCK_STRATEGIES,
+  MOCK_TRADES as PERF_MOCK_TRADES,
   getMockPerformanceSummary,
 } from "@/lib/mocks/fixtures/client-performance";
 import { MOCK_CATALOGUE } from "@/lib/mocks/fixtures/data-service";
-import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
-import {
-  getState as getProvisioningState,
-  addUser,
-  updateUser,
-  addRequest,
-  updateRequest,
-  addOrganization,
-  updateOrganization,
-  addApiKey,
-  removeApiKey,
-  persist,
-} from "@/lib/api/mock-provisioning-state";
-import type { MockUser, MockOrganization, MockVenueApiKey } from "@/lib/api/mock-provisioning-state";
-import {
-  getOrders as getLedgerOrders,
-  placeMockOrder,
-  cancelMockOrder,
-  amendMockOrder,
-} from "@/lib/api/mock-trade-ledger";
-import { getOnboardingState, addApplication, updateApplication, addDocument } from "@/lib/api/mock-onboarding-state";
-import type { OnboardingApplication, DocumentArtifact } from "@/lib/api/mock-onboarding-state";
-import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
-import { getPositions as getLedgerPositions, applyFilledOrder } from "@/lib/api/mock-position-ledger";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
 import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
 import { MOCK_SWAP_ROUTE, SWAP_TOKENS } from "@/lib/mocks/fixtures/defi-swap";
 import {
-  FOOTBALL_LEAGUES,
+  MOCK_ALGO_BACKTESTS,
+  MOCK_EXECUTION_ALGOS,
+  MOCK_EXECUTION_CANDIDATES,
+  MOCK_VENUES
+} from "@/lib/mocks/fixtures/execution-platform";
+import {
+  CHAMPION_CHALLENGER_PAIRS,
+  DATASET_SNAPSHOTS,
+  EXPERIMENTS,
+  FEATURE_SET_VERSIONS,
+  GPU_QUEUE_STATUS,
+  LIVE_DEPLOYMENTS,
+  ML_ALERTS,
+  ML_PIPELINE_STATUS,
+  MODEL_FAMILIES,
+  MODEL_VERSIONS,
+  RUN_COMPARISONS,
+  UNIFIED_TRAINING_RUNS,
+  VALIDATION_PACKAGES,
+  buildSyntheticRunComparisons
+} from "@/lib/mocks/fixtures/ml-data";
+import { MOCK_ARB_STREAM, MOCK_BETS, MOCK_FIXTURES, MOCK_ODDS } from "@/lib/mocks/fixtures/sports-data";
+import {
   BOOKMAKERS,
-  SUBSCRIBED_BOOKMAKERS,
+  FOOTBALL_LEAGUES,
   ODDS_MARKETS,
+  SUBSCRIBED_BOOKMAKERS,
 } from "@/lib/mocks/fixtures/sports-fixtures";
-import { MOCK_FIXTURES, MOCK_ODDS, MOCK_ARB_STREAM, MOCK_BETS } from "@/lib/mocks/fixtures/sports-data";
+import {
+  STRATEGY_ALERTS,
+  STRATEGY_CANDIDATES,
+  STRATEGY_TEMPLATES
+} from "@/lib/mocks/fixtures/strategy-platform";
+import {
+  ACCOUNTS,
+  CLIENTS,
+  ORGANIZATIONS,
+  STRATEGIES,
+  getAggregatedPnL,
+  getAggregatedTimeSeries,
+  getLiveBatchDelta,
+  getStrategyPerformance,
+} from "@/lib/mocks/fixtures/trading-data";
+import { MOCK_TRANSFER_HISTORY } from "@/lib/mocks/fixtures/transfer-history";
+import { ALL_INSTRUMENTS, SNAPSHOT_META, type Instrument } from "@/lib/registry/instruments";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 
 export const MOCK_MODE = typeof window !== "undefined" && isMockDataMode();
@@ -2201,7 +2197,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       return json(ML_ALERTS);
     }
     if (mlPath === "/api/ml/registry/models" && (!opts?.method || opts.method === "GET")) {
-      return json(MODEL_VERSIONS);
+      return json({ data: MODEL_VERSIONS });
     }
 
     const cancelMatch = mlPath.match(/^\/api\/ml\/training\/runs\/([^/]+)\/cancel$/);
@@ -2311,17 +2307,40 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   }
   if (route === "/api/ml/experiments") return json({ data: EXPERIMENTS, experiments: EXPERIMENTS });
   if (route.match(/\/api\/ml\/experiments\/[^/]+$/)) return json(EXPERIMENTS[0]);
-  if (route === "/api/ml/training-runs") return json({ data: TRAINING_RUNS, runs: TRAINING_RUNS });
+  if (route === "/api/ml/training-runs") return json(UNIFIED_TRAINING_RUNS);
   if (route === "/api/ml/training-jobs") return json({ ok: true, jobId: "job-mock-001" });
-  if (route === "/api/ml/versions") return json(MODEL_VERSIONS);
+  if (route === "/api/ml/versions") return json({ data: MODEL_VERSIONS });
   if (route.match(/\/api\/ml\/models\/[^/]+\/promote/)) return json({ ok: true });
-  if (route === "/api/ml/deployments") return json(LIVE_DEPLOYMENTS);
+  if (route === "/api/ml/deployments") return json({ deployments: LIVE_DEPLOYMENTS, championChallengerPairs: CHAMPION_CHALLENGER_PAIRS });
   if (route === "/api/ml/features") return json(FEATURE_SET_VERSIONS);
   if (route === "/api/ml/datasets") return json(DATASET_SNAPSHOTS);
   if (route === "/api/ml/validation-results") return json(VALIDATION_PACKAGES);
   if (route === "/api/ml/monitoring") return json({ alerts: [], drift: [], performance: {} });
   if (route === "/api/ml/governance") return json({ policies: [], approvals: [] });
   if (route === "/api/ml/config") return json({ hyperparameters: {}, featureFlags: {} });
+  if (route.startsWith("/api/ml/feature-groups")) {
+    const fgUrl = new URL(path, "http://mock.local");
+    const cat = fgUrl.searchParams.get("category") ?? "CEFI";
+    const groupsByCategory: Record<string, string[]> = {
+      CEFI: ["price_momentum", "volume_profile", "volatility_surface", "orderbook_imbalance", "funding_rate", "open_interest", "whale_flow", "correlation_regime"],
+      TRADFI: ["macro_indicators", "yield_curve", "equity_momentum", "fx_carry", "credit_spread", "sector_rotation"],
+      SPORTS: ["team_form", "player_stats", "market_movement", "weather_impact", "historical_h2h", "venue_effect"],
+    };
+    return json({ data: { category: cat, feature_groups: groupsByCategory[cat] ?? groupsByCategory.CEFI } });
+  }
+  if (route.startsWith("/api/ml/grid-configs")) {
+    if (route === "/api/ml/grid-configs") {
+      return json({
+        data: [
+          { name: "cefi-full", category: "CEFI", description: "All CeFi feature groups", feature_groups: ["price_momentum", "volume_profile", "volatility_surface", "orderbook_imbalance", "funding_rate", "open_interest"], exclude_features: [], created_at: "2026-03-01T10:00:00Z" },
+          { name: "cefi-momentum-only", category: "CEFI", description: "Momentum + volume features only", feature_groups: ["price_momentum", "volume_profile"], exclude_features: ["whale_flow"], created_at: "2026-03-05T14:00:00Z" },
+          { name: "sports-core", category: "SPORTS", description: "Core sports prediction features", feature_groups: ["team_form", "player_stats", "historical_h2h"], exclude_features: [], created_at: "2026-03-10T09:00:00Z" },
+        ],
+        total: 3, page: 1, page_size: 50,
+      });
+    }
+    return json({ data: { name: "cefi-full", category: "CEFI", feature_groups: ["price_momentum", "volume_profile", "volatility_surface"], exclude_features: [] } });
+  }
 
   // --- Reports ---
   if (route === "/api/reporting/reports") {
@@ -5477,9 +5496,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const updated = updateUser(uid, { status: "offboarded" });
     return updated
       ? json({
-          user: updated,
-          revocation_steps: [{ service: "portal", status: "revoked" }],
-        })
+        user: updated,
+        revocation_steps: [{ service: "portal", status: "revoked" }],
+      })
       : json({ error: "not found" });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {

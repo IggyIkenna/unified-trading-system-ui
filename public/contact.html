@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Odum Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-card: #111113;
+      --bg-surface: #161618;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.12);
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --primary: #22d3ee;
+      --sky: #38bdf8;
+      --emerald: #4ade80;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fca-badge {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--border-accent);
+      border-radius: 9999px;
+      padding: 2px 10px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+    }
+
+    nav a.active {
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: #06b6d4;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-pad {
+      padding: 80px 0;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .hero .subtitle {
+      margin-top: 20px;
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-muted);
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .contact-form {
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-group select option {
+      background: var(--bg-card);
+      color: var(--text);
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      .card-grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .section-pad {
+        padding: 48px 0;
+      }
+
+      .hero-content {
+        padding: 48px 16px 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <a href="homepage.html" class="logo-group">
+        <img src="/favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
+        <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
+      </a>
+      <nav>
+        <a href="strategies.html">Investment Management</a>
+        <a href="platform.html">Platform</a>
+        <a href="regulatory.html">Regulatory</a>
+        <a href="firm.html">Firm</a>
+        <a href="contact.html" class="active">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="contact.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="eyebrow">Get in touch</p>
+      <h1>Talk to the right person, quickly</h1>
+      <p class="subtitle">
+        Tell us what you're looking for and we'll route you to the relevant team &mdash; investment management,
+        platform, or regulatory.
+      </p>
+    </div>
+  </section>
+
+  <!-- CONTACT FORM -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="contact-form">
+        <form action="#" method="POST"
+          onsubmit="event.preventDefault(); alert('Form submission would be wired to your backend / email service.');">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@firm.com" required>
+          </div>
+          <div class="form-group">
+            <label for="firm">Firm / Organisation</label>
+            <input type="text" id="firm" name="firm" placeholder="Your firm name">
+          </div>
+          <div class="form-group">
+            <label for="interest">I'm interested in</label>
+            <select id="interest" name="interest">
+              <option value="">Select an area</option>
+              <option value="im">Investment Management &mdash; strategy allocation</option>
+              <option value="platform">Platform &mdash; data, research, execution</option>
+              <option value="regulatory">Regulatory &mdash; FCA umbrella coverage</option>
+              <option value="general">General enquiry</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message"
+              placeholder="Tell us briefly what you're looking for or any questions you have."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 12px;">
+            Send Message
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border);">
+          <p style="font-size: 14px; color: var(--text-muted);">Or reach us directly</p>
+          <p style="margin-top: 8px; font-size: 15px;">
+            <a href="mailto:info@odum-research.co.uk" style="color: var(--primary);">info@odum-research.co.uk</a>
+          </p>
+          <p style="margin-top: 4px; font-size: 13px; color: var(--text-dim);">London, United Kingdom</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK PATHS -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div style="text-align: center; margin-bottom: 40px;">
+        <p class="eyebrow">Not sure where to start?</p>
+        <h2 style="font-size: 24px; font-weight: 700;">Choose the path that fits</h2>
+      </div>
+      <div class="card-grid card-grid-3">
+        <article class="card" style="text-align: center;">
+          <h3 style="color: var(--rose);">Allocate capital</h3>
+          <p>Discuss a mandate, allocation process, or strategy fit with our investment management team.</p>
+          <a href="strategies.html" class="btn btn-outline" style="margin-top: 16px;">View strategies</a>
+        </article>
+        <article class="card" style="text-align: center;">
+          <h3 style="color: var(--sky);">Explore the platform</h3>
+          <p>Request a guided preview of the data, research, execution, or reporting layers.</p>
+          <a href="platform.html" class="btn btn-outline" style="margin-top: 16px;">View platform</a>
+        </article>
+        <article class="card" style="text-align: center;">
+          <h3 style="color: var(--emerald);">Check regulatory fit</h3>
+          <p>Find out if Odum's regulatory umbrella is right for your planned activities.</p>
+          <a href="regulatory.html" class="btn btn-outline" style="margin-top: 16px;">View regulatory</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="firm.html">Privacy</a>
+        <a href="firm.html">Terms</a>
+        <a href="regulatory.html">FCA 975797</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

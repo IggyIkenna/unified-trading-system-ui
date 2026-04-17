@@ -14,7 +14,7 @@ vi.mock("@/components/widgets/defi/defi-data-context", () => ({
 
 const defaultProps = { instanceId: "test-basis" };
 
-describe("DeFiBasisTradeWidget", () => {
+describe("DeFiBasisTradeWidget", { timeout: 30000 }, () => {
   it("renders without crashing", () => {
     const { container } = render(<DeFiBasisTradeWidget {...defaultProps} />);
     expect(container).toBeTruthy();

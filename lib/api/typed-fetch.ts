@@ -89,6 +89,52 @@ export interface GatewayPathMap {
   "/api/alerts/list": "/unified-trading-api/alerts/list";
   "/api/alerts/summary": "/unified-trading-api/alerts/summary";
   "/api/alerts/active": "/unified-trading-api/alerts/active";
+  // --- defi basis ---
+  "/api/defi/basis/funding-matrix": "/unified-trading-api/defi/basis/funding-matrix";
+  "/api/defi/basis/lst-collateral": "/unified-trading-api/defi/basis/lst-collateral";
+  "/api/defi/basis/venue-allocation": "/unified-trading-api/defi/basis/venue-allocation";
+  "/api/defi/basis/directions": "/unified-trading-api/defi/basis/directions";
+  // --- defi lending ---
+  "/api/defi/lending/rates": "/unified-trading-api/defi/lending/rates";
+  "/api/defi/lending/positions": "/unified-trading-api/defi/lending/positions";
+  // --- defi LP ---
+  "/api/defi/lp/position-range": "/unified-trading-api/defi/lp/position-range";
+  "/api/defi/lp/impermanent-loss": "/unified-trading-api/defi/lp/impermanent-loss";
+  "/api/defi/lp/rebalance-history": "/unified-trading-api/defi/lp/rebalance-history";
+  "/api/defi/lp/ml-confidence": "/unified-trading-api/defi/lp/ml-confidence";
+  "/api/defi/lp/fee-revenue": "/unified-trading-api/defi/lp/fee-revenue";
+  // --- defi liquidation ---
+  "/api/defi/liquidation/risk-heatmap": "/unified-trading-api/defi/liquidation/risk-heatmap";
+  "/api/defi/liquidation/cascade-risk": "/unified-trading-api/defi/liquidation/cascade-risk";
+  "/api/defi/liquidation/events": "/unified-trading-api/defi/liquidation/events";
+  "/api/defi/liquidation/captured-positions": "/unified-trading-api/defi/liquidation/captured-positions";
+  // --- data status ---
+  "/api/data-status": "/unified-trading-api/data-status";
+  "/api/data-status/turbo": "/unified-trading-api/data-status/turbo";
+  "/api/data-status/coverage-summary": "/unified-trading-api/data-status/coverage-summary";
+  "/api/data-status/venue-filters": "/unified-trading-api/data-status/venue-filters";
+  "/api/data-status/pipeline-overview": "/unified-trading-api/data-status/pipeline-overview";
+  "/api/data-status/instruments": "/unified-trading-api/data-status/instruments";
+  "/api/data-status/instrument-availability": "/unified-trading-api/data-status/instrument-availability";
+  // --- sports ---
+  "/api/sports/fixtures": "/unified-trading-api/api/sports/fixtures";
+  "/api/sports/leagues": "/unified-trading-api/api/sports/leagues";
+  "/api/sports/history": "/unified-trading-api/api/sports/history";
+  // --- risk (kill-switch / circuit-breaker) ---
+  "/api/risk/kill-switch": "/unified-trading-api/risk/kill-switch";
+  "/api/risk/circuit-breaker": "/unified-trading-api/risk/circuit-breaker";
+  // --- ML ---
+  "/api/ml/model-families": "/unified-trading-api/ml/model-families";
+  "/api/ml/experiments": "/unified-trading-api/ml/experiments";
+  "/api/ml/training-runs": "/unified-trading-api/ml/training-runs";
+  "/api/ml/versions": "/unified-trading-api/ml/versions";
+  "/api/ml/deployments": "/unified-trading-api/ml/deployments";
+  "/api/ml/features": "/unified-trading-api/ml/features";
+  "/api/ml/datasets": "/unified-trading-api/ml/datasets";
+  "/api/ml/training-jobs": "/unified-trading-api/ml/training-jobs";
+  "/api/ml/monitoring": "/unified-trading-api/ml/monitoring";
+  "/api/ml/governance": "/unified-trading-api/ml/governance";
+  "/api/ml/grid-configs": "/unified-trading-api/ml/grid-configs";
 }
 
 /**

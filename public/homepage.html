@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odum Research — FCA-Regulated Investment Manager &amp; Trading Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-card: #111113;
+      --bg-surface: #161618;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.12);
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --primary: #22d3ee;
+      --primary-dim: rgba(34, 211, 238, 0.12);
+      --sky: #38bdf8;
+      --emerald: #4ade80;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* --- HEADER --- */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fca-badge {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--border-accent);
+      border-radius: 9999px;
+      padding: 2px 10px;
+      vertical-align: middle;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+
+    nav a:hover {
+      color: var(--text);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: #06b6d4;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+    }
+
+    /* --- HERO --- */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.06) 0%, transparent 60%), radial-gradient(ellipse at 70% 80%, rgba(167, 139, 250, 0.04) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .hero .subtitle {
+      margin-top: 20px;
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-muted);
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero .support {
+      margin-top: 12px;
+      font-size: 15px;
+      color: var(--text-dim);
+    }
+
+    .hero-ctas {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    /* Proof strip */
+    .proof-strip {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .proof-item {
+      text-align: center;
+    }
+
+    .proof-item strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .proof-item span {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* --- SECTION COMMON --- */
+    section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-pad {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 48px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .section-header p {
+      margin-top: 16px;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    /* --- CARD GRIDS --- */
+    .card-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card-grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card-grid-4 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-kicker {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-top: 12px;
+    }
+
+    .card ul li {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 4px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 14px;
+      transition: color 0.15s;
+    }
+
+    .card-link:hover {
+      text-decoration: underline;
+    }
+
+    .card-link::after {
+      content: '→';
+    }
+
+    /* Colored card variants */
+    .card-cyan {
+      border-color: rgba(34, 211, 238, 0.2);
+    }
+
+    .card-cyan:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+    }
+
+    .card-cyan .card-kicker,
+    .card-cyan .card-link {
+      color: var(--cyan);
+    }
+
+    .card-cyan .icon-dot {
+      background: rgba(34, 211, 238, 0.12);
+      color: var(--cyan);
+    }
+
+    .card-cyan ul li::before {
+      background: var(--cyan);
+    }
+
+    .card-violet {
+      border-color: rgba(167, 139, 250, 0.2);
+    }
+
+    .card-violet:hover {
+      border-color: rgba(167, 139, 250, 0.4);
+    }
+
+    .card-violet .card-kicker,
+    .card-violet .card-link {
+      color: var(--violet);
+    }
+
+    .card-violet .icon-dot {
+      background: rgba(167, 139, 250, 0.12);
+      color: var(--violet);
+    }
+
+    .card-violet ul li::before {
+      background: var(--violet);
+    }
+
+    .card-amber {
+      border-color: rgba(251, 191, 36, 0.2);
+    }
+
+    .card-amber:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+    }
+
+    .card-amber .card-kicker,
+    .card-amber .card-link {
+      color: var(--amber);
+    }
+
+    .card-amber .icon-dot {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--amber);
+    }
+
+    .card-amber ul li::before {
+      background: var(--amber);
+    }
+
+    .card-slate {
+      border-color: rgba(148, 163, 184, 0.2);
+    }
+
+    .card-slate:hover {
+      border-color: rgba(148, 163, 184, 0.4);
+    }
+
+    .card-slate .card-kicker,
+    .card-slate .card-link {
+      color: #94a3b8;
+    }
+
+    .card-slate .icon-dot {
+      background: rgba(148, 163, 184, 0.12);
+      color: #94a3b8;
+    }
+
+    .card-slate ul li::before {
+      background: #94a3b8;
+    }
+
+    .card-rose {
+      border-color: rgba(251, 113, 133, 0.2);
+    }
+
+    .card-rose:hover {
+      border-color: rgba(251, 113, 133, 0.4);
+    }
+
+    .card-rose .card-kicker,
+    .card-rose .card-link {
+      color: var(--rose);
+    }
+
+    .card-rose .icon-dot {
+      background: rgba(251, 113, 133, 0.12);
+      color: var(--rose);
+    }
+
+    .card-rose ul li::before {
+      background: var(--rose);
+    }
+
+    .card-emerald {
+      border-color: rgba(74, 222, 128, 0.2);
+    }
+
+    .card-emerald:hover {
+      border-color: rgba(74, 222, 128, 0.4);
+    }
+
+    .card-emerald .card-kicker,
+    .card-emerald .card-link {
+      color: var(--emerald);
+    }
+
+    .card-emerald .icon-dot {
+      background: rgba(74, 222, 128, 0.12);
+      color: var(--emerald);
+    }
+
+    .card-emerald ul li::before {
+      background: var(--emerald);
+    }
+
+    .card-sky {
+      border-color: rgba(56, 189, 248, 0.2);
+    }
+
+    .card-sky:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .card-sky .card-kicker,
+    .card-sky .card-link {
+      color: var(--sky);
+    }
+
+    .card-sky .icon-dot {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--sky);
+    }
+
+    .card-sky ul li::before {
+      background: var(--sky);
+    }
+
+    .icon-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    /* --- GALAXY SECTION --- */
+    .galaxy-section {
+      background: linear-gradient(180deg, var(--bg) 0%, rgba(17, 17, 19, 0.5) 100%);
+    }
+
+    #galaxyCanvas {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    /* --- VENUE MARQUEE --- */
+    .venue-marquee {
+      overflow: hidden;
+      position: relative;
+      padding: 16px 0;
+    }
+
+    .venue-marquee::before,
+    .venue-marquee::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .venue-marquee::before {
+      left: 0;
+      background: linear-gradient(to right, var(--bg), transparent);
+    }
+
+    .venue-marquee::after {
+      right: 0;
+      background: linear-gradient(to left, var(--bg), transparent);
+    }
+
+    .venue-track {
+      display: flex;
+      gap: 12px;
+      animation: scroll-venues 40s linear infinite;
+      width: max-content;
+    }
+
+    @keyframes scroll-venues {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .venue-pill {
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .venue-pill-cyan {
+      color: var(--cyan);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      background: rgba(34, 211, 238, 0.05);
+    }
+
+    .venue-pill-emerald {
+      color: var(--emerald);
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      background: rgba(74, 222, 128, 0.05);
+    }
+
+    .venue-pill-violet {
+      color: var(--violet);
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      background: rgba(167, 139, 250, 0.05);
+    }
+
+    .venue-pill-amber {
+      color: var(--amber);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      background: rgba(251, 191, 36, 0.05);
+    }
+
+    .venue-pill-rose {
+      color: var(--rose);
+      border: 1px solid rgba(251, 113, 133, 0.25);
+      background: rgba(251, 113, 133, 0.05);
+    }
+
+    .venue-legend {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .venue-legend span {
+      margin: 0 6px;
+    }
+
+    /* --- FEATURE GRID --- */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+
+    .feature {
+      padding: 20px;
+    }
+
+    .feature h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* --- FINAL CTA --- */
+    .final-cta {
+      background: linear-gradient(180deg, var(--bg) 0%, rgba(17, 17, 19, 0.8) 100%);
+    }
+
+    .contact-block {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .contact-block p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .contact-block a {
+      color: var(--primary);
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-muted);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      .proof-strip {
+        gap: 16px;
+      }
+
+      .proof-item {
+        min-width: 120px;
+      }
+
+      .card-grid-3,
+      .card-grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .section-pad {
+        padding: 48px 0;
+      }
+
+      .hero-content {
+        padding: 48px 16px 40px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="container header-inner">
+      <a href="homepage.html" class="logo-group">
+        <img src="/favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
+        <div>
+          <span class="logo-text">Odum Research</span>
+          <span class="fca-badge">FCA 975797</span>
+        </div>
+      </a>
+      <nav>
+        <a href="strategies.html">Investment Management</a>
+        <a href="platform.html">Platform</a>
+        <a href="regulatory.html">Regulatory</a>
+        <a href="firm.html">Firm</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="contact.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ 1. HERO ============ -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1>FCA-Regulated Investment Manager and Trading Platform</h1>
+      <p class="subtitle">
+        Systematic strategies, regulatory coverage, and institutional infrastructure
+        across digital assets, traditional markets, sports, and prediction markets.
+      </p>
+      <p class="support">
+        Built by people from leading quantitative trading firms.
+      </p>
+      <div class="hero-ctas">
+        <a href="contact.html" class="btn btn-primary">Discuss a Mandate</a>
+        <a href="platform.html" class="btn btn-outline">Explore the Platform</a>
+      </div>
+      <div class="proof-strip">
+        <div class="proof-item">
+          <strong>FCA 975797</strong>
+          <span>regulated firm</span>
+        </div>
+        <div class="proof-item">
+          <strong>Clients live</strong>
+          <span>under regulatory umbrella</span>
+        </div>
+        <div class="proof-item">
+          <strong>$7.5M managed</strong>
+          <span>investment management AUM</span>
+        </div>
+        <div class="proof-item">
+          <strong>Platform clients live</strong>
+          <span>commercial traction</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. THREE ENTRY POINTS ============ -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Three ways to work with Odum</p>
+        <h2>Start where it fits</h2>
+        <p>Allocate to our strategies, use the platform, or operate under our regulatory umbrella.</p>
+      </div>
+      <div class="card-grid card-grid-3">
+        <article class="card card-rose">
+          <div class="icon-dot" style="background:rgba(251,113,133,0.12);color:var(--rose);"><svg width="20" height="20"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+              <rect x="2" y="10" width="6" height="10" rx="1" />
+              <rect x="16" y="8" width="6" height="12" rx="1" />
+            </svg></div>
+          <p class="card-kicker">Investment Management</p>
+          <h3>Access Odum-managed strategies through a regulated structure</h3>
+          <p>Get regulated portfolio access, reporting, oversight, and a clear allocation process across digital assets,
+            traditional markets, sports, and prediction markets.</p>
+          <ul>
+            <li>Systematic strategy access</li>
+            <li>Regulated reporting and oversight</li>
+            <li>Professional-client focused</li>
+          </ul>
+          <a href="strategies.html" class="card-link">View strategies</a>
+        </article>
+        <article class="card card-cyan">
+          <div class="icon-dot" style="background:rgba(34,211,238,0.12);color:var(--cyan);"><svg width="20" height="20"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg></div>
+          <p class="card-kicker">Trading Platform</p>
+          <h3>Use Odum's research, execution, and reporting stack without building it yourself</h3>
+          <p>Start with one layer or use the full system. Data, research, execution, and reporting can be deployed as a
+            guided platform engagement.</p>
+          <ul>
+            <li>Research and execution workflows</li>
+            <li>Reporting and control layers</li>
+            <li>Modular client access</li>
+          </ul>
+          <a href="platform.html" class="card-link">Explore the platform</a>
+        </article>
+        <article class="card card-slate">
+          <div class="icon-dot" style="background:rgba(148,163,184,0.12);color:#94a3b8;"><svg width="20" height="20"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg></div>
+          <p class="card-kicker">Regulatory Coverage</p>
+          <h3>Operate under FCA coverage without waiting for direct authorisation</h3>
+          <p>Launch faster with the controls, reporting, and supervision already in place. Engagement structure and
+            timeline are scoped to your specific activities &mdash; typically weeks to months rather than the 12&ndash;24
+            months required for direct authorisation.
+          </p>
+          <ul>
+            <li>Full regulatory coverage under Odum's FCA permissions</li>
+            <li>Compliance, MLRO, and supervision included</li>
+            <li>Client portal, reporting, and oversight from day one</li>
+          </ul>
+          <a href="regulatory.html" class="card-link">Check regulatory fit</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. GALAXY + VENUES ============ -->
+  <section class="galaxy-section section-pad">
+    <div class="container">
+      <div class="section-header">
+        <h2>One Platform. Five Asset Classes. 100+ Venues.</h2>
+        <p>Your backtests and live strategies run the exact same code. All your data comes through one clean feed, no
+          matter the source.</p>
+      </div>
+
+      <!-- ArbitrageGalaxy — live animated canvas (ported from arbitrage-galaxy.tsx) -->
+      <canvas id="galaxyCanvas"
+        style="display:block;width:100%;max-width:900px;margin:0 auto;aspect-ratio:2.2/1;max-height:450px;background:transparent;border-radius:12px;"></canvas>
+      <script>
+        (function () {
+          var NODES = [
+            { label: "TradFi", sub: "CME · ICE", color: "#22d3ee", fill: "#061820", fx: 0.16, fy: 0.36 },
+            { label: "Crypto", sub: "Exchanges", color: "#4ade80", fill: "#061a0f", fx: 0.5, fy: 0.19 },
+            { label: "DeFi", sub: "Protocols", color: "#a78bfa", fill: "#100a20", fx: 0.84, fy: 0.36 },
+            { label: "Sports", sub: "Betfair · Pinnacle", color: "#fbbf24", fill: "#1a1205", fx: 0.24, fy: 0.8 },
+            { label: "Predictions", sub: "Polymarket · Kalshi", color: "#fb7185", fill: "#1a060c", fx: 0.73, fy: 0.8 }
+          ];
+          var CONNS = [
+            { from: 0, to: 1, label: "BTC", delta: "+0.31%", color: "#f59e0b" },
+            { from: 1, to: 2, label: "BTC", delta: "+0.19%", color: "#f59e0b" },
+            { from: 0, to: 2, label: "BTC", delta: "+0.12%", color: "#f59e0b" },
+            { from: 4, to: 1, label: "BTC", delta: "+0.24%", color: "#f59e0b" },
+            { from: 0, to: 4, label: "S&P", delta: "+0.08%", color: "#60a5fa" },
+            { from: 3, to: 4, label: "Football", delta: "+2.1%", color: "#4ade80" }
+          ];
+          var PKT = 1800, PAU = 500, cv = document.getElementById("galaxyCanvas"), cx = cv.getContext("2d"), dpr = window.devicePixelRatio || 1;
+          function sz() { var W = cv.offsetWidth, H = cv.offsetHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+          sz(); window.addEventListener("resize", sz);
+          var stars = []; for (var i = 0; i < 60; i++)stars.push({ x: Math.random(), y: Math.random(), r: Math.random() * 0.8 + 0.2, a: Math.random() * 0.3 + 0.08, p: Math.random() * Math.PI * 2 });
+          var ci = 0, st = -1, pa = false, pe = -1;
+          function xy(n) { return { x: n.fx * cv.offsetWidth, y: n.fy * cv.offsetHeight }; }
+          function rr(x, y, w, h, rx, f, s, lw) { cx.beginPath(); cx.roundRect(x, y, w, h, rx); cx.fillStyle = f; cx.fill(); cx.strokeStyle = s; cx.lineWidth = lw || 1; cx.stroke(); }
+          function draw(t) {
+            var W = cv.offsetWidth, H = cv.offsetHeight, R = Math.min(W, H) * 0.13;
+            cx.clearRect(0, 0, W, H);
+            for (var s of stars) { var a = s.a * (0.55 + 0.45 * Math.sin(t * 0.0007 + s.p)); cx.beginPath(); cx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2); cx.fillStyle = "rgba(255,255,255," + a.toFixed(2) + ")"; cx.fill(); }
+            for (var j = 0; j < CONNS.length; j++) { var c = CONNS[j], a2 = xy(NODES[c.from]), b = xy(NODES[c.to]); cx.save(); cx.beginPath(); cx.moveTo(a2.x, a2.y); cx.lineTo(b.x, b.y); cx.strokeStyle = c.color + "60"; cx.lineWidth = 2; cx.setLineDash([9, 9]); cx.lineDashOffset = -((t * 0.02 + j * 30) % 36); cx.stroke(); cx.restore(); var mx = (a2.x + b.x) / 2, my = (a2.y + b.y) / 2; cx.font = "bold 11px 'IBM Plex Sans',sans-serif"; var tw = cx.measureText(c.label).width + 18, ia = j === ci && !pa; rr(mx - tw / 2, my - 11, tw, 22, 11, ia ? c.color + "40" : c.color + "15", ia ? c.color + "cc" : c.color + "55", ia ? 1.5 : 1); cx.fillStyle = ia ? c.color : c.color + "99"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(c.label, mx, my); }
+            if (pa) { if (t >= pe) { pa = false; ci = (ci + 1) % CONNS.length; st = -1; } }
+            else { if (st < 0) st = t; var pr = Math.min((t - st) / PKT, 1), c2 = CONNS[ci], a3 = xy(NODES[c2.from]), b2 = xy(NODES[c2.to]), px = a3.x + (b2.x - a3.x) * pr, py = a3.y + (b2.y - a3.y) * pr; cx.save(); cx.beginPath(); cx.moveTo(a3.x, a3.y); cx.lineTo(b2.x, b2.y); cx.strokeStyle = c2.color + "cc"; cx.lineWidth = 2.5; cx.setLineDash([9, 9]); cx.lineDashOffset = -((t * 0.06) % 36); cx.stroke(); cx.restore(); for (var k = 8; k >= 0; k--) { var tp = Math.max(0, pr - k * 0.022), tx = a3.x + (b2.x - a3.x) * tp, ty = a3.y + (b2.y - a3.y) * tp, ta = ((8 - k) / 8) * 0.5, tr = 6 - k * 0.5; cx.beginPath(); cx.arc(tx, ty, Math.max(tr, 1), 0, Math.PI * 2); cx.fillStyle = c2.color + Math.floor(ta * 255).toString(16).padStart(2, "0"); cx.fill(); } var gl = cx.createRadialGradient(px, py, 0, px, py, 18); gl.addColorStop(0, c2.color + "bb"); gl.addColorStop(1, c2.color + "00"); cx.beginPath(); cx.arc(px, py, 18, 0, Math.PI * 2); cx.fillStyle = gl; cx.fill(); cx.beginPath(); cx.arc(px, py, 6, 0, Math.PI * 2); cx.fillStyle = "#fff"; cx.fill(); if (pr > 0.12 && pr < 0.88) { cx.font = "bold 10px 'JetBrains Mono',monospace"; var bw = cx.measureText(c2.delta).width + 14; rr(px - bw / 2, py - 26, bw, 18, 9, "#0a0a0b", c2.color, 1.2); cx.fillStyle = c2.color; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(c2.delta, px, py - 17); } if (pr >= 1) { pa = true; pe = t + PAU; } }
+            for (var nd of NODES) { var p = xy(nd), g = cx.createRadialGradient(p.x, p.y, R * 0.3, p.x, p.y, R * 1.8); g.addColorStop(0, nd.color + "18"); g.addColorStop(1, nd.color + "00"); cx.beginPath(); cx.arc(p.x, p.y, R * 1.8, 0, Math.PI * 2); cx.fillStyle = g; cx.fill(); cx.beginPath(); cx.arc(p.x, p.y, R, 0, Math.PI * 2); cx.fillStyle = nd.fill; cx.strokeStyle = nd.color; cx.lineWidth = 2.5; cx.fill(); cx.stroke(); var ts2 = Math.round(R * 0.3); cx.fillStyle = nd.color; cx.font = "bold " + ts2 + "px 'IBM Plex Sans',sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(nd.label, p.x, p.y - R * 0.18); var ss = Math.round(R * 0.21); cx.fillStyle = "rgba(190,190,200,0.70)"; cx.font = ss + "px 'IBM Plex Sans',sans-serif"; cx.fillText(nd.sub, p.x, p.y + R * 0.3); }
+          }
+          var lf = 0; function loop(ts) { if (ts - lf >= 1000 / 24) { draw(ts); lf = ts; } requestAnimationFrame(loop); } requestAnimationFrame(loop);
+        })();
+      </script>
+
+      <!-- Venue Marquee -->
+      <div class="venue-marquee">
+        <div class="venue-track">
+          <span class="venue-pill venue-pill-cyan">CME</span>
+          <span class="venue-pill venue-pill-cyan">NYSE</span>
+          <span class="venue-pill venue-pill-cyan">NASDAQ</span>
+          <span class="venue-pill venue-pill-cyan">ICE</span>
+          <span class="venue-pill venue-pill-cyan">CBOE</span>
+          <span class="venue-pill venue-pill-cyan">FX</span>
+          <span class="venue-pill venue-pill-cyan">Barchart</span>
+          <span class="venue-pill venue-pill-cyan">IBKR</span>
+          <span class="venue-pill venue-pill-emerald">Binance</span>
+          <span class="venue-pill venue-pill-emerald">OKX</span>
+          <span class="venue-pill venue-pill-emerald">Bybit</span>
+          <span class="venue-pill venue-pill-emerald">Deribit</span>
+          <span class="venue-pill venue-pill-emerald">Coinbase</span>
+          <span class="venue-pill venue-pill-emerald">Hyperliquid</span>
+          <span class="venue-pill venue-pill-emerald">Upbit</span>
+          <span class="venue-pill venue-pill-emerald">Aster</span>
+          <span class="venue-pill venue-pill-violet">Aave V3</span>
+          <span class="venue-pill venue-pill-violet">Uniswap V3</span>
+          <span class="venue-pill venue-pill-violet">Morpho</span>
+          <span class="venue-pill venue-pill-violet">Curve</span>
+          <span class="venue-pill venue-pill-violet">Lido</span>
+          <span class="venue-pill venue-pill-violet">EtherFi</span>
+          <span class="venue-pill venue-pill-violet">Ethena</span>
+          <span class="venue-pill venue-pill-violet">Compound</span>
+          <span class="venue-pill venue-pill-violet">Raydium</span>
+          <span class="venue-pill venue-pill-violet">Jito</span>
+          <span class="venue-pill venue-pill-amber">Betfair</span>
+          <span class="venue-pill venue-pill-amber">Pinnacle</span>
+          <span class="venue-pill venue-pill-amber" style="opacity:0.6;font-style:italic;">+20 bookmakers</span>
+          <span class="venue-pill venue-pill-rose">Polymarket</span>
+          <span class="venue-pill venue-pill-rose">Kalshi</span>
+          <span class="venue-pill venue-pill-rose" style="opacity:0.6;font-style:italic;">+3 more</span>
+          <!-- Duplicate for seamless loop -->
+          <span class="venue-pill venue-pill-cyan">CME</span>
+          <span class="venue-pill venue-pill-cyan">NYSE</span>
+          <span class="venue-pill venue-pill-cyan">NASDAQ</span>
+          <span class="venue-pill venue-pill-cyan">ICE</span>
+          <span class="venue-pill venue-pill-cyan">CBOE</span>
+          <span class="venue-pill venue-pill-cyan">FX</span>
+          <span class="venue-pill venue-pill-cyan">Barchart</span>
+          <span class="venue-pill venue-pill-cyan">IBKR</span>
+          <span class="venue-pill venue-pill-emerald">Binance</span>
+          <span class="venue-pill venue-pill-emerald">OKX</span>
+          <span class="venue-pill venue-pill-emerald">Bybit</span>
+          <span class="venue-pill venue-pill-emerald">Deribit</span>
+          <span class="venue-pill venue-pill-emerald">Coinbase</span>
+          <span class="venue-pill venue-pill-emerald">Hyperliquid</span>
+          <span class="venue-pill venue-pill-emerald">Upbit</span>
+          <span class="venue-pill venue-pill-emerald">Aster</span>
+          <span class="venue-pill venue-pill-violet">Aave V3</span>
+          <span class="venue-pill venue-pill-violet">Uniswap V3</span>
+          <span class="venue-pill venue-pill-violet">Morpho</span>
+          <span class="venue-pill venue-pill-violet">Curve</span>
+          <span class="venue-pill venue-pill-violet">Lido</span>
+          <span class="venue-pill venue-pill-violet">EtherFi</span>
+          <span class="venue-pill venue-pill-violet">Ethena</span>
+          <span class="venue-pill venue-pill-violet">Compound</span>
+          <span class="venue-pill venue-pill-violet">Raydium</span>
+          <span class="venue-pill venue-pill-violet">Jito</span>
+          <span class="venue-pill venue-pill-amber">Betfair</span>
+          <span class="venue-pill venue-pill-amber">Pinnacle</span>
+          <span class="venue-pill venue-pill-amber" style="opacity:0.6;font-style:italic;">+20 bookmakers</span>
+          <span class="venue-pill venue-pill-rose">Polymarket</span>
+          <span class="venue-pill venue-pill-rose">Kalshi</span>
+          <span class="venue-pill venue-pill-rose" style="opacity:0.6;font-style:italic;">+3 more</span>
+        </div>
+      </div>
+      <div class="venue-legend">
+        <span style="color:var(--cyan)">TradFi</span> ·
+        <span style="color:var(--emerald)">Crypto Exchanges</span> ·
+        <span style="color:var(--violet)">DeFi Protocols</span> ·
+        <span style="color:var(--amber)">Sports</span> ·
+        <span style="color:var(--rose)">Predictions</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. WHO WE WORK WITH ============ -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Built for professional and institutional users</p>
+        <h2>Who we work with</h2>
+        <p>Allocators, professional trading firms, emerging managers, and institutions that need systematic investment
+          management, trading infrastructure, or regulated market access.</p>
+      </div>
+      <div class="card-grid card-grid-4">
+        <article class="card">
+          <h3>Allocators &amp; family offices</h3>
+          <p>Access managed strategies with regulated reporting, institutional oversight, and a clear allocation
+            framework.</p>
+        </article>
+        <article class="card">
+          <h3>Professional trading firms</h3>
+          <p>Use Odum's research, execution, and reporting stack without building every layer internally.</p>
+        </article>
+        <article class="card">
+          <h3>Emerging managers</h3>
+          <p>Launch under a regulated framework without waiting 12&ndash;24 months for direct authorisation.</p>
+        </article>
+        <article class="card">
+          <h3>Institutions &amp; platforms</h3>
+          <p>Plug Odum's research, execution, and reporting into your existing stack &mdash; one integration, one
+            commercial relationship, no internal build required.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. WHAT CLIENTS ACCESS ============ -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Examples of what clients access</p>
+        <h2>Managed strategies, regulated structures, and platform access</h2>
+        <p>Odum combines investment management, regulatory services, and infrastructure across multiple markets.</p>
+      </div>
+      <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <article class="card card-emerald" style="overflow:hidden;">
+          <p class="card-kicker">Crypto Exchanges</p>
+          <h3>Digital asset systematic</h3>
+          <p>ML-backed momentum, mean reversion, stat arb, and market making across 11 crypto exchanges. Highest
+            resolution data available &mdash; tick to daily.</p>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-dim);">Binance, OKX, Deribit, Coinbase +7 more
+          </div>
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.12);border-radius:8px;font-family:var(--font-mono);font-size:10px;">
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
+              <span>Pair</span><span>Signal</span><span>P&amp;L</span><span>Sharpe</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);">
+              <span>BTC-PERP</span><span style="color:var(--emerald);">LONG</span><span
+                style="color:var(--emerald);">+2.4%</span><span>2.81</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;color:var(--text-dim);">
+              <span>ETH-PERP</span><span style="color:var(--rose);">SHORT</span><span
+                style="color:var(--emerald);">+1.1%</span><span>1.94</span>
+            </div>
+          </div>
+        </article>
+        <article class="card card-violet" style="overflow:hidden;">
+          <p class="card-kicker">DeFi Protocols</p>
+          <h3>On-chain yield and basis</h3>
+          <p>Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi protocols on 8+
+            blockchains. Per-block resolution data.</p>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-dim);">Aave, Morpho, Lido, Uniswap, Curve +40 more
+          </div>
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.12);border-radius:8px;font-family:var(--font-mono);font-size:10px;">
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
+              <span>Protocol</span><span>Chain</span><span>APY</span><span>TVL</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);">
+              <span>Aave V3</span><span style="color:var(--violet);">ETH</span><span
+                style="color:var(--emerald);">4.8%</span><span>$8.2B</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;color:var(--text-dim);">
+              <span>Morpho</span><span style="color:var(--violet);">BASE</span><span
+                style="color:var(--emerald);">6.1%</span><span>$1.4B</span>
+            </div>
+          </div>
+        </article>
+        <article class="card card-cyan" style="overflow:hidden;">
+          <p class="card-kicker">Traditional Markets</p>
+          <h3>Quant directional and execution</h3>
+          <p>Systematic momentum, mean reversion, commodity regime, and event-driven strategies. Equities, futures,
+            FX, commodities.</p>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-dim);">CME, NASDAQ, NYSE, ICE, CBOE +3 more</div>
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.12);border-radius:8px;font-family:var(--font-mono);font-size:10px;">
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
+              <span>Instrument</span><span>Signal</span><span>MTD</span><span>Regime</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);">
+              <span>ES (S&amp;P)</span><span style="color:var(--emerald);">LONG</span><span
+                style="color:var(--emerald);">+3.2%</span><span style="color:var(--cyan);">Trend</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;color:var(--text-dim);">
+              <span>CL (Crude)</span><span style="color:var(--rose);">SHORT</span><span
+                style="color:var(--rose);">-0.8%</span><span style="color:var(--amber);">MR</span>
+            </div>
+          </div>
+        </article>
+        <article class="card card-amber" style="overflow:hidden;">
+          <p class="card-kicker">Sports</p>
+          <h3>Sports value betting, arbitrage, and ML signals</h3>
+          <p>Cross-bookmaker odds comparison across 20+ bookmakers, live arbitrage scanning, closing line value (CLV)
+            analytics, and
+            ML-powered match predictions across 100+ leagues and 7+ market types.</p>
+          <!-- Mini sports arb/odds preview -->
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.12);border-radius:8px;font-family:var(--font-mono);font-size:10px;">
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
+              <span>Match</span><span>Market</span><span>Arb%</span><span>CLV</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);">
+              <span>ARS v LIV</span><span>FT Result</span><span style="color:var(--emerald);">+1.8%</span><span
+                style="color:var(--amber);">+4.2bps</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4px;padding:4px 0;color:var(--text-dim);">
+              <span>BAR v MCI</span><span>O/U 2.5</span><span style="color:var(--emerald);">+2.1%</span><span
+                style="color:var(--amber);">+6.1bps</span>
+            </div>
+          </div>
+        </article>
+        <article class="card card-rose" style="overflow:hidden;">
+          <p class="card-kicker">Prediction Markets</p>
+          <h3>Cross-venue prediction market trading and arbitrage</h3>
+          <p>Browse, compare, and trade prediction markets on Polymarket and Kalshi. ODUM divergence charts overlay
+            prediction odds against underlying asset prices. Live arb stream with Kelly-optimal sizing.</p>
+          <!-- Mini predictions preview -->
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.12);border-radius:8px;font-family:var(--font-mono);font-size:10px;">
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr;gap:4px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--text-muted);font-size:9px;">
+              <span>Market</span><span>Venue</span><span>YES</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr;gap:4px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);">
+              <span>BTC above $100K</span><span style="color:var(--rose);">Poly</span><span
+                style="color:var(--emerald);">72%</span>
+            </div>
+            <div style="display:grid;grid-template-columns:3fr 1fr 1fr;gap:4px;padding:4px 0;color:var(--text-dim);">
+              <span>Arsenal win EPL</span><span style="color:var(--rose);">Kalshi</span><span
+                style="color:var(--emerald);">58%</span>
+            </div>
+          </div>
+        </article>
+        <article class="card card-slate" style="overflow:hidden;">
+          <p class="card-kicker">Regulatory</p>
+          <h3>Regulatory client onboarding</h3>
+          <p>Fast path to operating under FCA coverage with compliance support, reporting, and supervision.</p>
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(148,163,184,0.04);border:1px solid rgba(148,163,184,0.12);border-radius:8px;font-family:var(--font-mono);font-size:10px;">
+            <div
+              style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);align-items:center;">
+              <span
+                style="width:8px;height:8px;border-radius:50%;background:var(--emerald);display:inline-block;"></span>
+              <span>Eligibility &amp; scoping</span><span style="color:var(--text-dim);font-size:9px;">Week 1</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-dim);align-items:center;">
+              <span
+                style="width:8px;height:8px;border-radius:50%;background:var(--emerald);display:inline-block;"></span>
+              <span>Due diligence &amp; agreement</span><span style="color:var(--text-dim);font-size:9px;">Week
+                2&ndash;3</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:4px 0;color:var(--text-dim);align-items:center;">
+              <span
+                style="width:8px;height:8px;border-radius:50%;background:var(--emerald);display:inline-block;"></span>
+              <span>Advisory live / AR in progress</span><span style="color:var(--text-dim);font-size:9px;">~Month
+                1</span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div style="text-align:center;margin-top:32px;">
+        <a href="strategies.html" class="btn btn-outline" style="font-size:14px;">See all strategies and coverage
+          &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. PLATFORM LAYERS ============ -->
+  <section class="section-pad">
+    <div class="container" style="text-align:center;">
+      <p class="eyebrow">One platform, multiple entry points</p>
+      <h2 style="font-size:28px;font-weight:700;margin:12px 0 16px;">Start with one layer. Expand without rebuilding
+        or switching providers.</h2>
+      <p style="max-width:640px;margin:0 auto 32px;color:var(--text-muted);font-size:15px;">
+        Data, Research, Execution, and Reporting &mdash; each available independently or as a full operating stack.
+      </p>
+      <div style="display:flex;justify-content:center;gap:24px;flex-wrap:wrap;margin-bottom:28px;">
+        <div style="padding:16px 24px;border:1px solid rgba(56,189,248,0.2);border-radius:10px;min-width:120px;">
+          <div style="color:var(--sky);font-weight:700;font-size:16px;">Data</div>
+          <div style="color:var(--text-dim);font-size:12px;margin-top:4px;">100+ venues, normalised</div>
+        </div>
+        <div style="padding:16px 24px;border:1px solid rgba(167,139,250,0.2);border-radius:10px;min-width:120px;">
+          <div style="color:var(--violet);font-weight:700;font-size:16px;">Research</div>
+          <div style="color:var(--text-dim);font-size:12px;margin-top:4px;">Signals, models, backtests</div>
+        </div>
+        <div style="padding:16px 24px;border:1px solid rgba(251,191,36,0.2);border-radius:10px;min-width:120px;">
+          <div style="color:var(--amber);font-weight:700;font-size:16px;">Execution</div>
+          <div style="color:var(--text-dim);font-size:12px;margin-top:4px;">Multi-venue, monitored</div>
+        </div>
+        <div style="padding:16px 24px;border:1px solid rgba(74,222,128,0.2);border-radius:10px;min-width:120px;">
+          <div style="color:var(--emerald);font-weight:700;font-size:16px;">Reporting</div>
+          <div style="color:var(--text-dim);font-size:12px;margin-top:4px;">P&amp;L, attribution, controls</div>
+        </div>
+      </div>
+      <a href="platform.html" class="btn btn-outline" style="font-size:14px;">Explore the full platform &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ============ 7. WHY ODUM ============ -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Why Odum</p>
+        <h2>Five asset groups. One regulated platform. Real capital behind it.</h2>
+        <p>Most firms cover one or two markets. Odum trades across crypto exchanges, DeFi protocols, traditional
+          markets, sports, and prediction markets through a single infrastructure stack &mdash;
+          and you access the exact same system we use to manage capital and generate returns.</p>
+      </div>
+
+      <!-- Lead differentiator: breadth -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:40px;text-align:center;">
+        <div
+          style="padding:20px 12px;background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.15);border-radius:10px;">
+          <div style="font-size:16px;font-weight:700;color:var(--emerald);">Crypto Exchanges</div>
+          <div style="font-size:24px;font-weight:800;color:var(--emerald);margin:4px 0 2px;">11</div>
+          <div style="font-size:10px;color:var(--text-dim);">centralised exchanges</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Binance, OKX, Deribit +8</div>
+        </div>
+        <div
+          style="padding:20px 12px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.15);border-radius:10px;">
+          <div style="font-size:16px;font-weight:700;color:var(--violet);">DeFi Protocols</div>
+          <div style="font-size:24px;font-weight:800;color:var(--violet);margin:4px 0 2px;">55+</div>
+          <div style="font-size:10px;color:var(--text-dim);">protocols &times; 8+ chains</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Aave, Uniswap, Morpho +50</div>
+        </div>
+        <div
+          style="padding:20px 12px;background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);border-radius:10px;">
+          <div style="font-size:18px;font-weight:700;color:var(--cyan);">TradFi</div>
+          <div style="font-size:24px;font-weight:800;color:var(--cyan);margin:4px 0 2px;">8</div>
+          <div style="font-size:10px;color:var(--text-dim);">venues</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">CME, ICE, NASDAQ, NYSE, CBOE&hellip;</div>
+        </div>
+        <div
+          style="padding:20px 12px;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:10px;">
+          <div style="font-size:18px;font-weight:700;color:var(--amber);">Sports</div>
+          <div style="font-size:24px;font-weight:800;color:var(--amber);margin:4px 0 2px;">20+</div>
+          <div style="font-size:10px;color:var(--text-dim);">bookmakers &middot; 100+ leagues</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Betfair, Pinnacle +20 more&hellip;</div>
+        </div>
+        <div
+          style="padding:20px 12px;background:rgba(251,113,133,0.06);border:1px solid rgba(251,113,133,0.15);border-radius:10px;">
+          <div style="font-size:18px;font-weight:700;color:var(--rose);">Predictions</div>
+          <div style="font-size:24px;font-weight:800;color:var(--rose);margin:4px 0 2px;">5</div>
+          <div style="font-size:10px;color:var(--text-dim);">markets</div>
+          <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Polymarket, Kalshi +3 more&hellip;</div>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature">
+          <h3 style="color:var(--amber);">Same platform, same infrastructure</h3>
+          <p>You access the same platform, strategies, and infrastructure that Odum uses to manage its own capital.
+            No watered-down client version &mdash; identical system, identical controls.</p>
+        </article>
+        <article class="feature">
+          <h3 style="color:var(--emerald);">Real results from real capital</h3>
+          <p>Decades of combined experience from leading quantitative firms, exchanges, and regulated financial
+            institutions. Live track record, not hypothetical backtests.</p>
+        </article>
+        <article class="feature">
+          <h3 style="color:var(--rose);">FCA-regulated from day one</h3>
+          <p>Investment management and regulatory umbrella under FCA authorisation (975797). Reporting, compliance,
+            and oversight built into every client engagement.</p>
+        </article>
+        <article class="feature">
+          <h3 style="color:var(--cyan);">Institutional depth without the build-out</h3>
+          <p>Research, execution, risk, and reporting layers you would spend years building &mdash; available now,
+            modular, and maintained by the same team that trades on it daily.</p>
+        </article>
+        <article class="feature">
+          <h3 style="color:var(--violet);">One backbone across all five markets</h3>
+          <p>Every asset group runs on the same data pipeline, the same risk engine, the same reporting stack.
+            Consistency across crypto exchanges, DeFi protocols, equities, sports, and prediction markets.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. FINAL CTA ============ -->
+  <section class="final-cta section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Choose the right next step</p>
+        <h2>Work with Odum in the way that fits</h2>
+        <p>Allocate capital, explore the platform, or check regulatory fit. We'll direct you to the right path.</p>
+      </div>
+      <div class="card-grid card-grid-3">
+        <article class="card" style="text-align:center;">
+          <h3>Allocate capital</h3>
+          <p>Discuss a mandate, allocation process, or strategy fit.</p>
+          <a href="contact.html" class="btn btn-primary" style="margin-top:16px;">Discuss a Mandate</a>
+        </article>
+        <article class="card" style="text-align:center;">
+          <h3>Explore the platform</h3>
+          <p>Request a guided platform preview based on your use case.</p>
+          <a href="contact.html" class="btn btn-outline" style="margin-top:16px;">Book a Demo</a>
+        </article>
+        <article class="card" style="text-align:center;">
+          <h3>Check regulatory fit</h3>
+          <p>Run an eligibility assessment for FCA umbrella coverage.</p>
+          <a href="regulatory.html" class="btn btn-outline" style="margin-top:16px;">Check Regulatory Fit</a>
+        </article>
+      </div>
+      <div class="contact-block" id="contact">
+        <p>Not sure where to start? <a href="contact.html">Talk to us</a> &mdash; we'll help you find the right path.
+        </p>
+        <p style="margin-top:8px;">info@odum-research.co.uk</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="firm.html">Privacy</a>
+        <a href="firm.html">Terms</a>
+        <a href="regulatory.html">FCA 975797</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

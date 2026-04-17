@@ -95,7 +95,7 @@
           "standard"
         ],
         "version": "0.1.0",
-        "ci_status": "LOCAL_PASS",
+        "ci_status": "FAILING",
         "coverage_pct": 18,
         "testing_level": "unit",
         "status": "active",
@@ -128,7 +128,7 @@
           "standard"
         ],
         "version": "0.1.1",
-        "ci_status": "LOCAL_PASS",
+        "ci_status": "FAILING",
         "coverage_pct": 71,
         "testing_level": "unit",
         "status": "active",
@@ -470,7 +470,7 @@
           "standard"
         ],
         "version": "0.1.0",
-        "ci_status": "FAILING",
+        "ci_status": "LOCAL_PASS",
         "coverage_pct": 87,
         "testing_level": "integration",
         "status": "scaffolded",
@@ -853,7 +853,7 @@
           "standard"
         ],
         "version": "0.1.0",
-        "ci_status": "LOCAL_PASS",
+        "ci_status": "FAILING",
         "coverage_pct": 77,
         "testing_level": "integration",
         "status": "active",
@@ -988,7 +988,7 @@
           "cross-domain"
         ],
         "version": "0.1.20",
-        "ci_status": "FAILING",
+        "ci_status": "LOCAL_PASS",
         "coverage_pct": 85,
         "testing_level": "unit",
         "status": "active",
@@ -1474,7 +1474,7 @@
           "api"
         ],
         "version": "0.1.0",
-        "ci_status": "LOCAL_PASS",
+        "ci_status": "FAILING",
         "coverage_pct": null,
         "testing_level": null,
         "status": "active",
@@ -1499,7 +1499,7 @@
           "standard"
         ],
         "version": "0.1.0",
-        "ci_status": "LOCAL_PASS",
+        "ci_status": "FAILING",
         "coverage_pct": "N/A",
         "testing_level": "unit",
         "status": "active",
@@ -1514,9 +1514,13 @@
         "type": "ui",
         "tier": "T3",
         "role": "Deployment management UI",
-        "tags": [],
+        "tags": [
+          "ui",
+          "deployment",
+          "infrastructure"
+        ],
         "version": "0.1.0",
-        "ci_status": "BASELINE_RECORDED",
+        "ci_status": "FAILING",
         "coverage_pct": null,
         "testing_level": "unit",
         "status": "active",
@@ -4273,6 +4277,1368 @@
       "batch_capable": true,
       "live_capable": true,
       "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_BTC_BASIS_1H",
+      "display_name": "DeFi BTC Basis Trade (1H)",
+      "category": "DEFI",
+      "subcategory": "BTC_BASIS",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "WALLET",
+        "HYPERLIQUID"
+      ],
+      "instruments": [
+        "WALLET:SPOT_ASSET:WBTC",
+        "HYPERLIQUID:PERPETUAL:BTC-USDC@LIN@HYPERLIQUID"
+      ],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.btc_basis.BtcBasisTradeStrategy",
+      "factory_function": "create_btc_basis_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_BTC_LENDING_1H",
+      "display_name": "DeFi BTC Lending (1H)",
+      "category": "DEFI",
+      "subcategory": "BTC_LENDING",
+      "domain": "defi",
+      "asset_classes": [
+        "A_TOKEN"
+      ],
+      "venues": [
+        "AAVEV3-ETHEREUM"
+      ],
+      "instruments": [
+        "AAVEV3-ETHEREUM:A_TOKEN:AWBTC@ETHEREUM"
+      ],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.btc_lending.BtcLendingStrategy",
+      "factory_function": "create_btc_lending_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_STAKED_BASIS_SOL_1H",
+      "display_name": "DeFi SOL Staked Basis (1H)",
+      "category": "DEFI",
+      "subcategory": "SOL_STAKED_BASIS",
+      "domain": "defi",
+      "asset_classes": [
+        "LST",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "MARINADE-SOLANA",
+        "HYPERLIQUID"
+      ],
+      "instruments": [
+        "MARINADE-SOLANA:LST:MSOL@SOLANA",
+        "HYPERLIQUID:PERPETUAL:SOL-USDC@LIN@HYPERLIQUID"
+      ],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.sol_staked_basis.SolStakedBasisStrategy",
+      "factory_function": "create_sol_staked_basis_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_SOL_BASIS_1H",
+      "display_name": "DeFi SOL Basis Trade (1H)",
+      "category": "DEFI",
+      "subcategory": "SOL_BASIS",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "WALLET",
+        "HYPERLIQUID"
+      ],
+      "instruments": [
+        "WALLET:SPOT_ASSET:SOL",
+        "HYPERLIQUID:PERPETUAL:SOL-USDC@LIN@HYPERLIQUID"
+      ],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.sol_basis.SolBasisTradeStrategy",
+      "factory_function": "create_sol_basis_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_SOL_LENDING_KAMINO_1H",
+      "display_name": "DeFi SOL Lending Kamino (1H)",
+      "category": "DEFI",
+      "subcategory": "SOL_LENDING",
+      "domain": "defi",
+      "asset_classes": [
+        "A_TOKEN"
+      ],
+      "venues": [
+        "KAMINO-SOLANA"
+      ],
+      "instruments": [
+        "KAMINO-SOLANA:A_TOKEN:KSOL@SOLANA"
+      ],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.sol_lending.KaminoLendingStrategy",
+      "factory_function": "create_kamino_lending_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_SOL_CONCENTRATED_LP_1H",
+      "display_name": "DeFi SOL Concentrated LP (1H)",
+      "category": "DEFI",
+      "subcategory": "CONCENTRATED_LP",
+      "domain": "defi",
+      "asset_classes": [
+        "LP_TOKEN"
+      ],
+      "venues": [
+        "ORCA-SOLANA",
+        "RAYDIUM-SOLANA"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.sol_concentrated_lp.SolConcentratedLPStrategy",
+      "factory_function": "create_sol_concentrated_lp_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_AMM_LP_ETH_USDC",
+      "display_name": "DeFi AMM LP ETH/USDC",
+      "category": "DEFI",
+      "subcategory": "AMM_LP",
+      "domain": "defi",
+      "asset_classes": [
+        "LP_TOKEN"
+      ],
+      "venues": [
+        "UNISWAPV3-ETHEREUM",
+        "CURVE-ETHEREUM",
+        "BALANCER-ETH"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.defi_amm_lp.AmmLPStrategy",
+      "factory_function": "create_amm_lp_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_ACTIVE_LP_ETH_USDC",
+      "display_name": "DeFi Active LP ETH/USDC",
+      "category": "DEFI",
+      "subcategory": "ACTIVE_LP",
+      "domain": "defi",
+      "asset_classes": [
+        "LP_TOKEN"
+      ],
+      "venues": [
+        "UNISWAPV3-ETHEREUM"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": "active_lp_eth_usdc",
+        "ml_required": true
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.active_defi_mm.ActiveDeFiMMStrategy",
+      "factory_function": "create_active_lp_eth_usdc_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_ENHANCED_BASIS_ETH_1H",
+      "display_name": "DeFi Enhanced Basis Trade ETH (1H)",
+      "category": "DEFI",
+      "subcategory": "ENHANCED_BASIS",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET",
+        "PERPETUAL",
+        "LST"
+      ],
+      "venues": [
+        "WALLET",
+        "HYPERLIQUID",
+        "UNISWAPV3-ETHEREUM",
+        "CURVE-ETHEREUM"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.enhanced_basis.EnhancedBasisTradeStrategy",
+      "factory_function": "create_basis_trade_multi_venue_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_ETHENA_BENCHMARK_1H",
+      "display_name": "DeFi Ethena Benchmark (1H)",
+      "category": "DEFI",
+      "subcategory": "ETHENA_BENCHMARK",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET"
+      ],
+      "venues": [
+        "ETHENA-ETHEREUM"
+      ],
+      "instruments": [
+        "ETHENA-ETHEREUM:SPOT_ASSET:SUSDE@ETHEREUM"
+      ],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.defi_ethena_benchmark.EthenaBenchmarkStrategy",
+      "factory_function": "create_ethena_benchmark_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_L2_BASIS_ARB_1H",
+      "display_name": "DeFi L2 Basis Arb (1H)",
+      "category": "DEFI",
+      "subcategory": "L2_BASIS",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "WALLET",
+        "HYPERLIQUID"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.l2_basis.L2BasisTradeStrategy",
+      "factory_function": "create_l2_basis_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_LENDING_ARB_ETH_1H",
+      "display_name": "DeFi Lending Protocol Arb ETH (1H)",
+      "category": "DEFI",
+      "subcategory": "LENDING_ARB",
+      "domain": "defi",
+      "asset_classes": [
+        "A_TOKEN"
+      ],
+      "venues": [
+        "AAVEV3-ETHEREUM",
+        "COMPOUNDV3-ETHEREUM",
+        "MORPHO-ETHEREUM"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.lending_protocol_arb.LendingProtocolArbStrategy",
+      "factory_function": "create_lending_arb_eth_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_MULTICHAIN_LENDING_1H",
+      "display_name": "DeFi Multi-Chain Lending (1H)",
+      "category": "DEFI",
+      "subcategory": "MULTI_CHAIN_LENDING",
+      "domain": "defi",
+      "asset_classes": [
+        "A_TOKEN"
+      ],
+      "venues": [
+        "AAVEV3-ETHEREUM",
+        "COMPOUNDV3-ETHEREUM",
+        "KAMINO-SOLANA"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.multichain_lending.MultiChainLendingStrategy",
+      "factory_function": "create_multichain_lending_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_CROSS_CHAIN_SOR_1H",
+      "display_name": "DeFi Cross-Chain SOR (1H)",
+      "category": "DEFI",
+      "subcategory": "CROSS_CHAIN_SOR",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET"
+      ],
+      "venues": [
+        "UNISWAPV3-ETHEREUM",
+        "ORCA-SOLANA",
+        "RAYDIUM-SOLANA"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.cross_chain_sor.CrossChainSORStrategy",
+      "factory_function": "create_cross_chain_sor_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_CROSS_CHAIN_YIELD_ARB_1H",
+      "display_name": "DeFi Cross-Chain Yield Arb (1H)",
+      "category": "DEFI",
+      "subcategory": "CROSS_CHAIN_YIELD_ARB",
+      "domain": "defi",
+      "asset_classes": [
+        "A_TOKEN"
+      ],
+      "venues": [
+        "AAVEV3-ETHEREUM",
+        "KAMINO-SOLANA"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.cross_chain_yield_arb.CrossChainYieldArbStrategy",
+      "factory_function": "create_cross_chain_yield_arb_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_OMNICHAIN_TRANSFER_1H",
+      "display_name": "DeFi Omnichain Transfer (1H)",
+      "category": "DEFI",
+      "subcategory": "OMNICHAIN_TRANSFER",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET"
+      ],
+      "venues": [
+        "WALLET"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.omnichain_transfer.OmnichainTransferStrategy",
+      "factory_function": "create_omnichain_transfer_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "DEFI_LIQUIDATION_CAPTURE_ETH",
+      "display_name": "DeFi Liquidation Capture ETH",
+      "category": "DEFI",
+      "subcategory": "LIQUIDATION_CAPTURE",
+      "domain": "defi",
+      "asset_classes": [
+        "SPOT_ASSET",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "AAVEV3-ETHEREUM",
+        "HYPERLIQUID"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-onchain-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.liquidation_capture.LiquidationCaptureStrategy",
+      "factory_function": "create_liquidation_capture_eth_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "onchain"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": false,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "CEFI_MARKET_MAKING_BTC",
+      "display_name": "CeFi BTC Market Making",
+      "category": "CEFI",
+      "subcategory": "MARKET_MAKING",
+      "domain": "cefi",
+      "asset_classes": [
+        "SPOT_PAIR",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "BINANCE",
+        "BINANCE-FUTURES"
+      ],
+      "instruments": [
+        "BINANCE:SPOT_PAIR:BTCUSDT",
+        "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"
+      ],
+      "data_sources": {
+        "features": [
+          "features-delta-one-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.cefi_market_making.CeFiMarketMakingStrategy",
+      "factory_function": "create_btc_market_making_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "delta_one"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1m",
+        "max_timeframe": "1h"
+      },
+      "batch_capable": false,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "CEFI_ML_DIRECTIONAL_BTC",
+      "display_name": "CeFi ML Directional BTC",
+      "category": "CEFI",
+      "subcategory": "ML_DIRECTIONAL",
+      "domain": "cefi",
+      "asset_classes": [
+        "PERPETUAL"
+      ],
+      "venues": [
+        "BINANCE-FUTURES",
+        "BYBIT"
+      ],
+      "instruments": [
+        "BINANCE-FUTURES:PERPETUAL:BTC-USDT@LIN"
+      ],
+      "data_sources": {
+        "features": [
+          "features-delta-one-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": "ml_directional_btc",
+        "ml_required": true
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.cefi_ml_directional.CeFiMLDirectionalStrategy",
+      "factory_function": "create_btc_ml_directional_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "delta_one"
+        ],
+        "allowed_ml_targets": [
+          "DIRECTION"
+        ],
+        "min_timeframe": "1m",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "OPTIONS_MM_BTC_DERIBIT",
+      "display_name": "Options Market Making BTC Deribit",
+      "category": "OPTIONS",
+      "subcategory": "OPTIONS_MM",
+      "domain": "cefi",
+      "asset_classes": [
+        "OPTION",
+        "PERPETUAL"
+      ],
+      "venues": [
+        "DERIBIT"
+      ],
+      "instruments": [
+        "DERIBIT:OPTION:BTC-*"
+      ],
+      "data_sources": {
+        "features": [
+          "features-volatility-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.options_market_making.options_mm_strategy.OptionsMMStrategy",
+      "factory_function": "create_btc_options_mm_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "vol_surface",
+          "term_structure"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1m",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": false,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "TRADFI_COMMODITY_REGIME_OIL",
+      "display_name": "TradFi Commodity Regime Oil",
+      "category": "TRADFI",
+      "subcategory": "COMMODITY_REGIME",
+      "domain": "tradfi",
+      "asset_classes": [
+        "COMMODITY"
+      ],
+      "venues": [
+        "CME",
+        "NYMEX"
+      ],
+      "instruments": [
+        "NYMEX:FUTURES:CL"
+      ],
+      "data_sources": {
+        "features": [
+          "features-delta-one-service",
+          "features-calendar-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.commodity_regime.CommodityRegimeStrategy",
+      "factory_function": "create_commodity_regime_oil_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "delta_one",
+          "calendar"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
+    },
+    {
+      "strategy_id": "TRADFI_EVENT_MACRO_CRYPTO",
+      "display_name": "TradFi Event-Driven Macro Crypto",
+      "category": "TRADFI",
+      "subcategory": "EVENT_MACRO",
+      "domain": "tradfi",
+      "asset_classes": [
+        "PERPETUAL",
+        "EQUITY"
+      ],
+      "venues": [
+        "BINANCE-FUTURES",
+        "NASDAQ"
+      ],
+      "instruments": [],
+      "data_sources": {
+        "features": [
+          "features-delta-one-service",
+          "features-calendar-service"
+        ],
+        "market_data_processed": true,
+        "market_data_tick": false,
+        "ml_model_id": null,
+        "ml_required": false
+      },
+      "config_file": "strategy-service/strategy_service/configs/defaults/default_basis_trade.yaml",
+      "class_path": "strategy_service.engine.strategies.event_driven_macro.EventDrivenMacroStrategy",
+      "factory_function": "create_event_macro_crypto_strategy",
+      "maturity": {
+        "code": {
+          "status": "C4",
+          "class_exists": true,
+          "unit_tests": true,
+          "qg_pass": true,
+          "merged": false
+        },
+        "deployment": {
+          "status": "D0",
+          "batch_analytics": false,
+          "mock_smoke": false,
+          "batch_live_recon": false
+        },
+        "business": {
+          "status": "B0",
+          "backtest_profitable": false,
+          "live_1d_match": false,
+          "live_1w_match": false,
+          "strategy_deck": false
+        }
+      },
+      "restrictions": {
+        "allowed_features": [
+          "delta_one",
+          "calendar",
+          "macro"
+        ],
+        "allowed_ml_targets": [],
+        "min_timeframe": "1h",
+        "max_timeframe": "1d"
+      },
+      "batch_capable": true,
+      "live_capable": true,
+      "testnet_capable": false
     }
   ],
   "ui_api_flow_tests": {
@@ -4440,12 +5806,6 @@
         "internal_count": 0,
         "external_count": 15
       },
-      "unified-trading-codex": {
-        "internal_deps": {},
-        "external_deps": {},
-        "internal_count": 0,
-        "external_count": 0
-      },
       "unified-api-contracts": {
         "internal_deps": {},
         "external_deps": {
@@ -4470,11 +5830,23 @@
           "ib-insync": [
             "ib_insync>=0.9.86,<1.0.0"
           ],
+          "numpy": [
+            "numpy>=2.3.0,<2.4.0"
+          ],
+          "pandas": [
+            "pandas>=2.3.0,<3.0.0"
+          ],
+          "pandas-stubs": [
+            "pandas-stubs>=2.2.0,<3.0.0"
+          ],
           "pip-audit": [
             "pip-audit>=2.7.0,<3.0.0"
           ],
           "pre-commit": [
             "pre-commit>=3.0,<4.0.0"
+          ],
+          "pyarrow": [
+            "pyarrow>=23.0.0,<24.0.0"
           ],
           "pydantic": [
             "pydantic>=2.12.5,<3.0.0"
@@ -4514,15 +5886,18 @@
           ]
         },
         "internal_count": 0,
-        "external_count": 21
+        "external_count": 25
       },
-      "unified-cloud-interface": {
+      "unified-trading-library": {
         "internal_deps": {
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0"
         },
         "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
+          "aiohttp": [
+            "aiohttp>=3.13.2,<4.0.0"
+          ],
+          "bandit<2.0.0,": [
+            "bandit<2.0.0,>=1.7.0"
           ],
           "basedpyright": [
             "basedpyright==1.38.2"
@@ -4536,6 +5911,15 @@
           "botocore": [
             "botocore>=1.34.0,<2.0.0"
           ],
+          "databento": [
+            "databento>=0.32.0,<1.0.0"
+          ],
+          "fastapi<1.0.0,": [
+            "fastapi<1.0.0,>=0.115.0"
+          ],
+          "fsspec<2026.0.0,": [
+            "fsspec<2026.0.0,>=2025.2.0"
+          ],
           "gcsfs": [
             "gcsfs>=2025.5.0,<2026.0.0"
           ],
@@ -4548,8 +5932,8 @@
           "google-cloud-build": [
             "google-cloud-build>=3.0.0,<4.0.0"
           ],
-          "google-cloud-compute": [
-            "google-cloud-compute>=1.45.0,<2.0.0"
+          "google-cloud-compute<2.0.0,": [
+            "google-cloud-compute<2.0.0,>=1.45.0"
           ],
           "google-cloud-logging": [
             "google-cloud-logging>=3.12.0,<4.0.0"
@@ -4557,304 +5941,14 @@
           "google-cloud-pubsub": [
             "google-cloud-pubsub>=2.28.0,<3.0.0"
           ],
-          "google-cloud-run": [
-            "google-cloud-run>=0.15.0,<1.0.0"
+          "google-cloud-run<1.0.0,": [
+            "google-cloud-run<1.0.0,>=0.15.0"
           ],
           "google-cloud-secret-manager": [
             "google-cloud-secret-manager>=2.25.0,<3.0.0"
           ],
           "google-cloud-storage": [
             "google-cloud-storage>=3.8.0,<4.0.0"
-          ],
-          "moto": [
-            "moto[s3,secretsmanager,sqs]>=5.0.0,<6.0.0"
-          ],
-          "pandas<3.0.0,": [
-            "pandas<3.0.0,>=2.3.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pyjwt": [
-            "PyJWT>=2.8.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "redis": [
-            "redis>=5.0.0,<6.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "vcrpy": [
-            "vcrpy>=8.0.0,<9.0.0"
-          ]
-        },
-        "internal_count": 1,
-        "external_count": 28
-      },
-      "unified-events-interface": {
-        "internal_deps": {},
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 0,
-        "external_count": 11
-      },
-      "unified-internal-contracts": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-trading-library": "unified-trading-library>=1.6.0,<2.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "numpy<2.4.0,": [
-            "numpy<2.4.0,>=2.3.0"
-          ],
-          "pandas-stubs<3.0.0,": [
-            "pandas-stubs<3.0.0,>=2.2.0"
-          ],
-          "pandas<3.0.0,": [
-            "pandas<3.0.0,>=2.3.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pyarrow<24.0.0,": [
-            "pyarrow<24.0.0,>=23.0.0"
-          ],
-          "pydantic": [
-            "pydantic>=2.12.5,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "pyyaml<7.0.0,": [
-            "pyyaml<7.0.0,>=6.0.1"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 2,
-        "external_count": 17
-      },
-      "unified-config-interface": {
-        "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.2.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pyasn1": [
-            "pyasn1>=0.6.3,<0.7.0"
-          ],
-          "pydantic": [
-            "pydantic>=2.12.5,<3.0.0"
-          ],
-          "pydantic-settings": [
-            "pydantic-settings>=2.12.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "python-dateutil": [
-            "python-dateutil>=2.8.2,<3.0.0"
-          ],
-          "pyyaml": [
-            "pyyaml>=6.0.1,<7.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 3,
-        "external_count": 16
-      },
-      "unified-reference-data-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.2.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "aiohttp": [
-            "aiohttp>=3.13.2,<4.0.0"
-          ],
-          "aioresponses": [
-            "aioresponses>=0.7.6,<1.0.0"
-          ],
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "ccxt": [
-            "ccxt>=4.5.24,<5.0.0"
-          ],
-          "google-auth": [
-            "google-auth>=2.40.0,<3.0.0"
-          ],
-          "ib-insync<1.0.0,": [
-            "ib-insync<1.0.0,>=0.9.86"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "vcrpy": [
-            "vcrpy>=8.0.0,<9.0.0"
-          ]
-        },
-        "internal_count": 4,
-        "external_count": 17
-      },
-      "unified-trading-library": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.11.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit<2.0.0,": [
-            "bandit<2.0.0,>=1.7.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "databento": [
-            "databento>=0.32.0,<1.0.0"
-          ],
-          "fastapi<1.0.0,": [
-            "fastapi<1.0.0,>=0.115.0"
-          ],
-          "fsspec<2026.0.0,": [
-            "fsspec<2026.0.0,>=2025.2.0"
           ],
           "httpx<1.0.0,": [
             "httpx<1.0.0,>=0.28.1"
@@ -4904,11 +5998,17 @@
           "pyarrow<24.0.0,": [
             "pyarrow<24.0.0,>=23.0.0"
           ],
+          "pyasn1": [
+            "pyasn1>=0.6.3,<0.7.0"
+          ],
           "pydantic-settings<3.0.0,": [
             "pydantic-settings<3.0.0,>=2.12.0"
           ],
           "pydantic<3.0.0,": [
             "pydantic<3.0.0,>=2.12.5"
+          ],
+          "pyjwt": [
+            "PyJWT>=2.8.0,<3.0.0"
           ],
           "pytest-asyncio<2.0.0,": [
             "pytest-asyncio<2.0.0,>=0.25.0"
@@ -4928,14 +6028,26 @@
           "pytest<10.0.0,": [
             "pytest<10.0.0,>=9.0.1"
           ],
+          "python-dateutil": [
+            "python-dateutil>=2.8.2,<3.0.0"
+          ],
           "python-dotenv<2.0.0,": [
             "python-dotenv<2.0.0,>=1.0.0"
           ],
           "pyyaml<7.0.0,": [
             "pyyaml<7.0.0,>=6.0.1"
           ],
+          "redis": [
+            "redis>=5.0.0,<6.0.0"
+          ],
           "ruff": [
             "ruff==0.15.0"
+          ],
+          "scikit-learn": [
+            "scikit-learn>=1.5.0,<2.0.0"
+          ],
+          "scipy": [
+            "scipy>=1.15.0,<2.0.0"
           ],
           "starlette": [
             "starlette>=0.46.3,<1.0.0"
@@ -4944,228 +6056,17 @@
             "web3>=6.0.0,<7.0.0"
           ]
         },
-        "internal_count": 5,
-        "external_count": 34
-      },
-      "matching-engine-library": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 2,
-        "external_count": 10
-      },
-      "execution-algo-library": {
-        "internal_deps": {},
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pydantic": [
-            "pydantic>=2.12.5,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-mock": [
-            "pytest-mock>=3.15.0,<4.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "python-dateutil": [
-            "python-dateutil>=2.8.2,<3.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 0,
-        "external_count": 14
-      },
-      "unified-feature-calculator-library": {
-        "internal_deps": {
-          "unified-config-interface": "unified-config-interface",
-          "unified-events-interface": "unified-events-interface"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "httpx<1.0.0,": [
-            "httpx<1.0.0,>=0.28.1"
-          ],
-          "numpy": [
-            "numpy>=2.3.0,<2.4.0"
-          ],
-          "pandas": [
-            "pandas>=2.3.0,<3.0.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio<2.0.0,": [
-            "pytest-asyncio<2.0.0,>=0.25.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-mock<4.0.0,": [
-            "pytest-mock<4.0.0,>=3.15.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "scikit-learn": [
-            "scikit-learn>=1.5.0,<2.0.0"
-          ],
-          "scipy<2.0.0,": [
-            "scipy<2.0.0,>=1.15.0"
-          ]
-        },
-        "internal_count": 2,
-        "external_count": 16
-      },
-      "unified-domain-client": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.3.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-ml-interface": "unified-ml-interface>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pandas": [
-            "pandas>=2.3.0,<3.0.0"
-          ],
-          "pandas-stubs": [
-            "pandas-stubs>=2.2.0,<3.0.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pyarrow": [
-            "pyarrow>=23.0.0,<24.0.0"
-          ],
-          "pyright": [
-            "pyright>=1.1.390,<2.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-mock<4.0.0,": [
-            "pytest-mock<4.0.0,>=3.15.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "pyyaml": [
-            "pyyaml>=6.0.1,<7.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 5,
-        "external_count": 16
+        "internal_count": 1,
+        "external_count": 54
       },
       "unified-market-interface": {
         "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0",
-          "unified-config-interface": "unified-config-interface>=0.3.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
+          "unified-trading-library": "unified-trading-library>=0.3.0,<1.0.0"
         },
         "external_deps": {
           "aiohttp<4.0.0,": [
-            "aiohttp<4.0.0,>=3.13.2"
+            "aiohttp<4.0.0,>=3.13.4"
           ],
           "bandit<2.0.0,": [
             "bandit<2.0.0,>=1.7.0"
@@ -5252,455 +6153,12 @@
             "yfinance<1.0.0,>=0.2.66"
           ]
         },
-        "internal_count": 5,
+        "internal_count": 2,
         "external_count": 29
-      },
-      "unified-ml-interface": {
-        "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.2,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "joblib": [
-            "joblib>=1.3.0,<2.0.0"
-          ],
-          "numpy": [
-            "numpy>=2.3.0,<2.4.0"
-          ],
-          "pandas": [
-            "pandas>=2.3.0,<3.0.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "psutil": [
-            "psutil>=6.0.0,<7.0.0"
-          ],
-          "pydantic": [
-            "pydantic>=2.12.5,<3.0.0"
-          ],
-          "pydantic-settings": [
-            "pydantic-settings>=2.12.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "python-dateutil": [
-            "python-dateutil>=2.8.2,<3.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "scikit-learn": [
-            "scikit-learn>=1.5.0,<2.0.0"
-          ],
-          "scipy": [
-            "scipy>=1.15.0,<2.0.0"
-          ]
-        },
-        "internal_count": 3,
-        "external_count": 20
-      },
-      "unified-position-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "ccxt": [
-            "ccxt>=4.5.24,<5.0.0"
-          ],
-          "httpx": [
-            "httpx>=0.28.1,<1.0.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pydantic": [
-            "pydantic>=2.12.5,<3.0.0"
-          ],
-          "pyjwt": [
-            "PyJWT>=2.9.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 2,
-        "external_count": 13
-      },
-      "unified-trade-execution-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-sports-execution-interface": "unified-sports-execution-interface>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "aiohttp<4.0.0,": [
-            "aiohttp<4.0.0,>=3.13.2"
-          ],
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "ccxt<5.0.0,": [
-            "ccxt<5.0.0,>=4.5.24"
-          ],
-          "httpx<1.0.0,": [
-            "httpx<1.0.0,>=0.28.1"
-          ],
-          "ib-insync": [
-            "ib_insync>=0.9.86,<1.0.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pydantic": [
-            "pydantic>=2.12.5,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "python-dateutil": [
-            "python-dateutil>=2.8.2,<3.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "vcrpy": [
-            "vcrpy>=8.0.0,<9.0.0"
-          ]
-        },
-        "internal_count": 4,
-        "external_count": 18
-      },
-      "unified-features-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.2.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.11.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.2.0,<1.0.0"
-        },
-        "external_deps": {
-          "aiohttp": [
-            "aiohttp>=3.13.2,<4.0.0"
-          ],
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 3,
-        "external_count": 12
-      },
-      "unified-sports-reference-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.2.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.2.0,<1.0.0"
-        },
-        "external_deps": {
-          "aiohttp": [
-            "aiohttp>=3.13.2,<4.0.0"
-          ],
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 2,
-        "external_count": 12
-      },
-      "unified-defi-execution-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.36,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=1.0.0,<2.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.2,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "responses": [
-            "responses>=0.24.1,<1.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "vcrpy": [
-            "vcrpy>=8.0.0,<9.0.0"
-          ]
-        },
-        "internal_count": 3,
-        "external_count": 12
-      },
-      "unified-sports-execution-interface": {
-        "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0"
-        },
-        "external_deps": {
-          "aiohttp": [
-            "aiohttp>=3.13.2,<4.0.0"
-          ],
-          "aioresponses": [
-            "aioresponses>=0.7.6,<1.0.0"
-          ],
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "beautifulsoup4": [
-            "beautifulsoup4>=4.12,<5.0"
-          ],
-          "betfairlightweight": [
-            "betfairlightweight>=2.20,<3.0"
-          ],
-          "cryptography": [
-            "cryptography>=44.0.0,<47.0.0"
-          ],
-          "lxml": [
-            "lxml>=5.0,<6.0"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "playwright": [
-            "playwright>=1.40,<2.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov<8.0.0,": [
-            "pytest-cov<8.0.0,>=7.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "pyyaml": [
-            "pyyaml>=6.0.1,<7.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ],
-          "vcrpy": [
-            "vcrpy>=8.0.0,<9.0.0"
-          ]
-        },
-        "internal_count": 3,
-        "external_count": 19
-      },
-      "unified-feature-orchestration-library": {
-        "internal_deps": {
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.2.0,<1.0.0",
-          "unified-features-interface": "unified-features-interface>=0.1.0,<1.0.0",
-          "unified-trading-library": "unified-trading-library>=0.3.0,<1.0.0"
-        },
-        "external_deps": {
-          "bandit": [
-            "bandit>=1.7.0,<2.0.0"
-          ],
-          "basedpyright": [
-            "basedpyright==1.38.2"
-          ],
-          "pip-audit": [
-            "pip-audit>=2.7.0,<3.0.0"
-          ],
-          "pre-commit": [
-            "pre-commit>=3.0,<4.0.0"
-          ],
-          "pytest": [
-            "pytest>=9.0.1,<10.0.0"
-          ],
-          "pytest-asyncio": [
-            "pytest-asyncio>=0.25.0,<2.0.0"
-          ],
-          "pytest-cov": [
-            "pytest-cov>=7.0.0,<8.0.0"
-          ],
-          "pytest-socket": [
-            "pytest-socket>=0.7.0,<1.0.0"
-          ],
-          "pytest-timeout": [
-            "pytest-timeout>=2.4.0,<3.0.0"
-          ],
-          "pytest-xdist": [
-            "pytest-xdist>=3.6.0,<4.0.0"
-          ],
-          "ruff": [
-            "ruff==0.15.0"
-          ]
-        },
-        "internal_count": 3,
-        "external_count": 11
       },
       "instruments-service": {
         "internal_deps": {
-          "unified-api-contracts": "unified-api-contracts>=0.2.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.2.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.2.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-reference-data-interface": "unified-reference-data-interface>=0.1.0,<1.0.0",
-          "unified-sports-reference-interface": "unified-sports-reference-interface>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -5795,16 +6253,12 @@
             "yfinance>=0.2.66,<1.0.0"
           ]
         },
-        "internal_count": 7,
+        "internal_count": 2,
         "external_count": 30
       },
       "alerting-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -5865,6 +6319,9 @@
           "pyyaml": [
             "pyyaml>=6.0.1,<7.0.0"
           ],
+          "responses": [
+            "responses>=0.24.1,<1.0.0"
+          ],
           "ruff": [
             "ruff==0.15.0"
           ],
@@ -5875,30 +6332,27 @@
             "uvicorn[standard]>=0.27.0,<1.0.0"
           ]
         },
-        "internal_count": 6,
-        "external_count": 22
+        "internal_count": 2,
+        "external_count": 23
       },
       "execution-service": {
         "internal_deps": {
-          "execution-algo-library": "execution-algo-library>=0.1.0,<1.0.0",
-          "matching-engine-library": "matching-engine-library>=0.1.0,<1.0.0",
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-defi-execution-interface": "unified-defi-execution-interface>=0.1.0,<1.0.0",
-          "unified-domain-client": "unified-domain-client>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-sports-execution-interface": "unified-sports-execution-interface>=0.1.0,<1.0.0",
-          "unified-trade-execution-interface": "unified-trade-execution-interface>=0.1.0,<1.0.0",
+          "unified-market-interface": "unified-market-interface>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
           "aiohttp<4.0.0,": [
             "aiohttp<4.0.0,>=3.13.2"
           ],
+          "aioresponses": [
+            "aioresponses>=0.7.6,<1.0.0"
+          ],
           "alembic": [
             "alembic>=1.13.0,<2.0.0"
+          ],
+          "anchorpy": [
+            "anchorpy>=0.21.0,<1.0.0"
           ],
           "asyncpg": [
             "asyncpg>=0.31.0,<1.0.0"
@@ -5909,11 +6363,20 @@
           "basedpyright": [
             "basedpyright==1.38.2"
           ],
+          "beautifulsoup4": [
+            "beautifulsoup4>=4.12,<5.0"
+          ],
+          "betfairlightweight": [
+            "betfairlightweight>=2.20,<3.0"
+          ],
           "binance-futures-connector": [
             "binance-futures-connector>=2.0.0,<3.0.0"
           ],
           "cryptography": [
             "cryptography>=46.0.5"
+          ],
+          "driftpy": [
+            "driftpy>=0.8.0,<1.0.0"
           ],
           "eth-abi<6.0.0,": [
             "eth-abi<6.0.0,>=5.0.1"
@@ -5930,8 +6393,8 @@
           "httpx": [
             "httpx>=0.28.1,<1.0.0"
           ],
-          "mypy": [
-            "mypy>=1.13.0,<2.0.0"
+          "lxml": [
+            "lxml>=5.0,<6.0"
           ],
           "nautilus-trader": [
             "nautilus-trader>=1.221.0,<2.0.0"
@@ -5959,6 +6422,9 @@
           ],
           "pip-audit": [
             "pip-audit>=2.7.0,<3.0.0"
+          ],
+          "playwright": [
+            "playwright>=1.40,<2.0"
           ],
           "prometheus-client": [
             "prometheus-client>=0.20.0,<1.0.0"
@@ -6005,6 +6471,9 @@
           "requests": [
             "requests>=2.32.5,<3.0.0"
           ],
+          "responses": [
+            "responses>=0.24.1,<1.0.0"
+          ],
           "rich<15.0.0,": [
             "rich<15.0.0,>=14.2.0"
           ],
@@ -6016,6 +6485,12 @@
           ],
           "slowapi": [
             "slowapi>=0.1.9,<1.0.0"
+          ],
+          "solana": [
+            "solana>=0.36.0,<1.0.0"
+          ],
+          "solders": [
+            "solders>=0.27.0,<1.0.0"
           ],
           "sqlalchemy": [
             "sqlalchemy>=2.0.0,<3.0.0"
@@ -6029,22 +6504,19 @@
           "uvloop": [
             "uvloop>=0.21.0,<1.0.0; sys_platform != 'win32'"
           ],
+          "vcrpy": [
+            "vcrpy>=8.0.0,<9.0.0"
+          ],
           "websockets": [
             "websockets>=14.0,<15.0.0"
           ]
         },
-        "internal_count": 12,
-        "external_count": 46
+        "internal_count": 3,
+        "external_count": 56
       },
       "features-calendar-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.1.0,<1.0.0",
-          "unified-features-interface": "unified-features-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6056,6 +6528,9 @@
           ],
           "click": [
             "click>=8.3.1,<9.0.0"
+          ],
+          "curl-cffi": [
+            "curl-cffi>=0.15.0,<1.0.0"
           ],
           "httpx": [
             "httpx>=0.28.1,<1.0.0"
@@ -6089,6 +6564,9 @@
           ],
           "pydantic-settings": [
             "pydantic-settings>=2.12.0,<3.0.0"
+          ],
+          "pygments": [
+            "pygments>=2.20.0,<3.0.0"
           ],
           "pyjwt": [
             "pyjwt>=2.12.0,<3.0.0"
@@ -6125,18 +6603,17 @@
           ],
           "types-requests": [
             "types-requests>=2.32.0,<3.0.0"
+          ],
+          "yfinance<1.0.0,": [
+            "yfinance<1.0.0,>=0.2.66"
           ]
         },
-        "internal_count": 8,
-        "external_count": 26
+        "internal_count": 2,
+        "external_count": 29
       },
       "features-cross-instrument-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6228,17 +6705,12 @@
             "tqdm>=4.66.0,<5.0.0"
           ]
         },
-        "internal_count": 6,
+        "internal_count": 2,
         "external_count": 29
       },
       "features-delta-one-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-features-interface": "unified-features-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.4.0,<1.0.0"
         },
         "external_deps": {
@@ -6321,16 +6793,12 @@
             "tqdm>=4.66.0,<5.0.0"
           ]
         },
-        "internal_count": 7,
+        "internal_count": 2,
         "external_count": 26
       },
       "features-multi-timeframe-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<2.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<0.2.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<0.2.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.2.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6410,17 +6878,12 @@
             "tqdm>=4.66.0,<5.0.0"
           ]
         },
-        "internal_count": 6,
+        "internal_count": 2,
         "external_count": 25
       },
       "features-onchain-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.1.0,<1.0.0",
-          "unified-features-interface": "unified-features-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6500,21 +6963,13 @@
             "types-requests>=2.32.0,<3.0.0"
           ]
         },
-        "internal_count": 7,
+        "internal_count": 2,
         "external_count": 25
       },
       "features-sports-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.1.0,<1.0.0",
-          "unified-feature-orchestration-library": "unified-feature-orchestration-library>=0.1.0,<1.0.0",
-          "unified-features-interface": "unified-features-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-market-interface": "unified-market-interface>=0.1.0,<1.0.0",
-          "unified-reference-data-interface": "unified-reference-data-interface>=0.1.0,<1.0.0",
-          "unified-sports-reference-interface": "unified-sports-reference-interface>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6564,16 +7019,12 @@
             "ruff==0.15.0"
           ]
         },
-        "internal_count": 11,
+        "internal_count": 3,
         "external_count": 15
       },
       "features-volatility-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6644,17 +7095,13 @@
             "types-requests>=2.32.0,<3.0.0"
           ]
         },
-        "internal_count": 6,
+        "internal_count": 2,
         "external_count": 22
       },
       "market-data-processing-service": {
         "internal_deps": {
           "market-tick-data-service": "market-tick-data-service>=0.1.0,<1.0.0",
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6745,6 +7192,9 @@
           "python-dotenv": [
             "python-dotenv>=1.0.0,<2.0.0"
           ],
+          "pytz<2026.0,": [
+            "pytz<2026.0,>=2024.1"
+          ],
           "ruff": [
             "ruff==0.15.0"
           ],
@@ -6752,14 +7202,12 @@
             "types-aiobotocore-full>=2.26.0,<3.0.0"
           ]
         },
-        "internal_count": 7,
-        "external_count": 31
+        "internal_count": 3,
+        "external_count": 32
       },
       "market-tick-data-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
           "unified-market-interface": "unified-market-interface>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
@@ -6840,16 +7288,12 @@
             "uvicorn[standard]>=0.29.0,<1.0.0"
           ]
         },
-        "internal_count": 5,
+        "internal_count": 3,
         "external_count": 25
       },
       "ml-inference-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-ml-interface": "unified-ml-interface>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -6947,18 +7391,12 @@
             "uvicorn>=0.34.0,<1.0.0"
           ]
         },
-        "internal_count": 6,
+        "internal_count": 2,
         "external_count": 31
       },
       "ml-training-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-feature-calculator-library": "unified-feature-calculator-library>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-ml-interface": "unified-ml-interface>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.4.0,<1.0.0"
         },
         "external_deps": {
@@ -7065,15 +7503,12 @@
             "uvicorn>=0.34.0,<1.0.0"
           ]
         },
-        "internal_count": 8,
+        "internal_count": 2,
         "external_count": 34
       },
       "pnl-attribution-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7138,17 +7573,12 @@
             "uvicorn[standard]>=0.29.0,<1.0.0"
           ]
         },
-        "internal_count": 5,
+        "internal_count": 2,
         "external_count": 20
       },
       "strategy-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-domain-client": "unified-domain-client>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.3.0,<1.0.0"
         },
         "external_deps": {
@@ -7258,15 +7688,12 @@
             "types-requests>=2.32.0,<3.0.0"
           ]
         },
-        "internal_count": 7,
+        "internal_count": 2,
         "external_count": 35
       },
       "features-commodity-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.4.0,<1.0.0"
         },
         "external_deps": {
@@ -7346,16 +7773,12 @@
             "scikit-learn>=1.5.0,<2.0.0"
           ]
         },
-        "internal_count": 5,
+        "internal_count": 2,
         "external_count": 25
       },
       "trading-agent-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7408,11 +7831,12 @@
             "ruff==0.15.0"
           ]
         },
-        "internal_count": 6,
+        "internal_count": 2,
         "external_count": 16
       },
       "client-reporting-api": {
         "internal_deps": {
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.3.0,<1.0.0"
         },
         "external_deps": {
@@ -7477,17 +7901,12 @@
             "uvicorn[standard]>=0.27.0,<1.0.0"
           ]
         },
-        "internal_count": 1,
+        "internal_count": 2,
         "external_count": 20
       },
       "position-balance-monitor-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
-          "unified-position-interface": "unified-position-interface>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7585,16 +8004,12 @@
             "uvicorn[standard]>=0.27.0,<1.0.0"
           ]
         },
-        "internal_count": 7,
+        "internal_count": 2,
         "external_count": 31
       },
       "risk-and-exposure-service": {
         "internal_deps": {
           "unified-api-contracts": "unified-api-contracts>=0.2.38,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.11.39,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.3.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7602,7 +8017,7 @@
             "aiofiles>=24.1.0,<25.0.0"
           ],
           "aiohttp<4.0.0,": [
-            "aiohttp<4.0.0,>=3.13.2"
+            "aiohttp<4.0.0,>=3.13.4"
           ],
           "bandit": [
             "bandit>=1.7.0,<2.0.0"
@@ -7677,15 +8092,12 @@
             "uvicorn[standard]>=0.27.0,<1.0.0"
           ]
         },
-        "internal_count": 6,
+        "internal_count": 2,
         "external_count": 26
       },
       "batch-live-reconciliation-service": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7711,15 +8123,12 @@
             "pytest<10.0.0,>=9.0.1"
           ]
         },
-        "internal_count": 5,
+        "internal_count": 2,
         "external_count": 7
       },
       "deployment-api": {
         "internal_deps": {
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
+          "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7802,17 +8211,13 @@
             "uvicorn[standard]>=0.27.0,<1.0.0"
           ]
         },
-        "internal_count": 5,
+        "internal_count": 2,
         "external_count": 26
       },
       "deployment-service": {
         "internal_deps": {
           "deployment-api": "deployment-api>=0.1.0,<1.0.0",
           "unified-api-contracts": "unified-api-contracts>=0.1.0,<1.0.0",
-          "unified-cloud-interface": "unified-cloud-interface>=0.1.0,<1.0.0",
-          "unified-config-interface": "unified-config-interface>=0.1.0,<1.0.0",
-          "unified-events-interface": "unified-events-interface>=0.1.0,<1.0.0",
-          "unified-internal-contracts": "unified-internal-contracts>=0.1.0,<1.0.0",
           "unified-trading-library": "unified-trading-library>=0.1.0,<1.0.0"
         },
         "external_deps": {
@@ -7877,7 +8282,7 @@
             "uvicorn[standard]>=0.27.0,<1.0.0"
           ]
         },
-        "internal_count": 7,
+        "internal_count": 3,
         "external_count": 20
       },
       "deployment-ui": {
@@ -7893,9 +8298,7 @@
         "external_count": 0
       },
       "ibkr-gateway-infra": {
-        "internal_deps": {
-          "unified-config-interface": "unified-config-interface>=0.2.0,<1.0.0"
-        },
+        "internal_deps": {},
         "external_deps": {
           "bandit": [
             "bandit>=1.7.0,<2.0.0"
@@ -7934,7 +8337,7 @@
             "ruff==0.15.0"
           ]
         },
-        "internal_count": 1,
+        "internal_count": 0,
         "external_count": 12
       },
       "system-integration-tests": {

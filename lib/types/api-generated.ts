@@ -1996,6 +1996,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/deployment-api/stream/deploy-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Deploy Events
+         * @description Stream deployment lifecycle events as SSE.
+         *
+         *     Pushes an event whenever a deployment's state changes (shard status
+         *     transitions, overall status changes, cancellation, etc.).  The client
+         *     receives structured ``SSEMessage`` payloads on the ``deploy_events``
+         *     channel.  A heartbeat comment is sent every 30 s to keep the connection
+         *     alive through proxies.
+         */
+        get: operations["stream_deploy_events_stream_deploy_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/health": {
         parameters: {
             query?: never;
@@ -2072,6 +2098,26 @@ export interface paths {
          *     Returns HTTP 503 when downstream is unreachable so the UI correctly detects "down".
          */
         get: operations["reporting_health_reporting_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Data Status Health
+         * @description Health probe for deployment-api data-status domain.
+         */
+        get: operations["data_status_health_data_status_health_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2338,6 +2384,30 @@ export interface paths {
          *       Creates a single backtest record.
          */
         post: operations["create_backtest_execution_backtests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/execution/analysis/{execution_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Execution Analysis
+         * @description Get full execution analysis for a strategy run or order.
+         *
+         *     Returns the instruction chain, algo decisions at each step,
+         *     and resulting fills — the complete trace a trader needs to
+         *     understand what happened and why.
+         */
+        get: operations["get_execution_analysis_execution_analysis__execution_id__get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -2851,6 +2921,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/analytics/strategies/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Strategy Catalog
+         * @description Return the full strategy catalog from UAC STRATEGY_REGISTRY.
+         *
+         *     This powers the UI strategy family browser — traders can see every available
+         *     strategy type, its domain, family, and configurable parameters at a glance.
+         *     Data is sourced from the UAC StrategyRegistry singleton (SSOT).
+         */
+        get: operations["get_strategy_catalog_analytics_strategies_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/ml/model-families": {
         parameters: {
             query?: never;
@@ -3094,6 +3188,85 @@ export interface paths {
          *     Returns the current ML pipeline configuration used by training and inference services.
          */
         get: operations["get_ml_config_ml_config_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/ml/grid-configs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Grid Configs
+         * @description List saved ML training grid configurations.
+         */
+        get: operations["list_grid_configs_ml_grid_configs_get"];
+        put?: never;
+        /**
+         * Create Grid Config
+         * @description Create a new grid configuration.
+         *
+         *     Body must include ``name`` and at least one of ``instruments`` (CEFI/TRADFI)
+         *     or ``sports_families`` (SPORTS).  Feature groups default to all available
+         *     for the category when omitted.
+         */
+        post: operations["create_grid_config_ml_grid_configs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/ml/grid-configs/{config_name}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Grid Config
+         * @description Get a specific grid config by name.
+         */
+        get: operations["get_grid_config_ml_grid_configs__config_name__get"];
+        /**
+         * Update Grid Config
+         * @description Update an existing grid configuration.
+         */
+        put: operations["update_grid_config_ml_grid_configs__config_name__put"];
+        post?: never;
+        /**
+         * Delete Grid Config
+         * @description Delete a grid configuration.
+         */
+        delete: operations["delete_grid_config_ml_grid_configs__config_name__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/ml/feature-groups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Available Feature Groups
+         * @description Get available feature groups for a category.
+         *
+         *     Returns the list of feature group names that can be used in grid configs.
+         *     Groups are sourced from the FeatureGroupRegistry (SSOT in UTL).
+         */
+        get: operations["get_available_feature_groups_ml_feature_groups_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4277,6 +4450,171 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/data-status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Data Status
+         * @description Proxy to deployment-api GET /api/data-status.
+         */
+        get: operations["get_data_status_data_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/turbo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Data Status Turbo
+         * @description Proxy to deployment-api GET /api/data-status/turbo.
+         */
+        get: operations["get_data_status_turbo_data_status_turbo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/coverage-summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Coverage Summary
+         * @description Proxy to deployment-api GET /api/data-status/coverage-summary.
+         */
+        get: operations["get_coverage_summary_data_status_coverage_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/venue-filters": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Venue Filters
+         * @description Proxy to deployment-api GET /api/data-status/venue-filters.
+         */
+        get: operations["get_venue_filters_data_status_venue_filters_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/list-files": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Files
+         * @description Proxy to deployment-api GET /api/data-status/list-files.
+         */
+        get: operations["list_files_data_status_list_files_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/instruments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Instruments
+         * @description Proxy to deployment-api GET /api/data-status/instruments.
+         */
+        get: operations["get_instruments_data_status_instruments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/instrument-availability": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Instrument Availability
+         * @description Proxy to deployment-api GET /api/data-status/instrument-availability.
+         */
+        get: operations["get_instrument_availability_data_status_instrument_availability_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/data-status/pipeline-overview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Pipeline Overview
+         * @description Aggregate pipeline status across all services.
+         *
+         *     Returns completion percentages for each pipeline stage
+         *     (instruments, raw data, processed data, events).
+         *     In real mode, calls deployment-api /api/service-status/overview
+         *     and /api/data-status/turbo for each core service.
+         */
+        get: operations["get_pipeline_overview_data_status_pipeline_overview_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/users/organizations": {
         parameters: {
             query?: never;
@@ -4361,6 +4699,329 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/defi/basis/funding-matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Funding Matrix
+         * @description Coin x Venue funding rate matrix (annualised %, OI, 24h change).
+         */
+        get: operations["get_funding_matrix_defi_basis_funding_matrix_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/basis/lst-collateral": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Lst Collateral
+         * @description LST collateral utilisation per open basis position.
+         */
+        get: operations["get_lst_collateral_defi_basis_lst_collateral_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/basis/venue-allocation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Venue Allocation
+         * @description Cross-venue capital allocation for basis positions.
+         */
+        get: operations["get_venue_allocation_defi_basis_venue_allocation_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/basis/directions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Basis Directions
+         * @description Standard vs inverse basis direction per coin based on funding sign.
+         */
+        get: operations["get_basis_directions_defi_basis_directions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lending/rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Lending Rates
+         * @description Cross-protocol APY comparison for lending arb opportunities.
+         */
+        get: operations["get_lending_rates_defi_lending_rates_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lending/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Lending Positions
+         * @description Active lending arb positions with health factor monitoring.
+         */
+        get: operations["get_lending_positions_defi_lending_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lending/simulate-rate-impact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Simulate Rate Impact
+         * @description Simulate rate impact for a proposed deposit/borrow.
+         *
+         *     Uses a simplified utilization curve model: larger deposits compress
+         *     supply APY and increase borrow APY proportionally.
+         */
+        post: operations["simulate_rate_impact_defi_lending_simulate_rate_impact_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/liquidation/risk-heatmap": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Risk Heatmap
+         * @description Get liquidation risk heatmap — positions by asset x health factor range.
+         */
+        get: operations["get_risk_heatmap_defi_liquidation_risk_heatmap_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/liquidation/cascade-risk": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Cascade Risk
+         * @description Get current cascade risk indicator — correlated liquidation cluster analysis.
+         */
+        get: operations["get_cascade_risk_defi_liquidation_cascade_risk_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/liquidation/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Liquidation Events
+         * @description Get recent on-chain liquidation events.
+         */
+        get: operations["get_liquidation_events_defi_liquidation_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/liquidation/captured-positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Captured Positions
+         * @description Get captured positions from liquidation sniping.
+         */
+        get: operations["get_captured_positions_defi_liquidation_captured_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lp/position-range": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Position Range
+         * @description Get current LP position range and price data.
+         */
+        get: operations["get_position_range_defi_lp_position_range_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lp/impermanent-loss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Impermanent Loss
+         * @description Get impermanent loss time series (LP value vs HODL).
+         */
+        get: operations["get_impermanent_loss_defi_lp_impermanent_loss_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lp/rebalance-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Rebalance History
+         * @description Get LP rebalance event history.
+         */
+        get: operations["get_rebalance_history_defi_lp_rebalance_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lp/ml-confidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Ml Confidence
+         * @description Get current ML rebalance confidence and recommendation.
+         */
+        get: operations["get_ml_confidence_defi_lp_ml_confidence_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/defi/lp/fee-revenue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fee Revenue
+         * @description Get LP fee revenue accumulation (24h/7d/30d).
+         */
+        get: operations["get_fee_revenue_defi_lp_fee_revenue_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/derivatives/options-chain": {
         parameters: {
             query?: never;
@@ -4415,6 +5076,106 @@ export interface paths {
          * @description Get aggregated portfolio Greeks across options positions.
          */
         get: operations["get_portfolio_greeks_derivatives_portfolio_greeks_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/commodity/regime-state": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Regime State
+         * @description Current HMM regime state with confidence and transition metadata.
+         */
+        get: operations["get_regime_state_commodity_regime_state_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/commodity/factors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Factors
+         * @description Factor decomposition — 5 fundamental commodity factors with weights and values.
+         */
+        get: operations["get_factors_commodity_factors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/commodity/cot-positioning": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Cot Positioning
+         * @description CFTC COT positioning time series — speculative vs commercial net positions.
+         */
+        get: operations["get_cot_positioning_commodity_cot_positioning_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/commodity/regime-history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Regime History
+         * @description Regime transition history over last 90 days.
+         */
+        get: operations["get_regime_history_commodity_regime_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/commodity/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Commodity Positions
+         * @description Active commodity positions with regime-at-entry metadata.
+         */
+        get: operations["get_commodity_positions_commodity_positions_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -4555,6 +5316,107 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/unified-trading-api/events/calendar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Events Calendar
+         * @description Get upcoming economic events for the calendar view.
+         *
+         *     Returns a list of EconomicEventItem records sorted by scheduled_at.
+         *
+         *     Mock mode: seeded from seed_events.py.
+         *     Live mode (future): reads from GCS calendar pipeline output.
+         */
+        get: operations["get_events_calendar_events_calendar_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/events/predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Event Predictions
+         * @description Get ML-predicted market impact scenarios for upcoming events.
+         *
+         *     Returns a list of EventImpactPredictionItem records with three conditional
+         *     scenarios per event-instrument pair.
+         *
+         *     Mock mode: seeded from seed_events.py.
+         *     Live mode (future): reads from ML model inference output.
+         */
+        get: operations["get_event_predictions_events_predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/events/news": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Events News
+         * @description Get recent news feed items and macro announcements.
+         *
+         *     Returns a list of NewsFeedItemModel records sorted by published_at descending.
+         *
+         *     Mock mode: seeded from seed_events.py.
+         *     Live mode (future): reads from news aggregation pipeline.
+         */
+        get: operations["get_events_news_events_news_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/events/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Event Positions
+         * @description Get active positions taken based on event signals.
+         *
+         *     Returns a list of EventPositionItem records with P&L and phase data.
+         *
+         *     Mock mode: seeded from seed_events.py.
+         *     Live mode (future): reads from execution-service event position state.
+         */
+        get: operations["get_event_positions_events_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/unified-trading-api/chat/message": {
         parameters: {
             query?: never;
@@ -4599,6 +5461,331 @@ export interface paths {
          *     the user sends a message.
          */
         get: operations["chat_tier_chat_tier_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixtures
+         * @description List today's fixtures with current status, scores, odds.
+         */
+        get: operations["get_fixtures_api_sports_fixtures_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures/{fixture_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture Detail
+         * @description Get single fixture detail with full stats, events, lineups.
+         */
+        get: operations["get_fixture_detail_api_sports_fixtures__fixture_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures/{fixture_id}/odds": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture Odds History
+         * @description Get odds history for a fixture across bookmakers (time series).
+         */
+        get: operations["get_fixture_odds_history_api_sports_fixtures__fixture_id__odds_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/leagues": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Leagues
+         * @description List active leagues with fixture counts.
+         */
+        get: operations["get_leagues_api_sports_leagues_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/standings/{league_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Standings
+         * @description Get league standings table.
+         */
+        get: operations["get_standings_api_sports_standings__league_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures/{fixture_id}/predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture Predictions
+         * @description Get model predictions for a fixture.
+         */
+        get: operations["get_fixture_predictions_api_sports_fixtures__fixture_id__predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures/{fixture_id}/lineups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture Lineups
+         * @description Get confirmed lineups for a fixture.
+         */
+        get: operations["get_fixture_lineups_api_sports_fixtures__fixture_id__lineups_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures/{fixture_id}/results": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture Results
+         * @description Get post-match results summary with predicted vs actual comparison.
+         */
+        get: operations["get_fixture_results_api_sports_fixtures__fixture_id__results_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture History
+         * @description Get historical fixtures with results and P&L summary.
+         */
+        get: operations["get_fixture_history_api_sports_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/api/sports/fixtures/{fixture_id}/injuries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Fixture Injuries
+         * @description Get injury/absence list for a fixture's teams.
+         */
+        get: operations["get_fixture_injuries_api_sports_fixtures__fixture_id__injuries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/stream/positions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream Positions */
+        get: operations["stream_positions_stream_positions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/stream/signals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream Signals */
+        get: operations["stream_signals_stream_signals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/stream/risk-alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream Risk Alerts */
+        get: operations["stream_risk_alerts_stream_risk_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/stream/deploy-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream Deploy Events */
+        get: operations["stream_deploy_events_stream_deploy_events_get__2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/stream/predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream Predictions */
+        get: operations["stream_predictions_stream_predictions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/stream/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream Reports */
+        get: operations["stream_reports_stream_reports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/unified-trading-api/protocols": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Protocols
+         * @description Return supported protocols per domain.
+         *
+         *     Clients use this to discover whether a domain supports REST, WebSocket,
+         *     SSE, or PubSub and adapt their connection strategy accordingly.
+         */
+        get: operations["get_protocols_protocols_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -6004,6 +7191,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/client-reporting-api/api/v1/exports/daily-equity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Daily Equity Csv
+         * @description Download daily equity curve with TWR metrics as CSV.
+         *
+         *     Includes: date, equity, TWR index, drawdown %, daily return, cumulative transfers.
+         *     Uses transfer-adjusted metrics from canonical transfer store.
+         */
+        get: operations["export_daily_equity_csv_api_v1_exports_daily_equity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/exports/transfers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Transfers Csv
+         * @description Download canonical transfer history as CSV.
+         */
+        get: operations["export_transfers_csv_api_v1_exports_transfers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/client-reporting-api/api/v1/exports/tear-sheet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Tear Sheet
+         * @description Generate and return an institutional tear sheet as HTML.
+         *
+         *     Includes: equity curves, monthly returns, Sharpe/Sortino/Calmar,
+         *     drawdown series, rolling metrics, CSV download buttons.
+         */
+        get: operations["export_tear_sheet_api_v1_exports_tear_sheet_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/client-reporting-api/api/v1/tax/annual-summary": {
         parameters: {
             query?: never;
@@ -6355,6 +7608,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/client-reporting-api/api/v1/emergency/close-all/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Close All Positions
+         * @description Emergency close-all positions for a client.
+         *
+         *     - Guard: returns 403 if the client does not have trading keys.
+         *     - dry_run=true (default): lists positions that WOULD be closed.
+         *     - dry_run=false: submits market close orders via CCXT.
+         */
+        post: operations["close_all_positions_api_v1_emergency_close_all__client_id__post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/client-reporting-api/metrics": {
         parameters: {
             query?: never;
@@ -6612,6 +7889,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/execution-service/preview/unwind": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Preview cost of closing or reducing positions
+         * @description Read-only cost estimation endpoint. Returns gas, slippage, exchange fee, and bridge fee breakdown for unwinding positions. No orders are placed. Live-mode only.
+         */
+        post: operations["preview_unwind_preview_unwind_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/execution-service/kill-switch/activate": {
         parameters: {
             query?: never;
@@ -6816,6 +8113,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/execution-service/circuit-breakers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Circuit Breaker States
+         * @description Per-venue circuit breaker state for UI dashboard.
+         *
+         *     Returns a list of all known circuit breaker states including:
+         *     venue, state, consecutive failures, cooldown, and backoff cycle.
+         */
+        get: operations["get_circuit_breaker_states_circuit_breakers_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/execution-service/transfers/active": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Active Transfers
+         * @description Active in-flight transfers for UI Transfer Monitor.
+         *
+         *     Returns the list of currently tracked in-flight transfers.
+         */
+        get: operations["get_active_transfers_transfers_active_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/risk-and-exposure-service/health": {
         parameters: {
             query?: never;
@@ -6842,6 +8184,23 @@ export interface paths {
         };
         /** Readiness */
         get: operations["readiness_readiness_get__5"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/risk-and-exposure-service/stream/risk_alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream */
+        get: operations["stream_stream_risk_alerts_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -7399,6 +8758,77 @@ export interface paths {
         get: operations["get_trade_trades__fill_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/reconciliation/drift/portfolio-snapshot": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Portfolio Snapshot
+         * @description Get the latest portfolio reconciliation snapshot.
+         *
+         *     Returns the most recent PortfolioReconciliationSnapshot with:
+         *     - total_equity_usd, allocated/unallocated equity
+         *     - per-strategy drift metrics (delta + equity dimensions)
+         *     - per-share-class aggregated summaries
+         *     - worst drift KPI for quick alerting
+         */
+        get: operations["get_portfolio_snapshot_reconciliation_drift_portfolio_snapshot_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/reconciliation/drift/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Drift History
+         * @description Get recent drift metric snapshots for charting.
+         *
+         *     Returns most recent N PortfolioReconciliationSnapshots.
+         */
+        get: operations["get_drift_history_reconciliation_drift_history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/position-balance-monitor-service/reconciliation/drift/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Evaluate Drift
+         * @description Trigger an immediate drift evaluation (manual refresh).
+         *
+         *     Uses current strategy targets and actual positions to compute drift.
+         *     In mock mode, uses built-in mock data.
+         */
+        post: operations["evaluate_drift_reconciliation_drift_evaluate_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -7988,6 +9418,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/deployment-service/api/ml/experiments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Experiments
+         * @description List experiment directories from the ml-training-artifacts GCS bucket.
+         */
+        get: operations["list_experiments_api_ml_experiments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deployment-service/api/ml/experiments/{experiment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Experiment
+         * @description Get experiment details by reading metrics.json from GCS.
+         */
+        get: operations["get_experiment_api_ml_experiments__experiment_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deployment-service/api/ml/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Models
+         * @description List models from the ml-models-store GCS bucket model_registry/ prefix.
+         */
+        get: operations["list_models_api_ml_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/deployment-service/api/ml/models/{model_id}/metadata": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Model Metadata
+         * @description Read metadata.json for a specific model from the ml-models-store bucket.
+         *
+         *     If training_period is not specified, reads the manifest to find the latest period.
+         */
+        get: operations["get_model_metadata_api_ml_models__model_id__metadata_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/market-tick-data-service/health": {
         parameters: {
             query?: never;
@@ -8082,6 +9594,23 @@ export interface paths {
         };
         /** Readiness */
         get: operations["readiness_readiness_get__9"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/strategy-service/stream/signals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream */
+        get: operations["stream_stream_signals_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -8328,6 +9857,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/features-sports-service/stream/feature_ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream */
+        get: operations["stream_stream_feature_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/features-cross-instrument-service/health": {
         parameters: {
             query?: never;
@@ -8490,6 +10036,23 @@ export interface paths {
         };
         /** Readiness */
         get: operations["readiness_readiness_get__21"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ml-inference-service/stream/predictions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Stream */
+        get: operations["stream_stream_predictions_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -9363,6 +10926,15 @@ export interface components {
             /** Pool Address */
             pool_address?: string | null;
         };
+        /** SimulateRateImpactRequest */
+        SimulateRateImpactRequest: {
+            /** Protocol */
+            protocol: string;
+            /** Token */
+            token: string;
+            /** Amount Usd */
+            amount_usd: number;
+        };
         /**
          * AnnualTaxSummary
          * @description Aggregated tax summary for a given client and tax year.
@@ -9382,6 +10954,62 @@ export interface components {
             currency: string;
             /** Lots */
             lots: components["schemas"]["TaxLot"][];
+        };
+        /**
+         * CloseAllPositionResult
+         * @description Result for a single position in the close-all response.
+         */
+        CloseAllPositionResult: {
+            /** Instrument */
+            instrument: string;
+            /** Side */
+            side: string;
+            /** Quantity */
+            quantity: string;
+            /** Order Id */
+            order_id?: string | null;
+            /** Status */
+            status: string;
+            /** Error */
+            error?: string | null;
+        };
+        /**
+         * CloseAllRequest
+         * @description Request body for emergency close-all.
+         */
+        CloseAllRequest: {
+            /**
+             * Rationale
+             * @description Reason for emergency close - audit trail
+             */
+            rationale: string;
+            /**
+             * Dry Run
+             * @description If true, preview only - no orders placed
+             * @default true
+             */
+            dry_run: boolean;
+        };
+        /**
+         * CloseAllResponse
+         * @description Response body for emergency close-all.
+         */
+        CloseAllResponse: {
+            /** Client Id */
+            client_id: string;
+            /** Dry Run */
+            dry_run: boolean;
+            /** Positions Affected */
+            positions_affected: number;
+            /** Results */
+            results: components["schemas"]["CloseAllPositionResult"][];
+            /** Rationale */
+            rationale: string;
+            /**
+             * Timestamp
+             * Format: date-time
+             */
+            timestamp: string;
         };
         /** GenerateInvoiceRequest */
         GenerateInvoiceRequest: {
@@ -9758,6 +11386,210 @@ export interface components {
              * @description Error message if failed
              */
             error?: string | null;
+        };
+        /**
+         * UnwindPreviewRequestBody
+         * @description FastAPI request body for POST /preview/unwind.
+         * @example {
+         *       "action": "CLOSE",
+         *       "execution_style": "TWAP",
+         *       "strategy_id": "defi_yield_arb",
+         *       "twap_duration_minutes": 15
+         *     }
+         */
+        UnwindPreviewRequestBody: {
+            /**
+             * Action
+             * @description CLOSE (full position close) or REDUCE (partial unwind)
+             */
+            action: string;
+            /**
+             * Strategy Id
+             * @description Target strategy ID. None = all strategies (firm-wide)
+             */
+            strategy_id?: string | null;
+            /**
+             * Reduce Pct
+             * @description Percentage to reduce (1-100). Required when action=REDUCE
+             */
+            reduce_pct?: number | string | null;
+            /**
+             * Execution Style
+             * @description MARKET, TWAP, or ATOMIC_DEFI
+             * @default TWAP
+             */
+            execution_style: string;
+            /**
+             * Twap Duration Minutes
+             * @description TWAP window in minutes (only when execution_style=TWAP)
+             * @default 15
+             */
+            twap_duration_minutes: number;
+        };
+        /**
+         * UnwindPreviewResponseBody
+         * @description Full cost decomposition for a position close/reduce.
+         * @example {
+         *       "action": "CLOSE",
+         *       "confidence": "MEDIUM",
+         *       "estimated_bridge_fees_usd": "0.00",
+         *       "estimated_duration_minutes": "15",
+         *       "estimated_exchange_fees_usd": "7.50",
+         *       "estimated_gas_usd": "3.15",
+         *       "estimated_slippage_bps": "5.00",
+         *       "estimated_slippage_usd": "12.50",
+         *       "execution_steps": [],
+         *       "market_impact_estimate_bps": "0",
+         *       "notes": [],
+         *       "notional_to_close_usd": "25000.00",
+         *       "positions_affected": 4,
+         *       "strategy_id": "defi_yield_arb",
+         *       "timestamp": "2026-04-16T12:00:00Z",
+         *       "total_estimated_cost_bps": "9.26",
+         *       "total_estimated_cost_usd": "23.15"
+         *     }
+         */
+        UnwindPreviewResponseBody: {
+            /**
+             * Action
+             * @description CLOSE or REDUCE
+             */
+            action: string;
+            /**
+             * Strategy Id
+             * @description Target strategy ID
+             */
+            strategy_id?: string | null;
+            /**
+             * Positions Affected
+             * @description Number of positions in scope
+             */
+            positions_affected: number;
+            /**
+             * Estimated Slippage Usd
+             * @description Total slippage estimate (USD)
+             */
+            estimated_slippage_usd: string;
+            /**
+             * Estimated Slippage Bps
+             * @description Total slippage (bps of notional)
+             */
+            estimated_slippage_bps: string;
+            /**
+             * Estimated Gas Usd
+             * @description Total gas cost (USD)
+             */
+            estimated_gas_usd: string;
+            /**
+             * Estimated Exchange Fees Usd
+             * @description Exchange/protocol fees (USD)
+             */
+            estimated_exchange_fees_usd: string;
+            /**
+             * Estimated Bridge Fees Usd
+             * @description Cross-chain bridge fees (USD)
+             */
+            estimated_bridge_fees_usd: string;
+            /**
+             * Total Estimated Cost Usd
+             * @description Grand total cost (USD)
+             */
+            total_estimated_cost_usd: string;
+            /**
+             * Total Estimated Cost Bps
+             * @description Grand total as bps of notional
+             */
+            total_estimated_cost_bps: string;
+            /**
+             * Notional To Close Usd
+             * @description Notional being closed (USD)
+             */
+            notional_to_close_usd: string;
+            /**
+             * Estimated Duration Minutes
+             * @description Estimated time to complete
+             */
+            estimated_duration_minutes: string;
+            /**
+             * Execution Steps
+             * @description Ordered execution legs
+             */
+            execution_steps?: components["schemas"]["UnwindStepResponse"][];
+            /**
+             * Market Impact Estimate Bps
+             * @description Permanent market impact (bps)
+             * @default 0
+             */
+            market_impact_estimate_bps: string;
+            /**
+             * Confidence
+             * @description HIGH, MEDIUM, or LOW
+             * @default MEDIUM
+             */
+            confidence: string;
+            /**
+             * Timestamp
+             * @description ISO timestamp of preview generation
+             */
+            timestamp?: string | null;
+            /**
+             * Notes
+             * @description Human-readable notes
+             */
+            notes?: string[];
+        };
+        /**
+         * UnwindStepResponse
+         * @description One leg of the unwind execution plan.
+         */
+        UnwindStepResponse: {
+            /**
+             * Instrument Id
+             * @description Canonical instrument ID
+             */
+            instrument_id: string;
+            /**
+             * Venue
+             * @description Execution venue
+             */
+            venue: string;
+            /**
+             * Side
+             * @description Direction: sell for longs, buy for shorts
+             */
+            side: string;
+            /**
+             * Quantity
+             * @description Quantity to close
+             */
+            quantity: string;
+            /**
+             * Estimated Price
+             * @description Expected execution price
+             */
+            estimated_price: string;
+            /**
+             * Estimated Slippage Bps
+             * @description Expected slippage (bps)
+             */
+            estimated_slippage_bps: string;
+            /**
+             * Operation Type
+             * @description Operation: market_order, swap, repay, withdraw, unstake, bridge
+             */
+            operation_type: string;
+            /**
+             * Chain
+             * @description Chain name for DeFi ops
+             * @default
+             */
+            chain: string;
+            /**
+             * Gas Cost Usd
+             * @description Gas cost for this step (USD)
+             * @default 0
+             */
+            gas_cost_usd: string;
         };
         /** AlertContextData */
         AlertContextData: {
@@ -10737,6 +12569,38 @@ export interface components {
             region: string;
             /** Target Revision */
             target_revision?: string | null;
+        };
+        /** ExperimentDetail */
+        ExperimentDetail: {
+            /** Experiment Id */
+            experiment_id: string;
+            /** Metrics */
+            metrics: {
+                [key: string]: unknown;
+            };
+        };
+        /** ExperimentSummary */
+        ExperimentSummary: {
+            /** Experiment Id */
+            experiment_id: string;
+            /** Has Metrics */
+            has_metrics: boolean;
+        };
+        /** ModelMetadataResponse */
+        ModelMetadataResponse: {
+            /** Model Id */
+            model_id: string;
+            /** Metadata */
+            metadata: {
+                [key: string]: unknown;
+            };
+        };
+        /** ModelSummary */
+        ModelSummary: {
+            /** Model Id */
+            model_id: string;
+            /** Latest Training Period */
+            latest_training_period?: string | null;
         };
         /** QuotaAcquireRequest */
         QuotaAcquireRequest: {
@@ -13823,6 +15687,38 @@ export interface operations {
             };
         };
     };
+    stream_deploy_events_stream_deploy_events_get: {
+        parameters: {
+            query: {
+                /** @description Deployment ID to subscribe to */
+                deployment_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_health_get__2: {
         parameters: {
             query?: never;
@@ -13890,6 +15786,26 @@ export interface operations {
         };
     };
     reporting_health_reporting_health_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    data_status_health_data_status_health_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -14099,6 +16015,14 @@ export interface operations {
                 mode?: string;
                 venue?: string;
                 status?: string;
+                /** @description Filter by client ID */
+                client_id?: string;
+                /** @description Filter by category (CEFI, DEFI, TRADFI, SPORTS) */
+                category?: string;
+                /** @description Filter by strategy family */
+                strategy_family?: string;
+                /** @description Filter by account ID */
+                account_id?: string;
                 /** @description T+1 reconciliation date for batch mode */
                 as_of?: string;
                 page?: number;
@@ -14175,6 +16099,14 @@ export interface operations {
                 mode?: string;
                 venue?: string;
                 order_id?: string;
+                /** @description Filter by client ID */
+                client_id?: string;
+                /** @description Filter by category (CEFI, DEFI, TRADFI, SPORTS) */
+                category?: string;
+                /** @description Filter by strategy family */
+                strategy_family?: string;
+                /** @description Filter by account ID */
+                account_id?: string;
                 /** @description T+1 reconciliation date for batch mode */
                 as_of?: string;
                 page?: number;
@@ -14336,6 +16268,39 @@ export interface operations {
                 };
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_execution_analysis_execution_analysis__execution_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                execution_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {
@@ -14579,6 +16544,16 @@ export interface operations {
             query?: {
                 venue?: string;
                 strategy_id?: string;
+                /** @description Filter by client ID */
+                client_id?: string;
+                /** @description Filter by category (CEFI, DEFI, TRADFI, SPORTS) */
+                category?: string;
+                /** @description Filter by strategy family */
+                strategy_family?: string;
+                /** @description Filter by account ID */
+                account_id?: string;
+                /** @description Filter by chain (e.g. ETHEREUM, SOLANA) */
+                chain?: string;
                 mode?: string;
                 /** @description T+1 reconciliation date for batch mode */
                 as_of?: string;
@@ -14650,6 +16625,12 @@ export interface operations {
         parameters: {
             query?: {
                 venue?: string;
+                /** @description Filter by client ID */
+                client_id?: string;
+                /** @description Filter by account ID */
+                account_id?: string;
+                /** @description Filter by chain (e.g. ETHEREUM, SOLANA) */
+                chain?: string;
                 mode?: string;
                 page?: number;
                 page_size?: number;
@@ -14687,6 +16668,8 @@ export interface operations {
             query?: {
                 mode?: string;
                 venue?: string;
+                /** @description Filter PnL rows by strategy ID */
+                strategy_id?: string;
                 period?: string;
                 /** @description T+1 reconciliation date for batch mode */
                 as_of?: string;
@@ -15273,6 +17256,40 @@ export interface operations {
             };
         };
     };
+    get_strategy_catalog_analytics_strategies_catalog_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by domain: defi, cefi, tradfi, sports */
+                domain?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_model_families_ml_model_families_get: {
         parameters: {
             query?: never;
@@ -15667,6 +17684,197 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    list_grid_configs_ml_grid_configs_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by category: CEFI, TRADFI, SPORTS */
+                category?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_grid_config_ml_grid_configs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_grid_config_ml_grid_configs__config_name__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                config_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_grid_config_ml_grid_configs__config_name__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                config_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_grid_config_ml_grid_configs__config_name__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                config_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_available_feature_groups_ml_feature_groups_get: {
+        parameters: {
+            query?: {
+                /** @description Category: CEFI, TRADFI, SPORTS, DEFI */
+                category?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -16655,6 +18863,9 @@ export interface operations {
             query?: {
                 confidence?: number;
                 horizon?: string;
+                mode?: string;
+                /** @description T+1 reconciliation date for batch mode */
+                as_of?: string;
             };
             header?: never;
             path?: never;
@@ -16688,6 +18899,9 @@ export interface operations {
         parameters: {
             query?: {
                 instrument?: string;
+                mode?: string;
+                /** @description T+1 reconciliation date for batch mode */
+                as_of?: string;
                 page?: number;
                 page_size?: number;
             };
@@ -16721,7 +18935,11 @@ export interface operations {
     };
     get_stress_tests_risk_stress_get: {
         parameters: {
-            query?: never;
+            query?: {
+                mode?: string;
+                /** @description T+1 reconciliation date for batch mode */
+                as_of?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -16737,6 +18955,15 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -17475,6 +19702,288 @@ export interface operations {
             };
         };
     };
+    get_data_status_data_status_get: {
+        parameters: {
+            query: {
+                /** @description Service name */
+                service: string;
+                /** @description Start date (YYYY-MM-DD) */
+                start_date: string;
+                /** @description End date (YYYY-MM-DD) */
+                end_date: string;
+                category?: string | null;
+                venue?: string | null;
+                show_missing?: boolean;
+                mode?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_data_status_turbo_data_status_turbo_get: {
+        parameters: {
+            query: {
+                service: string;
+                start_date: string;
+                end_date: string;
+                category?: string | null;
+                venue?: string | null;
+                sub_dimension?: string | null;
+                mode?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_coverage_summary_data_status_coverage_summary_get: {
+        parameters: {
+            query: {
+                service: string;
+                start_date: string;
+                end_date: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_venue_filters_data_status_venue_filters_get: {
+        parameters: {
+            query: {
+                service: string;
+                category?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_files_data_status_list_files_get: {
+        parameters: {
+            query: {
+                service: string;
+                category?: string | null;
+                venue?: string | null;
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_instruments_data_status_instruments_get: {
+        parameters: {
+            query?: {
+                category?: string | null;
+                venue?: string | null;
+                instrument_type?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_instrument_availability_data_status_instrument_availability_get: {
+        parameters: {
+            query: {
+                venue: string;
+                instrument_type: string;
+                instrument: string;
+                start_date?: string | null;
+                end_date?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_pipeline_overview_data_status_pipeline_overview_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     get_organizations_users_organizations_get: {
         parameters: {
             query?: never;
@@ -17576,6 +20085,429 @@ export interface operations {
             };
         };
     };
+    get_funding_matrix_defi_basis_funding_matrix_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_lst_collateral_defi_basis_lst_collateral_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_venue_allocation_defi_basis_venue_allocation_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_basis_directions_defi_basis_directions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_lending_rates_defi_lending_rates_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_lending_positions_defi_lending_positions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    simulate_rate_impact_defi_lending_simulate_rate_impact_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimulateRateImpactRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_risk_heatmap_defi_liquidation_risk_heatmap_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                /** @description Reconciliation date for batch mode */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_cascade_risk_defi_liquidation_cascade_risk_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                /** @description Reconciliation date for batch mode */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_liquidation_events_defi_liquidation_events_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                /** @description Filter by protocol (e.g. AAVE_V3) */
+                protocol?: string;
+                /** @description Filter by chain (e.g. ETHEREUM) */
+                chain?: string;
+                /** @description Reconciliation date for batch mode */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_captured_positions_defi_liquidation_captured_positions_get: {
+        parameters: {
+            query?: {
+                mode?: string;
+                /** @description Filter by status (ACTIVE, CLOSED, PENDING_EXIT) */
+                status?: string;
+                /** @description Reconciliation date for batch mode */
+                as_of?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_position_range_defi_lp_position_range_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_impermanent_loss_defi_lp_impermanent_loss_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_rebalance_history_defi_lp_rebalance_history_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_ml_confidence_defi_lp_ml_confidence_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_fee_revenue_defi_lp_fee_revenue_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     get_options_chain_derivatives_options_chain_get: {
         parameters: {
             query?: {
@@ -17644,6 +20576,116 @@ export interface operations {
         };
     };
     get_portfolio_greeks_derivatives_portfolio_greeks_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_regime_state_commodity_regime_state_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_factors_commodity_factors_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_cot_positioning_commodity_cot_positioning_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_regime_history_commodity_regime_history_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_commodity_positions_commodity_positions_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -17850,6 +20892,152 @@ export interface operations {
             };
         };
     };
+    get_events_calendar_events_calendar_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by impact level: HIGH | MEDIUM | LOW */
+                impact?: string | null;
+                /** @description Filter by region: US | EU | JP */
+                region?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_event_predictions_events_predictions_get: {
+        parameters: {
+            query?: {
+                /** @description Filter predictions by event ID */
+                event_id?: string | null;
+                /** @description Filter by instrument (e.g. BTC-USD) */
+                instrument?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_events_news_events_news_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by sentiment: bullish | bearish | neutral */
+                sentiment?: string | null;
+                /** @description Filter by category (e.g. macro, on-chain, governance) */
+                category?: string | null;
+                /** @description Max items to return */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_event_positions_events_positions_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by phase: PRE_EVENT | POST_EVENT */
+                phase?: string | null;
+                /** @description Filter positions by event ID */
+                event_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     chat_message_chat_message_post: {
         parameters: {
             query?: never;
@@ -17900,6 +21088,543 @@ export interface operations {
                 content: {
                     "application/json": {
                         [key: string]: string;
+                    };
+                };
+            };
+        };
+    };
+    get_fixtures_api_sports_fixtures_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by league_id */
+                league?: string;
+                /** @description Filter by status (NS, 1H, HT, 2H, FT) */
+                status?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_detail_api_sports_fixtures__fixture_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fixture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_odds_history_api_sports_fixtures__fixture_id__odds_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fixture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_leagues_api_sports_leagues_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_standings_api_sports_standings__league_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                league_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_predictions_api_sports_fixtures__fixture_id__predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fixture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_lineups_api_sports_fixtures__fixture_id__lineups_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fixture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_results_api_sports_fixtures__fixture_id__results_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fixture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_history_api_sports_history_get: {
+        parameters: {
+            query?: {
+                /** @description Filter by league */
+                league?: string;
+                /** @description Filter by date (YYYY-MM-DD) */
+                date?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_fixture_injuries_api_sports_fixtures__fixture_id__injuries_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                fixture_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_positions_stream_positions_get: {
+        parameters: {
+            query?: {
+                _key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_signals_stream_signals_get: {
+        parameters: {
+            query?: {
+                _key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_risk_alerts_stream_risk_alerts_get: {
+        parameters: {
+            query?: {
+                _key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_deploy_events_stream_deploy_events_get__2: {
+        parameters: {
+            query?: {
+                _key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_predictions_stream_predictions_get: {
+        parameters: {
+            query?: {
+                _key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_reports_stream_reports_get: {
+        parameters: {
+            query?: {
+                _key?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_protocols_protocols_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string[];
                     };
                 };
             };
@@ -20223,6 +23948,113 @@ export interface operations {
             };
         };
     };
+    export_daily_equity_csv_api_v1_exports_daily_equity_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_transfers_csv_api_v1_exports_transfers_get: {
+        parameters: {
+            query: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_tear_sheet_api_v1_exports_tear_sheet_get: {
+        parameters: {
+            query: {
+                /** @description Comma-separated client IDs (e.g. 'PR,ODUM_PROP') */
+                client_ids: string;
+                /** @description Report title */
+                title?: string;
+            };
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_annual_tax_summary_api_v1_tax_annual_summary_get: {
         parameters: {
             query: {
@@ -20857,6 +24689,45 @@ export interface operations {
             };
         };
     };
+    close_all_positions_api_v1_emergency_close_all__client_id__post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+                "x-service-token"?: string | null;
+            };
+            path: {
+                /** @description Client identifier */
+                client_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CloseAllRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CloseAllResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     metrics_metrics_get: {
         parameters: {
             query?: never;
@@ -21167,6 +25038,39 @@ export interface operations {
             };
         };
     };
+    preview_unwind_preview_unwind_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnwindPreviewRequestBody"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnwindPreviewResponseBody"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     activate_kill_switch_kill_switch_activate_post: {
         parameters: {
             query?: {
@@ -21427,6 +25331,50 @@ export interface operations {
             };
         };
     };
+    get_circuit_breaker_states_circuit_breakers_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_active_transfers_transfers_active_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
     health_health_get__6: {
         parameters: {
             query?: never;
@@ -21464,6 +25412,24 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+        };
+    };
+    stream_stream_risk_alerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -22315,6 +26281,84 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_portfolio_snapshot_reconciliation_drift_portfolio_snapshot_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_drift_history_reconciliation_drift_history_get: {
+        parameters: {
+            query?: {
+                /** @description Max snapshots to return */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    evaluate_drift_reconciliation_drift_evaluate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };
@@ -23341,6 +27385,140 @@ export interface operations {
             };
         };
     };
+    list_experiments_api_ml_experiments_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperimentSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_experiment_api_ml_experiments__experiment_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                "x-service-token"?: string | null;
+            };
+            path: {
+                experiment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExperimentDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_models_api_ml_models_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: {
+                "x-service-token"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_model_metadata_api_ml_models__model_id__metadata_get: {
+        parameters: {
+            query?: {
+                training_period?: string | null;
+            };
+            header?: {
+                "x-service-token"?: string | null;
+            };
+            path: {
+                model_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelMetadataResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_health_get__8: {
         parameters: {
             query?: never;
@@ -23458,6 +27636,24 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+        };
+    };
+    stream_stream_signals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -23741,6 +27937,24 @@ export interface operations {
             };
         };
     };
+    stream_stream_feature_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     health_health_get__18: {
         parameters: {
             query?: never;
@@ -23938,6 +28152,24 @@ export interface operations {
                 content: {
                     "application/json": unknown;
                 };
+            };
+        };
+    };
+    stream_stream_predictions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

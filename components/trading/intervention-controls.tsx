@@ -17,6 +17,8 @@ import { cn } from "@/lib/utils";
 import { AlertOctagon, CheckCircle2, Pause, Play, RefreshCw, Shield, TrendingDown } from "lucide-react";
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { CostPreviewCard } from "@/components/trading/cost-preview-card";
+import { useUnwindPreview } from "@/hooks/api/use-unwind-preview";
 
 interface InterventionControlsProps {
   scope: {
@@ -43,6 +45,17 @@ export function InterventionControls({
   const [showReduceDialog, setShowReduceDialog] = React.useState(false);
   const [showFlattenDialog, setShowFlattenDialog] = React.useState(false);
   const [reducePercent, setReducePercent] = React.useState(50);
+
+  const { data: costPreview, isLoading: isCostLoading } = useUnwindPreview(
+    showReduceDialog
+      ? {
+          action: "reduce",
+          reduce_pct: reducePercent,
+          execution_style: "TWAP",
+          total_exposure: scope.totalExposure,
+        }
+      : null,
+  );
   const [flattenConfig, setFlattenConfig] = React.useState<"aggressive" | "conservative">("conservative");
   const [isPaused, setIsPaused] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
@@ -202,6 +215,18 @@ export function InterventionControls({
                 </span>
               </div>
             </div>
+            {/* Cost Preview */}
+            {isCostLoading && (
+              <div className="p-3 bg-muted/50 rounded-lg border border-border text-xs text-muted-foreground">
+                Loading cost estimate...
+              </div>
+            )}
+            {costPreview && (
+              <CostPreviewCard
+                cost={costPreview}
+                label={`Estimated Cost to Reduce by ${reducePercent}%`}
+              />
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowReduceDialog(false)}>

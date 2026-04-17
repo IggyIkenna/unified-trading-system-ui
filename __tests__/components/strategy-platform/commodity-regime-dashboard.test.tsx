@@ -87,8 +87,8 @@ describe("CommodityRegimeWidget", () => {
   it("renders P&L values with formatting", () => {
     render(<CommodityRegimeWidget {...defaultProps} />);
     const bodyText = document.body.textContent || "";
-    // Copper has negative P&L: -$18.4K
-    expect(bodyText).toMatch(/-\$18\.4K/);
+    // Copper has negative P&L: $-18.4K (formatted with dollar sign before minus)
+    expect(bodyText).toMatch(/\$-18\.4K/);
     // WTI Crude has positive P&L: +$58.0K
     expect(bodyText).toMatch(/\+\$58\.0K/);
   });

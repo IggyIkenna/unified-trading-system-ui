@@ -18,8 +18,8 @@ set -euo pipefail
 #              Zero dependencies. For offline demos and screenshots.
 #              Run `bash scripts/static-mock-server.sh --build-only` first if out/ is stale.
 #   T0 = UI-only. In-browser mock. No Python processes.
-#   T1 = UI + unified-trading-api + auth-api + client-reporting-api.
-#        API uses MockStateStore. No downstream service processes.
+#   T1 = UI + unified-trading-api + client-reporting-api.
+#        API uses MockStateStore. Auth is Firebase (VITE_SKIP_AUTH in mock).
 #   T2 = T1 + all downstream service processes (full fleet).
 #        Each service in mock mode. API gateway fans out to service URLs.
 #
@@ -73,8 +73,8 @@ stop_all() {
     fi
     rm -f "$pidfile"
   done
-  # Also kill anything holding our ports
-  for port in 3000 3100 8030 8200 8014; do
+  # Also kill anything holding our ports (Tier 1 + Tier 2)
+  for port in 3000 3100 8030 8014 8018 8019 8020 8021 8022 8023 8024 8025; do
     local holders
     holders=$(lsof -ti ":$port" 2>/dev/null || true)
     if [ -n "$holders" ]; then
@@ -109,7 +109,7 @@ show_status() {
 
   echo ""
   echo "═══ Port Check ═══"
-  for port in 3000 3100 8030 8200 8014; do
+  for port in 3000 3100 8030 8014 8018 8019 8020 8021 8022 8023 8024 8025; do
     local result
     result=$(lsof -i ":$port" -sTCP:LISTEN 2>/dev/null | tail -1)
     if [ -n "$result" ]; then
@@ -126,6 +126,12 @@ start_process() {
   shift 2
   local cmd=("$@")
 
+  if [ ! -d "$dir" ]; then
+    echo "  ERROR: $name — repo not found: $dir"
+    echo "  Required repos must exist at the workspace root."
+    exit 1
+  fi
+
   echo "  Starting $name..."
   cd "$dir"
   "${cmd[@]}" > "$LOG_DIR/$name.log" 2>&1 &
@@ -138,7 +144,7 @@ start_process() {
 wait_for_port() {
   local port="$1"
   local name="$2"
-  local max_wait=30
+  local max_wait=60
   local i=0
   while [ $i -lt $max_wait ]; do
     if lsof -i ":$port" -sTCP:LISTEN >/dev/null 2>&1; then
@@ -213,10 +219,7 @@ if [ "$TIER" = "1" ] || [ "$TIER" = "2" ]; then
     .venv/bin/python -m uvicorn "unified_trading_api.main:create_app" \
     --factory --host 0.0.0.0 --port 8030
 
-  # auth-api (port 8200)
-  start_process "auth-api" "$WORKSPACE/auth-api" \
-    env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local WORKFLOW_EXECUTION_ENABLED=false \
-    .venv/bin/python -m uvicorn auth_api.app:app --host 0.0.0.0 --port 8200
+  # Auth is Firebase-based (VITE_SKIP_AUTH=true in mock mode) — no auth-api process.
 
   # client-reporting-api (port 8014)
   start_process "client-reporting-api" "$WORKSPACE/client-reporting-api" \
@@ -226,7 +229,6 @@ if [ "$TIER" = "1" ] || [ "$TIER" = "2" ]; then
   echo ""
   echo "  Waiting for APIs..."
   wait_for_port 8030 "unified-trading-api"
-  wait_for_port 8200 "auth-api"
   wait_for_port 8014 "client-reporting-api"
 fi
 
@@ -234,19 +236,84 @@ fi
 
 if [ "$TIER" = "2" ]; then
   echo ""
-  echo "[T2] Starting downstream services..."
-  echo "  ⚠️  Tier 2 (full fleet) requires LiveDomainService wiring in the API gateway."
-  echo "  ⚠️  This is Phase 9 in the plan — not yet implemented."
-  echo "  ⚠️  Running at Tier 1 topology (API uses MockStateStore)."
+  echo "[T2] Starting downstream services (mock mode)..."
+  echo "  Port registry: unified-trading-pm/scripts/dev/ui-api-mapping.json"
   echo ""
-  # TODO: When LiveDomainService is wired, start services here:
-  # Port registry: unified-trading-pm/scripts/dev/ui-api-mapping.json
-  #
-  # start_process "instruments-service" "$WORKSPACE/instruments-service" \
-  #   env CLOUD_MOCK_MODE="$MOCK_MODE" CLOUD_PROVIDER=local \
-  #   .venv/bin/python -m instruments_service --operation serve --mode live
-  #
-  # ... repeat for each service
+
+  # Common env for all services — exported so child processes inherit
+  export CLOUD_MOCK_MODE="$MOCK_MODE"
+  export CLOUD_PROVIDER=local
+  export DISABLE_AUTH=true
+  export ENVIRONMENT=development
+  export OBSERVABILITY_MODE=local
+  export GCP_PROJECT_ID=mock-project
+  export PUBSUB_EMULATOR_HOST=localhost:8085
+  export STORAGE_EMULATOR_HOST=http://localhost:4443
+
+  # --- Batch seed tasks (run once, produce mock data, exit) ---
+
+  echo "  [SEED] Running batch seed tasks..."
+
+  # Strategy mock data
+  SEED_DIR="$UI_ROOT/.local-dev-cache/mock-seed/strategy-service"
+  if [ ! -f "$SEED_DIR/.seed-complete" ]; then
+ "$WORKSPACE/strategy-service/.venv/bin/python" \
+      "$WORKSPACE/strategy-service/scripts/seed_mock_data.py" \
+      --scenario normal --seed 42 --env local 2>/dev/null \
+      && echo "    strategy seed: done" || echo "    strategy seed: failed (non-fatal)"
+  else
+    echo "    strategy seed: cached"
+  fi
+
+  echo ""
+
+  # --- Resident services (stay alive with health API) ---
+
+  # risk-and-exposure-service — live mode starts uvicorn on port 8019
+  start_process "risk-and-exposure-service" "$WORKSPACE/risk-and-exposure-service" \
+    .venv/bin/python -m uvicorn risk_and_exposure_service.api.main:app \
+    --host 0.0.0.0 --port 8019
+
+  # position-balance-monitor-service — health API on port 8020
+  start_process "position-balance-monitor-service" "$WORKSPACE/position-balance-monitor-service" \
+    .venv/bin/python -m uvicorn position_balance_monitor_service.api.main:app \
+    --host 0.0.0.0 --port 8020
+
+  # alerting-service — health API on port 8021
+  start_process "alerting-service" "$WORKSPACE/alerting-service" \
+    .venv/bin/python -m uvicorn alerting_service.api.main:app \
+    --host 0.0.0.0 --port 8021
+
+  # pnl-attribution-service — health API on port 8022
+  start_process "pnl-attribution-service" "$WORKSPACE/pnl-attribution-service" \
+    .venv/bin/python -m uvicorn pnl_attribution_service.api.main:app \
+    --host 0.0.0.0 --port 8022
+
+  # execution-service — health API on port 8018
+  start_process "execution-service" "$WORKSPACE/execution-service" \
+    .venv/bin/python -m uvicorn execution_service.api.app:app \
+    --host 0.0.0.0 --port 8018
+
+  # strategy-service — health API on port 8025
+  start_process "strategy-service" "$WORKSPACE/strategy-service" \
+    .venv/bin/python -m uvicorn strategy_service.api.main:app \
+    --host 0.0.0.0 --port 8025
+
+  # instruments-service — health API on port 8024
+  start_process "instruments-service" "$WORKSPACE/instruments-service" \
+    .venv/bin/python -m uvicorn instruments_service.api.main:app \
+    --host 0.0.0.0 --port 8024
+
+  # market-tick-data-service — health API on port 8023
+  start_process "market-tick-data-service" "$WORKSPACE/market-tick-data-service" \
+    .venv/bin/python -m uvicorn market_tick_data_service.api.main:app \
+    --host 0.0.0.0 --port 8023
+
+  echo ""
+  echo "  Waiting for service health endpoints..."
+  for svc_port in 8018 8019 8020 8021 8022 8023 8024 8025; do
+    wait_for_port "$svc_port" "service:$svc_port" || true
+  done
 fi
 
 # ─── Start UI ────────────────────────────────────────────────────────────────
@@ -282,8 +349,20 @@ echo "  UI:        http://localhost:3000"
 echo "  Health:    http://localhost:3000/health"
 if [ "$TIER" != "0" ]; then
   echo "  API:       http://localhost:8030"
-  echo "  Auth:      http://localhost:8200"
   echo "  Reporting: http://localhost:8014"
+  echo "  Auth:      Firebase (VITE_SKIP_AUTH=$MOCK_MODE)"
+fi
+if [ "$TIER" = "2" ]; then
+  echo ""
+  echo "  ── Service Fleet ──"
+  echo "  Strategy:  http://localhost:8025/health"
+  echo "  Execution: http://localhost:8018/health"
+  echo "  Risk:      http://localhost:8019/health"
+  echo "  Position:  http://localhost:8020/health"
+  echo "  Alerting:  http://localhost:8021/health"
+  echo "  PnL:       http://localhost:8022/health"
+  echo "  MTDS:      http://localhost:8023/health"
+  echo "  Instrmts:  http://localhost:8024/health"
 fi
 echo ""
 echo "  Stop:      bash scripts/dev-tiers.sh --stop"

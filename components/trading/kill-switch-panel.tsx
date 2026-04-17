@@ -22,6 +22,8 @@ import { Activity, AlertOctagon, Ban, Clock, Shield, Timer, TrendingDown, Users,
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
 import { MOCK_ENTITIES } from "@/lib/mocks/fixtures/kill-switch-entities";
+import { CostComparison } from "@/components/trading/cost-preview-card";
+import { useUnwindComparison } from "@/hooks/api/use-unwind-preview";
 
 // Exit playbook types
 const EXIT_PLAYBOOKS = [
@@ -119,6 +121,15 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
   };
 
   const selectedPlaybook = EXIT_PLAYBOOKS.find((p) => p.id === playbook);
+
+  // Cost comparison for unwind playbooks
+  const unwindExposure = React.useMemo(
+    () => (playbook === "FAST_UNWIND" || playbook === "SLOW_UNWIND")
+      ? (entityId === "all" ? 120000 : 45000) * 20
+      : null,
+    [playbook, entityId],
+  );
+  const { data: costComparison, isLoading: isCostLoading } = useUnwindComparison(unwindExposure);
 
   // Calculate impact preview (mock)
   const impactPreview = React.useMemo(
@@ -346,7 +357,7 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
             </div>
 
             {/* Impact Preview */}
-            <div className="p-4 bg-muted/50 rounded-lg border border-border space-y-2">
+            <div className="p-4 bg-muted/50 rounded-lg border border-border space-y-3">
               <h4 className="text-sm font-medium">Impact Preview</h4>
               <div className="grid grid-cols-3 gap-4 text-sm">
                 <div>
@@ -354,17 +365,28 @@ export function KillSwitchPanel({ className }: KillSwitchPanelProps) {
                   <span className="ml-2 font-mono font-medium">{impactPreview.affectedPositions}</span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Est. market impact:</span>
-                  <span className="ml-2 font-mono font-medium text-[var(--status-warning)]">
-                    ~{formatCurrency(impactPreview.estimatedImpact)} ({impactPreview.impactBps} bps)
-                  </span>
-                </div>
-                <div>
                   <span className="text-muted-foreground">Affected clients:</span>
                   <span className="ml-2 font-mono font-medium">{impactPreview.affectedClients}</span>
                 </div>
+                <div>
+                  <span className="text-muted-foreground">Clients:</span>
+                  <span className="ml-2 text-xs">{impactPreview.clientNames.join(", ")}</span>
+                </div>
               </div>
-              <div className="text-xs text-muted-foreground">Clients: {impactPreview.clientNames.join(", ")}</div>
+              {/* Cost breakdown for unwind playbooks */}
+              {(playbook === "FAST_UNWIND" || playbook === "SLOW_UNWIND") && (
+                <>
+                  {isCostLoading && (
+                    <div className="text-xs text-muted-foreground">Loading cost comparison...</div>
+                  )}
+                  {costComparison && (
+                    <CostComparison
+                      conservative={costComparison.conservative}
+                      aggressive={costComparison.aggressive}
+                    />
+                  )}
+                </>
+              )}
             </div>
 
             {/* Rationale */}

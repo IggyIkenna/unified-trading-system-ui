@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useId } from "react";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { registerConnection, unregisterConnection } from "@/hooks/use-protocol-status";
 
 export type WebSocketStatus =
   | "connecting"
@@ -38,6 +39,7 @@ export function useWebSocket({
   // Disable WebSocket in static mock mode — no backend to connect to
   const isMockMode = typeof window !== "undefined" && isMockDataMode();
   if (isMockMode) enabled = false;
+  const connId = useId();
   const [status, setStatus] = useState<WebSocketStatus>("disconnected");
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -47,6 +49,16 @@ export function useWebSocket({
   useEffect(() => {
     onMessageRef.current = onMessage;
   });
+
+  // Register connection status with protocol indicator
+  useEffect(() => {
+    if (enabled) {
+      registerConnection(connId, "WS", status === "connected");
+    }
+    return () => {
+      unregisterConnection(connId);
+    };
+  }, [connId, enabled, status]);
 
   useEffect(() => {
     if (!enabled) {

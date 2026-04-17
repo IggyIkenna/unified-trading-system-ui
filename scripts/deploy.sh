@@ -15,7 +15,7 @@ REGION="europe-west4"
 SERVICE_NAME="odum-portal"
 REGISTRY="asia-northeast1-docker.pkg.dev/${PROJECT_ID}/unified-trading-system"
 IMAGE_NAME="unified-trading-system-ui"
-TAG="${1:-$(git rev-parse --short HEAD 2>/dev/null || echo 'latest')}"
+TAG="$(git rev-parse --short HEAD 2>/dev/null || echo 'latest')"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

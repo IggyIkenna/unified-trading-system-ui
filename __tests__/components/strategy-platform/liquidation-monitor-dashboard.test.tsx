@@ -23,13 +23,15 @@ describe("LiquidationMonitorWidget", () => {
 
   it("renders at-risk count from mock positions", () => {
     render(<LiquidationMonitorWidget {...defaultProps} />);
-    // 5 positions have HF < 1.5: 1.18, 1.08, 1.25, 1.12, 1.02
-    expect(screen.getByText("5")).toBeTruthy();
+    // 6 positions have HF < 1.5: 1.18, 1.42, 1.08, 1.25, 1.12, 1.02
+    expect(screen.getByText("6")).toBeTruthy();
   });
 
   it("renders cascade zone value", () => {
     render(<LiquidationMonitorWidget {...defaultProps} />);
-    expect(screen.getByText("$2,740")).toBeTruthy();
+    // $2,740 also appears as a liquidation price, so use getAllByText
+    const matches = screen.getAllByText("$2,740");
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders 24h liquidated value", () => {

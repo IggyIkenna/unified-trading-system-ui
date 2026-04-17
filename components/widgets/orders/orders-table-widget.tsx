@@ -187,6 +187,48 @@ function buildColumns(
       ),
     },
     {
+      accessorKey: "client_name",
+      header: "Client",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("client_name");
+        return val ? (
+          <span className="text-xs">{val}</span>
+        ) : (
+          <span className="text-muted-foreground text-[10px]">--</span>
+        );
+      },
+    },
+    {
+      accessorKey: "category",
+      header: "Category",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("category");
+        return val ? (
+          <span className="text-xs">{val}</span>
+        ) : (
+          <span className="text-muted-foreground text-[10px]">--</span>
+        );
+      },
+    },
+    {
+      accessorKey: "strategy_family",
+      header: "Family",
+      meta: { type: "text" },
+      enableSorting: true,
+      cell: ({ row }) => {
+        const val = row.getValue<string | undefined>("strategy_family");
+        return val ? (
+          <span className="text-xs">{val}</span>
+        ) : (
+          <span className="text-muted-foreground text-[10px]">--</span>
+        );
+      },
+    },
+    {
       accessorKey: "quantity",
       header: "Qty",
       meta: { type: "number" },
@@ -290,6 +332,9 @@ const ORDER_EXPORT_COLUMNS: ExportColumn[] = [
   { key: "filled", header: "Filled", format: "number" },
   { key: "status", header: "Status" },
   { key: "venue", header: "Venue" },
+  { key: "client_name", header: "Client" },
+  { key: "category", header: "Category" },
+  { key: "strategy_family", header: "Family" },
   { key: "created_at", header: "Created" },
 ];
 

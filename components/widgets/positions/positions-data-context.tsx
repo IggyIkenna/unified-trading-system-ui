@@ -94,6 +94,16 @@ interface PositionRecord {
   net_delta?: number;
   /** DeFi: AAVE health factor (lending/recursive positions) */
   health_factor?: number;
+  /** Shard dimension: client display name */
+  client_name?: string;
+  /** Shard dimension: domain category (CeFi, DeFi, TradFi, Sports, Prediction) */
+  category?: string;
+  /** Shard dimension: strategy family grouping */
+  strategy_family?: string;
+  /** Shard dimension: trading account identifier */
+  account_id?: string;
+  /** Shard dimension: blockchain chain (for DeFi positions) */
+  chain?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -415,6 +425,11 @@ function mapRawRowToPosition(row: Record<string, unknown>): PositionRecord {
     leverage: Number(row.leverage ?? 0),
     updated_at: String(row.updated_at ?? new Date().toISOString()),
     notional_usd: row.notional_usd != null ? Number(row.notional_usd) : undefined,
+    client_name: row.client_name != null ? String(row.client_name) : undefined,
+    category: row.category != null ? String(row.category) : undefined,
+    strategy_family: row.strategy_family != null ? String(row.strategy_family) : undefined,
+    account_id: row.account_id != null ? String(row.account_id) : undefined,
+    chain: row.chain != null ? String(row.chain) : undefined,
   };
 }
 

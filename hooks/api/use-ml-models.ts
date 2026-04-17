@@ -171,14 +171,14 @@ export function useMLConfig() {
   });
 }
 
-/** Unified training runs (4-page ML architecture). GET /api/ml/training/runs */
+/** Unified training runs (4-page ML architecture). GET /api/ml/training-runs */
 export function useUnifiedTrainingRuns(filters?: { status?: string; family?: string }) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
   const qs = new URLSearchParams();
   if (filters?.status) qs.set("status", filters.status);
   if (filters?.family) qs.set("family", filters.family);
-  const path = qs.toString() ? `/api/ml/training/runs?${qs.toString()}` : "/api/ml/training/runs";
+  const path = qs.toString() ? `/api/ml/training-runs?${qs.toString()}` : "/api/ml/training-runs";
 
   return useQuery({
     queryKey: ["ml-unified-runs", user?.id, scope.mode, filters?.status, filters?.family],
@@ -187,14 +187,14 @@ export function useUnifiedTrainingRuns(filters?: { status?: string; family?: str
   });
 }
 
-/** GET /api/ml/training/runs/:id */
+/** GET /api/ml/training-runs/:id */
 export function useUnifiedTrainingRunDetail(id: string | null) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
   return useQuery({
     queryKey: ["ml-unified-run", id, user?.id, scope.mode],
-    queryFn: () => apiFetch(withMode(`/api/ml/training/runs/${id}`, scope.mode), token),
+    queryFn: () => apiFetch(withMode(`/api/ml/training-runs/${id}`, scope.mode), token),
     enabled: !!user && !!id,
   });
 }
@@ -272,7 +272,7 @@ export function useMLRunComparison(baselineId: string | null, compareIds: string
   });
 }
 
-/** POST /api/ml/training/runs — create and queue */
+/** POST /api/ml/training-runs — create and queue */
 export function useCreateUnifiedTrainingRun() {
   const { token } = useAuth();
   const { scope } = useGlobalScope();
@@ -280,7 +280,7 @@ export function useCreateUnifiedTrainingRun() {
 
   return useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      apiFetch(withMode("/api/ml/training/runs", scope.mode), token, {
+      apiFetch(withMode("/api/ml/training-runs", scope.mode), token, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
@@ -293,7 +293,7 @@ export function useCreateUnifiedTrainingRun() {
   });
 }
 
-/** POST /api/ml/training/runs/:id/cancel */
+/** POST /api/ml/training-runs/:id/cancel */
 export function useCancelUnifiedTrainingRun() {
   const { token } = useAuth();
   const { scope } = useGlobalScope();
@@ -301,7 +301,7 @@ export function useCancelUnifiedTrainingRun() {
 
   return useMutation({
     mutationFn: (id: string) =>
-      apiFetch(withMode(`/api/ml/training/runs/${id}/cancel`, scope.mode), token, { method: "POST" }),
+      apiFetch(withMode(`/api/ml/training-runs/${id}/cancel`, scope.mode), token, { method: "POST" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ml-unified-runs"] });
       queryClient.invalidateQueries({ queryKey: ["ml-pipeline-status"] });

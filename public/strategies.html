@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investment Management — Odum Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-card: #111113;
+      --bg-surface: #161618;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.12);
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --primary: #22d3ee;
+      --primary-dim: rgba(34, 211, 238, 0.12);
+      --sky: #38bdf8;
+      --emerald: #4ade80;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fca-badge {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--border-accent);
+      border-radius: 9999px;
+      padding: 2px 10px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+    }
+
+    nav a.active {
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: #06b6d4;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-pad {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 48px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .section-header p {
+      margin-top: 16px;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 30%, rgba(251, 113, 133, 0.07) 0%, transparent 60%), radial-gradient(ellipse at 20% 70%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .hero .subtitle {
+      margin-top: 20px;
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-muted);
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-ctas {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero .fca-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+
+    .hero .fca-inline .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card-grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card-grid-4 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-kicker {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-top: 12px;
+    }
+
+    .card ul li {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 4px 0 4px 18px;
+      position: relative;
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .strategy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+    }
+
+    .strategy-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .strategy-table td {
+      font-size: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .strategy-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .strategy-table .cat-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      counter-reset: step;
+    }
+
+    .process-step {
+      padding: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      counter-increment: step;
+      position: relative;
+    }
+
+    .process-step::before {
+      content: counter(step);
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-size: 28px;
+      font-weight: 700;
+      color: rgba(34, 211, 238, 0.15);
+      font-family: var(--font-mono);
+    }
+
+    .process-step h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .process-step p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      .card-grid-3,
+      .card-grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .section-pad {
+        padding: 48px 0;
+      }
+
+      .hero-content {
+        padding: 48px 16px 40px;
+      }
+
+      .strategy-table {
+        font-size: 13px;
+      }
+
+      .strategy-table th,
+      .strategy-table td {
+        padding: 10px 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <a href="homepage.html" class="logo-group">
+        <img src="/favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
+        <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
+      </a>
+      <nav>
+        <a href="strategies.html" class="active">Investment Management</a>
+        <a href="platform.html">Platform</a>
+        <a href="regulatory.html">Regulatory</a>
+        <a href="firm.html">Firm</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="contact.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="eyebrow">Investment Management</p>
+      <h1>Access systematic strategies through a regulated structure</h1>
+      <p class="subtitle">
+        Odum manages systematic strategies across crypto exchanges, DeFi protocols, traditional markets, sports,
+        and prediction markets.
+        Allocate through a regulated investment management structure with full reporting and oversight.
+      </p>
+      <div class="fca-inline">
+        <span class="dot"></span>
+        FCA Authorised &mdash; Firm Reference 975797
+      </div>
+      <div class="hero-ctas">
+        <a href="contact.html" class="btn btn-primary">Discuss a Mandate</a>
+        <a href="contact.html" class="btn btn-outline">Request Performance Data</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRATEGY CATEGORIES -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Strategy universe</p>
+        <h2>Systematic strategies across five asset classes</h2>
+        <p>Machine learning, mean reversion, momentum, stat arb, market making, yield, and more &mdash; deployed through
+          one infrastructure and one reporting layer. Every strategy runs on the highest resolution data available for
+          each venue and instrument.</p>
+      </div>
+      <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <article class="card" style="border-color: rgba(74,222,128,0.2);">
+          <p class="card-kicker" style="color:var(--emerald);">Crypto Exchanges</p>
+          <h3>Digital asset systematic</h3>
+          <p>ML-backed momentum, mean reversion, directional, stat arb, and market making across BTC, ETH, SOL, and
+            more on crypto exchanges.</p>
+          <ul>
+            <li style="color:var(--emerald);">Binance, OKX, Bybit, Deribit, Coinbase, Hyperliquid +5 more</li>
+            <li>Spot, perpetuals, futures, options</li>
+            <li>Highest resolution data available &mdash; tick, 1m, 5m to daily depending on venue and instrument</li>
+          </ul>
+        </article>
+        <article class="card" style="border-color: rgba(167,139,250,0.2);">
+          <p class="card-kicker" style="color:var(--violet);">DeFi Protocols</p>
+          <h3>On-chain yield and basis</h3>
+          <p>Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi protocols on 8+ blockchains.
+          </p>
+          <ul>
+            <li style="color:var(--violet);">Aave, Morpho, Lido, EtherFi, Uniswap, Curve, Compound +40 more</li>
+            <li>Basis trades, lending optimisation, yield farming, liquidity provision</li>
+            <li>Per-block resolution on EVM chains; real-time pool and rate data</li>
+          </ul>
+        </article>
+        <article class="card" style="border-color: rgba(34,211,238,0.2);">
+          <p class="card-kicker" style="color:var(--cyan);">Traditional Markets</p>
+          <h3>Quant directional and execution</h3>
+          <p>Systematic momentum, mean reversion, event-driven, and commodity regime strategies across equities,
+            futures, FX, and commodities.</p>
+          <ul>
+            <li style="color:var(--cyan);">CME, NASDAQ, NYSE, ICE, CBOE, FX +2 more</li>
+            <li>SPY, 6E (FX), CL (oil), equity indices, ETFs +more</li>
+            <li>Highest resolution available per venue &mdash; tick to daily multi-timeframe signals</li>
+          </ul>
+        </article>
+        <article class="card" style="border-color: rgba(251,191,36,0.2);overflow:hidden;">
+          <p class="card-kicker" style="color:var(--amber);">Sports</p>
+          <h3>Quantitative sports trading</h3>
+          <p>Cross-bookmaker odds comparison, live arbitrage scanning, closing line value (CLV) analytics, and
+            ML-powered match predictions. 100+ leagues, 20+ bookmakers, seven market types, and full backtest-to-live
+            parity.</p>
+          <ul>
+            <li style="color:var(--amber);">Betfair, Pinnacle +20 bookmakers</li>
+            <li>FT Result, O/U 2.5, BTTS, Asian Handicap, DNB, Corners, HT Result</li>
+            <li>EPL, La Liga, Bundesliga, Serie A, Ligue 1, UCL, UEL, MLS, Eredivisie +90 leagues</li>
+          </ul>
+          <!-- Mini sports dashboard -->
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.12);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;">
+            <div style="color:var(--text-muted);font-size:9px;font-weight:600;margin-bottom:6px;">ML PREDICTION &mdash;
+              ARS v LIV</div>
+            <div style="display:flex;gap:12px;margin-bottom:8px;">
+              <div style="flex:1;text-align:center;">
+                <div style="font-size:9px;color:var(--text-dim);">Home</div>
+                <div style="font-size:14px;color:var(--amber);font-weight:600;">42%</div>
+              </div>
+              <div style="flex:1;text-align:center;">
+                <div style="font-size:9px;color:var(--text-dim);">Draw</div>
+                <div style="font-size:14px;color:var(--text-muted);font-weight:600;">27%</div>
+              </div>
+              <div style="flex:1;text-align:center;">
+                <div style="font-size:9px;color:var(--text-dim);">Away</div>
+                <div style="font-size:14px;color:var(--text-muted);font-weight:600;">31%</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;font-size:9px;color:var(--text-dim);justify-content:center;"><span>xG: 1.7
+                - 1.2</span><span>|</span><span>O2.5: 68%</span><span>|</span><span>BTTS: 72%</span></div>
+            <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);">
+              <div
+                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);">
+                <span>Book</span><span>H</span><span>D</span><span>A</span>
+              </div>
+              <div
+                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);margin-top:2px;">
+                <span style="color:var(--amber);">Pinnacle</span><span>2.35</span><span>3.40</span><span>3.10</span>
+              </div>
+              <div
+                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);margin-top:2px;">
+                <span style="color:var(--amber);">Betfair</span><span>2.38</span><span>3.50</span><span>3.05</span>
+              </div>
+              <div
+                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);margin-top:2px;">
+                <span style="color:var(--text-muted);font-style:italic;">+20
+                  books</span><span>&hellip;</span><span>&hellip;</span><span>&hellip;</span>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="card" style="border-color: rgba(251,113,133,0.2);overflow:hidden;">
+          <p class="card-kicker" style="color:var(--rose);">Prediction Markets</p>
+          <h3>Cross-venue prediction market trading and arbitrage</h3>
+          <p>Browse all markets, compare pricing across Polymarket and Kalshi, overlay prediction odds against
+            underlying
+            assets with ODUM divergence charts, and execute with Kelly-optimal sizing. Categories span crypto, macro,
+            geopolitics, elections, and sports outcomes.</p>
+          <ul>
+            <li style="color:var(--rose);">Polymarket, Kalshi +3 more &mdash; live arb stream</li>
+            <li>ODUM divergence: prediction odds vs underlying price</li>
+            <li>Crypto, macro, sports, geopolitics, elections</li>
+          </ul>
+          <!-- Mini predictions dashboard -->
+          <div
+            style="margin-top:12px;padding:10px;background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.12);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;">
+            <div style="color:var(--text-muted);font-size:9px;font-weight:600;margin-bottom:6px;">LIVE MARKETS</div>
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;font-weight:600;color:var(--text-muted);padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.06);">
+              <span>Market</span><span>Venue</span><span>YES</span><span>Vol</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span>BTC above $100K</span><span style="color:var(--rose);">Poly</span><span
+                style="color:var(--emerald);">72%</span><span>$4.2M</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span>Arsenal win EPL</span><span style="color:var(--rose);">Kalshi</span><span
+                style="color:var(--emerald);">58%</span><span>$1.8M</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
+              <span>Fed cuts by Sept</span><span style="color:var(--rose);">Poly</span><span
+                style="color:var(--amber);">44%</span><span>$6.1M</span>
+            </div>
+            <div
+              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;">
+              <span>S&amp;P above 6000</span><span style="color:var(--rose);">Kalshi</span><span
+                style="color:var(--emerald);">63%</span><span>$2.4M</span>
+            </div>
+            <div
+              style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);font-size:9px;color:var(--text-dim);">
+              <span style="color:var(--rose);font-weight:600;">ARB:</span> BTC $100K &mdash; Poly 72% / Kalshi 69%
+              &rarr; <span style="color:var(--emerald);">+1.4%</span>
+            </div>
+          </div>
+        </article>
+        <article class="card" style="border-color: rgba(96,165,250,0.2);">
+          <p class="card-kicker" style="color:#60a5fa;">Cross-Market</p>
+          <h3>Multi-venue stat arb and vol</h3>
+          <p>Relative value, volatility surface, and cross-exchange strategies that span multiple asset classes and
+            venues.</p>
+          <ul>
+            <li style="color:#60a5fa;">BTC/ETH cross-exchange arb, funding rate arb +more</li>
+            <li>Vol surface (Deribit options), term structure strategies</li>
+            <li>Event-driven macro (crypto + equity + prediction markets)</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRATEGY BREADTH TABLE -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <h2>Strategy breadth at a glance</h2>
+        <p>20+ strategy types across five domains. Each runs on the same infrastructure, same reporting, same risk
+          controls.</p>
+      </div>
+      <table class="strategy-table">
+        <thead>
+          <tr>
+            <th>Domain</th>
+            <th>Strategy Types</th>
+            <th>Venues</th>
+            <th>Instruments</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="cat-dot" style="background:var(--emerald);"></span>Crypto Exchanges</td>
+            <td>ML momentum, mean reversion, stat arb, market making, directional</td>
+            <td>Binance, OKX, Bybit, Deribit, Coinbase, Hyperliquid, Upbit +4</td>
+            <td>Spot, perpetuals, futures, options</td>
+          </tr>
+          <tr>
+            <td><span class="cat-dot" style="background:var(--violet);"></span>DeFi Protocols</td>
+            <td>Lending, basis, staked basis, recursive, yield optimisation</td>
+            <td>55+ protocol&times;chain pairs across Ethereum, Arbitrum, Optimism, Polygon, Base, Avalanche, BSC,
+              Solana</td>
+            <td>a-tokens, debt tokens, LSTs, pools, lending vaults</td>
+          </tr>
+          <tr>
+            <td><span class="cat-dot" style="background:var(--cyan);"></span>TradFi</td>
+            <td>Momentum, mean reversion, commodity regime, event-driven, FX</td>
+            <td>CME, NASDAQ, NYSE, ICE, CBOE, FX, Barchart, Yahoo Finance</td>
+            <td>Equities, futures, FX, commodities, ETFs</td>
+          </tr>
+          <tr>
+            <td><span class="cat-dot" style="background:var(--amber);"></span>Sports</td>
+            <td>Cross-book arb, value betting, Kelly, CLV analytics, ML xG prediction, pre-game/HT models</td>
+            <td>Betfair, Pinnacle +20 bookmakers</td>
+            <td>FT Result, O/U 2.5, BTTS, Asian HC, Corners, HT Result, DNB across 100+ leagues</td>
+          </tr>
+          <tr>
+            <td><span class="cat-dot" style="background:var(--rose);"></span>Predictions</td>
+            <td>Cross-venue arb, ODUM divergence (odds vs underlying), Kelly sizing, event-driven systematic</td>
+            <td>Polymarket, Kalshi +3 more</td>
+            <td>Crypto, macro, geopolitics, elections, sports outcomes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- HOW ALLOCATION WORKS -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Allocation process</p>
+        <h2>How it works</h2>
+        <p>From initial conversation to live capital &mdash; a clear, regulated process with full transparency at every
+          step.</p>
+      </div>
+      <div class="process-grid">
+        <article class="process-step">
+          <h3>Discovery call</h3>
+          <p>We scope your objectives, risk appetite, and regulatory requirements. No commitment needed.</p>
+        </article>
+        <article class="process-step">
+          <h3>Strategy fit</h3>
+          <p>We recommend a strategy mix based on your goals. You review historical performance, risk metrics, and
+            operational details.</p>
+        </article>
+        <article class="process-step">
+          <h3>Regulated onboarding</h3>
+          <p>Professional-client classification, compliance checks, and mandate documentation &mdash; all under FCA
+            oversight.</p>
+        </article>
+        <article class="process-step">
+          <h3>Live allocation</h3>
+          <p>Capital deployed. You get a client portal with live positions, P&amp;L attribution, risk reporting, and
+            settlement tracking.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU GET -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <h2>What allocators get</h2>
+        <p>Every mandate comes with regulated reporting, operational oversight, and full platform visibility.</p>
+      </div>
+      <div class="card-grid card-grid-3">
+        <article class="card">
+          <h3>Regulated structure</h3>
+          <p>FCA-authorised investment management. Professional-client reporting, oversight, and allocation discipline.
+          </p>
+        </article>
+        <article class="card">
+          <h3>Client portal</h3>
+          <p>Live positions, P&amp;L attribution, trade history, compliance reports, settlement tracking, and fee
+            transparency.</p>
+        </article>
+        <article class="card">
+          <h3>Backtest-to-live parity</h3>
+          <p>Every strategy runs the same code in backtest and production. Daily reconciliation confirms alignment.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-pad">
+    <div class="container" style="text-align:center; max-width:600px;">
+      <h2>Ready to discuss a mandate?</h2>
+      <p style="margin-top:16px; font-size:16px; color:var(--text-muted);">
+        Whether you're exploring strategy fit or ready to allocate, we'll walk you through the process and share
+        relevant performance data.
+      </p>
+      <div style="margin-top:28px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <a href="contact.html" class="btn btn-primary">Discuss a Mandate</a>
+        <a href="contact.html" class="btn btn-outline">Request Performance Data</a>
+      </div>
+      <p style="margin-top:24px; font-size:13px; color:var(--text-dim);">
+        info@odum-research.co.uk &middot; London, United Kingdom
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="firm.html">Privacy</a>
+        <a href="firm.html">Terms</a>
+        <a href="regulatory.html">FCA 975797</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

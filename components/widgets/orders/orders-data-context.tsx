@@ -40,6 +40,16 @@ export interface OrderRecord {
   edge_bps: number;
   instant_pnl: number;
   created_at: string;
+  /** Shard dimension: client display name */
+  client_name?: string;
+  /** Shard dimension: domain category (CeFi, DeFi, TradFi, Sports, Prediction) */
+  category?: string;
+  /** Shard dimension: strategy family grouping */
+  strategy_family?: string;
+  /** Shard dimension: trading account identifier */
+  account_id?: string;
+  /** Shard dimension: blockchain chain (for DeFi orders) */
+  chain?: string;
 }
 
 interface OrdersDataContextShape {

@@ -3,6 +3,7 @@
 import { RequireAuth } from "@/components/shell/require-auth";
 import { UnifiedShell } from "@/components/shell/unified-shell";
 import { useAuth } from "@/hooks/use-auth";
+import { useRiskAlertNotifications } from "@/hooks/api/use-risk-alert-notifications";
 
 /**
  * Platform shell — THE product. Auth required.
@@ -22,6 +23,8 @@ export default function PlatformLayout({
 
 function PlatformShellInner({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  // Subscribe globally so risk alerts fire toast notifications on every platform page
+  useRiskAlertNotifications();
 
   return (
     <UnifiedShell

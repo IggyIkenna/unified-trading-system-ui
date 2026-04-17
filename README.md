@@ -42,13 +42,20 @@ All legacy flat routes (`/trading/*`, `/execution/*`, `/ml/*`, `/research/*`, `/
 
 ### Service Areas
 
-- Data (catalogue, subscriptions, venues, markets)
+- Data (catalogue, subscriptions, venues, markets, **data completeness**)
 - Research & Simulation (strategy backtesting, ML models, quant workspace)
 - Trading & Execution (live trading, execution analytics, TCA)
 - Reporting (P&L, executive reports, settlement, reconciliation)
 - Admin (org management, user roles, billing)
 - Deployment & DevOps (infrastructure, CI/CD)
-- Audit & Compliance (provenance, event history)
+- Observe (**event audit**, system health, alerts, risk, position recon)
+- Manage (clients, mandates, fees, compliance, **best execution audit**)
+
+> **Migrated from unified-admin-ui (2026-04-16):** Event Audit (`/services/observe/event-audit`),
+> Best Execution (`/services/manage/best-execution`), and Data Completeness
+> (`/services/data/completeness`) were migrated from the now-archived `unified-admin-ui` repo.
+> The archived repos (`unified-trading-ui-auth`, `unified-trading-ui-kit`, `unified-admin-ui`)
+> are read-only on GitHub — all functionality is now in this repo or inlined in `deployment-ui`.
 
 ### Core Workflow
 

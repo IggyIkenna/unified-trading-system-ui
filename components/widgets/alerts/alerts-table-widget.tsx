@@ -103,6 +103,8 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
     setStatusFilter,
     severityFilter,
     setSeverityFilter,
+    sourceFilter,
+    setSourceFilter,
     resetFilters,
   } = useAlertsData();
 
@@ -110,6 +112,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
     searchQuery,
     statusFilter !== "all" ? statusFilter : "",
     severityFilter !== "all" ? severityFilter : "",
+    sourceFilter !== "all" ? sourceFilter : "",
   ].filter(Boolean).length;
 
   const alertColumns: ColumnDef<Alert, unknown>[] = React.useMemo(
@@ -409,6 +412,16 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
           { value: "medium", label: "Medium" },
           { value: "low", label: "Low" },
           { value: "info", label: "Info" },
+        ],
+      },
+      {
+        value: sourceFilter,
+        onChange: setSourceFilter,
+        placeholder: "Source",
+        allLabel: "All Sources",
+        width: "w-36",
+        options: [
+          { value: "recovery", label: "Recovery Events" },
         ],
       },
     ],

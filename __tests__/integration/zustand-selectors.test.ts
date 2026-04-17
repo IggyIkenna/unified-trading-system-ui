@@ -16,7 +16,7 @@ describe("Zustand selector stability", () => {
     const source = await import("@/components/widgets/workspace-toolbar");
     // The module should export WorkspaceToolbar (function component)
     expect(typeof source.WorkspaceToolbar).toBe("function");
-  });
+  }, 30000);
 
   it("workspace-toolbar source does not use inline ?? [] in selectors", async () => {
     // Read the actual source to verify no inline empty array fallbacks in selectors

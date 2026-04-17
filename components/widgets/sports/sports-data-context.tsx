@@ -7,7 +7,6 @@ import { useExecutionMode } from "@/lib/execution-mode-context";
 import { MOCK_BETS, MOCK_CLV_RECORDS, MOCK_FIXTURES, MOCK_STANDINGS } from "@/lib/mocks/fixtures/sports-data";
 import { DEFAULT_ARB_THRESHOLD } from "@/lib/mocks/fixtures/sports-fixtures";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
-import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import * as React from "react";
 
@@ -212,8 +211,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
   const [arbThreshold, setArbThreshold] = React.useState(DEFAULT_ARB_THRESHOLD);
   const [activeTab, setActiveTab] = React.useState<SportsWorkspaceTab>("fixtures");
 
-  const isMock = typeof window !== "undefined" && isMockDataMode();
-  const { updates: liveUpdates, status: wsStatus } = useSportsLiveUpdates({ enabled: !isMock });
+  const { updates: liveUpdates, status: wsStatus } = useSportsLiveUpdates({ enabled: true });
 
   const allFixtures = React.useMemo(() => {
     // Start with mock fixtures as base (in all modes -- real mode will overlay with API data)
@@ -230,6 +228,45 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
             status: update.status as (typeof base)[0]["status"],
             minute: update.minute ?? base[idx].minute,
             score: update.score ?? base[idx].score,
+            ...(update.stats
+              ? {
+                  stats: {
+                    home: {
+                      xg: base[idx].stats?.home.xg ?? 0,
+                      shotsTotal: update.stats.home.shots,
+                      shotsOnTarget: update.stats.home.shots_on_target,
+                      possession: update.stats.home.possession,
+                      corners: update.stats.home.corners,
+                      fouls: base[idx].stats?.home.fouls ?? 0,
+                      yellowCards: base[idx].stats?.home.yellowCards ?? 0,
+                      redCards: base[idx].stats?.home.redCards ?? 0,
+                      dangerousAttacks: base[idx].stats?.home.dangerousAttacks ?? 0,
+                    },
+                    away: {
+                      xg: base[idx].stats?.away.xg ?? 0,
+                      shotsTotal: update.stats.away.shots,
+                      shotsOnTarget: update.stats.away.shots_on_target,
+                      possession: update.stats.away.possession,
+                      corners: update.stats.away.corners,
+                      fouls: base[idx].stats?.away.fouls ?? 0,
+                      yellowCards: base[idx].stats?.away.yellowCards ?? 0,
+                      redCards: base[idx].stats?.away.redCards ?? 0,
+                      dangerousAttacks: base[idx].stats?.away.dangerousAttacks ?? 0,
+                    },
+                  },
+                }
+              : {}),
+            ...(update.events && update.events.length > 0
+              ? {
+                  events: update.events.map((e) => ({
+                    minute: e.minute,
+                    type: e.type as "goal" | "yellow_card" | "red_card" | "substitution" | "var" | "penalty",
+                    team: e.team,
+                    player: e.player,
+                    detail: e.detail,
+                  })),
+                }
+              : {}),
           };
         }
       }

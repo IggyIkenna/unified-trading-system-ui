@@ -52,7 +52,7 @@ describe("Seed Data", () => {
 
   it("uses org IDs that match trading-data fixtures", () => {
     // These are the IDs from lib/mocks/fixtures/trading-data ORGANIZATIONS
-    const validOrgIds = ["odum", "alpha-capital", "vertex-partners", "meridian-fund", "atlas-ventures"];
+    const validOrgIds = ["odum", "alpha-capital", "vertex-partners", "meridian-fund", "atlas-ventures", "elysium"];
     for (const s of SEED_STRATEGIES) {
       expect(validOrgIds).toContain(s.orgId);
     }

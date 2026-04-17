@@ -8,6 +8,7 @@ import { AlertTriangle } from "lucide-react";
 export default function TradingPage() {
   const { terminalData, errors } = useTerminalPageData();
 
+
   return (
     <div className="h-full bg-background flex flex-col">
       {(errors.tickers || errors.positions || errors.alerts) && (

@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumber } from "@/lib/utils/formatters";
 import { MOCK_SIGNALS, type Signal, type SignalStatus } from "@/lib/mocks/fixtures/research-pages";
+import { LiveSignalFeed } from "@/components/trading/live-signal-feed";
 
 function getStatusBadge(status: SignalStatus) {
   switch (status) {
@@ -128,6 +129,9 @@ export default function SignalsPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Live Signal Stream (SSE) */}
+        <LiveSignalFeed />
 
         {/* Signal Table */}
         <Card>

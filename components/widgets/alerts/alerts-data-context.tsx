@@ -14,6 +14,16 @@ import { getFilledDefiOrders } from "@/lib/api/mock-trade-ledger";
 export type AlertSeverity = "critical" | "high" | "medium" | "low" | "info";
 export type AlertStatus = "active" | "acknowledged" | "resolved" | "muted";
 
+/** Prefixes that identify autonomous recovery events in the alert stream. */
+const RECOVERY_SOURCE_PREFIXES = [
+  "KILL_SWITCH_",
+  "CIRCUIT_BREAKER_",
+  "POSITION_DRIFT_",
+  "DUAL_FAILURE_",
+  "TRANSFER_",
+  "AUTO_DELEVERAGE_",
+];
+
 export interface Alert {
   id: string;
   severity: AlertSeverity;
@@ -43,6 +53,8 @@ export interface AlertsDataContextValue {
   setStatusFilter: (s: string) => void;
   severityFilter: string;
   setSeverityFilter: (s: string) => void;
+  sourceFilter: string;
+  setSourceFilter: (s: string) => void;
   resetFilters: () => void;
 
   alertFilterDefs: FilterDefinition[];
@@ -178,6 +190,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
 
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [severityFilter, setSeverityFilter] = React.useState<string>("all");
+  const [sourceFilter, setSourceFilter] = React.useState<string>("all");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
   const scopeStrategyIds = React.useMemo(
@@ -195,6 +208,12 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       if (scopeStrategyIds.length > 0 && alert.entity && !scopeStrategyIds.includes(alert.entity)) return false;
       if (statusFilter !== "all" && alert.status !== statusFilter) return false;
       if (severityFilter !== "all" && alert.severity !== severityFilter) return false;
+      if (sourceFilter === "recovery") {
+        const src = alert.source.toUpperCase();
+        const title = alert.title.toUpperCase();
+        const isRecovery = RECOVERY_SOURCE_PREFIXES.some((p) => src.includes(p) || title.includes(p));
+        if (!isRecovery) return false;
+      }
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         return (
@@ -206,7 +225,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       }
       return true;
     });
-  }, [allAlerts, statusFilter, severityFilter, searchQuery, scopeStrategyIds]);
+  }, [allAlerts, statusFilter, severityFilter, sourceFilter, searchQuery, scopeStrategyIds]);
 
   const alertFilterDefs: FilterDefinition[] = React.useMemo(
     () => [
@@ -239,6 +258,14 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
           { value: "info", label: "Info" },
         ],
       },
+      {
+        key: "source",
+        label: "Source",
+        type: "select" as const,
+        options: [
+          { value: "recovery", label: "Recovery Events" },
+        ],
+      },
     ],
     [],
   );
@@ -248,8 +275,9 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       search: searchQuery || undefined,
       status: statusFilter !== "all" ? statusFilter : undefined,
       severity: severityFilter !== "all" ? severityFilter : undefined,
+      source: sourceFilter !== "all" ? sourceFilter : undefined,
     }),
-    [searchQuery, statusFilter, severityFilter],
+    [searchQuery, statusFilter, severityFilter, sourceFilter],
   );
 
   const handleFilterChange = React.useCallback((key: string, value: unknown) => {
@@ -263,6 +291,9 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       case "severity":
         setSeverityFilter((value as string) || "all");
         break;
+      case "source":
+        setSourceFilter((value as string) || "all");
+        break;
     }
   }, []);
 
@@ -270,6 +301,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
     setSearchQuery("");
     setStatusFilter("all");
     setSeverityFilter("all");
+    setSourceFilter("all");
   }, []);
 
   const resetFilters = handleFilterReset;
@@ -332,6 +364,8 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       setStatusFilter,
       severityFilter,
       setSeverityFilter,
+      sourceFilter,
+      setSourceFilter,
       resetFilters,
       alertFilterDefs,
       alertFilterValues,
@@ -358,6 +392,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       searchQuery,
       statusFilter,
       severityFilter,
+      sourceFilter,
       resetFilters,
       alertFilterDefs,
       alertFilterValues,

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Regulatory Umbrella — Odum Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-card: #111113;
+      --bg-surface: #161618;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.12);
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --primary: #22d3ee;
+      --sky: #38bdf8;
+      --emerald: #4ade80;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0e7490, #22d3ee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fca-badge {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--border-accent);
+      border-radius: 9999px;
+      padding: 2px 10px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+    }
+
+    nav a.active {
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: #06b6d4;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-pad {
+      padding: 80px 0;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 48px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .section-header p {
+      margin-top: 16px;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .hero .subtitle {
+      margin-top: 20px;
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-muted);
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-ctas {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+
+    .hero .fca-large {
+      margin-top: 20px;
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--emerald);
+      letter-spacing: 0.02em;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card-grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card ul {
+      list-style: none;
+      margin-top: 12px;
+    }
+
+    .card ul li {
+      font-size: 13px;
+      color: var(--text-muted);
+      padding: 6px 0 6px 20px;
+      position: relative;
+    }
+
+    .card ul li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--emerald);
+    }
+
+    .timeline {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 24px;
+      padding-bottom: 32px;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(74, 222, 128, 0.12);
+      border: 2px solid var(--emerald);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--emerald);
+    }
+
+    .timeline-content h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .timeline-content p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 32px;
+    }
+
+    .comparison-table th {
+      text-align: left;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table td {
+      font-size: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .comparison-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .check {
+      color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .cross {
+      color: var(--rose);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      .card-grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .section-pad {
+        padding: 48px 0;
+      }
+
+      .hero-content {
+        padding: 48px 16px 40px;
+      }
+
+      .comparison-table th,
+      .comparison-table td {
+        padding: 10px 8px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <a href="homepage.html" class="logo-group">
+        <div class="logo-img">O</div>
+        <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
+      </a>
+      <nav>
+        <a href="strategies.html">Investment Management</a>
+        <a href="platform.html">Platform</a>
+        <a href="regulatory.html" class="active">Regulatory</a>
+        <a href="firm.html">Firm</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="contact.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="eyebrow">Regulatory Umbrella</p>
+      <h1>Launch under a regulated framework without the usual delay</h1>
+      <p class="subtitle">
+        Odum provides regulatory coverage for Professional Clients and Eligible Counterparties through
+        structured engagement under our existing FCA permissions &mdash; avoiding the 12&ndash;24 months
+        typically required for direct authorisation.
+      </p>
+      <div class="fca-large">FCA 975797</div>
+      <div class="hero-ctas">
+        <a href="contact.html" class="btn btn-primary">Check Regulatory Fit</a>
+        <a href="contact.html" class="btn btn-outline">Contact Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S COVERED -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Regulatory coverage</p>
+        <h2>What's included under the umbrella</h2>
+        <p>Dealing, arranging, advising, and managing under Odum's FCA authorisation where your activities fit within
+          the approved structure &mdash; with compliance infrastructure and supervision already in place. Engagement
+          structure and timeline are scoped to your specific activities.</p>
+      </div>
+      <div class="card-grid card-grid-3">
+        <article class="card">
+          <h3>Regulated activities</h3>
+          <p>Dealing in investments, arranging deals, advising, and managing &mdash; under Odum's FCA permissions where
+            activity is in scope.</p>
+          <ul>
+            <li>Dealing in investments as principal or agent</li>
+            <li>Arranging deals in investments</li>
+            <li>Investment advice and management</li>
+            <li>Custody and reporting (where applicable)</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Compliance support</h3>
+          <p>Ongoing compliance infrastructure so you can focus on your business, not on building a compliance function
+            from scratch.</p>
+          <ul>
+            <li>MLRO (Money Laundering Reporting Officer)</li>
+            <li>Ongoing supervision and monitoring</li>
+            <li>Regulatory reporting support</li>
+            <li>Annual compliance review process</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Client portal &amp; reporting</h3>
+          <p>Your clients get institutional-grade visibility. You get operational transparency and audit readiness.</p>
+          <ul>
+            <li>Portfolio dashboard with live positions</li>
+            <li>Trade history and settlement tracking</li>
+            <li>Compliance reports and documentation</li>
+            <li>Fee transparency and billing</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO IT'S FOR -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <h2>Why structure matters</h2>
+        <p>If you are managing capital, executing on behalf of clients, or moving from tooling into
+          decision-making, the regulatory line can become much thinner than it first appears. Commercial
+          agreements, software terms, and advisory labels do not by themselves replace the need for the
+          right structure where activities are in scope.</p>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 32px;">Firms usually come to us for one of four reasons:</p>
+      <div class="card-grid card-grid-2">
+        <article class="card">
+          <h3>Moving into regulated territory</h3>
+          <p>They are moving from infrastructure or signals into activities that may be regulated.</p>
+        </article>
+        <article class="card">
+          <h3>Speed to market</h3>
+          <p>They want to manage third-party capital without waiting 12&ndash;24 months for direct authorisation.</p>
+        </article>
+        <article class="card">
+          <h3>Established framework</h3>
+          <p>They would rather operate under an established framework than build compliance, reporting, and
+            oversight from scratch.</p>
+        </article>
+        <article class="card">
+          <h3>Credibility and distribution</h3>
+          <p>They want the credibility of operating and promoting under a regulated structure when speaking to
+            clients, counterparties, and distribution partners.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="section-header">
+        <p class="eyebrow">Onboarding process</p>
+        <h2>From inquiry to operational</h2>
+        <p>A structured process that gets you live quickly. Timeline depends on the scope and complexity of
+          your proposed activities, typically ranging from weeks to a few months.</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot">1</div>
+          <div class="timeline-content">
+            <h3>Eligibility assessment</h3>
+            <p>We scope your proposed activity, client base, and regulatory requirements to confirm fit. No commitment
+              &mdash; takes 1&ndash;2 calls.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">2</div>
+          <div class="timeline-content">
+            <h3>Due diligence</h3>
+            <p>Background checks, AML/KYC documentation, and business plan review. Typically 1&ndash;2 weeks depending
+              on documentation readiness.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">3</div>
+          <div class="timeline-content">
+            <h3>Structuring &amp; agreement</h3>
+            <p>We determine the right engagement structure based on your proposed activities, client base, and
+              regulatory scope. You receive a clear agreement covering permissions, compliance support, reporting
+              infrastructure, and supervision &mdash; all under Odum's existing FCA authorisation.
+            </p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot">4</div>
+          <div class="timeline-content">
+            <h3>Go live</h3>
+            <p>Begin regulated operations with full compliance support, supervision, and reporting. Ongoing annual
+              review and monitoring included.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <h2>Umbrella vs. direct authorisation</h2>
+        <p>A practical comparison for firms evaluating their regulatory path.</p>
+      </div>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Odum Umbrella</th>
+            <th>Direct FCA Authorisation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Time to operational</td>
+            <td class="check">Weeks to months (scope-dependent)</td>
+            <td class="cross">12&ndash;24 months</td>
+          </tr>
+          <tr>
+            <td>Setup cost</td>
+            <td class="check">Minimal (onboarding fee)</td>
+            <td class="cross">&pound;25K&ndash;&pound;100K+ (legal, consulting)</td>
+          </tr>
+          <tr>
+            <td>Annual overhead</td>
+            <td class="check">Included in umbrella fee</td>
+            <td class="cross">MLRO + Compliance Officer salaries, regulatory reporting, capital adequacy</td>
+          </tr>
+          <tr>
+            <td>Compliance function</td>
+            <td class="check">Provided by Odum</td>
+            <td class="cross">Build or hire internally</td>
+          </tr>
+          <tr>
+            <td>MLRO</td>
+            <td class="check">Included</td>
+            <td class="cross">Hire or appoint (required by FCA)</td>
+          </tr>
+          <tr>
+            <td>Ongoing supervision</td>
+            <td class="check">Included</td>
+            <td>Self-supervised (FCA oversight)</td>
+          </tr>
+          <tr>
+            <td>Client reporting portal</td>
+            <td class="check">Included (Odum platform)</td>
+            <td>Build or buy separately</td>
+          </tr>
+          <tr>
+            <td>Regulatory capital</td>
+            <td class="check">Covered by Odum</td>
+            <td>Maintain own capital requirements</td>
+          </tr>
+          <tr>
+            <td>Independence</td>
+            <td>Operate under Odum's permissions</td>
+            <td class="check">Fully independent entity</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-pad">
+    <div class="container" style="text-align:center; max-width:600px;">
+      <h2>Check if the umbrella is right for you</h2>
+      <p style="margin-top:16px; font-size:16px; color:var(--text-muted);">
+        Run a quick eligibility assessment with no commitment. We'll tell you whether your planned activities
+        fit under Odum's regulatory umbrella, or suggest alternatives if they don't.
+      </p>
+      <div style="margin-top:28px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+        <a href="contact.html" class="btn btn-primary">Check Regulatory Fit</a>
+        <a href="contact.html" class="btn btn-outline">Contact Us</a>
+      </div>
+      <p style="margin-top:24px; font-size:13px; color:var(--text-dim);">
+        info@odum-research.co.uk &middot; London, United Kingdom
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="firm.html">Privacy</a>
+        <a href="firm.html">Terms</a>
+        <a href="regulatory.html">FCA 975797</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

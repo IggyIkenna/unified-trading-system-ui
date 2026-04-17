@@ -16,8 +16,10 @@ import {
   useTrainingQueue,
   useUnifiedTrainingRuns,
 } from "@/hooks/api/use-ml-models";
+import { usePredictionStream, type PredictionStreamEvent } from "@/hooks/api/use-sse-channels";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { ModelFamily, UnifiedTrainingRun } from "@/lib/types/ml";
-import { Activity, AlertTriangle, Brain, CheckCircle2, Clock, Cpu, Layers, Play, XCircle } from "lucide-react";
+import { Activity, AlertTriangle, Brain, CheckCircle2, Clock, Cpu, Layers, Play, Radio, XCircle } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -59,8 +61,37 @@ function archetypeColor(archetype: string) {
   return colors[archetype] ?? "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
 }
 
+const MAX_PREDICTION_EVENTS = 20;
+
+function directionBadge(dir: PredictionStreamEvent["predicted_direction"]) {
+  const colors: Record<string, string> = {
+    UP: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
+    DOWN: "bg-red-500/15 text-red-400 border-red-500/30",
+    FLAT: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
+  };
+  return colors[dir] ?? "bg-zinc-500/15 text-zinc-400 border-zinc-500/30";
+}
+
+function confidenceColor(prob: number): string {
+  if (prob >= 0.8) return "text-emerald-400";
+  if (prob >= 0.6) return "text-amber-400";
+  return "text-red-400";
+}
+
 export default function MLOverviewPage() {
   const [mlTab, setMlTab] = useTabParam("overview");
+  const { scope } = useGlobalScope();
+  const isLive = scope.mode === "live";
+
+  // Prediction stream — only active in live mode
+  const [predictionEvents, setPredictionEvents] = React.useState<PredictionStreamEvent[]>([]);
+  const { isConnected: predictionConnected } = usePredictionStream({
+    enabled: isLive,
+    onMessage: React.useCallback((evt: PredictionStreamEvent) => {
+      setPredictionEvents((prev) => [evt, ...prev].slice(0, MAX_PREDICTION_EVENTS));
+    }, []),
+  });
+
   const {
     data: pipelineData,
     isLoading: pipelineLoading,
@@ -395,6 +426,60 @@ export default function MLOverviewPage() {
                 ))}
               </CardContent>
             </Card>
+
+            {/* Live Predictions — only in live mode */}
+            {isLive && (
+              <Card className="border-border/50">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <Radio className={`size-4 ${predictionConnected ? "text-emerald-400 animate-pulse" : "text-zinc-500"}`} />
+                    Live Predictions
+                    {predictionConnected && (
+                      <span className="ml-auto text-[9px] font-normal text-emerald-400">CONNECTED</span>
+                    )}
+                    {!predictionConnected && predictionEvents.length === 0 && (
+                      <span className="ml-auto text-[9px] font-normal text-zinc-500">CONNECTING...</span>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {predictionEvents.length === 0 ? (
+                    <p className="text-[11px] text-muted-foreground text-center py-3">
+                      Waiting for prediction events...
+                    </p>
+                  ) : (
+                    predictionEvents.slice(0, 8).map((evt) => (
+                      <div
+                        key={evt.prediction_id}
+                        className="rounded-md border border-border/50 p-2 space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <Badge
+                              variant="outline"
+                              className={`${directionBadge(evt.predicted_direction)} text-[9px] shrink-0`}
+                            >
+                              {evt.predicted_direction}
+                            </Badge>
+                            <span className="text-[11px] font-medium truncate">{evt.instrument}</span>
+                          </div>
+                          <span className={`text-[11px] font-mono font-medium ${confidenceColor(evt.probability)}`}>
+                            {formatPercent(evt.probability * 100, 1)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                          <span>{evt.model_family}</span>
+                          <span>{evt.horizon_minutes}m horizon</span>
+                        </div>
+                        <div className="text-[9px] text-muted-foreground/60 text-right">
+                          {new Date(evt.timestamp).toLocaleTimeString()}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>

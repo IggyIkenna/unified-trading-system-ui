@@ -16,6 +16,8 @@ import {
   RotateCcw,
   StopCircle,
   Tag,
+  Wifi,
+  WifiOff,
   X,
 } from "lucide-react";
 import { useDeploymentDetailsModelContext } from "./deployment-details-context";
@@ -101,6 +103,7 @@ export function DeploymentDetailsHeader() {
     shardsForDisplay,
     displayShards,
     CLASSIFICATION_FILTERS,
+    sseConnected,
   } = dd;
 
   if (!status) return null;
@@ -129,6 +132,21 @@ export function DeploymentDetailsHeader() {
                 {status.gcs_fuse_active ? "GCS Fuse" : "GCS API"}
               </span>
             )}
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
+                sseConnected
+                  ? "bg-[var(--color-accent-green)]/20 text-[var(--color-accent-green)]"
+                  : "bg-[var(--color-text-muted)]/20 text-[var(--color-text-muted)]"
+              }`}
+              title={
+                sseConnected
+                  ? "Live event stream connected -- updates arrive in real-time"
+                  : "Event stream disconnected -- using polling fallback"
+              }
+            >
+              {sseConnected ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+              {sseConnected ? "Live" : "Polling"}
+            </span>
           </div>
           <CardDescription>
             {status.service} • {status.compute_type}

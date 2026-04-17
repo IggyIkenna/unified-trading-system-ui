@@ -22,7 +22,7 @@ export interface AuthState {
   isInternal: () => boolean;
 }
 
-const AuthContext = React.createContext<AuthState | null>(null);
+export const AuthContext = React.createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const provider = React.useMemo(() => getAuthProvider(), []);

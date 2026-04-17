@@ -327,6 +327,12 @@ export interface TradeRecord {
   order_id: string;
   trade_type: string;
   notional_usd: number;
+  /** Shard dimension: strategy identifier */
+  strategy_id?: string;
+  /** Shard dimension: client display name */
+  client_name?: string;
+  /** Shard dimension: domain category */
+  category?: string;
 }
 
 export const MOCK_TRADES: TradeRecord[] = [

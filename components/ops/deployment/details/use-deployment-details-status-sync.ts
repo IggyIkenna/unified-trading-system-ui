@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { useDeployEventStream } from "@/hooks/api/use-sse-channels";
 import type { DeploymentStatusData, ShardDetail } from "./deployment-details-types";
 
 export function useDeploymentDetailsStatusSync({
@@ -25,17 +26,29 @@ export function useDeploymentDetailsStatusSync({
   loadAllShards: () => Promise<void>;
   fetchLiveHealth: () => Promise<void>;
 }) {
+  // SSE: deploy event stream with auto-reconnect and heartbeat monitoring.
+  // Replaces the old raw EventSource block. When connected, polling slows to 30s.
+  const { isConnected: sseConnected } = useDeployEventStream({
+    onMessage: () => {
+      refetchStatusRef.current?.();
+    },
+  });
+
   useEffect(() => {
     let mounted = true;
     let pollInterval: ReturnType<typeof setInterval> | null = null;
     let pollCount = 0;
-    const maxFastPolls = 6;
+    // When SSE is connected, skip fast-poll phase and use 30s fallback polling.
+    // When SSE is disconnected, use fast (3s) for first 18s then slow (15s).
+    const maxFastPolls = sseConnected ? 0 : 6;
+    const slowPollMs = sseConnected ? 30_000 : 15_000;
+    const fastPollMs = 3_000;
 
     const poll = async () => {
       if (!mounted) return;
 
       pollCount++;
-      const isFastPolling = pollCount <= maxFastPolls;
+      const isFastPolling = !sseConnected && pollCount <= maxFastPolls;
 
       try {
         const response = await fetch(`/api/deployments/${deploymentId}?skip_logs=true&summary=true`);
@@ -98,15 +111,18 @@ export function useDeploymentDetailsStatusSync({
         }
       }
 
-      if (isFastPolling && pollCount === maxFastPolls && pollInterval) {
+      // Adjust polling interval: fast phase -> slow phase
+      if (!sseConnected && isFastPolling && pollCount === maxFastPolls && pollInterval) {
         clearInterval(pollInterval);
-        pollInterval = setInterval(poll, 15000);
+        pollInterval = setInterval(poll, slowPollMs);
       }
     };
 
     refetchStatusRef.current = poll;
     poll();
-    pollInterval = setInterval(poll, 3000);
+    // Start polling: fast (3s) when no SSE, slow (30s) when SSE is connected
+    const initialInterval = sseConnected ? slowPollMs : fastPollMs;
+    pollInterval = setInterval(poll, initialInterval);
 
     return () => {
       mounted = false;
@@ -115,23 +131,7 @@ export function useDeploymentDetailsStatusSync({
         pollInterval = null;
       }
     };
-  }, [deploymentId, refetchStatusRef, setError, setLoading, setStatus]);
-
-  useEffect(() => {
-    const url = `${window.location.origin}/api/deployments/${deploymentId}/events`;
-    const es = new EventSource(url);
-    const onUpdate = () => {
-      refetchStatusRef.current?.();
-    };
-    es.addEventListener("updated", onUpdate);
-    es.onmessage = onUpdate;
-    es.onerror = () => {
-      es.close();
-    };
-    return () => {
-      es.close();
-    };
-  }, [deploymentId, refetchStatusRef]);
+  }, [deploymentId, sseConnected, refetchStatusRef, setError, setLoading, setStatus]);
 
   const prevStatusRef = useRef<string | null>(null);
   useEffect(() => {
@@ -167,5 +167,5 @@ export function useDeploymentDetailsStatusSync({
     return () => clearInterval(interval);
   }, [status?.deploy_mode, status?.status, fetchLiveHealth]);
 
-  return { prevStatusRef };
+  return { prevStatusRef, sseConnected };
 }

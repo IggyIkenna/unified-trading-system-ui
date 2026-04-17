@@ -2,6 +2,7 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
+  Bell,
   Clock,
   LineChart,
   Shield,
@@ -18,6 +19,7 @@ import { RiskExposureAttributionWidget } from "./risk-exposure-attribution-widge
 import { RiskGreeksSummaryWidget } from "./risk-greeks-summary-widget";
 import { RiskKpiStripWidget } from "./risk-kpi-strip-widget";
 import { RiskLimitsHierarchyWidget } from "./risk-limits-hierarchy-widget";
+import { RiskLiveAlertFeedWidget } from "./risk-live-alert-feed-widget";
 import { RiskMarginWidget } from "./risk-margin-widget";
 import { RiskStrategyHeatmapWidget } from "./risk-strategy-heatmap-widget";
 import { RiskStressTableWidget } from "./risk-stress-table-widget";
@@ -50,6 +52,7 @@ registerPresets("risk", [
       { widgetId: "risk-circuit-breakers", instanceId: "risk-cb-1", x: 0, y: 30, w: 6, h: 3 },
       { widgetId: "risk-correlation-heatmap", instanceId: "risk-corr-1", x: 6, y: 30, w: 6, h: 4 },
       { widgetId: "risk-limits-hierarchy", instanceId: "risk-limits-1", x: 0, y: 34, w: 12, h: 5 },
+      { widgetId: "risk-live-alert-feed", instanceId: "risk-alert-feed-1", x: 0, y: 39, w: 12, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -88,6 +91,7 @@ registerPresets("risk", [
       { widgetId: "risk-what-if-slider", instanceId: "risk-what-if-slider-full", x: 0, y: 29, w: 12, h: 2 },
       { widgetId: "risk-circuit-breakers", instanceId: "risk-circuit-breakers-full", x: 0, y: 31, w: 12, h: 3 },
       { widgetId: "risk-correlation-heatmap", instanceId: "risk-correlation-heatmap-full", x: 0, y: 34, w: 12, h: 4 },
+      { widgetId: "risk-live-alert-feed", instanceId: "risk-live-alert-feed-full", x: 0, y: 38, w: 12, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -304,4 +308,20 @@ registerWidget({
   availableOn: ["risk"],
   singleton: true,
   component: RiskCorrelationHeatmapWidget,
+});
+
+registerWidget({
+  id: "risk-live-alert-feed",
+  label: "Live Alert Feed",
+  description: "Real-time SSE risk alert stream with severity-based styling. Active in live mode only.",
+  icon: Bell,
+  minW: 4,
+  minH: 3,
+  defaultW: 12,
+  defaultH: 4,
+  requiredEntitlements: ["execution-basic", "execution-full"],
+  category: "Risk",
+  availableOn: ["risk"],
+  singleton: true,
+  component: RiskLiveAlertFeedWidget,
 });

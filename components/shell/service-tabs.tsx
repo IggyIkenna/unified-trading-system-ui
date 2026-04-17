@@ -214,6 +214,7 @@ export const DATA_TABS: ServiceTab[] = [
   { label: DS.events, href: "/services/data/events" },
   { label: DS.coverage, href: "/services/data/coverage" },
   { label: DS.gaps, href: "/services/data/gaps" },
+  { label: "Completeness", href: "/services/data/completeness" },
   { label: DS.valuation, href: "/services/data/valuation" },
 ];
 
@@ -271,11 +272,32 @@ export const ML_SUB_TABS: ServiceTab[] = [
     href: "/services/research/ml/registry",
     matchPrefix: "/services/research/ml/registry",
   },
+  {
+    label: "Grid Config",
+    href: "/services/research/ml/grid-config",
+    matchPrefix: "/services/research/ml/grid-config",
+  },
+  {
+    label: "Monitoring",
+    href: "/services/research/ml/monitoring",
+    matchPrefix: "/services/research/ml/monitoring",
+  },
+  {
+    label: "Governance",
+    href: "/services/research/ml/governance",
+    matchPrefix: "/services/research/ml/governance",
+  },
+  {
+    label: "Config",
+    href: "/services/research/ml/config",
+    matchPrefix: "/services/research/ml/config",
+  },
 ];
 
 // Strategy sub-tabs — shown inside Strategy section pages
 export const STRATEGY_SUB_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/research/strategy/overview" },
+  { label: "Catalog", href: "/services/research/strategy/catalog", matchPrefix: "/services/research/strategy/catalog" },
   { label: "Backtests", href: "/services/research/strategy/backtests" },
   { label: "Compare", href: "/services/research/strategy/compare" },
   { label: "Results", href: "/services/research/strategy/results" },
@@ -417,6 +439,9 @@ export const OBSERVE_TABS: ServiceTab[] = [
   { label: "Strategy Health", href: "/services/observe/strategy-health" },
   { label: "Scenarios", href: "/services/observe/scenarios" },
   { label: "System Health", href: "/services/observe/health" },
+  { label: "Event Audit", href: "/services/observe/event-audit" },
+  { label: "Position Recon", href: "/services/observe/reconciliation" },
+  { label: "Recovery", href: "/services/observe/recovery" },
 ];
 
 // ── Manage (Back Office) ─────────────────────────────────────────────────────
@@ -426,6 +451,7 @@ export const MANAGE_TABS: ServiceTab[] = [
   { label: "Fees", href: "/services/manage/fees" },
   { label: "Users", href: "/services/manage/users" },
   { label: "Compliance", href: "/services/manage/compliance" },
+  { label: "Best Execution", href: "/services/manage/best-execution" },
 ];
 
 // ── Report (Executive) ───────────────────────────────────────────────────────

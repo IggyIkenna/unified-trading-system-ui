@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firm — Odum Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-card: #111113;
+      --bg-surface: #161618;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.12);
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-dim: #71717a;
+      --primary: #22d3ee;
+      --sky: #38bdf8;
+      --emerald: #4ade80;
+      --violet: #a78bfa;
+      --amber: #fbbf24;
+      --rose: #fb7185;
+      --cyan: #22d3ee;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 10, 11, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fca-badge {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border: 1px solid var(--border-accent);
+      border-radius: 9999px;
+      padding: 2px 10px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    nav a {
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--text);
+    }
+
+    nav a.active {
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: #06b6d4;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 8px 12px;
+    }
+
+    section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-pad {
+      padding: 80px 0;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .hero .subtitle {
+      margin-top: 20px;
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-muted);
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .content-section {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .content-section h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-section p {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card-grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--border-accent);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      margin: 40px 0;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 28px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .team-member {
+      text-align: center;
+    }
+
+    .team-photo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border-accent);
+      margin: 0 auto 16px;
+      display: block;
+      filter: grayscale(20%);
+      transition: filter 0.2s;
+    }
+
+    .team-photo:hover {
+      filter: grayscale(0%);
+    }
+
+    .team-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .team-role {
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .team-bio {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .live-item {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg-card);
+    }
+
+    .live-item .status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+
+    .live-item .status.green {
+      background: var(--emerald);
+    }
+
+    .live-item .status.amber {
+      background: var(--amber);
+    }
+
+    .live-item .label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .live-item .desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        display: none;
+      }
+
+      .card-grid-3,
+      .card-grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+
+      .section-pad {
+        padding: 48px 0;
+      }
+
+      .hero-content {
+        padding: 48px 16px 40px;
+      }
+
+      .stat-row {
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container header-inner">
+      <a href="homepage.html" class="logo-group">
+        <img src="/favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
+        <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
+      </a>
+      <nav>
+        <a href="strategies.html">Investment Management</a>
+        <a href="platform.html">Platform</a>
+        <a href="regulatory.html">Regulatory</a>
+        <a href="firm.html" class="active">Firm</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a href="contact.html" class="btn btn-ghost">Sign In</a>
+        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <p class="eyebrow">About Odum Research</p>
+      <h1>A regulated quantitative trading firm spanning investment management, platform infrastructure, and
+        regulatory services</h1>
+      <p class="subtitle">
+        Odum Research is an FCA-authorised firm that trades systematic strategies across digital assets,
+        traditional markets, sports, and prediction markets &mdash; and provides the same platform and regulatory
+        infrastructure to institutional clients.
+      </p>
+    </div>
+  </section>
+
+  <!-- WHAT WE DO -->
+  <section class="section-pad">
+    <div class="container content-section">
+      <p class="eyebrow">What we do</p>
+      <h2>Three lines of business. One infrastructure.</h2>
+      <p>
+        Odum operates at the intersection of regulated investment management, trading technology, and regulatory
+        services. Everything runs on a single platform &mdash; the same system we use to trade our own capital.
+      </p>
+    </div>
+    <div class="container" style="margin-top: 32px;">
+      <div class="card-grid card-grid-3">
+        <article class="card">
+          <h3 style="color: var(--rose);">Investment Management</h3>
+          <p>Systematic strategy allocation across five asset groups. FCA-regulated reporting, oversight, and a clear
+            mandate process for professional and eligible counterparty clients.</p>
+        </article>
+        <article class="card">
+          <h3 style="color: var(--sky);">Platform</h3>
+          <p>Institutional trading infrastructure &mdash; data, research, execution, and reporting. Available as a
+            guided
+            engagement or a production operating layer.</p>
+        </article>
+        <article class="card">
+          <h3 style="color: var(--emerald);">Regulatory Umbrella</h3>
+          <p>Regulatory coverage for firms that want to operate in regulated markets without the delay and cost of
+            direct authorisation. Engagement structure scoped to your specific activities.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-value">$7.5M</div>
+          <div class="stat-label">Investment management AUM</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">Clients live</div>
+          <div class="stat-label">Platform &amp; regulatory umbrella</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">FCA 975797</div>
+          <div class="stat-label">Firm reference</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">100+ venues</div>
+          <div class="stat-label">5 asset groups &middot; London</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY INSTITUTIONS WORK WITH US -->
+  <section class="section-pad">
+    <div class="container content-section">
+      <p class="eyebrow">Why institutions work with us</p>
+      <h2>The combination matters more than any single capability.</h2>
+      <p>
+        Most firms offer either strategies, or a platform, or regulatory coverage. Odum provides all three under one
+        roof &mdash; built by a team with decades of combined experience at leading quantitative trading firms,
+        investment banks, and regulated financial institutions.
+      </p>
+      <p>
+        Clients access the same system we use to manage real capital. There is no separate &ldquo;client version&rdquo;
+        of the platform. The strategies, data pipelines, execution infrastructure, and risk controls are identical.
+      </p>
+    </div>
+    <div class="container" style="margin-top: 32px;">
+      <div class="card-grid card-grid-2">
+        <article class="card">
+          <h3>Breadth of coverage</h3>
+          <p>Crypto exchanges, DeFi protocols, traditional markets, sports, and prediction markets through one
+            unified stack. Most competitors focus on a single asset class.</p>
+        </article>
+        <article class="card">
+          <h3>Same system, no watered-down version</h3>
+          <p>You access the exact platform, strategies, and infrastructure that Odum uses to trade its own capital.
+            Research, execution, risk, and reporting &mdash; all shared.</p>
+        </article>
+        <article class="card">
+          <h3>Real results from real capital</h3>
+          <p>Decades of combined experience at leading quantitative firms and investment banks, with a live track record
+            managing actual capital &mdash; not just backtests.</p>
+        </article>
+        <article class="card">
+          <h3>Regulated from day one</h3>
+          <p>FCA authorisation (975797) from inception. Investment management, reporting, compliance, and client
+            oversight built into the operating model, not bolted on afterwards.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container">
+      <div style="text-align:center; max-width:700px; margin:0 auto 48px;">
+        <p class="eyebrow">Leadership</p>
+        <h2 style="font-size:clamp(24px,3vw,36px);font-weight:700;letter-spacing:-0.01em;">The team behind Odum</h2>
+        <p style="margin-top:16px;font-size:16px;color:var(--text-muted);">Built by people from leading quantitative
+          trading firms, investment banks, and regulated financial institutions.</p>
+      </div>
+      <div class="team-grid">
+        <div class="team-member">
+          <img src="team-ikenna.jpg" alt="Ikenna Igboaka" class="team-photo">
+          <div class="team-name">Ikenna Igboaka</div>
+          <div class="team-role">Founder &amp; CEO</div>
+          <p class="team-bio">10+ years in derivatives trading at IMC (Amsterdam) and Mako (London), specialising in
+            volatility arbitrage and systematic market-making across European and US indices. Built and led desks from
+            inception to seven-figure profitability at both firms. BSc Economics from Warwick, Certificate in
+            Quantitative Finance (CQF). Founded Odum to build multi-strategy, multi-asset trading infrastructure under
+            FCA regulation.</p>
+        </div>
+        <div class="team-member">
+          <img src="team-robert.png" alt="Rob Osborne" class="team-photo">
+          <div class="team-name">Rob Osborne</div>
+          <div class="team-role">CFO &amp; Adviser</div>
+          <p class="team-bio">Chartered Tax Adviser with a 24-year career spanning HMRC, a Big&nbsp;4 practice,
+            regulated asset management, and venture capital. Has incubated, run, and led businesses through
+            transactions, with deep expertise in financial structuring, planning, and operations.</p>
+        </div>
+        <div class="team-member">
+          <img src="team-harsh.jpg" alt="Harsh Kantariya" class="team-photo">
+          <div class="team-name">Harsh Kantariya</div>
+          <div class="team-role">Quant Engineer</div>
+          <p class="team-bio">Quant engineer with 10+ years of experience designing and building intelligent trading
+            systems across multiple asset classes. Leads signal research, model development, and production strategy
+            infrastructure at Odum.</p>
+        </div>
+        <div class="team-member">
+          <img src="team-julian.png" alt="Julian John" class="team-photo" style="object-position:center 20%;">
+          <div class="team-name">Julian John</div>
+          <div class="team-role">Programme &amp; Operations</div>
+          <p class="team-bio">15+ years delivering complex digital, AI, and trading technology projects across public
+            and private sectors. Specialises in aligning technical execution with business strategy in fast-paced,
+            multi-stakeholder environments.</p>
+        </div>
+        <div class="team-member">
+          <img src="team-femi.jpg" alt="Femi Amoo" class="team-photo" style="object-position:center 15%;">
+          <div class="team-name">Femi Amoo</div>
+          <div class="team-role">Engineering &amp; Infrastructure</div>
+          <p class="team-bio">Software engineer and infrastructure architect with 10+ years across fintech, healthtech,
+            and cloud platforms. Built core trading infrastructure, predictive models, and real-time analytics pipelines
+            at Odum. MSc Cryptography from King's College London.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IS LIVE TODAY -->
+  <section class="section-pad">
+    <div class="container content-section">
+      <p class="eyebrow">What is live today</p>
+      <h2>Current operating scope</h2>
+      <p>
+        Odum is actively trading and serving clients across the following areas. Some capabilities are in active
+        deployment; others are available through selected engagements.
+      </p>
+    </div>
+    <div class="container" style="margin-top: 24px;">
+      <div class="live-grid">
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Crypto exchange strategies</span></div>
+          <div class="desc">11 exchanges &middot; spot, perps, futures, options</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">DeFi protocol strategies</span></div>
+          <div class="desc">55+ protocols &middot; 8+ chains</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Traditional markets</span></div>
+          <div class="desc">8 venues &middot; equities, futures, FX, commodities</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Sports quantitative</span></div>
+          <div class="desc">Betfair, Pinnacle +20 bookmakers &middot; 100+ leagues</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Prediction markets</span></div>
+          <div class="desc">Polymarket, Kalshi +3 more</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Unified data pipeline</span></div>
+          <div class="desc">100+ venues &middot; tick to daily resolution</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Platform access</span></div>
+          <div class="desc">Data, research, execution, and reporting layers</div>
+        </div>
+        <div class="live-item">
+          <div><span class="status green"></span><span class="label">Regulatory umbrella</span></div>
+          <div class="desc">FCA umbrella &middot; professional &amp; eligible counterparty</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGULATORY & CLIENT SCOPE -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container content-section">
+      <p class="eyebrow">Regulatory and client scope</p>
+      <h2>Who we serve and how we operate</h2>
+      <p>
+        Odum Research Ltd is authorised and regulated by the Financial Conduct Authority (FCA), firm reference number
+        975797. We operate as an investment manager, provide trading platform infrastructure, and offer regulatory
+        coverage through structured engagement under our existing FCA permissions.
+      </p>
+      <p>
+        Our client base is limited to Professional Clients and Eligible Counterparties as defined under FCA rules. We do
+        not offer services to retail investors.
+      </p>
+      <p>
+        The firm is headquartered in London, United Kingdom.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-pad" style="background: var(--bg-surface); text-align: center;">
+    <div class="container">
+      <p class="eyebrow">Get in touch</p>
+      <h2 style="font-size: 28px; font-weight: 700; margin: 12px 0 16px;">Talk to us about working together</h2>
+      <p style="max-width: 560px; margin: 0 auto 28px; color: var(--text-muted); font-size: 15px;">
+        Whether you're exploring strategy allocation, platform access, or regulatory structure, we'll direct you to the
+        right path.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+        <a href="contact.html" class="btn btn-outline">Contact Us</a>
+      </div>
+      <p style="margin-top: 24px; font-size: 13px; color: var(--text-dim);">
+        info@odum-research.co.uk &middot; London, United Kingdom
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-inner">
+      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="firm.html">Privacy</a>
+        <a href="firm.html">Terms</a>
+        <a href="regulatory.html">FCA 975797</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>

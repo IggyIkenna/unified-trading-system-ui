@@ -3598,6 +3598,46 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-api/stream/deploy-events:
+    get:
+      tags:
+      - deployment-api
+      - sse
+      summary: Stream Deploy Events
+      description: 'Stream deployment lifecycle events as SSE.
+
+
+        Pushes an event whenever a deployment''s state changes (shard status
+
+        transitions, overall status changes, cancellation, etc.).  The client
+
+        receives structured ``SSEMessage`` payloads on the ``deploy_events``
+
+        channel.  A heartbeat comment is sent every 30 s to keep the connection
+
+        alive through proxies.'
+      operationId: stream_deploy_events_stream_deploy_events_get
+      parameters:
+      - name: deployment_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Deployment ID to subscribe to
+          title: Deployment Id
+        description: Deployment ID to subscribe to
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/health:
     get:
       tags:
@@ -3666,6 +3706,20 @@ paths:
         Returns HTTP 503 when downstream is unreachable so the UI correctly detects
         "down".'
       operationId: reporting_health_reporting_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /unified-trading-api/data-status/health:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Data Status Health
+      description: Health probe for deployment-api data-status domain.
+      operationId: data_status_health_data_status_health_get
       responses:
         '200':
           description: Successful Response
@@ -3933,6 +3987,38 @@ paths:
         schema:
           type: string
           title: Status
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by client ID
+          title: Client Id
+        description: Filter by client ID
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by category (CEFI, DEFI, TRADFI, SPORTS)
+          title: Category
+        description: Filter by category (CEFI, DEFI, TRADFI, SPORTS)
+      - name: strategy_family
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by strategy family
+          title: Strategy Family
+        description: Filter by strategy family
+      - name: account_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by account ID
+          title: Account Id
+        description: Filter by account ID
       - name: as_of
         in: query
         required: false
@@ -4041,6 +4127,38 @@ paths:
         schema:
           type: string
           title: Order Id
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by client ID
+          title: Client Id
+        description: Filter by client ID
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by category (CEFI, DEFI, TRADFI, SPORTS)
+          title: Category
+        description: Filter by category (CEFI, DEFI, TRADFI, SPORTS)
+      - name: strategy_family
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by strategy family
+          title: Strategy Family
+        description: Filter by strategy family
+      - name: account_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by account ID
+          title: Account Id
+        description: Filter by account ID
       - name: as_of
         in: query
         required: false
@@ -4249,6 +4367,46 @@ paths:
                 type: object
                 additionalProperties: true
                 title: Response Create Backtest Execution Backtests Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/execution/analysis/{execution_id}:
+    get:
+      tags:
+      - unified-trading-api
+      - execution
+      summary: Get Execution Analysis
+      description: 'Get full execution analysis for a strategy run or order.
+
+
+        Returns the instruction chain, algo decisions at each step,
+
+        and resulting fills — the complete trace a trader needs to
+
+        understand what happened and why.'
+      operationId: get_execution_analysis_execution_analysis__execution_id__get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: execution_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Execution Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Execution Analysis Execution Analysis  Execution
+                  Id  Get
         '422':
           description: Validation Error
           content:
@@ -4520,6 +4678,46 @@ paths:
         schema:
           type: string
           title: Strategy Id
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by client ID
+          title: Client Id
+        description: Filter by client ID
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by category (CEFI, DEFI, TRADFI, SPORTS)
+          title: Category
+        description: Filter by category (CEFI, DEFI, TRADFI, SPORTS)
+      - name: strategy_family
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by strategy family
+          title: Strategy Family
+        description: Filter by strategy family
+      - name: account_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by account ID
+          title: Account Id
+        description: Filter by account ID
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by chain (e.g. ETHEREUM, SOLANA)
+          title: Chain
+        description: Filter by chain (e.g. ETHEREUM, SOLANA)
       - name: mode
         in: query
         required: false
@@ -4619,6 +4817,30 @@ paths:
         schema:
           type: string
           title: Venue
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by client ID
+          title: Client Id
+        description: Filter by client ID
+      - name: account_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by account ID
+          title: Account Id
+        description: Filter by account ID
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by chain (e.g. ETHEREUM, SOLANA)
+          title: Chain
+        description: Filter by chain (e.g. ETHEREUM, SOLANA)
       - name: mode
         in: query
         required: false
@@ -4684,6 +4906,14 @@ paths:
         schema:
           type: string
           title: Venue
+      - name: strategy_id
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter PnL rows by strategy ID
+          title: Strategy Id
+        description: Filter PnL rows by strategy ID
       - name: period
         in: query
         required: false
@@ -5390,6 +5620,48 @@ paths:
                 title: Response Get Strategy Configs Analytics Strategy Configs Get
       security:
       - APIKeyHeader: []
+  /unified-trading-api/analytics/strategies/catalog:
+    get:
+      tags:
+      - unified-trading-api
+      - analytics
+      summary: Get Strategy Catalog
+      description: 'Return the full strategy catalog from UAC STRATEGY_REGISTRY.
+
+
+        This powers the UI strategy family browser — traders can see every available
+
+        strategy type, its domain, family, and configurable parameters at a glance.
+
+        Data is sourced from the UAC StrategyRegistry singleton (SSOT).'
+      operationId: get_strategy_catalog_analytics_strategies_catalog_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: domain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by domain: defi, cefi, tradfi, sports'
+          title: Domain
+        description: 'Filter by domain: defi, cefi, tradfi, sports'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Strategy Catalog Analytics Strategies Catalog
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/ml/model-families:
     get:
       tags:
@@ -5849,6 +6121,216 @@ paths:
                 title: Response Get Ml Config Ml Config Get
       security:
       - APIKeyHeader: []
+  /unified-trading-api/ml/grid-configs:
+    get:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: List Grid Configs
+      description: List saved ML training grid configurations.
+      operationId: list_grid_configs_ml_grid_configs_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Filter by category: CEFI, TRADFI, SPORTS'
+          title: Category
+        description: 'Filter by category: CEFI, TRADFI, SPORTS'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Grid Configs Ml Grid Configs Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Create Grid Config
+      description: 'Create a new grid configuration.
+
+
+        Body must include ``name`` and at least one of ``instruments`` (CEFI/TRADFI)
+
+        or ``sports_families`` (SPORTS).  Feature groups default to all available
+
+        for the category when omitted.'
+      operationId: create_grid_config_ml_grid_configs_post
+      security:
+      - APIKeyHeader: []
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Create Grid Config Ml Grid Configs Post
+  /unified-trading-api/ml/grid-configs/{config_name}:
+    get:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Get Grid Config
+      description: Get a specific grid config by name.
+      operationId: get_grid_config_ml_grid_configs__config_name__get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: config_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Config Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Grid Config Ml Grid Configs  Config Name  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Update Grid Config
+      description: Update an existing grid configuration.
+      operationId: update_grid_config_ml_grid_configs__config_name__put
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: config_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Config Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Update Grid Config Ml Grid Configs  Config Name  Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    delete:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Delete Grid Config
+      description: Delete a grid configuration.
+      operationId: delete_grid_config_ml_grid_configs__config_name__delete
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: config_name
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Config Name
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Delete Grid Config Ml Grid Configs  Config Name  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/ml/feature-groups:
+    get:
+      tags:
+      - unified-trading-api
+      - ml
+      summary: Get Available Feature Groups
+      description: 'Get available feature groups for a category.
+
+
+        Returns the list of feature group names that can be used in grid configs.
+
+        Groups are sourced from the FeatureGroupRegistry (SSOT in UTL).'
+      operationId: get_available_feature_groups_ml_feature_groups_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          type: string
+          description: 'Category: CEFI, TRADFI, SPORTS, DEFI'
+          default: CEFI
+          title: Category
+        description: 'Category: CEFI, TRADFI, SPORTS, DEFI'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Available Feature Groups Ml Feature Groups Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/ml/models/{model_id}/promote:
     post:
       tags:
@@ -7091,6 +7573,22 @@ paths:
           type: string
           default: 1d
           title: Horizon
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: T+1 reconciliation date for batch mode
+          title: As Of
+        description: T+1 reconciliation date for batch mode
       responses:
         '200':
           description: Successful Response
@@ -7123,6 +7621,22 @@ paths:
         schema:
           type: string
           title: Instrument
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: T+1 reconciliation date for batch mode
+          title: As Of
+        description: T+1 reconciliation date for batch mode
       - name: page
         in: query
         required: false
@@ -7163,17 +7677,40 @@ paths:
       summary: Get Stress Tests
       description: Get stress test results.
       operationId: get_stress_tests_risk_stress_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: T+1 reconciliation date for batch mode
+          title: As Of
+        description: T+1 reconciliation date for batch mode
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
-                additionalProperties: true
                 type: object
+                additionalProperties: true
                 title: Response Get Stress Tests Risk Stress Get
-      security:
-      - APIKeyHeader: []
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/risk/circuit-breaker:
     post:
       tags:
@@ -8032,6 +8569,459 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Data Status
+      description: Proxy to deployment-api GET /api/data-status.
+      operationId: get_data_status_data_status_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Service name
+          title: Service
+        description: Service name
+      - name: start_date
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Start date (YYYY-MM-DD)
+          title: Start Date
+        description: Start date (YYYY-MM-DD)
+      - name: end_date
+        in: query
+        required: true
+        schema:
+          type: string
+          description: End date (YYYY-MM-DD)
+          title: End Date
+        description: End date (YYYY-MM-DD)
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: venue
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Venue
+      - name: show_missing
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Show Missing
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          default: batch
+          title: Mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Data Status Data Status Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/turbo:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Data Status Turbo
+      description: Proxy to deployment-api GET /api/data-status/turbo.
+      operationId: get_data_status_turbo_data_status_turbo_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Service
+      - name: start_date
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Start Date
+      - name: end_date
+        in: query
+        required: true
+        schema:
+          type: string
+          title: End Date
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: venue
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Venue
+      - name: sub_dimension
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Sub Dimension
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          default: batch
+          title: Mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Data Status Turbo Data Status Turbo Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/coverage-summary:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Coverage Summary
+      description: Proxy to deployment-api GET /api/data-status/coverage-summary.
+      operationId: get_coverage_summary_data_status_coverage_summary_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Service
+      - name: start_date
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Start Date
+      - name: end_date
+        in: query
+        required: true
+        schema:
+          type: string
+          title: End Date
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Coverage Summary Data Status Coverage Summary
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/venue-filters:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Venue Filters
+      description: Proxy to deployment-api GET /api/data-status/venue-filters.
+      operationId: get_venue_filters_data_status_venue_filters_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Service
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Venue Filters Data Status Venue Filters Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/list-files:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: List Files
+      description: Proxy to deployment-api GET /api/data-status/list-files.
+      operationId: list_files_data_status_list_files_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: service
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Service
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: venue
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Venue
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Start Date
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End Date
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Files Data Status List Files Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/instruments:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Instruments
+      description: Proxy to deployment-api GET /api/data-status/instruments.
+      operationId: get_instruments_data_status_instruments_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+      - name: venue
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Venue
+      - name: instrument_type
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Instrument Type
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 5000
+          minimum: 1
+          default: 500
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Instruments Data Status Instruments Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/instrument-availability:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Instrument Availability
+      description: Proxy to deployment-api GET /api/data-status/instrument-availability.
+      operationId: get_instrument_availability_data_status_instrument_availability_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: venue
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Venue
+      - name: instrument_type
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Instrument Type
+      - name: instrument
+        in: query
+        required: true
+        schema:
+          type: string
+          title: Instrument
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Start Date
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End Date
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Instrument Availability Data Status Instrument
+                  Availability Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/data-status/pipeline-overview:
+    get:
+      tags:
+      - unified-trading-api
+      - data-status
+      summary: Get Pipeline Overview
+      description: 'Aggregate pipeline status across all services.
+
+
+        Returns completion percentages for each pipeline stage
+
+        (instruments, raw data, processed data, events).
+
+        In real mode, calls deployment-api /api/service-status/overview
+
+        and /api/data-status/turbo for each core service.'
+      operationId: get_pipeline_overview_data_status_pipeline_overview_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Pipeline Overview Data Status Pipeline Overview
+                  Get
+      security:
+      - APIKeyHeader: []
   /unified-trading-api/users/organizations:
     get:
       tags:
@@ -8145,6 +9135,447 @@ paths:
                 title: Response Pre Trade Check Compliance Pre Trade Check Post
       security:
       - APIKeyHeader: []
+  /unified-trading-api/defi/basis/funding-matrix:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-basis
+      summary: Get Funding Matrix
+      description: Coin x Venue funding rate matrix (annualised %, OI, 24h change).
+      operationId: get_funding_matrix_defi_basis_funding_matrix_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Funding Matrix Defi Basis Funding Matrix Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/basis/lst-collateral:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-basis
+      summary: Get Lst Collateral
+      description: LST collateral utilisation per open basis position.
+      operationId: get_lst_collateral_defi_basis_lst_collateral_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Lst Collateral Defi Basis Lst Collateral Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/basis/venue-allocation:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-basis
+      summary: Get Venue Allocation
+      description: Cross-venue capital allocation for basis positions.
+      operationId: get_venue_allocation_defi_basis_venue_allocation_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Venue Allocation Defi Basis Venue Allocation Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/basis/directions:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-basis
+      summary: Get Basis Directions
+      description: Standard vs inverse basis direction per coin based on funding sign.
+      operationId: get_basis_directions_defi_basis_directions_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Basis Directions Defi Basis Directions Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lending/rates:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lending
+      summary: Get Lending Rates
+      description: Cross-protocol APY comparison for lending arb opportunities.
+      operationId: get_lending_rates_defi_lending_rates_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Lending Rates Defi Lending Rates Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lending/positions:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lending
+      summary: Get Lending Positions
+      description: Active lending arb positions with health factor monitoring.
+      operationId: get_lending_positions_defi_lending_positions_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Lending Positions Defi Lending Positions Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lending/simulate-rate-impact:
+    post:
+      tags:
+      - unified-trading-api
+      - defi-lending
+      summary: Simulate Rate Impact
+      description: 'Simulate rate impact for a proposed deposit/borrow.
+
+
+        Uses a simplified utilization curve model: larger deposits compress
+
+        supply APY and increase borrow APY proportionally.'
+      operationId: simulate_rate_impact_defi_lending_simulate_rate_impact_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SimulateRateImpactRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Simulate Rate Impact Defi Lending Simulate Rate Impact
+                  Post
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/liquidation/risk-heatmap:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-liquidation
+      summary: Get Risk Heatmap
+      description: Get liquidation risk heatmap — positions by asset x health factor
+        range.
+      operationId: get_risk_heatmap_defi_liquidation_risk_heatmap_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reconciliation date for batch mode
+          title: As Of
+        description: Reconciliation date for batch mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Risk Heatmap Defi Liquidation Risk Heatmap Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/defi/liquidation/cascade-risk:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-liquidation
+      summary: Get Cascade Risk
+      description: Get current cascade risk indicator — correlated liquidation cluster
+        analysis.
+      operationId: get_cascade_risk_defi_liquidation_cascade_risk_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reconciliation date for batch mode
+          title: As Of
+        description: Reconciliation date for batch mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Cascade Risk Defi Liquidation Cascade Risk Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/defi/liquidation/events:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-liquidation
+      summary: Get Liquidation Events
+      description: Get recent on-chain liquidation events.
+      operationId: get_liquidation_events_defi_liquidation_events_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: protocol
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by protocol (e.g. AAVE_V3)
+          title: Protocol
+        description: Filter by protocol (e.g. AAVE_V3)
+      - name: chain
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by chain (e.g. ETHEREUM)
+          title: Chain
+        description: Filter by chain (e.g. ETHEREUM)
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reconciliation date for batch mode
+          title: As Of
+        description: Reconciliation date for batch mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Liquidation Events Defi Liquidation Events Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/defi/liquidation/captured-positions:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-liquidation
+      summary: Get Captured Positions
+      description: Get captured positions from liquidation sniping.
+      operationId: get_captured_positions_defi_liquidation_captured_positions_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: mode
+        in: query
+        required: false
+        schema:
+          type: string
+          pattern: ^(live|batch)$
+          default: live
+          title: Mode
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by status (ACTIVE, CLOSED, PENDING_EXIT)
+          title: Status
+        description: Filter by status (ACTIVE, CLOSED, PENDING_EXIT)
+      - name: as_of
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Reconciliation date for batch mode
+          title: As Of
+        description: Reconciliation date for batch mode
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Captured Positions Defi Liquidation Captured Positions
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/defi/lp/position-range:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lp
+      summary: Get Position Range
+      description: Get current LP position range and price data.
+      operationId: get_position_range_defi_lp_position_range_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Position Range Defi Lp Position Range Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lp/impermanent-loss:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lp
+      summary: Get Impermanent Loss
+      description: Get impermanent loss time series (LP value vs HODL).
+      operationId: get_impermanent_loss_defi_lp_impermanent_loss_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Impermanent Loss Defi Lp Impermanent Loss Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lp/rebalance-history:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lp
+      summary: Get Rebalance History
+      description: Get LP rebalance event history.
+      operationId: get_rebalance_history_defi_lp_rebalance_history_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Rebalance History Defi Lp Rebalance History Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lp/ml-confidence:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lp
+      summary: Get Ml Confidence
+      description: Get current ML rebalance confidence and recommendation.
+      operationId: get_ml_confidence_defi_lp_ml_confidence_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Ml Confidence Defi Lp Ml Confidence Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/defi/lp/fee-revenue:
+    get:
+      tags:
+      - unified-trading-api
+      - defi-lp
+      summary: Get Fee Revenue
+      description: Get LP fee revenue accumulation (24h/7d/30d).
+      operationId: get_fee_revenue_defi_lp_fee_revenue_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Fee Revenue Defi Lp Fee Revenue Get
+      security:
+      - APIKeyHeader: []
   /unified-trading-api/derivatives/options-chain:
     get:
       tags:
@@ -8240,6 +9671,103 @@ paths:
                 type: object
                 title: Response Get Portfolio Greeks Derivatives Portfolio Greeks
                   Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/commodity/regime-state:
+    get:
+      tags:
+      - unified-trading-api
+      - commodity
+      summary: Get Regime State
+      description: Current HMM regime state with confidence and transition metadata.
+      operationId: get_regime_state_commodity_regime_state_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Regime State Commodity Regime State Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/commodity/factors:
+    get:
+      tags:
+      - unified-trading-api
+      - commodity
+      summary: Get Factors
+      description: Factor decomposition — 5 fundamental commodity factors with weights
+        and values.
+      operationId: get_factors_commodity_factors_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Factors Commodity Factors Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/commodity/cot-positioning:
+    get:
+      tags:
+      - unified-trading-api
+      - commodity
+      summary: Get Cot Positioning
+      description: CFTC COT positioning time series — speculative vs commercial net
+        positions.
+      operationId: get_cot_positioning_commodity_cot_positioning_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Cot Positioning Commodity Cot Positioning Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/commodity/regime-history:
+    get:
+      tags:
+      - unified-trading-api
+      - commodity
+      summary: Get Regime History
+      description: Regime transition history over last 90 days.
+      operationId: get_regime_history_commodity_regime_history_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Regime History Commodity Regime History Get
+      security:
+      - APIKeyHeader: []
+  /unified-trading-api/commodity/positions:
+    get:
+      tags:
+      - unified-trading-api
+      - commodity
+      summary: Get Commodity Positions
+      description: Active commodity positions with regime-at-entry metadata.
+      operationId: get_commodity_positions_commodity_positions_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Commodity Positions Commodity Positions Get
       security:
       - APIKeyHeader: []
   /unified-trading-api/catalogue:
@@ -8472,6 +10000,235 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/events/calendar:
+    get:
+      tags:
+      - unified-trading-api
+      - events
+      summary: Get Events Calendar
+      description: 'Get upcoming economic events for the calendar view.
+
+
+        Returns a list of EconomicEventItem records sorted by scheduled_at.
+
+
+        Mock mode: seeded from seed_events.py.
+
+        Live mode (future): reads from GCS calendar pipeline output.'
+      operationId: get_events_calendar_events_calendar_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: impact
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Filter by impact level: HIGH | MEDIUM | LOW'
+          title: Impact
+        description: 'Filter by impact level: HIGH | MEDIUM | LOW'
+      - name: region
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Filter by region: US | EU | JP'
+          title: Region
+        description: 'Filter by region: US | EU | JP'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Events Calendar Events Calendar Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/events/predictions:
+    get:
+      tags:
+      - unified-trading-api
+      - events
+      summary: Get Event Predictions
+      description: 'Get ML-predicted market impact scenarios for upcoming events.
+
+
+        Returns a list of EventImpactPredictionItem records with three conditional
+
+        scenarios per event-instrument pair.
+
+
+        Mock mode: seeded from seed_events.py.
+
+        Live mode (future): reads from ML model inference output.'
+      operationId: get_event_predictions_events_predictions_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: event_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter predictions by event ID
+          title: Event Id
+        description: Filter predictions by event ID
+      - name: instrument
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by instrument (e.g. BTC-USD)
+          title: Instrument
+        description: Filter by instrument (e.g. BTC-USD)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Event Predictions Events Predictions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/events/news:
+    get:
+      tags:
+      - unified-trading-api
+      - events
+      summary: Get Events News
+      description: 'Get recent news feed items and macro announcements.
+
+
+        Returns a list of NewsFeedItemModel records sorted by published_at descending.
+
+
+        Mock mode: seeded from seed_events.py.
+
+        Live mode (future): reads from news aggregation pipeline.'
+      operationId: get_events_news_events_news_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: sentiment
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Filter by sentiment: bullish | bearish | neutral'
+          title: Sentiment
+        description: 'Filter by sentiment: bullish | bearish | neutral'
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by category (e.g. macro, on-chain, governance)
+          title: Category
+        description: Filter by category (e.g. macro, on-chain, governance)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          description: Max items to return
+          default: 50
+          title: Limit
+        description: Max items to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Events News Events News Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/events/positions:
+    get:
+      tags:
+      - unified-trading-api
+      - events
+      summary: Get Event Positions
+      description: 'Get active positions taken based on event signals.
+
+
+        Returns a list of EventPositionItem records with P&L and phase data.
+
+
+        Mock mode: seeded from seed_events.py.
+
+        Live mode (future): reads from execution-service event position state.'
+      operationId: get_event_positions_events_positions_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: phase
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Filter by phase: PRE_EVENT | POST_EVENT'
+          title: Phase
+        description: 'Filter by phase: PRE_EVENT | POST_EVENT'
+      - name: event_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter positions by event ID
+          title: Event Id
+        description: Filter positions by event ID
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Event Positions Events Positions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /unified-trading-api/chat/message:
     post:
       tags:
@@ -8527,6 +10284,568 @@ paths:
                   type: string
                 type: object
                 title: Response Chat Tier Chat Tier Get
+  /unified-trading-api/api/sports/fixtures:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixtures
+      description: List today's fixtures with current status, scores, odds.
+      operationId: get_fixtures_api_sports_fixtures_get
+      parameters:
+      - name: league
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by league_id
+          title: League
+        description: Filter by league_id
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by status (NS, 1H, HT, 2H, FT)
+          title: Status
+        description: Filter by status (NS, 1H, HT, 2H, FT)
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 200
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixtures Api Sports Fixtures Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/fixtures/{fixture_id}:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture Detail
+      description: Get single fixture detail with full stats, events, lineups.
+      operationId: get_fixture_detail_api_sports_fixtures__fixture_id__get
+      parameters:
+      - name: fixture_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Fixture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture Detail Api Sports Fixtures  Fixture Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/fixtures/{fixture_id}/odds:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture Odds History
+      description: Get odds history for a fixture across bookmakers (time series).
+      operationId: get_fixture_odds_history_api_sports_fixtures__fixture_id__odds_get
+      parameters:
+      - name: fixture_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Fixture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture Odds History Api Sports Fixtures  Fixture
+                  Id  Odds Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/leagues:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Leagues
+      description: List active leagues with fixture counts.
+      operationId: get_leagues_api_sports_leagues_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Leagues Api Sports Leagues Get
+  /unified-trading-api/api/sports/standings/{league_id}:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Standings
+      description: Get league standings table.
+      operationId: get_standings_api_sports_standings__league_id__get
+      parameters:
+      - name: league_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: League Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Standings Api Sports Standings  League Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/fixtures/{fixture_id}/predictions:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture Predictions
+      description: Get model predictions for a fixture.
+      operationId: get_fixture_predictions_api_sports_fixtures__fixture_id__predictions_get
+      parameters:
+      - name: fixture_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Fixture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture Predictions Api Sports Fixtures  Fixture
+                  Id  Predictions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/fixtures/{fixture_id}/lineups:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture Lineups
+      description: Get confirmed lineups for a fixture.
+      operationId: get_fixture_lineups_api_sports_fixtures__fixture_id__lineups_get
+      parameters:
+      - name: fixture_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Fixture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture Lineups Api Sports Fixtures  Fixture Id  Lineups
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/fixtures/{fixture_id}/results:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture Results
+      description: Get post-match results summary with predicted vs actual comparison.
+      operationId: get_fixture_results_api_sports_fixtures__fixture_id__results_get
+      parameters:
+      - name: fixture_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Fixture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture Results Api Sports Fixtures  Fixture Id  Results
+                  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/history:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture History
+      description: Get historical fixtures with results and P&L summary.
+      operationId: get_fixture_history_api_sports_history_get
+      parameters:
+      - name: league
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by league
+          title: League
+        description: Filter by league
+      - name: date
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Filter by date (YYYY-MM-DD)
+          title: Date
+        description: Filter by date (YYYY-MM-DD)
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture History Api Sports History Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/api/sports/fixtures/{fixture_id}/injuries:
+    get:
+      tags:
+      - unified-trading-api
+      - sports
+      - sports
+      summary: Get Fixture Injuries
+      description: Get injury/absence list for a fixture's teams.
+      operationId: get_fixture_injuries_api_sports_fixtures__fixture_id__injuries_get
+      parameters:
+      - name: fixture_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Fixture Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Fixture Injuries Api Sports Fixtures  Fixture
+                  Id  Injuries Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/stream/positions:
+    get:
+      tags:
+      - unified-trading-api
+      - sse
+      - sse
+      summary: Stream Positions
+      operationId: stream_positions_stream_positions_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: _key
+        in: query
+        required: false
+        schema:
+          type: string
+          default: positions
+          title: ' Key'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/stream/signals:
+    get:
+      tags:
+      - unified-trading-api
+      - sse
+      - sse
+      summary: Stream Signals
+      operationId: stream_signals_stream_signals_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: _key
+        in: query
+        required: false
+        schema:
+          type: string
+          default: signals
+          title: ' Key'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/stream/risk-alerts:
+    get:
+      tags:
+      - unified-trading-api
+      - sse
+      - sse
+      summary: Stream Risk Alerts
+      operationId: stream_risk_alerts_stream_risk_alerts_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: _key
+        in: query
+        required: false
+        schema:
+          type: string
+          default: risk-alerts
+          title: ' Key'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/stream/deploy-events:
+    get:
+      tags:
+      - unified-trading-api
+      - sse
+      - sse
+      summary: Stream Deploy Events
+      operationId: stream_deploy_events_stream_deploy_events_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: _key
+        in: query
+        required: false
+        schema:
+          type: string
+          default: deploy-events
+          title: ' Key'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/stream/predictions:
+    get:
+      tags:
+      - unified-trading-api
+      - sse
+      - sse
+      summary: Stream Predictions
+      operationId: stream_predictions_stream_predictions_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: _key
+        in: query
+        required: false
+        schema:
+          type: string
+          default: predictions
+          title: ' Key'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/stream/reports:
+    get:
+      tags:
+      - unified-trading-api
+      - sse
+      - sse
+      summary: Stream Reports
+      operationId: stream_reports_stream_reports_get
+      security:
+      - APIKeyHeader: []
+      parameters:
+      - name: _key
+        in: query
+        required: false
+        schema:
+          type: string
+          default: reports
+          title: ' Key'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /unified-trading-api/protocols:
+    get:
+      tags:
+      - unified-trading-api
+      - protocols
+      - protocols
+      summary: Get Protocols
+      description: 'Return supported protocols per domain.
+
+
+        Clients use this to discover whether a domain supports REST, WebSocket,
+
+        SSE, or PubSub and adapt their connection strategy accordingly.'
+      operationId: get_protocols_protocols_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  items:
+                    type: string
+                  type: array
+                type: object
+                title: Response Get Protocols Protocols Get
   /client-reporting-api/health:
     get:
       summary: Health
@@ -11767,6 +14086,160 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/daily-equity:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Daily Equity Csv
+      description: 'Download daily equity curve with TWR metrics as CSV.
+
+
+        Includes: date, equity, TWR index, drawdown %, daily return, cumulative transfers.
+
+        Uses transfer-adjusted metrics from canonical transfer store.'
+      operationId: export_daily_equity_csv_api_v1_exports_daily_equity_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/transfers:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Transfers Csv
+      description: Download canonical transfer history as CSV.
+      operationId: export_transfers_csv_api_v1_exports_transfers_get
+      parameters:
+      - name: client_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/exports/tear-sheet:
+    get:
+      tags:
+      - client-reporting-api
+      - exports
+      summary: Export Tear Sheet
+      description: 'Generate and return an institutional tear sheet as HTML.
+
+
+        Includes: equity curves, monthly returns, Sharpe/Sortino/Calmar,
+
+        drawdown series, rolling metrics, CSV download buttons.'
+      operationId: export_tear_sheet_api_v1_exports_tear_sheet_get
+      parameters:
+      - name: client_ids
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Comma-separated client IDs (e.g. 'PR,ODUM_PROP')
+          title: Client Ids
+        description: Comma-separated client IDs (e.g. 'PR,ODUM_PROP')
+      - name: title
+        in: query
+        required: false
+        schema:
+          type: string
+          description: Report title
+          default: Odum Capital — Strategy Performance
+          title: Title
+        description: Report title
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /client-reporting-api/api/v1/tax/annual-summary:
     get:
       tags:
@@ -12655,6 +15128,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /client-reporting-api/api/v1/emergency/close-all/{client_id}:
+    post:
+      tags:
+      - client-reporting-api
+      - emergency
+      summary: Close All Positions
+      description: 'Emergency close-all positions for a client.
+
+
+        - Guard: returns 403 if the client does not have trading keys.
+
+        - dry_run=true (default): lists positions that WOULD be closed.
+
+        - dry_run=false: submits market close orders via CCXT.'
+      operationId: close_all_positions_api_v1_emergency_close_all__client_id__post
+      parameters:
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          description: Client identifier
+          title: Client Id
+        description: Client identifier
+      - name: authorization
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Authorization
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseAllRequest'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CloseAllResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /client-reporting-api/metrics:
     get:
       summary: Metrics
@@ -12928,6 +15460,35 @@ paths:
                   type: array
                 type: object
                 title: Response Get Supported Algos Manual Algos Get
+  /execution-service/preview/unwind:
+    post:
+      tags:
+      - execution-service
+      - preview
+      summary: Preview cost of closing or reducing positions
+      description: Read-only cost estimation endpoint. Returns gas, slippage, exchange
+        fee, and bridge fee breakdown for unwinding positions. No orders are placed.
+        Live-mode only.
+      operationId: preview_unwind_preview_unwind_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnwindPreviewRequestBody'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnwindPreviewResponseBody'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /execution-service/kill-switch/activate:
     post:
       summary: Activate Kill Switch
@@ -13208,6 +15769,46 @@ paths:
                   Get
       tags:
       - execution-service
+  /execution-service/circuit-breakers:
+    get:
+      summary: Get Circuit Breaker States
+      description: 'Per-venue circuit breaker state for UI dashboard.
+
+
+        Returns a list of all known circuit breaker states including:
+
+        venue, state, consecutive failures, cooldown, and backoff cycle.'
+      operationId: get_circuit_breaker_states_circuit_breakers_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Circuit Breaker States Circuit Breakers Get
+      tags:
+      - execution-service
+  /execution-service/transfers/active:
+    get:
+      summary: Get Active Transfers
+      description: 'Active in-flight transfers for UI Transfer Monitor.
+
+
+        Returns the list of currently tracked in-flight transfers.'
+      operationId: get_active_transfers_transfers_active_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Active Transfers Transfers Active Get
+      tags:
+      - execution-service
   /risk-and-exposure-service/health:
     get:
       tags:
@@ -13234,6 +15835,16 @@ paths:
           content:
             application/json:
               schema: {}
+  /risk-and-exposure-service/stream/risk_alerts:
+    get:
+      tags:
+      - risk-and-exposure-service
+      - sse
+      summary: Stream
+      operationId: stream_stream_risk_alerts_get
+      responses:
+        '200':
+          description: Successful Response
   /risk-and-exposure-service/:
     get:
       summary: Root
@@ -14268,6 +16879,95 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /position-balance-monitor-service/reconciliation/drift/portfolio-snapshot:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - reconciliation
+      summary: Get Portfolio Snapshot
+      description: 'Get the latest portfolio reconciliation snapshot.
+
+
+        Returns the most recent PortfolioReconciliationSnapshot with:
+
+        - total_equity_usd, allocated/unallocated equity
+
+        - per-strategy drift metrics (delta + equity dimensions)
+
+        - per-share-class aggregated summaries
+
+        - worst drift KPI for quick alerting'
+      operationId: get_portfolio_snapshot_reconciliation_drift_portfolio_snapshot_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Get Portfolio Snapshot Reconciliation Drift Portfolio
+                  Snapshot Get
+  /position-balance-monitor-service/reconciliation/drift/history:
+    get:
+      tags:
+      - position-balance-monitor-service
+      - reconciliation
+      summary: Get Drift History
+      description: 'Get recent drift metric snapshots for charting.
+
+
+        Returns most recent N PortfolioReconciliationSnapshots.'
+      operationId: get_drift_history_reconciliation_drift_history_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 1000
+          minimum: 1
+          description: Max snapshots to return
+          default: 100
+          title: Limit
+        description: Max snapshots to return
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Drift History Reconciliation Drift History Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /position-balance-monitor-service/reconciliation/drift/evaluate:
+    post:
+      tags:
+      - position-balance-monitor-service
+      - reconciliation
+      summary: Evaluate Drift
+      description: 'Trigger an immediate drift evaluation (manual refresh).
+
+
+        Uses current strategy targets and actual positions to compute drift.
+
+        In mock mode, uses built-in mock data.'
+      operationId: evaluate_drift_reconciliation_drift_evaluate_post
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Evaluate Drift Reconciliation Drift Evaluate Post
   /position-balance-monitor-service/treasury/balance:
     get:
       tags:
@@ -15451,6 +18151,173 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-service/api/ml/experiments:
+    get:
+      tags:
+      - deployment-service
+      - ml-experiments
+      summary: List Experiments
+      description: List experiment directories from the ml-training-artifacts GCS
+        bucket.
+      operationId: list_experiments_api_ml_experiments_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExperimentSummary'
+                title: Response List Experiments Api Ml Experiments Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-service/api/ml/experiments/{experiment_id}:
+    get:
+      tags:
+      - deployment-service
+      - ml-experiments
+      summary: Get Experiment
+      description: Get experiment details by reading metrics.json from GCS.
+      operationId: get_experiment_api_ml_experiments__experiment_id__get
+      parameters:
+      - name: experiment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Experiment Id
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-service/api/ml/models:
+    get:
+      tags:
+      - deployment-service
+      - ml-experiments
+      summary: List Models
+      description: List models from the ml-models-store GCS bucket model_registry/
+        prefix.
+      operationId: list_models_api_ml_models_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 100
+          title: Limit
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ModelSummary'
+                title: Response List Models Api Ml Models Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /deployment-service/api/ml/models/{model_id}/metadata:
+    get:
+      tags:
+      - deployment-service
+      - ml-experiments
+      summary: Get Model Metadata
+      description: 'Read metadata.json for a specific model from the ml-models-store
+        bucket.
+
+
+        If training_period is not specified, reads the manifest to find the latest
+        period.'
+      operationId: get_model_metadata_api_ml_models__model_id__metadata_get
+      parameters:
+      - name: model_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Model Id
+      - name: training_period
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Training Period
+      - name: x-service-token
+        in: header
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: X-Service-Token
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ModelMetadataResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /market-tick-data-service/health:
     get:
       tags:
@@ -15529,6 +18396,16 @@ paths:
           content:
             application/json:
               schema: {}
+  /strategy-service/stream/signals:
+    get:
+      tags:
+      - strategy-service
+      - sse
+      summary: Stream
+      operationId: stream_stream_signals_get
+      responses:
+        '200':
+          description: Successful Response
   /instruments-service/health:
     get:
       tags:
@@ -15711,6 +18588,16 @@ paths:
           content:
             application/json:
               schema: {}
+  /features-sports-service/stream/feature_ready:
+    get:
+      tags:
+      - features-sports-service
+      - sse
+      summary: Stream
+      operationId: stream_stream_feature_ready_get
+      responses:
+        '200':
+          description: Successful Response
   /features-cross-instrument-service/health:
     get:
       tags:
@@ -15841,6 +18728,16 @@ paths:
           content:
             application/json:
               schema: {}
+  /ml-inference-service/stream/predictions:
+    get:
+      tags:
+      - ml-inference-service
+      - sse
+      summary: Stream
+      operationId: stream_stream_predictions_get
+      responses:
+        '200':
+          description: Successful Response
   /ml-training-service/health:
     get:
       tags:
@@ -16956,6 +19853,23 @@ components:
       - symbol
       title: MockInstrumentCreate
       description: Request body for creating a mock instrument.
+    SimulateRateImpactRequest:
+      properties:
+        protocol:
+          type: string
+          title: Protocol
+        token:
+          type: string
+          title: Token
+        amount_usd:
+          type: number
+          title: Amount Usd
+      type: object
+      required:
+      - protocol
+      - token
+      - amount_usd
+      title: SimulateRateImpactRequest
     AnnualTaxSummary:
       properties:
         client_id:
@@ -16992,6 +19906,89 @@ components:
       - lots
       title: AnnualTaxSummary
       description: Aggregated tax summary for a given client and tax year.
+    CloseAllPositionResult:
+      properties:
+        instrument:
+          type: string
+          title: Instrument
+        side:
+          type: string
+          title: Side
+        quantity:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Quantity
+        order_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Order Id
+        status:
+          type: string
+          title: Status
+        error:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Error
+      type: object
+      required:
+      - instrument
+      - side
+      - quantity
+      - status
+      title: CloseAllPositionResult
+      description: Result for a single position in the close-all response.
+    CloseAllRequest:
+      properties:
+        rationale:
+          type: string
+          minLength: 10
+          title: Rationale
+          description: Reason for emergency close - audit trail
+        dry_run:
+          type: boolean
+          title: Dry Run
+          description: If true, preview only - no orders placed
+          default: true
+      type: object
+      required:
+      - rationale
+      title: CloseAllRequest
+      description: Request body for emergency close-all.
+    CloseAllResponse:
+      properties:
+        client_id:
+          type: string
+          title: Client Id
+        dry_run:
+          type: boolean
+          title: Dry Run
+        positions_affected:
+          type: integer
+          title: Positions Affected
+        results:
+          items:
+            $ref: '#/components/schemas/CloseAllPositionResult'
+          type: array
+          title: Results
+        rationale:
+          type: string
+          title: Rationale
+        timestamp:
+          type: string
+          format: date-time
+          title: Timestamp
+      type: object
+      required:
+      - client_id
+      - dry_run
+      - positions_affected
+      - results
+      - rationale
+      - timestamp
+      title: CloseAllResponse
+      description: Response body for emergency close-all.
     GenerateInvoiceRequest:
       properties:
         org_id:
@@ -17469,6 +20466,228 @@ components:
         instruction_id: manual-20260216-103045-ABC123
         message: Instruction submitted successfully
         status: SUBMITTED
+    UnwindPreviewRequestBody:
+      properties:
+        action:
+          type: string
+          title: Action
+          description: CLOSE (full position close) or REDUCE (partial unwind)
+        strategy_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Strategy Id
+          description: Target strategy ID. None = all strategies (firm-wide)
+        reduce_pct:
+          anyOf:
+          - type: number
+            maximum: 100.0
+            minimum: 1.0
+          - type: string
+            pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          - type: 'null'
+          title: Reduce Pct
+          description: Percentage to reduce (1-100). Required when action=REDUCE
+        execution_style:
+          type: string
+          title: Execution Style
+          description: MARKET, TWAP, or ATOMIC_DEFI
+          default: TWAP
+        twap_duration_minutes:
+          type: integer
+          maximum: 480.0
+          minimum: 1.0
+          title: Twap Duration Minutes
+          description: TWAP window in minutes (only when execution_style=TWAP)
+          default: 15
+      type: object
+      required:
+      - action
+      title: UnwindPreviewRequestBody
+      description: FastAPI request body for POST /preview/unwind.
+      example:
+        action: CLOSE
+        execution_style: TWAP
+        strategy_id: defi_yield_arb
+        twap_duration_minutes: 15
+    UnwindPreviewResponseBody:
+      properties:
+        action:
+          type: string
+          title: Action
+          description: CLOSE or REDUCE
+        strategy_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Strategy Id
+          description: Target strategy ID
+        positions_affected:
+          type: integer
+          title: Positions Affected
+          description: Number of positions in scope
+        estimated_slippage_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Slippage Usd
+          description: Total slippage estimate (USD)
+        estimated_slippage_bps:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Slippage Bps
+          description: Total slippage (bps of notional)
+        estimated_gas_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Gas Usd
+          description: Total gas cost (USD)
+        estimated_exchange_fees_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Exchange Fees Usd
+          description: Exchange/protocol fees (USD)
+        estimated_bridge_fees_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Bridge Fees Usd
+          description: Cross-chain bridge fees (USD)
+        total_estimated_cost_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Estimated Cost Usd
+          description: Grand total cost (USD)
+        total_estimated_cost_bps:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Total Estimated Cost Bps
+          description: Grand total as bps of notional
+        notional_to_close_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Notional To Close Usd
+          description: Notional being closed (USD)
+        estimated_duration_minutes:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Duration Minutes
+          description: Estimated time to complete
+        execution_steps:
+          items:
+            $ref: '#/components/schemas/UnwindStepResponse'
+          type: array
+          title: Execution Steps
+          description: Ordered execution legs
+        market_impact_estimate_bps:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Market Impact Estimate Bps
+          description: Permanent market impact (bps)
+          default: '0'
+        confidence:
+          type: string
+          title: Confidence
+          description: HIGH, MEDIUM, or LOW
+          default: MEDIUM
+        timestamp:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Timestamp
+          description: ISO timestamp of preview generation
+        notes:
+          items:
+            type: string
+          type: array
+          title: Notes
+          description: Human-readable notes
+      type: object
+      required:
+      - action
+      - positions_affected
+      - estimated_slippage_usd
+      - estimated_slippage_bps
+      - estimated_gas_usd
+      - estimated_exchange_fees_usd
+      - estimated_bridge_fees_usd
+      - total_estimated_cost_usd
+      - total_estimated_cost_bps
+      - notional_to_close_usd
+      - estimated_duration_minutes
+      title: UnwindPreviewResponseBody
+      description: Full cost decomposition for a position close/reduce.
+      example:
+        action: CLOSE
+        confidence: MEDIUM
+        estimated_bridge_fees_usd: '0.00'
+        estimated_duration_minutes: '15'
+        estimated_exchange_fees_usd: '7.50'
+        estimated_gas_usd: '3.15'
+        estimated_slippage_bps: '5.00'
+        estimated_slippage_usd: '12.50'
+        execution_steps: []
+        market_impact_estimate_bps: '0'
+        notes: []
+        notional_to_close_usd: '25000.00'
+        positions_affected: 4
+        strategy_id: defi_yield_arb
+        timestamp: '2026-04-16T12:00:00Z'
+        total_estimated_cost_bps: '9.26'
+        total_estimated_cost_usd: '23.15'
+    UnwindStepResponse:
+      properties:
+        instrument_id:
+          type: string
+          title: Instrument Id
+          description: Canonical instrument ID
+        venue:
+          type: string
+          title: Venue
+          description: Execution venue
+        side:
+          type: string
+          title: Side
+          description: 'Direction: sell for longs, buy for shorts'
+        quantity:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Quantity
+          description: Quantity to close
+        estimated_price:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Price
+          description: Expected execution price
+        estimated_slippage_bps:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Estimated Slippage Bps
+          description: Expected slippage (bps)
+        operation_type:
+          type: string
+          title: Operation Type
+          description: 'Operation: market_order, swap, repay, withdraw, unstake, bridge'
+        chain:
+          type: string
+          title: Chain
+          description: Chain name for DeFi ops
+          default: ''
+        gas_cost_usd:
+          type: string
+          pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$
+          title: Gas Cost Usd
+          description: Gas cost for this step (USD)
+          default: '0'
+      type: object
+      required:
+      - instrument_id
+      - venue
+      - side
+      - quantity
+      - estimated_price
+      - estimated_slippage_bps
+      - operation_type
+      title: UnwindStepResponse
+      description: One leg of the unwind execution plan.
     AlertContextData:
       properties:
         client_id:
@@ -18878,6 +22097,61 @@ components:
       - service
       - region
       title: DeploymentServiceRollbackRequest
+    ExperimentDetail:
+      properties:
+        experiment_id:
+          type: string
+          title: Experiment Id
+        metrics:
+          additionalProperties: true
+          type: object
+          title: Metrics
+      type: object
+      required:
+      - experiment_id
+      - metrics
+      title: ExperimentDetail
+    ExperimentSummary:
+      properties:
+        experiment_id:
+          type: string
+          title: Experiment Id
+        has_metrics:
+          type: boolean
+          title: Has Metrics
+      type: object
+      required:
+      - experiment_id
+      - has_metrics
+      title: ExperimentSummary
+    ModelMetadataResponse:
+      properties:
+        model_id:
+          type: string
+          title: Model Id
+        metadata:
+          additionalProperties: true
+          type: object
+          title: Metadata
+      type: object
+      required:
+      - model_id
+      - metadata
+      title: ModelMetadataResponse
+    ModelSummary:
+      properties:
+        model_id:
+          type: string
+          title: Model Id
+        latest_training_period:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Latest Training Period
+      type: object
+      required:
+      - model_id
+      title: ModelSummary
     QuotaAcquireRequest:
       properties:
         quota_shape:

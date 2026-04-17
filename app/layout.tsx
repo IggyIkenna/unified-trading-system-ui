@@ -1,4 +1,5 @@
 import { PreviewBanner } from "@/components/preview-banner";
+import { ProtocolIndicator } from "@/components/ui/protocol-indicator";
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { StagingGate } from "@/components/staging-gate";
 import { Toaster } from "@/components/ui/sonner";
@@ -82,6 +83,7 @@ export default function RootLayout({
             </Providers>
           </StagingGate>
           <RuntimeModeBadge />
+          <ProtocolIndicator />
           <Toaster />
         </ThemeProvider>
       </body>
