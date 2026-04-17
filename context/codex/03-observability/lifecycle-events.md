@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-Every service must emit a structured sequence of lifecycle events via `log_event()` from `unified_events_interface`.
+Every service must emit a structured sequence of lifecycle events via `log_event()` from `unified_trading_library.events`.
 Batch services require **11 mandatory events**; live services require **12 mandatory events** (batch set plus
 `DATA_BROADCAST`). UTD v2 parses these events for real-time progress tracking, alerting, and cost attribution.
 
@@ -141,7 +141,7 @@ Calling `log_event()` before `setup_events()` raises a runtime error in non-test
 ## Code Example
 
 ```python
-from unified_events_interface import setup_events, log_event
+from unified_trading_library.events import setup_events, log_event
 
 # At CLI entrypoint (before any log_event calls):
 setup_events(service_name="instruments-service", mode="batch")
@@ -258,7 +258,7 @@ security anomalies, and infrastructure boundary conditions.
 | `SECURITY_ALERT`           | Generic security anomaly detected                         | CRITICAL |
 
 > All events in this table are codex-canonical and enforced by QG rg-checks. Use `log_event(event_name, ...)` from
-> `unified_events_interface`.
+> `unified_trading_library.events`.
 
 ---
 

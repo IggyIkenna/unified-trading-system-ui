@@ -155,13 +155,13 @@ async def handle_request(request: Request) -> Response:
 
 | Tier | Libraries                                                                                                    |
 | ---- | ------------------------------------------------------------------------------------------------------------ |
-| T0   | `unified_events_interface` (UEI), `unified_market_interface` (UMI)                                           |
+| T0   | `unified_trading_library.events` (UEI), `unified_market_interface` (UMI)                                           |
 | T1   | `unified_config_interface` (UCI), `unified_trading_library` (UTL), `unified_reference_data_interface` (URDI) |
 
 `BaseFeatureServiceV2` imports:
 
 - `unified_config_interface.UnifiedCloudConfig` (T1/UCI)
-- `unified_events_interface.{setup_events,log_event,close_events}` (T0/UEI)
+- `unified_trading_library.events.{setup_events,log_event,close_events}` (T0/UEI)
 - `unified_trading_library.GCSEventSink` (T1/UTL)
 
 No Tier 2 → Tier 2 imports are permitted. No circular imports.

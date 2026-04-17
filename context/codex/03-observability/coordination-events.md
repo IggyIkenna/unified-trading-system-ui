@@ -18,7 +18,7 @@ upstream work is complete and data is available for consumption.
 - Schema: `CoordinationEvent` dataclass from `unified-events-interface`
 - All event types must be UPPERCASE strings
 
-**Machine-readable SSOT:** `unified-events-interface/unified_events_interface/schemas.py` --
+**Machine-readable SSOT:** `unified-events-interface/unified_trading_library.events/schemas.py` --
 `STANDARD_COORDINATION_EVENTS` set.
 
 **UIC mirror:** `unified-internal-contracts/unified_internal_contracts/events.py` -- `LifecycleEventType` enum includes
@@ -184,7 +184,7 @@ class CoordinationEvent:
 ### Publishing (upstream service)
 
 ```python
-from unified_events_interface import publish_coordination_event
+from unified_trading_library.events import publish_coordination_event
 
 # After processing completes:
 with contextlib.suppress(RuntimeError, ValueError):
@@ -203,7 +203,7 @@ with contextlib.suppress(RuntimeError, ValueError):
 ### Subscribing (downstream service)
 
 ```python
-from unified_events_interface import subscribe_coordination_events
+from unified_trading_library.events import subscribe_coordination_events
 
 # At service startup (live mode):
 def _on_data_ready(event: CoordinationEvent) -> None:
@@ -233,5 +233,5 @@ subscribe_coordination_events("DATA_READY", _on_data_ready)
 
 - Lifecycle events: `03-observability/lifecycle-events.md`
 - Data flow map: `04-architecture/data-flow-map.md`
-- Event schemas: `unified-events-interface/unified_events_interface/schemas.py`
+- Event schemas: `unified-events-interface/unified_trading_library.events/schemas.py`
 - UIC event types: `unified-internal-contracts/unified_internal_contracts/events.py`

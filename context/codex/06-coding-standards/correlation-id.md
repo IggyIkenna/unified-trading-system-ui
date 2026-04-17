@@ -113,10 +113,10 @@ log.info(
 )
 ```
 
-When using `log_event()` from `unified_events_interface`, pass `correlation_id` in the `details` dict:
+When using `log_event()` from `unified_trading_library.events`, pass `correlation_id` in the `details` dict:
 
 ```python
-from unified_events_interface import log_event
+from unified_trading_library.events import log_event
 
 log_event(
     event_type=ORDER_SUBMITTED_MIFID,

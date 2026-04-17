@@ -299,7 +299,7 @@ Issues are sorted by priority (P0 = immediate, P3 = polish). Each issue has:
 - **Section:** S7 (Codex Drift) | **Criterion:** 7.3
 - **Severity:** HIGH | **Time:** 2h | **Difficulty:** Low
 - **Files:**
-  - `unified-events-interface/unified_events_interface/schemas.py:98-111`
+  - `unified-events-interface/unified_trading_library.events/schemas.py:98-111`
   - `unified-trading-codex/03-observability/lifecycle-events.md:25-41`
 - **Fix:**
   1. Synchronize `STANDARD_LIFECYCLE_EVENTS` in `schemas.py` to match codex
@@ -387,7 +387,7 @@ Issues are sorted by priority (P0 = immediate, P3 = polish). Each issue has:
 - **Severity:** HIGH | **Time:** 20 min | **Difficulty:** Easy
 - **Files:** `ml-training-service/ml_training_service/cli/main.py:16`
 - **Fix:** Replace `from unified_trading_library import setup_cloud_logging` with
-  `from unified_events_interface import setup_events`
+  `from unified_trading_library.events import setup_events`
 
 ### ISS-024: 3 services have zero observability (no setup_events, no lifecycle events) — FIXED
 

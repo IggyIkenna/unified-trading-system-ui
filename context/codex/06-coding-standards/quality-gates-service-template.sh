@@ -6,7 +6,7 @@
 #   1. Copy this to scripts/quality-gates.sh in your repo (rollout-quality-gates-unified.py does this)
 #   2. SERVICE_NAME, SOURCE_DIR, and MIN_COVERAGE are set automatically by rollout (floor=70)
 #   3. Set RUN_INTEGRATION=true only if your repo has integration tests
-#   4. Add LOCAL_DEPS entries if your service has local editable deps (e.g. unified-events-interface)
+#   4. Add LOCAL_DEPS entries if your service has local editable deps (e.g. unified-trading-library)
 SERVICE_NAME="REPLACE_ME"
 SOURCE_DIR="REPLACE_ME"
 MIN_COVERAGE=70

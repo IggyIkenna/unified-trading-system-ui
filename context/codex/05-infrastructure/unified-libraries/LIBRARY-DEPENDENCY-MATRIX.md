@@ -100,7 +100,7 @@ All three paths converge on T0 libs. Python loads each package once.
 | unified-api-contracts            | `unified_api_contracts`            | Pydantic v2 schemas, VCR cassettes, `unified_api_contracts.external`, `unified_api_contracts.canonical` | pydantic, aiohttp           |
 | unified-internal-contracts       | `unified_internal_contracts`       | `MessagingTopic`, `EventEnvelope`, PubSub topic names, req/resp/error envelopes                         | pydantic                    |
 | unified-config-interface         | `unified_config_interface`         | `UnifiedCloudConfig`, `BaseConfig`, env loading, venue constants                                        | pydantic, pyyaml            |
-| unified-events-interface         | `unified_events_interface`         | `EventSink` Protocol, `setup_events`, `log_event`, `MockEventSink`                                      | pydantic                    |
+| unified-events-interface         | `unified_trading_library.events`         | `EventSink` Protocol, `setup_events`, `log_event`, `MockEventSink`                                      | pydantic                    |
 | unified-cloud-interface          | `unified_cloud_interface`          | `StorageClient`, `SecretClient`, `QueueClient`; GCP/AWS/Local providers                                 | google-cloud-storage, boto3 |
 | unified-reference-data-interface | `unified_reference_data_interface` | REST venue adapters, instrument definitions, IBKR corp actions, API key resolution                      | aiohttp, pydantic           |
 | execution-algo-library           | `execution_algo_library`           | TWAP, VWAP, Iceberg — pure compute, zero inter-lib deps                                                 | pydantic, python-dateutil   |

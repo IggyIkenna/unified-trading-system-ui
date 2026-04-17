@@ -362,7 +362,7 @@ Setup OK: 55 | Skipped: 0 | Failed: 0
 ━━━ Phase 5: Import Smoke Test (all Python repos) ━━━ [FAIL] unified-trading-pm (import unified_trading_pm) [FAIL]
 unified-trading-codex (import unified_trading_codex) [FAIL] matching-engine-library (import matching_engine_library)
 [FAIL] unified-api-contracts (import unified_api_contracts) [FAIL] unified-cloud-interface (import
-unified_cloud_interface) [FAIL] unified-events-interface (import unified_events_interface) [FAIL]
+unified_cloud_interface) [FAIL] unified-events-interface (import unified_trading_library.events) [FAIL]
 unified-internal-contracts (import unified_internal_contracts) [FAIL] unified-reference-data-interface (import
 unified_reference_data_interface) [FAIL] unified-config-interface (import unified_config_interface) [FAIL]
 unified-trading-library (import unified_trading_library) [FAIL] execution-algo-library (import execution_algo_library)
@@ -396,7 +396,7 @@ Failed imports:
 - matching-engine-library: import matching_engine_library
 - unified-api-contracts: import unified_api_contracts
 - unified-cloud-interface: import unified_cloud_interface
-- unified-events-interface: import unified_events_interface
+- unified-events-interface: import unified_trading_library.events
 - unified-internal-contracts: import unified_internal_contracts
 - unified-reference-data-interface: import unified_reference_data_interface
 - unified-config-interface: import unified_config_interface
