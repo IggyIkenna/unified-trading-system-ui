@@ -57,8 +57,12 @@ export function DeFiTradeHistoryWidget() {
     });
   }, []);
 
+  // DeFiDataContext is a mock-only synchronous context — isLoading and error are
+  // not yet exposed. Passing explicit values here makes intent clear and ensures
+  // that once the context gains these fields, wiring is trivial.
   return (
     <LiveFeedWidget
+      isLoading={false}
       isEmpty={!tradeHistory || tradeHistory.length === 0}
       emptyMessage="No trade history yet. Execute a DeFi instruction to see results here."
       header={
@@ -128,115 +132,120 @@ export function DeFiTradeHistoryWidget() {
             const isChild = row.is_child_fill;
             return (
               <React.Fragment key={`${row.seq}-${isChild ? "child" : "parent"}-wrap`}>
-              <tr
-                className={`border-b hover:bg-muted/50 ${isChild ? "bg-muted/20" : ""} cursor-pointer`}
-                onClick={() => !isChild && row.execution_chain && toggleExpand(row.seq)}
-              >
-                <td className="px-1 py-1 text-muted-foreground text-center">
-                  {!isChild && row.execution_chain ? (
-                    <span className="text-[10px]">{expandedRows.has(row.seq) ? "▾" : "▸"}</span>
-                  ) : null}
-                </td>
-                <td className="px-1 py-1 text-muted-foreground">
-                  {isChild ? <span className="pl-3 text-muted-foreground/50">↳</span> : row.seq}
-                </td>
-                <td className="px-1 py-1">{isChild ? "" : formatTime(row.timestamp)}</td>
-                <td className="px-1 py-1">
-                  {!isChild && row.strategy_id ? (
-                    <span className="font-mono text-[10px] text-muted-foreground truncate max-w-[80px] inline-block" title={row.strategy_id}>
-                      {row.strategy_id}
-                    </span>
-                  ) : null}
-                </td>
-                <td className="px-1 py-1">
-                  {isChild ? (
-                    <span className="text-[10px] text-muted-foreground">fill</span>
-                  ) : (
-                    <Badge variant="outline" className={TYPE_COLORS[row.instruction_type] ?? ""}>
-                      {row.instruction_type}
-                    </Badge>
-                  )}
-                </td>
-                <td className="px-1 py-1 text-muted-foreground">{isChild ? "" : row.algo_type}</td>
-                <td className="px-1 py-1 max-w-[140px] truncate font-mono text-[11px]" title={row.instrument_id}>
-                  {row.venue}
-                </td>
-                <td className="px-1 py-1 text-right font-mono">
-                  {row.amount > 0 ? row.amount.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "—"}
-                </td>
-                <td className="px-1 py-1 text-right font-mono">
-                  {row.expected_output > 0
-                    ? row.expected_output.toLocaleString(undefined, { maximumFractionDigits: 2 })
-                    : "—"}
-                </td>
-                <td className="px-1 py-1 text-right font-mono">
-                  {row.actual_output > 0
-                    ? row.actual_output.toLocaleString(undefined, { maximumFractionDigits: 2 })
-                    : "—"}
-                </td>
-                <td className={`px-1 py-1 text-right font-mono ${pnl.price_slippage_usd > 0 ? "text-red-600" : ""}`}>
-                  {pnl.price_slippage_usd !== 0 ? formatUsd(-pnl.price_slippage_usd) : "—"}
-                </td>
-                <td className={`px-1 py-1 text-right font-mono ${pnl.gas_cost_usd > 0 ? "text-red-600" : ""}`}>
-                  {pnl.gas_cost_usd > 0 ? formatUsd(-pnl.gas_cost_usd) : "—"}
-                </td>
-                <td className={`px-1 py-1 text-right font-mono ${pnl.trading_fee_usd > 0 ? "text-red-600" : ""}`}>
-                  {pnl.trading_fee_usd > 0 ? formatUsd(-pnl.trading_fee_usd) : "—"}
-                </td>
-                <td
-                  className={`px-1 py-1 text-right font-mono ${(row.alpha_pnl_usd ?? 0) >= 0 ? "text-blue-600" : "text-red-600"}`}
+                <tr
+                  className={`border-b hover:bg-muted/50 ${isChild ? "bg-muted/20" : ""} cursor-pointer`}
+                  onClick={() => !isChild && row.execution_chain && toggleExpand(row.seq)}
                 >
-                  {row.alpha_pnl_usd != null && row.alpha_pnl_usd !== 0 ? formatUsd(row.alpha_pnl_usd) : "—"}
-                </td>
-                <td
-                  className={`px-1 py-1 text-right font-mono font-medium ${pnl.net_pnl >= 0 ? "text-green-600" : "text-red-600"}`}
-                >
-                  {isChild ? "" : formatUsd(pnl.net_pnl)}
-                </td>
-                <td
-                  className={`px-1 py-1 text-right font-mono font-semibold ${row.running_pnl >= 0 ? "text-green-600" : "text-red-600"}`}
-                >
-                  {isChild ? "" : formatUsd(row.running_pnl)}
-                </td>
-                <td className="px-1 py-1">
-                  {!isChild && (
-                    <Badge
-                      variant="outline"
-                      className={
-                        row.status === "filled"
-                          ? "bg-green-100 text-green-700"
-                          : row.status === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : row.status === "failed" || row.status === "reverted"
-                              ? "bg-red-100 text-red-700"
-                              : ""
-                      }
-                    >
-                      {row.status}
-                    </Badge>
-                  )}
-                </td>
-              </tr>
-              {!isChild && expandedRows.has(row.seq) && row.execution_chain && (
-                <tr key={`${row.seq}-chain`} className="bg-muted/30">
-                  <td colSpan={16} className="px-3 py-2">
-                    <div className="flex items-center gap-1 text-[10px]">
-                      {row.execution_chain.map((step, i) => (
-                        <React.Fragment key={step.label}>
-                          <div className="flex flex-col items-center gap-0.5 min-w-[60px]">
-                            <span className="font-semibold text-foreground">{step.label}</span>
-                            {step.detail && <span className="text-muted-foreground text-center">{step.detail}</span>}
-                            {step.duration_ms != null && <span className="text-muted-foreground/60">{step.duration_ms}ms</span>}
-                          </div>
-                          {i < (row.execution_chain?.length ?? 0) - 1 && (
-                            <span className="text-muted-foreground/40 mx-0.5">→</span>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </div>
+                  <td className="px-1 py-1 text-muted-foreground text-center">
+                    {!isChild && row.execution_chain ? (
+                      <span className="text-[10px]">{expandedRows.has(row.seq) ? "▾" : "▸"}</span>
+                    ) : null}
+                  </td>
+                  <td className="px-1 py-1 text-muted-foreground">
+                    {isChild ? <span className="pl-3 text-muted-foreground/50">↳</span> : row.seq}
+                  </td>
+                  <td className="px-1 py-1">{isChild ? "" : formatTime(row.timestamp)}</td>
+                  <td className="px-1 py-1">
+                    {!isChild && row.strategy_id ? (
+                      <span
+                        className="font-mono text-[10px] text-muted-foreground truncate max-w-[80px] inline-block"
+                        title={row.strategy_id}
+                      >
+                        {row.strategy_id}
+                      </span>
+                    ) : null}
+                  </td>
+                  <td className="px-1 py-1">
+                    {isChild ? (
+                      <span className="text-[10px] text-muted-foreground">fill</span>
+                    ) : (
+                      <Badge variant="outline" className={TYPE_COLORS[row.instruction_type] ?? ""}>
+                        {row.instruction_type}
+                      </Badge>
+                    )}
+                  </td>
+                  <td className="px-1 py-1 text-muted-foreground">{isChild ? "" : row.algo_type}</td>
+                  <td className="px-1 py-1 max-w-[140px] truncate font-mono text-[11px]" title={row.instrument_id}>
+                    {row.venue}
+                  </td>
+                  <td className="px-1 py-1 text-right font-mono">
+                    {row.amount > 0 ? row.amount.toLocaleString(undefined, { maximumFractionDigits: 4 }) : "—"}
+                  </td>
+                  <td className="px-1 py-1 text-right font-mono">
+                    {row.expected_output > 0
+                      ? row.expected_output.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                      : "—"}
+                  </td>
+                  <td className="px-1 py-1 text-right font-mono">
+                    {row.actual_output > 0
+                      ? row.actual_output.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                      : "—"}
+                  </td>
+                  <td className={`px-1 py-1 text-right font-mono ${pnl.price_slippage_usd > 0 ? "text-red-600" : ""}`}>
+                    {pnl.price_slippage_usd !== 0 ? formatUsd(-pnl.price_slippage_usd) : "—"}
+                  </td>
+                  <td className={`px-1 py-1 text-right font-mono ${pnl.gas_cost_usd > 0 ? "text-red-600" : ""}`}>
+                    {pnl.gas_cost_usd > 0 ? formatUsd(-pnl.gas_cost_usd) : "—"}
+                  </td>
+                  <td className={`px-1 py-1 text-right font-mono ${pnl.trading_fee_usd > 0 ? "text-red-600" : ""}`}>
+                    {pnl.trading_fee_usd > 0 ? formatUsd(-pnl.trading_fee_usd) : "—"}
+                  </td>
+                  <td
+                    className={`px-1 py-1 text-right font-mono ${(row.alpha_pnl_usd ?? 0) >= 0 ? "text-blue-600" : "text-red-600"}`}
+                  >
+                    {row.alpha_pnl_usd != null && row.alpha_pnl_usd !== 0 ? formatUsd(row.alpha_pnl_usd) : "—"}
+                  </td>
+                  <td
+                    className={`px-1 py-1 text-right font-mono font-medium ${pnl.net_pnl >= 0 ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {isChild ? "" : formatUsd(pnl.net_pnl)}
+                  </td>
+                  <td
+                    className={`px-1 py-1 text-right font-mono font-semibold ${row.running_pnl >= 0 ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {isChild ? "" : formatUsd(row.running_pnl)}
+                  </td>
+                  <td className="px-1 py-1">
+                    {!isChild && (
+                      <Badge
+                        variant="outline"
+                        className={
+                          row.status === "filled"
+                            ? "bg-green-100 text-green-700"
+                            : row.status === "pending"
+                              ? "bg-yellow-100 text-yellow-700"
+                              : row.status === "failed" || row.status === "reverted"
+                                ? "bg-red-100 text-red-700"
+                                : ""
+                        }
+                      >
+                        {row.status}
+                      </Badge>
+                    )}
                   </td>
                 </tr>
-              )}
+                {!isChild && expandedRows.has(row.seq) && row.execution_chain && (
+                  <tr key={`${row.seq}-chain`} className="bg-muted/30">
+                    <td colSpan={16} className="px-3 py-2">
+                      <div className="flex items-center gap-1 text-[10px]">
+                        {row.execution_chain.map((step, i) => (
+                          <React.Fragment key={step.label}>
+                            <div className="flex flex-col items-center gap-0.5 min-w-[60px]">
+                              <span className="font-semibold text-foreground">{step.label}</span>
+                              {step.detail && <span className="text-muted-foreground text-center">{step.detail}</span>}
+                              {step.duration_ms != null && (
+                                <span className="text-muted-foreground/60">{step.duration_ms}ms</span>
+                              )}
+                            </div>
+                            {i < (row.execution_chain?.length ?? 0) - 1 && (
+                              <span className="text-muted-foreground/40 mx-0.5">→</span>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </React.Fragment>
             );
           })}

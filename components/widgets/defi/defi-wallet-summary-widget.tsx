@@ -5,6 +5,7 @@ import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
 import type { LendingProtocol, LiquidityPool, StakingProtocol } from "@/lib/types/defi";
@@ -104,6 +105,9 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     chainPortfolios,
   } = useDeFiData();
 
+  // 0.6 Loading guard — context is synchronous mock; show skeleton when data not yet populated
+  const isLoading = chainPortfolios.length === 0 && Object.keys(tokenBalances).length === 0;
+
   const portfolio = React.useMemo(() => mockPortfolioUsd(tokenBalances), [tokenBalances]);
 
   const treasuryStatusColor =
@@ -144,6 +148,22 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     () => buildKeyRateRows(lendingProtocols, stakingProtocols, liquidityPools),
     [lendingProtocols, stakingProtocols, liquidityPools],
   );
+
+  // 0.6 Loading state — show skeleton while data populates
+  if (isLoading) {
+    return (
+      <div className="space-y-2 p-1">
+        <Skeleton className="h-7 w-40" />
+        <div className="flex gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 flex-1 rounded-md" />
+          ))}
+        </div>
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-32 w-full rounded-md" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-2 p-1">
@@ -209,49 +229,53 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
 
       <CollapsibleSection title="Portfolio by chain" defaultOpen={true} count={sortedPortfolios.length}>
         <div className="px-1 pb-1">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="text-[10px] text-muted-foreground border-b border-border/50">
-                <th className="text-left py-1 font-medium">Chain</th>
-                <th className="text-right py-1 font-medium">Value (USD)</th>
-                <th className="text-right py-1 font-medium">Gas Token</th>
-                <th className="text-right py-1 font-medium">Gas Balance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedPortfolios.map((cp) => {
-                const threshold = GAS_TOKEN_MIN_THRESHOLDS[cp.gasTokenSymbol] ?? 0;
-                const gasLow = cp.gasTokenBalance < threshold;
-                return (
-                  <tr key={cp.chain} className="border-b border-border/30 last:border-0">
-                    <td className="py-1 font-medium">{cp.chain}</td>
-                    <td className="py-1 text-right font-mono tabular-nums">
-                      ${cp.totalUsd.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    </td>
-                    <td className="py-1 text-right font-mono text-muted-foreground">{cp.gasTokenSymbol}</td>
-                    <td className="py-1 text-right">
-                      <span className="inline-flex items-center gap-1 justify-end">
-                        <span className={cn("font-mono tabular-nums", gasLow ? "text-amber-500" : "text-foreground")}>
-                          {formatNumber(cp.gasTokenBalance, 4)}
+          {sortedPortfolios.length === 0 ? (
+            <p className="text-xs text-muted-foreground italic py-2">No chain portfolio data available.</p>
+          ) : (
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                  <th className="text-left py-1 font-medium">Chain</th>
+                  <th className="text-right py-1 font-medium">Value (USD)</th>
+                  <th className="text-right py-1 font-medium">Gas Token</th>
+                  <th className="text-right py-1 font-medium">Gas Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedPortfolios.map((cp) => {
+                  const threshold = GAS_TOKEN_MIN_THRESHOLDS[cp.gasTokenSymbol] ?? 0;
+                  const gasLow = cp.gasTokenBalance < threshold;
+                  return (
+                    <tr key={cp.chain} className="border-b border-border/30 last:border-0">
+                      <td className="py-1 font-medium">{cp.chain}</td>
+                      <td className="py-1 text-right font-mono tabular-nums">
+                        ${cp.totalUsd.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </td>
+                      <td className="py-1 text-right font-mono text-muted-foreground">{cp.gasTokenSymbol}</td>
+                      <td className="py-1 text-right">
+                        <span className="inline-flex items-center gap-1 justify-end">
+                          <span className={cn("font-mono tabular-nums", gasLow ? "text-amber-500" : "text-foreground")}>
+                            {formatNumber(cp.gasTokenBalance, 4)}
+                          </span>
+                          {gasLow && <AlertTriangle className="size-3 text-amber-500 shrink-0" />}
                         </span>
-                        {gasLow && <AlertTriangle className="size-3 text-amber-500 shrink-0" />}
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr className="border-t border-border font-medium">
-                <td className="py-1.5">Total</td>
-                <td className="py-1.5 text-right font-mono tabular-nums">
-                  ${totalPortfolioUsd.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                </td>
-                <td className="py-1.5" />
-                <td className="py-1.5" />
-              </tr>
-            </tfoot>
-          </table>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr className="border-t border-border font-medium">
+                  <td className="py-1.5">Total</td>
+                  <td className="py-1.5 text-right font-mono tabular-nums">
+                    ${totalPortfolioUsd.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </td>
+                  <td className="py-1.5" />
+                  <td className="py-1.5" />
+                </tr>
+              </tfoot>
+            </table>
+          )}
         </div>
       </CollapsibleSection>
 

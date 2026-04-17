@@ -3,7 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useDeFiData } from "@/components/widgets/defi/defi-data-context";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import type { BasisTradeMarketData } from "@/lib/types/defi";
 
 interface BasisRow {
   pair: string;
@@ -17,14 +19,40 @@ interface BasisRow {
   direction: "LONG_SPOT" | "SHORT_PERP";
 }
 
-const MOCK_BASIS_DATA: BasisRow[] = [
-  { pair: "ETH/USDT", spotVenue: "Uniswap V3", perpVenue: "Hyperliquid", spotPrice: 3842.5, perpPrice: 3861.2, basisBps: 49, fundingRate8h: 0.0042, annualisedYield: 15.3, direction: "LONG_SPOT" },
-  { pair: "BTC/USDT", spotVenue: "Uniswap V3", perpVenue: "Hyperliquid", spotPrice: 68420.0, perpPrice: 68612.5, basisBps: 28, fundingRate8h: 0.0031, annualisedYield: 11.3, direction: "LONG_SPOT" },
-  { pair: "SOL/USDT", spotVenue: "Raydium", perpVenue: "Drift", spotPrice: 178.4, perpPrice: 179.8, basisBps: 78, fundingRate8h: 0.0065, annualisedYield: 23.7, direction: "LONG_SPOT" },
-  { pair: "ARB/USDT", spotVenue: "Uniswap V3", perpVenue: "Hyperliquid", spotPrice: 1.24, perpPrice: 1.252, basisBps: 97, fundingRate8h: 0.0082, annualisedYield: 29.9, direction: "LONG_SPOT" },
-  { pair: "AVAX/USDT", spotVenue: "TraderJoe", perpVenue: "Hyperliquid", spotPrice: 38.9, perpPrice: 39.12, basisBps: 57, fundingRate8h: 0.0048, annualisedYield: 17.5, direction: "LONG_SPOT" },
-  { pair: "LINK/USDT", spotVenue: "Uniswap V3", perpVenue: "Hyperliquid", spotPrice: 15.82, perpPrice: 15.91, basisBps: 57, fundingRate8h: 0.0047, annualisedYield: 17.2, direction: "LONG_SPOT" },
-];
+/** Spot venue label per asset — sourced from BASIS_TRADE_MOCK_DATA.spotVenues via context. */
+const SPOT_VENUE_LABEL: Record<string, string> = {
+  ETH: "Uniswap V3",
+  BTC: "Uniswap V3",
+  SOL: "Raydium",
+  ARB: "Uniswap V3",
+  AVAX: "TraderJoe",
+  LINK: "Uniswap V3",
+};
+
+/** Perp venue label per asset — sourced from BASIS_TRADE_MOCK_DATA.perpVenues via context. */
+const PERP_VENUE_LABEL: Record<string, string> = {
+  ETH: "Hyperliquid",
+  BTC: "Hyperliquid",
+  SOL: "Drift",
+  ARB: "Hyperliquid",
+  AVAX: "Hyperliquid",
+  LINK: "Hyperliquid",
+};
+
+function toBasisRow(asset: string, data: BasisTradeMarketData): BasisRow {
+  return {
+    pair: `${asset}/USDT`,
+    spotVenue: SPOT_VENUE_LABEL[asset] ?? "DEX",
+    perpVenue: PERP_VENUE_LABEL[asset] ?? "Hyperliquid",
+    spotPrice: data.spotPrice,
+    perpPrice: data.perpPrice,
+    basisBps: data.basisBps,
+    // fundingRate in context is per-8h period already (0.000125 = 0.0125% per 8h)
+    fundingRate8h: data.fundingRate,
+    annualisedYield: data.fundingRateAnnualized * 100,
+    direction: "LONG_SPOT",
+  };
+}
 
 function formatPrice(n: number): string {
   if (n >= 1000) return n.toLocaleString("en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -33,7 +61,63 @@ function formatPrice(n: number): string {
 }
 
 export function EnhancedBasisWidget(_props: WidgetComponentProps) {
-  const bestOpportunity = MOCK_BASIS_DATA.reduce((best, row) => (row.annualisedYield > best.annualisedYield ? row : best), MOCK_BASIS_DATA[0]);
+  const { basisTradeAssets, basisTradeMarketData } = useDeFiData();
+
+  // DeFiDataContext is synchronous (mock) — isLoading is always false.
+  // When the context adds isLoading + error fields, wire them here.
+  const isLoading = false;
+  const error: string | null = null;
+
+  if (isLoading) {
+    return (
+      <Card className="h-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[200px]">
+          <span className="text-xs text-muted-foreground animate-pulse">Loading basis data…</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="h-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[200px]">
+          <span className="text-xs text-rose-400">{error}</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const rows: BasisRow[] = basisTradeAssets
+    .map((asset) => {
+      const data = basisTradeMarketData[asset];
+      return data ? toBasisRow(asset, data) : null;
+    })
+    .filter((r): r is BasisRow => r !== null);
+
+  if (rows.length === 0) {
+    return (
+      <Card className="h-full">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
+        </CardHeader>
+        <CardContent className="flex items-center justify-center h-[200px]">
+          <span className="text-xs text-muted-foreground">No basis opportunities available.</span>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const bestOpportunity = rows.reduce(
+    (best, row) => (row.annualisedYield > best.annualisedYield ? row : best),
+    rows[0],
+  );
 
   return (
     <Card className="h-full">
@@ -43,7 +127,8 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
       <CardContent className="space-y-3 pt-0">
         <div className="rounded-md border border-blue-500/30 bg-blue-500/10 px-3 py-2 flex items-center justify-between">
           <div className="text-xs text-blue-400">
-            <span className="font-medium">Best Opportunity:</span> {bestOpportunity.pair} ({bestOpportunity.spotVenue} / {bestOpportunity.perpVenue})
+            <span className="font-medium">Best Opportunity:</span> {bestOpportunity.pair} ({bestOpportunity.spotVenue} /{" "}
+            {bestOpportunity.perpVenue})
           </div>
           <Badge variant="success" className="text-[10px]">
             {bestOpportunity.annualisedYield.toFixed(1)}% APY
@@ -65,11 +150,8 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {MOCK_BASIS_DATA.map((row) => (
-                <TableRow
-                  key={row.pair}
-                  className={row.annualisedYield > 20 ? "bg-emerald-500/5" : ""}
-                >
+              {rows.map((row) => (
+                <TableRow key={row.pair} className={row.annualisedYield > 20 ? "bg-emerald-500/5" : ""}>
                   <TableCell className="text-xs font-medium">{row.pair}</TableCell>
                   <TableCell className="text-xs">{row.spotVenue}</TableCell>
                   <TableCell className="text-xs">{row.perpVenue}</TableCell>
@@ -80,7 +162,9 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
                       {row.basisBps} bps
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs font-mono text-right">{(row.fundingRate8h * 100).toFixed(3)}%</TableCell>
+                  <TableCell className="text-xs font-mono text-right">
+                    {(row.fundingRate8h * 100).toFixed(3)}%
+                  </TableCell>
                   <TableCell className="text-xs font-mono text-right">
                     <span className={row.annualisedYield > 20 ? "text-emerald-400 font-semibold" : ""}>
                       {row.annualisedYield.toFixed(1)}%

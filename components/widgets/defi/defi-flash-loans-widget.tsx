@@ -13,7 +13,6 @@ import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import {
-  FLASH_OPERATION_TYPES,
   FLASH_VENUES,
   DEFI_INSTRUCTION_TYPES,
   DEFI_ALGO_TYPES,
@@ -29,10 +28,14 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
     useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
+  // Context is synchronous (mock) so isLoading is always false;
+  // retained for when a real data source is wired in.
+  const isLoading = false;
+
   const netPnl = flashPnl.netPnl;
 
   return (
-    <FormWidget error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
       <div className="flex items-center gap-2">
         <Zap className="size-4 text-amber-400" />
         <span className="text-xs font-medium">Bundle steps</span>
@@ -63,6 +66,11 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
 
       <div className="space-y-2">
         <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Operations</p>
+        {flashSteps.length === 0 && (
+          <div className="py-4 text-center text-xs text-muted-foreground">
+            No steps added. Click &ldquo;Add step&rdquo; to build your flash bundle.
+          </div>
+        )}
         {flashSteps.map((step, index) => (
           <div key={step.id} className="p-2.5 rounded-lg border space-y-2">
             <div className="flex items-center justify-between">

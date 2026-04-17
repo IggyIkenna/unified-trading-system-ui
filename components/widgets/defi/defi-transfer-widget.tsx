@@ -29,6 +29,10 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
   } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
+  // Context is synchronous (mock) so isLoading is always false;
+  // retained for when a real data source is wired in.
+  const isLoading = false;
+
   const [toAddress, setToAddress] = React.useState("");
   const [fromChain, setFromChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [toChain, setToChain] = React.useState<string>(DEFI_CHAINS[1]);
@@ -60,8 +64,17 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
     return `${addr.slice(0, 6)}\u2026${addr.slice(-4)}`;
   };
 
+  if (!connectedWallet) {
+    return (
+      <div className="p-2 text-xs text-muted-foreground flex items-center gap-1.5">
+        <AlertTriangle className="size-3.5 shrink-0 text-amber-500" />
+        No wallet connected. Connect a wallet to send or bridge tokens.
+      </div>
+    );
+  }
+
   return (
-    <FormWidget error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
       <div className="grid grid-cols-2 gap-1">
         <Button
           variant={transferMode === "send" ? "default" : "outline"}
@@ -338,13 +351,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                             Best Return
                           </Badge>
                         )}
-                        {route.isFastest && !route.isBestReturn && (
-                          <Badge variant="outline" className="h-4 px-1 text-[9px] gap-0.5">
-                            <Clock className="size-2.5" />
-                            Fastest
-                          </Badge>
-                        )}
-                        {route.isFastest && route.isBestReturn && (
+                        {route.isFastest && (
                           <Badge variant="outline" className="h-4 px-1 text-[9px] gap-0.5">
                             <Clock className="size-2.5" />
                             Fastest

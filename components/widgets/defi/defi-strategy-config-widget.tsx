@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { SchemaForm } from "@/components/shared/schema-driven-form";
 import { buildDefaults, DEFI_STRATEGY_FAMILIES, DEFI_STRATEGY_SCHEMAS } from "@/lib/config/strategy-config-schemas";
@@ -52,13 +53,60 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
   const [selectedStrategy, setSelectedStrategy] = React.useState<DeFiStrategyId>("AAVE_LENDING");
   const [shareClass, setShareClass] = React.useState<ShareClass>("USDT");
   const [mode] = React.useState<"Active" | "Paper">("Paper");
-  const [configs, setConfigs] = React.useState(loadInitialConfigs);
+  // isLoading: true during SSR/hydration until localStorage is readable client-side
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [loadError, setLoadError] = React.useState<string | null>(null);
+  const [configs, setConfigs] = React.useState<Record<string, Record<string, unknown>>>({});
+
+  React.useEffect(() => {
+    try {
+      setConfigs(loadInitialConfigs());
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load strategy configs");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const schema = DEFI_STRATEGY_SCHEMAS[selectedStrategy];
   const current = configs[selectedStrategy] ?? buildDefaults(schema);
 
   function updateConfig(next: Record<string, unknown>) {
     setConfigs((prev) => ({ ...prev, [selectedStrategy]: next }));
+  }
+
+  // ── Loading state ──────────────────────────────────────────────────────────
+  if (isLoading) {
+    return (
+      <div className="space-y-3 p-1">
+        <Skeleton className="h-9 w-full" />
+        <Skeleton className="h-7 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-28 w-full" />
+      </div>
+    );
+  }
+
+  // ── Error state ────────────────────────────────────────────────────────────
+  if (loadError) {
+    return (
+      <div className="flex h-full min-h-[120px] items-center justify-center p-4">
+        <div className="text-center space-y-1">
+          <p className="text-xs font-medium text-rose-400">Failed to load strategy configs</p>
+          <p className="text-[10px] text-muted-foreground">{loadError}</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Empty state ────────────────────────────────────────────────────────────
+  if (ALL_DEFI_IDS.length === 0) {
+    return (
+      <div className="flex h-full min-h-[120px] items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">No DeFi strategies registered.</p>
+      </div>
+    );
   }
 
   return (

@@ -8,16 +8,16 @@
   "description": "Add or remove liquidity from DeFi pools. Pool selector, fee tier, price range, TVL, and APR display.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "All 9 checks pass. Error boundary: WidgetErrorBoundary covers all grid widgets globally. requiredEntitlements: [defi-trading]. availableOn: [defi]. No any types or @ts-ignore. No lib/mocks imports in widget file. Loading: context does not expose isLoading; FormWidget shows skeleton when isLoading prop is set; marked N/A for context-level loading. Empty state: guard on !pool (fixed: removed '(mock)' text). Error state: FormWidget shows dismissible error banner from useFormSubmit — covers submission errors; context has no error field. No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "fail",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 FAIL: liquidityPools is always LIQUIDITY_POOLS regardless of org scope — org filter only gates adjustedTokenBalances/adjustedLendingProtocols/getBridgeRoutes, not liquidityPools. 1.4 FAIL: no client-level cascading filter in context. 1.5 PARTIAL: strategyIds filter applied to tradeHistory only, not liquidityPools. 1.6 PASS: empty scope arrays return all data. 1.7 FAIL: LIQUIDITY_POOLS constant lives in lib/mocks/fixtures/defi-liquidity.ts rather than lib/constants/ — reference data in wrong location (context file, not widget file; fix deferred to context migration task)."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,33 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    {
+      "level": "l0",
+      "description": "Empty state message contained '(mock)' text — removed and replaced with user-facing message 'No liquidity pools available.'",
+      "status": "fixed"
+    },
+    {
+      "level": "l0",
+      "description": "Context (defi-data-context.tsx) does not expose isLoading or error fields; FormWidget isLoading prop receives no value (undefined = content shown immediately). Context-level loading/error states are N/A for this widget.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "liquidityPools is not filtered by org scope — always returns LIQUIDITY_POOLS regardless of globalScope.organizationIds. Context gates other data (tokenBalances, lendingProtocols, bridgeRoutes) via hasDefiDesk but not liquidityPools.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "No client-level (clientIds) cascading filter in DeFiDataProvider — 1.4 unimplemented.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "LIQUIDITY_POOLS constant is in lib/mocks/fixtures/defi-liquidity.ts — should be in lib/constants/ or lib/config/. Requires context file migration (defi-data-context.tsx update, not widget file).",
+      "status": "open"
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

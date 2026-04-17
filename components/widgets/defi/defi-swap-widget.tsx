@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
 import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
@@ -30,7 +31,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
     calculateBasisTradeCostOfCarry,
   } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
-  const tokens = swapTokens as string[];
+  const tokens = swapTokens;
 
   // Check if this widget is in basis-trade mode
   const isBasisTrade = props.config?.mode === "basis-trade";
@@ -45,6 +46,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
       setTokenOut("weETH");
     }
   }, [isStakedBasis]);
+
   const [amountIn, setAmountIn] = React.useState("");
   const [slippage, setSlippage] = React.useState("0.5");
   const [algoType, setAlgoType] = React.useState<AlgoType>("SOR_DEX");
@@ -67,6 +69,18 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
     if (amountNum <= 0) return null;
     return generateSwapRoute(tokenIn, tokenOut, amountNum, algoType, selectedChain);
   }, [amountNum, tokenIn, tokenOut, algoType, selectedChain, generateSwapRoute]);
+
+  // Loading / empty state: token list not yet available
+  if (tokens.length === 0) {
+    return (
+      <div className="space-y-3 p-1">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-1/2 mx-auto" />
+      </div>
+    );
+  }
 
   return (
     <FormWidget error={error} onClearError={clearError}>

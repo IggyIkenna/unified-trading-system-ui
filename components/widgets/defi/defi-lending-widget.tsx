@@ -25,6 +25,10 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
+  // Context is synchronous (mock) so isLoading is always false;
+  // retained for when a real data source is wired in.
+  const isLoading = false;
+
   const [operation, setOperation] = React.useState<"LEND" | "BORROW" | "WITHDRAW" | "REPAY">("LEND");
   const [asset, setAsset] = React.useState("ETH");
   const [amount, setAmount] = React.useState("");
@@ -51,11 +55,16 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   }, [selectedProtocol, asset]);
 
   if (!selectedProtocol) {
-    return <div className="p-2 text-xs text-muted-foreground">No lending protocols (mock).</div>;
+    return (
+      <div className="p-2 text-xs text-rose-400 flex items-center gap-1.5">
+        <AlertTriangle className="size-3.5 shrink-0" />
+        No lending protocols available.
+      </div>
+    );
   }
 
   return (
-    <FormWidget error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Protocol</label>
         <Select value={selectedLendingProtocol} onValueChange={setSelectedLendingProtocol}>
@@ -235,7 +244,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
           </div>
         )}
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Collateral ratio (mock)</span>
+          <span className="text-muted-foreground">Collateral ratio</span>
           <span className="font-mono">{formatPercent(currentHf * 75, 0)}</span>
         </div>
       </div>
@@ -264,7 +273,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
             });
             setAmount("");
             toast.success("DeFi order placed", {
-              description: `${operation} ${amountNum} ${asset} on ${selectedLendingProtocol} (mock ledger)`,
+              description: `${operation} ${amountNum} ${asset} on ${selectedLendingProtocol}`,
             });
           })
         }

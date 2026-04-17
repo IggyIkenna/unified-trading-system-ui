@@ -23,6 +23,28 @@ function daysUntil(iso: string): number {
 export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
   const { stakingRewards, claimReward, claimAndSellReward, rewardPnl } = useDeFiData();
 
+  // 0.6 Loading: DeFiDataContext is synchronous (mock) — isLoading is structurally absent.
+  // React.Suspense in widget-wrapper.tsx handles any async boundary above this widget.
+
+  // 0.8 Error: context does not expose an error field; WidgetErrorBoundary in widget-wrapper.tsx
+  // catches thrown errors. Guard against unexpected nullish data here.
+  if (!stakingRewards || !rewardPnl) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">Failed to load staking rewards data.</p>
+      </div>
+    );
+  }
+
+  // 0.7 Empty state: no rewards tracked yet.
+  if (stakingRewards.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">No staking rewards available.</p>
+      </div>
+    );
+  }
+
   const totalAccrued = stakingRewards.reduce((sum, r) => sum + r.accrued_value_usd, 0);
   const totalClaimed = stakingRewards.reduce((sum, r) => sum + r.claimed_amount, 0);
   const totalSold = stakingRewards.reduce((sum, r) => sum + r.sold_value_usd, 0);

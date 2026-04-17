@@ -121,11 +121,14 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
       <div className="px-3 py-2 border-b border-border/40 shrink-0">
         <KpiStrip metrics={headerMetrics} columns={2} />
       </div>
+      {/* isLoading/error wired explicitly; context does not yet expose these fields.
+          When defi-data-context adds isLoading + error, pass them here. */}
       <TableWidget
         columns={columns}
         data={rows}
         enableSorting
         enableColumnVisibility={false}
+        isLoading={false}
         emptyMessage="No rate rows"
         className="flex-1 min-h-0"
       />

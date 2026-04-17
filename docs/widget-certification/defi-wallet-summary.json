@@ -8,16 +8,16 @@
   "description": "KPI strip showing total wallet value, chain selector, and per-token balances across all connected wallets and chains.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "All 9 checks green. 0.1: WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2: requiredEntitlements=['defi-trading']. 0.3: availableOn=['defi']. 0.4: no any or ts-ignore. 0.5: no lib/mocks/ imports in widget file (MOCK_CHAIN_PORTFOLIOS was moved to context in S0.3 commit 8e2007e; knownIssues entry is stale). 0.6: added Skeleton loading guard — shows 4-element skeleton when chainPortfolios and tokenBalances are both empty. 0.7: added 'No chain portfolio data available' empty-state guard on sortedPortfolios.length===0 in Portfolio by chain section (Key Rates section already had empty guard). 0.8: DeFiDataContext is synchronous mock with no error field; useDeFiData() throws when provider missing, caught by global WidgetErrorBoundary (0.1); no additional error UI needed. 0.9: no dead code found."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "fail",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS — widget reads all data via useDeFiData() hook, no inline fetches. 1.2 PASS — defi-data-context.tsx calls useGlobalScope() at line 188. 1.3 PARTIAL — org filter wired: hasDefiDesk filters tokenBalances and lendingProtocols when org selected without DeFi desk. However chainPortfolios (MOCK_CHAIN_PORTFOLIOS) is passed unconditionally regardless of org scope — not filtered. 1.4 PARTIAL — client filter: not wired (CLIENTS is imported but only used for hasDefiDesk check, no client-level data narrowing). 1.5 PASS — strategy filter wired for tradeHistory (scopeStrategyIds). 1.6 PASS — empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds is empty). 1.7 FAIL — reference data (MOCK_CHAIN_PORTFOLIOS, MOCK_TOKEN_BALANCES, MOCK_TREASURY, MOCK_PORTFOLIO_DELTA, etc.) live in lib/mocks/fixtures/ not lib/constants/. Context correctly imports them but the fixtures are not in lib/constants/ as spec requires for reference/static data. These context-level mock imports are tracked but cannot be fixed without modifying defi-data-context.tsx (out of scope for widget-level certification)."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,39 @@
       "notes": null
     }
   },
-  "knownIssues": ["Mock import: MOCK_CHAIN_PORTFOLIOS"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [],
+  "findings": [
+    {
+      "level": "l0",
+      "description": "Missing loading skeleton — no visual feedback when context data is initializing.",
+      "status": "fixed"
+    },
+    {
+      "level": "l0",
+      "description": "Missing empty state for 'Portfolio by chain' table — no message when sortedPortfolios is empty.",
+      "status": "fixed"
+    },
+    {
+      "level": "l0",
+      "description": "knownIssues entry 'Mock import: MOCK_CHAIN_PORTFOLIOS' was stale — import was already removed from widget file in commit 8e2007e (S0.3 cleanup).",
+      "status": "fixed"
+    },
+    {
+      "level": "l1",
+      "description": "chainPortfolios (MOCK_CHAIN_PORTFOLIOS) passed to context unconditionally — not filtered by org scope. Should return empty array when selected org has no DeFi desk.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "Client-level filter not wired in context — scope.clientIds does not narrow any DeFi data.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "Reference/static data (MOCK_CHAIN_PORTFOLIOS, MOCK_TOKEN_BALANCES, treasury, delta snapshots) live in lib/mocks/fixtures/ rather than lib/constants/. Context is the correct gating layer but fixture location violates 1.7.",
+      "status": "open"
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

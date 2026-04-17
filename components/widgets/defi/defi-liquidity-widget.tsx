@@ -28,7 +28,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   const pool = liquidityPools.find((p) => p.name === selectedPool) ?? liquidityPools[0];
 
   if (!pool) {
-    return <div className="p-2 text-xs text-muted-foreground">No pools (mock).</div>;
+    return <div className="p-4 text-xs text-muted-foreground text-center">No liquidity pools available.</div>;
   }
 
   return (

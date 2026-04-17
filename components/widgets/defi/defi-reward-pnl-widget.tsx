@@ -16,8 +16,37 @@ const FACTOR_COLORS: Record<string, string> = {
 export function DeFiRewardPnlWidget(_props: WidgetComponentProps) {
   const { rewardPnl } = useDeFiData();
 
-  const total = Object.values(rewardPnl).reduce((s, f) => s + f.amount, 0);
-  const maxAmount = Math.max(...Object.values(rewardPnl).map((f) => f.amount), 1);
+  // Error guard — context value missing
+  if (!rewardPnl) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">Failed to load reward P&amp;L data.</p>
+      </div>
+    );
+  }
+
+  const entries = Object.entries(rewardPnl);
+
+  // Loading guard — no factors available yet
+  if (entries.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">Loading reward data…</p>
+      </div>
+    );
+  }
+
+  const total = entries.reduce((s, [, f]) => s + f.amount, 0);
+  const maxAmount = Math.max(...entries.map(([, f]) => f.amount), 1);
+
+  // Empty state — all factors are zero
+  if (total === 0 && entries.every(([, f]) => f.amount === 0)) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">No reward P&amp;L to display.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 p-1">
@@ -31,7 +60,7 @@ export function DeFiRewardPnlWidget(_props: WidgetComponentProps) {
 
       {/* Waterfall bars */}
       <div className="space-y-2">
-        {Object.entries(rewardPnl).map(([key, factor]) => {
+        {entries.map(([key, factor]) => {
           const barWidth = maxAmount > 0 ? (factor.amount / maxAmount) * 100 : 0;
           return (
             <div key={key} className="space-y-0.5">

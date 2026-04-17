@@ -30,7 +30,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget error={error} onClearError={clearError}>
+    <FormWidget isLoading={false} error={error} onClearError={clearError}>
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant={operation === "STAKE" ? "default" : "outline"}

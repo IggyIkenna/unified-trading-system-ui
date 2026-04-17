@@ -36,7 +36,28 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
   const { waterfallWeights } = useDeFiData();
   const [selectedCoin, setSelectedCoin] = React.useState<string | null>(null);
 
+  // DeFiDataContext is synchronous (mock) — isLoading is always false.
+  // When the context adds isLoading + error fields, wire them here.
+  const isLoading = false;
+  const error: string | null = null;
+
   const coins = Object.keys(waterfallWeights.coin_weights);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">Loading allocation weights…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3 p-1">

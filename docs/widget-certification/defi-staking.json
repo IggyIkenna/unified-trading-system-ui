@@ -8,16 +8,16 @@
   "description": "Stake or unstake tokens across protocols. Shows protocol APY, yield earned, TVL, and unbonding period.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[defi-trading]. 0.3 availableOn=[defi]. 0.4 no any/ts-ignore. 0.5 no lib/mocks imports in widget. 0.6 FormWidget accepts isLoading; context is synchronous mock with no async loading — wired isLoading={false} to document intent. 0.7 empty guard via if(!selected) present. 0.8 submission errors displayed via FormWidget error={error} from useFormSubmit; WidgetErrorBoundary covers crashes; context exposes no context-level error field. 0.9 no dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "fail",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 pass — data via useDeFiData(). 1.2 pass — context calls useGlobalScope(), uses organizationIds and strategyIds. 1.3 partial — org filter zeros balances and empties lendingProtocols, but stakingProtocols is always STAKING_PROTOCOLS regardless of org scope (no protocol-level org filtering). 1.4 fail — no client-level filter cascade in context; CLIENTS imported from mocks only used for DeFi desk presence check, not data narrowing. 1.5 pass for tradeHistory; N/A for stakingProtocols (protocol list, not strategy data). 1.6 pass — empty organizationIds returns all data (hasDefiDesk=true). 1.7 fail — STAKING_PROTOCOLS imported from lib/mocks/fixtures/defi-staking in context; reference data should live in lib/constants/ or lib/config/. Context file not modified (out of scope for this widget cert)."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,33 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    {
+      "level": "l0",
+      "description": "0.6 Context exposes no isLoading field (synchronous mock data). FormWidget loading infra is wired with isLoading={false} to document that loading path was considered. No fix needed until context gains async loading.",
+      "status": "open"
+    },
+    {
+      "level": "l0",
+      "description": "0.8 Context exposes no context-level error field. Submission errors are handled via useFormSubmit + FormWidget error prop. Crash errors covered by WidgetErrorBoundary. Acceptable for mock-data context.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "1.3 stakingProtocols list is not filtered by org scope in context — always returns full STAKING_PROTOCOLS regardless of globalScope.organizationIds. Requires context change.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "1.4 No client-level filter cascade in defi-data-context.tsx for any data including stakingProtocols. CLIENTS from mocks only used for DeFi desk presence check.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "1.7 STAKING_PROTOCOLS reference data lives in lib/mocks/fixtures/defi-staking instead of lib/constants/ or lib/config/. Context file change required.",
+      "status": "open"
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

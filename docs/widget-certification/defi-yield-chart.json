@@ -8,16 +8,16 @@
   "description": "Time series chart of yield performance across DeFi positions. Compares realised vs target APY over time.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets via WidgetBody. 0.2 requiredEntitlements: ['defi-trading'] set. 0.3 availableOn: ['defi'] set. 0.4 No any types or @ts-ignore in widget file. 0.5 Widget file has zero lib/mocks imports — data sourced exclusively via useDeFiData(); known mock-generator issue lives in defi-data-context.tsx (out of scope for widget file fix). 0.6 Loading covered by React.Suspense fallback in WidgetBody (widget-wrapper.tsx) plus empty-state guard when allSeries.length===0. 0.7 Empty state rendered at lines 65-71 ('No yield data available'). 0.8 Error state covered by WidgetErrorBoundary in widget-wrapper.tsx — catches any thrown errors from context or render. 0.9 No dead code; 'comparison' ViewMode is a type-extension stub with no reachable UI path but causes no runtime issue."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "fail",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS — widget reads exclusively via useDeFiData(). 1.2 PASS — defi-data-context.tsx calls useGlobalScope() (line 44) and uses globalScope for org/strategy filtering. 1.3 FAIL — yieldSeries is generated unconditionally via generateAllYieldSeries(yieldDays) without filtering by globalScope.organizationIds; org scope change does NOT narrow yield chart data. 1.4 FAIL — client filter not applied to yieldSeries; tradeHistory respects strategyIds but yieldSeries does not. 1.5 FAIL — globalScope.strategyIds is NOT applied to yieldSeries generation; all 8 strategy curves always appear regardless of strategy filter. 1.6 PASS — empty scope (no filters set) returns all 8 strategies, satisfying 'empty = all'. 1.7 FAIL — strategy definitions (APYs, colors, names, capitals) are hardcoded in lib/mocks/generators/defi-yield-generators.ts rather than lib/constants/ or lib/config/. Context file fix required (out of widget scope)."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,28 @@
       "notes": null
     }
   },
-  "knownIssues": ["Mock import: yield generators"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "Mock import: yield generators (lib/mocks/generators/defi-yield-generators.ts used in defi-data-context.tsx, not widget file)",
+    "L1: yieldSeries not filtered by globalScope.organizationIds or strategyIds — context fix needed",
+    "L1: strategy definitions (APYs, colors, capitals) in lib/mocks/ instead of lib/constants/ or lib/config/"
+  ],
+  "findings": [
+    {
+      "level": "l0",
+      "description": "0.5 Widget file clean — no lib/mocks imports. Known mock-generator import is in defi-data-context.tsx (deferred, out of widget scope).",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "1.3/1.4/1.5 yieldSeries generated unconditionally; org, client, and strategy scope filters are not applied to yield chart data in defi-data-context.tsx.",
+      "status": "open"
+    },
+    {
+      "level": "l1",
+      "description": "1.7 Strategy reference data (APY targets, colors, capital allocations) live in lib/mocks/generators/defi-yield-generators.ts — should be in lib/constants/ or lib/config/.",
+      "status": "open"
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }
