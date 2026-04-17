@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-flash-loans",
+  "label": "Flash Loan Builder",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-flash-loans-widget.tsx",
+  "class": "form",
+  "description": "Compose multi-step flash loan bundles with borrow and repay legs, P&L preview, and execution simulation.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: SWAP_TOKENS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

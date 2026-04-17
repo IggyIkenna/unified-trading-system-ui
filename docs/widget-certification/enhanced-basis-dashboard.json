@@ -1,0 +1,57 @@
+{
+  "widgetId": "enhanced-basis-dashboard",
+  "label": "Enhanced Basis Dashboard",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/enhanced-basis-widget.tsx",
+  "class": "inline-table",
+  "description": "Cross-venue basis trade monitor showing spot-perp spreads, funding rates, and arb opportunity scores.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["New widget — fully disconnected, uses inline mock data"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

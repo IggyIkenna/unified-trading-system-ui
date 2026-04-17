@@ -1,0 +1,57 @@
+{
+  "widgetId": "scope-summary",
+  "label": "Scope & Controls",
+  "priority": 2,
+  "domain": "overview",
+  "file": "components/widgets/overview/scope-summary-widget.tsx",
+  "class": "control-bar",
+  "description": "Global scope summary with active org, client, and strategy selectors, intervention controls, and terminal link.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

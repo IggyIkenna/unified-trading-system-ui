@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-kpi-strip",
+  "label": "Risk KPIs",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-kpi-strip-widget.tsx",
+  "class": "kpi-strip",
+  "description": "Nine risk metrics with sparklines: P&L, exposure, margin%, VaR95, ES95, alert count, VaR99, ES99, and kill switch count.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: getFilledDefiOrders, MOCK_PORTFOLIO_DELTA, STRATEGY_RISK_PROFILES"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

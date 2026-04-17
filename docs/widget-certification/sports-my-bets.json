@@ -1,0 +1,57 @@
+{
+  "widgetId": "sports-my-bets",
+  "label": "My Bets",
+  "priority": 5,
+  "domain": "sports",
+  "file": "components/widgets/sports/sports-my-bets-widget.tsx",
+  "class": "data-table",
+  "description": "KPI strip with open and settled bet tables using DataTableWidget. Includes accumulator tracking.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

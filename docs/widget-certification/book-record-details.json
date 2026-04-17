@@ -1,0 +1,57 @@
+{
+  "widgetId": "book-record-details",
+  "label": "Record Details",
+  "priority": 4,
+  "domain": "book",
+  "file": "components/widgets/book/book-record-details-widget.tsx",
+  "class": "form",
+  "description": "Counterparty, source reference, and fee fields for record-only booking mode.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

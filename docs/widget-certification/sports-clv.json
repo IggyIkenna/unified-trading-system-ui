@@ -1,0 +1,57 @@
+{
+  "widgetId": "sports-clv",
+  "label": "CLV Performance",
+  "priority": 5,
+  "domain": "sports",
+  "file": "components/widgets/sports/sports-clv-widget.tsx",
+  "class": "detail-panel",
+  "description": "Closing line value tracking with hit rate, mean CLV, and P&L breakdown by market and bookmaker.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_CLV_RECORDS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

@@ -1,0 +1,57 @@
+{
+  "widgetId": "strategy-family-browser",
+  "label": "Strategy Family Browser",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/strategy-family-browser-widget.tsx",
+  "class": "card-grid",
+  "description": "Browse all 65+ strategy types across DeFi, CeFi, TradFi, and Sports, grouped by family with configurable parameters.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

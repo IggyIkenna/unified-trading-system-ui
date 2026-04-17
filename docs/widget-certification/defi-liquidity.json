@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-liquidity",
+  "label": "Liquidity Provision",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-liquidity-widget.tsx",
+  "class": "form",
+  "description": "Add or remove liquidity from DeFi pools. Pool selector, fee tier, price range, TVL, and APR display.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

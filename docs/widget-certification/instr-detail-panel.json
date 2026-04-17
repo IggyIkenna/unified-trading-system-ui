@@ -1,0 +1,57 @@
+{
+  "widgetId": "instr-detail-panel",
+  "label": "Instruction Detail",
+  "priority": 4,
+  "domain": "instructions",
+  "file": "components/widgets/instructions/instructions-detail-panel-widget.tsx",
+  "class": "detail-panel",
+  "description": "Persistent detail panel for the selected instruction. Shows legs, fills, compliance, and timeline.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

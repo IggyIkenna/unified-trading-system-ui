@@ -1,0 +1,57 @@
+{
+  "widgetId": "saft-portfolio",
+  "label": "SAFT & Token Warrants",
+  "priority": 3,
+  "domain": "accounts",
+  "file": "components/widgets/accounts/saft-portfolio-widget.tsx",
+  "class": "card-grid",
+  "description": "SAFT portfolio tracker with vesting timeline, token warrant details, and treasury position overview.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_SAFTS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

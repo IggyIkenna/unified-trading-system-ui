@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-strategy-config",
+  "label": "Strategy Config",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-strategy-config-widget.tsx",
+  "class": "form",
+  "description": "View and edit configuration for active DeFi strategies including allocation targets, rebalance rules, and risk limits.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["1,157 lines — decomposed via schema-driven form"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

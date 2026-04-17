@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-reward-pnl",
+  "label": "Reward P&L Breakdown",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-reward-pnl-widget.tsx",
+  "class": "detail-panel",
+  "description": "P&L decomposition by reward factor: staking yield, restaking, seasonal bonuses, and protocol incentives.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

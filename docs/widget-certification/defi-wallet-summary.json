@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-wallet-summary",
+  "label": "Wallet Summary",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-wallet-summary-widget.tsx",
+  "class": "bespoke",
+  "description": "KPI strip showing total wallet value, chain selector, and per-token balances across all connected wallets and chains.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_CHAIN_PORTFOLIOS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

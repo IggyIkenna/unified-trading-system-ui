@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-swap",
+  "label": "DeFi Swap",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-swap-widget.tsx",
+  "class": "form",
+  "description": "Swap tokens with route preview, price impact, slippage control, and gas estimate. Supports basis trade mode.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: generateSwapRoute, getMockPrice"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

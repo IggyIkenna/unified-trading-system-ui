@@ -1,0 +1,57 @@
+{
+  "widgetId": "commodity-regime",
+  "label": "Commodity Regime",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/commodity-regime-widget.tsx",
+  "class": "detail-panel",
+  "description": "Regime detection dashboard with factor scores, trading signals, and active commodity positions with P&L.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Fully disconnected — inline MOCK_FACTORS, MOCK_POSITIONS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

@@ -1,0 +1,57 @@
+{
+  "widgetId": "markets-defi-amm",
+  "label": "DeFi Pool Activity",
+  "priority": 5,
+  "domain": "markets",
+  "file": "components/widgets/markets/markets-defi-amm-widget.tsx",
+  "class": "live-feed",
+  "description": "AMM swap and LP-style activity table for DeFi venues showing pool, size, price impact, and fees.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

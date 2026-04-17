@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-funding-matrix",
+  "label": "Funding Rate Matrix",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-funding-matrix-widget.tsx",
+  "class": "heatmap",
+  "description": "Heatmap of annualised funding rates per coin per venue. Highlights rates below floor threshold.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import fixed — moved to defi.config.ts"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

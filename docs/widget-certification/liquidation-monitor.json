@@ -1,0 +1,57 @@
+{
+  "widgetId": "liquidation-monitor",
+  "label": "Liquidation Monitor",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/liquidation-monitor-widget.tsx",
+  "class": "inline-table",
+  "description": "Real-time cascade risk monitor showing at-risk DeFi positions, health factors, and liquidation price proximity.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Fully disconnected — inline MOCK_POSITIONS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

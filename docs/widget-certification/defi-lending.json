@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-lending",
+  "label": "DeFi Lending",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-lending-widget.tsx",
+  "class": "form",
+  "description": "Lend, borrow, withdraw, or repay across DeFi protocols. Shows APY, health factor preview, and collateral ratios per asset.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: calculateHealthFactorDelta, getAssetParams"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

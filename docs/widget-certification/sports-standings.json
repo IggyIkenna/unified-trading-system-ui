@@ -1,0 +1,57 @@
+{
+  "widgetId": "sports-standings",
+  "label": "Standings",
+  "priority": 5,
+  "domain": "sports",
+  "file": "components/widgets/sports/sports-standings-widget.tsx",
+  "class": "inline-table",
+  "description": "League standings table with form dots, goal difference, points, and qualification zone colouring.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_STANDINGS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

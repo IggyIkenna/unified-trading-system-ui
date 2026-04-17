@@ -1,0 +1,57 @@
+{
+  "widgetId": "events-feed",
+  "label": "Events Feed",
+  "priority": 2,
+  "domain": "terminal",
+  "file": "components/widgets/terminal/events-feed-widget.tsx",
+  "class": "live-feed",
+  "description": "Streaming feed of platform and market events: order lifecycle, risk alerts, and system notifications.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["New widget — fully disconnected, uses inline mock data"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

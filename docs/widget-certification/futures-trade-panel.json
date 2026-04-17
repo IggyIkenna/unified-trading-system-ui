@@ -1,0 +1,57 @@
+{
+  "widgetId": "futures-trade-panel",
+  "label": "Futures Trade Panel",
+  "priority": 5,
+  "domain": "options",
+  "file": "components/widgets/options/options-futures-trade-panel-widget.tsx",
+  "class": "form",
+  "description": "Futures order entry form shown after selecting a contract. Supports leverage, margin mode, and limit/market orders.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

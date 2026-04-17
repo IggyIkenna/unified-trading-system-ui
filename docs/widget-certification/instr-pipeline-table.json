@@ -1,0 +1,57 @@
+{
+  "widgetId": "instr-pipeline-table",
+  "label": "Instruction Pipeline",
+  "priority": 4,
+  "domain": "instructions",
+  "file": "components/widgets/instructions/instructions-pipeline-table-widget.tsx",
+  "class": "live-feed",
+  "description": "Signal, instruction, and fill columns with real-time updates, status filters, and expandable detail rows.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

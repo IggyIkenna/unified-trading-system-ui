@@ -1,0 +1,57 @@
+{
+  "widgetId": "accounts-margin-util",
+  "label": "Margin Utilization",
+  "priority": 3,
+  "domain": "accounts",
+  "file": "components/widgets/accounts/accounts-margin-util-widget.tsx",
+  "class": "bespoke",
+  "description": "Margin utilisation bars with trend and margin-call distance per venue. Highlights venues near limits.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-health-factor",
+  "label": "Health Factor Monitor",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-health-factor-widget.tsx",
+  "class": "detail-panel",
+  "description": "Real-time health factor monitoring across lending positions. Shows oracle vs market rates, spread, and emergency exit trigger.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

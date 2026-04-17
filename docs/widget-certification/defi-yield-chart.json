@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-yield-chart",
+  "label": "Yield Performance",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-yield-chart-widget.tsx",
+  "class": "recharts-chart",
+  "description": "Time series chart of yield performance across DeFi positions. Compares realised vs target APY over time.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: yield generators"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

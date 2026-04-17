@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-greeks-summary",
+  "label": "Portfolio Greeks",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-greeks-summary-widget.tsx",
+  "class": "recharts-chart",
+  "description": "Five Greek metric cards, per-position Greeks table, time series, and second-order risk display.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

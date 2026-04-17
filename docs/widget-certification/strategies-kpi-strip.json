@@ -1,0 +1,57 @@
+{
+  "widgetId": "strategies-kpi-strip",
+  "label": "Strategy Summary",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/strategies-kpi-widget.tsx",
+  "class": "kpi-strip",
+  "description": "Active strategy count, total AUM, total P&L, and MTD P&L with current execution mode badge.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

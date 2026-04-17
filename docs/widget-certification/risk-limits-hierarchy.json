@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-limits-hierarchy",
+  "label": "Limits Hierarchy",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-limits-hierarchy-widget.tsx",
+  "class": "inline-table",
+  "description": "Interactive six-level hierarchy tree for limit management. Shows all limits with utilisation and breach status.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

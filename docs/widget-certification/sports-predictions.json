@@ -1,0 +1,57 @@
+{
+  "widgetId": "sports-predictions",
+  "label": "Model Predictions",
+  "priority": 5,
+  "domain": "sports",
+  "file": "components/widgets/sports/sports-predictions-widget.tsx",
+  "class": "bespoke",
+  "description": "ML model predictions for upcoming fixtures: 1X2, xG, BTTS, and over/under probabilities with confidence scores.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_FIXTURES, MOCK_PREDICTIONS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

@@ -1,0 +1,57 @@
+{
+  "widgetId": "sports-ml-status",
+  "label": "ML Pipeline",
+  "priority": 5,
+  "domain": "sports",
+  "file": "components/widgets/sports/sports-ml-status-widget.tsx",
+  "class": "detail-panel",
+  "description": "Training status, model families, feature freshness, and accuracy metrics for the sports ML pipeline.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_MODEL_FAMILIES, MOCK_FEATURE_FRESHNESS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

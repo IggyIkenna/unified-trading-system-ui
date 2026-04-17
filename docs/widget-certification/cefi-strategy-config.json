@@ -1,0 +1,57 @@
+{
+  "widgetId": "cefi-strategy-config",
+  "label": "CeFi/TradFi Strategy Config",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/cefi-strategy-config-widget.tsx",
+  "class": "form",
+  "description": "Configure CeFi, TradFi, Options, and Prediction strategies — momentum, mean-reversion, ML, stat-arb, market-making.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["567 lines refactored to 79 via schema-driven form"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

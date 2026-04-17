@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-live-alert-feed",
+  "label": "Live Alert Feed",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-live-alert-feed-widget.tsx",
+  "class": "live-feed",
+  "description": "Real-time streaming feed of risk alerts with severity, entity, and recommended action per alert.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["New widget — verify data source and context wiring"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

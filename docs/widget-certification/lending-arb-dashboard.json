@@ -1,0 +1,57 @@
+{
+  "widgetId": "lending-arb-dashboard",
+  "label": "Lending Arb Dashboard",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/lending-arb-dashboard-widget.tsx",
+  "class": "inline-table",
+  "description": "Cross-protocol lending rate comparison with spread and utilisation tracking across Aave, Morpho, Compound, and Kamino.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Fully disconnected — inline MOCK_DATA"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

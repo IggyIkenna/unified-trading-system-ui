@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-strategy-heatmap",
+  "label": "Strategy Heatmap",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-strategy-heatmap-widget.tsx",
+  "class": "bespoke",
+  "description": "Strategy risk status grid with circuit breaker trip/reset actions, utilisation scale, and kill switch controls.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-transfer",
+  "label": "Transfer & Bridge",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-transfer-widget.tsx",
+  "class": "form",
+  "description": "Send tokens on the same chain or bridge cross-chain. Shows gas estimate and bridge fee before submission.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_CHAIN_PORTFOLIOS, getMockPrice"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

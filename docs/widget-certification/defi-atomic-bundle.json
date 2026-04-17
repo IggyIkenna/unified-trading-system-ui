@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-atomic-bundle",
+  "label": "DeFi Atomic Bundles",
+  "priority": 4,
+  "domain": "bundles",
+  "file": "components/widgets/bundles/defi-atomic-bundle-widget.tsx",
+  "class": "card-grid",
+  "description": "DeFi-specific atomic bundle builder with Flash Loan Arb and Leverage Long pre-built templates.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

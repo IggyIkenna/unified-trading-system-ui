@@ -1,0 +1,57 @@
+{
+  "widgetId": "pnl-chart",
+  "label": "P&L / NAV / Exposure Charts",
+  "priority": 2,
+  "domain": "overview",
+  "file": "components/widgets/overview/pnl-chart-widget.tsx",
+  "class": "bespoke",
+  "description": "Live vs batch time series comparison of P&L, NAV, and exposure with drift analysis and mode indicators.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

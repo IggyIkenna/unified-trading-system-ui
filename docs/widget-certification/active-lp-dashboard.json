@@ -1,0 +1,57 @@
+{
+  "widgetId": "active-lp-dashboard",
+  "label": "Active LP Dashboard",
+  "priority": 4,
+  "domain": "strategies",
+  "file": "components/widgets/strategies/active-lp-dashboard-widget.tsx",
+  "class": "inline-table",
+  "description": "Concentrated liquidity position tracker with TVL, fees earned, impermanent loss, and in-range status.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Fully disconnected — inline MOCK_LP_POSITIONS"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

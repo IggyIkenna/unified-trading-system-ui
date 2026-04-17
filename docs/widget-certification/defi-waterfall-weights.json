@@ -1,0 +1,57 @@
+{
+  "widgetId": "defi-waterfall-weights",
+  "label": "Allocation Weights",
+  "priority": 1,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-waterfall-weights-widget.tsx",
+  "class": "waterfall",
+  "description": "Dual waterfall showing coin allocation weights and per-coin venue weights for the active DeFi strategy.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

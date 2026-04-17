@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-correlation-heatmap",
+  "label": "Correlation Heatmap",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-correlation-heatmap-widget.tsx",
+  "class": "heatmap",
+  "description": "Asset correlation matrix heatmap with colour-coded cells, tooltip, and dynamic import for performance.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

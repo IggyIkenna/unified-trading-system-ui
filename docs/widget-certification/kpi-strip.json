@@ -1,0 +1,57 @@
+{
+  "widgetId": "kpi-strip",
+  "label": "Key Metrics",
+  "priority": 2,
+  "domain": "overview",
+  "file": "components/widgets/overview/kpi-strip-widget.tsx",
+  "class": "kpi-strip",
+  "description": "Overview KPI strip showing P&L, exposure, margin, live strategy count, and alert count at a glance.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": ["Mock import: MOCK_PORTFOLIO_DELTA, STRATEGY_RISK_PROFILES"],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

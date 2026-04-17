@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-what-if-slider",
+  "label": "What-If Slider",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-what-if-slider-widget.tsx",
+  "class": "bespoke",
+  "description": "BTC price shock slider with estimated P&L via delta and gamma approximation. Instant scenario sensitivity.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

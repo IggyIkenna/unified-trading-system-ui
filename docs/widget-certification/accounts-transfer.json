@@ -1,0 +1,57 @@
+{
+  "widgetId": "accounts-transfer",
+  "label": "Transfer Panel",
+  "priority": 3,
+  "domain": "accounts",
+  "file": "components/widgets/accounts/accounts-transfer-widget.tsx",
+  "class": "form",
+  "description": "Initiate venue-to-venue, sub-account, withdrawal, and deposit transfer flows with fee preview.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}

@@ -1,0 +1,57 @@
+{
+  "widgetId": "risk-stress-table",
+  "label": "Stress Scenarios",
+  "priority": 2,
+  "domain": "risk",
+  "file": "components/widgets/risk/risk-stress-table-widget.tsx",
+  "class": "inline-table",
+  "description": "Historical stress scenario table with multiplier, estimated P&L impact, breach count, and on-demand stress test action.",
+  "levels": {
+    "l0": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l1": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l2": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l3": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l4": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l5": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    },
+    "l6": {
+      "status": null,
+      "by": null,
+      "date": null,
+      "notes": null
+    }
+  },
+  "knownIssues": [],
+  "findings": [],
+  "updatedBy": null,
+  "updatedAt": null
+}
