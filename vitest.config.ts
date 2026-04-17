@@ -16,6 +16,7 @@ export default defineConfig({
     exclude: ["**/node_modules/**", "**/.git/**", "**/.next/**", "tests/e2e/**"],
     coverage: {
       reporter: ["text", "json-summary"],
+      reportsDirectory: "./build-artifacts/coverage",
     },
   },
 });

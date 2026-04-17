@@ -10,6 +10,7 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   timeout: 30000,
+  outputDir: "./build-artifacts/test-results",
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3100",
     trace: "off",

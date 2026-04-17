@@ -152,8 +152,8 @@ The 6 strategy-platform widgets are production code — deletion leaves a covera
 
 **Actions (when instructed):**
 
-- [ ] Phase D: update `testDir` in all three configs (+ `globalSetup` in static)
-- [ ] Phase E: update `reporter` + `outputDir` in all three configs
+- [x] Phase D: update `testDir` in all three configs (+ `globalSetup` in static)
+- [x] Phase E: update `reporter` + `outputDir` in all three configs
 - [ ] Phase E.1 (optional, after D+E verified): extract `playwright.base.config.ts` with shared chromium project + `forbidOnly` + base `use` block; all three configs spread it
 
 ---
@@ -217,10 +217,10 @@ build-artifacts/
 
 **Actions (when instructed):**
 
-- [ ] Update configs to emit into `build-artifacts/`
-- [ ] Replace gitignore entries with `/build-artifacts/`
-- [ ] Delete any committed local copies (`git rm -r --cached coverage playwright-report test-results tsconfig.tsbuildinfo` if tracked)
-- [ ] Run `pnpm test:ci` + `pnpm exec playwright test --list` to confirm outputs land in new folder
+- [x] Update configs to emit into `build-artifacts/` (vitest.config.ts, 3 playwright configs, tsconfig.json)
+- [x] Replace gitignore entries with `/build-artifacts/`
+- [x] Move stale root-level `coverage/`, `playwright-report/`, `test-results/`, `tsconfig.tsbuildinfo` into `build-artifacts/` (none were tracked — git-clean after move)
+- [x] Verified: `pnpm exec vitest list` discovers tests, `tsc --noEmit` emits to `build-artifacts/tsbuildinfo`, `playwright test --list` succeeds on both static (122 tests) and e2e (568 tests) configs
 
 ---
 

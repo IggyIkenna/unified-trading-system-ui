@@ -18,7 +18,8 @@ export default defineConfig({
   retries: 1,
   workers: 3,
   timeout: 30000,
-  reporter: [["list"], ["json", { outputFile: "test-results/static-smoke-results.json" }]],
+  reporter: [["list"], ["json", { outputFile: "./build-artifacts/test-results/static-smoke-results.json" }]],
+  outputDir: "./build-artifacts/test-results",
   use: {
     baseURL: "http://localhost:3100",
     trace: "off",

@@ -6,7 +6,11 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: [["html"], ["json", { outputFile: "test-results/results.json" }]],
+  reporter: [
+    ["html", { outputFolder: "./build-artifacts/playwright-report" }],
+    ["json", { outputFile: "./build-artifacts/test-results/results.json" }],
+  ],
+  outputDir: "./build-artifacts/test-results",
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",

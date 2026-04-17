@@ -20,22 +20,18 @@ node_modules/
 # pnpm is canonical — block npm's lockfile from being re-committed
 package-lock.json
 
-# Build artifacts — test coverage output directories (NOT app routes)
-coverage/
-# Allow the coverage tab app route (app/(platform)/services/data/coverage/)
-!app/**/coverage/
+# Build / test output routed into a single folder (see vitest.config.ts,
+# playwright.*.config.ts, tsconfig.json)
+/build-artifacts/
+
+# Next / misc build outputs
 next-env.d.ts
-tsconfig.tsbuildinfo
-*.tsbuildinfo
 dist/
 out/
 build/
 storybook-static/
 
-# Playwright test artifacts (machine-generated, never commit)
-test-results/
-playwright-report/
-blob-report/
+# Playwright MCP scratch dir (separate from test artifacts)
 .playwright-mcp/
 
 # Local dev cache and logs (machine-generated, never commit)
