@@ -137,15 +137,24 @@ The 6 strategy-platform widgets are production code — deletion leaves a covera
 
 ### 5. Three Playwright configs
 
-- `playwright.config.ts` — full E2E, spins up API + UI via `webServer`
-- `playwright.e2e.config.ts` — runs against already-running dev server (no webServer)
-- `playwright.static.config.ts` — tier 0 static smoke only, specific `testMatch` + `globalSetup`
+- `playwright.config.ts` (36 lines) — full E2E, spins up API + UI via `webServer`, baseURL 3000, retries=2, html+json reporter
+- `playwright.e2e.config.ts` (20 lines) — no webServer, baseURL env-var default 3100, serial workers, minimal reporter
+- `playwright.static.config.ts` (41 lines) — no webServer, baseURL 3100, `globalSetup`, `testMatch` whitelist for 3 tier-0 specs
 
-**DECIDED: Keep all three. Revisit after new test structure is in place.**
+**DECIDED: Keep three separate configs — consolidating into one with `projects` needs conditional logic (which `webServer` runs, which `testMatch` applies) and obscures the three intentionally-different run modes. Three thin files invoked by explicit `--config=` flags is clearer than one file with mode branching.**
 
-- They serve genuinely different purposes, not duplicates.
+**BUT extract shared base to DRY up ~10 duplicated lines** (chromium project def, `forbidOnly`, `use.trace`/`screenshot`). Each config then spreads `...baseConfig`.
 
-**Actions: None yet.**
+**Phase D + E both touch all three configs:**
+
+- **Phase D** (item 2): `testDir: "./e2e"` → `"./tests/e2e"` × 3 configs, and `globalSetup: "./e2e/warmup.setup.ts"` → `"./tests/e2e/warmup.setup.ts"` in `playwright.static.config.ts`
+- **Phase E** (item 9): `reporter` output paths + `outputDir` → `build-artifacts/*` × 3 configs
+
+**Actions (when instructed):**
+
+- [ ] Phase D: update `testDir` in all three configs (+ `globalSetup` in static)
+- [ ] Phase E: update `reporter` + `outputDir` in all three configs
+- [ ] Phase E.1 (optional, after D+E verified): extract `playwright.base.config.ts` with shared chromium project + `forbidOnly` + base `use` block; all three configs spread it
 
 ---
 
