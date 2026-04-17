@@ -5,7 +5,7 @@ import { defineConfig, devices } from "@playwright/test";
  * Usage: npx playwright test --config=playwright.e2e.config.ts
  */
 export default defineConfig({
-  testDir: "./e2e",
+  testDir: "./tests/e2e",
   fullyParallel: false,
   retries: 0,
   workers: 1,

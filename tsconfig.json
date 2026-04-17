@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "vitest.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
-  "exclude": ["node_modules", "_reference", "coverage", "e2e", "archive"]
+  "exclude": ["node_modules", "_reference", "coverage", "tests/e2e", "archive"]
 }

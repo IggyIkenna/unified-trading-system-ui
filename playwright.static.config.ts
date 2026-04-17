@@ -10,22 +10,15 @@ import { defineConfig, devices } from "@playwright/test";
  * Route-registry-only (no dev server): PLAYWRIGHT_SKIP_GLOBAL_SETUP=1 npx playwright test e2e/tier0-app-route-coverage.spec.ts --config playwright.static.config.ts
  */
 export default defineConfig({
-  globalSetup: "./e2e/warmup.setup.ts",
-  testDir: "./e2e",
-  testMatch: [
-    "static-smoke.spec.ts",
-    "tier0-app-route-coverage.spec.ts",
-    "tier0-behavior-audit.spec.ts",
-  ],
+  globalSetup: "./tests/e2e/warmup.setup.ts",
+  testDir: "./tests/e2e",
+  testMatch: ["static-smoke.spec.ts", "tier0-app-route-coverage.spec.ts", "tier0-behavior-audit.spec.ts"],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 1,
   workers: 3,
   timeout: 30000,
-  reporter: [
-    ["list"],
-    ["json", { outputFile: "test-results/static-smoke-results.json" }],
-  ],
+  reporter: [["list"], ["json", { outputFile: "test-results/static-smoke-results.json" }]],
   use: {
     baseURL: "http://localhost:3100",
     trace: "off",
