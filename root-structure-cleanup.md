@@ -1,157 +1,219 @@
 # Root Structure Cleanup
 
-Working audit of root-level clutter. Check each item before acting — some have non-obvious dependencies.
+Working audit of root-level clutter. Decisions logged below each item. Do not execute until explicitly instructed.
 
 ---
 
-## Critical (requires careful auditing before touching)
+## Critical
 
-### 1. Duplicate test runners — Jest vs Vitest
+### 1. Move source code into `src/`
 
-- `jest.config.js`, `jest.setup.js`, `jest-dom.d.ts` ← Jest
-- `vitest.config.ts` ← Vitest (workspace standard per rules)
-- `__tests__/` ← likely Jest
-- `tests/` ← likely Vitest
+Currently `app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/` all sit at root alongside config files — hard to tell source from config at a glance.
 
-**Decision needed:** Confirm which runner is active (`package.json` `test` script). Delete the other runner's config + directory entirely. Do not keep both.
+**DECIDED: Move all source code into `src/`.**
 
-- [ ] Check `package.json` scripts to confirm active runner
-- [ ] Grep `__tests__/` files for `describe`/`it` — confirm Jest syntax
-- [ ] Grep `tests/` files — confirm Vitest syntax
-- [ ] Delete inactive runner's config files
-- [ ] Consolidate test directories into one
+- `public/` stays at root — Next.js hard-requires it there, no exceptions.
+- `tests/` stays at root — it's not source code, it's a peer concern.
+- Everything else (`app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/`) moves to `src/`.
+- **Do this before thousands of new tests are written** — all new tests will import from `@/components/...` etc. and migrating path aliases after the fact is 10x more work.
 
----
+**What needs updating after the move:**
 
-### 2. Duplicate lockfiles — npm vs pnpm
+- `tsconfig.json` — `paths` aliases (`@/*` → `./src/*`)
+- `next.config.mjs` — confirm Next.js picks up `src/app/` (it does automatically if `src/app/` exists)
+- `vitest.config.ts` — update any root-relative includes
+- `components.json` (shadcn) — `aliases.components`, `aliases.utils` paths
+- Any hardcoded relative imports that skip the alias (e.g., `../../lib/utils`)
 
-- `package-lock.json` ← npm
-- `pnpm-lock.yaml` ← pnpm
+**Actions (when instructed):**
 
-**Decision needed:** Only one package manager should be in use. Check CI scripts and `package.json` to confirm which is authoritative. Delete the stale one and add it to `.gitignore`.
-
-- [ ] Check `.github/` workflows + `scripts/setup.sh` for which manager CI uses
-- [ ] Check `package.json` `packageManager` field if present
-- [ ] Delete stale lockfile
-- [ ] Add stale lockfile pattern to `.gitignore`
-
----
-
-### 3. Three Playwright configs
-
-- `playwright.config.ts`
-- `playwright.e2e.config.ts`
-- `playwright.static.config.ts`
-
-**Decision needed:** Check what each config targets (baseURL, reporter, test dir). Likely can be consolidated into one config with [projects](https://playwright.dev/docs/test-configuration#projects). Ensure `npm run smoketest` still works after consolidation.
-
-- [ ] Read each config and document what differs
-- [ ] Consolidate into `playwright.config.ts` with named projects or env flags
-- [ ] Delete the other two
+- [ ] Move `app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/` → `src/`
+- [ ] Update `tsconfig.json` path aliases
+- [ ] Update `components.json` shadcn aliases
+- [ ] Update `vitest.config.ts` include/exclude paths
+- [ ] Verify `next.config.mjs` picks up `src/app/` correctly
+- [ ] Run `tsc --noEmit` + `pnpm build` to confirm nothing broke
 
 ---
 
-### 4. `archive/` directory
+### 2. Centralize all tests under `tests/`
 
-Contains: `archive/components`, `archive/ml`, `archive/services`
+Current state: `__tests__/` (old Jest), `tests/` (Vitest), `e2e/` (Playwright) — three locations.
 
-Workspace rule: **delete deprecated code, don't archive it.** Safe rollback = git history.
+**DECIDED: Single `tests/` folder with `e2e/` nested inside.**
 
-- [ ] Confirm nothing in `archive/` is imported anywhere (`grep -r "from.*archive"`)
-- [ ] Delete the entire `archive/` directory
+```
+tests/
+  unit/         ← Vitest: component/function unit tests
+  integration/  ← Vitest: API/store/hook integration tests
+  audit/        ← Vitest: existing audit tests
+  e2e/          ← Playwright: moved from root e2e/
+```
+
+**On test output artifacts (`test-results/`, `coverage/`, `playwright-report/`):**
+These are generated OUTPUT, not source — they must NOT live inside `tests/`. They stay gitignored at root (or wherever the tool drops them). Do not move them.
+
+**What needs updating after the move:**
+
+- All three Playwright configs: `testDir: "./e2e"` → `testDir: "./tests/e2e"`
+- `playwright.static.config.ts` `globalSetup` path if it references `./e2e/warmup.setup.ts`
+- `vitest.config.ts` `include` paths to match new layout
+
+**Actions (when instructed):**
+
+- [ ] Create `tests/unit/`, `tests/integration/`, `tests/audit/`, `tests/e2e/`
+- [ ] Move `e2e/` content → `tests/e2e/`
+- [ ] Move existing `tests/` content into appropriate subdirs
+- [ ] Migrate valid `__tests__/` content → `tests/unit/` or `tests/integration/`
+- [ ] Update all three Playwright configs: `testDir` + any path references
+- [ ] Update `vitest.config.ts` include paths
+- [ ] Delete `__tests__/` and root `e2e/` once migrated
 
 ---
 
-### 5. Two scripts directories
+### 3. Duplicate test runners — Jest vs Vitest
 
-- `.scripts/` — contains only `verify.sh`
-- `scripts/` — main scripts directory
+**DECIDED: Keep Vitest, delete Jest.**
 
-- [ ] Check if `verify.sh` is referenced in CI, `package.json`, or pre-commit hooks
-- [ ] Move `verify.sh` into `scripts/` if used, delete if not
-- [ ] Remove `.scripts/`
+- `package.json` `test` = `vitest`. CI runs `pnpm test:ci` = vitest. Workspace rules mandate Vitest.
+- Jest and Vitest are API-compatible — no test rewrites needed.
+
+**Actions (when instructed):**
+
+- [ ] Delete `jest.config.js`, `jest.setup.js`, `jest-dom.d.ts`
+- [ ] Confirm `__tests__/` has no Vitest-valid tests before deleting (done during item 2 migration)
 
 ---
 
-## Medium (lower risk, cleaner to fix)
+### 4. Duplicate lockfiles — npm vs pnpm
 
-### 6. AI/agent files at root
+**DECIDED: pnpm is canonical. Delete `package-lock.json`.**
 
-These don't belong in the repo root:
+- CI uses `pnpm/action-setup@v2` + `pnpm install --frozen-lockfile`.
+- `package-lock.json` is stale and misleading.
+
+**Also: `setup.sh` calls `npm install` — must be updated to pnpm.**
+
+- `setup.sh` is a PM SSOT template. Fix locally first, then flag for PM propagation.
+
+**Actions (when instructed):**
+
+- [ ] Delete `package-lock.json`
+- [ ] Add `package-lock.json` to `.gitignore`
+- [ ] Update `scripts/setup.sh`: `npm install --silent --legacy-peer-deps` → `pnpm install --frozen-lockfile`
+- [ ] Flag PM SSOT codex template for same change
+
+---
+
+### 5. Three Playwright configs
+
+- `playwright.config.ts` — full E2E, spins up API + UI via `webServer`
+- `playwright.e2e.config.ts` — runs against already-running dev server (no webServer)
+- `playwright.static.config.ts` — tier 0 static smoke only, specific `testMatch` + `globalSetup`
+
+**DECIDED: Keep all three. Revisit after new test structure is in place.**
+
+- They serve genuinely different purposes, not duplicates.
+
+**Actions: None yet.**
+
+---
+
+### 6. `archive/` directory
+
+**DECIDED: Keep intentionally.**
+
+- Nothing imports from it (confirmed by grep).
+- Retained as reference for components that may be brought back — last iterated version not easily recoverable from git history.
+
+**Actions: None.**
+
+---
+
+### 7. `.scripts/` directory
+
+**DECIDED: Already deleted by user.** ✓
+
+---
+
+## Medium
+
+### 8. AI/agent files at root
 
 - `AGENT_PROMPT.md`
 - `START_HERE.md`
 - `V0_SYSTEM_PROMPT.txt`
 - `UI_STRUCTURE_MANIFEST.json`
 
-- [ ] Move `AGENT_PROMPT.md` and `START_HERE.md` to `docs/`
-- [ ] Move or delete `V0_SYSTEM_PROMPT.txt` (check if still used)
-- [ ] Move `UI_STRUCTURE_MANIFEST.json` to `docs/` or regenerate it on-demand
+**DECIDED: Defer — handle after `src/` migration and test consolidation are complete.**
+
+- [ ] Check references in CI/scripts/cursor rules
+- [ ] Move to `docs/` or delete per findings
 
 ---
 
-### 7. Build/test artifacts that may be tracked in git
+### 9. Build/test output artifacts
 
-- `tsconfig.tsbuildinfo`
-- `coverage/`
-- `playwright-report/`
-- `test-results/`
+- `tsconfig.tsbuildinfo`, `coverage/`, `playwright-report/`, `test-results/`
 
-- [ ] Check `.gitignore` — are these already excluded?
-- [ ] Add any missing entries to `.gitignore`
-- [ ] Delete local copies if committed by mistake
+These are generated output — must be gitignored, not committed.
+
+**Actions (when instructed):**
+
+- [ ] Check `.gitignore` — confirm which are already excluded
+- [ ] Add any missing entries
+- [ ] Delete local copies if accidentally committed
 
 ---
 
-### 8. Deployment configs at root
+### 10. Deployment configs at root
 
-Three different cloud targets mixed at root:
-
-- `cloudbuild.yaml` (GCP)
-- `buildspec.aws.yaml` (AWS)
+- `cloudbuild.yaml` (GCP Cloud Build)
+- `buildspec.aws.yaml` (AWS CodeBuild)
 - `firebase.json` + `.firebase/` (Firebase)
 - `nginx.conf`
 
-- [ ] Determine which cloud target is active/in-use
-- [ ] Consider moving all into `deploy/` or `infra/` subdirectory
-- [ ] If AWS or Firebase is no longer active, delete those configs
+**DECIDED: Keep all — project is intentionally multi-cloud.**
+
+**Actions: None.**
 
 ---
 
-### 9. `issues.md` at root
+### 11. `issues.md` at root
 
-A dev note file — not a valid doc type. Delete or move content into a GitHub issue.
+**Decision needed:** Read content — open a GitHub issue if still relevant, then delete.
 
-- [ ] Read content, open GitHub issue if still relevant, then delete file
-
----
-
-## Minor (low risk, do last)
-
-### 10. Two ESLint configs
-
-- `eslint.config.base.js` — base rules
-- `eslint.config.mjs` — extends base
-
-This pattern is fine but `eslint.config.base.js` could live in a `config/` folder to reduce root noise. Low priority.
-
-- [ ] Decide if worth moving (breaks nothing either way)
+- [ ] Review and delete
 
 ---
 
-### 11. Five `.env.*` files
+## Minor (do last)
 
-- `.env.example`, `.env.integration`, `.env.local`, `.env.preview`, `.env.production`
+### 12. Two ESLint configs
 
-Standard Next.js pattern — acceptable. Just verify `.env.local` is in `.gitignore`.
+- `eslint.config.base.js` + `eslint.config.mjs` (extends base)
+
+Fine as-is. Low priority.
+
+---
+
+### 13. Five `.env.*` files
+
+Standard Next.js pattern — acceptable.
 
 - [ ] Confirm `.env.local` is gitignored
-- [ ] Confirm `.env.production` doesn't contain real secrets
+- [ ] Confirm `.env.production` has no real secrets
 
 ---
 
-## Quick wins (do these first, no audit needed)
+## Recommended execution order
 
-- [ ] Delete `issues.md`
-- [ ] Verify `.gitignore` covers `tsconfig.tsbuildinfo`, `coverage/`, `playwright-report/`, `test-results/`
-- [ ] Move `AGENT_PROMPT.md`, `START_HERE.md`, `V0_SYSTEM_PROMPT.txt` to `docs/`
+When ready to execute, do in this order to avoid compounding breakage:
+
+1. **Lockfile + `setup.sh`** (item 4) — isolated, low risk
+2. **Delete Jest files** (item 3) — isolated, no deps
+3. **`src/` migration** (item 1) — biggest change, do standalone with full build verify
+4. **Test folder consolidation** (item 2) — after `src/` is stable
+5. **Gitignore + artifact cleanup** (item 9) — quick housekeeping
+6. **AI files + `issues.md`** (items 8, 11) — trivial moves
+7. **Deployment configs** (item 10) — after confirming active target
