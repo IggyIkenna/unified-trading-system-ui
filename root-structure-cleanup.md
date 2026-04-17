@@ -17,22 +17,56 @@ Currently `app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/` all sit
 - Everything else (`app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/`) moves to `src/`.
 - **Do this before thousands of new tests are written** — all new tests will import from `@/components/...` etc. and migrating path aliases after the fact is 10x more work.
 
-**What needs updating after the move:**
+**Scale (audited 2026-04-17):**
+
+- **~1,064** source files (.ts/.tsx/.css) across the 6 dirs being moved
+- **4,152** `@/*` alias imports in app code — unaffected (one tsconfig alias update covers them)
+- **736** relative imports within moved dirs — unaffected (dirs move together)
+- **0** deep `../../../` relative imports escaping moved dirs — clean, no special cases
+- **66** `@/*` alias refs from `tests/` — unaffected (alias handles it)
+
+**Severity: mechanically simple, logistically tricky.** Most of the pain is timing + coordination, not code.
+
+**⚠️ Blocking precondition — do NOT run while other contributors have open PRs touching `app/`, `components/`, `hooks/`, `lib/`, `styles/`, or `context/`.** A single ~1k-file rename commit turns every in-flight branch touching these dirs into a painful 3-way-merge rebase. Confirm quiet window before executing.
+
+**What needs updating (beyond the move itself):**
 
 - `tsconfig.json` — `paths` aliases (`@/*` → `./src/*`)
-- `next.config.mjs` — confirm Next.js picks up `src/app/` (it does automatically if `src/app/` exists)
-- `vitest.config.ts` — update any root-relative includes
-- `components.json` (shadcn) — `aliases.components`, `aliases.utils` paths
-- Any hardcoded relative imports that skip the alias (e.g., `../../lib/utils`)
+- `vitest.config.ts` — has its own `alias: { "@": path.resolve(__dirname, ".") }` → must change to `./src` (separate resolver from tsconfig, easy to forget)
+- `components.json` (shadcn) — `tailwind.css: "app/globals.css"` → `"src/app/globals.css"`. Alias block (`@/components`, `@/lib/utils`, etc.) unaffected. New shadcn installs break if tailwind.css path is stale.
+- `next.config.mjs:9` — TODO comment referencing `lib/types/api-generated.ts` (doc-only fix)
+- `eslint.config.mjs:7` — `ignores: [..., "lib/types/api-generated.ts"]` → `"src/lib/types/api-generated.ts"`
+- **CI/CD path refs (audit required):** `cloudbuild.yaml`, `buildspec.aws.yaml`, `firebase.json`, any `Dockerfile` likely have `COPY app/`, `COPY lib/` etc. — grep + update before the move lands or the deploy breaks.
+- `docs/initial-boss/*`, `docs/under-review/*` — hardcoded `app/`, `lib/` path references (see FU-4)
+- Any `app/` leftover at root after the move — Next.js router resolution gets ambiguous if both `app/` and `src/app/` exist. Verify clean state.
+
+**What does NOT break (counterintuitive — documented so we don't over-audit):**
+
+- `process.cwd()` calls in `app/opengraph-image.tsx`, `app/api/onboarding/{download,reset,upload}/route.ts` — resolve at runtime relative to where Next.js starts, not to source file location
+- `require()` in `lib/auth/get-provider.ts` — relative path (`./demo-provider`, `./firebase-provider`), moves together
+- `proxy.ts` at root — stays at root (middleware-adjacent, not in moved set)
+- Next.js config — auto-detects `src/app/` when root `app/` is absent; no config flag needed
+
+**Execution approach:**
+
+- **Single atomic commit.** Partial moves leave the codebase in a broken state between commits.
+- `git mv` for all dirs (preserves rename detection — `git log --follow` still works for blame).
+- Realistic effort: **30–60 min of work** if the precondition holds. Most time goes to CI ref audit + verification.
 
 **Actions (when instructed):**
 
-- [ ] Move `app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/` → `src/`
-- [ ] Update `tsconfig.json` path aliases
-- [ ] Update `components.json` shadcn aliases
-- [ ] Update `vitest.config.ts` include/exclude paths
-- [ ] Verify `next.config.mjs` picks up `src/app/` correctly
-- [ ] Run `tsc --noEmit` + `pnpm build` to confirm nothing broke
+- [ ] Confirm no open PRs touch `app/`, `components/`, `hooks/`, `lib/`, `styles/`, `context/`
+- [ ] Audit `cloudbuild.yaml`, `buildspec.aws.yaml`, `firebase.json`, Dockerfile for source-path refs — update alongside move
+- [ ] `git mv app components hooks lib styles context src/` (6 moves in one commit)
+- [ ] Update `tsconfig.json` path aliases (`@/*` → `./src/*`)
+- [ ] Update `vitest.config.ts` alias (`"@": "./src"`)
+- [ ] Update `components.json` tailwind.css path
+- [ ] Update `eslint.config.mjs` ignore path
+- [ ] Update `next.config.mjs:9` TODO comment
+- [ ] Verify no straggler `app/` at repo root
+- [ ] Run `tsc --noEmit` + `pnpm build` + `pnpm exec vitest list` + `pnpm exec playwright test --list` (both static and e2e)
+- [ ] `pnpm dev` — wait 8–10s, verify no console errors, hit key pages in browser
+- [ ] Post-merge: notify anyone with feature branches to rebase immediately
 
 ---
 
