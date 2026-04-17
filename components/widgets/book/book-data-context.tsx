@@ -342,7 +342,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
         price: priceNum || 0,
         asset_class: isDeFi ? "DeFi" : "CeFi",
         lane: isDeFi ? "defi" : "book",
-        algo_type: isDeFi ? defiAlgo || null : algoType || null,
+        algo_type: isDeFi ? defiAlgo || null : null,
       });
 
       await placeOrder.mutateAsync({
@@ -425,7 +425,11 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
         status: "filled" as const,
         counterparty: o.venue,
         settlementDate: o.updated_at || o.created_at,
-        tradeType: (o.asset_class === "DeFi" ? "DeFi" : o.asset_class === "Sports" ? "OTC" : "Exchange") as BookTrade["tradeType"],
+        tradeType: (o.asset_class === "DeFi"
+          ? "DeFi"
+          : o.asset_class === "Sports"
+            ? "OTC"
+            : "Exchange") as BookTrade["tradeType"],
       }));
     const merged = [...ledgerTrades, ...MOCK_TRADES];
     // Sort newest first

@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { CalendarEventsWidget } from "@/components/widgets/terminal/calendar-events-widget";
 
@@ -82,9 +83,7 @@ describe("CalendarEventsWidget loading state", () => {
     }));
 
     // Re-import after mock to get fresh module
-    const { CalendarEventsWidget: FreshWidget } = await import(
-      "@/components/widgets/terminal/calendar-events-widget"
-    );
+    const { CalendarEventsWidget: FreshWidget } = await import("@/components/widgets/terminal/calendar-events-widget");
 
     render(<FreshWidget instanceId="test-loading" />);
     const bodyText = document.body.textContent || "";

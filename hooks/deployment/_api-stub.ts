@@ -247,10 +247,7 @@ export interface TurboCategoryData {
   venue_weighted?: boolean;
   venue_summary?: TurboCategoryVenueSummary;
   venues?: Record<string, TurboVenueData>;
-  folders?: Record<
-    string,
-    { completion_pct?: number; dates_found?: number; dates_expected?: number }
-  >;
+  folders?: Record<string, { completion_pct?: number; dates_found?: number; dates_expected?: number }>;
   data_types?: string[];
   feature_groups?: string[];
   defi_sub_dimensions?: Record<
@@ -412,10 +409,7 @@ export const UPSTREAM_CHECK_SERVICES = [
   "market-data-processing-service",
 ];
 
-export const TURBO_MODE_SERVICES = [
-  "market-tick-data-service",
-  "market-data-processing-service",
-];
+export const TURBO_MODE_SERVICES = ["market-tick-data-service", "market-data-processing-service"];
 
 export const TURBO_SUB_DIMENSION_SERVICES: Record<string, string> = {
   "market-tick-data-service": "venue",
@@ -480,9 +474,7 @@ export async function deployMissing(params: {
 
   if (!response.ok) {
     const errorBody = await response.text().catch(() => "");
-    throw new Error(
-      `Deploy-missing failed (${response.status}): ${errorBody || response.statusText}`,
-    );
+    throw new Error(`Deploy-missing failed (${response.status}): ${errorBody || response.statusText}`);
   }
 
   return response.json() as Promise<DeployMissingResponse>;
@@ -631,7 +623,10 @@ function normalizeInstrumentAvailability(
       end: typed.date_range?.end ?? effectiveEnd,
       total_dates: typed.date_range?.total_dates ?? dates.length,
     },
-    availability_window: effectiveStart && effectiveEnd ? { effective_start: effectiveStart, effective_end: effectiveEnd, dates_in_window: dates.length } : undefined,
+    availability_window:
+      effectiveStart && effectiveEnd
+        ? { effective_start: effectiveStart, effective_end: effectiveEnd, dates_in_window: dates.length }
+        : undefined,
     overall: {
       expected: overallExpected,
       found: overallFound,
@@ -642,11 +637,7 @@ function normalizeInstrumentAvailability(
   };
 }
 
-async function requestJson<T>(
-  path: string,
-  options?: RequestInit,
-  mockFallback?: () => T,
-): Promise<T> {
+async function requestJson<T>(path: string, options?: RequestInit, mockFallback?: () => T): Promise<T> {
   try {
     const headers: HeadersInit = {
       ...getAuthHeader(),
@@ -673,10 +664,7 @@ async function requestJson<T>(
   }
 }
 
-export async function fetchBuilds(
-  service: string,
-  env: BuildEnvironment,
-): Promise<BuildEntry[]> {
+export async function fetchBuilds(service: string, env: BuildEnvironment): Promise<BuildEntry[]> {
   return requestJson<{ builds?: BuildEntry[] } | BuildEntry[]>(
     `/api/builds/${encodeURIComponent(service)}?env=${encodeURIComponent(env)}`,
     undefined,
@@ -704,9 +692,7 @@ export async function triggerCloudBuild(
   );
 }
 
-export async function getCloudBuildHistory(
-  service: string,
-): Promise<{ builds: BuildInfo[] }> {
+export async function getCloudBuildHistory(service: string): Promise<{ builds: BuildInfo[] }> {
   return requestJson<{ builds: BuildInfo[] }>(
     `/api/cloud-builds/history/${encodeURIComponent(service)}`,
     undefined,
@@ -714,10 +700,7 @@ export async function getCloudBuildHistory(
   );
 }
 
-export async function listDirectories(
-  service: string,
-  path: string,
-): Promise<{ directories: string[] }> {
+export async function listDirectories(service: string, path: string): Promise<{ directories: string[] }> {
   return requestJson<{ directories: string[] }>(
     `/api/services/${encodeURIComponent(service)}/list-directories?path=${encodeURIComponent(path)}`,
     undefined,
@@ -725,10 +708,7 @@ export async function listDirectories(
   );
 }
 
-export async function discoverConfigs(
-  service: string,
-  path: string,
-): Promise<{ total_configs: number }> {
+export async function discoverConfigs(service: string, path: string): Promise<{ total_configs: number }> {
   return requestJson<{ total_configs: number }>(
     `/api/services/${encodeURIComponent(service)}/discover-configs?path=${encodeURIComponent(path)}`,
     undefined,
@@ -743,27 +723,17 @@ export async function getConfigBuckets(service: string): Promise<{
   return requestJson<{
     buckets: Array<{ name: string; path: string }>;
     default_bucket?: string;
-  }>(
-    `/api/services/${encodeURIComponent(service)}/config-buckets`,
-    undefined,
-    () => ({ buckets: [] }),
-  );
+  }>(`/api/services/${encodeURIComponent(service)}/config-buckets`, undefined, () => ({ buckets: [] }));
 }
 
-export async function getDeploymentQuotaInfo(
-  params: Record<string, unknown>,
-): Promise<QuotaInfoResponse> {
+export async function getDeploymentQuotaInfo(params: Record<string, unknown>): Promise<QuotaInfoResponse> {
   const query = buildQuery(params);
-  return requestJson<QuotaInfoResponse>(
-    `/api/deployments/quota-info${query ? `?${query}` : ""}`,
-    undefined,
-    () => ({
-      service: String(params.service ?? ""),
-      quota_remaining: 100,
-      quota_limit: 100,
-      reset_at: new Date().toISOString(),
-    }),
-  );
+  return requestJson<QuotaInfoResponse>(`/api/deployments/quota-info${query ? `?${query}` : ""}`, undefined, () => ({
+    service: String(params.service ?? ""),
+    quota_remaining: 100,
+    quota_limit: 100,
+    reset_at: new Date().toISOString(),
+  }));
 }
 
 export async function getExecutionMissingShards(
@@ -787,9 +757,7 @@ export async function cancelDeployment(
   );
 }
 
-export async function resumeDeployment(
-  deploymentId: string,
-): Promise<{ success: boolean; message?: string }> {
+export async function resumeDeployment(deploymentId: string): Promise<{ success: boolean; message?: string }> {
   return requestJson<{ success: boolean; message?: string }>(
     `/api/deployments/${encodeURIComponent(deploymentId)}/resume`,
     { method: "POST" },
@@ -809,9 +777,7 @@ export async function verifyDeploymentCompletion(
   );
 }
 
-export async function retryFailedShards(
-  deploymentId: string,
-): Promise<{ retried: number; message?: string }> {
+export async function retryFailedShards(deploymentId: string): Promise<{ retried: number; message?: string }> {
   return requestJson<{ retried: number; message?: string }>(
     `/api/deployments/${encodeURIComponent(deploymentId)}/retry-failed`,
     { method: "POST" },
@@ -847,9 +813,7 @@ export async function updateDeploymentTag(
   );
 }
 
-export async function getDeploymentReport(
-  deploymentId: string,
-): Promise<DeploymentReport> {
+export async function getDeploymentReport(deploymentId: string): Promise<DeploymentReport> {
   return requestJson<DeploymentReport>(
     `/api/deployments/${encodeURIComponent(deploymentId)}/report`,
     undefined,
@@ -877,9 +841,7 @@ export async function getRerunCommands(
   );
 }
 
-export async function getDeploymentEvents(
-  deploymentId: string,
-): Promise<{ events: ShardEvent[] }> {
+export async function getDeploymentEvents(deploymentId: string): Promise<{ events: ShardEvent[] }> {
   return requestJson<{ events: ShardEvent[] }>(
     `/api/deployments/${encodeURIComponent(deploymentId)}/events`,
     undefined,
@@ -907,18 +869,14 @@ export async function getLiveDeploymentHealth(
   region?: string,
 ): Promise<LiveHealthStatus | null> {
   const query = buildQuery({ service, region });
-  return requestJson<LiveHealthStatus>(
+  return requestJson<LiveHealthStatus | null>(
     `/api/deployments/${encodeURIComponent(deploymentId)}/live-health${query ? `?${query}` : ""}`,
     undefined,
     () => null,
   );
 }
 
-export async function getDeployments(params: {
-  service: string;
-  limit?: number;
-  forceRefresh?: boolean;
-}): Promise<{
+export async function getDeployments(params: { service: string; limit?: number; forceRefresh?: boolean }): Promise<{
   deployments: Array<{
     id: string;
     service: string;
@@ -947,9 +905,7 @@ export async function getDeployments(params: {
   }>(`/api/deployments${query ? `?${query}` : ""}`, undefined, () => ({ deployments: [] }));
 }
 
-export async function bulkDeleteDeployments(
-  ids: string[],
-): Promise<{ deleted: number; failed: number }> {
+export async function bulkDeleteDeployments(ids: string[]): Promise<{ deleted: number; failed: number }> {
   return requestJson<{ deleted: number; failed: number }>(
     "/api/deployments/bulk-delete",
     {
@@ -983,9 +939,7 @@ export async function getServices(): Promise<{
   return requestJson<{ services: Service[] }>("/api/services", undefined, () => ({ services: [] }));
 }
 
-export async function getServiceDimensions(
-  service: string,
-): Promise<ServiceDimensionsResponse> {
+export async function getServiceDimensions(service: string): Promise<ServiceDimensionsResponse> {
   return requestJson<ServiceDimensionsResponse>(
     `/api/services/${encodeURIComponent(service)}/dimensions`,
     undefined,
@@ -993,9 +947,7 @@ export async function getServiceDimensions(
   );
 }
 
-export async function getDependencies(
-  service: string,
-): Promise<DependenciesResponse> {
+export async function getDependencies(service: string): Promise<DependenciesResponse> {
   return requestJson<DependenciesResponse>(
     `/api/config/dependencies/${encodeURIComponent(service)}`,
     undefined,
@@ -1010,30 +962,22 @@ export async function getDependencies(
   );
 }
 
-export async function getChecklist(
-  service: string,
-): Promise<ChecklistResponse> {
-  return requestJson<ChecklistResponse>(
-    `/api/checklists/${encodeURIComponent(service)}/checklist`,
-    undefined,
-    () => ({
-      service,
-      readiness_percent: 0,
-      completed_items: 0,
-      total_items: 0,
-      partial_items: 0,
-      pending_items: 0,
-      not_applicable_items: 0,
-      last_updated: "",
-      blocking_items: [],
-      categories: [],
-    }),
-  );
+export async function getChecklist(service: string): Promise<ChecklistResponse> {
+  return requestJson<ChecklistResponse>(`/api/checklists/${encodeURIComponent(service)}/checklist`, undefined, () => ({
+    service,
+    readiness_percent: 0,
+    completed_items: 0,
+    total_items: 0,
+    partial_items: 0,
+    pending_items: 0,
+    not_applicable_items: 0,
+    last_updated: "",
+    blocking_items: [],
+    categories: [],
+  }));
 }
 
-export async function validateChecklist(
-  service: string,
-): Promise<ChecklistValidateResponse> {
+export async function validateChecklist(service: string): Promise<ChecklistValidateResponse> {
   return requestJson<ChecklistValidateResponse>(
     `/api/checklists/${encodeURIComponent(service)}/checklist/validate`,
     undefined,
@@ -1077,9 +1021,7 @@ export async function getEpicDetail(epicId: string): Promise<EpicDetail> {
   }));
 }
 
-export async function getVenuesByCategory(
-  category: string,
-): Promise<CategoryVenuesResponse> {
+export async function getVenuesByCategory(category: string): Promise<CategoryVenuesResponse> {
   const response = await requestJson<CategoryVenuesResponse>(
     `/api/config/venues/${encodeURIComponent(category.toLowerCase())}`,
     undefined,
@@ -1091,9 +1033,7 @@ export async function getVenuesByCategory(
   };
 }
 
-export async function getStartDates(
-  service: string,
-): Promise<StartDatesResponse> {
+export async function getStartDates(service: string): Promise<StartDatesResponse> {
   return requestJson<StartDatesResponse>(
     `/api/config/expected-start-dates/${encodeURIComponent(service)}`,
     undefined,
@@ -1101,22 +1041,16 @@ export async function getStartDates(
   );
 }
 
-export async function getServiceStatus(
-  service: string,
-): Promise<ServiceStatus> {
-  return requestJson<ServiceStatus>(
-    `/api/service-status/${encodeURIComponent(service)}/status`,
-    undefined,
-    () => ({
-      service,
-      health: "healthy",
-      last_data_update: null,
-      last_deployment: null,
-      last_build: null,
-      last_code_push: null,
-      anomalies: [],
-    }),
-  );
+export async function getServiceStatus(service: string): Promise<ServiceStatus> {
+  return requestJson<ServiceStatus>(`/api/service-status/${encodeURIComponent(service)}/status`, undefined, () => ({
+    service,
+    health: "healthy",
+    last_data_update: null,
+    last_deployment: null,
+    last_build: null,
+    last_code_push: null,
+    anomalies: [],
+  }));
 }
 
 export async function getServicesOverview(): Promise<{
@@ -1149,32 +1083,28 @@ export async function getServicesOverview(): Promise<{
   }>("/api/service-status/overview", undefined, () => ({ count: 0, healthy: 0, warnings: 0, errors: 0, services: [] }));
 }
 
-export async function getDataStatus(
-  params: Record<string, unknown>,
-): Promise<TurboDataStatusResponse> {
+export async function getDataStatus(params: Record<string, unknown>): Promise<TurboDataStatusResponse> {
   const query = buildQuery({
     ...params,
     service: normalizeDataQueryService(typeof params.service === "string" ? params.service : undefined),
   });
-  return requestJson<TurboDataStatusResponse>(
-    `/api/data-status${query ? `?${query}` : ""}`,
-    undefined,
-    () => ({ service: String(params.service ?? ""), status: "unknown", categories: {} }),
-  );
+  return requestJson<TurboDataStatusResponse>(`/api/data-status${query ? `?${query}` : ""}`, undefined, () => ({
+    service: String(params.service ?? ""),
+    status: "unknown",
+    categories: {},
+  }));
 }
 
-export async function getDataStatusTurbo(
-  params: Record<string, unknown>,
-): Promise<TurboDataStatusResponse> {
+export async function getDataStatusTurbo(params: Record<string, unknown>): Promise<TurboDataStatusResponse> {
   const query = buildQuery({
     ...params,
     service: normalizeDataQueryService(typeof params.service === "string" ? params.service : undefined),
   });
-  return requestJson<TurboDataStatusResponse>(
-    `/api/data-status/turbo${query ? `?${query}` : ""}`,
-    undefined,
-    () => ({ service: String(params.service ?? ""), status: "unknown", categories: {} }),
-  );
+  return requestJson<TurboDataStatusResponse>(`/api/data-status/turbo${query ? `?${query}` : ""}`, undefined, () => ({
+    service: String(params.service ?? ""),
+    status: "unknown",
+    categories: {},
+  }));
 }
 
 export async function clearDataStatusCache(): Promise<void> {
@@ -1185,23 +1115,18 @@ export async function clearDataStatusCache(): Promise<void> {
   }
 }
 
-export async function listFiles(
-  params: Record<string, unknown>,
-): Promise<ListFilesResponse> {
+export async function listFiles(params: Record<string, unknown>): Promise<ListFilesResponse> {
   const query = buildQuery({
     ...params,
     service: normalizeDataQueryService(typeof params.service === "string" ? params.service : undefined),
   });
-  return requestJson<ListFilesResponse>(
-    `/api/data-status/list-files${query ? `?${query}` : ""}`,
-    undefined,
-    () => ({ files: [], total: 0 }),
-  );
+  return requestJson<ListFilesResponse>(`/api/data-status/list-files${query ? `?${query}` : ""}`, undefined, () => ({
+    files: [],
+    total: 0,
+  }));
 }
 
-export async function getInstrumentsList(
-  params: Record<string, unknown>,
-): Promise<InstrumentSearchResponse> {
+export async function getInstrumentsList(params: Record<string, unknown>): Promise<InstrumentSearchResponse> {
   const query = buildQuery({
     category: params.category,
     venue: params.venue,
@@ -1232,14 +1157,16 @@ export async function getInstrumentAvailability(
   const payload = await requestJson<InstrumentAvailabilityResponse | RawInstrumentAvailabilityResponse>(
     `/api/data-status/instrument-availability${query ? `?${query}` : ""}`,
     undefined,
-    () => ({ venue: String(params.venue ?? ""), instrument_type: String(params.instrument_type ?? ""), instrument: String(params.instrument ?? "") }),
+    () => ({
+      venue: String(params.venue ?? ""),
+      instrument_type: String(params.instrument_type ?? ""),
+      instrument: String(params.instrument ?? ""),
+    }),
   );
   return normalizeInstrumentAvailability(payload);
 }
 
-export async function getServiceCategories(
-  service: string,
-): Promise<{ categories: string[] }> {
+export async function getServiceCategories(service: string): Promise<{ categories: string[] }> {
   return requestJson<{ categories: string[] }>(
     `/api/capabilities/service-categories/${encodeURIComponent(service)}`,
     undefined,

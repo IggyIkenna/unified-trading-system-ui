@@ -88,7 +88,7 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
     executeDeFiOrder({
       client_id: "internal-trader",
       strategy_id: "BASIS_TRADE",
-      instruction_type: operation,
+      instruction_type: operation === "BOTH" ? "TRADE" : operation,
       algo_type: "BENCHMARK_FILL",
       instrument_id: `BASIS:${asset}:${operation}`,
       venue: `${asset}-PERP`,
@@ -101,7 +101,6 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
       benchmark_price: marketData?.spotPrice ?? 0,
       asset_class: "DeFi",
       lane: "defi",
-      description: `${operation} basis trade on ${asset} — ${slippageBps} bps slippage`,
     });
 
     toast.success("Trade Executed", {

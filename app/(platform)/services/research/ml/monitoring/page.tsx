@@ -20,12 +20,8 @@ export default function MLMonitoringPage() {
     performance: Record<string, number>;
   } | null;
   const allAlerts = Array.isArray(alertsData) ? alertsData : [];
-  const activeAlerts = allAlerts.filter(
-    (a: { resolvedAt?: string | null }) => !a.resolvedAt,
-  );
-  const resolvedAlerts = allAlerts.filter(
-    (a: { resolvedAt?: string | null }) => !!a.resolvedAt,
-  );
+  const activeAlerts = allAlerts.filter((a: { resolvedAt?: string | null }) => !a.resolvedAt);
+  const resolvedAlerts = allAlerts.filter((a: { resolvedAt?: string | null }) => !!a.resolvedAt);
 
   if (isLoading) {
     return (
@@ -111,36 +107,46 @@ export default function MLMonitoringPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {activeAlerts.map((alert: { id: string; severity: string; message: string; triggeredAt: string; metric?: string; currentValue?: number; threshold?: number }) => (
-              <div key={alert.id} className="rounded-md border border-border/50 p-3 space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <Badge
-                    variant="outline"
-                    className={`text-[10px] ${alert.severity === "warning" ? "bg-amber-500/15 text-amber-400 border-amber-500/30" : "bg-red-500/15 text-red-400 border-red-500/30"}`}
-                  >
-                    {alert.severity}
-                  </Badge>
-                  <span className="text-[10px] text-muted-foreground">
-                    {new Date(alert.triggeredAt).toLocaleTimeString()}
-                  </span>
-                </div>
-                <p className="text-xs text-muted-foreground">{alert.message}</p>
-                {alert.metric && (
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <span className="text-muted-foreground">{alert.metric}:</span>
-                    <span className="font-mono font-medium text-red-400">
-                      {formatNumber(alert.currentValue ?? 0, 3)}
+            {activeAlerts.map(
+              (alert: {
+                id: string;
+                severity: string;
+                message: string;
+                triggeredAt: string;
+                metric?: string;
+                currentValue?: number;
+                threshold?: number;
+              }) => (
+                <div key={alert.id} className="rounded-md border border-border/50 p-3 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] ${alert.severity === "warning" ? "bg-amber-500/15 text-amber-400 border-amber-500/30" : "bg-red-500/15 text-red-400 border-red-500/30"}`}
+                    >
+                      {alert.severity}
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground">
+                      {new Date(alert.triggeredAt).toLocaleTimeString()}
                     </span>
-                    <span className="text-muted-foreground">threshold: {formatNumber(alert.threshold ?? 0, 3)}</span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <p className="text-xs text-muted-foreground">{alert.message}</p>
+                  {alert.metric && (
+                    <div className="flex items-center gap-3 text-[11px]">
+                      <span className="text-muted-foreground">{alert.metric}:</span>
+                      <span className="font-mono font-medium text-red-400">
+                        {formatNumber(alert.currentValue ?? 0, 3)}
+                      </span>
+                      <span className="text-muted-foreground">threshold: {formatNumber(alert.threshold ?? 0, 3)}</span>
+                    </div>
+                  )}
+                </div>
+              ),
+            )}
           </CardContent>
         </Card>
       ) : (
         <EmptyState
-          icon={<Activity className="size-10 text-muted-foreground" />}
+          icon={Activity}
           title="No active alerts"
           description="All models are within acceptable drift thresholds."
         />

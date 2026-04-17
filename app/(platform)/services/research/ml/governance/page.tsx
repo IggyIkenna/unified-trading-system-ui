@@ -39,10 +39,7 @@ export default function MLGovernancePage() {
 
   return (
     <div className="platform-page-width space-y-6 p-6">
-      <PageHeader
-        title="ML Governance"
-        description="Approval status and audit trail for model deployments"
-      />
+      <PageHeader title="ML Governance" description="Approval status and audit trail for model deployments" />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card className="border-border/50">
@@ -129,7 +126,7 @@ export default function MLGovernancePage() {
         </Card>
       ) : (
         <EmptyState
-          icon={<Shield className="size-10 text-muted-foreground" />}
+          icon={Shield}
           title="No model versions"
           description="Register models to see their governance audit trail."
         />

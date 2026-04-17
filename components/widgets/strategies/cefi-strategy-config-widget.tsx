@@ -35,7 +35,7 @@ function loadInitialConfigs(): Record<string, Record<string, unknown>> {
 export function CeFiStrategyConfigWidget(_props: WidgetComponentProps) {
   const [selectedId, setSelectedId] = React.useState(ALL_STRATEGIES[0].id);
   const [configs, setConfigs] = React.useState(loadInitialConfigs);
-  const mode = "Paper" as const;
+  const mode = "Paper" as "Paper" | "Active";
 
   const schema = CEFI_STRATEGY_SCHEMAS[selectedId];
   const current = configs[selectedId] ?? (schema ? buildDefaults(schema) : {});

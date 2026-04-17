@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import type { Prediction } from "@/components/trading/sports/types";
 import { MOCK_PREDICTIONS } from "@/lib/mocks/fixtures/sports-data";
 import { Spinner } from "@/components/shared/spinner";

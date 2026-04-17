@@ -115,15 +115,15 @@ export default function GapsPage() {
     const selectedGaps = MOCK_ENHANCED_GAPS.filter((g) => selected.has(g.id));
     if (selectedGaps.length === 0) return;
 
-    // Group gaps by service+category to batch API calls
+    // Group gaps by venue+category to batch API calls
     const groups = new Map<string, { service: string; category: string; dates: string[] }>();
     for (const gap of selectedGaps) {
-      const key = `${gap.service}:${gap.category}`;
+      const key = `${gap.venue}:${gap.category}`;
       const existing = groups.get(key);
       if (existing) {
-        existing.dates.push(gap.date);
+        existing.dates.push(gap.gapStart);
       } else {
-        groups.set(key, { service: gap.service, category: gap.category, dates: [gap.date] });
+        groups.set(key, { service: gap.venue, category: gap.category, dates: [gap.gapStart] });
       }
     }
 

@@ -272,7 +272,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
           // Reference = mid-market at signal time (what strategy-service saw)
           reference_price: expectedPrice,
           alpha_pnl_usd: slippage > 0 ? -slippage : 0,
-          strategy_id: o.strategy_id,
+          strategy_id: o.strategy_id ?? undefined,
           execution_chain: [
             { label: "Signal", detail: "Strategy generated instruction", duration_ms: 2 },
             { label: "Risk Check", detail: "Pre-trade exposure validation", duration_ms: 5 },

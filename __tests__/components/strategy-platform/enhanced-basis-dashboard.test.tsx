@@ -1,3 +1,4 @@
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DeFiBasisTradeWidget } from "@/components/widgets/defi/defi-basis-trade-widget";
 
@@ -14,7 +15,7 @@ vi.mock("@/components/widgets/defi/defi-data-context", () => ({
 
 const defaultProps = { instanceId: "test-basis" };
 
-describe("DeFiBasisTradeWidget", { timeout: 30000 }, () => {
+describe("DeFiBasisTradeWidget", () => {
   it("renders without crashing", () => {
     const { container } = render(<DeFiBasisTradeWidget {...defaultProps} />);
     expect(container).toBeTruthy();

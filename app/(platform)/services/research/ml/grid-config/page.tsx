@@ -37,21 +37,17 @@ export default function GridConfigPage() {
 
   return (
     <div className="platform-page-width space-y-6 p-6">
-      <PageHeader
-        title="Feature Grid Configs"
-        description="Manage feature group subscriptions for ML training runs"
-        actions={
-          <Button
-            onClick={() => {
-              setEditingConfig(null);
-              setEditorOpen(true);
-            }}
-          >
-            <Plus className="size-4 mr-1.5" />
-            New Config
-          </Button>
-        }
-      />
+      <PageHeader title="Feature Grid Configs" description="Manage feature group subscriptions for ML training runs">
+        <Button
+          onClick={() => {
+            setEditingConfig(null);
+            setEditorOpen(true);
+          }}
+        >
+          <Plus className="size-4 mr-1.5" />
+          New Config
+        </Button>
+      </PageHeader>
 
       <GridConfigEditor
         open={editorOpen}
@@ -79,9 +75,7 @@ export default function GridConfigPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">CeFi</p>
-                <p className="text-2xl font-bold mt-0.5">
-                  {configs.filter((c) => c.category === "CEFI").length}
-                </p>
+                <p className="text-2xl font-bold mt-0.5">{configs.filter((c) => c.category === "CEFI").length}</p>
               </div>
             </div>
           </CardContent>
@@ -91,9 +85,7 @@ export default function GridConfigPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Sports</p>
-                <p className="text-2xl font-bold mt-0.5">
-                  {configs.filter((c) => c.category === "SPORTS").length}
-                </p>
+                <p className="text-2xl font-bold mt-0.5">{configs.filter((c) => c.category === "SPORTS").length}</p>
               </div>
             </div>
           </CardContent>
@@ -123,9 +115,7 @@ export default function GridConfigPage() {
                         {cfg.category}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {cfg.feature_groups.length} groups
-                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{cfg.feature_groups.length} groups</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {cfg.exclude_features.length > 0 ? `${cfg.exclude_features.length} excluded` : "—"}
                     </TableCell>
@@ -170,7 +160,7 @@ export default function GridConfigPage() {
         </Card>
       ) : (
         <EmptyState
-          icon={<Layers className="size-10 text-muted-foreground" />}
+          icon={Layers}
           title="No grid configs"
           description="Create a feature grid config to customize which feature groups are used in training runs."
         />

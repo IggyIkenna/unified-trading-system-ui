@@ -339,7 +339,7 @@ export function DeployFormProvider({ serviceName, onDeploy, isDeploying, childre
     setQuotaInfo(null);
 
     try {
-      const info = await getDeploymentQuotaInfo(buildRequest());
+      const info = await getDeploymentQuotaInfo(buildRequest() as unknown as Record<string, unknown>);
       setQuotaInfo(info);
     } catch (e: unknown) {
       setQuotaError(e instanceof Error ? e.message : "Failed to load quota info");
