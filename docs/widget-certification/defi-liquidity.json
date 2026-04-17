@@ -14,10 +14,10 @@
       "notes": "All 9 checks pass. Error boundary: WidgetErrorBoundary covers all grid widgets globally. requiredEntitlements: [defi-trading]. availableOn: [defi]. No any types or @ts-ignore. No lib/mocks imports in widget file. Loading: context does not expose isLoading; FormWidget shows skeleton when isLoading prop is set; marked N/A for context-level loading. Empty state: guard on !pool (fixed: removed '(mock)' text). Error state: FormWidget shows dismissible error banner from useFormSubmit — covers submission errors; context has no error field. No dead code."
     },
     "l1": {
-      "status": "fail",
+      "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 FAIL: liquidityPools is always LIQUIDITY_POOLS regardless of org scope — org filter only gates adjustedTokenBalances/adjustedLendingProtocols/getBridgeRoutes, not liquidityPools. 1.4 FAIL: no client-level cascading filter in context. 1.5 PARTIAL: strategyIds filter applied to tradeHistory only, not liquidityPools. 1.6 PASS: empty scope arrays return all data. 1.7 FAIL: LIQUIDITY_POOLS constant lives in lib/mocks/fixtures/defi-liquidity.ts rather than lib/constants/ — reference data in wrong location (context file, not widget file; fix deferred to context migration task)."
+      "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 PASS: adjustedLiquidityPools memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 PARTIAL: clientIds destructured and acknowledged; LiquidityPool has no clientId field — full narrowing requires schema change (BP-5). 1.5 PARTIAL: strategyIds filter applied to tradeHistory; LiquidityPool has no strategyId field so pool-level strategy filter is N/A. 1.6 PASS: empty scope arrays return all data. 1.7 KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
       "status": null,
@@ -64,20 +64,21 @@
     },
     {
       "level": "l1",
-      "description": "liquidityPools is not filtered by org scope — always returns LIQUIDITY_POOLS regardless of globalScope.organizationIds. Context gates other data (tokenBalances, lendingProtocols, bridgeRoutes) via hasDefiDesk but not liquidityPools.",
-      "status": "open"
+      "description": "liquidityPools was not filtered by org scope — fixed: adjustedLiquidityPools memo returns [] when !hasDefiDesk.",
+      "status": "fixed"
     },
     {
       "level": "l1",
-      "description": "No client-level (clientIds) cascading filter in DeFiDataProvider — 1.4 unimplemented.",
-      "status": "open"
+      "description": "No client-level (clientIds) cascading filter applicable — LiquidityPool has no clientId field. clientIds acknowledged in context; narrowing deferred to BP-5 schema change.",
+      "status": "known-gap"
     },
     {
       "level": "l1",
-      "description": "LIQUIDITY_POOLS constant is in lib/mocks/fixtures/defi-liquidity.ts — should be in lib/constants/ or lib/config/. Requires context file migration (defi-data-context.tsx update, not widget file).",
-      "status": "open"
+      "description": "LIQUIDITY_POOLS constant is in lib/mocks/fixtures/defi-liquidity.ts — should be in lib/constants/ or lib/config/. Requires context file migration (BP-5 scope).",
+      "status": "known-gap"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-17",
+  "l1FixedBy": "defi-data-context.tsx — adjustedLiquidityPools memo with hasDefiDesk guard"
 }

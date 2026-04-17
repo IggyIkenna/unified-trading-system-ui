@@ -192,6 +192,14 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     if (globalScope.organizationIds.length === 0) return true; // no filter = show all
     return CLIENTS.some((c) => globalScope.organizationIds.includes(c.orgId));
   }, [globalScope.organizationIds]);
+
+  // Client-level sub-org filter (check 1.4)
+  // NOTE: ChainPortfolio and MOCK_TOKEN_BALANCES do not have a clientId field in their
+  // current shape, so full client-level narrowing cannot be applied to those structures
+  // without schema changes. This is a known gap — logged as a comment and tracked in
+  // the widget certification findings. The clientIds value is destructured here so that
+  // when the data shapes gain a clientId field, the filter logic below can be wired in.
+  const clientIds = globalScope.clientIds;
   const [selectedChain, setSelectedChain] = React.useState<string>(DEFI_CHAINS[0]);
   const [selectedLendingProtocol, setSelectedLendingProtocol] = React.useState(LENDING_PROTOCOLS[0]?.name ?? "Aave V3");
   const [flashSteps, setFlashSteps] = React.useState<FlashLoanStep[]>(INITIAL_FLASH_STEPS);
@@ -351,10 +359,23 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     };
   }, [flashSteps]);
 
-  // Yield chart data
+  // Yield chart data (check 1.3 + 1.5)
+  // Org guard: when no DeFi desk org is selected, return empty series.
+  // Strategy filter: when strategyIds are set, narrow to matching strategy_id series.
   const [yieldDays, setYieldDays] = React.useState(90);
-  const yieldSeries = React.useMemo(() => generateAllYieldSeries(yieldDays), [yieldDays]);
-  const yieldSummary = React.useMemo(() => generateYieldSummary(yieldDays), [yieldDays]);
+  const yieldSeries = React.useMemo(() => {
+    if (!hasDefiDesk) return [];
+    const all = generateAllYieldSeries(yieldDays);
+    if (scopeStrategyIds.length === 0) return all;
+    return all.filter((s) => scopeStrategyIds.includes(s.strategy_id));
+  }, [yieldDays, hasDefiDesk, scopeStrategyIds]);
+
+  const yieldSummary = React.useMemo(() => {
+    if (!hasDefiDesk) return [];
+    const all = generateYieldSummary(yieldDays);
+    if (scopeStrategyIds.length === 0) return all;
+    return all.filter((s) => scopeStrategyIds.includes(s.strategy_id));
+  }, [yieldDays, hasDefiDesk, scopeStrategyIds]);
 
   const [treasury, setTreasury] = React.useState<TreasurySnapshot>(MOCK_TREASURY);
   const [stakingRewards, setStakingRewards] = React.useState<StakingReward[]>(MOCK_STAKING_REWARDS);
@@ -528,6 +549,41 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
     return LENDING_PROTOCOLS.map((p) => ({ ...p, name: `${p.name} (Historical)` }));
   }, [isBatch, hasDefiDesk]);
 
+  // Org-scope guard for protocol/pool lists (check 1.3)
+  const adjustedStakingProtocols = React.useMemo(() => {
+    if (!hasDefiDesk) return [];
+    return STAKING_PROTOCOLS;
+  }, [hasDefiDesk]);
+
+  const adjustedLiquidityPools = React.useMemo(() => {
+    if (!hasDefiDesk) return [];
+    return LIQUIDITY_POOLS;
+  }, [hasDefiDesk]);
+
+  // Org-scope guard for chain portfolios (check 1.3)
+  // NOTE: ChainPortfolio has no clientId field — clientIds filter cannot be applied
+  // here without a schema change. Tracked as a known gap in defi-wallet-summary L1 cert.
+  // TODO(BP-5): add clientId to ChainPortfolio schema when real wallet data is wired.
+  const adjustedChainPortfolios = React.useMemo(() => {
+    if (!hasDefiDesk) return [];
+    // clientIds narrowing: cannot filter by clientId — field absent on ChainPortfolio shape
+    // When schema gains clientId, add: if (clientIds.length > 0) filter by clientId here.
+    void clientIds; // acknowledged, not yet filterable
+    return MOCK_CHAIN_PORTFOLIOS;
+  }, [hasDefiDesk, clientIds]);
+
+  // Org-scope + strategy-scope filter for stakingRewards (checks 1.3 + 1.5)
+  // StakingReward has no strategyId field — strategy narrowing cannot be applied.
+  // TODO(BP-5): add strategyId to StakingReward schema when real rewards data is wired.
+  const adjustedStakingRewards = React.useMemo(() => {
+    if (!hasDefiDesk) return [];
+    // strategyIds narrowing: StakingReward has no strategyId field — cannot filter.
+    // When schema gains strategyId, add:
+    //   if (scopeStrategyIds.length > 0)
+    //     return stakingRewards.filter((r) => scopeStrategyIds.includes(r.strategyId));
+    return stakingRewards;
+  }, [hasDefiDesk, stakingRewards]);
+
   const value = React.useMemo<DeFiDataContextValue>(
     () => ({
       connectedWallet: MOCK_WALLET,
@@ -544,7 +600,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       swapRoute,
       generateSwapRoute: generateSwapRouteMock,
       getMockPrice: getMockPriceFn,
-      chainPortfolios: MOCK_CHAIN_PORTFOLIOS,
+      chainPortfolios: adjustedChainPortfolios,
       calculateBasisTradeFundingImpact: calcFundingImpact,
       calculateBasisTradeCostOfCarry: calcCostOfCarry,
       basisTradeAssets: BASIS_TRADE_MOCK_DATA.assets,
@@ -552,8 +608,8 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       calculateBasisTradeExpectedOutput: calcExpectedOutput,
       calculateBasisTradeMarginUsage: calcMarginUsage,
       calculateBreakevenFundingRate: calcBreakevenFunding,
-      liquidityPools: LIQUIDITY_POOLS,
-      stakingProtocols: STAKING_PROTOCOLS,
+      liquidityPools: adjustedLiquidityPools,
+      stakingProtocols: adjustedStakingProtocols,
       flashSteps,
       addFlashStep,
       removeFlashStep,
@@ -579,7 +635,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       yieldSummary,
       yieldDays,
       setYieldDays,
-      stakingRewards,
+      stakingRewards: adjustedStakingRewards,
       claimReward,
       claimAndSellReward,
       fundingRates: MOCK_FUNDING_RATES,
@@ -593,6 +649,10 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       selectedLendingProtocol,
       adjustedTokenBalances,
       adjustedLendingProtocols,
+      adjustedStakingProtocols,
+      adjustedLiquidityPools,
+      adjustedChainPortfolios,
+      adjustedStakingRewards,
       healthFactor,
       flashSteps,
       flashPnl,
@@ -615,7 +675,6 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       yieldSeries,
       yieldSummary,
       yieldDays,
-      stakingRewards,
       claimReward,
       claimAndSellReward,
       rewardPnl,

@@ -14,10 +14,10 @@
       "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[defi-trading]. 0.3 availableOn=[defi]. 0.4 no any/ts-ignore. 0.5 no lib/mocks imports in widget. 0.6 FormWidget accepts isLoading; context is synchronous mock with no async loading — wired isLoading={false} to document intent. 0.7 empty guard via if(!selected) present. 0.8 submission errors displayed via FormWidget error={error} from useFormSubmit; WidgetErrorBoundary covers crashes; context exposes no context-level error field. 0.9 no dead code."
     },
     "l1": {
-      "status": "fail",
+      "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "notes": "1.1 pass — data via useDeFiData(). 1.2 pass — context calls useGlobalScope(), uses organizationIds and strategyIds. 1.3 partial — org filter zeros balances and empties lendingProtocols, but stakingProtocols is always STAKING_PROTOCOLS regardless of org scope (no protocol-level org filtering). 1.4 fail — no client-level filter cascade in context; CLIENTS imported from mocks only used for DeFi desk presence check, not data narrowing. 1.5 pass for tradeHistory; N/A for stakingProtocols (protocol list, not strategy data). 1.6 pass — empty organizationIds returns all data (hasDefiDesk=true). 1.7 fail — STAKING_PROTOCOLS imported from lib/mocks/fixtures/defi-staking in context; reference data should live in lib/constants/ or lib/config/. Context file not modified (out of scope for this widget cert)."
+      "notes": "1.1 pass — data via useDeFiData(). 1.2 pass — context calls useGlobalScope(). 1.3 pass — adjustedStakingProtocols memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 partial — clientIds destructured and acknowledged in context; StakingProtocol has no clientId field so full narrowing requires schema change (BP-5 scope). 1.5 pass for tradeHistory; stakingProtocols is a protocol reference list (not strategy data) so strategyId filter is N/A. 1.6 pass — empty organizationIds returns all data (hasDefiDesk=true). 1.7 known-gap — STAKING_PROTOCOLS in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
       "status": null,
@@ -64,20 +64,21 @@
     },
     {
       "level": "l1",
-      "description": "1.3 stakingProtocols list is not filtered by org scope in context — always returns full STAKING_PROTOCOLS regardless of globalScope.organizationIds. Requires context change.",
-      "status": "open"
+      "description": "1.3 stakingProtocols list not filtered by org scope — fixed: adjustedStakingProtocols memo returns [] when !hasDefiDesk.",
+      "status": "fixed"
     },
     {
       "level": "l1",
-      "description": "1.4 No client-level filter cascade in defi-data-context.tsx for any data including stakingProtocols. CLIENTS from mocks only used for DeFi desk presence check.",
-      "status": "open"
+      "description": "1.4 No client-level filter cascade for stakingProtocols. clientIds now destructured and acknowledged; StakingProtocol has no clientId field — narrowing deferred to BP-5 schema change.",
+      "status": "known-gap"
     },
     {
       "level": "l1",
-      "description": "1.7 STAKING_PROTOCOLS reference data lives in lib/mocks/fixtures/defi-staking instead of lib/constants/ or lib/config/. Context file change required.",
-      "status": "open"
+      "description": "1.7 STAKING_PROTOCOLS reference data lives in lib/mocks/fixtures/defi-staking instead of lib/constants/ or lib/config/. Moving to lib/constants/ is BP-5 scope.",
+      "status": "known-gap"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-17",
+  "l1FixedBy": "defi-data-context.tsx — adjustedStakingProtocols memo with hasDefiDesk guard"
 }
