@@ -447,7 +447,7 @@ STUB
 chmod +x scripts/quality-gates.sh
 ```
 
-Replace `<package_dir>` with the Python package directory name (underscore form, e.g. `unified_events_interface`). Set
+Replace `<package_dir>` with the Python package directory name (underscore form, e.g. `unified_trading_library.events`). Set
 `MIN_COVERAGE` to `(actual_coverage - 1%)` after the first successful test run.
 
 See `unified-trading-pm/scripts/quality-gates-base/README.md` for the full variable reference and all stub templates.

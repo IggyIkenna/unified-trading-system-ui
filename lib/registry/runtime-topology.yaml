@@ -985,7 +985,7 @@ ibkr-gateway-infra:
 alerting:
   architecture: one-to-many
   consumes_from:
-    - all services via unified-events-interface lifecycle events (PubSub)
+    - all services via unified-trading-library lifecycle events (PubSub)
     - risk-and-exposure-service: risk breach triggers
     - position-balance-monitor-service: balance discrepancy alerts
     - execution-service: order rejection spike alerts
@@ -995,7 +995,7 @@ alerting:
     - deployment-api: service stop/restart triggers
     - external: Slack webhooks, PagerDuty alerts, email
   role: >
-    Disaster recovery trigger. Sits above the pipeline as a cross-cutting concern. Uses unified-events-interface
+    Disaster recovery trigger. Sits above the pipeline as a cross-cutting concern. Uses unified-trading-library
     EventSink protocol for event consumption. Circuit breaker commands are PubSub events that services MUST honor.
     Separate from normal business PubSub flows — this is operational control.
 

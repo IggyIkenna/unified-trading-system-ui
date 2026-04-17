@@ -30,7 +30,7 @@ defined once in the canonical template and must not be trimmed in service copies
 Update the canonical template when:
 
 - A new required common event is added to the codex event schema.
-- The `unified_events_interface` API changes (e.g. `setup_events` gains a new required parameter).
+- The `unified_trading_library.events` API changes (e.g. `setup_events` gains a new required parameter).
 - A new test case is identified that applies to all services.
 
 After updating the template, propagate the change to all service copies. Use

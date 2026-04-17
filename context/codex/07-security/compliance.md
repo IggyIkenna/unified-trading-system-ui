@@ -27,7 +27,7 @@ execution/risk/strategy services in production) do not require handoff review.
 
 ## Overview
 
-The unified trading system emits structured compliance events via `log_event()` from `unified_events_interface` at key
+The unified trading system emits structured compliance events via `log_event()` from `unified_trading_library.events` at key
 checkpoints in the order and trade lifecycle. These events satisfy the minimum audit-trail requirements for MiFID II
 (EU) and FCA (UK) regulated activity.
 
@@ -76,7 +76,7 @@ payload must be set to `"UK_FCA"`.
 | `TRANSACTION_REPORTED_FCA` | `"TRANSACTION_REPORTED_FCA"` | FCA SUP 17          |
 | `POSITION_LIMIT_CHECKED`   | `"POSITION_LIMIT_CHECKED"`   | MiFID II Article 57 |
 
-All constants are exported from `unified_events_interface` and defined in `unified_events_interface/schemas.py`.
+All constants are exported from `unified_trading_library.events` and defined in `unified_trading_library.events/schemas.py`.
 
 ---
 
@@ -105,7 +105,7 @@ Position gate runs
 
 ### Shared Schema (Tier 0)
 
-- **Event types + payload schema**: `unified-events-interface/unified_events_interface/schemas.py`
+- **Event types + payload schema**: `unified-events-interface/unified_trading_library.events/schemas.py`
   - `TRADE_REPORTED_MIFID`, `ORDER_SUBMITTED_MIFID`, `BEST_EXECUTION_CHECKED`, `TRANSACTION_REPORTED_FCA`,
     `POSITION_LIMIT_CHECKED` constants
   - `ComplianceEventPayload` dataclass with `to_dict() -> JSONDict` for use as `log_event()` details
@@ -215,7 +215,7 @@ Phase 3 wires compliance reporting through the full observability stack:
 
 | Step                     | Owner                                | Mechanism                                         |
 | ------------------------ | ------------------------------------ | ------------------------------------------------- |
-| Event emission           | execution-service / strategy-service | `log_event()` via `unified_events_interface`      |
+| Event emission           | execution-service / strategy-service | `log_event()` via `unified_trading_library.events`      |
 | PubSub propagation       | alerting-service                     | Subscribes to compliance event topic              |
 | Prometheus counter       | execution-service                    | `compliance_events_emitted_total{event_type=...}` |
 | Audit log retention      | GCS (via DataSink)                   | 7-year retention bucket policy                    |

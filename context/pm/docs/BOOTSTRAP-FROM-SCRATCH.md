@@ -582,7 +582,7 @@ python --version  # should be 3.13.x
 ### Verify core imports
 
 ```bash
-python -c "from unified_events_interface import setup_events, log_event; print('UEI OK')"
+python -c "from unified_trading_library.events import setup_events, log_event; print('UEI OK')"
 python -c "from unified_config_interface import UnifiedCloudConfig; print('UCI OK')"
 python -c "import unified_trading_library; print('UTL OK')"
 python -c "import unified_market_interface; print('UMI OK')"

@@ -383,7 +383,7 @@ EOF
 cat > tests/unit/test_event_logging.py << 'EOF'
 """Test event logging compliance."""
 
-from unified_events_interface import setup_events, log_event
+from unified_trading_library.events import setup_events, log_event
 
 
 def test_event_logging_setup():
