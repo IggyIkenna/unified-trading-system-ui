@@ -83,10 +83,10 @@ describe("Marketing page content consistency", () => {
     expect(pp).toContain("Reporting");
   });
 
-  it("regulatory page contains advisory agreement pathway", () => {
+  it("regulatory page describes umbrella pathway", () => {
     const rp = pages["regulatory.html"];
-    expect(rp).toContain("advisory agreement");
-    expect(rp).toContain("AR appointment");
+    expect(rp).toContain("umbrella");
+    expect(rp).toContain("authorisation");
   });
 
   it("firm page contains company description", () => {
@@ -103,7 +103,7 @@ describe("Marketing page content consistency", () => {
     expect(cp).toContain("email");
   });
 
-  it("no page contains placeholder href=\"#\" links", () => {
+  it('no page contains placeholder href="#" links', () => {
     for (const [name, html] of Object.entries(pages)) {
       const placeholderLinks = (html.match(/href="#"/g) || []).length;
       expect(placeholderLinks, `${name} has ${placeholderLinks} dead # links`).toBeLessThanOrEqual(2);
