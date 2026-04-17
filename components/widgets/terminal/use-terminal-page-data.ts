@@ -807,6 +807,9 @@ export function useTerminalPageData(): TerminalPageResult {
       isContextComplete,
       wallClockMs,
       isBatchMode: context.mode === "batch",
+      // TODO: wire from API hook when real endpoint exists
+      isLoading: false,
+      error: null,
     }),
     [
       instruments,

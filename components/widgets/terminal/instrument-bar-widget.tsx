@@ -22,7 +22,25 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
     setSelectedAccount,
     availableAccounts,
     isBatchMode,
+    isLoading,
+    error,
   } = useTerminalData();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="animate-pulse text-sm text-zinc-400">Loading...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="text-sm text-rose-400">{error}</span>
+      </div>
+    );
+  }
 
   const formatPrice = (v: number) => {
     if (v >= 1000) return v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

@@ -54,6 +54,9 @@ export interface TerminalData {
   isContextComplete: boolean;
   wallClockMs: number;
   isBatchMode: boolean;
+  // TODO: wire from API hook when real endpoint exists
+  isLoading: boolean;
+  error: string | null;
 }
 
 const TerminalDataContext = React.createContext<TerminalData | null>(null);

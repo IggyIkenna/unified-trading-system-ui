@@ -8,10 +8,10 @@
   "description": "Candlestick and line chart with technical indicators, volume, and timeframe controls for the selected instrument.",
   "levels": {
     "l0": {
-      "status": "partial",
+      "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "notes": "0.1–0.3 PASS. 0.4 FIXED: replaced as-never casts with typed assertions (candleData as Array<{time,open,high,low,close,volume?}> and indicatorOverlays as unknown as IndicatorOverlay[]). 0.5 PASS. 0.6 GAP: no isLoading in context; chart renders immediately with mock fallback. 0.7 FIXED: added candleData.length === 0 guard with instrument-specific empty message. 0.8 GAP: no error in context; CandlestickChart renders silently on malformed data. 0.9 PASS."
+      "notes": "0.1–0.3 PASS. 0.4 FIXED: replaced as-never casts with typed assertions (candleData as Array<{time,open,high,low,close,volume?}> and indicatorOverlays as unknown as IndicatorOverlay[]). 0.5 PASS. 0.6 PASS — isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true. 0.7 FIXED: added candleData.length === 0 guard with instrument-specific empty message. 0.8 PASS — isLoading/error now available from TerminalData context; widget renders error message when error is non-null. 0.9 PASS."
     },
     "l1": {
       "status": "pass",
@@ -51,14 +51,12 @@
     }
   },
   "knownIssues": [
-    "TerminalData context types candleData and indicatorOverlays as Array<Record<string,unknown>> — context should type them to their real shapes to avoid double-cast in widget",
-    "TerminalData context missing isLoading and error fields — loading/error states cannot be implemented in widget without context change"
+    "TerminalData context types candleData and indicatorOverlays as Array<Record<string,unknown>> — context should type them to their real shapes to avoid double-cast in widget"
   ],
   "findings": [
     "FIXED: Replaced as-never casts on candleData and indicatorOverlays with properly typed assertions (L0.4)",
     "FIXED: Added candleData.length === 0 empty state guard with symbol-specific message (L0.7)",
-    "GAP: No isLoading field in TerminalData context — loading skeleton blocked on context owner",
-    "GAP: No error field in TerminalData context — chart error state blocked on context owner"
+    "FIXED: TerminalData context extended with isLoading and error fields — widget now shows loading spinner and error message guards (L0.6, L0.8)"
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-17"

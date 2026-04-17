@@ -5,7 +5,23 @@ import { OrderBook } from "@/components/trading/order-book";
 import { useTerminalData } from "./terminal-data-context";
 
 export function OrderBookWidget(_props: WidgetComponentProps) {
-  const { selectedInstrument, bids, asks, livePrice, spread, spreadBps } = useTerminalData();
+  const { selectedInstrument, bids, asks, livePrice, spread, spreadBps, isLoading, error } = useTerminalData();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="animate-pulse text-sm text-zinc-400">Loading...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="text-sm text-rose-400">{error}</span>
+      </div>
+    );
+  }
 
   if (bids.length === 0 && asks.length === 0) {
     return (

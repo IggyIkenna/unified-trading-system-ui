@@ -25,7 +25,25 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
     activeIndicators,
     toggleIndicator,
     selectedInstrument,
+    isLoading,
+    error,
   } = useTerminalData();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="animate-pulse text-sm text-zinc-400">Loading...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="text-sm text-rose-400">{error}</span>
+      </div>
+    );
+  }
 
   return (
     // `absolute inset-0` positions the Card relative to the WidgetScroll Root

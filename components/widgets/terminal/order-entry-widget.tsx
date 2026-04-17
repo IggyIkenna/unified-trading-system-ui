@@ -35,10 +35,27 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
     handleSubmitOrder,
     isContextComplete,
     isBatchMode,
+    isLoading,
+    error: contextError,
   } = useTerminalData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
-
   const [constraintsOpen, setConstraintsOpen] = React.useState(false);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="animate-pulse text-sm text-zinc-400">Loading...</span>
+      </div>
+    );
+  }
+
+  if (contextError) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="text-sm text-rose-400">{contextError}</span>
+      </div>
+    );
+  }
   const sizeNum = parseFloat(orderSize) || 0;
   const priceNum = orderType === "market" ? livePrice : parseFloat(orderPrice) || 0;
   const total = sizeNum * priceNum;

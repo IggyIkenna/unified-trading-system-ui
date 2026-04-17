@@ -9,11 +9,27 @@ import type { WidgetComponentProps } from "../widget-registry";
 import { useTerminalData } from "./terminal-data-context";
 
 export function MarketTradesWidget(_props: WidgetComponentProps) {
-  const { recentTrades, ownTrades } = useTerminalData();
+  const { recentTrades, ownTrades, isLoading, error } = useTerminalData();
   const [tab, setTab] = React.useState<"market" | "own">("market");
 
   const allTrades = tab === "market" ? recentTrades : ownTrades;
   const trades = useLiveFeed(allTrades as Array<Record<string, unknown>>, 500);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="animate-pulse text-sm text-zinc-400">Loading...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <span className="text-sm text-rose-400">{error}</span>
+      </div>
+    );
+  }
 
   return (
     <LiveFeedWidget

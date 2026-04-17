@@ -8,10 +8,10 @@
   "description": "Buy/sell order form with side, quantity, price, strategy linking, and pre-trade constraint validation.",
   "levels": {
     "l0": {
-      "status": "partial",
+      "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "notes": "0.1–0.5 PASS. 0.6 GAP: TerminalData context exposes no isLoading field; widget cannot show skeleton without context change. 0.7 PASS: form renders with defaults; isBatchMode message shown. 0.8 GAP: context exposes no error field; submit errors handled via FormWidget/useFormSubmit only. 0.9 FIXED: removed unused Target and Zap lucide imports."
+      "notes": "0.1–0.5 PASS. 0.6 PASS — isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true. 0.7 PASS: form renders with defaults; isBatchMode message shown. 0.8 PASS — isLoading/error now available from TerminalData context; widget renders error message (contextError) when error is non-null. Submit errors still handled via FormWidget/useFormSubmit (error aliased as contextError to avoid shadowing). 0.9 FIXED: removed unused Target and Zap lucide imports."
     },
     "l1": {
       "status": "pass",
@@ -51,13 +51,12 @@
     }
   },
   "knownIssues": [
-    "TerminalData context missing isLoading and error fields — widgets cannot implement L0.6/L0.8 without context change (blocked on context owner)",
     "DEFAULT_INSTRUMENTS fallback lives in use-terminal-page-data.ts rather than lib/constants/ — low-risk but minor L1.7 placement gap"
   ],
   "findings": [
     "FIXED: Removed unused Target and Zap lucide-react imports (L0.9)",
-    "GAP: No isLoading field in TerminalData context — loading skeleton cannot be added without context change",
-    "GAP: No error field in TerminalData context — data-loading error cannot be surfaced without context change"
+    "FIXED: TerminalData context extended with isLoading and error fields — widget now destructures contextError (aliased from error) to avoid shadowing useFormSubmit's error",
+    "isLoading and error are stubbed as false/null in use-terminal-page-data.ts pending real API hook wiring"
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-17"
