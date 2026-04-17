@@ -7,11 +7,10 @@ import { FixtureSection, groupFixtures } from "@/components/trading/sports/fixtu
 import { LeagueBadge } from "@/components/trading/sports/shared";
 import type { Fixture, FootballLeague } from "@/components/trading/sports/types";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
 import { cn } from "@/lib/utils";
 import { Filter } from "lucide-react";
 import * as React from "react";
-import { useSportsData, type GlobalFilters } from "./sports-data-context";
+import { FOOTBALL_LEAGUES, useSportsData, type GlobalFilters } from "./sports-data-context";
 
 export function SportsFixturesWidget(_props: WidgetComponentProps) {
   const { filteredFixtures, selectedFixtureId, setSelectedFixtureId, handleViewArb, filters, setFilters } =
@@ -40,23 +39,23 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
       },
       ...(filters.dateRange === "matchday"
         ? [
-          {
-            key: "matchday",
-            label: "Round",
-            type: "select" as const,
-            options: matchdays.map((md) => ({ value: md, label: md })),
-          },
-        ]
+            {
+              key: "matchday",
+              label: "Round",
+              type: "select" as const,
+              options: matchdays.map((md) => ({ value: md, label: md })),
+            },
+          ]
         : []),
       ...(filters.dateRange === "custom"
         ? [
-          {
-            key: "customDate",
-            label: "Date",
-            type: "search" as const,
-            placeholder: "YYYY-MM-DD",
-          },
-        ]
+            {
+              key: "customDate",
+              label: "Date",
+              type: "search" as const,
+              placeholder: "YYYY-MM-DD",
+            },
+          ]
         : []),
       {
         key: "statusFilter",

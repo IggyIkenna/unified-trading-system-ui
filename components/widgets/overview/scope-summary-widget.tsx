@@ -3,6 +3,7 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { ScopeSummary } from "@/components/trading/scope-summary";
 import { InterventionControls } from "@/components/trading/intervention-controls";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -19,7 +20,20 @@ export function ScopeSummaryWidget(_props: WidgetComponentProps) {
         Navigate to Overview tab
       </div>
     );
-  const { organizations, clients, filteredSortedStrategies, totalNav, totalExposure } = ctx;
+  const { organizations, clients, filteredSortedStrategies, totalNav, totalExposure, coreLoading } = ctx;
+
+  if (coreLoading)
+    return (
+      <div className="flex flex-wrap items-center gap-3 px-3 py-2 h-full">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-6 w-36" />
+        <div className="ml-auto flex items-center gap-2">
+          <Skeleton className="h-8 w-28" />
+          <Skeleton className="h-8 w-40" />
+        </div>
+      </div>
+    );
 
   const scopeOrgs = context.organizationIds
     .map((id) => organizations.find((o) => o.id === id))
@@ -28,20 +42,18 @@ export function ScopeSummaryWidget(_props: WidgetComponentProps) {
     .map((id) => clients.find((c) => c.id === id))
     .filter((c): c is TradingClient => !!c);
 
-  const kpiStrategies = filteredSortedStrategies;
-
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 h-full">
       <ScopeSummary
         organizations={scopeOrgs}
         clients={scopeClients}
-        strategies={kpiStrategies.map((s: Record<string, unknown>) => ({
+        strategies={filteredSortedStrategies.map((s: Record<string, unknown>) => ({
           id: String(s.id ?? ""),
           name: String(s.name ?? ""),
           status: String(s.status ?? ""),
         }))}
         selectedStrategyIds={context.strategyIds}
-        totalStrategies={kpiStrategies.length}
+        totalStrategies={filteredSortedStrategies.length}
         totalOrganizations={organizations.length}
         totalClients={clients.length}
         totalCapital={totalNav}
@@ -57,7 +69,7 @@ export function ScopeSummaryWidget(_props: WidgetComponentProps) {
       <div className="flex items-center gap-2">
         <InterventionControls
           scope={{
-            strategyCount: kpiStrategies.length,
+            strategyCount: filteredSortedStrategies.length,
             totalExposure,
             scopeLabel:
               context.organizationIds.length > 0 || context.clientIds.length > 0 ? "Filtered" : "All Strategies",

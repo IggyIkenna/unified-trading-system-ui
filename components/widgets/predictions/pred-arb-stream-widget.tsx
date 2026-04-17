@@ -4,10 +4,12 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Info } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { ARB_THRESHOLD_OPTIONS } from "@/lib/mocks/fixtures/sports-fixtures";
 import type { PredictionArbMarketType } from "@/components/trading/predictions/types";
 import { PredActiveArbCard } from "./pred-arb-ui";
 import { usePredictionsData } from "./predictions-data-context";
+
+// UI-only constant — defined here, not in lib/mocks/
+const ARB_THRESHOLD_OPTIONS = [0.5, 1.0, 1.5, 2.0, 3.0] as const;
 
 export function PredArbStreamWidget(_props: WidgetComponentProps) {
   const {
@@ -19,6 +21,27 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
     setArbMarketTypeFilter,
     executeArb,
   } = usePredictionsData();
+
+  // PredictionsDataContext is synchronous (mock) — isLoading is always false.
+  // When the context adds isLoading + error fields, wire them here.
+  const isLoading = false;
+  const error: string | null = null;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">Loading arb stream…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-3 h-full min-h-0 overflow-auto">

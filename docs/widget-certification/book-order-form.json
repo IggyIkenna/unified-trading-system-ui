@@ -8,16 +8,16 @@
   "description": "Core order form: mode toggle, category, venue, instrument, side, quantity, and price fields.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[book]. 0.4 No any types or @ts-ignore. 0.5 No lib/mocks imports. 0.6 N/A — pure order-entry form; all form state is synchronous; submitting/success/error states handled by book-preview-compliance-widget once orderState leaves idle. 0.7 PASS — !canExecute warning shown; Preview Order button disabled when fields incomplete; venue list and category tabs always populated from static config. 0.8 N/A — error handling for order submission delegated to book-preview-compliance-widget (orderState=error renders errorMessage there). 0.9 No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 All data via useBookTradeData() — no inline fetch or direct imports. 1.2-1.6 N/A — pure UI order entry form, not a data display widget. Form pre-fill from global scope handled in book-data-context via useEffect on globalScope.organizationIds/clientIds/strategyIds. 1.7 BOOK_VENUES_BY_CATEGORY from lib/config/services/trading.config, DEFI_INSTRUCTION_TYPES and SLIPPAGE_OPTIONS from lib/config/services/defi.config — correct locations."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,13 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "book-data-context.tsx line 345 references undefined variable 'algoType' in handleSubmit — CeFi algo type not passed to placeMockOrder (pre-existing bug, not in this widget file)"
+  ],
+  "findings": [
+    "L0 PASS — no changes needed to widget file; loading/error N/A for pure entry form; error/success states correctly delegated to book-preview-compliance-widget",
+    "L1 PASS — all data from useBookTradeData(); scope pre-fill wired in context via useEffect; reference data in correct config locations"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

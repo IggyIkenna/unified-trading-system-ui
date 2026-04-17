@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EntityLink } from "@/components/trading/entity-link";
 import { PnLValue } from "@/components/trading/pnl-value";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
@@ -96,7 +97,26 @@ function FactorSummaryTable() {
 // ---------------------------------------------------------------------------
 
 export function PnlFactorDrilldownWidget(_props: WidgetComponentProps) {
-  const { selectedFactorData, setSelectedFactor } = usePnLData();
+  const { selectedFactorData, setSelectedFactor, isLoading } = usePnLData();
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3 p-2 h-full">
+        <div className="flex items-center justify-between shrink-0">
+          <Skeleton className="h-4 w-40" />
+        </div>
+        <div className="space-y-2 flex-1">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <Skeleton className="h-3.5 w-20" />
+              <Skeleton className="h-3.5 w-24 ml-auto" />
+              <Skeleton className="h-4 w-[120px] rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full min-h-0 p-2 gap-3">

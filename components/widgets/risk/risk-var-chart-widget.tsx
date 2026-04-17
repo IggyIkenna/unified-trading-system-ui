@@ -3,6 +3,7 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, formatCurrency, getAssetClassColor } from "./risk-data-context";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/shared/spinner";
 import {
   ResponsiveContainer,
   BarChart,
@@ -15,7 +16,19 @@ import {
 } from "recharts";
 
 export function RiskVarChartWidget(_props: WidgetComponentProps) {
-  const { adjustedVarData, varMethod, setVarMethod } = useRiskData();
+  const { adjustedVarData, varMethod, setVarMethod, isLoading, hasError } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return <div className="flex items-center justify-center h-full text-xs text-rose-400">Failed to load VaR data</div>;
+  }
 
   const methods = ["historical", "parametric", "monte_carlo", "filtered_historical"] as const;
 

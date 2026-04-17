@@ -8,16 +8,16 @@
   "description": "Market depth visualisation showing cumulative bid and ask volume across price levels.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx — pass. 0.2 requiredEntitlements=[\"execution-basic\",\"execution-full\"] — pass. 0.3 availableOn=[\"terminal\"] — pass. 0.4 No any/ts-ignore — pass. 0.5 No lib/mocks imports — pass. 0.6 FIXED: added !isContextComplete loading guard (animate-pulse spinner text) before data render — was missing, now pass. 0.7 Empty guard: bids.length===0 && asks.length===0 returns 'No depth data' — pass. 0.8 WidgetErrorBoundary in widget-wrapper covers render errors — pass. 0.9 No dead code — pass."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data read via useTerminalData() — bids, asks, livePrice, selectedInstrument, isContextComplete all from TerminalDataProvider — pass. 1.2 terminal-data-context is provided by use-terminal-page-data.ts which calls useGlobalScope() at line 107 and filters instruments/strategies by scope — pass. 1.3 Org filter: useGlobalScope context.organizationIds used in isContextComplete and strategy filtering in use-terminal-page-data.ts — pass. 1.4 Client filter: context.clientIds used in isContextComplete — pass. 1.5 Strategy filter: context.strategyIds filters filteredStrategies in use-terminal-page-data.ts — pass (depth chart displays bids/asks not strategies but the context properly handles it). 1.6 Empty scope arrays: isMockDataMode() returns true when no scope, otherwise context returns unfiltered when arrays empty — pass. 1.7 No reference data in lib/mocks in widget file — pass."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,10 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "L0 0.6 FIX: Added !isContextComplete loading guard — was missing before; now shows 'Loading depth data…' with animate-pulse when terminal context is not yet ready.",
+    "L1: All checks pass. Data exclusively from useTerminalData(); terminal-data-context backed by use-terminal-page-data.ts which correctly reads useGlobalScope() and filters by scope."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

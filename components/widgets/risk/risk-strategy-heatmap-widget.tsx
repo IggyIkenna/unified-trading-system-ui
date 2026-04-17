@@ -31,6 +31,7 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
     isBatchMode,
     circuitBreakerPending,
     isLoading,
+    hasError,
     handleTripCircuitBreaker,
     handleResetCircuitBreaker,
     handleKillSwitch,
@@ -43,6 +44,14 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton key={i} className="h-10 w-full rounded-lg" />
         ))}
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+        Failed to load strategy heatmap
       </div>
     );
   }

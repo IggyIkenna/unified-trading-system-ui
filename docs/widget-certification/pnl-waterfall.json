@@ -8,16 +8,16 @@
   "description": "Structural P&L breakdown with factor bars, drill-down by strategy, residual, and net total.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [pnl]. 0.4 ✓ No any types or @ts-ignore. 0.5 ✓ No direct lib/mocks imports (mock imports are in data-context only). 0.6 ✓ isLoading skeleton already present (lines 149-165). 0.7 ✓ pnlComponents.length === 0 empty guard present. 0.8 ✓ Error handled at PnLDataProvider level — provider short-circuits rendering and shows error UI before mounting widget; WidgetErrorBoundary catches runtime throws. 0.9 ✓ No commented-out or dead code. No fixes required."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 ✓ All data via usePnLData() hook — no inline fetch or direct import. 1.2 ✓ pnl-data-context.tsx calls useGlobalScope() (line 116) and filters strategies/orgs/clients via scope. 1.3 ✓ selectedOrgIds synced from globalScope.organizationIds in useEffect (line 180); filterMultiplier reacts to org selection. 1.4 ✓ selectedClientIds derived from globalScope.clientIds or getClientIdsForOrgs(); cascades in filterMultiplier. 1.5 ✓ selectedStrategyIds via getStrategyIdsForScope(globalScope); filtered in apiStrategies memo. 1.6 ✓ Empty scope arrays leave filterMultiplier at 1 (no scaling) — unfiltered dataset returned. 1.7 ✓ SHARE_CLASSES/SHARE_CLASS_LABELS from lib/types/defi; formatPercent from lib/utils/formatters — no reference data in lib/mocks."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,10 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "L0 — All 9 checks passed. No fixes required. isLoading skeleton, empty guard, and error handling via provider were already in place.",
+    "L1 — All 7 checks passed. Context reads useGlobalScope(), filters org/client/strategy, empty scope = all data."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

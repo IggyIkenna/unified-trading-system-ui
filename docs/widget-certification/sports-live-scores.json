@@ -8,16 +8,16 @@
   "description": "Compact horizontal ticker of live and suspended fixtures with scores and match clock.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary present in widget-wrapper.tsx. 0.2 requiredEntitlements=[\"sports-trading\"]. 0.3 availableOn=[\"sports\"]. 0.4 No any/ts-ignore. 0.5 No direct mock imports. 0.6 No async loading path — data is synchronous filtered from context. 0.7 Empty state: 'No live matches' renders when liveRows.length===0. 0.8 No error path in context. 0.9 No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data via useSportsData().filteredFixtures — no inline fetch. 1.2 Context reads useGlobalScope(). 1.3 Org filter affects bets; fixture ticker is scope-agnostic (public event data). 1.4 N/A — control-bar widget, no client scope. 1.5 N/A — strategy filter not applicable. 1.6 Empty scope shows all live fixtures. 1.7 No reference data in widget file. Note: wsStatus indicator shows WebSocket connection health — correctly sourced from context."
     },
     "l2": {
       "status": null,
@@ -52,6 +52,6 @@
   },
   "knownIssues": [],
   "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

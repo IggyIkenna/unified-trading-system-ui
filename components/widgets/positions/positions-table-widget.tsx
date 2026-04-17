@@ -340,9 +340,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("chain");
-        return val ? (
-          <span className="text-[11px]">{val}</span>
-        ) : null;
+        return val ? <span className="text-[11px]">{val}</span> : null;
       },
     },
     {

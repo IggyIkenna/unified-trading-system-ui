@@ -8,16 +8,16 @@
   "description": "Configure CeFi, TradFi, Options, and Prediction strategies — momentum, mean-reversion, ML, stat-arb, market-making.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper covers all grid widgets. 0.2 ✓ requiredEntitlements=[execution-basic,execution-full]. 0.3 ✓ availableOn=[strategies]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks imports. 0.6 N/A — pure config form with no data context dependency. 0.7 N/A — schema missing case shows fallback message inline. 0.8 N/A — pure form, no data context, no error surface needed. 0.9 FIXED — replaced dead React.useState for mode (never mutated) with plain const."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 N/A — widget is a pure UI form; all data is local state + lib/config/ schemas (no domain context). 1.2-1.6 N/A — no data to scope-filter. 1.7 ✓ — CEFI_STRATEGY_FAMILIES and CEFI_STRATEGY_SCHEMAS are in lib/config/strategy-config-schemas/ (correct location)."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,10 @@
     }
   },
   "knownIssues": ["567 lines refactored to 79 via schema-driven form"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "0.9 FIX: mode was declared as React.useState but setter was never used — replaced with plain const.",
+    "L1 note: widget does not consume useStrategiesData() — it is a self-contained form over lib/config/ schemas; scope filtering is intentionally absent."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

@@ -11,10 +11,7 @@ import { cn } from "@/lib/utils";
 // Severity styles
 // ---------------------------------------------------------------------------
 
-const SEVERITY_STYLES: Record<
-  RiskAlertStreamEvent["severity"],
-  { badge: string; border: string; dot: string }
-> = {
+const SEVERITY_STYLES: Record<RiskAlertStreamEvent["severity"], { badge: string; border: string; dot: string }> = {
   CRITICAL: {
     badge: "bg-rose-500/20 text-rose-400",
     border: "border-l-rose-500",
@@ -66,14 +63,9 @@ export function RiskLiveAlertFeedWidget(_props: WidgetComponentProps) {
       <div className="flex items-center justify-between px-2 py-1.5 border-b shrink-0">
         <div className="flex items-center gap-2">
           <span
-            className={cn(
-              "size-2 rounded-full",
-              isConnected ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground",
-            )}
+            className={cn("size-2 rounded-full", isConnected ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground")}
           />
-          <span className="text-[10px] text-muted-foreground">
-            {isConnected ? "Live" : "Disconnected"}
-          </span>
+          <span className="text-[10px] text-muted-foreground">{isConnected ? "Live" : "Disconnected"}</span>
         </div>
         {alertFeed.length > 0 && (
           <button
@@ -87,43 +79,27 @@ export function RiskLiveAlertFeedWidget(_props: WidgetComponentProps) {
 
       {/* Feed */}
       {alertFeed.length === 0 ? (
-        <div className="flex items-center justify-center flex-1 text-xs text-muted-foreground">
-          No alerts yet
-        </div>
+        <div className="flex items-center justify-center flex-1 text-xs text-muted-foreground">No alerts yet</div>
       ) : (
         <WidgetScroll axes="vertical">
           <div className="space-y-1 p-1">
             {alertFeed.map((alert) => {
               const style = SEVERITY_STYLES[alert.severity];
               return (
-                <div
-                  key={alert.alert_id}
-                  className={cn(
-                    "rounded-md border border-l-2 bg-card p-2",
-                    style.border,
-                  )}
-                >
+                <div key={alert.alert_id} className={cn("rounded-md border border-l-2 bg-card p-2", style.border)}>
                   <div className="flex items-center justify-between gap-2 mb-0.5">
                     <div className="flex items-center gap-1.5">
                       <span className={cn("size-1.5 rounded-full shrink-0", style.dot)} />
-                      <Badge className={cn("text-[9px] h-4", style.badge)}>
-                        {alert.severity}
-                      </Badge>
-                      <span className="text-[10px] font-medium truncate">
-                        {alert.category}
-                      </span>
+                      <Badge className={cn("text-[9px] h-4", style.badge)}>{alert.severity}</Badge>
+                      <span className="text-[10px] font-medium truncate">{alert.category}</span>
                     </div>
                     <span className="text-[9px] text-muted-foreground whitespace-nowrap">
                       {formatAlertTime(alert.timestamp)}
                     </span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight">
-                    {alert.message}
-                  </p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">{alert.message}</p>
                   {alert.strategy_id && (
-                    <span className="text-[9px] text-muted-foreground mt-0.5 block">
-                      Strategy: {alert.strategy_id}
-                    </span>
+                    <span className="text-[9px] text-muted-foreground mt-0.5 block">Strategy: {alert.strategy_id}</span>
                   )}
                 </div>
               );

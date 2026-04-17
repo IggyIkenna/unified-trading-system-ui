@@ -8,16 +8,36 @@
   "description": "Full orders table with integrated filters, sorting, status badges, and inline cancel and amend actions.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "0.1_error_boundary": "pass — WidgetErrorBoundary wraps all widgets in widget-wrapper.tsx line 89",
+        "0.2_required_entitlements": "pass — [\"execution-basic\", \"execution-full\"] in register.ts",
+        "0.3_available_on": "pass — [\"orders\"] in register.ts",
+        "0.4_no_any_ts_ignore": "pass — no any or @ts-ignore; as unknown as Record<string, unknown>[] casts on export data are type-safe narrowings",
+        "0.5_no_mock_imports": "pass — widget imports only from context, shared, and ui components",
+        "0.6_loading_state": "pass — isLoading passed to TableWidget which renders skeleton",
+        "0.7_empty_state": "pass — emptyMessage=\"No orders match your filters\" passed to TableWidget",
+        "0.8_error_state": "pass — error={error ? \"Failed to load orders\" : null} + onRetry={refetch} passed to TableWidget",
+        "0.9_dead_code": "pass — no commented-out blocks or unreachable branches"
+      },
+      "notes": "All 9 checks pass. No fixes required."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "1.1_data_from_context": "pass — all data (filteredOrders, filters, actions) exclusively from useOrdersData()",
+        "1.2_context_uses_global_scope": "pass — orders-data-context.tsx uses useGlobalScope() and scopeStrategyIds",
+        "1.3_org_filter": "pass — scopedOrders filtered by scopeStrategyIds derived from globalScope.organizationIds",
+        "1.4_client_filter": "pass — getStrategyIdsForScope accepts clientIds; cascades through org→client→strategy",
+        "1.5_strategy_filter": "pass — local strategyFilter + globalScope.strategyIds both applied in context",
+        "1.6_no_filter_shows_all": "pass — scopeStrategyIds.length === 0 skips filter, returns all orders",
+        "1.7_reference_data_location": "pass — widget has no inline reference data; ASSET_CLASS_OPTIONS from context is a domain type constant"
+      },
+      "notes": "Context (read-only): imports from lib/mocks/* are dev-mode data sources in the context layer, not in the widget. Acceptable per spec."
     },
     "l2": {
       "status": null,
@@ -52,6 +72,6 @@
   },
   "knownIssues": [],
   "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

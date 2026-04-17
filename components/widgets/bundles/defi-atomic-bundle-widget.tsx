@@ -33,12 +33,14 @@ import {
   type DefiOp,
   type DefiTemplate,
 } from "@/lib/config/services/defi-bundles.config";
+import { useBundlesData } from "./bundles-data-context";
 
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
+  const { readOnly } = useBundlesData();
   const [operations, setOperations] = React.useState<DefiOp[]>([]);
   const [showTemplates, setShowTemplates] = React.useState(true);
 
@@ -295,7 +297,13 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
 
           {/* Add operation button */}
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="text-xs flex-1 min-w-[120px]" onClick={addOp}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-xs flex-1 min-w-[120px]"
+              onClick={addOp}
+              disabled={readOnly}
+            >
               <Plus className="size-3 mr-1.5" />
               Add Operation
             </Button>
@@ -304,6 +312,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                 variant="ghost"
                 size="sm"
                 className="text-xs"
+                disabled={readOnly}
                 onClick={() => {
                   setOperations([]);
                   setShowTemplates(true);
@@ -321,7 +330,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
           <Layers className="size-8 opacity-30" />
           <p className="text-sm text-center">No operations in bundle</p>
           <div className="flex flex-wrap gap-2 justify-center">
-            <Button variant="outline" size="sm" className="text-xs" onClick={addOp}>
+            <Button variant="outline" size="sm" className="text-xs" onClick={addOp} disabled={readOnly}>
               <Plus className="size-3 mr-1.5" />
               Add operation
             </Button>
@@ -363,11 +372,15 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
 
             {/* Actions */}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="text-xs flex-1 gap-1.5">
+              <Button variant="outline" size="sm" className="text-xs flex-1 gap-1.5" disabled={readOnly}>
                 <FlaskConical className="size-3" />
                 Simulate on Tenderly
               </Button>
-              <Button size="sm" className="text-xs flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700">
+              <Button
+                size="sm"
+                className="text-xs flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700"
+                disabled={readOnly}
+              >
                 <Rocket className="size-3" />
                 Execute Bundle
               </Button>

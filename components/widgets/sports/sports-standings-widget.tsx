@@ -2,10 +2,12 @@
 
 import { TableWidget } from "@/components/shared/table-widget";
 import type { TableActionsConfig } from "@/components/shared/table-widget";
+import { Spinner } from "@/components/shared/spinner";
 import { FormDots, LeagueBadge } from "@/components/trading/sports/shared";
 import type { FootballLeague, Standing } from "@/components/trading/sports/types";
 import { cn } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useSportsData } from "./sports-data-context";
 
 const LEAGUE_MAP: Record<string, FootballLeague> = {
@@ -97,9 +99,25 @@ const columns: ColumnDef<Standing, unknown>[] = [
   },
 ];
 
-export function SportsStandingsWidget() {
-  const { filters, standings } = useSportsData();
+export function SportsStandingsWidget(_props: WidgetComponentProps) {
+  const { filters, standings, wsStatus } = useSportsData();
   const selectedLeague = filters.leagues.length === 1 ? filters.leagues[0] : "EPL";
+
+  if (wsStatus === "connecting") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <Spinner size="sm" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (wsStatus === "error" || wsStatus === "disconnected") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-sm text-destructive">Standings unavailable — connection error</p>
+      </div>
+    );
+  }
 
   const actionsConfig: TableActionsConfig = {
     extraActions: (

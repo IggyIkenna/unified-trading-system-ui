@@ -8,50 +8,25 @@
   "description": "Global controls: view mode, data mode, date range, asset filter, order-flow range, and depth setting.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary via widget-wrapper.tsx ✓. 0.2 requiredEntitlements=[markets-data] ✓. 0.3 availableOn=[markets] ✓. 0.4 No any/@ts-ignore ✓. 0.5 No lib/mocks imports ✓. 0.6 N/A — pure control bar, no async data. 0.7 N/A — pure control bar, no data list. 0.8 N/A — pure control bar. 0.9 No dead code ✓."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 All state from useMarketsData() context hook ✓. 1.2–1.6 N/A — widget is a pure UI control bar with no data to scope-filter; emits setAssetClass/setViewMode/etc. back to context which owns filtering. 1.7 No reference data in this file; asset class options are inline constants appropriate for a control bar ✓."
     },
-    "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
-    },
-    "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
-    },
-    "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
-    },
-    "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
-    },
-    "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
-    }
+    "l2": { "status": null, "by": null, "date": null, "notes": null },
+    "l3": { "status": null, "by": null, "date": null, "notes": null },
+    "l4": { "status": null, "by": null, "date": null, "notes": null },
+    "l5": { "status": null, "by": null, "date": null, "notes": null },
+    "l6": { "status": null, "by": null, "date": null, "notes": null }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": ["Generate Report button (line 85) has no onClick handler — dead button; flagged for L4 4.1 check."],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

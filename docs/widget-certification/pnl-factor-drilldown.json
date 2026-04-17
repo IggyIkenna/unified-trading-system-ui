@@ -8,16 +8,16 @@
   "description": "Per-strategy P&L breakdown for the selected factor with a mini time series chart alongside.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper.tsx. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [pnl]. 0.4 ✓ No any types or @ts-ignore. 0.5 ✓ No direct lib/mocks imports. 0.6 FIXED — added Skeleton import and isLoading early-return skeleton (header + 8 factor row placeholders). 0.7 ✓ Two-state empty: no selectedFactor → FactorSummaryTable (shows all factors with click-to-drill); selectedFactor but no data unreachable (selectedFactorData derives from pnlComponents). 0.8 ✓ Error handled at PnLDataProvider level. 0.9 ✓ No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 ✓ selectedFactorData from usePnLData(); FactorSummaryTable uses pnlComponents from usePnLData(). 1.2 ✓ Context reads useGlobalScope(). 1.3 ✓ selectedOrgIds from global scope drives pnlComponents generation. 1.4 ✓ selectedClientIds cascade wired in context. 1.5 ✓ selectedStrategyIds drives generateStrategyBreakdown() and generateFactorTimeSeries(). 1.6 ✓ Empty arrays → filterMultiplier=1 → full unfiltered dataset. 1.7 ✓ STRATEGY_AREA_COLORS is an inline constant (hardcoded in widget, no mock source); formatNumber/formatPercent from lib/utils/formatters."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,10 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "L0 — 0.6 FAILED (no isLoading handling). Fixed: added Skeleton import and isLoading early-return guard showing header + 8 row skeletons. 8 of 9 checks already passed.",
+    "L1 — All 7 checks passed. Both the summary table (FactorSummaryTable) and the drilldown view use data exclusively from usePnLData(). Strategy breakdown and time series are scoped through selectedStrategyIds derived from global scope."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

@@ -7,7 +7,7 @@ import { OptionsChainTab, TradFiOptionsChainTab } from "@/components/trading/opt
 import { useOptionsData } from "./options-data-context";
 
 export function OptionsChainWidget(_props: WidgetComponentProps) {
-  const { isCrypto, asset, tradFiAsset, setSelectedFuture, setSelectedInstrument } = useOptionsData();
+  const { isCrypto, asset, tradFiAsset, optionRows, setSelectedFuture, setSelectedInstrument } = useOptionsData();
   const onPick = React.useCallback(
     (inst: SelectedInstrument) => {
       setSelectedFuture(null);
@@ -15,6 +15,13 @@ export function OptionsChainWidget(_props: WidgetComponentProps) {
     },
     [setSelectedFuture, setSelectedInstrument],
   );
+  if (optionRows.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground p-3">
+        No options contracts available for the selected expiry and asset.
+      </p>
+    );
+  }
   if (isCrypto) {
     return <OptionsChainTab asset={asset} onSelectInstrument={onPick} />;
   }

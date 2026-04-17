@@ -3,6 +3,7 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData } from "./risk-data-context";
 import { CollapsibleSection, KpiStrip, type KpiMetric } from "@/components/shared";
+import { Spinner } from "@/components/shared/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ResponsiveContainer,
@@ -18,7 +19,29 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
-  const { portfolioGreeks, positionGreeks, greeksTimeSeries, secondOrderRisks, portfolioGreeksData } = useRiskData();
+  const {
+    portfolioGreeks,
+    positionGreeks,
+    greeksTimeSeries,
+    secondOrderRisks,
+    portfolioGreeksData,
+    isLoading,
+    hasError,
+  } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">Failed to load Greeks data</div>
+    );
+  }
 
   const greeks = portfolioGreeksData?.portfolio ?? portfolioGreeks;
 

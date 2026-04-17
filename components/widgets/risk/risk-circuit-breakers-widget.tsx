@@ -8,12 +8,20 @@ import { cn } from "@/lib/utils";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function RiskCircuitBreakersWidget(_props: WidgetComponentProps) {
-  const { venueCircuitBreakers, isLoading } = useRiskData();
+  const { venueCircuitBreakers, isLoading, hasError } = useRiskData();
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground">
         <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">
+        Failed to load circuit breaker data
       </div>
     );
   }

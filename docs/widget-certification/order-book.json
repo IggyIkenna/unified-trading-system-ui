@@ -8,16 +8,16 @@
   "description": "Live bid/ask ladder with depth bars, spread display, and price level aggregation for the active instrument.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 PASS — WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2 PASS — requiredEntitlements: ['execution-basic','execution-full']. 0.3 PASS — availableOn: ['terminal']. 0.4 PASS — zero any types or @ts-ignore. 0.5 PASS — no lib/mocks imports. 0.6 BLOCKED — TerminalData context exposes no isLoading field; widget renders empty-state guard immediately with no spinner. 0.7 PASS — guards on bids.length === 0 && asks.length === 0 renders 'No order book data' message. 0.8 BLOCKED — TerminalData context exposes no error field; requires context extension. 0.9 PASS — no dead code or commented-out blocks. Widget was previously audited in BP-2 §8."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS — data exclusively via useTerminalData(); bids/asks/livePrice/spread/spreadBps all from context. 1.2 PASS — context reads useGlobalScope() in use-terminal-page-data.ts; orderbookApiData sourced from useOrderBook() which passes mode/asOf params from scope. 1.3 N/A — order book is instrument-level L2 market data; no org/client filtering applies. 1.4 N/A — same reason. 1.5 N/A — strategy filter does not affect the order book. 1.6 N/A — empty scope shows full market order book (correct for market data). 1.7 PASS — no reference data in this widget; order book mock generation in lib/mocks/generators/order-book.ts (correct location, used by context not widget)."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,28 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    {
+      "id": "OB-01",
+      "check": "0.6",
+      "severity": "medium",
+      "description": "No loading skeleton. TerminalData context has no isLoading field so the widget cannot distinguish 'loading' from 'empty'. Currently both states show 'No order book data' which is misleading during initial fetch.",
+      "blockedBy": "TerminalData context missing isLoading field — requires context extension"
+    },
+    {
+      "id": "OB-02",
+      "check": "0.8",
+      "severity": "medium",
+      "description": "No error state. TerminalData context has no error field; orderbookApiData errors are silently swallowed and the widget falls back to mock data rather than showing an error.",
+      "blockedBy": "TerminalData context missing error field — requires context extension"
+    }
+  ],
+  "findings": [
+    "Widget is minimal and clean — correctly delegates all rendering to the shared OrderBook component.",
+    "Empty state guard (bids.length === 0 && asks.length === 0) is correct for 0.7.",
+    "L0 0.6 and 0.8 are context-blocked. In practice, generateMockOrderBook fallback in use-terminal-page-data.ts means bids/asks are never truly empty — loading and empty states are virtually indistinguishable at the widget level. Context should expose isLoading to differentiate.",
+    "In mock data mode the context always returns non-empty bids/asks so the empty guard never fires; useful only when real API returns nothing."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

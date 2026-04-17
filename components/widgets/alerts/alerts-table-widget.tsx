@@ -420,9 +420,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
         placeholder: "Source",
         allLabel: "All Sources",
         width: "w-36",
-        options: [
-          { value: "recovery", label: "Recovery Events" },
-        ],
+        options: [{ value: "recovery", label: "Recovery Events" }],
       },
     ],
     activeFilterCount,

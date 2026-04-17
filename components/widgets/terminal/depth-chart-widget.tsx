@@ -5,7 +5,15 @@ import { DepthChart } from "@/components/trading/order-book";
 import { useTerminalData } from "./terminal-data-context";
 
 export function DepthChartWidget(_props: WidgetComponentProps) {
-  const { selectedInstrument, bids, asks, livePrice } = useTerminalData();
+  const { selectedInstrument, bids, asks, livePrice, isContextComplete } = useTerminalData();
+
+  if (!isContextComplete) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground animate-pulse">
+        Loading depth data…
+      </div>
+    );
+  }
 
   if (bids.length === 0 && asks.length === 0) {
     return <div className="flex h-full items-center justify-center text-sm text-muted-foreground">No depth data</div>;

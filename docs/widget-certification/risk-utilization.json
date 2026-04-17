@@ -8,16 +8,16 @@
   "description": "Top-N limits ranked by utilisation percentage with limit bars and breach highlighting.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 pass — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 pass — requiredEntitlements: [execution-basic, execution-full]. 0.3 pass — availableOn: [risk]. 0.4 pass — no any types or @ts-ignore. 0.5 pass — no direct lib/mocks imports in widget file. 0.6 fix applied — added isLoading -> Spinner guard. 0.7 fix applied — moved empty guard to early return (was inline conditional inside JSX, now proper early return). 0.8 fix applied — added hasError -> rose-400 message guard. 0.9 pass — no dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 pass — reads sortedLimits exclusively from useRiskData() hook. 1.2 pass — use-risk-page-data.ts calls useGlobalScope(); riskLimits filtered by scopeStrategyIds; sortedLimits derived from filtered riskLimits. 1.3 pass — org filter changes scopeStrategyIds which filters strategy-level limits. 1.4 pass — clientIds threaded through getStrategyIdsForScope. 1.5 pass — strategyIds threaded through getStrategyIdsForScope. 1.6 pass — empty scopeStrategyIds returns unfiltered limits. 1.7 pass — no reference data in widget file."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,11 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "L0.6: Added isLoading -> Spinner guard (was missing)",
+    "L0.7: Promoted inline empty conditional to proper early return for clarity",
+    "L0.8: Added hasError -> error message guard (was missing)"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

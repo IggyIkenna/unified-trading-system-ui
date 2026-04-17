@@ -8,16 +8,16 @@
   "description": "Recent transfer history with status, transaction references, amounts, and venue routing details.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx wraps all widgets globally. 0.2 requiredEntitlements=[\"execution-basic\",\"execution-full\"]. 0.3 availableOn=[\"accounts\"]. 0.4 No any/ts-ignore. 0.5 No lib/mocks imports. 0.6 isLoading passed to TableWidget. 0.7 emptyMessage=\"No transfers yet\" passed to TableWidget. 0.8 error+onRetry wired to TableWidget. 0.9 No dead code. No fixes required."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data from useAccountsData() → transferHistory (no inline fetch). 1.2 Context calls useGlobalScope() and filters balances by org venue membership. 1.3 Org filter changes balances via orgVenues memo. 1.4 Client filter: N/A — transfer history is user-scoped via auth token (queryKey includes user.id); client sub-filter not applicable to this widget's domain function. 1.5 Strategy filter: N/A — transfers are account-level, not strategy-scoped. 1.6 Empty scope → orgVenues=null → no venue filtering applied, all balances returned. 1.7 SAFTRecord type re-exported from lib/mocks/fixtures/trading-pages.ts via context; this is a context-level concern, not a widget-level one. Widget imports only from context."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,13 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "L1 context issue (not widget): accounts-data-context.tsx re-exports SAFTRecord type from lib/mocks/fixtures/trading-pages.ts and inlines MOCK_SAFTS directly. saftRecords data is never fetched — it is hardcoded mock data. Context-level fix deferred (out of scope for widget certification)."
+  ],
+  "findings": [
+    "L1.4/1.5: Transfer history is scoped by auth user (queryKey=[\"transfer-history\", user.id]). Client and strategy sub-filtering is not applicable — transfers are atomic account operations, not strategy positions.",
+    "All L0 checks passed without any code changes required."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

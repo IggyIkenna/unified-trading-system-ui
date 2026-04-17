@@ -3,10 +3,31 @@
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData } from "./risk-data-context";
 import { LimitBar } from "@/components/trading/limit-bar";
+import { Spinner } from "@/components/shared/spinner";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function RiskUtilizationWidget(_props: WidgetComponentProps) {
-  const { sortedLimits } = useRiskData();
+  const { sortedLimits, isLoading, hasError } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">
+        Failed to load utilization data
+      </div>
+    );
+  }
+
+  if (sortedLimits.length === 0) {
+    return <div className="flex items-center justify-center h-full text-xs text-muted-foreground">No limits data</div>;
+  }
 
   return (
     <WidgetScroll axes="vertical">
@@ -21,9 +42,6 @@ export function RiskUtilizationWidget(_props: WidgetComponentProps) {
             showStatus={false}
           />
         ))}
-        {sortedLimits.length === 0 && (
-          <div className="text-center text-muted-foreground text-xs py-6">No limits data</div>
-        )}
       </div>
     </WidgetScroll>
   );

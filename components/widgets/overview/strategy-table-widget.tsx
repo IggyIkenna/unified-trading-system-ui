@@ -231,160 +231,179 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
     </div>
   );
 
+  if (!ctx.perfLoading && !ctx.coreLoading && allFiltered.length === 0) {
+    return (
+      <LiveFeedWidget header={toolbar}>
+        <div className="flex h-full items-center justify-center p-6 text-xs text-muted-foreground">
+          No strategy data available
+        </div>
+      </LiveFeedWidget>
+    );
+  }
+
   return (
     <LiveFeedWidget header={toolbar}>
-      <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="text-xs">
-              <TableHead className="cursor-pointer hover:text-foreground" onClick={() => toggleSort("name")}>
-                Strategy
-              </TableHead>
-              <TableHead className="text-right cursor-pointer hover:text-foreground" onClick={() => toggleSort("pnl")}>
-                P&L
-              </TableHead>
-              <TableHead
-                className="text-right cursor-pointer hover:text-foreground"
-                onClick={() => toggleSort("sharpe")}
-              >
-                Sharpe
-              </TableHead>
-              <TableHead className="text-right">Drawdown</TableHead>
-              <TableHead
-                className="text-right cursor-pointer hover:text-foreground"
-                onClick={() => toggleSort("exposure")}
-              >
-                Exposure
-              </TableHead>
-              <TableHead className="text-right">NAV</TableHead>
-              <TableHead>Asset Class</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {Object.entries(grouped).map(([group, items]) => {
-              const isCollapsed = collapsedGroups === null || collapsedGroups.has(group);
-              const gPnl = items.reduce((s, x) => s + (Number(x.pnl) || 0), 0);
-              return (
-                <React.Fragment key={group}>
-                  <TableRow
-                    className="text-xs cursor-pointer hover:bg-muted/50 border-b-0"
-                    onClick={() => toggleGroup(group)}
-                  >
-                    <TableCell className="font-medium">
-                      <span className="flex items-center gap-1.5">
-                        <ChevronDown className={cn("size-3 transition-transform", isCollapsed && "-rotate-90")} />
-                        {group}
-                        <Badge variant="outline" className="text-[9px] h-4 px-1">
-                          {items.length}
-                        </Badge>
-                      </span>
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right font-mono tabular-nums font-medium",
-                        gPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
-                      )}
+      {filtered.length === 0 && !ctx.perfLoading ? (
+        <div className="flex h-full items-center justify-center p-6 text-xs text-muted-foreground">
+          No strategies match the current filters
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="text-xs">
+                <TableHead className="cursor-pointer hover:text-foreground" onClick={() => toggleSort("name")}>
+                  Strategy
+                </TableHead>
+                <TableHead
+                  className="text-right cursor-pointer hover:text-foreground"
+                  onClick={() => toggleSort("pnl")}
+                >
+                  P&L
+                </TableHead>
+                <TableHead
+                  className="text-right cursor-pointer hover:text-foreground"
+                  onClick={() => toggleSort("sharpe")}
+                >
+                  Sharpe
+                </TableHead>
+                <TableHead className="text-right">Drawdown</TableHead>
+                <TableHead
+                  className="text-right cursor-pointer hover:text-foreground"
+                  onClick={() => toggleSort("exposure")}
+                >
+                  Exposure
+                </TableHead>
+                <TableHead className="text-right">NAV</TableHead>
+                <TableHead>Asset Class</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(grouped).map(([group, items]) => {
+                const isCollapsed = collapsedGroups === null || collapsedGroups.has(group);
+                const gPnl = items.reduce((s, x) => s + (Number(x.pnl) || 0), 0);
+                return (
+                  <React.Fragment key={group}>
+                    <TableRow
+                      className="text-xs cursor-pointer hover:bg-muted/50 border-b-0"
+                      onClick={() => toggleGroup(group)}
                     >
-                      {formatDollar(gPnl)}
-                    </TableCell>
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                  </TableRow>
-                  {!isCollapsed &&
-                    items.map((s) => {
-                      const livePnl = realtimePnl[String(s.id)] ?? Number(s.pnl) ?? 0;
-                      return (
-                        <TableRow key={String(s.id)} className="text-xs">
-                          <TableCell className="pl-8">
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <Link
-                                href={`/services/trading/strategies/${s.id}`}
-                                className="font-medium hover:underline"
+                      <TableCell className="font-medium">
+                        <span className="flex items-center gap-1.5">
+                          <ChevronDown className={cn("size-3 transition-transform", isCollapsed && "-rotate-90")} />
+                          {group}
+                          <Badge variant="outline" className="text-[9px] h-4 px-1">
+                            {items.length}
+                          </Badge>
+                        </span>
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          "text-right font-mono tabular-nums font-medium",
+                          gPnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
+                        )}
+                      >
+                        {formatDollar(gPnl)}
+                      </TableCell>
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+                      <TableCell />
+                    </TableRow>
+                    {!isCollapsed &&
+                      items.map((s) => {
+                        const livePnl = realtimePnl[String(s.id)] ?? Number(s.pnl) ?? 0;
+                        return (
+                          <TableRow key={String(s.id)} className="text-xs">
+                            <TableCell className="pl-8">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <Link
+                                  href={`/services/trading/strategies/${s.id}`}
+                                  className="font-medium hover:underline"
+                                >
+                                  {String(s.name)}
+                                </Link>
+                                <LatencyBadge archetype={String(s.archetype ?? "")} />
+                              </div>
+                            </TableCell>
+                            <TableCell
+                              className={cn(
+                                "text-right font-mono tabular-nums",
+                                livePnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
+                              )}
+                            >
+                              {formatDollar(livePnl)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono tabular-nums">
+                              {formatNumber(Number(s.sharpe) || 0, 2)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono tabular-nums text-rose-400">
+                              {formatPercent(Number(s.maxDrawdown) || 0, 1)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono tabular-nums">
+                              {formatDollar(Number(s.exposure) || 0)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono tabular-nums">
+                              {formatDollar(Number(s.nav) || 0)}
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-[10px] text-muted-foreground">{String(s.assetClass)}</span>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "text-[10px]",
+                                  s.status === "live" && "text-emerald-500 border-emerald-500/30",
+                                  s.status === "warning" && "text-amber-500 border-amber-500/30",
+                                  s.status === "paused" && "text-muted-foreground",
+                                )}
                               >
-                                {String(s.name)}
-                              </Link>
-                              <LatencyBadge archetype={String(s.archetype ?? "")} />
-                            </div>
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              "text-right font-mono tabular-nums",
-                              livePnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
-                            )}
-                          >
-                            {formatDollar(livePnl)}
-                          </TableCell>
-                          <TableCell className="text-right font-mono tabular-nums">
-                            {formatNumber(Number(s.sharpe) || 0, 2)}
-                          </TableCell>
-                          <TableCell className="text-right font-mono tabular-nums text-rose-400">
-                            {formatPercent(Number(s.maxDrawdown) || 0, 1)}
-                          </TableCell>
-                          <TableCell className="text-right font-mono tabular-nums">
-                            {formatDollar(Number(s.exposure) || 0)}
-                          </TableCell>
-                          <TableCell className="text-right font-mono tabular-nums">
-                            {formatDollar(Number(s.nav) || 0)}
-                          </TableCell>
-                          <TableCell>
-                            <span className="text-[10px] text-muted-foreground">{String(s.assetClass)}</span>
-                          </TableCell>
-                          <TableCell>
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "text-[10px]",
-                                s.status === "live" && "text-emerald-500 border-emerald-500/30",
-                                s.status === "warning" && "text-amber-500 border-amber-500/30",
-                                s.status === "paused" && "text-muted-foreground",
-                              )}
-                            >
-                              {String(s.status)}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className={cn(
-                                "h-6 px-2 text-[10px]",
-                                s.status === "live" || s.status === "warning"
-                                  ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
-                                  : "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10",
-                              )}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              {s.status === "live" || s.status === "warning" ? "Pause" : "Resume"}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </React.Fragment>
-              );
-            })}
-          </TableBody>
-        </Table>
-        {filtered.length > 15 && (
-          <div className="pt-2 border-t border-border mt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full text-xs text-muted-foreground"
-              onClick={() => setShowAll(!showAll)}
-            >
-              {showAll ? `Show less (15 of ${filtered.length})` : `Show all ${filtered.length} strategies`}
-            </Button>
-          </div>
-        )}
-      </div>
+                                {String(s.status)}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                  "h-6 px-2 text-[10px]",
+                                  s.status === "live" || s.status === "warning"
+                                    ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
+                                    : "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10",
+                                )}
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                {s.status === "live" || s.status === "warning" ? "Pause" : "Resume"}
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </React.Fragment>
+                );
+              })}
+            </TableBody>
+          </Table>
+          {filtered.length > 15 && (
+            <div className="pt-2 border-t border-border mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs text-muted-foreground"
+                onClick={() => setShowAll(!showAll)}
+              >
+                {showAll ? `Show less (15 of ${filtered.length})` : `Show all ${filtered.length} strategies`}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </LiveFeedWidget>
   );
 }

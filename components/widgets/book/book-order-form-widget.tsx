@@ -113,10 +113,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
             <>
               <div className="space-y-1">
                 <label className="text-[10px] text-muted-foreground">Instruction Type</label>
-                <Select
-                  value={defiInstructionType}
-                  onValueChange={(v) => setDefiInstructionType(v as InstructionType)}
-                >
+                <Select value={defiInstructionType} onValueChange={(v) => setDefiInstructionType(v as InstructionType)}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Select instruction" />
                   </SelectTrigger>
@@ -149,10 +146,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
 
               <div className="space-y-1">
                 <label className="text-[10px] text-muted-foreground">Max Slippage</label>
-                <Select
-                  value={String(maxSlippageBps)}
-                  onValueChange={(v) => setMaxSlippageBps(Number(v))}
-                >
+                <Select value={String(maxSlippageBps)} onValueChange={(v) => setMaxSlippageBps(Number(v))}>
                   <SelectTrigger className="h-8 text-xs font-mono">
                     <SelectValue />
                   </SelectTrigger>

@@ -5,6 +5,7 @@ import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, MOCK_STRATEGIES } from "./risk-data-context";
 import { CollapsibleSection } from "@/components/shared";
 import { PnLValue } from "@/components/trading/pnl-value";
+import { Spinner } from "@/components/shared/spinner";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -32,7 +33,23 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
     exposureTimeSeries,
     exposurePeriod,
     setExposurePeriod,
+    isLoading,
+    hasError,
   } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">Failed to load exposure data</div>
+    );
+  }
 
   const selectedStrategy = MOCK_STRATEGIES.find((s) => s.archetype === riskFilterStrategy);
 

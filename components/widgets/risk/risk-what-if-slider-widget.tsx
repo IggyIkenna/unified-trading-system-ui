@@ -2,11 +2,34 @@
 
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, formatCurrency } from "./risk-data-context";
+import { Spinner } from "@/components/shared/spinner";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
-  const { btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData } = useRiskData();
+  const {
+    btcPriceChangePct,
+    setBtcPriceChangePct,
+    estimatedPnl,
+    portfolioGreeks,
+    portfolioGreeksData,
+    isLoading,
+    hasError,
+  } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">Failed to load portfolio data</div>
+    );
+  }
 
   const greeks = portfolioGreeksData?.portfolio ?? portfolioGreeks;
   const btcSpot = 65000;

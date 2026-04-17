@@ -47,11 +47,7 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
             <div key={cat}>
               <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase">{cat}</div>
               {insts.map((inst) => (
-                <SelectItem
-                  key={inst.instrumentKey}
-                  value={inst.instrumentKey}
-                  className="text-xs"
-                >
+                <SelectItem key={inst.instrumentKey} value={inst.instrumentKey} className="text-xs">
                   {inst.symbol} <span className="text-muted-foreground ml-1">{inst.venue}</span>
                 </SelectItem>
               ))}

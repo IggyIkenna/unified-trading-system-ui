@@ -32,8 +32,8 @@ const TYPE_PILLS: { id: TransferType; label: string }[] = [
 ];
 
 export function AccountsTransferWidget(_props: WidgetComponentProps) {
-  const { balances, addTransferEntry } = useAccountsData();
-  const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
+  const { balances, isLoading, error: contextError, addTransferEntry } = useAccountsData();
+  const { isSubmitting, error: submitError, clearError, handleSubmit } = useFormSubmit();
   const [transferType, setTransferType] = React.useState<TransferType>("venue-to-venue");
   const [fromVenue, setFromVenue] = React.useState<string>(CEFI_VENUES[0]);
   const [toVenue, setToVenue] = React.useState<string>(CEFI_VENUES[1]);
@@ -49,6 +49,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
   const amountNum = parseFloat(amount) || 0;
 
   const handleCopyAddress = () => {
+    void navigator.clipboard.writeText("0x7a23b8c1d9e4f6a2b3c5d7e8f0a1b2c3d4e5f691");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -83,8 +84,18 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
     addTransferEntry({ type: "Deposit", from: "External", to: fromVenue, asset: "—", amount: 0, status: "Pending" });
   };
 
+  const displayError = contextError?.message ?? submitError ?? null;
+
+  if (!isLoading && balances.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center p-4 text-center">
+        <p className="text-xs text-muted-foreground">No accounts available. Connect a venue to initiate a transfer.</p>
+      </div>
+    );
+  }
+
   return (
-    <FormWidget error={error} onClearError={clearError} className="px-1 pb-1">
+    <FormWidget isLoading={isLoading} error={displayError} onClearError={clearError} className="px-1 pb-1">
       <div className="space-y-1">
         <span className="text-xs text-muted-foreground">Transfer type</span>
         <div className="grid grid-cols-4 gap-1">

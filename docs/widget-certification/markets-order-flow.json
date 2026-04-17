@@ -8,16 +8,16 @@
   "description": "Scrollable order flow table with timestamps, latency, side, venue, and aggressor flag.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[markets-data]. 0.3 availableOn=[markets]. 0.4 no any/ts-ignore. 0.5 no lib/mocks imports. 0.6 FIXED: added isLoading from useMarketsData() and passed to TableWidget. 0.7 emptyMessage set. 0.8 FIXED: added error+onRetry from useMarketsData() and passed to TableWidget. 0.9 no dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 data from useMarketsData().orderFlowData via useLiveFeed() — no inline fetch. 1.2-1.5 N/A: orderFlowData is market-wide (instrument-level) data, not scoped by org/client/strategy — correct for a market order flow feed. 1.6 N/A (same reason). 1.7 no reference data in widget file."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,11 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "L0 fix: isLoading and error/onRetry were not wired — added from useMarketsData() and passed to TableWidget.",
+    "L1 1.2-1.6 marked N/A: orderFlowData is market-wide instrument data, not filtered by org/client/strategy — intentional design for a market feed widget.",
+    "Note: context disables liveBookUpdates in batch mode (isBatch => []) but orderFlowData itself has no batch guard — acceptable since static mock data has no tick interval."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

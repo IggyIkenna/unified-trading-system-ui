@@ -18,6 +18,27 @@ export function PredMarketsGridWidget(_props: WidgetComponentProps) {
     resetMarketsFilters,
   } = usePredictionsData();
 
+  // PredictionsDataContext is synchronous (mock) — isLoading is always false.
+  // When the context adds isLoading + error fields, wire them here.
+  const isLoading = false;
+  const error: string | null = null;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">Loading markets…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-3 h-full min-h-0 overflow-auto">
       <FilterBar

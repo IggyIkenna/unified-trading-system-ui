@@ -1,7 +1,9 @@
 "use client";
 
 import type { Prediction } from "@/components/trading/sports/types";
-import { MOCK_FIXTURES, MOCK_PREDICTIONS } from "@/lib/mocks/fixtures/sports-data";
+import { MOCK_PREDICTIONS } from "@/lib/mocks/fixtures/sports-data";
+import { Spinner } from "@/components/shared/spinner";
+import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { cn } from "@/lib/utils";
 import { useSportsData } from "./sports-data-context";
 
@@ -19,10 +21,12 @@ function ProbBar({ label, prob, color }: { label: string; prob: number; color: s
   );
 }
 
-function PredictionCard({ pred }: { pred: Prediction }) {
-  const fixture = MOCK_FIXTURES.find((f) => f.id === pred.fixtureId);
-  const kickoff = new Date(pred.kickoffUtc);
-  const hoursUntil = Math.max(0, (kickoff.getTime() - Date.now()) / (1000 * 60 * 60));
+function PredictionCard({ pred, fixtureLeague }: { pred: Prediction; fixtureLeague?: string }) {
+  const [hoursUntil, setHoursUntil] = React.useState<number>(0);
+  React.useEffect(() => {
+    const kickoff = new Date(pred.kickoffUtc);
+    setHoursUntil(Math.max(0, (kickoff.getTime() - Date.now()) / (1000 * 60 * 60)));
+  }, [pred.kickoffUtc]);
 
   return (
     <div className="rounded-md border border-zinc-800 bg-zinc-900/60 p-3 space-y-3">
@@ -31,30 +35,28 @@ function PredictionCard({ pred }: { pred: Prediction }) {
           <span className="text-xs font-bold text-zinc-200">
             {pred.homeTeam} vs {pred.awayTeam}
           </span>
-          {fixture && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">
-              {fixture.league}
-            </span>
+          {fixtureLeague && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">{fixtureLeague}</span>
           )}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-zinc-500">
-            {hoursUntil < 24
-              ? `${hoursUntil.toFixed(0)}h`
-              : `${(hoursUntil / 24).toFixed(0)}d`}
+            {hoursUntil < 24 ? `${hoursUntil.toFixed(0)}h` : `${(hoursUntil / 24).toFixed(0)}d`}
           </span>
-          <span
-            className={cn(
-              "text-[10px] px-1.5 py-0.5 rounded font-mono font-bold",
-              pred.confidence >= 0.7
-                ? "bg-emerald-900/40 text-emerald-400"
-                : pred.confidence >= 0.5
-                  ? "bg-amber-900/40 text-amber-400"
-                  : "bg-red-900/40 text-red-400",
-            )}
-          >
-            {(pred.confidence * 100).toFixed(0)}% conf
-          </span>
+          {pred.confidence != null && (
+            <span
+              className={cn(
+                "text-[10px] px-1.5 py-0.5 rounded font-mono font-bold",
+                pred.confidence >= 0.7
+                  ? "bg-emerald-900/40 text-emerald-400"
+                  : pred.confidence >= 0.5
+                    ? "bg-amber-900/40 text-amber-400"
+                    : "bg-red-900/40 text-red-400",
+              )}
+            >
+              {(pred.confidence * 100).toFixed(0)}% conf
+            </span>
+          )}
         </div>
       </div>
 
@@ -75,15 +77,11 @@ function PredictionCard({ pred }: { pred: Prediction }) {
         </div>
         <div className="text-center">
           <div className="text-[10px] text-zinc-500">O2.5</div>
-          <div className="text-xs font-mono font-bold text-emerald-400">
-            {(pred.over25Prob * 100).toFixed(0)}%
-          </div>
+          <div className="text-xs font-mono font-bold text-emerald-400">{(pred.over25Prob * 100).toFixed(0)}%</div>
         </div>
         <div className="text-center">
           <div className="text-[10px] text-zinc-500">BTTS</div>
-          <div className="text-xs font-mono font-bold text-emerald-400">
-            {(pred.bttsProb * 100).toFixed(0)}%
-          </div>
+          <div className="text-xs font-mono font-bold text-emerald-400">{(pred.bttsProb * 100).toFixed(0)}%</div>
         </div>
       </div>
 
@@ -95,12 +93,29 @@ function PredictionCard({ pred }: { pred: Prediction }) {
   );
 }
 
-export function SportsPredictionsWidget() {
-  const { filters } = useSportsData();
+export function SportsPredictionsWidget(_props: WidgetComponentProps) {
+  const { filters, allFixtures, wsStatus } = useSportsData();
+
+  if (wsStatus === "connecting") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <Spinner size="sm" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (wsStatus === "error" || wsStatus === "disconnected") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-sm text-destructive">Prediction data unavailable — connection error</p>
+      </div>
+    );
+  }
+
   const allPredictions = Object.values(MOCK_PREDICTIONS);
   const filtered = allPredictions.filter((p) => {
     if (filters.leagues.length > 0) {
-      const fixture = MOCK_FIXTURES.find((f) => f.id === p.fixtureId);
+      const fixture = allFixtures.find((f) => f.id === p.fixtureId);
       if (fixture && !filters.leagues.includes(fixture.league)) return false;
     }
     return true;
@@ -109,9 +124,7 @@ export function SportsPredictionsWidget() {
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-800 shrink-0">
-        <span className="text-xs font-black uppercase tracking-widest text-zinc-500">
-          Model Predictions
-        </span>
+        <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Model Predictions</span>
         <span className="ml-auto text-[10px] text-zinc-600">{filtered.length} upcoming</span>
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
@@ -120,7 +133,10 @@ export function SportsPredictionsWidget() {
             No predictions for current filter
           </div>
         ) : (
-          filtered.map((pred) => <PredictionCard key={pred.fixtureId} pred={pred} />)
+          filtered.map((pred) => {
+            const fixture = allFixtures.find((f) => f.id === pred.fixtureId);
+            return <PredictionCard key={pred.fixtureId} pred={pred} fixtureLeague={fixture?.league} />;
+          })
         )}
       </div>
     </div>

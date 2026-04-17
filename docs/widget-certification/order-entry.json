@@ -8,16 +8,16 @@
   "description": "Buy/sell order form with side, quantity, price, strategy linking, and pre-trade constraint validation.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1–0.5 PASS. 0.6 GAP: TerminalData context exposes no isLoading field; widget cannot show skeleton without context change. 0.7 PASS: form renders with defaults; isBatchMode message shown. 0.8 GAP: context exposes no error field; submit errors handled via FormWidget/useFormSubmit only. 0.9 FIXED: removed unused Target and Zap lucide imports."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS: all data from useTerminalData(). 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3 PASS: organizationIds drives isContextComplete. 1.4 PASS: clientIds drives isContextComplete. 1.5 PASS: strategyIds filters strategies and maps instrument selection. 1.6 PASS: empty strategyIds returns all strategies. 1.7 PASS: STRATEGIES from lib/strategy-registry; DEFAULT_INSTRUMENTS fallback in hook (acceptable location)."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,15 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "TerminalData context missing isLoading and error fields — widgets cannot implement L0.6/L0.8 without context change (blocked on context owner)",
+    "DEFAULT_INSTRUMENTS fallback lives in use-terminal-page-data.ts rather than lib/constants/ — low-risk but minor L1.7 placement gap"
+  ],
+  "findings": [
+    "FIXED: Removed unused Target and Zap lucide-react imports (L0.9)",
+    "GAP: No isLoading field in TerminalData context — loading skeleton cannot be added without context change",
+    "GAP: No error field in TerminalData context — data-loading error cannot be surfaced without context change"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

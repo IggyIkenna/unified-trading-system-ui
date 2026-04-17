@@ -8,16 +8,36 @@
   "description": "Six KPIs showing total, open, partially filled, filled, rejected, and failed order counts.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "0.1_error_boundary": "pass — WidgetErrorBoundary wraps all widgets in widget-wrapper.tsx line 89",
+        "0.2_required_entitlements": "pass — [\"execution-basic\", \"execution-full\"] in register.ts",
+        "0.3_available_on": "pass — [\"orders\"] in register.ts",
+        "0.4_no_any_ts_ignore": "pass — no any or @ts-ignore in widget file",
+        "0.5_no_mock_imports": "pass — widget file imports only from context and shared components",
+        "0.6_loading_state": "pass — isLoading guard renders \"—\" for all metric values",
+        "0.7_empty_state": "pass — KPI strip shows zeros when no orders (valid state for a summary strip)",
+        "0.8_error_state": "fixed — added error guard: renders rose error message when context.error is set",
+        "0.9_dead_code": "pass — no commented-out blocks or unreachable branches"
+      },
+      "notes": "Fixed 0.8: orders-data-context exposes error but the widget was not reading it. Added error early-return before metrics array."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "1.1_data_from_context": "pass — reads summary and isLoading exclusively via useOrdersData()",
+        "1.2_context_uses_global_scope": "pass — orders-data-context.tsx line 145: useGlobalScope(); scopeStrategyIds derived from globalScope",
+        "1.3_org_filter": "pass — scopedOrders filters by scopeStrategyIds (org→client→strategy cascade) in context",
+        "1.4_client_filter": "pass — getStrategyIdsForScope() accepts clientIds; context line 178-185",
+        "1.5_strategy_filter": "pass — strategyFilter state in context + scopeStrategyIds chain covers strategy-level scoping",
+        "1.6_no_filter_shows_all": "pass — scopeStrategyIds.length === 0 means no filtering (context line 253-255)",
+        "1.7_reference_data_location": "pass — widget itself has no reference data; context uses getOrdersForScope from lib/mocks/fixtures (read-only concern)"
+      },
+      "notes": "Context (read-only): imports from lib/mocks/fixtures and lib/mocks/generators are acceptable mock-data paths for dev mode; not a widget-file concern per spec."
     },
     "l2": {
       "status": null,
@@ -51,7 +71,13 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    {
+      "check": "0.8",
+      "severity": "fix-applied",
+      "description": "Widget was not reading error from useOrdersData(). Added error guard returning a rose error message."
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

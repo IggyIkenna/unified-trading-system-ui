@@ -4,9 +4,11 @@ import * as React from "react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { KpiStrip } from "@/components/shared/kpi-strip";
+import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { useMarketsData } from "./markets-data-context";
@@ -19,12 +21,31 @@ function simulatedBatchMs(live: number, idx: number, field: "p50" | "p95" | "p99
 }
 
 export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
-  const { latencyMetrics, selectedLatencyService, latencyViewMode, latencyDataMode } = useMarketsData();
+  const { latencyMetrics, selectedLatencyService, latencyViewMode, latencyDataMode, isLoading, isError } =
+    useMarketsData();
 
   const metric = React.useMemo(
     () => latencyMetrics.find((m) => m.serviceId === selectedLatencyService),
     [latencyMetrics, selectedLatencyService],
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center gap-2 text-muted-foreground">
+        <Spinner className="size-5" />
+        <span className="text-sm">Loading…</span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground px-4 text-center">
+        <AlertCircle className="size-8 text-destructive" />
+        <p className="text-sm">Failed to load latency data</p>
+      </div>
+    );
+  }
 
   if (!metric) {
     return (

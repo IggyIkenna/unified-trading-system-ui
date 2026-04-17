@@ -13,7 +13,7 @@ import { useBundlesData } from "./bundles-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 
 export function BundleTemplatesWidget(_props: WidgetComponentProps) {
-  const { templates, loadTemplate, showTemplates, setShowTemplates, steps } = useBundlesData();
+  const { templates, loadTemplate, showTemplates, setShowTemplates, steps, readOnly } = useBundlesData();
 
   if (!showTemplates) {
     return (
@@ -31,6 +31,15 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
     );
   }
 
+  if (templates.length === 0) {
+    return (
+      <div className="p-2 flex flex-col items-center justify-center gap-2 text-muted-foreground min-h-[80px]">
+        <FileText className="size-6 opacity-30" />
+        <p className="text-xs text-center">No templates available for the current scope.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-2 flex flex-col gap-2 h-full min-h-0 overflow-auto">
       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pick a starting point</p>
@@ -39,8 +48,9 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
           <button
             key={template.name}
             type="button"
-            className="w-full p-2.5 rounded-lg border text-left hover:bg-muted/20 transition-colors"
+            className="w-full p-2.5 rounded-lg border text-left hover:bg-muted/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => loadTemplate(template)}
+            disabled={readOnly}
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">

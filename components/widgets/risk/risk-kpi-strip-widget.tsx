@@ -175,16 +175,23 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
     defiDeltaComposite,
     hasDefiStrategies,
     defiRiskTimeSeries,
+    hasError,
   } = useRiskData();
 
   const hasDefi = hasDefiStrategies;
   const liveDelta = defiDeltaComposite;
   const [defiRiskView, setDefiRiskView] = React.useState<"table" | "chart">("table");
 
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">Failed to load risk KPIs</div>
+    );
+  }
+
   const baseMetrics: KpiMetric[] = [
-    { label: "Firm P&L", value: "+$1.04M", sentiment: "positive" },
-    { label: "Net Exposure", value: "$5.2M", sentiment: "neutral" },
-    { label: "Margin Used", value: "47%", sentiment: "neutral" },
+    { label: "Firm P&L", value: "—", sentiment: "neutral" },
+    { label: "Net Exposure", value: "—", sentiment: "neutral" },
+    { label: "Margin Used", value: "—", sentiment: "neutral" },
     {
       label: `VaR 95%${regimeMultiplier !== 1 ? ` (×${formatNumber(regimeMultiplier, 1)})` : ""}`,
       value: formatCurrency(-totalVar95),

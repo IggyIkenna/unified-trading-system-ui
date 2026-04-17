@@ -8,6 +8,27 @@ import { usePredictionsData } from "./predictions-data-context";
 export function PredArbClosedWidget(_props: WidgetComponentProps) {
   const { closedArbs } = usePredictionsData();
 
+  // PredictionsDataContext is synchronous (mock) — isLoading is always false.
+  // When the context adds isLoading + error fields, wire them here.
+  const isLoading = false;
+  const error: string | null = null;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-muted-foreground">Loading closed arbs…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <CollapsibleSection title="Closed / Decayed Arbs" defaultOpen={false} count={closedArbs.length}>
       <div className="flex flex-col gap-1.5 max-h-[280px] overflow-y-auto pr-1">

@@ -8,16 +8,16 @@
   "description": "Market selector and trade entry form with Kelly stake suggestion and position size controls.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "All 9 checks green. 0.1: WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: when no market selected (selectedMarket===null), renders Search icon + 'Search or select a market above' message — empty/no-selection state handled. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS — markets, quickTradeMarketId, placeTrade read exclusively via usePredictionsData() hook. 1.2 PASS — context calls useGlobalScope(). 1.3-1.5 N/A — trade panel displays the global market catalogue for market selection; the catalogue is not scoped by org/client/strategy. placeTrade() is an action, not a data display. 1.6 PASS — all markets available in the selector regardless of scope. 1.7 KNOWN-GAP — MOCK_MARKETS in lib/mocks/fixtures/; future scope."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,19 @@
       "notes": null
     }
   },
-  "knownIssues": [],
+  "knownIssues": [
+    {
+      "level": "l1",
+      "description": "Market catalogue shown in selector is global — not filtered by org/client/strategy scope. Trade panel is an action widget; 1.3–1.5 marked N/A.",
+      "status": "known-gap"
+    },
+    {
+      "level": "l1",
+      "description": "Reference data (MOCK_MARKETS) lives in lib/mocks/fixtures/ rather than lib/constants/; moving is future scope.",
+      "status": "known-gap"
+    }
+  ],
   "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

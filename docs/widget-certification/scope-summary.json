@@ -8,16 +8,16 @@
   "description": "Global scope summary with active org, client, and strategy selectors, intervention controls, and terminal link.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary — global in widget-wrapper.tsx line 89, covers all widgets. 0.2 requiredEntitlements=['execution-basic','execution-full']. 0.3 availableOn=['overview']. 0.4 No any/ts-ignore — Record<string,unknown> used correctly. 0.5 No lib/mocks imports in widget file. 0.6 FIXED — added Skeleton loading state guarded by ctx.coreLoading. 0.7 N/A — control-bar; always renders scope + actions regardless of strategy count; !ctx guard covers context-absent case. 0.8 Global WidgetErrorBoundary sufficient; no thrown errors expected from this render path. 0.9 FIXED — removed dead alias kpiStrategies, replaced with filteredSortedStrategies directly."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data via useOverviewDataSafe() hook only — no inline fetch or direct import. 1.2 Scope reading is in use-overview-page-data.ts (the context producer) which calls useGlobalScope() twice (lines 117, 247); overview-data-context.tsx is a pure value container — valid architecture. 1.3 Org filter applied in use-overview-page-data.ts lines 258-261 filtering strategyPerformance by context.organizationIds. 1.4 Client filter cascades via context.clientIds lines 264-267. 1.5 Strategy filter cascades via context.strategyIds lines 270-272. 1.6 Empty scope = all data — each filter block guarded by .length > 0 check, so empty arrays skip filtering. 1.7 FINDING (read-only): overview-data-context.tsx imports types PnLBreakdown and TimeSeriesPoint from lib/mocks/fixtures/trading-data — these are type-only imports of data shapes, not runtime reference data constants; acceptable for L1 but should be migrated to lib/types/ in a future pass."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,14 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "overview-data-context.tsx imports PnLBreakdown and TimeSeriesPoint types from lib/mocks/fixtures/trading-data — type-only imports but should migrate to lib/types/ in future pass"
+  ],
+  "findings": [
+    "L0/0.6: Widget had no loading skeleton — fixed by adding coreLoading guard with Skeleton placeholders matching the control-bar layout",
+    "L0/0.9: Dead alias `const kpiStrategies = filteredSortedStrategies` removed; filteredSortedStrategies used directly at all three callsites",
+    "L1/1.7: Context file (read-only) imports types from lib/mocks/fixtures — type-only so not a runtime issue, but noted for future migration"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

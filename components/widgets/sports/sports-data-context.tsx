@@ -5,7 +5,9 @@ import type { Bet, CLVRecord, Fixture, FootballLeague, Standing } from "@/compon
 import { useSportsLiveUpdates } from "@/hooks/use-sports-live-updates";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { MOCK_BETS, MOCK_CLV_RECORDS, MOCK_FIXTURES, MOCK_STANDINGS } from "@/lib/mocks/fixtures/sports-data";
-import { DEFAULT_ARB_THRESHOLD } from "@/lib/mocks/fixtures/sports-fixtures";
+import { DEFAULT_ARB_THRESHOLD, FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
+
+export { FOOTBALL_LEAGUES };
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import * as React from "react";
@@ -343,8 +345,6 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       adjustedBets,
       standings,
       activeTab,
-      isPaper,
-      isBatch,
       mode,
       handleViewArb,
       wsStatus,

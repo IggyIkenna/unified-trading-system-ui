@@ -9,10 +9,12 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useStrategyHealth } from "@/hooks/api/use-strategies";
 import { useAlertsData } from "./alerts-data-context";
 import { Pause, Power, Square, XCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
-  const { filteredAlerts } = useAlertsData();
-  const { data: strategies = [] } = useStrategyHealth();
+  const { filteredAlerts, isLoading: alertsLoading } = useAlertsData();
+  const { data: strategies = [], isLoading: strategiesLoading } = useStrategyHealth();
+  const isLoading = alertsLoading || strategiesLoading;
   const [entityId, setEntityId] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -28,6 +30,18 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const activeEntityAlerts = filteredAlerts.filter(
     (a) => a.entityType === "strategy" && a.entity === entityId && a.status === "active",
   ).length;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3 p-3">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-2 h-full min-h-0 p-1">

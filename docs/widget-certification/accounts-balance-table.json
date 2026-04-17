@@ -8,16 +8,36 @@
   "description": "Free, locked, total, margin, and utilisation balances broken down per connected venue.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "All 9 checks pass. No fixes required in widget file. 0.1 confirmed via widget-wrapper.tsx. 0.2/0.3 set in register.ts. 0.4 no any/ts-ignore. 0.5 no lib/mocks imports. 0.6 isLoading forwarded to TableWidget. 0.7 emptyMessage prop set. 0.8 error+onRetry forwarded. 0.9 no dead code.",
+      "checks": {
+        "0.1": "pass",
+        "0.2": "pass",
+        "0.3": "pass",
+        "0.4": "pass",
+        "0.5": "pass",
+        "0.6": "pass",
+        "0.7": "pass",
+        "0.8": "pass",
+        "0.9": "pass"
+      }
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass-with-findings",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 pass — widget reads only from useAccountsData(). 1.2 pass — context calls useGlobalScope(). 1.3 pass — org filter wired via orgVenues/globalScope.organizationIds. 1.4 finding — no clientIds cascade in accounts-data-context.tsx (no client-level filtering). 1.5 finding — no strategyIds cascade (accounts domain has no strategy relevance, likely N/A). 1.6 pass — empty organizationIds yields orgVenues=null which returns full unfiltered dataset. 1.7 finding — ACCOUNTS and MOCK_SAFTS imported from lib/mocks/fixtures in context; ACCOUNTS is reference/org-venue mapping data that should live in lib/constants/; MOCK_SAFTS is demo data that should move to lib/mocks/demo/ or lib/constants/. Widget file itself has no mock imports.",
+      "checks": {
+        "1.1": "pass",
+        "1.2": "pass",
+        "1.3": "pass",
+        "1.4": "finding — no client-level cascade in context; human to decide if accounts domain needs clientIds filtering",
+        "1.5": "N/A — accounts balance table has no strategy dimension",
+        "1.6": "pass",
+        "1.7": "finding — ACCOUNTS fixture used for org-venue mapping in context; should move to lib/constants/accounts.ts. MOCK_SAFTS is demo data surfaced via saftRecords; acceptable for now but flagged."
+      }
     },
     "l2": {
       "status": null,
@@ -50,8 +70,42 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    {
+      "id": "ABT-1",
+      "level": "L1",
+      "check": "1.4",
+      "severity": "low",
+      "summary": "No clientIds cascade in accounts-data-context.tsx",
+      "detail": "globalScope.clientIds is not read or applied as a filter. Balances are filtered by org venue membership only. Human to decide if client-level filtering is in scope for the accounts domain.",
+      "file": "components/widgets/accounts/accounts-data-context.tsx",
+      "fixTarget": "human-decision"
+    },
+    {
+      "id": "ABT-2",
+      "level": "L1",
+      "check": "1.7",
+      "severity": "low",
+      "summary": "ACCOUNTS fixture used as org-venue reference data in context",
+      "detail": "accounts-data-context.tsx imports ACCOUNTS from lib/mocks/fixtures/trading-data to derive orgVenues. This is static reference/config data and should live in lib/constants/accounts.ts. Not blocking — widget itself is clean.",
+      "file": "components/widgets/accounts/accounts-data-context.tsx",
+      "fixTarget": "context-file"
+    },
+    {
+      "id": "ABT-3",
+      "level": "L1",
+      "check": "1.7",
+      "severity": "info",
+      "summary": "MOCK_SAFTS demo data surfaced via saftRecords in context",
+      "detail": "accounts-data-context.tsx imports MOCK_SAFTS from lib/mocks/fixtures/trading-pages and exposes it as saftRecords. This is demo/seed data; acceptable while a real SAFT API does not exist, but flagged for future cleanup.",
+      "file": "components/widgets/accounts/accounts-data-context.tsx",
+      "fixTarget": "deferred"
+    }
+  ],
+  "findings": [
+    "L0: clean — no fixes needed in widget file",
+    "L1: widget data flow clean; two context-level findings (ABT-1, ABT-2, ABT-3) documented above, none blocking"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

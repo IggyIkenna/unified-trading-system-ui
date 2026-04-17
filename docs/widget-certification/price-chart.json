@@ -8,16 +8,16 @@
   "description": "Candlestick and line chart with technical indicators, volume, and timeframe controls for the selected instrument.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1–0.3 PASS. 0.4 FIXED: replaced as-never casts with typed assertions (candleData as Array<{time,open,high,low,close,volume?}> and indicatorOverlays as unknown as IndicatorOverlay[]). 0.5 PASS. 0.6 GAP: no isLoading in context; chart renders immediately with mock fallback. 0.7 FIXED: added candleData.length === 0 guard with instrument-specific empty message. 0.8 GAP: no error in context; CandlestickChart renders silently on malformed data. 0.9 PASS."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PASS: all data from useTerminalData(). 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: price chart shows market data for selectedInstrument, not filtered by org/client/strategy directly — instrument selection is driven by scope.strategyIds but the chart data itself is per-instrument. 1.6 PASS: empty scope shows default instrument chart. 1.7 PASS: no reference data in lib/mocks — TIMEFRAMES and INDICATORS are widget-local constants (appropriate)."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,16 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "TerminalData context types candleData and indicatorOverlays as Array<Record<string,unknown>> — context should type them to their real shapes to avoid double-cast in widget",
+    "TerminalData context missing isLoading and error fields — loading/error states cannot be implemented in widget without context change"
+  ],
+  "findings": [
+    "FIXED: Replaced as-never casts on candleData and indicatorOverlays with properly typed assertions (L0.4)",
+    "FIXED: Added candleData.length === 0 empty state guard with symbol-specific message (L0.7)",
+    "GAP: No isLoading field in TerminalData context — loading skeleton blocked on context owner",
+    "GAP: No error field in TerminalData context — chart error state blocked on context owner"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

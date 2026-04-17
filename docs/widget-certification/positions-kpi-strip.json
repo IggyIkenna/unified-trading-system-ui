@@ -8,16 +8,36 @@
   "description": "Six KPIs: position count, total notional, unrealised P&L, margin used, long exposure, and short exposure.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "0.1_error_boundary": "pass — WidgetErrorBoundary wraps all widgets in widget-wrapper.tsx line 89",
+        "0.2_required_entitlements": "pass — [\"execution-basic\", \"execution-full\"] in register.ts",
+        "0.3_available_on": "pass — [\"positions\"] in register.ts",
+        "0.4_no_any_ts_ignore": "pass — no any or @ts-ignore in widget file",
+        "0.5_no_mock_imports": "pass — widget imports only from context, shared, and lib/reference-data",
+        "0.6_loading_state": "fixed — added isLoading to usePositionsData() destructure; all metric values render \"—\" when loading",
+        "0.7_empty_state": "pass — KPI strip shows zeros when positions array is empty (valid state for a summary strip)",
+        "0.8_error_state": "fixed — added positionsError guard: renders rose error message when context reports an error",
+        "0.9_dead_code": "pass — no commented-out blocks or unreachable branches"
+      },
+      "notes": "Fixed 0.6 and 0.8: widget was destructuring only summary from context, ignoring isLoading and positionsError. Both now wired. useMemo kept before the conditional return to satisfy Rules of Hooks."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "1.1_data_from_context": "pass — reads summary, isLoading, positionsError exclusively via usePositionsData()",
+        "1.2_context_uses_global_scope": "pass — positions-data-context.tsx uses useGlobalScope() and scopeStrategyIds",
+        "1.3_org_filter": "pass — positions filtered by scopeStrategyIds derived from globalScope.organizationIds (context line 584-587)",
+        "1.4_client_filter": "pass — getStrategyIdsForScope accepts clientIds; org→client→strategy cascade in context",
+        "1.5_strategy_filter": "pass — local strategyFilter + globalScope.strategyIds both applied",
+        "1.6_no_filter_shows_all": "pass — scopeStrategyIds.length === 0 skips scope filter (context line 584)",
+        "1.7_reference_data_location": "pass — widget has no inline reference data; formatCurrency imported from lib/reference-data (correct location)"
+      },
+      "notes": "Context (read-only): DEFI_MOCK_POSITIONS is inline in the context (positions-data-context.tsx lines 113-219). This is a context-layer concern, not a widget concern. Flagged for future context cleanup."
     },
     "l2": {
       "status": null,
@@ -50,8 +70,26 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    {
+      "id": "ctx-defi-mock-inline",
+      "scope": "context",
+      "description": "DEFI_MOCK_POSITIONS (5 hardcoded positions) is defined inline in positions-data-context.tsx. Should be moved to lib/mocks/fixtures/ once context is refactored.",
+      "blocking": false
+    }
+  ],
+  "findings": [
+    {
+      "check": "0.6",
+      "severity": "fix-applied",
+      "description": "Widget was not reading isLoading from usePositionsData(). All 6 metric values now show \"—\" while loading."
+    },
+    {
+      "check": "0.8",
+      "severity": "fix-applied",
+      "description": "Widget was not reading positionsError from usePositionsData(). Added error guard returning a rose error message before KpiSummaryWidget render."
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

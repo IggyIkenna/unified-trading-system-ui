@@ -8,16 +8,16 @@
   "description": "Margin utilisation bars with trend and margin-call distance per venue. Highlights venues near limits.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary global in widget-wrapper.tsx ✓. 0.2 requiredEntitlements=[execution-basic,execution-full] ✓. 0.3 availableOn=[accounts] ✓. 0.4 no any/@ts-ignore ✓. 0.5 no lib/mocks imports ✓. 0.6 isLoading skeleton added ✓. 0.7 empty state (venueMargins.length===0) ✓. 0.8 error state added ✓. 0.9 no dead code ✓."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 data sourced exclusively via useAccountsData() ✓. 1.2 context calls useGlobalScope() ✓. 1.3 org filter: globalScope.organizationIds drives orgVenues set that filters balances ✓. 1.4 N/A — context scopes to org level only; no client sub-filter in accounts domain. 1.5 N/A — no strategy filter in accounts domain. 1.6 organizationIds.length===0 returns null (show all) ✓. 1.7 ACCOUNTS and MOCK_SAFTS from lib/mocks/fixtures are reference/seed data in context (org-venue mapping); noted as tech debt but not a widget-file violation — context is read-only in L1."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,16 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "accounts-data-context.tsx imports ACCOUNTS and MOCK_SAFTS from lib/mocks/fixtures — org-venue mapping uses mock seed data; should move to lib/constants/ or API-backed reference data (L1 tech debt, context file)"
+  ],
+  "findings": [
+    "L0.6 FIXED: added isLoading skeleton (3 rows of Skeleton bars) — was missing before this pass",
+    "L0.8 FIXED: added error state rendering error.message — was missing before this pass",
+    "L1.4 N/A: accounts domain has no client-level sub-filter; org is the only scope axis",
+    "L1.5 N/A: accounts domain has no strategy filter",
+    "L1.7 NOTE: context uses ACCOUNTS mock for org→venue mapping; reference data not in lib/constants/ — logged as known issue"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

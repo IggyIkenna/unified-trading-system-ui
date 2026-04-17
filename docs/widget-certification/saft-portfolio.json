@@ -8,16 +8,16 @@
   "description": "SAFT portfolio tracker with vesting timeline, token warrant details, and treasury position overview.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx wraps all widgets globally. 0.2 requiredEntitlements=[\"execution-basic\",\"execution-full\"]. 0.3 availableOn=[\"accounts\"]. 0.4 No any/ts-ignore. 0.5 No lib/mocks imports in widget file (context re-exports SAFTRecord type; widget imports only from context). 0.6 Spinner shown when isLoading. 0.7 \"No SAFT records\" shown when saftRecords.length===0. 0.8 FIXED: added error guard using context error field — renders \"Could not load account data\" in rose-400. 0.9 No dead code (disabled Save SAFT button is intentional placeholder per widget description \"demo data\")."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data from useAccountsData() → saftRecords (no inline fetch or import). 1.2 Context calls useGlobalScope(); balances filtered by org venue membership via orgVenues memo. saftRecords are mock/demo (MOCK_SAFTS hardcoded) — no scope filter applicable for SAFT records since they represent user-level investment agreements, not trading positions. 1.3-1.5 N/A for saftRecords: SAFT agreements are user-level, not org/client/strategy scoped. Balances (used for isLoading/error state) do filter by org. 1.6 Empty orgVenues (scope.organizationIds=[]) → orgVenues=null → all balances returned. 1.7 MOCK_SAFTS lives in lib/mocks/fixtures/trading-pages.ts — context-level concern. Widget itself has no reference to lib/mocks/."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,15 @@
       "notes": null
     }
   },
-  "knownIssues": ["Mock import: MOCK_SAFTS"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "Context issue (not widget): accounts-data-context.tsx sources saftRecords from MOCK_SAFTS (lib/mocks/fixtures/trading-pages.ts) with no real fetch. There is no saft-specific loading or error state in context. Widget uses the balances error field as a proxy. Proper fix: move SAFTRecord to lib/types/, add a useSaftRecords() hook backed by a real or mock API, wire dedicated loading/error fields in context.",
+    "Save SAFT button in Add SAFT dialog is permanently disabled — form has no submit handler. This is marked as demo/placeholder per widget description. Track as L4 functional gap."
+  ],
+  "findings": [
+    "L0.8 FIX: added error state guard (error from useAccountsData) — renders rose-400 message. One-line change + prettier.",
+    "L1.2-1.5 N/A for saftRecords: SAFT agreements are user-level investment records; org/client/strategy scope filtering is not applicable to this data type.",
+    "Timeline constants (timelineStart/timelineEnd) are module-level hardcoded dates (2025-06-01 to 2028-09-01). These are display-range constants, not data — acceptable for current demo scope."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

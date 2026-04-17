@@ -8,16 +8,16 @@
   "description": "Strategy risk status grid with circuit breaker trip/reset actions, utilisation scale, and kill switch controls.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[risk]. 0.4 No any/ts-ignore. 0.5 No lib/mocks imports. 0.6 Skeleton loading guard already present (5 skeleton rows). 0.7 Empty state: inline 'No strategy heatmap data' message when strategyRiskHeatmap.length===0. 0.8 Added hasError guard returning 'Failed to load strategy heatmap'. 0.9 No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data via useRiskData() hook. 1.2 use-risk-page-data.ts calls useGlobalScope(). 1.3-1.5 strategyRiskHeatmap comes from riskLimitsData?.heatmap in context; scope-filtered limits drive the source data. 1.6 Empty scope returns unfiltered data. 1.7 No mock constants in widget. FINDING: strategyRiskHeatmap field in use-risk-page-data.ts falls back to empty array [] when riskLimitsData?.heatmap is absent — this means the heatmap won't show mocked strategies unless the API returns heatmap data. MOCK_STRATEGIES defined in lib/mocks is not used to populate the heatmap fallback in context."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,10 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "strategyRiskHeatmap falls back to [] when API heatmap field absent — MOCK_STRATEGIES in lib/mocks is not wired as fallback; heatmap may appear empty in dev/mock mode"
+  ],
+  "findings": ["Added hasError early-return guard (widget had isLoading handling but no error state)"],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

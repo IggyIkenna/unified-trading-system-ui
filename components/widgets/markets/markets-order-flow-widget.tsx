@@ -102,7 +102,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
 ];
 
 export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
-  const { orderFlowData, assetClass, orderFlowRange } = useMarketsData();
+  const { orderFlowData, assetClass, orderFlowRange, isLoading, isError, refetch } = useMarketsData();
   const rows = useLiveFeed(orderFlowData, 500);
 
   const actionsConfig: TableActionsConfig = {
@@ -123,6 +123,9 @@ export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
       columns={columns}
       data={rows}
       actions={actionsConfig}
+      isLoading={isLoading}
+      error={isError ? "Failed to load order flow" : null}
+      onRetry={refetch}
       enableSorting={false}
       enableColumnVisibility={false}
       emptyMessage="No order flow data yet"

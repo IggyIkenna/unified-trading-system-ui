@@ -8,16 +8,16 @@
   "description": "Per-venue circuit breaker cards with status badges, trip thresholds, and manual reset controls.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks import. 0.6 ✓ isLoading spinner. 0.7 ✓ empty state renders 'No venue CB data'. 0.8 FIXED — added hasError block returning error message. 0.9 ✓ no dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 ✓ data exclusively from useRiskData(). 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds feeds scopeStrategyIds → riskLimits filter. 1.4 ✓ scope.clientIds via getStrategyIdsForScope. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → unfiltered data (scopeStrategyIds.length === 0 guard). 1.7 ⚠ MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context — these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,10 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "Domain-level: MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE should move from lib/mocks/ to lib/constants/risk (affects all risk widgets via context re-export)"
+  ],
+  "findings": ["0.8 fix: added hasError early-return block (was missing, only isLoading was handled)"],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

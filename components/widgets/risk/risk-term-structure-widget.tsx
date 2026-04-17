@@ -2,6 +2,7 @@
 
 import type { WidgetComponentProps } from "../widget-registry";
 import { useRiskData, formatCurrency } from "./risk-data-context";
+import { Spinner } from "@/components/shared/spinner";
 import {
   ResponsiveContainer,
   BarChart,
@@ -15,7 +16,23 @@ import {
 import { formatNumber } from "@/lib/utils/formatters";
 
 export function RiskTermStructureWidget(_props: WidgetComponentProps) {
-  const { termStructureData } = useRiskData();
+  const { termStructureData, isLoading, hasError } = useRiskData();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-muted-foreground">
+        <Spinner className="size-4" />
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-rose-400">
+        Failed to load term structure data
+      </div>
+    );
+  }
 
   if (termStructureData.length === 0) {
     return (

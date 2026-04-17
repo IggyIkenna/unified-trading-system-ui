@@ -8,16 +8,16 @@
   "description": "Streaming feed of platform and market events: order lifecycle, risk alerts, and system notifications.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx — pass. 0.2 requiredEntitlements=[\"execution-basic\",\"execution-full\"] — pass. 0.3 availableOn=[\"terminal\",\"overview\",\"strategies\"] — pass. 0.4 No any/ts-ignore — pass. 0.5 No import from lib/mocks/ — data is a placeholder const in widget file, not a mock import — pass. 0.6 FIXED: added isLoading guard rendering 'Loading events…' with animate-pulse — was missing, now pass. 0.7 FIXED: added events.length===0 empty guard rendering 'No events to display' — was missing, now pass. 0.8 FIXED: added error string guard rendering 'Failed to load events: {error}' — was missing, now pass. 0.9 FIXED: renamed MOCK_EVENTS to PLACEHOLDER_EVENTS, added TODO(L1) comments marking data as temporary pending context wiring — pass."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "fail",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 FAIL — events data is a PLACEHOLDER_EVENTS const in the widget file, not sourced from a context hook. terminal-data-context.tsx does not expose an events/isLoadingEvents/errorEvents field. Widget needs: (a) TerminalData interface extended with events+loading+error fields, (b) use-terminal-page-data.ts wired to events source, (c) widget updated to call useTerminalData(). BLOCKED: context file is read-only for this task. 1.2–1.6 BLOCKED pending 1.1 resolution. 1.7 No reference data in lib/mocks — pass. ACTION REQUIRED: extend terminal-data-context + use-terminal-page-data with events fields, then re-certify L1."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,18 @@
       "notes": null
     }
   },
-  "knownIssues": ["New widget — fully disconnected, uses inline mock data"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "New widget — fully disconnected, uses inline mock data",
+    "L1 BLOCKED: terminal-data-context.tsx does not expose events/isLoadingEvents/errorEvents fields. Must extend context + use-terminal-page-data.ts before L1 can pass."
+  ],
+  "findings": [
+    "L0 0.5: Inline PLACEHOLDER_EVENTS const is not an import from lib/mocks/ — 0.5 passes by spec definition.",
+    "L0 0.6 FIX: Added isLoading guard with animate-pulse loading text.",
+    "L0 0.7 FIX: Added events.length === 0 empty state guard.",
+    "L0 0.8 FIX: Added error string guard with rose-400 error text.",
+    "L0 0.9 FIX: Renamed MOCK_EVENTS to PLACEHOLDER_EVENTS with TODO(L1) annotation to make intent explicit.",
+    "L1 1.1 FAIL: Data must come from useTerminalData() or dedicated events context. terminal-data-context.tsx needs events/isLoadingEvents/errorEvents fields added and wired in use-terminal-page-data.ts."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

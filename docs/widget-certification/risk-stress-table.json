@@ -8,16 +8,16 @@
   "description": "Historical stress scenario table with multiplier, estimated P&L impact, breach count, and on-demand stress test action.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[risk]. 0.4 No any/ts-ignore; as unknown as StressRow[] is a legitimate typed cast (context types Array<Record<string,unknown>>). 0.5 No lib/mocks imports. 0.6 isLoading passed to TableWidget which renders skeletons. 0.7 emptyMessage='No stress scenarios available' in TableWidget. 0.8 error={hasError ? 'Failed to load stress scenarios' : null} passed to TableWidget. 0.9 No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data via useRiskData() hook; stressScenarios/regimeData/stressTestResult all from context. 1.2 use-risk-page-data.ts calls useGlobalScope(). 1.3-1.5 stressScenarios sourced from useStressScenarios() API hook in context; not directly entity-filtered (stress scenarios are portfolio-level, not per-strategy) — appropriate. 1.6 N/A — stress scenarios are not scope-filtered (correct: portfolio-level data). 1.7 No mock constants in widget. regimeMultiplier slider and scenario selector are wired to context setters (setRegimeMultiplier, setSelectedStressScenario)."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,7 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": ["No fixes required — widget was already L0/L1 compliant prior to this audit"],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

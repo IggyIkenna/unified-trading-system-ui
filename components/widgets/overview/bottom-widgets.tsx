@@ -19,7 +19,7 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
         Navigate to Overview tab
       </div>
     );
-  const { pnlComponents, totalPnl } = ctx;
+  const { pnlComponents, totalPnl, coreLoading } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
       <div className="flex justify-end mb-2">
@@ -29,7 +29,17 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
           </Button>
         </Link>
       </div>
-      <PnLAttributionPanel components={pnlComponents} totalPnl={totalPnl} />
+      {coreLoading ? (
+        <div className="flex items-center justify-center py-6 text-muted-foreground">
+          <Spinner className="size-4 mr-2" />
+        </div>
+      ) : pnlComponents.length === 0 ? (
+        <div className="flex items-center justify-center py-6 text-muted-foreground text-xs">
+          No P&amp;L attribution data
+        </div>
+      ) : (
+        <PnLAttributionPanel components={pnlComponents} totalPnl={totalPnl} />
+      )}
     </div>
   );
 }
@@ -95,10 +105,9 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
       </div>
     );
   const { ordersData, ordersLoading } = ctx;
-  const raw = ordersData as unknown;
-  const orders = Array.isArray(raw)
-    ? raw
-    : (((raw as Record<string, unknown>)?.orders ?? []) as Array<Record<string, unknown>>);
+  const orders = Array.isArray(ordersData)
+    ? (ordersData as Array<Record<string, unknown>>)
+    : (((ordersData as Record<string, unknown> | null)?.orders ?? []) as Array<Record<string, unknown>>);
 
   return (
     <div className="p-3 h-full overflow-auto">
@@ -155,7 +164,7 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
         Navigate to Overview tab
       </div>
     );
-  const { allMockServices } = ctx;
+  const { allMockServices, coreLoading } = ctx;
   return (
     <div className="p-3 h-full overflow-auto">
       <div className="flex justify-end mb-2">
@@ -165,7 +174,15 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
           </Button>
         </Link>
       </div>
-      <HealthStatusGrid services={allMockServices.slice(0, 6)} />
+      {coreLoading ? (
+        <div className="flex items-center justify-center py-6 text-muted-foreground">
+          <Spinner className="size-4 mr-2" />
+        </div>
+      ) : allMockServices.length === 0 ? (
+        <div className="flex items-center justify-center py-6 text-muted-foreground text-xs">No services reported</div>
+      ) : (
+        <HealthStatusGrid services={allMockServices.slice(0, 6)} />
+      )}
     </div>
   );
 }

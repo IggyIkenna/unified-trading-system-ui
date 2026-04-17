@@ -1,7 +1,7 @@
 "use client";
 
 import type { WidgetComponentProps } from "../widget-registry";
-import { CandlestickChart } from "@/components/trading/candlestick-chart";
+import { CandlestickChart, type IndicatorOverlay } from "@/components/trading/candlestick-chart";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTerminalData } from "./terminal-data-context";
@@ -73,17 +73,32 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
         </div>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col overflow-hidden p-0">
-        {/* Candles and Line share one persistent LWC chart instance — no remount on switch */}
-        <div className="flex-1 min-h-0 relative">
-          <CandlestickChart
-            key={`${selectedInstrument.symbol}-${timeframe}`}
-            absoluteFill
-            className="absolute inset-0"
-            displayType={chartType === "line" ? "line" : "candles"}
-            data={candleData as never}
-            indicators={indicatorOverlays as never}
-          />
-        </div>
+        {candleData.length === 0 ? (
+          <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+            No chart data available for {selectedInstrument.symbol}
+          </div>
+        ) : (
+          /* Candles and Line share one persistent LWC chart instance — no remount on switch */
+          <div className="flex-1 min-h-0 relative">
+            <CandlestickChart
+              key={`${selectedInstrument.symbol}-${timeframe}`}
+              absoluteFill
+              className="absolute inset-0"
+              displayType={chartType === "line" ? "line" : "candles"}
+              data={
+                candleData as Array<{
+                  time: number;
+                  open: number;
+                  high: number;
+                  low: number;
+                  close: number;
+                  volume?: number;
+                }>
+              }
+              indicators={indicatorOverlays as unknown as IndicatorOverlay[]}
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

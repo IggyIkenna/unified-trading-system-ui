@@ -2,9 +2,10 @@
 
 import * as React from "react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { Spinner } from "@/components/shared/spinner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BarChart3, Database, LayoutGrid, LineChart, Radio } from "lucide-react";
+import { AlertCircle, ArrowRight, BarChart3, Database, LayoutGrid, LineChart, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { useMarketsData } from "./markets-data-context";
@@ -18,7 +19,35 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
     setLatencyViewMode,
     selectedLatencyService,
     setSelectedLatencyService,
+    isLoading,
+    isError,
   } = useMarketsData();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center gap-2 text-muted-foreground">
+        <Spinner className="size-5" />
+        <span className="text-sm">Loading…</span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground px-4 text-center">
+        <AlertCircle className="size-8 text-destructive" />
+        <p className="text-sm">Failed to load latency metrics</p>
+      </div>
+    );
+  }
+
+  if (latencyMetrics.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center text-sm text-muted-foreground">
+        <p>No latency data available</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-2 space-y-3">

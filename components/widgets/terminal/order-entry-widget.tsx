@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronRight, Shield, Target, Zap, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
+import { ChevronDown, ChevronRight, Shield, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STRATEGIES } from "@/lib/strategy-registry";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";

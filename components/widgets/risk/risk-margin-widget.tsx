@@ -5,6 +5,7 @@ import { useRiskData, formatCurrency } from "./risk-data-context";
 import { LimitBar } from "@/components/trading/limit-bar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   ResponsiveContainer,
@@ -22,10 +23,37 @@ import { CollapsibleSection } from "@/components/shared";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function RiskMarginWidget(_props: WidgetComponentProps) {
-  const { sortedLimits, hfTimeSeries, distanceToLiquidation } = useRiskData();
+  const { sortedLimits, hfTimeSeries, distanceToLiquidation, isLoading, hasError } = useRiskData();
 
   const marginLimits = sortedLimits.filter((l) => l.category === "margin");
   const ltvLimits = sortedLimits.filter((l) => l.category === "ltv");
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2 p-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-10 w-full rounded" />
+        ))}
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+        Failed to load margin data
+      </div>
+    );
+  }
+
+  const isEmpty = marginLimits.length === 0 && ltvLimits.length === 0 && hfTimeSeries.length === 0;
+  if (isEmpty) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+        No margin data available
+      </div>
+    );
+  }
 
   return (
     <WidgetScroll axes="vertical">
@@ -79,16 +107,16 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
             <div className="space-y-2 pt-1">
               {ltvLimits.map((limit) => {
                 // LTV is stored as ratio (0.72). HF = 1 / LTV. Display HF, not LTV.
-                const hf = limit.value > 0 ? (1 / limit.value) : 0;
-                const hfLimit = limit.limit > 0 ? (1 / limit.limit) : 2;
+                const hf = limit.value > 0 ? 1 / limit.value : 0;
+                const hfLimit = limit.limit > 0 ? 1 / limit.limit : 2;
                 return (
-                <LimitBar
-                  key={limit.id}
-                  label={`${limit.entity} HF (= 1/LTV)`}
-                  value={Math.round(hf * 100) / 100}
-                  limit={Math.round(hfLimit * 100) / 100}
-                  unit="HF"
-                />
+                  <LimitBar
+                    key={limit.id}
+                    label={`${limit.entity} HF (= 1/LTV)`}
+                    value={Math.round(hf * 100) / 100}
+                    limit={Math.round(hfLimit * 100) / 100}
+                    unit="HF"
+                  />
                 );
               })}
             </div>
@@ -113,9 +141,24 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                     }}
                     formatter={(value: number) => [formatNumber(value, 2), "HF"]}
                   />
-                  <ReferenceLine y={1.0} stroke="var(--destructive)" strokeDasharray="5 5" label={{ value: "Liquidation 1.0", position: "right", fontSize: 8 }} />
-                  <ReferenceLine y={1.2} stroke="#f97316" strokeDasharray="4 4" label={{ value: "Emergency 1.2", position: "right", fontSize: 8 }} />
-                  <ReferenceLine y={1.5} stroke="var(--warning)" strokeDasharray="5 5" label={{ value: "Deleverage 1.5", position: "right", fontSize: 8 }} />
+                  <ReferenceLine
+                    y={1.0}
+                    stroke="var(--destructive)"
+                    strokeDasharray="5 5"
+                    label={{ value: "Liquidation 1.0", position: "right", fontSize: 8 }}
+                  />
+                  <ReferenceLine
+                    y={1.2}
+                    stroke="#f97316"
+                    strokeDasharray="4 4"
+                    label={{ value: "Emergency 1.2", position: "right", fontSize: 8 }}
+                  />
+                  <ReferenceLine
+                    y={1.5}
+                    stroke="var(--warning)"
+                    strokeDasharray="5 5"
+                    label={{ value: "Deleverage 1.5", position: "right", fontSize: 8 }}
+                  />
                   <Area
                     type="monotone"
                     dataKey="hf"

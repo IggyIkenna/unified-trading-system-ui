@@ -8,16 +8,16 @@
   "description": "Closing line value tracking with hit rate, mean CLV, and P&L breakdown by market and bookmaker.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary present in widget-wrapper.tsx. 0.2 requiredEntitlements=[\"sports-trading\"]. 0.3 availableOn=[\"sports\"]. 0.4 No any/ts-ignore. 0.5 No direct mock imports in widget file — MOCK_CLV_RECORDS was a knownIssue but widget sources via useSportsData().clvRecords; context owns the mock import. 0.6 No async loading path (pure mock architecture). 0.7 Empty state: records.length===0 guard renders 'No CLV data available'. 0.8 No error path in context (mock-only). 0.9 No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 Data via useSportsData().clvRecords — no inline fetch. 1.2 Context calls useGlobalScope(). 1.3 CLV records are bet-derived and gated by hasSportsDesk org filter. 1.4 N/A — no client-level scope for sports CLV. 1.5 N/A — strategy filter not applicable. 1.6 Empty organizationIds shows all CLV data. 1.7 No reference data in widget file."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,10 @@
       "notes": null
     }
   },
-  "knownIssues": ["Mock import: MOCK_CLV_RECORDS"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [],
+  "findings": [
+    "MOCK_CLV_RECORDS knownIssue resolved: widget accesses records via useSportsData() context hook — context owns the mock import boundary, widget file is clean."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

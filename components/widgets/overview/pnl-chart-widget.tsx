@@ -33,6 +33,23 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   const { liveTimeSeries, batchTimeSeries, realtimePnlPoints, timeseriesLoading, liveBatchLoading, formatCurrency } =
     ctx;
 
+  const hasData =
+    liveTimeSeries.pnl.length > 0 ||
+    liveTimeSeries.nav.length > 0 ||
+    liveTimeSeries.exposure.length > 0 ||
+    batchTimeSeries.pnl.length > 0 ||
+    batchTimeSeries.nav.length > 0 ||
+    batchTimeSeries.exposure.length > 0 ||
+    realtimePnlPoints.length > 0;
+
+  if (!timeseriesLoading && !liveBatchLoading && !hasData) {
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        No time series data available for the selected scope.
+      </div>
+    );
+  }
+
   return (
     <div className="p-3 space-y-2 h-full overflow-auto">
       <div className="flex items-center gap-2">

@@ -7,7 +7,7 @@ import { Play, Send } from "lucide-react";
 import { useBundlesData } from "./bundles-data-context";
 
 export function BundleActionsWidget(_props: WidgetComponentProps) {
-  const { steps } = useBundlesData();
+  const { steps, readOnly } = useBundlesData();
 
   if (steps.length === 0) {
     return (
@@ -23,11 +23,11 @@ export function BundleActionsWidget(_props: WidgetComponentProps) {
         {steps.length} leg{steps.length === 1 ? "" : "s"}
       </Badge>
       <div className="flex flex-1 gap-2 min-w-[200px]">
-        <Button variant="outline" className="text-xs h-9 flex-1" type="button">
+        <Button variant="outline" className="text-xs h-9 flex-1" type="button" disabled={readOnly}>
           <Play className="size-3.5 mr-1.5 shrink-0" />
           Simulate (dry run)
         </Button>
-        <Button className="text-xs h-9 flex-1" type="button" disabled={steps.length === 0}>
+        <Button className="text-xs h-9 flex-1" type="button" disabled={steps.length === 0 || readOnly}>
           <Send className="size-3.5 mr-1.5 shrink-0" />
           Submit bundle
         </Button>

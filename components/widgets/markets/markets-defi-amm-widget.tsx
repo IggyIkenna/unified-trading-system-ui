@@ -9,13 +9,16 @@ import { AlertTriangle } from "lucide-react";
 import { useMarketsData } from "./markets-data-context";
 
 export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
-  const { orderFlowData, assetClass } = useMarketsData();
+  const { orderFlowData, assetClass, isLoading, isError, refetch } = useMarketsData();
   const rows = useLiveFeed(orderFlowData, 500);
 
   const isNotDefi = assetClass !== "defi";
 
   return (
     <LiveFeedWidget
+      isLoading={isLoading}
+      error={isError ? "Failed to load AMM activity" : null}
+      onRetry={refetch}
       isEmpty={isNotDefi || rows.length === 0}
       emptyMessage={
         isNotDefi

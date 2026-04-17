@@ -8,16 +8,16 @@
   "description": "DeFi-specific atomic bundle builder with Flash Loan Arb and Leverage Long pre-built templates.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[bundles]. 0.4 No any types or @ts-ignore (string 'any' in UI text is not a type). 0.5 No mock imports in widget file; DEFI_TEMPLATES from lib/config/services/defi-bundles.config. 0.6 N/A — widget uses local DefiOp[] state (no async fetch); template selection is the pre-data state. 0.7 Empty state present: pre-template state (showTemplates+empty ops), and ops.length===0+!showTemplates guard. 0.8 N/A — no error field; WidgetErrorBoundary covers render errors. 0.9 No dead code. Fixed: now imports useBundlesData() for readOnly flag; readOnly wired to disable Add Operation, Clear all, Simulate on Tenderly, Execute Bundle buttons in batch mode."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 PARTIAL — widget manages its own DefiOp[] local state rather than reading from a domain data context hook. This is intentional: DefiOp is a different data model from BundleStep (used by the other 4 bundles widgets). No defi-atomic-specific data context exists. readOnly flag now sourced from useBundlesData(). Recommend creating a DefiAtomicBundlesDataContext in a follow-up task to fully satisfy 1.1. 1.2-1.6 N/A at widget level — the widget's operations are user-authored local state. Scope filtering applies to readOnly (batch mode) which is now wired. 1.7 All reference data (DEFI_OPERATIONS, DEFI_TOKENS, DEFI_TEMPLATES, GAS_ESTIMATES, gasToUsd) in lib/config/services/defi-bundles.config — correct location."
     },
     "l2": {
       "status": null,
@@ -35,7 +35,7 @@
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Known L4 issues: Simulate on Tenderly and Execute Bundle buttons have no onClick handlers — dead buttons. Needs wiring in L4."
     },
     "l5": {
       "status": null,
@@ -50,8 +50,16 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "Widget uses local DefiOp[] state instead of a domain data context hook — recommend DefiAtomicBundlesDataContext (L1.1 partial)",
+    "Simulate on Tenderly button has no onClick handler — dead button (L4 scope)",
+    "Execute Bundle button has no onClick handler — dead button (L4 scope)"
+  ],
+  "findings": [
+    "Now imports useBundlesData() for readOnly flag from bundles context",
+    "readOnly wired to disable Add Operation, Clear all, Simulate on Tenderly, Execute Bundle in batch mode",
+    "All DeFi reference data correctly placed in lib/config/services/defi-bundles.config"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

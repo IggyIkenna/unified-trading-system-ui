@@ -20,7 +20,7 @@ const DOMAINS = ["all", "defi", "cefi", "tradfi", "sports"] as const;
 export function StrategyFamilyBrowserWidget(_props: WidgetComponentProps) {
   const [selectedDomain, setSelectedDomain] = useState<string>("all");
   const domain = selectedDomain === "all" ? undefined : selectedDomain;
-  const { data, isLoading } = useStrategyCatalog(domain);
+  const { data, isLoading, error } = useStrategyCatalog(domain);
 
   const strategies: StrategyCatalogEntry[] = data?.strategies ?? [];
   const families = data?.families ?? {};
@@ -29,6 +29,14 @@ export function StrategyFamilyBrowserWidget(_props: WidgetComponentProps) {
     return (
       <div className="flex items-center justify-center h-48">
         <Spinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-xs text-destructive">
+        Failed to load strategy catalog.
       </div>
     );
   }

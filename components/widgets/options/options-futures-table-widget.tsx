@@ -25,5 +25,8 @@ export function OptionsFuturesTableWidget(_props: WidgetComponentProps) {
       </p>
     );
   }
+  if (futureRows.length === 0) {
+    return <p className="text-xs text-muted-foreground p-3">No futures contracts available for the selected asset.</p>;
+  }
   return <FuturesTab asset={asset} onSelectInstrument={onPick} />;
 }

@@ -8,16 +8,16 @@
   "description": "Saved watchlists and symbol selection for the active underlying in options and futures views.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1: WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2: requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1: Widget reads ctx.watchlists, ctx.watchlistId, ctx.setWatchlistId, ctx.selectedWatchlistSymbolId, ctx.handleWatchlistSelect exclusively via useOptionsData() hook. No inline fetch or mock import. 1.2: options-data-context.tsx calls useGlobalScope() (line 130); globalScope.organizationIds used to build scopedWatchlists (lines 273-279). 1.3: Org filter — when organizationIds is set and does not include 'odum', only crypto watchlists are shown (watchlist 'crypto-top', 'crypto-defi' etc. pass filter; 'tradfi-us' is excluded). Widget displays only the org-scoped watchlists, so org change visibly changes the available watchlist tabs. 1.4: clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,16 @@
       "notes": null
     }
   },
-  "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "DEFAULT_WATCHLISTS reference data lives in lib/mocks/fixtures/options-futures-mock — should be moved to lib/config/services/options.config.ts or lib/constants/options.ts."
+  ],
+  "findings": [
+    {
+      "level": "l1",
+      "description": "1.7 — DEFAULT_WATCHLISTS (watchlist symbol definitions) are defined in lib/mocks/fixtures/options-futures-mock and imported into options-data-context. This reference data should be extracted to lib/config/services/options.config.ts or lib/constants/options.ts. Context file change, out of scope for widget cert.",
+      "status": "open"
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

@@ -8,16 +8,84 @@
   "description": "Order preview grid and pre-trade compliance checks with pass/fail badges before submission.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "status": "pass",
+          "note": "WidgetErrorBoundary wraps all widgets globally in widget-wrapper.tsx — confirmed present."
+        },
+        "0.2": {
+          "status": "pass",
+          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"] set in register.ts."
+        },
+        "0.3": {
+          "status": "pass",
+          "note": "availableOn: [\"book\"] set in register.ts."
+        },
+        "0.4": {
+          "status": "pass",
+          "note": "No `any` types or @ts-ignore in widget file."
+        },
+        "0.5": {
+          "status": "pass",
+          "note": "No lib/mocks/ imports in widget file. All data sourced from useBookTradeData() context hook."
+        },
+        "0.6": {
+          "status": "pass",
+          "note": "complianceLoading drives Spinner and Checking... button label during compliance run. orderState machine covers all async phases (idle / preview / submitting / success / error)."
+        },
+        "0.7": {
+          "status": "pass",
+          "note": "orderState === 'idle' renders guidance text 'Preview summary and compliance appear after you run Preview Order.' — clear empty/initial state."
+        },
+        "0.8": {
+          "status": "pass",
+          "note": "orderState === 'error' renders a rose error banner with errorMessage from context, plus a Retry button that transitions back to 'preview'."
+        },
+        "0.9": {
+          "status": "pass",
+          "note": "No commented-out code, dead branches, or unreachable stubs found."
+        }
+      },
+      "notes": "All 9 L0 checks pass. No fixes required. State machine (idle → preview → submitting → success/error) is complete and clean."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "status": "pass",
+          "note": "All data (executionMode, complianceResult, complianceLoading, compliancePassed, canExecute, handleSubmit, etc.) sourced exclusively via useBookTradeData(). No inline fetch or direct imports."
+        },
+        "1.2": {
+          "status": "pass",
+          "note": "book-data-context.tsx calls useGlobalScope() and syncs org/client/strategyId into the form state via useEffect hooks (lines 154–170)."
+        },
+        "1.3": {
+          "status": "pass",
+          "note": "When org filter changes, orgId is set from globalScope.organizationIds[0]; orgId appears in the summary grid, and the order payload uses it for portfolio_id scoping."
+        },
+        "1.4": {
+          "status": "pass",
+          "note": "clientId syncs from globalScope.clientIds[0] via useEffect and is surfaced in the summary grid and order payload."
+        },
+        "1.5": {
+          "status": "pass",
+          "note": "strategyId syncs from globalScope.strategyIds[0] via useEffect; shown conditionally in summary and passed in pre-trade check and order payload."
+        },
+        "1.6": {
+          "status": "pass",
+          "note": "Empty scope arrays leave org/client/strategy fields at default empty strings — the form still works; pre-trade check omits strategy_id when set to 'manual'."
+        },
+        "1.7": {
+          "status": "pass",
+          "note": "Widget itself imports no reference data. BOOK_CATEGORY_LABELS and categoryLabels come from lib/config/services/trading.config via context. Context-level MOCK_TRADES import from lib/mocks/ is a known context gap (flagged as known issue) — out of scope for widget file."
+        }
+      },
+      "notes": "Data flow is clean. Context correctly reads global scope and cascades org → client → strategy into the preview summary and submission payload. 1.7 context note: MOCK_TRADES in book-data-context.tsx still references lib/mocks/ — flagged as known issue for context-level cleanup."
     },
     "l2": {
       "status": null,
@@ -50,8 +118,21 @@
       "notes": null
     }
   },
-  "knownIssues": [],
+  "knownIssues": [
+    {
+      "id": "ki-1",
+      "level": "L1",
+      "severity": "low",
+      "note": "book-data-context.tsx imports MOCK_TRADES from lib/mocks/fixtures/book-trades and merges it with ledger trades. Reference trade data should eventually move to lib/config/ or a proper seed file. Context file is out of scope for widget certification fixes."
+    },
+    {
+      "id": "ki-2",
+      "level": "L0",
+      "severity": "low",
+      "note": "book-data-context.tsx references undeclared variable `algoType` at line 345 inside handleSubmit (uses `algoType || null` for non-DeFi algo_type). This is in the read-only context file — not a widget-file issue but should be fixed in a context audit."
+    }
+  ],
   "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

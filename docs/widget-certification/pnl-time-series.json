@@ -8,16 +8,16 @@
   "description": "Stacked area chart of ten P&L factors over time with live and batch mode comparison.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper.tsx. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [pnl]. 0.4 ✓ No any types or @ts-ignore. 0.5 ✓ No direct lib/mocks imports. 0.6 FIXED — added isLoading skeleton (Skeleton import + early-return guard before empty-state check). 0.7 ✓ Empty guard: timeSeriesData.length === 0 && backtestVsLive.length === 0 returns 'No P&L time series data available'. 0.8 ✓ Error handled at PnLDataProvider level. 0.9 ✓ No dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 ✓ timeSeriesData, timeSeriesNetPnL, backtestVsLive all from usePnLData(). 1.2 ✓ Context reads useGlobalScope(). 1.3 ✓ filterMultiplier reacts to selectedOrgIds from global scope — timeSeriesData is re-derived on change. 1.4 ✓ selectedClientIds cascade wired in context. 1.5 ✓ selectedStrategyIds wired in context. 1.6 ✓ Empty scope arrays → filterMultiplier=1 → unfiltered. 1.7 ✓ PNL_FACTOR_CHART_COLORS from lib/config/services/pnl.config; FACTORS inline constant (not from mocks)."
     },
     "l2": {
       "status": null,
@@ -51,7 +51,10 @@
     }
   },
   "knownIssues": [],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "findings": [
+    "L0 — 0.6 FAILED (no isLoading handling). Fixed: added Skeleton import and isLoading early-return skeleton above the existing empty-state check. 8 of 9 checks already passed.",
+    "L1 — All 7 checks passed. timeSeriesData reactive to filterMultiplier which reads org/client/strategy scope from global store."
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

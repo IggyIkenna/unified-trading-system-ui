@@ -27,7 +27,7 @@ function correlationColor(value: number): string {
 }
 
 export function CorrelationHeatmap() {
-  const { data: rawCorrelationData, isLoading } = useCorrelationMatrix();
+  const { data: rawCorrelationData, isLoading, isError } = useCorrelationMatrix();
   const correlationData = rawCorrelationData as CorrelationData | undefined;
   const [hoveredCell, setHoveredCell] = React.useState<{
     row: number;
@@ -52,6 +52,8 @@ export function CorrelationHeatmap() {
               <Skeleton key={i} className="h-8 w-full" />
             ))}
           </div>
+        ) : isError ? (
+          <p className="text-center text-rose-400 text-xs py-4">Failed to load correlation data</p>
         ) : correlationData && correlationData.labels && correlationData.labels.length > 0 ? (
           <div className="overflow-x-auto">
             <div

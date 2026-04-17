@@ -3,6 +3,7 @@
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { cn } from "@/lib/utils";
 import { useSportsData, type ModelFamily, type FeatureFreshness } from "./sports-data-context";
+import { Spinner } from "@/components/shared/spinner";
 
 const statusColors: Record<ModelFamily["status"], string> = {
   healthy: "bg-emerald-500",
@@ -26,7 +27,23 @@ function timeSince(iso: string): string {
 }
 
 export function SportsMLStatusWidget(_props: WidgetComponentProps) {
-  const { modelFamilies, featureFreshness } = useSportsData();
+  const { modelFamilies, featureFreshness, wsStatus } = useSportsData();
+
+  if (wsStatus === "connecting") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <Spinner size="sm" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (wsStatus === "error" || wsStatus === "disconnected") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-sm text-destructive">ML pipeline data unavailable — connection error</p>
+      </div>
+    );
+  }
 
   if (modelFamilies.length === 0) {
     return (

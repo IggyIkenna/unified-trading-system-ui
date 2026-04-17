@@ -24,6 +24,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
     instruments,
     clearSteps,
     setShowTemplates,
+    readOnly,
   } = useBundlesData();
 
   if (steps.length === 0) {
@@ -32,11 +33,17 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
         <Layers className="size-8 opacity-30" />
         <p className="text-sm text-center">No legs in this bundle yet</p>
         <div className="flex flex-wrap gap-2 justify-center">
-          <Button variant="outline" size="sm" className="text-xs" onClick={addStep}>
+          <Button variant="outline" size="sm" className="text-xs" onClick={addStep} disabled={readOnly}>
             <Plus className="size-3 mr-1.5" />
             Add leg
           </Button>
-          <Button variant="outline" size="sm" className="text-xs" onClick={() => setShowTemplates(true)}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="text-xs"
+            onClick={() => setShowTemplates(true)}
+            disabled={readOnly}
+          >
             Use a template
           </Button>
         </div>
@@ -245,11 +252,17 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
       ))}
 
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" className="text-xs flex-1 min-w-[120px]" onClick={addStep}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-xs flex-1 min-w-[120px]"
+          onClick={addStep}
+          disabled={readOnly}
+        >
           <Plus className="size-3 mr-1.5" />
           Add leg
         </Button>
-        <Button variant="ghost" size="sm" className="text-xs" onClick={clearSteps}>
+        <Button variant="ghost" size="sm" className="text-xs" onClick={clearSteps} disabled={readOnly}>
           Clear all
         </Button>
       </div>

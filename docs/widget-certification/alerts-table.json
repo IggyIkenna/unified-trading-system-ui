@@ -8,16 +8,84 @@
   "description": "Filterable alert table with severity, entity, timestamp, action buttons, and expandable detail sheet.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary wraps all widgets via widget-wrapper.tsx line 89"
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"]"
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: [\"alerts\"]"
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any types or @ts-ignore. ColumnDef<Alert, unknown> uses unknown (not any). Double-cast 'as unknown as Record<string, unknown>[]' at export config is a type-narrowing bridge, not a type suppression."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget file"
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "isLoading passed to TableWidget which renders loading skeleton"
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "emptyMessage=\"No active alerts — all systems operating normally\" passed to TableWidget"
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "error prop passed: isError ? 'Failed to load alerts' : null; onRetry={refetch} wired"
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code. All imports used. alertsResponse used in dataFreshness.lastUpdated."
+        }
+      },
       "notes": null
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "All data from useAlertsData(): filteredAlerts, isLoading, isError, refetch, counts, mutation fns, filter state"
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "AlertsDataProvider reads useGlobalScope() and applies scopeStrategyIds filter"
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "allAlerts memo depends on scope.organizationIds; changing org rerenders widget with updated filteredAlerts"
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "scope.clientIds flows through getStrategyIdsForScope in context; client filter narrows alert.entity matches"
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "scope.strategyIds flows through getStrategyIdsForScope; strategy filter narrows to specific strategy alerts"
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "scopeStrategyIds.length === 0 skips entity filter; empty scope returns full unfiltered alert set"
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "ALERT_EXPORT_COLUMNS imported from lib/config/services/alerts.config — correct location"
+        }
+      },
+      "notes": "Most complete widget in the alerts domain. Full filter chain: scope → status/severity/source/search. BatchGuardButton disables mutations in batch mode."
     },
     "l2": {
       "status": null,
@@ -52,6 +120,6 @@
   },
   "knownIssues": [],
   "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

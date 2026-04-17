@@ -8,16 +8,16 @@
   "description": "Nine risk metrics with sparklines: P&L, exposure, margin%, VaR95, ES95, alert count, VaR99, ES99, and kill switch count.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks import in widget file (defiRiskProfiles/defiDeltaComposite sourced via context). 0.6 ✓ KPI values are computed from numeric context fields (totalVar95 etc.); widget renders immediately with derived values — no separate fetch gate needed. 0.7 ✓ empty defiRiskProfiles hides DeFi sections entirely; base metrics always render. 0.8 FIXED — added hasError early-return block. 0.9 FIXED — replaced hardcoded stub values '+$1.04M', '$5.2M', '47%' for Firm P&L / Net Exposure / Margin Used with '—' (context does not yet expose these fields)."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 ✓ data exclusively from useRiskData() — VaR/ES values, criticalCount, killedStrategies, defiRiskProfiles, defiDeltaComposite all from context. 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds → scopeReductionFactor applied to totalVar95/99/ES values. 1.4 ✓ scope.clientIds via getStrategyIdsForScope → scopeReductionFactor. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → scopeReductionFactor = 1.0 (full values). 1.7 ⚠ defiRiskProfiles sourced from STRATEGY_RISK_PROFILES (lib/mocks/fixtures/defi-risk) and MOCK_PORTFOLIO_DELTA via use-risk-page-data.ts — these are mock constants passed through context. Should move to lib/constants/defi or be fetched from API."
     },
     "l2": {
       "status": null,
@@ -50,8 +50,14 @@
       "notes": null
     }
   },
-  "knownIssues": ["Mock import: getFilledDefiOrders, MOCK_PORTFOLIO_DELTA, STRATEGY_RISK_PROFILES"],
-  "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "knownIssues": [
+    "1.7: defiRiskProfiles (STRATEGY_RISK_PROFILES) and defiDeltaComposite base (MOCK_PORTFOLIO_DELTA) flow from lib/mocks/fixtures/defi-risk through use-risk-page-data.ts into context. Should be API-sourced or moved to lib/constants/defi.",
+    "Firm P&L, Net Exposure, Margin Used KPIs have no context source — rendered as '—' pending context wiring. These should be added to RiskData context when available."
+  ],
+  "findings": [
+    "0.8 fix: added hasError early-return block (was missing)",
+    "0.9 fix: replaced hardcoded stub strings '+$1.04M', '$5.2M', '47%' with '—' for Firm P&L, Net Exposure, Margin Used — context does not provide these values"
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

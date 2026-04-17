@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EntityLink } from "@/components/trading/entity-link";
 import { PnLChange, PnLValue } from "@/components/trading/pnl-value";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
@@ -9,8 +10,30 @@ import { usePnLData } from "./pnl-data-context";
 import { useRouter } from "next/navigation";
 
 export function PnlByClientWidget(_props: WidgetComponentProps) {
-  const { clientPnL, netPnL } = usePnLData();
+  const { clientPnL, netPnL, isLoading } = usePnLData();
   const router = useRouter();
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-2 p-2 h-full">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+            <div className="flex items-center gap-3 flex-1">
+              <Skeleton className="size-7 rounded-full shrink-0" />
+              <div className="space-y-1 flex-1">
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-3 w-36" />
+              </div>
+            </div>
+            <div className="space-y-1 text-right shrink-0">
+              <Skeleton className="h-3.5 w-16" />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   const totalClientPnL = clientPnL.reduce((sum, c) => sum + c.pnl, 0);
   const topClient = clientPnL.reduce(

@@ -19,6 +19,7 @@ import {
 import { usePnLData } from "./pnl-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 import { Layers, GitCompare } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ---------------------------------------------------------------------------
 // Why percentage heights break inside WidgetScroll
@@ -231,8 +232,21 @@ function BacktestVsLiveChart({ data }: { data: Array<Record<string, number | str
 // ---------------------------------------------------------------------------
 
 export function PnlTimeSeriesWidget(_props: WidgetComponentProps) {
-  const { timeSeriesData, timeSeriesNetPnL, backtestVsLive } = usePnLData();
+  const { timeSeriesData, timeSeriesNetPnL, backtestVsLive, isLoading } = usePnLData();
   const [overlay, setOverlay] = React.useState<"factors" | "backtest">("factors");
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-3 p-2 h-full">
+        <div className="flex items-center justify-between shrink-0">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-5 w-28" />
+        </div>
+        <Skeleton className="flex-1 w-full rounded-lg" />
+        <Skeleton className="h-3 w-64 shrink-0" />
+      </div>
+    );
+  }
 
   if (timeSeriesData.length === 0 && backtestVsLive.length === 0) {
     return (

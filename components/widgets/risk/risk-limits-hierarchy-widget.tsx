@@ -6,6 +6,7 @@ import { useRiskData, getUtilization, getStatusFromUtil, formatCurrency, type Ri
 import { StatusBadge } from "@/components/shared/status-badge";
 import { TableWidget } from "@/components/shared/table-widget";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -85,6 +86,24 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
   const { riskLimits, sortedLimits, selectedNode, setSelectedNode, isLoading, hasError } = useRiskData();
 
   const selectedHierarchyNode = selectedNode ? riskLimits.find((l) => l.entity === selectedNode) : null;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-1.5 p-1">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-8 w-full rounded" />
+        ))}
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+        Failed to load risk limits
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full min-h-0">

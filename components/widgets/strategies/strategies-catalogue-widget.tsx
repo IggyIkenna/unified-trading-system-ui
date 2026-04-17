@@ -246,139 +246,144 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
         }
         const archetypeLabel = (a: string) => ARCHETYPES.find((x) => x.id === a)?.label ?? a;
         return (
-        <div
-          key={assetClass}
-          className="rounded-md border border-border/60 pl-2"
-          style={{ borderLeftWidth: 3, borderLeftColor: ASSET_CLASS_COLORS[assetClass] ?? "var(--border)" }}
-        >
-          <CollapsibleSection title={assetClass} defaultOpen count={strategies.length} className="space-y-2">
-            {Object.entries(byArchetype).map(([arch, archStrategies]) => (
-              <div key={arch} className="space-y-1.5">
-                <div className="flex items-center gap-2 px-1 pt-1">
-                  <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{archetypeLabel(arch)}</span>
-                  <span className="text-[10px] text-muted-foreground">({archStrategies.length})</span>
-                </div>
-            <div className={cn("grid gap-3 pb-2", narrow ? "grid-cols-1" : "grid-cols-2")}>
-              {archStrategies.map((strategy) => {
-                const exec = executionModeShort(strategy);
-                const inst = strategy.instructionTypes ?? [];
-                return (
-                  <Card
-                    key={strategy.id}
-                    className="cursor-pointer overflow-hidden transition-all duration-150 ease-out hover:shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
-                  >
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="space-y-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <EntityLink
-                              type="strategy"
-                              id={strategy.id}
-                              label={strategy.name}
-                              className="text-base font-semibold"
-                            />
-                            <StatusBadge status={strategy.status} />
-                            <Badge variant="outline" className="font-mono text-[10px]">
-                              {strategy.version}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2">{strategy.description}</p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1 shrink-0">
-                          <span className="text-xs font-medium px-2 py-1 rounded bg-secondary text-secondary-foreground">
-                            {strategy.strategyType}
-                          </span>
-                          <Badge variant="outline" className="text-[10px] font-mono" title={exec.title}>
-                            {exec.code}
-                          </Badge>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="flex items-center gap-1 mb-2 flex-wrap">
-                        {strategy.venues.slice(0, 3).map((venue) => (
-                          <Badge key={venue} variant="outline" className="text-[10px] px-1.5 py-0">
-                            {venue}
-                          </Badge>
-                        ))}
-                        {strategy.venues.length > 3 && (
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                            +{strategy.venues.length - 3}
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1 mb-3 flex-wrap">
-                        {inst.map((instType) => (
-                          <Badge key={instType} variant="secondary" className="text-[9px] px-1.5 py-0 font-mono">
-                            {instType}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-between gap-2 py-3 border-t border-border">
-                        <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                          <div>
-                            <span className="text-xs text-muted-foreground block">Sharpe</span>
-                            <span className="text-sm font-mono font-semibold">
-                              {formatNumber(strategy.performance.sharpe, 2)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-xs text-muted-foreground block">Return</span>
-                            <span
-                              className={cn(
-                                "text-sm font-mono font-semibold",
-                                strategy.performance.returnPct >= 0 ? "pnl-positive" : "pnl-negative",
+          <div
+            key={assetClass}
+            className="rounded-md border border-border/60 pl-2"
+            style={{ borderLeftWidth: 3, borderLeftColor: ASSET_CLASS_COLORS[assetClass] ?? "var(--border)" }}
+          >
+            <CollapsibleSection title={assetClass} defaultOpen count={strategies.length} className="space-y-2">
+              {Object.entries(byArchetype).map(([arch, archStrategies]) => (
+                <div key={arch} className="space-y-1.5">
+                  <div className="flex items-center gap-2 px-1 pt-1">
+                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      {archetypeLabel(arch)}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">({archStrategies.length})</span>
+                  </div>
+                  <div className={cn("grid gap-3 pb-2", narrow ? "grid-cols-1" : "grid-cols-2")}>
+                    {archStrategies.map((strategy) => {
+                      const exec = executionModeShort(strategy);
+                      const inst = strategy.instructionTypes ?? [];
+                      return (
+                        <Card
+                          key={strategy.id}
+                          className="cursor-pointer overflow-hidden transition-all duration-150 ease-out hover:shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
+                        >
+                          <CardHeader className="pb-2">
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="space-y-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <EntityLink
+                                    type="strategy"
+                                    id={strategy.id}
+                                    label={strategy.name}
+                                    className="text-base font-semibold"
+                                  />
+                                  <StatusBadge status={strategy.status} />
+                                  <Badge variant="outline" className="font-mono text-[10px]">
+                                    {strategy.version}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-muted-foreground line-clamp-2">{strategy.description}</p>
+                              </div>
+                              <div className="flex flex-col items-end gap-1 shrink-0">
+                                <span className="text-xs font-medium px-2 py-1 rounded bg-secondary text-secondary-foreground">
+                                  {strategy.strategyType}
+                                </span>
+                                <Badge variant="outline" className="text-[10px] font-mono" title={exec.title}>
+                                  {exec.code}
+                                </Badge>
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="pt-0">
+                            <div className="flex items-center gap-1 mb-2 flex-wrap">
+                              {strategy.venues.slice(0, 3).map((venue) => (
+                                <Badge key={venue} variant="outline" className="text-[10px] px-1.5 py-0">
+                                  {venue}
+                                </Badge>
+                              ))}
+                              {strategy.venues.length > 3 && (
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                  +{strategy.venues.length - 3}
+                                </Badge>
                               )}
-                            >
-                              {strategy.performance.returnPct >= 0 ? "+" : ""}
-                              {formatPercent(strategy.performance.returnPct, 1)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-xs text-muted-foreground block">Max DD</span>
-                            <span className="text-sm font-mono text-muted-foreground">
-                              {formatPercent(strategy.performance.maxDrawdown, 1)}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-xs text-muted-foreground block">MTD P&L</span>
-                            <PnLValue value={strategy.performance.pnlMTD} size="sm" />
-                          </div>
-                        </div>
-                        <SparklineCell data={strategy.sparklineData} className={narrow ? "w-16 h-6" : "w-20 h-8"} />
-                      </div>
+                            </div>
 
-                      <div className="flex flex-col sm:flex-row items-stretch gap-2 pt-3 border-t border-border">
-                        <Link href={`/positions?strategy_id=${strategy.id}`} className="flex-1 min-w-0">
-                          <Button variant="outline" size="sm" className="w-full gap-2">
-                            <Play className="size-3" />
-                            View Live
-                          </Button>
-                        </Link>
-                        <Link href={`/services/trading/strategies/${strategy.id}`} className="flex-1 min-w-0">
-                          <Button variant="outline" size="sm" className="w-full gap-2">
-                            <BarChart2 className="size-3" />
-                            Details
-                          </Button>
-                        </Link>
-                        <Link href={`/config/strategies/${strategy.id}`} className="flex-1 min-w-0">
-                          <Button variant="outline" size="sm" className="w-full gap-2">
-                            <Settings className="size-3" />
-                            Config
-                          </Button>
-                        </Link>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-              </div>
-            ))}
-          </CollapsibleSection>
-        </div>
+                            <div className="flex items-center gap-1 mb-3 flex-wrap">
+                              {inst.map((instType) => (
+                                <Badge key={instType} variant="secondary" className="text-[9px] px-1.5 py-0 font-mono">
+                                  {instType}
+                                </Badge>
+                              ))}
+                            </div>
+
+                            <div className="flex flex-wrap items-center justify-between gap-2 py-3 border-t border-border">
+                              <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                                <div>
+                                  <span className="text-xs text-muted-foreground block">Sharpe</span>
+                                  <span className="text-sm font-mono font-semibold">
+                                    {formatNumber(strategy.performance.sharpe, 2)}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-xs text-muted-foreground block">Return</span>
+                                  <span
+                                    className={cn(
+                                      "text-sm font-mono font-semibold",
+                                      strategy.performance.returnPct >= 0 ? "pnl-positive" : "pnl-negative",
+                                    )}
+                                  >
+                                    {strategy.performance.returnPct >= 0 ? "+" : ""}
+                                    {formatPercent(strategy.performance.returnPct, 1)}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-xs text-muted-foreground block">Max DD</span>
+                                  <span className="text-sm font-mono text-muted-foreground">
+                                    {formatPercent(strategy.performance.maxDrawdown, 1)}
+                                  </span>
+                                </div>
+                                <div>
+                                  <span className="text-xs text-muted-foreground block">MTD P&L</span>
+                                  <PnLValue value={strategy.performance.pnlMTD} size="sm" />
+                                </div>
+                              </div>
+                              <SparklineCell
+                                data={strategy.sparklineData}
+                                className={narrow ? "w-16 h-6" : "w-20 h-8"}
+                              />
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row items-stretch gap-2 pt-3 border-t border-border">
+                              <Link href={`/positions?strategy_id=${strategy.id}`} className="flex-1 min-w-0">
+                                <Button variant="outline" size="sm" className="w-full gap-2">
+                                  <Play className="size-3" />
+                                  View Live
+                                </Button>
+                              </Link>
+                              <Link href={`/services/trading/strategies/${strategy.id}`} className="flex-1 min-w-0">
+                                <Button variant="outline" size="sm" className="w-full gap-2">
+                                  <BarChart2 className="size-3" />
+                                  Details
+                                </Button>
+                              </Link>
+                              <Link href={`/config/strategies/${strategy.id}`} className="flex-1 min-w-0">
+                                <Button variant="outline" size="sm" className="w-full gap-2">
+                                  <Settings className="size-3" />
+                                  Config
+                                </Button>
+                              </Link>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </CollapsibleSection>
+          </div>
         );
       })}
 

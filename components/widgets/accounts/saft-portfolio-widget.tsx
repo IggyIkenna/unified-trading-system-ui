@@ -15,7 +15,7 @@ import { Spinner } from "@/components/shared/spinner";
 import type { WidgetComponentProps } from "../widget-registry";
 
 export function SaftPortfolioWidget(_props: WidgetComponentProps) {
-  const { saftRecords, isLoading } = useAccountsData();
+  const { saftRecords, isLoading, error } = useAccountsData();
   const now = React.useMemo(() => new Date(), []);
 
   const TOTAL_COMMITTED = React.useMemo(
@@ -46,6 +46,12 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
       <div className="flex h-full items-center justify-center text-muted-foreground">
         <Spinner className="size-5" />
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center text-xs text-rose-400">Could not load account data</div>
     );
   }
 

@@ -8,16 +8,16 @@
   "description": "Asset class, venue, settlement type, main tab selector, and watchlist toggle for options and futures.",
   "levels": {
     "l0": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "0.1 pass — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 pass — requiredEntitlements: ['options-trading']. 0.3 pass — availableOn: ['options']. 0.4 pass — no any types or @ts-ignore. 0.5 pass — widget file does not import from lib/mocks/. 0.6 N/A — pure control bar; no data to load; all state is synchronous context state. 0.7 N/A — pure control bar; no data list to be empty; renders selectors unconditionally. 0.8 N/A — pure control bar; no data fetching; no error state applicable. 0.9 pass — no dead code."
     },
     "l1": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-17",
+      "notes": "1.1 pass — widget reads all state and setters exclusively from useOptionsData(). 1.2 pass — options-data-context.tsx calls useGlobalScope() (line 130). 1.3 N/A — control bar drives asset/venue selection; it is the input, not a filtered output. 1.4 N/A — control bar is not filtered by client. 1.5 N/A — control bar is not filtered by strategy. 1.6 N/A — control bar renders unconditionally; empty scope means no filter applied to the downstream widgets it drives. 1.7 N/A — no reference data constants in widget file."
     },
     "l2": {
       "status": null,
@@ -52,6 +52,6 @@
   },
   "knownIssues": [],
   "findings": [],
-  "updatedBy": null,
-  "updatedAt": null
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-17"
 }

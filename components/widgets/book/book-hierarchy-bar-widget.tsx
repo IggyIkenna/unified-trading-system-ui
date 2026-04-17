@@ -3,12 +3,33 @@
 import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/shared/spinner";
+import { useOrganizationsList } from "@/hooks/api/use-organizations";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useBookTradeData } from "./book-data-context";
 
 export function BookHierarchyBarWidget(_props: WidgetComponentProps) {
   const { orgId, setOrgId, clientId, setClientId, strategyId, setStrategyId, organizations, registryStrategies } =
     useBookTradeData();
+
+  const { isLoading: orgsLoading, isError: orgsError } = useOrganizationsList();
+
+  if (orgsLoading) {
+    return (
+      <div className="px-2 py-2 flex items-center gap-2 text-muted-foreground">
+        <Spinner size="sm" />
+        <span className="text-xs">Loading organizations…</span>
+      </div>
+    );
+  }
+
+  if (orgsError) {
+    return (
+      <div className="px-2 py-2 text-xs text-rose-500">
+        Failed to load organizations. Check your connection and refresh.
+      </div>
+    );
+  }
 
   return (
     <div className="px-2 py-2 flex items-center gap-4 flex-wrap">

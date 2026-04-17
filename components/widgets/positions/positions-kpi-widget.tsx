@@ -7,43 +7,53 @@ import { formatCurrency } from "@/lib/reference-data";
 import { usePositionsData } from "./positions-data-context";
 
 export function PositionsKpiWidget(_props: WidgetComponentProps) {
-  const { summary } = usePositionsData();
+  const { summary, isLoading, positionsError } = usePositionsData();
 
   const metrics: KpiMetric[] = React.useMemo(
     () => [
       {
         label: "Positions",
-        value: String(summary.totalPositions),
+        value: isLoading ? "—" : String(summary.totalPositions),
         sentiment: "neutral",
       },
       {
         label: "Total Notional",
-        value: `$${formatCurrency(summary.totalNotional)}`,
+        value: isLoading ? "—" : `$${formatCurrency(summary.totalNotional)}`,
         sentiment: "neutral",
       },
       {
         label: "Unrealized P&L",
-        value: `${summary.unrealizedPnL >= 0 ? "+" : ""}$${formatCurrency(Math.abs(summary.unrealizedPnL))}`,
+        value: isLoading
+          ? "—"
+          : `${summary.unrealizedPnL >= 0 ? "+" : ""}$${formatCurrency(Math.abs(summary.unrealizedPnL))}`,
         sentiment: summary.unrealizedPnL >= 0 ? "positive" : "negative",
       },
       {
         label: "Total Margin",
-        value: `$${formatCurrency(summary.totalMargin)}`,
+        value: isLoading ? "—" : `$${formatCurrency(summary.totalMargin)}`,
         sentiment: "neutral",
       },
       {
         label: "Long Exposure",
-        value: `$${formatCurrency(summary.longExposure)}`,
+        value: isLoading ? "—" : `$${formatCurrency(summary.longExposure)}`,
         sentiment: "neutral",
       },
       {
         label: "Short Exposure",
-        value: `$${formatCurrency(summary.shortExposure)}`,
+        value: isLoading ? "—" : `$${formatCurrency(summary.shortExposure)}`,
         sentiment: "neutral",
       },
     ],
-    [summary],
+    [summary, isLoading],
   );
+
+  if (positionsError) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">Failed to load positions</p>
+      </div>
+    );
+  }
 
   return <KpiSummaryWidget metrics={metrics} storageKey="uts-positions-kpi-layout" />;
 }

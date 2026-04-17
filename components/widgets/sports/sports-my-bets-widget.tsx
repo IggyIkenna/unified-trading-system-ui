@@ -5,6 +5,7 @@ import { KpiStrip } from "@/components/shared/kpi-strip";
 import { DataTableWidget, type DataTableColumn } from "@/components/shared/data-table-widget";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { Spinner } from "@/components/shared/spinner";
 import type { Bet } from "@/components/trading/sports/types";
 import { fmtCurrency, fmtOdds, fmtRelativeTime } from "@/components/trading/sports/helpers";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
@@ -45,7 +46,7 @@ const settledColumns: DataTableColumn<Bet>[] = [
 ];
 
 export function SportsMyBetsWidget(_props: WidgetComponentProps) {
-  const { allBets } = useSportsData();
+  const { allBets, wsStatus } = useSportsData();
 
   const metrics = React.useMemo(() => {
     const totalStaked = allBets.reduce((s, b) => s + b.stake, 0);
@@ -75,6 +76,22 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
   const open = openSingles(allBets);
   const settled = settledSingles(allBets);
   const accas = accumulators(allBets);
+
+  if (wsStatus === "connecting") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <Spinner size="sm" className="text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (wsStatus === "error" || wsStatus === "disconnected") {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-sm text-destructive">Bet data unavailable — connection error</p>
+      </div>
+    );
+  }
 
   return (
     <WidgetScroll className="h-full flex flex-col gap-2 p-2">

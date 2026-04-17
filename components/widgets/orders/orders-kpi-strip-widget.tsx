@@ -5,7 +5,15 @@ import { KpiSummaryWidget, type KpiMetric } from "@/components/shared";
 import { useOrdersData } from "./orders-data-context";
 
 export function OrdersKpiStripWidget(_props: WidgetComponentProps) {
-  const { summary, isLoading } = useOrdersData();
+  const { summary, isLoading, error } = useOrdersData();
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4">
+        <p className="text-xs text-rose-400">Failed to load orders</p>
+      </div>
+    );
+  }
 
   const metrics: KpiMetric[] = [
     { label: "Total Orders", value: isLoading ? "—" : summary.total, sentiment: "neutral" },
