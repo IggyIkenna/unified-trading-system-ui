@@ -30,21 +30,11 @@
       "optional_dir": "specs/"
     },
     "ui-canonical": {
-      "required": [
-        "README.md",
-        "docs/ARCHITECTURE.md",
-        "docs/DEPLOYMENT_GUIDE.md",
-        "docs/TESTING.md"
-      ],
+      "required": ["README.md", "docs/ARCHITECTURE.md", "docs/DEPLOYMENT_GUIDE.md", "docs/TESTING.md"],
       "optional_dir": "specs/"
     },
     "infrastructure-canonical": {
-      "required": [
-        "README.md",
-        "docs/ARCHITECTURE.md",
-        "docs/DEPLOYMENT_GUIDE.md",
-        "QUALITY_GATE_BYPASS_AUDIT.md"
-      ],
+      "required": ["README.md", "docs/ARCHITECTURE.md", "docs/DEPLOYMENT_GUIDE.md", "QUALITY_GATE_BYPASS_AUDIT.md"],
       "optional_dir": "specs/"
     },
     "api-canonical": {
@@ -71,36 +61,35 @@
     "deployment-api": "0.1.1",
     "deployment-service": "0.1.1",
     "deployment-ui": "0.1.0",
-    "execution-algo-library": "0.1.6",
+    "execution-algo-library": "0.1.2",
     "execution-service": "0.1.1",
     "features-cross-instrument-service": "0.1.1",
     "features-multi-timeframe-service": "0.1.1",
     "features-sports-service": "0.1.0",
     "ibkr-gateway-infra": "0.1.0",
-    "instruments-service": "0.1.117",
+    "instruments-service": "0.1.22",
     "market-tick-data-service": "0.3.1",
-    "matching-engine-library": "0.1.57",
+    "matching-engine-library": "0.1.3",
     "pnl-attribution-service": "0.1.0",
     "system-integration-tests": "0.2.0",
-    "unified-api-contracts": "0.2.38",
-    "unified-cloud-interface": "0.11.39",
-    "unified-config-interface": "0.2.1",
-    "unified-defi-execution-interface": "0.1.13",
-    "unified-domain-client": "0.1.76",
-    "unified-events-interface": "0.2.48",
-    "unified-feature-calculator-library": "0.2.0",
+    "unified-api-contracts": "0.1.20",
+    "unified-cloud-interface": "0.11.6",
+    "unified-config-interface": "0.1.17",
+    "unified-defi-execution-interface": "0.1.1",
+    "unified-domain-client": "0.1.14",
+    "unified-feature-calculator-library": "0.1.0",
     "unified-feature-orchestration-library": "0.1.0",
     "unified-features-interface": "0.1.0",
-    "unified-internal-contracts": "0.1.95",
-    "unified-market-interface": "0.3.101",
-    "unified-ml-interface": "0.1.21",
-    "unified-position-interface": "0.1.27",
-    "unified-reference-data-interface": "0.1.102",
-    "unified-sports-execution-interface": "0.1.19",
+    "unified-internal-contracts": "0.1.2",
+    "unified-market-interface": "0.3.2",
+    "unified-ml-interface": "0.1.0",
+    "unified-position-interface": "0.1.0",
+    "unified-reference-data-interface": "0.1.0",
+    "unified-sports-execution-interface": "0.1.1",
     "unified-sports-reference-interface": "0.1.0",
-    "unified-trade-execution-interface": "0.1.42",
-    "unified-trading-codex": "1.0.0",
-    "unified-trading-library": "0.3.191",
+    "unified-trade-execution-interface": "0.1.1",
+    "unified-trading-codex": "0.1.0",
+    "unified-trading-library": "0.3.167",
     "unified-trading-pm": "1.2.0"
   },
   "repositories": {
@@ -119,23 +108,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -147,12 +121,7 @@
       "status": "active",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "data_source",
-          "data_sink",
-          "event_bus",
-          "cache"
-        ],
+        "capabilities_needed": ["data_source", "data_sink", "event_bus", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "completion_path": "infrastructure",
@@ -183,22 +152,12 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "testing_level": "integration",
       "skipped_gates": [],
       "service_declaration": {
@@ -234,27 +193,12 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.11.6,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 18,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "unit",
@@ -279,34 +223,14 @@
       "description": "Deployment API \u2014 standalone FastAPI service extracted from unified-trading-deployment-v3/api/. Monitors deployments, service status, cloud builds.",
       "dependencies": [
         {
-          "name": "unified-events-interface",
-          "version": ">=0.2.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-trading-library",
           "version": ">=0.4.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.3,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
           "required": true
         }
       ],
       "completion_path": "cefi",
       "notes": "Fully extracted from unified-trading-deployment-v3 on 2026-03-01. 27 route modules, gunicorn config, Google OAuth.",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 71,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "unit",
@@ -341,39 +265,19 @@
           "required": true
         },
         {
-          "name": "unified-events-interface",
-          "version": ">=0.2.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.3,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "deployment-api",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         },
         {
           "name": "unified-api-contracts",
-          "version": ">=0.2.0,<1.0.0",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
       "completion_path": "cefi",
       "notes": "Full extraction from unified-trading-deployment-v3 completed 2026-03-02. All Python modules, configs (81 YAML), terraform (193 files), tests (48 files), scripts, docs extracted. deployment-api/configs/ is a symlink to deployment-service/configs/.",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "github_url": "https://github.com/IggyIkenna/deployment-service",
       "coverage_pct": 81,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
@@ -389,38 +293,12 @@
       "role": "service",
       "tags": ["cefi", "deployment", "standard"]
     },
-    "deployment-ui": {
-      "type": "ui",
-      "arch_tier": "ui",
-      "status": "scaffolded",
-      "version": "0.1.0",
-      "description": "Deployment management UI \u2014 orchestrator status, shard progress, Cloud Build logs, IBKR Gateway config UI",
-      "dependencies": [],
-      "cluster": "devops-ui",
-      "completion_path": "cefi",
-      "notes": "UI split from unified-trading-deployment-v3 per ui-service-separation rule. React/TypeScript. Scaffolded 2026-02-28. After four-way split: depends on deployment-api.",
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": "N/A",
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "unit",
-      "skipped_gates": [],
-      "doc_standard": "ui-canonical",
-      "version_source": "package.json",
-      "codex_sections": ["05-infrastructure"],
-      "github_url": "https://github.com/IggyIkenna/deployment-ui",
-      "semver_rules_ref": "ui",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 3,
-      "role": "ui",
-      "tags": ["cefi", "deployment", "standard"]
-    },
     "execution-algo-library": {
       "type": "library",
       "arch_tier": "0",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.1.6",
+      "version": "0.1.2",
       "version_source": "pyproject.toml",
       "dependencies": [],
       "ci_status": "LOCAL_PASS",
@@ -456,62 +334,17 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-trade-execution-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "execution-algo-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-sports-execution-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "matching-engine-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-api-contracts",
-          "version": ">=0.1.1,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-defi-execution-interface",
-          "version": ">=0.1.1,<1.0.0",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         },
         {
           "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-domain-client",
-          "version": ">=0.1.0,<1.0.0",
+          "version": ">=0.11.6,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "FAILING",
+      "ci_status": "LOCAL_PASS",
       "coverage_pct": 26,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -546,37 +379,12 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 72,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -613,28 +421,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.3,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<2.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -675,33 +463,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -738,28 +501,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -800,33 +543,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -864,33 +582,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -931,52 +624,17 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-market-interface",
-          "version": ">=0.3.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
+          "version": ">=0.3.2,<1.0.0",
           "required": true
         },
         {
           "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-orchestration-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 87,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1009,33 +667,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.11.6,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-features-interface",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -1067,17 +700,11 @@
       "codex_sections": ["05-infrastructure"],
       "version": "0.1.0",
       "version_source": "version-file",
-      "dependencies": [
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        }
-      ],
+      "dependencies": [],
       "status": "active",
       "completion_path": "tradfi",
       "notes": "Terraform + scripts for IBKR Gateway VM setup, SSH tunnel, startup. IaC for TradFi execution connectivity. 2026-03-05: Added scripts/ (quickmerge, setup, quality-gates), .github/workflows/ (quality-gates, version-bump), VERSION file, .pre-commit-config.yaml.",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": "N/A",
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "none",
@@ -1100,13 +727,8 @@
       "type": "service",
       "arch_tier": "service",
       "doc_standard": "service-canonical",
-      "codex_sections": [
-        "01-domain",
-        "02-data",
-        "03-observability",
-        "04-architecture"
-      ],
-      "version": "0.1.117",
+      "codex_sections": ["01-domain", "02-data", "03-observability", "04-architecture"],
+      "version": "0.1.22",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -1116,36 +738,6 @@
         },
         {
           "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-market-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-reference-data-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         }
@@ -1185,33 +777,13 @@
           "required": true
         },
         {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
+          "name": "market-tick-data-service",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         },
         {
           "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "market-tick-data-service",
-          "version": ">=0.1.0,<1.0.0",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -1224,12 +796,7 @@
       "status": "active",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "data_source",
-          "data_sink",
-          "event_bus",
-          "cache"
-        ],
+        "capabilities_needed": ["data_source", "data_sink", "event_bus", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "github_url": "https://github.com/IggyIkenna/market-data-processing-service",
@@ -1251,48 +818,13 @@
       "github_url": "https://github.com/IggyIkenna/market-tick-data-service",
       "dependencies": [
         {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-trading-library",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-market-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-sports-execution-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-domain-client",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -1304,12 +836,7 @@
       "status": "active",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "data_source",
-          "data_sink",
-          "event_bus",
-          "cache"
-        ],
+        "capabilities_needed": ["data_source", "data_sink", "event_bus", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "completion_path": "cefi",
@@ -1325,7 +852,7 @@
       "arch_tier": "0",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.1.57",
+      "version": "0.1.3",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -1339,7 +866,7 @@
           "required": true
         }
       ],
-      "notes": "TIER 0: Pure order matching algorithms \u2014 zero inter-library deps. arch_tier corrected 2\u21920 on 2026-02-28. Any current UTS/UCI deps in source must be removed.",
+      "notes": "TIER 0: Pure order matching algorithms \u2014 zero inter-library deps. arch_tier corrected 2\u21920 on 2026-02-28. Any current UTL/UCI deps in source must be removed.",
       "ci_status": "LOCAL_PASS",
       "coverage_pct": 89,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
@@ -1370,32 +897,12 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-ml-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 75,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1403,12 +910,7 @@
       "status": "active",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "data_source",
-          "data_sink",
-          "event_bus",
-          "cache"
-        ],
+        "capabilities_needed": ["data_source", "data_sink", "event_bus", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "github_url": "https://github.com/IggyIkenna/ml-inference-service",
@@ -1434,42 +936,12 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-ml-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-feature-calculator-library",
-          "version": ">=0.1.0,<1.0.0",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 35,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1503,23 +975,8 @@
           "required": true
         },
         {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -1553,33 +1010,13 @@
       "deployment_note": "Shared service \u2014 serves many clients. One instance per workspace.",
       "dependencies": [
         {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-trading-library",
           "version": ">=0.1.0,<1.0.0",
+          "required": true
+        },
+        {
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
@@ -1591,12 +1028,7 @@
       "status": "active",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "data_source",
-          "data_sink",
-          "event_bus",
-          "cache"
-        ],
+        "capabilities_needed": ["data_source", "data_sink", "event_bus", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "github_url": "https://github.com/IggyIkenna/position-balance-monitor-service",
@@ -1618,26 +1050,6 @@
       "dependencies": [
         {
           "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         },
@@ -1672,36 +1084,11 @@
       "type": "service",
       "arch_tier": "service",
       "doc_standard": "service-canonical",
-      "codex_sections": [
-        "01-domain",
-        "02-data",
-        "03-observability",
-        "04-architecture"
-      ],
+      "codex_sections": ["01-domain", "02-data", "03-observability", "04-architecture"],
       "version": "0.1.0",
       "version_source": "pyproject.toml",
       "deployment_note": "One instance per client (separately managed accounts)",
       "dependencies": [
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
         {
           "name": "unified-trading-library",
           "version": ">=0.4.0,<1.0.0",
@@ -1709,16 +1096,11 @@
         },
         {
           "name": "unified-api-contracts",
-          "version": ">=0.1.1,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-domain-client",
-          "version": ">=0.1.0,<1.0.0",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
-      "ci_status": "FAILING",
+      "ci_status": "LOCAL_PASS",
       "coverage_pct": 72,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1727,12 +1109,7 @@
       "status": "active",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "data_source",
-          "data_sink",
-          "event_bus",
-          "cache"
-        ],
+        "capabilities_needed": ["data_source", "data_sink", "event_bus", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "github_url": "https://github.com/IggyIkenna/strategy-service",
@@ -1751,21 +1128,6 @@
       "version": "0.2.0",
       "description": "Layer 3a (fast smoke, @pytest.mark.smoke, <5 min) + Layer 3b (full e2e, @pytest.mark.full_e2e, 15-30 min). Sequential: 3a must pass before 3b. Triggered by deployment-api post-deploy. Requires GCP sandbox. Zero service imports \u2014 HTTP/GCS/PubSub only.",
       "dependencies": [
-        {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
         {
           "name": "unified-trading-library",
           "version": ">=0.1.0,<1.0.0",
@@ -1799,50 +1161,25 @@
       "type": "service",
       "arch_tier": "service",
       "doc_standard": "service-canonical",
-      "codex_sections": [
-        "01-domain",
-        "02-data",
-        "03-observability",
-        "04-architecture"
-      ],
+      "codex_sections": ["01-domain", "02-data", "03-observability", "04-architecture"],
       "version": "0.1.0",
       "version_source": "pyproject.toml",
       "completion_path": "tradfi",
       "notes": "Autonomous 7-loop micro-loop trading agent supervisor for TradFi commodity options/futures. Subscribes to CommoditySignal, ranks strategies via StrategySpec catalog in ConfigStore, routes through PreTradeCheckEngine to execution-service. Blockers: ibkr-config-in-ucc (L3 end-to-end), risk-circuit-breaker (PnLMonitor hook).",
       "dependencies": [
         {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<2.0.0",
-          "required": true
-        },
-        {
           "name": "unified-trading-library",
           "version": ">=0.3.42,<1.0.0",
           "required": true
         },
         {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
+          "name": "unified-api-contracts",
+          "version": ">=0.1.20,<1.0.0",
           "required": true
         }
       ],
       "github_url": "https://github.com/IggyIkenna/trading-agent-service",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 50,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1850,12 +1187,7 @@
       "status": "scaffolded",
       "service_declaration": {
         "mode": "live",
-        "capabilities_needed": [
-          "event_bus",
-          "data_source",
-          "data_sink",
-          "cache"
-        ],
+        "capabilities_needed": ["event_bus", "data_source", "data_sink", "cache"],
         "protocol_default_set": "gcp_live"
       },
       "semver_rules_ref": "service",
@@ -1871,24 +1203,19 @@
       "arch_tier_sub": "L2a",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure", "06-coding-standards"],
-      "version": "0.2.38",
+      "version": "0.1.20",
       "version_source": "pyproject.toml",
       "dependencies": [],
       "github_url": "https://github.com/IggyIkenna/unified-api-contracts",
       "artifact_registry": "asia-northeast1-python.pkg.dev/central-element-323112/unified-libraries/unified-api-contracts",
       "cloud_build_trigger": "unified-api-contracts-build",
       "status": "active",
-      "ci_status": "FAILING",
+      "ci_status": "LOCAL_PASS",
       "coverage_pct": 85,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "unit",
       "skipped_gates": [],
-      "infra_primitives": [
-        "normalization functions",
-        "CanonicalTrade",
-        "CanonicalOrderBook",
-        "CanonicalFill"
-      ],
+      "infra_primitives": ["normalization functions", "CanonicalTrade", "CanonicalOrderBook", "CanonicalFill"],
       "completion_path": "core",
       "semver_rules_ref": "library-t0",
       "sit_level": "standard",
@@ -1902,7 +1229,7 @@
       "arch_tier": "0",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure", "06-coding-standards"],
-      "version": "0.11.39",
+      "version": "0.11.6",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -1913,7 +1240,7 @@
       ],
       "status": "active",
       "notes": "Cloud abstraction layer: storage, pub/sub, logging. Tier 0 pure leaf.",
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 82,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1953,14 +1280,9 @@
       "arch_tier": "1",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure", "06-coding-standards"],
-      "version": "0.2.1",
+      "version": "0.1.17",
       "version_source": "pyproject.toml",
       "dependencies": [
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.0,<1.0.0",
-          "required": true
-        },
         {
           "name": "unified-cloud-interface",
           "version": ">=0.11.6,<1.0.0",
@@ -1972,7 +1294,7 @@
           "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 97,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
@@ -1994,7 +1316,7 @@
       "arch_tier": "2",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.1.13",
+      "version": "0.1.1",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -2034,14 +1356,9 @@
       "arch_tier": "3",
       "doc_standard": "library-canonical",
       "codex_sections": ["01-domain", "02-data", "05-infrastructure"],
-      "version": "0.1.76",
+      "version": "0.1.14",
       "version_source": "pyproject.toml",
       "dependencies": [
-        {
-          "name": "unified-trading-library",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
         {
           "name": "unified-config-interface",
           "version": ">=0.1.0,<1.0.0",
@@ -2087,46 +1404,17 @@
       "role": "domain-client",
       "tags": ["config", "cross-domain", "standard"]
     },
-    "unified-events-interface": {
-      "type": "library",
-      "arch_tier": "0",
-      "doc_standard": "library-canonical",
-      "codex_sections": ["03-observability", "05-infrastructure"],
-      "version": "0.2.48",
-      "version_source": "pyproject.toml",
-      "dependencies": [],
-      "ci_status": "LOCAL_PASS",
-      "coverage_pct": 97,
-      "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
-      "testing_level": "integration",
-      "skipped_gates": [],
-      "status": "active",
-      "infra_primitives": ["setup_events", "log_event"],
-      "github_url": "https://github.com/IggyIkenna/unified-events-interface",
-      "completion_path": "core",
-      "semver_rules_ref": "library-t0",
-      "sit_level": "standard",
-      "semver_policy": "agent",
-      "tier": 0,
-      "role": "primitive",
-      "tags": ["critical", "cross-domain", "events"]
-    },
     "unified-feature-calculator-library": {
       "type": "library",
       "arch_tier": "2",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.2.0",
+      "version": "0.1.0",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
           "name": "unified-config-interface",
           "version": ">=0.1.17,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.2,<1.0.0",
           "required": true
         }
       ],
@@ -2153,7 +1441,7 @@
       "arch_tier_sub": "L2b",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure", "06-coding-standards"],
-      "version": "0.1.95",
+      "version": "0.1.2",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -2189,7 +1477,7 @@
       "arch_tier": "2",
       "doc_standard": "library-canonical",
       "codex_sections": ["02-data", "05-infrastructure"],
-      "version": "0.3.101",
+      "version": "0.3.2",
       "version_source": "pyproject.toml",
       "known_violations": [],
       "dependencies": [
@@ -2210,11 +1498,6 @@
         },
         {
           "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         }
@@ -2240,7 +1523,7 @@
       "arch_tier": "2",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure"],
-      "version": "0.1.21",
+      "version": "0.1.0",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -2281,7 +1564,7 @@
       "arch_tier": "2",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.1.27",
+      "version": "0.1.0",
       "version_source": "pyproject.toml",
       "status": "future",
       "notes": "Not yet built. Planned: per-client position feeds, normalises exchange-native format to canonical CanonicalPosition. Consumers: execution-service, position-balance-monitor-service.",
@@ -2317,7 +1600,7 @@
       "arch_tier": "1",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure", "02-data"],
-      "version": "0.1.102",
+      "version": "0.1.0",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -2333,11 +1616,6 @@
         {
           "name": "unified-api-contracts",
           "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.0,<1.0.0",
           "required": true
         }
       ],
@@ -2365,7 +1643,7 @@
       "arch_tier": "1",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.1.19",
+      "version": "0.1.1",
       "version_source": "pyproject.toml",
       "status": "scaffolded",
       "completion_path": "sports",
@@ -2379,11 +1657,6 @@
         {
           "name": "unified-internal-contracts",
           "version": ">=0.1.2,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
           "required": true
         }
       ],
@@ -2406,7 +1679,7 @@
       "arch_tier": "2",
       "doc_standard": "library-canonical",
       "codex_sections": ["04-architecture", "05-infrastructure"],
-      "version": "0.1.42",
+      "version": "0.1.1",
       "version_source": "pyproject.toml",
       "dependencies": [
         {
@@ -2452,7 +1725,7 @@
       "arch_tier": "infrastructure",
       "doc_standard": "infrastructure-canonical",
       "codex_sections": [],
-      "version": "1.0.0",
+      "version": "0.1.0",
       "version_source": "manual",
       "dependencies": [],
       "notes": "Standards & codex repo. Coding standards, architecture docs, quality gate templates. Depends on PM for workspace-manifest.json, setup.sh template, cursor rules. CI infrastructure dep for ALL repos.",
@@ -2476,7 +1749,7 @@
       "arch_tier": "1",
       "doc_standard": "library-canonical",
       "codex_sections": ["05-infrastructure", "06-coding-standards"],
-      "version": "0.3.191",
+      "version": "0.3.167",
       "version_source": "pyproject.toml",
       "github_url": "https://github.com/IggyIkenna/unified-trading-library",
       "artifact_registry": "asia-northeast1-python.pkg.dev/central-element-323112/unified-libraries/unified-trading-library",
@@ -2484,42 +1757,18 @@
       "status": "active",
       "dependencies": [
         {
-          "name": "unified-cloud-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.3,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
           "name": "unified-api-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
         }
       ],
       "notes": "Renamed from unified-trading-services to unified-trading-library (2026-03-02). Directory, package, and all imports now use unified-trading-library / unified_trading_library.",
-      "ci_status": "FAILING",
+      "ci_status": "LOCAL_PASS",
       "coverage_pct": 78,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "integration",
       "skipped_gates": [],
-      "infra_primitives": [
-        "UnifiedCloudService",
-        "CloudStorageService",
-        "CloudPubSubService"
-      ],
+      "infra_primitives": ["UnifiedCloudService", "CloudStorageService", "CloudPubSubService"],
       "completion_path": "core",
       "semver_rules_ref": "library-t1",
       "sit_level": "standard",
@@ -2537,7 +1786,7 @@
       "dependencies": [],
       "completion_path": "all",
       "notes": "Pure root (L0). Contains workspace SSOT, CI/CD templates, cursor rules, AI plans. CI infrastructure dep for ALL repos \u2014 cloned alongside target repo in quality-gates.yml.",
-      "ci_status": "FAILING",
+      "ci_status": "LOCAL_PASS",
       "coverage_pct": 93,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "none",
@@ -2571,11 +1820,6 @@
         {
           "name": "unified-cloud-interface",
           "version": ">=0.11.39,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.48,<1.0.0",
           "required": true
         }
       ],
@@ -2645,14 +1889,9 @@
           "name": "unified-api-contracts",
           "version": ">=0.1.0,<1.0.0",
           "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.2.48,<1.0.0",
-          "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": 80,
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "unit",
@@ -2675,29 +1914,9 @@
           "name": "unified-trading-library",
           "version": ">=0.1.0,<1.0.0",
           "required": true
-        },
-        {
-          "name": "unified-config-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-events-interface",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-internal-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
-        },
-        {
-          "name": "unified-api-contracts",
-          "version": ">=0.1.0,<1.0.0",
-          "required": true
         }
       ],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "version": "0.1.0",
       "version_source": "pyproject.toml",
       "status": "active",
@@ -2715,7 +1934,7 @@
       "version": "0.1.0",
       "version_source": "package.json",
       "dependencies": [],
-      "ci_status": "LOCAL_PASS",
+      "ci_status": "FAILING",
       "coverage_pct": "N/A",
       "bypass_audit_path": "QUALITY_GATE_BYPASS_AUDIT.md",
       "testing_level": "unit",
@@ -2730,6 +1949,18 @@
       "role": "ui",
       "notes": "Canonical Next.js trading UI. Legacy split UIs archived under workspace-root archive/.",
       "tags": ["cross-domain", "trading", "standard"]
+    },
+    "deployment-ui": {
+      "type": "ui",
+      "arch_tier": "T3",
+      "version": "0.1.0",
+      "dependencies": [],
+      "ci_status": "FAILING",
+      "testing_level": "unit",
+      "status": "active",
+      "tier": 3,
+      "role": "Deployment management UI",
+      "tags": ["ui", "deployment", "infrastructure"]
     }
   },
   "topologicalOrder": {
@@ -2748,30 +1979,17 @@
       {
         "level": 2,
         "description": "Foundation \u2014 zero inter-library dependencies (Tier 0). Depends on PM + codex for CI standards.",
-        "repos": [
-          "unified-api-contracts",
-          "unified-cloud-interface",
-          "unified-events-interface",
-          "unified-internal-contracts"
-        ]
+        "repos": ["unified-api-contracts", "unified-cloud-interface", "unified-internal-contracts"]
       },
       {
         "level": 3,
         "description": "Services runtime (Tier 1)",
-        "repos": [
-          "unified-config-interface",
-          "unified-reference-data-interface",
-          "unified-trading-library"
-        ]
+        "repos": ["unified-config-interface", "unified-reference-data-interface", "unified-trading-library"]
       },
       {
         "level": 4,
         "description": "T1c + T2 libraries (reference-data, algo, feature-calculator)",
-        "repos": [
-          "matching-engine-library",
-          "execution-algo-library",
-          "unified-feature-calculator-library"
-        ]
+        "repos": ["matching-engine-library", "execution-algo-library", "unified-feature-calculator-library"]
       },
       {
         "level": 5,
@@ -2826,20 +2044,12 @@
       {
         "level": 9,
         "description": "Operational services + API gateways",
-        "repos": [
-          "client-reporting-api",
-          "position-balance-monitor-service",
-          "risk-and-exposure-service"
-        ]
+        "repos": ["client-reporting-api", "position-balance-monitor-service", "risk-and-exposure-service"]
       },
       {
         "level": 10,
         "description": "Deployment infrastructure (deployment-api, deployment-service; deploys all services)",
-        "repos": [
-          "batch-live-reconciliation-service",
-          "deployment-api",
-          "deployment-service"
-        ]
+        "repos": ["batch-live-reconciliation-service", "deployment-api", "deployment-service"]
       },
       {
         "level": 11,
@@ -2856,7 +2066,7 @@
   "tier_rules": {
     "0": {
       "allowed_from": [],
-      "description": "Pure leaf \u2014 zero inter-library deps. Uses doc dependencies (PM, codex) for CI standards. Repos: unified-api-contracts, unified-internal-contracts, unified-events-interface, unified-cloud-interface, execution-algo-library, matching-engine-library"
+      "description": "Pure leaf \u2014 zero inter-library deps. Uses doc dependencies (PM, codex) for CI standards. Repos: unified-api-contracts, unified-internal-contracts, unified-cloud-interface, execution-algo-library, matching-engine-library"
     },
     "1": {
       "allowed_from": ["0"],
@@ -2932,37 +2142,28 @@
   },
   "removedEntries": {
     "corporate-actions": "Not a standalone repo. It is an operational mode within instruments-service (reference data attributed to instruments).",
-    "unified-trading-deployment-v2": "Superseded by unified-trading-deployment-v3. Exists on GitHub but ignored."
+    "unified-trading-deployment-v2": "Superseded by unified-trading-deployment-v3. Exists on GitHub but ignored.",
+    "client-reporting-ui": {
+      "reason": "Archived",
+      "removedDate": "2026-03-24"
+    }
   },
   "publishingOrder": {
     "description": "Order for publishing packages to Artifact Registry",
     "steps": [
       {
         "step": 1,
-        "packages": [
-          "unified-api-contracts",
-          "unified-internal-contracts",
-          "unified-events-interface",
-          "unified-cloud-interface"
-        ],
+        "packages": ["unified-api-contracts", "unified-internal-contracts", "unified-cloud-interface"],
         "reason": "Foundation packages with no dependencies (Tier 0)"
       },
       {
         "step": 2,
-        "packages": [
-          "unified-config-interface",
-          "unified-reference-data-interface",
-          "unified-trading-library"
-        ],
+        "packages": ["unified-config-interface", "unified-reference-data-interface", "unified-trading-library"],
         "reason": "Tier 1 packages. UCI depends on UEI. UTL depends on T0 libs."
       },
       {
         "step": 3,
-        "packages": [
-          "unified-domain-client",
-          "execution-algo-library",
-          "unified-feature-calculator-library"
-        ],
+        "packages": ["unified-domain-client", "execution-algo-library", "unified-feature-calculator-library"],
         "reason": "Depend on cloud services"
       },
       {
@@ -2977,10 +2178,7 @@
       },
       {
         "step": 5,
-        "packages": [
-          "unified-defi-execution-interface",
-          "unified-position-interface"
-        ],
+        "packages": ["unified-defi-execution-interface", "unified-position-interface"],
         "reason": "Depend on market/execution interfaces"
       },
       {
@@ -3064,11 +2262,7 @@
     ],
     "infra_authority": {
       "decision_owner": "libraries",
-      "enforcement": [
-        "quality-gates STEP 5.10",
-        "quality-gates STEP 5.11",
-        "quality-gates STEP 5.12"
-      ],
+      "enforcement": ["quality-gates STEP 5.10", "quality-gates STEP 5.11", "quality-gates STEP 5.12"],
       "note": "Libraries (UCI T0, UTL T1, protocol router) own all infra decisions. Service source files must NEVER contain: gcs, s3, bigquery, pubsub, sqs, redis, bucket, dataset, topic, cloudtarget, upload_to_gcs, StandardizedDomainCloudService. Those belong only in UCI providers and deployment config."
     }
   },
@@ -3082,7 +2276,6 @@
         "unified-api-contracts (CeFi venues: Binance, OKX, Bybit, Hyperliquid, Coinbase, IBKR, Deribit, Kalshi)",
         "unified-internal-contracts",
         "unified-config-interface",
-        "unified-events-interface",
         "unified-cloud-interface",
         "unified-reference-data-interface",
         "unified-trading-library",
@@ -3110,12 +2303,7 @@
         "position-balance-monitor-service",
         "alerting-service"
       ],
-      "required_api_services": [
-        "unified-trading-api",
-        "deployment-api",
-        "auth-api",
-        "client-reporting-api"
-      ],
+      "required_api_services": ["unified-trading-api", "deployment-api", "auth-api", "client-reporting-api"],
       "required_uis": ["unified-trading-system-ui", "deployment-ui"],
       "not_required": [
         "features-sports-service",

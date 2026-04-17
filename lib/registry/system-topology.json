@@ -32,7 +32,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -68,8 +67,7 @@
           "unified-trading-library",
           "unified-internal-contracts",
           "unified-cloud-interface",
-          "unified-config-interface",
-          "unified-events-interface"
+          "unified-config-interface"
         ],
         "service_declaration": {
           "mode": "batch",
@@ -133,7 +131,6 @@
         "testing_level": "unit",
         "status": "active",
         "dependencies": [
-          "unified-events-interface",
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
@@ -222,7 +219,6 @@
           "unified-cloud-interface",
           "unified-config-interface",
           "unified-domain-client",
-          "unified-events-interface",
           "unified-internal-contracts",
           "unified-sports-execution-interface",
           "unified-trade-execution-interface"
@@ -262,7 +258,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -297,7 +292,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -332,7 +326,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-feature-calculator-library",
           "unified-internal-contracts"
         ],
@@ -369,7 +362,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-features-interface",
           "unified-internal-contracts"
         ],
@@ -404,7 +396,6 @@
         "dependencies": [
           "unified-trading-library",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-cloud-interface",
           "unified-feature-calculator-library",
           "unified-internal-contracts"
@@ -441,7 +432,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-feature-calculator-library",
           "unified-features-interface",
           "unified-internal-contracts"
@@ -478,7 +468,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-feature-calculator-library",
           "unified-feature-orchestration-library",
           "unified-features-interface",
@@ -519,7 +508,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-feature-calculator-library",
           "unified-internal-contracts"
         ],
@@ -577,7 +565,6 @@
           "unified-api-contracts",
           "unified-trading-library",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-reference-data-interface",
           "unified-internal-contracts",
           "unified-sports-reference-interface"
@@ -616,7 +603,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -652,7 +638,6 @@
           "unified-trading-library",
           "unified-api-contracts",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-market-interface"
         ],
         "service_declaration": {
@@ -712,7 +697,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts",
           "unified-ml-interface"
         ],
@@ -751,7 +735,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-feature-calculator-library",
           "unified-internal-contracts"
         ],
@@ -787,7 +770,6 @@
           "unified-trading-library",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -824,7 +806,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts",
           "unified-position-interface"
         ],
@@ -861,7 +842,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts",
           "unified-trading-library"
         ],
@@ -899,7 +879,6 @@
           "unified-cloud-interface",
           "unified-config-interface",
           "unified-domain-client",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -960,7 +939,6 @@
           "unified-api-contracts",
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts"
         ],
         "service_declaration": {
@@ -1037,7 +1015,6 @@
         "testing_level": "integration",
         "status": "active",
         "dependencies": [
-          "unified-events-interface",
           "unified-cloud-interface",
           "unified-internal-contracts"
         ],
@@ -1099,27 +1076,6 @@
         "completion_path": "core",
         "sit_level": "standard"
       },
-      "unified-events-interface": {
-        "type": "library",
-        "tier": 0,
-        "role": "primitive",
-        "tags": [
-          "critical",
-          "cross-domain",
-          "events"
-        ],
-        "version": "0.2.2",
-        "ci_status": "FAILING",
-        "coverage_pct": 97,
-        "testing_level": "integration",
-        "status": "active",
-        "dependencies": [],
-        "service_declaration": null,
-        "serves_ui": null,
-        "proxies_service": null,
-        "completion_path": "core",
-        "sit_level": "standard"
-      },
       "unified-feature-calculator-library": {
         "type": "library",
         "tier": 2,
@@ -1135,8 +1091,7 @@
         "testing_level": "integration",
         "status": "active",
         "dependencies": [
-          "unified-config-interface",
-          "unified-events-interface"
+          "unified-config-interface"
         ],
         "service_declaration": null,
         "serves_ui": null,
@@ -1185,8 +1140,7 @@
           "unified-api-contracts",
           "unified-config-interface",
           "unified-cloud-interface",
-          "unified-internal-contracts",
-          "unified-events-interface"
+          "unified-internal-contracts"
         ],
         "service_declaration": null,
         "serves_ui": null,
@@ -1261,8 +1215,7 @@
         "dependencies": [
           "unified-cloud-interface",
           "unified-internal-contracts",
-          "unified-api-contracts",
-          "unified-events-interface"
+          "unified-api-contracts"
         ],
         "service_declaration": null,
         "serves_ui": null,
@@ -1286,8 +1239,7 @@
         "status": "scaffolded",
         "dependencies": [
           "unified-api-contracts",
-          "unified-internal-contracts",
-          "unified-events-interface"
+          "unified-internal-contracts"
         ],
         "service_declaration": null,
         "serves_ui": null,
@@ -1359,7 +1311,6 @@
         "dependencies": [
           "unified-cloud-interface",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-internal-contracts",
           "unified-api-contracts"
         ],
@@ -1406,8 +1357,7 @@
         "status": "active",
         "dependencies": [
           "unified-api-contracts",
-          "unified-cloud-interface",
-          "unified-events-interface"
+          "unified-cloud-interface"
         ],
         "service_declaration": null,
         "serves_ui": null,
@@ -1455,8 +1405,7 @@
         "testing_level": "unit",
         "status": "active",
         "dependencies": [
-          "unified-api-contracts",
-          "unified-events-interface"
+          "unified-api-contracts"
         ],
         "service_declaration": null,
         "serves_ui": null,
@@ -1555,7 +1504,6 @@
       "unified-config-interface": "0.1.17",
       "unified-defi-execution-interface": "0.1.1",
       "unified-domain-client": "0.1.14",
-      "unified-events-interface": "0.2.2",
       "unified-feature-calculator-library": "0.1.0",
       "unified-feature-orchestration-library": "0.1.0",
       "unified-features-interface": "0.1.0",
@@ -1594,7 +1542,6 @@
           "repos": [
             "unified-api-contracts",
             "unified-cloud-interface",
-            "unified-events-interface",
             "unified-internal-contracts"
           ]
         },
@@ -1707,7 +1654,7 @@
     "tier_rules": {
       "0": {
         "allowed_from": [],
-        "description": "Pure leaf \u2014 zero inter-library deps. Uses doc dependencies (PM, codex) for CI standards. Repos: unified-api-contracts, unified-internal-contracts, unified-events-interface, unified-cloud-interface, execution-algo-library, matching-engine-library"
+        "description": "Pure leaf \u2014 zero inter-library deps. Uses doc dependencies (PM, codex) for CI standards. Repos: unified-api-contracts, unified-internal-contracts, unified-cloud-interface, execution-algo-library, matching-engine-library"
       },
       "1": {
         "allowed_from": [
@@ -1773,7 +1720,6 @@
           "packages": [
             "unified-api-contracts",
             "unified-internal-contracts",
-            "unified-events-interface",
             "unified-cloud-interface"
           ],
           "reason": "Foundation packages with no dependencies (Tier 0)"
@@ -1833,7 +1779,6 @@
           "unified-api-contracts (CeFi venues: Binance, OKX, Bybit, Hyperliquid, Coinbase, IBKR, Deribit, Kalshi)",
           "unified-internal-contracts",
           "unified-config-interface",
-          "unified-events-interface",
           "unified-cloud-interface",
           "unified-reference-data-interface",
           "unified-trading-library",
