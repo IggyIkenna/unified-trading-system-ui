@@ -18,12 +18,12 @@
 #
 #   ── REPO TYPE DETECTION (runs first) ──────────────────────────────────────
 #   Detects repo type before any setup steps:
-#     UI repo:     package.json present, no pyproject.toml → npm install path
+#     UI repo:     package.json present, no pyproject.toml → pnpm install path
 #     Python repo: pyproject.toml present → Python venv path (steps 1-13)
 #
 #   ── UI REPO PATH (React/TypeScript) ───────────────────────────────────────
 #   UI.1. Check Node.js version
-#   UI.2. Run npm install (idempotent: skips if node_modules newer than package.json)
+#   UI.2. Run pnpm install --frozen-lockfile (idempotent: skips if pnpm-lock.yaml newer than package.json)
 #   UI.3. Check TypeScript / tsc available
 #   UI.4. Build library dist/ if missing (only for repos where "main" points to dist/)
 #         Library repos (e.g. unified-trading-ui-kit) have dist/ gitignored; consumers
@@ -55,8 +55,8 @@
 #   13. Print known caveats from AGENTS.md (if present)
 #
 # Idempotency:
-#   - UI:  node_modules skipped if package-lock.json is newer than package.json (reliable:
-#          lock file only updates on successful npm install; node_modules dir mtime is fragile)
+#   - UI:  node_modules skipped if pnpm-lock.yaml is newer than package.json (reliable:
+#          lock file only updates on successful pnpm install; node_modules dir mtime is fragile)
 #   - .venv creation: skipped if .venv/ exists with correct Python version
 #   - uv lock: always runs (sibling version bumps don't update pyproject.toml timestamps)
 #   - Dep install: always runs — same reason as uv lock; timestamp/stamp checks are
@@ -66,7 +66,7 @@
 # CI detection (GITHUB_ACTIONS, CI, or CLOUD_BUILD set):
 #   Python repo: steps 1-8 (install/setup) are skipped — CI manages its own env.
 #   Steps 9-13 (verification) always run.
-#   UI repo: npm install step is skipped — CI manages node_modules.
+#   UI repo: pnpm install step is skipped — CI manages node_modules.
 #
 # Exit codes:
 #   0 = success
@@ -167,7 +167,7 @@ if [ -f "package.json" ] && [ ! -f "pyproject.toml" ]; then
 fi
 
 # ── UI REPO FLOW ─────────────────────────────────────────────────────────────
-# For UI repos, skip all Python steps and run npm install instead, then exit.
+# For UI repos, skip all Python steps and run pnpm install instead, then exit.
 if [ "$IS_UI_REPO" = true ]; then
     echo -e "  ${BLUE}UI repo detected (package.json, no pyproject.toml)${NC}"
 
@@ -181,30 +181,34 @@ if [ "$IS_UI_REPO" = true ]; then
         [ "$CHECK_ONLY" = true ] || exit 1
     fi
 
-    log_step "npm / node_modules"
-    if [ "$IN_CI" = true ]; then
+    log_step "pnpm / node_modules"
+    if ! command -v pnpm &>/dev/null; then
+        log_fail "pnpm not found — install: npm install -g pnpm"
+        ISSUES=$((ISSUES + 1))
+        [ "$CHECK_ONLY" = true ] || exit 1
+    elif [ "$IN_CI" = true ]; then
         log_skip "CI mode — dependencies managed by CI"
     elif [ "$CHECK_ONLY" = true ]; then
         if [ -d "node_modules" ]; then
             log_ok "node_modules exists"
         else
-            log_fail "node_modules missing — run: npm install"
+            log_fail "node_modules missing — run: pnpm install --frozen-lockfile"
             ISSUES=$((ISSUES + 1))
         fi
     elif [ -d "node_modules" ] && [ "$FORCE" != true ]; then
-        # Re-install when package.json is newer than package-lock.json (reliable: lock file is
-        # only updated by a *successful* npm install, so any edit to package.json will trigger
+        # Re-install when package.json is newer than pnpm-lock.yaml (reliable: lock file is
+        # only updated by a *successful* pnpm install, so any edit to package.json will trigger
         # reinstall here even if node_modules dir mtime was touched by a failed prior install).
-        if [ ! -f "package-lock.json" ] || [ "package.json" -nt "package-lock.json" ]; then
-            log_warn "package.json changed (or no lock file) — running npm install"
-            npm install --silent --legacy-peer-deps
-            log_ok "npm install complete"
+        if [ ! -f "pnpm-lock.yaml" ] || [ "package.json" -nt "pnpm-lock.yaml" ]; then
+            log_warn "package.json changed (or no lock file) — running pnpm install"
+            pnpm install --frozen-lockfile --silent
+            log_ok "pnpm install complete"
         else
-            log_skip "node_modules up to date (package-lock.json in sync)"
+            log_skip "node_modules up to date (pnpm-lock.yaml in sync)"
         fi
     else
-        npm install --silent --legacy-peer-deps
-        log_ok "npm install complete"
+        pnpm install --frozen-lockfile --silent
+        log_ok "pnpm install complete"
     fi
 
     log_step "TypeScript / build tools"
@@ -212,7 +216,7 @@ if [ "$IS_UI_REPO" = true ]; then
         TSC_VER=$(node_modules/.bin/tsc --version 2>&1 || echo "installed")
         log_ok "tsc $TSC_VER"
     else
-        log_warn "tsc not found in node_modules (will be available after npm install)"
+        log_warn "tsc not found in node_modules (will be available after pnpm install)"
     fi
 
     # ── [UI.4] BUILD LIBRARY (if this repo is a library with gitignored dist/) ──

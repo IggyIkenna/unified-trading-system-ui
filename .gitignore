@@ -17,6 +17,9 @@ node_modules/
 .next/
 .DS_Store
 
+# pnpm is canonical — block npm's lockfile from being re-committed
+package-lock.json
+
 # Build artifacts — test coverage output directories (NOT app routes)
 coverage/
 # Allow the coverage tab app route (app/(platform)/services/data/coverage/)
