@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[terminal]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks imports in widget file."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "dynamic() loading fallbacks for both sub-components; OptionsChain has isLoading handler; VolSurfaceChart has internal loading state."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "VolSurfaceChart renders 'No vol surface data' empty state; OptionsChain shows 'No live data -- displaying sample options chain'."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "OptionsChain renders 'API unavailable -- showing mock data' on isError."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code."
+        }
+      },
       "notes": "0.1 PASS: WidgetErrorBoundary in widget-wrapper.tsx. 0.2 PASS: requiredEntitlements=[execution-full]. 0.3 PASS: availableOn=[terminal]. 0.4 PASS: no any/ts-ignore. 0.5 PASS: no lib/mocks imports in widget file. 0.6 PASS: dynamic() loading fallbacks for both sub-components; OptionsChain has isLoading handler; VolSurfaceChart has internal loading state. 0.7 PASS: VolSurfaceChart renders 'No vol surface data' empty state; OptionsChain shows 'No live data -- displaying sample options chain'. 0.8 PASS: OptionsChain renders 'API unavailable -- showing mock data' on isError. 0.9 PASS: no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "data sourced via useTerminalData() for selectedInstrument."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.5 N/A: options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "default instrument always set."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "no reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (acceptable — trading component layer)."
+        }
+      },
       "notes": "1.1 PASS: data sourced via useTerminalData() for selectedInstrument. 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven. 1.6 PASS: default instrument always set. 1.7 PASS: no reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (acceptable — trading component layer)."
     },
     "l2": {

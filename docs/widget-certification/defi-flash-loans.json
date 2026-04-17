@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "). No mock imports in widget file (0.5) — swapTokens sourced from useDeFiData(). No any types or @ts-ignore (0.4). requiredEntitlements and availableOn set (0.2, 0.3)."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": ", 0.3)."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": ")."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "). requiredEntitlements and availableOn set (0.2, 0.3)."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": ") — swapTokens sourced from useDeFiData(). No any types or @ts-ignore (0.4). requiredEntitlements and availableOn set (0.2, 0.3)."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "), added empty-state message when flashSteps is empty (0.7), removed unused FLASH_OPERATION_TYPES import (0.9). Error boundary via widget-wrapper WidgetErrorBoundary confirmed (0.1). No mock imports in widget file (0.5) — swapTokens sourced from useDeFiData(). No any types or @ts-ignore (0.4). requiredEntitlements and availableOn set (0.2, 0.3)."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "), removed unused FLASH_OPERATION_TYPES import (0.9). Error boundary via widget-wrapper WidgetErrorBoundary confirmed (0.1). No mock imports in widget file (0.5) — swapTokens sourced from useDeFiData(). No any types or @ts-ignore (0.4). requiredEntitlements and availableOn set (0.2, 0.3)."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": null
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "). Error boundary via widget-wrapper WidgetErrorBoundary confirmed (0.1). No mock imports in widget file (0.5) — swapTokens sourced from useDeFiData(). No any types or @ts-ignore (0.4). requiredEntitlements and availableOn set (0.2, 0.3)."
+        }
+      },
       "notes": "All 9 checks pass. Fixed: added isLoading=false placeholder to FormWidget prop (0.6), added empty-state message when flashSteps is empty (0.7), removed unused FLASH_OPERATION_TYPES import (0.9). Error boundary via widget-wrapper WidgetErrorBoundary confirmed (0.1). No mock imports in widget file (0.5) — swapTokens sourced from useDeFiData(). No any types or @ts-ignore (0.4). requiredEntitlements and availableOn set (0.2, 0.3)."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "all data via useDeFiData() hook only. 1.2: context calls useGlobalScope(). 1.3: org filter wired — hasDefiDesk derived from globalScope.organizationIds; zeroes balances and empties protocols/routes when non-DeFi org selected. 1.4: no explicit clientIds cascade — org-level only; minor gap, not blocking. 1.5: strategyIds filter applied to trade history ledger orders. 1.6: empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "context calls useGlobalScope(). 1.3: org filter wired — hasDefiDesk derived from globalScope.organizationIds; zeroes balances and empties protocols/routes when non-DeFi org selected. 1.4: no explicit clientIds cascade — org-level only; minor gap, not blocking. 1.5: strategyIds filter applied to trade history ledger orders. 1.6: empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "org filter wired — hasDefiDesk derived from globalScope.organizationIds; zeroes balances and empties protocols/routes when non-DeFi org selected. 1.4: no explicit clientIds cascade — org-level only; minor gap, not blocking. 1.5: strategyIds filter applied to trade history ledger orders. 1.6: empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "no explicit clientIds cascade — org-level only; minor gap, not blocking. 1.5: strategyIds filter applied to trade history ledger orders. 1.6: empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "strategyIds filter applied to trade history ledger orders. 1.6: empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
+        }
+      },
       "notes": "1.1: all data via useDeFiData() hook only. 1.2: context calls useGlobalScope(). 1.3: org filter wired — hasDefiDesk derived from globalScope.organizationIds; zeroes balances and empties protocols/routes when non-DeFi org selected. 1.4: no explicit clientIds cascade — org-level only; minor gap, not blocking. 1.5: strategyIds filter applied to trade history ledger orders. 1.6: empty organizationIds returns all data (return true path). 1.7: SWAP_TOKENS lives in lib/mocks/fixtures/defi-swap.ts (exposed via context, not widget) — open issue for context refactor, out of scope for widget-only certification."
     },
     "l2": {

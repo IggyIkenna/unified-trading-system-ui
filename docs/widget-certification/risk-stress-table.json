@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[execution-basic,execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[risk]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any/ts-ignore; as unknown as StressRow[] is a legitimate typed cast (context types Array<Record<string,unknown>>)."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No lib/mocks imports."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "isLoading passed to TableWidget which renders skeletons."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "emptyMessage='No stress scenarios available' in TableWidget."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "error={hasError ? 'Failed to load stress scenarios' : null} passed to TableWidget."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[risk]. 0.4 No any/ts-ignore; as unknown as StressRow[] is a legitimate typed cast (context types Array<Record<string,unknown>>). 0.5 No lib/mocks imports. 0.6 isLoading passed to TableWidget which renders skeletons. 0.7 emptyMessage='No stress scenarios available' in TableWidget. 0.8 error={hasError ? 'Failed to load stress scenarios' : null} passed to TableWidget. 0.9 No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data via useRiskData() hook; stressScenarios/regimeData/stressTestResult all from context."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "use-risk-page-data.ts calls useGlobalScope(). 1.3-1.5 stressScenarios sourced from useStressScenarios() API hook in context; not directly entity-filtered (stress scenarios are portfolio-level, not per-strategy) — appropriate."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.5 stressScenarios sourced from useStressScenarios() API hook in context; not directly entity-filtered (stress scenarios are portfolio-level, not per-strategy) — appropriate."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "stressScenarios sourced from useStressScenarios() API hook in context; not directly entity-filtered (stress scenarios are portfolio-level, not per-strategy) — appropriate."
+        },
+        "1.6": {
+          "result": "n/a",
+          "note": "— stress scenarios are not scope-filtered (correct: portfolio-level data)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "No mock constants in widget. regimeMultiplier slider and scenario selector are wired to context setters (setRegimeMultiplier, setSelectedStressScenario)."
+        }
+      },
       "notes": "1.1 Data via useRiskData() hook; stressScenarios/regimeData/stressTestResult all from context. 1.2 use-risk-page-data.ts calls useGlobalScope(). 1.3-1.5 stressScenarios sourced from useStressScenarios() API hook in context; not directly entity-filtered (stress scenarios are portfolio-level, not per-strategy) — appropriate. 1.6 N/A — stress scenarios are not scope-filtered (correct: portfolio-level data). 1.7 No mock constants in widget. regimeMultiplier slider and scenario selector are wired to context setters (setRegimeMultiplier, setSelectedStressScenario)."
     },
     "l2": {

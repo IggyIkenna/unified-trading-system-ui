@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2/0.3 requiredEntitlements/availableOn non-empty."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "/0.3 requiredEntitlements/availableOn non-empty."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "requiredEntitlements/availableOn non-empty."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks imports."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "/0.7/0.8: added client-side hydration skeleton (Skeleton component), empty state when no strategies registered, and error state for localStorage load failures."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "/0.8: added client-side hydration skeleton (Skeleton component), empty state when no strategies registered, and error state for localStorage load failures."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "client-side hydration skeleton (Skeleton component), empty state when no strategies registered, and error state for localStorage load failures."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code (mode state value is used for badge variant)."
+        }
+      },
       "notes": "All 9 checks pass. Fixed 0.6/0.7/0.8: added client-side hydration skeleton (Skeleton component), empty state when no strategies registered, and error state for localStorage load failures. 0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2/0.3 requiredEntitlements/availableOn non-empty. 0.4 no any/ts-ignore. 0.5 no lib/mocks imports. 0.9 no dead code (mode state value is used for badge variant)."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Widget is a pure config form that reads from defi-strategy-store (localStorage-backed) rather than useDeFiData() — correct for a form widget with no server data."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "Context calls useGlobalScope() at line 188 of defi-data-context.tsx. 1.3-1.5 Context filters tradeHistory by scopeStrategyIds and adjusts token balances/lending protocols by hasDefiDesk org filter — cascade is correct. N/A for this widget directly since it does not consume context data."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.5 Context filters tradeHistory by scopeStrategyIds and adjusts token balances/lending protocols by hasDefiDesk org filter — cascade is correct. N/A for this widget directly since it does not consume context data."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Context filters tradeHistory by scopeStrategyIds and adjusts token balances/lending protocols by hasDefiDesk org filter — cascade is correct. N/A for this widget directly since it does not consume context data."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty scope arrays → context returns unfiltered data (hasDefiDesk defaults to true when organizationIds.length === 0)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "Widget imports from lib/config/strategy-config-schemas and lib/stores/defi-strategy-store — no lib/mocks imports. Context imports mocks from lib/mocks/fixtures/ which is acceptable for the context layer (mock data source, not widget-level imports)."
+        }
+      },
       "notes": "1.1 Widget is a pure config form that reads from defi-strategy-store (localStorage-backed) rather than useDeFiData() — correct for a form widget with no server data. 1.2 Context calls useGlobalScope() at line 188 of defi-data-context.tsx. 1.3-1.5 Context filters tradeHistory by scopeStrategyIds and adjusts token balances/lending protocols by hasDefiDesk org filter — cascade is correct. N/A for this widget directly since it does not consume context data. 1.6 Empty scope arrays → context returns unfiltered data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7 Widget imports from lib/config/strategy-config-schemas and lib/stores/defi-strategy-store — no lib/mocks imports. Context imports mocks from lib/mocks/fixtures/ which is acceptable for the context layer (mock data source, not widget-level imports)."
     },
     "l2": {

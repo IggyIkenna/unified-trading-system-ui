@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[markets-data]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[markets]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks imports."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "added isLoading from useMarketsData() and passed to TableWidget."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "emptyMessage set."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "added error+onRetry from useMarketsData() and passed to TableWidget."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[markets-data]. 0.3 availableOn=[markets]. 0.4 no any/ts-ignore. 0.5 no lib/mocks imports. 0.6 FIXED: added isLoading from useMarketsData() and passed to TableWidget. 0.7 emptyMessage set. 0.8 FIXED: added error+onRetry from useMarketsData() and passed to TableWidget. 0.9 no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "data from useMarketsData().orderFlowData via useLiveFeed() — no inline fetch. 1.2-1.5 N/A: orderFlowData is market-wide (instrument-level) data, not scoped by org/client/strategy — correct for a market order flow feed."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "1.5 N/A: orderFlowData is market-wide (instrument-level) data, not scoped by org/client/strategy — correct for a market order flow feed."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": null
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "orderFlowData is market-wide (instrument-level) data, not scoped by org/client/strategy — correct for a market order flow feed."
+        },
+        "1.6": {
+          "result": "n/a",
+          "note": "(same reason)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "no reference data in widget file."
+        }
+      },
       "notes": "1.1 data from useMarketsData().orderFlowData via useLiveFeed() — no inline fetch. 1.2-1.5 N/A: orderFlowData is market-wide (instrument-level) data, not scoped by org/client/strategy — correct for a market order flow feed. 1.6 N/A (same reason). 1.7 no reference data in widget file."
     },
     "l2": {

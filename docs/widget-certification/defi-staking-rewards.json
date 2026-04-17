@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": null
+        },
+        "0.5": {
+          "result": "pass",
+          "note": null
+        },
+        "0.6": {
+          "result": "pass",
+          "note": null
+        },
+        "0.7": {
+          "result": "pass",
+          "note": null
+        },
+        "0.8": {
+          "result": "pass",
+          "note": null
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks pass. Error boundary confirmed in widget-wrapper.tsx (WidgetErrorBoundary wraps all grid widgets). requiredEntitlements=[execution-basic,execution-full] non-empty. availableOn=[defi] non-empty. No any types or @ts-ignore. No lib/mocks/ imports in widget file. Loading state: DeFiDataContext is synchronous; React.Suspense boundary in widget-wrapper.tsx covers async; comment added. Empty state: guard added for stakingRewards.length===0. Error state: guard added for nullish stakingRewards/rewardPnl data. No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "— data exclusively via useDeFiData()."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "— context calls useGlobalScope() and reads organizationIds+strategyIds."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "— adjustedStakingRewards memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx)."
+        },
+        "1.4": {
+          "result": "partial",
+          "note": "— clientIds destructured and acknowledged; StakingReward has no clientId field — full client narrowing deferred to BP-5 schema change."
+        },
+        "1.5": {
+          "result": "partial",
+          "note": "— StakingReward has no strategyId field — strategy narrowing cannot be applied; comment added to adjustedStakingRewards memo with TODO for BP-5."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "— empty org arrays return all data (hasDefiDesk=true)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "known-gap — MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
+        }
+      },
       "notes": "1.1 pass — data exclusively via useDeFiData(). 1.2 pass — context calls useGlobalScope() and reads organizationIds+strategyIds. 1.3 pass — adjustedStakingRewards memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 partial — clientIds destructured and acknowledged; StakingReward has no clientId field — full client narrowing deferred to BP-5 schema change. 1.5 partial — StakingReward has no strategyId field — strategy narrowing cannot be applied; comment added to adjustedStakingRewards memo with TODO for BP-5. 1.6 pass — empty org arrays return all data (hasDefiDesk=true). 1.7 known-gap — MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {

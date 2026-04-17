@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[execution-basic,execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[bundles]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any types or @ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No mock imports in widget file."
+        },
+        "0.6": {
+          "result": "n/a",
+          "note": "— context is pure local state (no async fetch); no isLoading field."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "Empty state present (steps.length===0 guard with informative message)."
+        },
+        "0.8": {
+          "result": "n/a",
+          "note": "— context has no error field; WidgetErrorBoundary handles render errors."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[bundles]. 0.4 No any types or @ts-ignore. 0.5 No mock imports in widget file. 0.6 N/A — context is pure local state (no async fetch); no isLoading field. 0.7 Empty state present (steps.length===0 guard with informative message). 0.8 N/A — context has no error field; WidgetErrorBoundary handles render errors. 0.9 No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data sourced from useBundlesData() hook (steps, totalCost, totalRevenue, estimatedGas, netPnl)."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "Context calls useGlobalScope() and derives hasDefiDesk from org scope."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "Org filter adjusts scoped templates; P&L values derive from steps (no direct org filtering needed for P&L display). 1.4-1.5 N/A — P&L is a derived display widget; client/strategy cascade not applicable."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "1.5 N/A — P&L is a derived display widget; client/strategy cascade not applicable."
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "— P&L is a derived display widget; client/strategy cascade not applicable."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty org scope → hasDefiDesk=true → no restriction."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "Reference data in lib/config/services/bundle.config — correct location."
+        }
+      },
       "notes": "1.1 Data sourced from useBundlesData() hook (steps, totalCost, totalRevenue, estimatedGas, netPnl). 1.2 Context calls useGlobalScope() and derives hasDefiDesk from org scope. 1.3 Org filter adjusts scoped templates; P&L values derive from steps (no direct org filtering needed for P&L display). 1.4-1.5 N/A — P&L is a derived display widget; client/strategy cascade not applicable. 1.6 Empty org scope → hasDefiDesk=true → no restriction. 1.7 Reference data in lib/config/services/bundle.config — correct location."
     },
     "l2": {

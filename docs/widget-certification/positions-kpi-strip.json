@@ -12,15 +12,42 @@
       "by": "agent",
       "date": "2026-04-17",
       "checks": {
-        "0.1_error_boundary": "pass — WidgetErrorBoundary wraps all widgets in widget-wrapper.tsx line 89",
-        "0.2_required_entitlements": "pass — [\"execution-basic\", \"execution-full\"] in register.ts",
-        "0.3_available_on": "pass — [\"positions\"] in register.ts",
-        "0.4_no_any_ts_ignore": "pass — no any or @ts-ignore in widget file",
-        "0.5_no_mock_imports": "pass — widget imports only from context, shared, and lib/reference-data",
-        "0.6_loading_state": "fixed — added isLoading to usePositionsData() destructure; all metric values render \"—\" when loading",
-        "0.7_empty_state": "pass — KPI strip shows zeros when positions array is empty (valid state for a summary strip)",
-        "0.8_error_state": "fixed — added positionsError guard: renders rose error message when context reports an error",
-        "0.9_dead_code": "pass — no commented-out blocks or unreachable branches"
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary wraps all widgets in widget — wrapper.tsx line 89"
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "[\"execution — basic\", \"execution — full\"] in register.ts"
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "[\"positions\"] in register.ts"
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any or @ts — ignore in widget file"
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "widget imports only from context, shared, and lib/reference — data"
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "added isLoading to usePositionsData() destructure; all metric values render \" — \" when loading"
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "KPI strip shows zeros when positions array is empty (valid state for a summary strip)"
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "added positionsError guard: renders rose error message when context reports an error"
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no commented — out blocks or unreachable branches"
+        }
       },
       "notes": "Fixed 0.6 and 0.8: widget was destructuring only summary from context, ignoring isLoading and positionsError. Both now wired. useMemo kept before the conditional return to satisfy Rules of Hooks."
     },
@@ -29,13 +56,34 @@
       "by": "agent",
       "date": "2026-04-17",
       "checks": {
-        "1.1_data_from_context": "pass — reads summary, isLoading, positionsError exclusively via usePositionsData()",
-        "1.2_context_uses_global_scope": "pass — positions-data-context.tsx uses useGlobalScope() and scopeStrategyIds",
-        "1.3_org_filter": "pass — positions filtered by scopeStrategyIds derived from globalScope.organizationIds (context line 584-587)",
-        "1.4_client_filter": "pass — getStrategyIdsForScope accepts clientIds; org→client→strategy cascade in context",
-        "1.5_strategy_filter": "pass — local strategyFilter + globalScope.strategyIds both applied",
-        "1.6_no_filter_shows_all": "pass — scopeStrategyIds.length === 0 skips scope filter (context line 584)",
-        "1.7_reference_data_location": "pass — widget has no inline reference data; formatCurrency imported from lib/reference-data (correct location)"
+        "1.1": {
+          "result": "pass",
+          "note": "reads summary, isLoading, positionsError exclusively via usePositionsData()"
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "positions — data — context.tsx uses useGlobalScope() and scopeStrategyIds"
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "positions filtered by scopeStrategyIds derived from globalScope.organizationIds (context line 584 — 587)"
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "getStrategyIdsForScope accepts clientIds; org→client→strategy cascade in context"
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "local strategyFilter + globalScope.strategyIds both applied"
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "scopeStrategyIds.length === 0 skips scope filter (context line 584)"
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "widget has no inline reference data; formatCurrency imported from lib/reference — data (correct location)"
+        }
       },
       "notes": "Context (read-only): DEFI_MOCK_POSITIONS is inline in the context (positions-data-context.tsx lines 113-219). This is a context-layer concern, not a widget concern. Flagged for future context cleanup."
     },

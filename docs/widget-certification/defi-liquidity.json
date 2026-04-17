@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": null
+        },
+        "0.5": {
+          "result": "pass",
+          "note": null
+        },
+        "0.6": {
+          "result": "pass",
+          "note": null
+        },
+        "0.7": {
+          "result": "pass",
+          "note": null
+        },
+        "0.8": {
+          "result": "pass",
+          "note": null
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks pass. Error boundary: WidgetErrorBoundary covers all grid widgets globally. requiredEntitlements: [defi-trading]. availableOn: [defi]. No any types or @ts-ignore. No lib/mocks imports in widget file. Loading: context does not expose isLoading; FormWidget shows skeleton when isLoading prop is set; marked N/A for context-level loading. Empty state: guard on !pool (fixed: removed '(mock)' text). Error state: FormWidget shows dismissible error banner from useFormSubmit — covers submission errors; context has no error field. No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "data via useDeFiData() hook."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "context calls useGlobalScope()."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "adjustedLiquidityPools memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx)."
+        },
+        "1.4": {
+          "result": "partial",
+          "note": "clientIds destructured and acknowledged; LiquidityPool has no clientId field — full narrowing requires schema change (BP-5)."
+        },
+        "1.5": {
+          "result": "partial",
+          "note": "strategyIds filter applied to tradeHistory; LiquidityPool has no strategyId field so pool-level strategy filter is N/A."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "empty scope arrays return all data."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
+        }
+      },
       "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 PASS: adjustedLiquidityPools memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 PARTIAL: clientIds destructured and acknowledged; LiquidityPool has no clientId field — full narrowing requires schema change (BP-5). 1.5 PARTIAL: strategyIds filter applied to tradeHistory; LiquidityPool has no strategyId field so pool-level strategy filter is N/A. 1.6 PASS: empty scope arrays return all data. 1.7 KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {

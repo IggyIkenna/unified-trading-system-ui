@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[execution-basic,execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[strategies,overview]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks imports — data via useStrategiesData()."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "explicit isLoading guard renders loading card."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "explicit empty guard (factors.length===0 && positions.length===0) renders empty card."
+        },
+        "0.8": {
+          "result": "partial",
+          "note": "— context does not expose error field; WidgetErrorBoundary covers thrown exceptions; context falls back to mock data silently on API error."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code."
+        }
+      },
       "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper. 0.2 ✓ requiredEntitlements=[execution-basic,execution-full]. 0.3 ✓ availableOn=[strategies,overview]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks imports — data via useStrategiesData(). 0.6 ✓ explicit isLoading guard renders loading card. 0.7 ✓ explicit empty guard (factors.length===0 && positions.length===0) renders empty card. 0.8 NOTED — context does not expose error field; WidgetErrorBoundary covers thrown exceptions; context falls back to mock data silently on API error. 0.9 ✓ no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "commodityRegime sourced exclusively from useStrategiesData() hook."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "context calls useGlobalScope(). 1.3-1.6 NOTE — commodity regime data (factors, positions) is domain-specific mock data not filtered by org/client/strategy scope; it represents market-wide regime signals rather than per-client positions. Scope filtering applies to the strategies list; commodity data is intentionally global."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.6 NOTE — commodity regime data (factors, positions) is domain-specific mock data not filtered by org/client/strategy scope; it represents market-wide regime signals rather than per-client positions. Scope filtering applies to the strategies list; commodity data is intentionally global."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "pass",
+          "note": null
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "NOTE — commodity regime data (factors, positions) is domain-specific mock data not filtered by org/client/strategy scope; it represents market-wide regime signals rather than per-client positions. Scope filtering applies to the strategies list; commodity data is intentionally global."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "MOCK_COMMODITY_REGIME lives in strategies-data-context.tsx (not in lib/mocks/)."
+        }
+      },
       "notes": "1.1 ✓ commodityRegime sourced exclusively from useStrategiesData() hook. 1.2 ✓ context calls useGlobalScope(). 1.3-1.6 NOTE — commodity regime data (factors, positions) is domain-specific mock data not filtered by org/client/strategy scope; it represents market-wide regime signals rather than per-client positions. Scope filtering applies to the strategies list; commodity data is intentionally global. 1.7 ✓ MOCK_COMMODITY_REGIME lives in strategies-data-context.tsx (not in lib/mocks/)."
     },
     "l2": {

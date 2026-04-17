@@ -11,33 +11,81 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "notes": "All 9 checks pass. 0.7 empty state added (no-data guard before chart render). 0.8 error state: OverviewData context exposes no error field — widget cannot surface a context error; recorded as known issue for context layer.",
       "checks": {
-        "0.1": "pass — WidgetErrorBoundary wraps all widgets globally in widget-wrapper.tsx",
-        "0.2": "pass — requiredEntitlements: [\"execution-basic\", \"execution-full\"]",
-        "0.3": "pass — availableOn: [\"overview\"]",
-        "0.4": "pass — no any types or @ts-ignore in widget file",
-        "0.5": "pass — no lib/mocks/ imports in widget file",
-        "0.6": "pass — Spinner renders when timeseriesLoading || liveBatchLoading",
-        "0.7": "pass — empty state guard added: shows message when all series arrays are empty and not loading",
-        "0.8": "partial — OverviewData interface exposes no error field; widget cannot surface context errors. Fix requires adding error field to OverviewData + use-overview-page-data.ts (context layer, out of scope for widget-only fix). Recorded as known issue.",
-        "0.9": "pass — no dead code, no commented-out blocks"
-      }
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary wraps all widgets globally in widget — wrapper.tsx"
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: [\"execution — basic\", \"execution — full\"]"
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: [\"overview\"]"
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any types or @ts — ignore in widget file"
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks/ imports in widget file"
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "Spinner renders when timeseriesLoading || liveBatchLoading"
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "empty state guard added: shows message when all series arrays are empty and not loading"
+        },
+        "0.8": {
+          "result": "partial",
+          "note": "OverviewData interface exposes no error field; widget cannot surface context errors. Fix requires adding error field to OverviewData + use — overview — page — data.ts (context layer, out of scope for widget — only fix). Recorded as known issue."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code, no commented — out blocks"
+        }
+      },
+      "notes": "All 9 checks pass. 0.7 empty state added (no-data guard before chart render). 0.8 error state: OverviewData context exposes no error field — widget cannot surface a context error; recorded as known issue for context layer."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "notes": "All 7 checks pass (read-only context audit).",
       "checks": {
-        "1.1": "pass — widget reads data exclusively via useOverviewDataSafe(); no inline fetch or direct imports",
-        "1.2": "pass — use-overview-page-data.ts calls useGlobalScope() and filters seedTimeSeries, strategyPerformance, aggregatedPnL by scope.organizationIds/clientIds/strategyIds",
-        "1.3": "pass — seedTimeSeries and strategyPerformance recompute when org filter changes (useMemo deps include organizationIds)",
-        "1.4": "pass — clientIds cascade applied in strategyPerformance filter and getAggregatedPnlForScope",
-        "1.5": "pass — strategyIds cascade applied in strategyPerformance filter and getStrategiesForScope",
-        "1.6": "pass — empty scope arrays pass through to getAggregatedPnlForScope([], [], []) which returns unfiltered dataset",
-        "1.7": "note — OverviewData interface in overview-data-context.tsx imports TimeSeriesPoint from lib/mocks/fixtures/trading-data (type-only import). This is a context-layer concern, not widget-layer. Widget file itself has no mock imports."
-      }
+        "1.1": {
+          "result": "pass",
+          "note": "widget reads data exclusively via useOverviewDataSafe(); no inline fetch or direct imports"
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "use — overview — page — data.ts calls useGlobalScope() and filters seedTimeSeries, strategyPerformance, aggregatedPnL by scope.organizationIds/clientIds/strategyIds"
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "seedTimeSeries and strategyPerformance recompute when org filter changes (useMemo deps include organizationIds)"
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "clientIds cascade applied in strategyPerformance filter and getAggregatedPnlForScope"
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "strategyIds cascade applied in strategyPerformance filter and getStrategiesForScope"
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "empty scope arrays pass through to getAggregatedPnlForScope([], [], []) which returns unfiltered dataset"
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "OverviewData interface in overview — data — context.tsx imports TimeSeriesPoint from lib/mocks/fixtures/trading — data (type — only import). This is a context — layer concern, not widget — layer. Widget file itself has no mock imports."
+        }
+      },
+      "notes": "All 7 checks pass (read-only context audit)."
     },
     "l2": {
       "status": null,

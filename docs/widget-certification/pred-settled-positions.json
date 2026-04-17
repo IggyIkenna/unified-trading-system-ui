@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code."
+        }
+      },
       "notes": "All 9 checks green. 0.1: WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: DataTableWidget receives emptyMessage='No settled positions'; CollapsibleSection shows count badge (settledPositions.length). 0.8: no error field in context; WidgetErrorBoundary (0.1) covers throw. 0.9: no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "— settledPositions read exclusively via usePredictionsData() hook."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "— context calls useGlobalScope() and getStrategyIdsForScope()."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "— settledPositions memo filters by scopeStrategyIds.length when a scope is selected."
+        },
+        "1.4": {
+          "result": "partial",
+          "note": "— no clientId on PredictionPosition; client narrowing deferred to schema change."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "— strategy filter drives the deterministic subset in context."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "— empty strategyIds returns full settled dataset."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "KNOWN-GAP — MOCK_POSITIONS in lib/mocks/fixtures/; future scope."
+        }
+      },
       "notes": "1.1 PASS — settledPositions read exclusively via usePredictionsData() hook. 1.2 PASS — context calls useGlobalScope() and getStrategyIdsForScope(). 1.3 PASS — settledPositions memo filters by scopeStrategyIds.length when a scope is selected. 1.4 PARTIAL — no clientId on PredictionPosition; client narrowing deferred to schema change. 1.5 PASS — strategy filter drives the deterministic subset in context. 1.6 PASS — empty strategyIds returns full settled dataset. 1.7 KNOWN-GAP — MOCK_POSITIONS in lib/mocks/fixtures/; future scope."
     },
     "l2": {

@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper covers all grid widgets."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: [execution-basic, execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: [strategies]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any / @ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks imports in widget file."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "Spinner rendered when isLoading."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "empty message when filteredStrategies.length === 0."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "error surfaced at WidgetErrorBoundary level; StrategiesDataProvider silently falls back to mock data — no error field exposed by context, boundary is the correct gate."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code. Prettier applied (fixed indentation in grouped section)."
+        }
+      },
       "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper covers all grid widgets. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [strategies]. 0.4 ✓ no any / @ts-ignore. 0.5 ✓ no lib/mocks imports in widget file. 0.6 ✓ Spinner rendered when isLoading. 0.7 ✓ empty message when filteredStrategies.length === 0. 0.8 ✓ error surfaced at WidgetErrorBoundary level; StrategiesDataProvider silently falls back to mock data — no error field exposed by context, boundary is the correct gate. 0.9 ✓ no dead code. Prettier applied (fixed indentation in grouped section)."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "data from useStrategiesData() only, no inline fetch."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "context calls useGlobalScope() and filters via getStrategyIdsForScope + getClientIdsForOrgs."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "org filter change → scopeClientIds rebuilds → strategies re-filtered."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "client filter cascades via getClientIdsForOrgs in context."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "strategy filter via getStrategyIdsForScope."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "empty scope arrays → returns DEFAULT_STRATEGIES (all)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "ARCHETYPES/ASSET_CLASS_COLORS/STATUSES in lib/config/services/strategies.config."
+        }
+      },
       "notes": "1.1 ✓ data from useStrategiesData() only, no inline fetch. 1.2 ✓ context calls useGlobalScope() and filters via getStrategyIdsForScope + getClientIdsForOrgs. 1.3 ✓ org filter change → scopeClientIds rebuilds → strategies re-filtered. 1.4 ✓ client filter cascades via getClientIdsForOrgs in context. 1.5 ✓ strategy filter via getStrategyIdsForScope. 1.6 ✓ empty scope arrays → returns DEFAULT_STRATEGIES (all). 1.7 ✓ ARCHETYPES/ASSET_CLASS_COLORS/STATUSES in lib/config/services/strategies.config."
     },
     "l2": {

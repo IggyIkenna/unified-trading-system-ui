@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: [execution-basic, execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: [strategies]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any / @ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks imports."
+        },
+        "0.6": {
+          "result": "n/a",
+          "note": "— pure UI action panel, no data fetching."
+        },
+        "0.7": {
+          "result": "n/a",
+          "note": "— no data to be empty."
+        },
+        "0.8": {
+          "result": "n/a",
+          "note": "— no data to error."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code. No changes required."
+        }
+      },
       "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [strategies]. 0.4 ✓ no any / @ts-ignore. 0.5 ✓ no lib/mocks imports. 0.6 N/A — pure UI action panel, no data fetching. 0.7 N/A — no data to be empty. 0.8 N/A — no data to error. 0.9 ✓ no dead code. No changes required."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "N/A. 1.2–1.6 N/A — no data to filter by scope."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "1.6 N/A — no data to filter by scope."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": null
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "pass",
+          "note": null
+        },
+        "1.6": {
+          "result": "n/a",
+          "note": "— no data to filter by scope."
+        },
+        "1.7": {
+          "result": "n/a",
+          "note": "— no reference data."
+        }
+      },
       "notes": "Pure UI widget — renders a static navigation button to /services/trading/strategies/grid. No data dependency. 1.1 N/A. 1.2–1.6 N/A — no data to filter by scope. 1.7 N/A — no reference data."
     },
     "l2": {

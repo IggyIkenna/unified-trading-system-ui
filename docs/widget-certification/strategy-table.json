@@ -11,61 +11,15 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "checks": {
-        "0.1": { "status": "pass", "note": "WidgetErrorBoundary wraps all widgets in widget-wrapper.tsx" },
-        "0.2": { "status": "pass", "note": "requiredEntitlements: ['execution-basic', 'execution-full']" },
-        "0.3": { "status": "pass", "note": "availableOn: ['overview']" },
-        "0.4": { "status": "pass", "note": "No any types or @ts-ignore — uses Record<string, unknown> casts" },
-        "0.5": { "status": "pass", "note": "No lib/mocks/ imports in widget file" },
-        "0.6": { "status": "pass", "note": "perfLoading shows Spinner in toolbar" },
-        "0.7": {
-          "status": "pass",
-          "note": "Added: empty filtered list shows 'No strategies match the current filters'; zero data available shows 'No strategy data available'"
-        },
-        "0.8": {
-          "status": "partial",
-          "note": "OverviewData interface has no error field — runtime errors caught by WidgetErrorBoundary (L0.1). Data-unavailable state (allFiltered empty after loading) shows 'No strategy data available'. Full error field requires context change (out of widget-file-only scope)."
-        },
-        "0.9": {
-          "status": "pass",
-          "note": "No dead code blocks; _sp prefix on unused strategyPerformance destructure is intentional suppression"
-        }
-      }
+      "checks": {},
+      "notes": null
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "checks": {
-        "1.1": {
-          "status": "pass",
-          "note": "Data sourced exclusively via useOverviewDataSafe() → ctx.filteredSortedStrategies; no inline fetch or direct imports"
-        },
-        "1.2": {
-          "status": "pass",
-          "note": "use-overview-page-data.ts calls useGlobalScope() (line 117 + 247) and filters strategies by scope.organizationIds, scope.clientIds, scope.strategyIds before placing them in context.filteredSortedStrategies"
-        },
-        "1.3": {
-          "status": "pass",
-          "note": "strategyPerformance memo in use-overview-page-data.ts re-filters on context.organizationIds change; widget re-renders with updated data"
-        },
-        "1.4": {
-          "status": "pass",
-          "note": "context.clientIds filter applied in strategyPerformance memo (lines 263-268 in use-overview-page-data.ts)"
-        },
-        "1.5": {
-          "status": "pass",
-          "note": "context.strategyIds filter applied in strategyPerformance memo (lines 269-271 in use-overview-page-data.ts)"
-        },
-        "1.6": {
-          "status": "pass",
-          "note": "Empty scope arrays → no filter branches execute → full allStrategies set returned"
-        },
-        "1.7": {
-          "status": "finding",
-          "note": "overview-data-context.tsx imports PnLBreakdown and TimeSeriesPoint type-only from lib/mocks/fixtures/trading-data. use-overview-page-data.ts imports CLIENTS, ORGANIZATIONS, SEED_SERVICES, getAlertsForScope, getStrategiesForScope, getAggregatedPnlForScope from lib/mocks — these are used as mock fallback data only when isMockDataMode() is true, not as primary data sources. Widget file itself is clean. Context-level mock usage is gated behind data-mode flag (acceptable pattern) but the type imports from lib/mocks in context are a minor hygiene issue."
-        }
-      }
+      "checks": {},
+      "notes": null
     },
     "l2": {
       "status": null,

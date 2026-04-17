@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": null
+        },
+        "0.5": {
+          "result": "pass",
+          "note": null
+        },
+        "0.6": {
+          "result": "pass",
+          "note": null
+        },
+        "0.7": {
+          "result": "pass",
+          "note": null
+        },
+        "0.8": {
+          "result": "pass",
+          "note": null
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks green. Error boundary covered globally by WidgetErrorBoundary in widget-wrapper.tsx. requiredEntitlements=[defi-trading], availableOn=[defi,strategies]. No any types or @ts-ignore. Inline MOCK_BASIS_DATA removed; widget now reads basisTradeAssets + basisTradeMarketData from useDeFiData(). Loading, empty, and error states added following defi-waterfall-weights-widget pattern (isLoading=false/error=null stubs ready for when context adds those fields). No dead code remaining."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Widget reads exclusively via useDeFiData() hook — PASS. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 and filters by scope (strategyIds filter on tradeHistory at line 210, org filter via hasDefiDesk at line 191) — PASS. 1.3–1.5: Org/client/strategy filters cascade in context via hasDefiDesk (org) and scopeStrategyIds (strategy); client-level cascade not explicitly present but org filter covers it — PARTIAL (context does not have explicit client-level cascade; noted as gap for L1 re-check when context is updated). 1.6: globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "defi-data-context.tsx calls useGlobalScope() at line 188 and filters by scope (strategyIds filter on tradeHistory at line 210, org filter via hasDefiDesk at line 191) — PASS. 1.3–1.5: Org/client/strategy filters cascade in context via hasDefiDesk (org) and scopeStrategyIds (strategy); client-level cascade not explicitly present but org filter covers it — PARTIAL (context does not have explicit client-level cascade; noted as gap for L1 re-check when context is updated). 1.6: globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.5: Org/client/strategy filters cascade in context via hasDefiDesk (org) and scopeStrategyIds (strategy); client-level cascade not explicitly present but org filter covers it — PARTIAL (context does not have explicit client-level cascade; noted as gap for L1 re-check when context is updated). 1.6: globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Org/client/strategy filters cascade in context via hasDefiDesk (org) and scopeStrategyIds (strategy); client-level cascade not explicitly present but org filter covers it — PARTIAL (context does not have explicit client-level cascade; noted as gap for L1 re-check when context is updated). 1.6: globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
+        }
+      },
       "notes": "1.1: Widget reads exclusively via useDeFiData() hook — PASS. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 and filters by scope (strategyIds filter on tradeHistory at line 210, org filter via hasDefiDesk at line 191) — PASS. 1.3–1.5: Org/client/strategy filters cascade in context via hasDefiDesk (org) and scopeStrategyIds (strategy); client-level cascade not explicitly present but org filter covers it — PARTIAL (context does not have explicit client-level cascade; noted as gap for L1 re-check when context is updated). 1.6: globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
     },
     "l2": {

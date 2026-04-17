@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2: requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: Fixed — ARB_THRESHOLD_OPTIONS was imported from lib/mocks/fixtures/sports-fixtures; moved inline as a widget-local const. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: Fixed — ARB_THRESHOLD_OPTIONS was imported from lib/mocks/fixtures/sports-fixtures; moved inline as a widget-local const. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: Fixed — ARB_THRESHOLD_OPTIONS was imported from lib/mocks/fixtures/sports-fixtures; moved inline as a widget-local const. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any types or @ts-ignore. 0.5: Fixed — ARB_THRESHOLD_OPTIONS was imported from lib/mocks/fixtures/sports-fixtures; moved inline as a widget-local const. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "— ARB_THRESHOLD_OPTIONS was imported from lib/mocks/fixtures/sports-fixtures; moved inline as a widget-local const. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "error guard added. 0.9: No dead code."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code."
+        }
+      },
       "notes": "All 9 checks pass. 0.1: WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2: requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: Fixed — ARB_THRESHOLD_OPTIONS was imported from lib/mocks/fixtures/sports-fixtures; moved inline as a widget-local const. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: Empty state present — Card with Clock icon and 'No arbs above N% threshold' when activeArbs.length === 0. 0.8: error guard added. 0.9: No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Widget reads activeArbs, arbNewIds, arbThreshold, arbMarketTypeFilter, executeArb exclusively via usePredictionsData() — no inline fetch or direct import. 1.2: predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3/1.5: Arb opportunities are market-level data (cross-venue, not strategy-scoped); scope filtering applies to positions, not arb stream. This is correct by domain design. 1.4: clientIds from globalScope not wired into predictions context — same open gap as other domains. 1.6: Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3/1.5: Arb opportunities are market-level data (cross-venue, not strategy-scoped); scope filtering applies to positions, not arb stream. This is correct by domain design. 1.4: clientIds from globalScope not wired into predictions context — same open gap as other domains. 1.6: Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "/1.5: Arb opportunities are market-level data (cross-venue, not strategy-scoped); scope filtering applies to positions, not arb stream. This is correct by domain design. 1.4: clientIds from globalScope not wired into predictions context — same open gap as other domains. 1.6: Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "clientIds from globalScope not wired into predictions context — same open gap as other domains. 1.6: Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Arb opportunities are market-level data (cross-venue, not strategy-scoped); scope filtering applies to positions, not arb stream. This is correct by domain design. 1.4: clientIds from globalScope not wired into predictions context — same open gap as other domains. 1.6: Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
+        }
+      },
       "notes": "1.1: Widget reads activeArbs, arbNewIds, arbThreshold, arbMarketTypeFilter, executeArb exclusively via usePredictionsData() — no inline fetch or direct import. 1.2: predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3/1.5: Arb opportunities are market-level data (cross-venue, not strategy-scoped); scope filtering applies to positions, not arb stream. This is correct by domain design. 1.4: clientIds from globalScope not wired into predictions context — same open gap as other domains. 1.6: Empty scope arrays return all arbs (arb stream is unfiltered by scope). 1.7: ARB_THRESHOLD_OPTIONS was in lib/mocks/ (sports-fixtures.ts) — removed from mock file dependency; now defined inline in widget as a UI constant."
     },
     "l2": {

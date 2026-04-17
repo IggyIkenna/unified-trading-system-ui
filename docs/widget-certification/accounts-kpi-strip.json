@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary: PASS (global in widget-wrapper.tsx)."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: PASS ([execution-basic, execution-full])."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: PASS ([accounts])."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any/@ts-ignore: PASS."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No mock imports: PASS."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "Loading state: FIXED (added Skeleton strip guard)."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "Empty state: FIXED (added balances.length === 0 guard)."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "Error state: FIXED (added error guard with message)."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code: PASS."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary: PASS (global in widget-wrapper.tsx). 0.2 requiredEntitlements: PASS ([execution-basic, execution-full]). 0.3 availableOn: PASS ([accounts]). 0.4 No any/@ts-ignore: PASS. 0.5 No mock imports: PASS. 0.6 Loading state: FIXED (added Skeleton strip guard). 0.7 Empty state: FIXED (added balances.length === 0 guard). 0.8 Error state: FIXED (added error guard with message). 0.9 No dead code: PASS."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data from context: PASS (useAccountsData() hook, no inline fetch)."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "Context reads useGlobalScope(): PASS (accounts-data-context.tsx calls useGlobalScope() and filters balances by organizationIds)."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "Org filter changes data: PASS (orgVenues memo filters balances by venues belonging to selected org)."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "Client filter: N/A (accounts domain has no client sub-filter; org is the top-level scope)."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Strategy filter: N/A (account balances are not strategy-scoped)."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "No filter = all data: PASS (orgVenues = null when organizationIds is empty, raw balances returned unfiltered)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "Reference data location: NOTE — context imports ACCOUNTS and MOCK_SAFTS from lib/mocks/fixtures/ for org-venue mapping and SAFT demo data; MOCK_SAFTS is fixture/demo data kept in mocks intentionally; ACCOUNTS is used for org→venue mapping lookup (not balance display data). Not a block for L1 but flagged for L7+ cleanup."
+        }
+      },
       "notes": "1.1 Data from context: PASS (useAccountsData() hook, no inline fetch). 1.2 Context reads useGlobalScope(): PASS (accounts-data-context.tsx calls useGlobalScope() and filters balances by organizationIds). 1.3 Org filter changes data: PASS (orgVenues memo filters balances by venues belonging to selected org). 1.4 Client filter: N/A (accounts domain has no client sub-filter; org is the top-level scope). 1.5 Strategy filter: N/A (account balances are not strategy-scoped). 1.6 No filter = all data: PASS (orgVenues = null when organizationIds is empty, raw balances returned unfiltered). 1.7 Reference data location: NOTE — context imports ACCOUNTS and MOCK_SAFTS from lib/mocks/fixtures/ for org-venue mapping and SAFT demo data; MOCK_SAFTS is fixture/demo data kept in mocks intentionally; ACCOUNTS is used for org→venue mapping lookup (not balance display data). Not a block for L1 but flagged for L7+ cleanup."
     },
     "l2": {

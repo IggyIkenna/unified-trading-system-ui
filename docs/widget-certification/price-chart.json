@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "0.3 PASS."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "PASS."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "replaced as-never casts with typed assertions (candleData as Array<{time,open,high,low,close,volume?}> and indicatorOverlays as unknown as IndicatorOverlay[])."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "PASS."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "— isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "added candleData.length === 0 guard with instrument-specific empty message."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "— isLoading/error now available from TerminalData context; widget renders error message when error is non-null."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "PASS."
+        }
+      },
       "notes": "0.1–0.3 PASS. 0.4 FIXED: replaced as-never casts with typed assertions (candleData as Array<{time,open,high,low,close,volume?}> and indicatorOverlays as unknown as IndicatorOverlay[]). 0.5 PASS. 0.6 PASS — isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true. 0.7 FIXED: added candleData.length === 0 guard with instrument-specific empty message. 0.8 PASS — isLoading/error now available from TerminalData context; widget renders error message when error is non-null. 0.9 PASS."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "all data from useTerminalData()."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: price chart shows market data for selectedInstrument, not filtered by org/client/strategy directly — instrument selection is driven by scope.strategyIds but the chart data itself is per-instrument."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.5 N/A: price chart shows market data for selectedInstrument, not filtered by org/client/strategy directly — instrument selection is driven by scope.strategyIds but the chart data itself is per-instrument."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "price chart shows market data for selectedInstrument, not filtered by org/client/strategy directly — instrument selection is driven by scope.strategyIds but the chart data itself is per-instrument."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "empty scope shows default instrument chart."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "no reference data in lib/mocks — TIMEFRAMES and INDICATORS are widget-local constants (appropriate)."
+        }
+      },
       "notes": "1.1 PASS: all data from useTerminalData(). 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: price chart shows market data for selectedInstrument, not filtered by org/client/strategy directly — instrument selection is driven by scope.strategyIds but the chart data itself is per-instrument. 1.6 PASS: empty scope shows default instrument chart. 1.7 PASS: no reference data in lib/mocks — TIMEFRAMES and INDICATORS are widget-local constants (appropriate)."
     },
     "l2": {

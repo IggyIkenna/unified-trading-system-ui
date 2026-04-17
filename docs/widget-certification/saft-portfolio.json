@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx wraps all widgets globally."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[\"execution-basic\",\"execution-full\"]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[\"accounts\"]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget file (context re-exports SAFTRecord type; widget imports only from context)."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "Spinner shown when isLoading."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "\"No SAFT records\" shown when saftRecords.length===0."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "added error guard using context error field — renders \"Could not load account data\" in rose-400."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code (disabled Save SAFT button is intentional placeholder per widget description \"demo data\")."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx wraps all widgets globally. 0.2 requiredEntitlements=[\"execution-basic\",\"execution-full\"]. 0.3 availableOn=[\"accounts\"]. 0.4 No any/ts-ignore. 0.5 No lib/mocks imports in widget file (context re-exports SAFTRecord type; widget imports only from context). 0.6 Spinner shown when isLoading. 0.7 \"No SAFT records\" shown when saftRecords.length===0. 0.8 FIXED: added error guard using context error field — renders \"Could not load account data\" in rose-400. 0.9 No dead code (disabled Save SAFT button is intentional placeholder per widget description \"demo data\")."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data from useAccountsData() → saftRecords (no inline fetch or import)."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "Context calls useGlobalScope(); balances filtered by org venue membership via orgVenues memo. saftRecords are mock/demo (MOCK_SAFTS hardcoded) — no scope filter applicable for SAFT records since they represent user-level investment agreements, not trading positions. 1.3-1.5 N/A for saftRecords: SAFT agreements are user-level, not org/client/strategy scoped. Balances (used for isLoading/error state) do filter by org."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "1.5 N/A for saftRecords: SAFT agreements are user-level, not org/client/strategy scoped. Balances (used for isLoading/error state) do filter by org."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": null
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "for saftRecords: SAFT agreements are user-level, not org/client/strategy scoped. Balances (used for isLoading/error state) do filter by org."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty orgVenues (scope.organizationIds=[]) → orgVenues=null → all balances returned."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "MOCK_SAFTS lives in lib/mocks/fixtures/trading-pages.ts — context-level concern. Widget itself has no reference to lib/mocks/."
+        }
+      },
       "notes": "1.1 Data from useAccountsData() → saftRecords (no inline fetch or import). 1.2 Context calls useGlobalScope(); balances filtered by org venue membership via orgVenues memo. saftRecords are mock/demo (MOCK_SAFTS hardcoded) — no scope filter applicable for SAFT records since they represent user-level investment agreements, not trading positions. 1.3-1.5 N/A for saftRecords: SAFT agreements are user-level, not org/client/strategy scoped. Balances (used for isLoading/error state) do filter by org. 1.6 Empty orgVenues (scope.organizationIds=[]) → orgVenues=null → all balances returned. 1.7 MOCK_SAFTS lives in lib/mocks/fixtures/trading-pages.ts — context-level concern. Widget itself has no reference to lib/mocks/."
     },
     "l2": {

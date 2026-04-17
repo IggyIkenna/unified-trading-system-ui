@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "— WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "— requiredEntitlements: [execution-basic, execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "— availableOn: [instructions]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "— no any types or @ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "— no lib/mocks imports in widget file."
+        },
+        "0.6": {
+          "result": "n/a",
+          "note": "— pure detail/selection panel; no async data fetch; content is driven by selectedInstruction from context which is a derived memo over already-loaded data."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "— renders 'Select a row in the instruction pipeline table to view detail here.' when selectedInstruction is null."
+        },
+        "0.8": {
+          "result": "n/a",
+          "note": "— no async fetch; error state is not reachable in this widget."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "— no dead code."
+        }
+      },
       "notes": "0.1 PASS — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 PASS — requiredEntitlements: [execution-basic, execution-full]. 0.3 PASS — availableOn: [instructions]. 0.4 PASS — no any types or @ts-ignore. 0.5 PASS — no lib/mocks imports in widget file. 0.6 N/A — pure detail/selection panel; no async data fetch; content is driven by selectedInstruction from context which is a derived memo over already-loaded data. 0.7 PASS — renders 'Select a row in the instruction pipeline table to view detail here.' when selectedInstruction is null. 0.8 N/A — no async fetch; error state is not reachable in this widget. 0.9 PASS — no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "— data sourced exclusively from useInstructionsData() hook via selectedInstruction derived value."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "— context calls useGlobalScope(); filteredInstructions (which drives selectedInstruction lookup) is scope-filtered."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "— org filter changes filteredInstructions; selectedInstruction is looked up within filteredInstructions so org change propagates."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "— client filter cascades through scopeStrategyIds into filteredInstructions."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "— strategy filter cascades the same way."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "— empty scope arrays result in unfiltered dataset in context."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "— no reference data constants defined in this widget; config constants live in lib/config/."
+        }
+      },
       "notes": "1.1 PASS — data sourced exclusively from useInstructionsData() hook via selectedInstruction derived value. 1.2 PASS — context calls useGlobalScope(); filteredInstructions (which drives selectedInstruction lookup) is scope-filtered. 1.3 PASS — org filter changes filteredInstructions; selectedInstruction is looked up within filteredInstructions so org change propagates. 1.4 PASS — client filter cascades through scopeStrategyIds into filteredInstructions. 1.5 PASS — strategy filter cascades the same way. 1.6 PASS — empty scope arrays result in unfiltered dataset in context. 1.7 PASS — no reference data constants defined in this widget; config constants live in lib/config/."
     },
     "l2": {

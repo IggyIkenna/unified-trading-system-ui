@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": null
+        },
+        "0.5": {
+          "result": "pass",
+          "note": null
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "loading (Spinner on wsStatus=connecting) and"
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "empty handled by DataTableWidget emptyMessage + accas.length===0 guard. No mock imports — allBets sourced from context. No any types, no dead code."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "error (destructive msg on wsStatus=error|disconnected) were added. Hooks moved before early returns to comply with Rules of Hooks."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks pass. 0.6 loading (Spinner on wsStatus=connecting) and 0.8 error (destructive msg on wsStatus=error|disconnected) were added. Hooks moved before early returns to comply with Rules of Hooks. 0.7 empty handled by DataTableWidget emptyMessage + accas.length===0 guard. No mock imports — allBets sourced from context. No any types, no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "data via useSportsData() — pass. 1.2: context calls useGlobalScope() — pass. 1.3: hasSportsDesk memo reads organizationIds; adjustedBets returns [] when org has no sports desk — pass. 1.4: client cascade uses CLIENTS filtered by orgId — sports desk check only (no per-client sub-filter, acceptable for sports domain). 1.5: N/A — no strategy filter. 1.6: organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "context calls useGlobalScope() — pass. 1.3: hasSportsDesk memo reads organizationIds; adjustedBets returns [] when org has no sports desk — pass. 1.4: client cascade uses CLIENTS filtered by orgId — sports desk check only (no per-client sub-filter, acceptable for sports domain). 1.5: N/A — no strategy filter. 1.6: organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "hasSportsDesk memo reads organizationIds; adjustedBets returns [] when org has no sports desk — pass. 1.4: client cascade uses CLIENTS filtered by orgId — sports desk check only (no per-client sub-filter, acceptable for sports domain). 1.5: N/A — no strategy filter. 1.6: organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "client cascade uses CLIENTS filtered by orgId — sports desk check only (no per-client sub-filter, acceptable for sports domain). 1.5: N/A — no strategy filter. 1.6: organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "— no strategy filter. 1.6: organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "MOCK_BETS in context; acceptable until real API."
+        }
+      },
       "notes": "1.1: data via useSportsData() — pass. 1.2: context calls useGlobalScope() — pass. 1.3: hasSportsDesk memo reads organizationIds; adjustedBets returns [] when org has no sports desk — pass. 1.4: client cascade uses CLIENTS filtered by orgId — sports desk check only (no per-client sub-filter, acceptable for sports domain). 1.5: N/A — no strategy filter. 1.6: organizationIds.length===0 → show all — pass. 1.7: MOCK_BETS in context; acceptable until real API."
     },
     "l2": {

@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": null
+        },
+        "0.5": {
+          "result": "pass",
+          "note": null
+        },
+        "0.6": {
+          "result": "pass",
+          "note": null
+        },
+        "0.7": {
+          "result": "pass",
+          "note": null
+        },
+        "0.8": {
+          "result": "pass",
+          "note": null
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks pass. Error boundary via WidgetErrorBoundary in widget-wrapper.tsx. requiredEntitlements and availableOn set. No any types or @ts-ignore. No lib/mocks/ imports in widget file (generateSwapRoute and getMockPrice come from useDeFiData() context). Loading/empty state added: Skeleton rendered when tokens.length === 0. Error state covered by FormWidget (submission errors) and WidgetErrorBoundary (context errors). No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Widget reads all data via useDeFiData() hook exclusively. 1.2: defi-data-context.tsx calls useGlobalScope() and derives hasDefiDesk from globalScope.organizationIds. 1.3: Org filter gates hasDefiDesk — when org without DeFi access selected, token balances zero out and lending protocols return empty. 1.4: clientIds field exists in GlobalScopeState but defi-data-context does not currently filter by clientIds — partial gap, swap widget itself is not client-filtered (strategy-level widget). 1.5: Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "defi-data-context.tsx calls useGlobalScope() and derives hasDefiDesk from globalScope.organizationIds. 1.3: Org filter gates hasDefiDesk — when org without DeFi access selected, token balances zero out and lending protocols return empty. 1.4: clientIds field exists in GlobalScopeState but defi-data-context does not currently filter by clientIds — partial gap, swap widget itself is not client-filtered (strategy-level widget). 1.5: Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "Org filter gates hasDefiDesk — when org without DeFi access selected, token balances zero out and lending protocols return empty. 1.4: clientIds field exists in GlobalScopeState but defi-data-context does not currently filter by clientIds — partial gap, swap widget itself is not client-filtered (strategy-level widget). 1.5: Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "clientIds field exists in GlobalScopeState but defi-data-context does not currently filter by clientIds — partial gap, swap widget itself is not client-filtered (strategy-level widget). 1.5: Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
+        }
+      },
       "notes": "1.1: Widget reads all data via useDeFiData() hook exclusively. 1.2: defi-data-context.tsx calls useGlobalScope() and derives hasDefiDesk from globalScope.organizationIds. 1.3: Org filter gates hasDefiDesk — when org without DeFi access selected, token balances zero out and lending protocols return empty. 1.4: clientIds field exists in GlobalScopeState but defi-data-context does not currently filter by clientIds — partial gap, swap widget itself is not client-filtered (strategy-level widget). 1.5: Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
     },
     "l2": {

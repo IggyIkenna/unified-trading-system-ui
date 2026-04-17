@@ -11,80 +11,14 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "checks": {
-        "0.1": {
-          "status": "pass",
-          "note": "WidgetErrorBoundary wraps all widgets globally in widget-wrapper.tsx — verified present."
-        },
-        "0.2": {
-          "status": "pass",
-          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"] set in register.ts."
-        },
-        "0.3": {
-          "status": "pass",
-          "note": "availableOn: [\"accounts\"] set in register.ts."
-        },
-        "0.4": {
-          "status": "pass",
-          "note": "No `any` types or @ts-ignore found in widget file."
-        },
-        "0.5": {
-          "status": "pass",
-          "note": "No lib/mocks/ imports in widget file. Config constants sourced from lib/config/services/accounts.config.ts."
-        },
-        "0.6": {
-          "status": "fixed",
-          "note": "Wired isLoading from useAccountsData() into FormWidget isLoading prop — renders skeleton on load."
-        },
-        "0.7": {
-          "status": "fixed",
-          "note": "Added empty guard: when !isLoading && balances.length === 0, renders 'No accounts available' message."
-        },
-        "0.8": {
-          "status": "fixed",
-          "note": "Combined contextError.message and submitError into displayError; passed as error prop to FormWidget."
-        },
-        "0.9": {
-          "status": "fixed",
-          "note": "handleCopyAddress was missing navigator.clipboard.writeText — the copy button set UI state but silently discarded the address. Added the actual clipboard write."
-        }
-      },
+      "checks": {},
       "notes": "4 fixes applied: loading state, empty state, error state, dead clipboard write."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "checks": {
-        "1.1": {
-          "status": "pass",
-          "note": "All data (balances, addTransferEntry) sourced exclusively via useAccountsData() hook. No inline fetch or direct imports."
-        },
-        "1.2": {
-          "status": "pass",
-          "note": "accounts-data-context.tsx calls useGlobalScope() (line 6) and derives orgVenues from globalScope.organizationIds."
-        },
-        "1.3": {
-          "status": "pass",
-          "note": "When org filter changes, orgVenues recomputes and balances are re-filtered to only include venues belonging to selected orgs."
-        },
-        "1.4": {
-          "status": "N/A",
-          "note": "No client-level filter concept in accounts domain — accounts are scoped per org/venue only."
-        },
-        "1.5": {
-          "status": "N/A",
-          "note": "No strategy filter applicable to the transfer panel widget."
-        },
-        "1.6": {
-          "status": "pass",
-          "note": "orgVenues is null when organizationIds is empty (line 77 in context) — null means no filter applied, all balances returned."
-        },
-        "1.7": {
-          "status": "pass",
-          "note": "CEFI_VENUES, NETWORKS, SUB_ACCOUNTS, TRANSFER_ASSETS are in lib/config/services/accounts.config.ts. MOCK_SAFTS is still in lib/mocks/ but lives in context file only (read-only for this cert). Noted as context-level L1.7 gap — out of scope for widget file fix."
-        }
-      },
+      "checks": {},
       "notes": "Clean data flow. Context correctly gates on org scope. 1.4 and 1.5 are N/A — transfer panel has no client or strategy dimension. One context-level note: MOCK_SAFTS in context still references lib/mocks/ but is outside this widget's fix scope."
     },
     "l2": {

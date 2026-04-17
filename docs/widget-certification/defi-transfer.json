@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": null
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "stale known-issue cleared — getMockPrice and chainPortfolios already flow through useDeFiData() context, no direct mock imports in widget."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": null
+        },
+        "0.7": {
+          "result": "pass",
+          "note": null
+        },
+        "0.8": {
+          "result": "pass",
+          "note": null
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks pass. Fixed: (1) added isLoading={false} placeholder to FormWidget for future real-data wiring, (2) added empty state guard for null connectedWallet, (3) removed duplicate isFastest badge branch (dead code). 0.5 stale known-issue cleared — getMockPrice and chainPortfolios already flow through useDeFiData() context, no direct mock imports in widget."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data exclusively from useDeFiData() hook — pass. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 — pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "defi-data-context.tsx calls useGlobalScope() at line 188 — pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+        }
+      },
       "notes": "1.1: Data exclusively from useDeFiData() hook — pass. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 — pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
     },
     "l2": {

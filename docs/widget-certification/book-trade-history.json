@@ -11,80 +11,14 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "checks": {
-        "0.1": {
-          "status": "pass",
-          "note": "WidgetErrorBoundary wraps all widgets globally in widget-wrapper.tsx — confirmed present."
-        },
-        "0.2": {
-          "status": "pass",
-          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"] set in register.ts."
-        },
-        "0.3": {
-          "status": "pass",
-          "note": "availableOn: [\"book\"] set in register.ts."
-        },
-        "0.4": {
-          "status": "pass",
-          "note": "No `any` types or @ts-ignore in widget file."
-        },
-        "0.5": {
-          "status": "pass",
-          "note": "No lib/mocks/ imports in widget file. All data sourced via useBookTradeData() context hook."
-        },
-        "0.6": {
-          "status": "N/A",
-          "note": "book-data-context.tsx derives trades synchronously (getTradesForScope + getLedgerOrders are synchronous). No isLoading state is exposed from the context. TableWidget's isLoading prop is not wired because there is no async data fetch path. Will become applicable when the context moves to a real API hook."
-        },
-        "0.7": {
-          "status": "pass",
-          "note": "TableWidget receives emptyMessage='No trades match your search' — DataTable renders this when filtered array is empty, covering both no-data and no-search-match cases."
-        },
-        "0.8": {
-          "status": "N/A",
-          "note": "book-data-context.tsx exposes no error state for trades (synchronous mock derivation). TableWidget's error prop is not wired. Will become applicable when context moves to a real API hook."
-        },
-        "0.9": {
-          "status": "pass",
-          "note": "No commented-out code, dead branches, or unreachable stubs found."
-        }
-      },
+      "checks": {},
       "notes": "7 checks pass, 2 N/A (0.6 and 0.8 — context is synchronous, no loading/error path exposed). No fixes required in widget file."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
-      "checks": {
-        "1.1": {
-          "status": "pass",
-          "note": "trades sourced exclusively via useBookTradeData().trades. No inline fetch or direct mock imports in widget file."
-        },
-        "1.2": {
-          "status": "pass",
-          "note": "book-data-context.tsx calls useGlobalScope() (line 147) and passes scope arrays into getTradesForScope(globalScope.organizationIds, globalScope.clientIds, globalScope.strategyIds) to derive scopedTrades."
-        },
-        "1.3": {
-          "status": "pass",
-          "note": "When org filter changes, globalScope.organizationIds changes, scopedTrades recomputes via useMemo, and the trade table reflects only trades for strategies belonging to the selected org."
-        },
-        "1.4": {
-          "status": "pass",
-          "note": "Client filter cascades: resolveStrategyIds in mock-data-index.ts filters strategies by clientId, then trades by strategyId — client scope narrows the trade set."
-        },
-        "1.5": {
-          "status": "pass",
-          "note": "Strategy filter cascades: resolveStrategyIds returns strategyIds directly when non-empty, scoping trades to exactly the selected strategies."
-        },
-        "1.6": {
-          "status": "pass",
-          "note": "resolveStrategyIds returns null when all three scope arrays are empty, and getTradesForScope returns the full SEED_TRADES set — empty scope = all data (plus ledger trades)."
-        },
-        "1.7": {
-          "status": "pass",
-          "note": "Widget file imports no reference data. STATUS_COLORS uses CSS variables from the design token system. No constants in lib/mocks/."
-        }
-      },
+      "checks": {},
       "notes": "Data flow is clean. Context correctly reads global scope and applies org → client → strategy cascade to filter book trades. Empty scope returns all data. 1.7: context-level MOCK_TRADES reference in lib/mocks/ is a known issue flagged separately."
     },
     "l2": {

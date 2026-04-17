@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": null
+        },
+        "0.2": {
+          "result": "pass",
+          "note": null
+        },
+        "0.3": {
+          "result": "pass",
+          "note": null
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "confidence field is optional in Prediction type — fixed undefined guard. 0.5: removed MOCK_FIXTURES import; now uses allFixtures from useSportsData() for league lookup. MOCK_PREDICTIONS remains — SportsDataContext does not expose predictions (context gap, noted in findings). 0.6/0.8: loading/error guards added."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "MOCK_FIXTURES import; now uses allFixtures from useSportsData() for league lookup. MOCK_PREDICTIONS remains — SportsDataContext does not expose predictions (context gap, noted in findings). 0.6/0.8: loading/error guards added."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "/0.8: loading/error guards added."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "empty guard was present. Added missing WidgetComponentProps signature. No dead code."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "loading/error guards added."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": null
+        }
+      },
       "notes": "All 9 checks pass. 0.4: confidence field is optional in Prediction type — fixed undefined guard. 0.5: removed MOCK_FIXTURES import; now uses allFixtures from useSportsData() for league lookup. MOCK_PREDICTIONS remains — SportsDataContext does not expose predictions (context gap, noted in findings). 0.6/0.8: loading/error guards added. 0.7 empty guard was present. Added missing WidgetComponentProps signature. No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "data via useSportsData() for fixtures; MOCK_PREDICTIONS is a context gap (predictions not in SportsDataContextValue) — needs context promotion. 1.2: context calls useGlobalScope() — pass. 1.3: league filter applies via allFixtures from context — pass. 1.4: N/A for predictions (no client sub-filter). 1.5: N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "context calls useGlobalScope() — pass. 1.3: league filter applies via allFixtures from context — pass. 1.4: N/A for predictions (no client sub-filter). 1.5: N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "league filter applies via allFixtures from context — pass. 1.4: N/A for predictions (no client sub-filter). 1.5: N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        },
+        "1.4": {
+          "result": "n/a",
+          "note": "for predictions (no client sub-filter). 1.5: N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
+        }
+      },
       "notes": "1.1: data via useSportsData() for fixtures; MOCK_PREDICTIONS is a context gap (predictions not in SportsDataContextValue) — needs context promotion. 1.2: context calls useGlobalScope() — pass. 1.3: league filter applies via allFixtures from context — pass. 1.4: N/A for predictions (no client sub-filter). 1.5: N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
     },
     "l2": {

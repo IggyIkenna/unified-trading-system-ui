@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "verified via widget-wrapper.tsx WidgetErrorBoundary. 0.2/0.3 verified in register.ts."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "/0.3 verified in register.ts."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "verified in register.ts."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "); removed mock-backed useHasDefiStrategies + DeFi Delta card (0.9); added Skeleton loading state (0.6); added empty state guard (0.7)."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "); added empty state guard (0.7)."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": ")."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "covered by global boundary."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "); added Skeleton loading state (0.6); added empty state guard (0.7)."
+        }
+      },
       "notes": "All 9 checks green. Fixed: removed MOCK_PORTFOLIO_DELTA+STRATEGY_RISK_PROFILES imports (0.5); removed mock-backed useHasDefiStrategies + DeFi Delta card (0.9); added Skeleton loading state (0.6); added empty state guard (0.7). 0.1 verified via widget-wrapper.tsx WidgetErrorBoundary. 0.2/0.3 verified in register.ts. 0.4 no any/ts-ignore. 0.8 covered by global boundary."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data via useOverviewDataSafe() hook only — no inline fetch. 1.2: Context itself (overview-data-context.tsx) is a thin provider; scope reading lives in use-overview-page-data.ts which calls useGlobalScope() and filters strategyPerformance/alerts by organizationIds/clientIds/strategyIds before passing into the context value — satisfies the spirit of"
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "Context itself (overview-data-context.tsx) is a thin provider; scope reading lives in use-overview-page-data.ts which calls useGlobalScope() and filters strategyPerformance/alerts by organizationIds/clientIds/strategyIds before passing into the context value — satisfies the spirit of"
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "Org filter changes strategyPerformance via getStrategiesForScope(organizationIds,...) in use-overview-page-data.ts — data changes. 1.4: Client filter cascades via clientIds filter in strategyPerformance useMemo. 1.5: Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "Client filter cascades via clientIds filter in strategyPerformance useMemo. 1.5: Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+        }
+      },
       "notes": "1.1: Data via useOverviewDataSafe() hook only — no inline fetch. 1.2: Context itself (overview-data-context.tsx) is a thin provider; scope reading lives in use-overview-page-data.ts which calls useGlobalScope() and filters strategyPerformance/alerts by organizationIds/clientIds/strategyIds before passing into the context value — satisfies the spirit of 1.2 for this provider pattern. 1.3: Org filter changes strategyPerformance via getStrategiesForScope(organizationIds,...) in use-overview-page-data.ts — data changes. 1.4: Client filter cascades via clientIds filter in strategyPerformance useMemo. 1.5: Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
     },
     "l2": {

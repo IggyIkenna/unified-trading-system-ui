@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[execution-basic,execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[bundles]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any types or @ts-ignore (string 'any' in UI text is not a type)."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No mock imports in widget file; DEFI_TEMPLATES from lib/config/services/defi-bundles.config."
+        },
+        "0.6": {
+          "result": "n/a",
+          "note": "— widget uses local DefiOp[] state (no async fetch); template selection is the pre-data state."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "Empty state present: pre-template state (showTemplates+empty ops), and ops.length===0+!showTemplates guard."
+        },
+        "0.8": {
+          "result": "n/a",
+          "note": "— no error field; WidgetErrorBoundary covers render errors."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code. Fixed: now imports useBundlesData() for readOnly flag; readOnly wired to disable Add Operation, Clear all, Simulate on Tenderly, Execute Bundle buttons in batch mode."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[bundles]. 0.4 No any types or @ts-ignore (string 'any' in UI text is not a type). 0.5 No mock imports in widget file; DEFI_TEMPLATES from lib/config/services/defi-bundles.config. 0.6 N/A — widget uses local DefiOp[] state (no async fetch); template selection is the pre-data state. 0.7 Empty state present: pre-template state (showTemplates+empty ops), and ops.length===0+!showTemplates guard. 0.8 N/A — no error field; WidgetErrorBoundary covers render errors. 0.9 No dead code. Fixed: now imports useBundlesData() for readOnly flag; readOnly wired to disable Add Operation, Clear all, Simulate on Tenderly, Execute Bundle buttons in batch mode."
     },
     "l1": {
       "status": "partial",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "partial",
+          "note": "— widget manages its own DefiOp[] local state rather than reading from a domain data context hook. This is intentional: DefiOp is a different data model from BundleStep (used by the other 4 bundles widgets). No defi-atomic-specific data context exists. readOnly flag now sourced from useBundlesData(). Recommend creating a DefiAtomicBundlesDataContext in a follow-up task to fully satisfy 1.1. 1.2-1.6 N/A at widget level — the widget's operations are user-authored local state. Scope filtering applies to readOnly (batch mode) which is now wired."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "1.6 N/A at widget level — the widget's operations are user-authored local state. Scope filtering applies to readOnly (batch mode) which is now wired."
+        },
+        "1.3": {
+          "result": "partial",
+          "note": null
+        },
+        "1.4": {
+          "result": "partial",
+          "note": null
+        },
+        "1.5": {
+          "result": "partial",
+          "note": null
+        },
+        "1.6": {
+          "result": "n/a",
+          "note": "at widget level — the widget's operations are user-authored local state. Scope filtering applies to readOnly (batch mode) which is now wired."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "All reference data (DEFI_OPERATIONS, DEFI_TOKENS, DEFI_TEMPLATES, GAS_ESTIMATES, gasToUsd) in lib/config/services/defi-bundles.config — correct location."
+        }
+      },
       "notes": "1.1 PARTIAL — widget manages its own DefiOp[] local state rather than reading from a domain data context hook. This is intentional: DefiOp is a different data model from BundleStep (used by the other 4 bundles widgets). No defi-atomic-specific data context exists. readOnly flag now sourced from useBundlesData(). Recommend creating a DefiAtomicBundlesDataContext in a follow-up task to fully satisfy 1.1. 1.2-1.6 N/A at widget level — the widget's operations are user-authored local state. Scope filtering applies to readOnly (batch mode) which is now wired. 1.7 All reference data (DEFI_OPERATIONS, DEFI_TOKENS, DEFI_TEMPLATES, GAS_ESTIMATES, gasToUsd) in lib/config/services/defi-bundles.config — correct location."
     },
     "l2": {

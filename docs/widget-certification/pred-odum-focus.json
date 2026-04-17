@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2: requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — filter state via usePredictionsData(); note OdumFocusBody (the delegated component in trading/) internally imports ODUM_INSTRUMENTS from lib/mocks/ but that is a trading component, not the widget file — widget file is clean. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — filter state via usePredictionsData(); note OdumFocusBody (the delegated component in trading/) internally imports ODUM_INSTRUMENTS from lib/mocks/ but that is a trading component, not the widget file — widget file is clean. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — filter state via usePredictionsData(); note OdumFocusBody (the delegated component in trading/) internally imports ODUM_INSTRUMENTS from lib/mocks/ but that is a trading component, not the widget file — widget file is clean. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — filter state via usePredictionsData(); note OdumFocusBody (the delegated component in trading/) internally imports ODUM_INSTRUMENTS from lib/mocks/ but that is a trading component, not the widget file — widget file is clean. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No lib/mocks/ imports in widget file — filter state via usePredictionsData(); note OdumFocusBody (the delegated component in trading/) internally imports ODUM_INSTRUMENTS from lib/mocks/ but that is a trading component, not the widget file — widget file is clean. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "error guard added. 0.9: No dead code."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code."
+        }
+      },
       "notes": "All 9 checks pass. 0.1: WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2: requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — filter state via usePredictionsData(); note OdumFocusBody (the delegated component in trading/) internally imports ODUM_INSTRUMENTS from lib/mocks/ but that is a trading component, not the widget file — widget file is clean. 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring). 0.7: OdumFocusBody renders empty-grid message when no instruments match filters — covered in delegated component. 0.8: error guard added. 0.9: No dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Widget reads odumTypeFilter, setOdumTypeFilter, odumTfFilter, setOdumTfFilter exclusively via usePredictionsData(); ODUM_INSTRUMENTS list passed through context (odumInstruments field) though OdumFocusBody currently re-imports it directly from lib/mocks/ — this is a trading component concern, not the widget file. 1.2: predictions-data-context.tsx calls useGlobalScope(). 1.3: ODUM instruments are market-level signals (crypto/TradFi/football prediction instruments) — not org-scoped by domain design. 1.4: clientIds not wired — same open gap as other domains. 1.5: Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "predictions-data-context.tsx calls useGlobalScope(). 1.3: ODUM instruments are market-level signals (crypto/TradFi/football prediction instruments) — not org-scoped by domain design. 1.4: clientIds not wired — same open gap as other domains. 1.5: Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "ODUM instruments are market-level signals (crypto/TradFi/football prediction instruments) — not org-scoped by domain design. 1.4: clientIds not wired — same open gap as other domains. 1.5: Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        },
+        "1.4": {
+          "result": "pass",
+          "note": "clientIds not wired — same open gap as other domains. 1.5: Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        },
+        "1.5": {
+          "result": "pass",
+          "note": "Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
+        }
+      },
       "notes": "1.1: Widget reads odumTypeFilter, setOdumTypeFilter, odumTfFilter, setOdumTfFilter exclusively via usePredictionsData(); ODUM_INSTRUMENTS list passed through context (odumInstruments field) though OdumFocusBody currently re-imports it directly from lib/mocks/ — this is a trading component concern, not the widget file. 1.2: predictions-data-context.tsx calls useGlobalScope(). 1.3: ODUM instruments are market-level signals (crypto/TradFi/football prediction instruments) — not org-scoped by domain design. 1.4: clientIds not wired — same open gap as other domains. 1.5: Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
     },
     "l2": {

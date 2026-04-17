@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "— WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "— requiredEntitlements: ['options-trading']."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "— availableOn: ['options']."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "— no any types or @ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "— widget file does not import from lib/mocks/."
+        },
+        "0.6": {
+          "result": "partial",
+          "note": "— context (options-data-context.tsx) exposes no isLoading field; synchronous mock data; loading state cannot be wired at widget level without context changes."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "— TradePanel renders 'Click a row to select' when instrument is null (selectedFuture === null); widget also shows instructional hint text above TradePanel."
+        },
+        "0.8": {
+          "result": "partial",
+          "note": "— context exposes no error field; error state cannot be wired at widget level without context changes."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "— no dead code."
+        }
+      },
       "notes": "0.1 pass — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 pass — requiredEntitlements: ['options-trading']. 0.3 pass — availableOn: ['options']. 0.4 pass — no any types or @ts-ignore. 0.5 pass — widget file does not import from lib/mocks/. 0.6 finding — context (options-data-context.tsx) exposes no isLoading field; synchronous mock data; loading state cannot be wired at widget level without context changes. 0.7 pass — TradePanel renders 'Click a row to select' when instrument is null (selectedFuture === null); widget also shows instructional hint text above TradePanel. 0.8 finding — context exposes no error field; error state cannot be wired at widget level without context changes. 0.9 pass — no dead code."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "— widget reads selectedFuture exclusively from useOptionsData()."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "— options-data-context.tsx calls useGlobalScope() (line 130)."
+        },
+        "1.3": {
+          "result": "n/a",
+          "note": "— futures trade panel is an order entry form; scope org filter does not directly affect selected future instrument display."
+        },
+        "1.4": {
+          "result": "n/a",
+          "note": "— no client filter applicable to trade panel."
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "— no strategy filter applicable."
+        },
+        "1.6": {
+          "result": "n/a",
+          "note": "— pure order entry; no data list to filter."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "— no reference data in widget file; TradePanel sub-component uses mock fixtures (outside widget file scope)."
+        }
+      },
       "notes": "1.1 pass — widget reads selectedFuture exclusively from useOptionsData(). 1.2 pass — options-data-context.tsx calls useGlobalScope() (line 130). 1.3 N/A — futures trade panel is an order entry form; scope org filter does not directly affect selected future instrument display. 1.4 N/A — no client filter applicable to trade panel. 1.5 N/A — no strategy filter applicable. 1.6 N/A — pure order entry; no data list to filter. 1.7 pass — no reference data in widget file; TradePanel sub-component uses mock fixtures (outside widget file scope)."
     },
     "l2": {

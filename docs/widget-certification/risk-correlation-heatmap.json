@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary via widget-wrapper."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements: [execution-basic, execution-full]."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn: [risk]."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "no any/ts-ignore."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "no lib/mocks import."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "sub-component (CorrelationHeatmap) renders Skeleton rows during isLoading."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "sub-component renders 'No correlation data available' when empty."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "— sub-component now checks isError from useCorrelationMatrix and renders error message."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "no dead code. Architecture note: widget uses Next.js dynamic import delegating to components/risk/correlation-heatmap.tsx which owns its own useCorrelationMatrix hook — L0 checks satisfied at sub-component level."
+        }
+      },
       "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks import. 0.6 ✓ sub-component (CorrelationHeatmap) renders Skeleton rows during isLoading. 0.7 ✓ sub-component renders 'No correlation data available' when empty. 0.8 FIXED — sub-component now checks isError from useCorrelationMatrix and renders error message. 0.9 ✓ no dead code. Architecture note: widget uses Next.js dynamic import delegating to components/risk/correlation-heatmap.tsx which owns its own useCorrelationMatrix hook — L0 checks satisfied at sub-component level."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "CorrelationHeatmap sub-component reads exclusively from useCorrelationMatrix() API hook."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "useCorrelationMatrix calls useGlobalScope() internally (hooks/api/use-risk.ts line 175)."
+        },
+        "1.3": {
+          "result": "pass",
+          "note": "scope.mode fed into query key and API path (withMode helper)."
+        },
+        "1.4": {
+          "result": "n/a",
+          "note": "— correlation matrix is portfolio-level, no client-level cascade in this hook."
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "— no strategy-level filter for correlation matrix."
+        },
+        "1.6": {
+          "result": "pass",
+          "note": "no filter selection means full matrix returned."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "no reference data constants in this widget or sub-component."
+        }
+      },
       "notes": "1.1 ✓ CorrelationHeatmap sub-component reads exclusively from useCorrelationMatrix() API hook. 1.2 ✓ useCorrelationMatrix calls useGlobalScope() internally (hooks/api/use-risk.ts line 175). 1.3 ✓ scope.mode fed into query key and API path (withMode helper). 1.4 N/A — correlation matrix is portfolio-level, no client-level cascade in this hook. 1.5 N/A — no strategy-level filter for correlation matrix. 1.6 ✓ no filter selection means full matrix returned. 1.7 ✓ no reference data constants in this widget or sub-component."
     },
     "l2": {

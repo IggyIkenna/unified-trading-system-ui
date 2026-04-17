@@ -11,12 +11,80 @@
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "0.1": {
+          "result": "pass",
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets — pass."
+        },
+        "0.2": {
+          "result": "pass",
+          "note": "requiredEntitlements=[\"data-basic\",\"data-pro\"] — pass."
+        },
+        "0.3": {
+          "result": "pass",
+          "note": "availableOn=[\"terminal\",\"overview\"] — pass."
+        },
+        "0.4": {
+          "result": "pass",
+          "note": "No any/ts-ignore — pass."
+        },
+        "0.5": {
+          "result": "pass",
+          "note": "No lib/mocks imports — pass."
+        },
+        "0.6": {
+          "result": "pass",
+          "note": "Loading handled inside CalendarEventFeed via useEconomicResults/useCorporateActions isLoading guards — pass."
+        },
+        "0.7": {
+          "result": "pass",
+          "note": "Empty states: \"No events in range\" and \"No corporate actions in range\" in CalendarEventFeed — pass."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "Error boundary in widget-wrapper covers render errors; CalendarEventFeed sub-hooks surface loading state — pass."
+        },
+        "0.9": {
+          "result": "pass",
+          "note": "No dead code — pass. NO FIXES REQUIRED."
+        }
+      },
       "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets — pass. 0.2 requiredEntitlements=[\"data-basic\",\"data-pro\"] — pass. 0.3 availableOn=[\"terminal\",\"overview\"] — pass. 0.4 No any/ts-ignore — pass. 0.5 No lib/mocks imports — pass. 0.6 Loading handled inside CalendarEventFeed via useEconomicResults/useCorporateActions isLoading guards — pass. 0.7 Empty states: \"No events in range\" and \"No corporate actions in range\" in CalendarEventFeed — pass. 0.8 Error boundary in widget-wrapper covers render errors; CalendarEventFeed sub-hooks surface loading state — pass. 0.9 No dead code — pass. NO FIXES REQUIRED."
     },
     "l1": {
       "status": "pass",
       "by": "agent",
       "date": "2026-04-17",
+      "checks": {
+        "1.1": {
+          "result": "pass",
+          "note": "Data sourced from useEconomicResults and useCorporateActions hooks (hooks/api/use-calendar.ts) via CalendarEventFeed — no inline fetch/import in widget file — pass."
+        },
+        "1.2": {
+          "result": "pass",
+          "note": "hooks/api/use-calendar.ts uses useAuth() for user-scoped queries; terminal-data-context.tsx calls useGlobalScope() for instrument/account scope — calendar data is user-scoped but not filtered by org/client/strategy (correct for an economic calendar domain) — N/A for org/client/strategy filtering."
+        },
+        "1.3": {
+          "result": "n/a",
+          "note": "— calendar data is global macro/corporate-action data, not org-filtered."
+        },
+        "1.4": {
+          "result": "n/a",
+          "note": "— calendar data is not client-scoped."
+        },
+        "1.5": {
+          "result": "n/a",
+          "note": "— calendar data is not strategy-scoped."
+        },
+        "1.6": {
+          "result": "n/a",
+          "note": "— no scope filtering applies; hook fetches all events in the time window."
+        },
+        "1.7": {
+          "result": "pass",
+          "note": "No reference data in lib/mocks — pass."
+        }
+      },
       "notes": "1.1 Data sourced from useEconomicResults and useCorporateActions hooks (hooks/api/use-calendar.ts) via CalendarEventFeed — no inline fetch/import in widget file — pass. 1.2 hooks/api/use-calendar.ts uses useAuth() for user-scoped queries; terminal-data-context.tsx calls useGlobalScope() for instrument/account scope — calendar data is user-scoped but not filtered by org/client/strategy (correct for an economic calendar domain) — N/A for org/client/strategy filtering. 1.3 N/A — calendar data is global macro/corporate-action data, not org-filtered. 1.4 N/A — calendar data is not client-scoped. 1.5 N/A — calendar data is not strategy-scoped. 1.6 N/A — no scope filtering applies; hook fetches all events in the time window. 1.7 No reference data in lib/mocks — pass."
     },
     "l2": {
