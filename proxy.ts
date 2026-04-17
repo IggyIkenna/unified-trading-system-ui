@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const STAGING_HOSTS = ["odum-research.co.uk", "www.odum-research.co.uk"];
+
 const MARKETING_ROUTES: Record<string, string> = {
   "/": "/homepage.html",
   "/investment-management": "/strategies.html",
@@ -10,15 +12,14 @@ const MARKETING_ROUTES: Record<string, string> = {
   "/contact": "/contact.html",
 };
 
-const PLATFORM_PREFIXES = ["/dashboard", "/services/", "/admin", "/api/"];
-
 export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const host = request.headers.get("host")?.replace(/:\d+$/, "") ?? "";
 
-  if (PLATFORM_PREFIXES.some((p) => pathname.startsWith(p))) {
+  if (!STAGING_HOSTS.includes(host)) {
     return NextResponse.next();
   }
 
+  const { pathname } = request.nextUrl;
   const staticFile = MARKETING_ROUTES[pathname];
   if (staticFile) {
     return NextResponse.rewrite(new URL(staticFile, request.url));

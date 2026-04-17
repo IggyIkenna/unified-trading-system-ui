@@ -63,7 +63,7 @@ bash scripts/deploy-cloud-run.sh
 
 This runs: local Docker build → push to Artifact Registry → deploy to Cloud Run → route 100% traffic → clean up old revisions.
 
-Both `.com` and `.co.uk` are updated because they serve from the same Cloud Run service.
+Both `.com` and `.co.uk` are served from the same Cloud Run service, but `proxy.ts` uses host-based routing to serve different content (see Staging Hosts below).
 
 If you also need to update Firebase Hosting config (rare — only when `firebase.json` changes):
 
@@ -238,9 +238,31 @@ firebase deploy --only hosting --project=central-element-323112
 
 Use `deploy-cloud-run.sh` for day-to-day deploys. Use `deploy.sh --local` only if you also need to update Firebase Hosting configuration.
 
-### Routing: How Marketing Pages Are Served
+### Staging Hosts — How `.com` and `.co.uk` Serve Different Content
 
-The Next.js app serves both the marketing site (static HTML) and the platform (React app). Routing is handled by `proxy.ts`:
+Both domains point to the same Cloud Run service, but `proxy.ts` checks the `Host` header to decide what to serve:
+
+| Domain                  | What it serves                          |
+| ----------------------- | --------------------------------------- |
+| `odum-research.com`     | **Production React app** (auth, sign-in, full platform) |
+| `odum-research.co.uk`   | **Marketing pages** (static HTML, internal review) |
+| `localhost:*`           | **Production React app** (default)      |
+
+The staging host list is defined in `proxy.ts`:
+
+```typescript
+const STAGING_HOSTS = ["odum-research.co.uk", "www.odum-research.co.uk"];
+```
+
+Only requests with a `Host` header matching a staging host get rewritten to the static HTML marketing pages. All other hosts (including `.com`, `localhost`, and the raw Cloud Run URL) serve the normal Next.js React app.
+
+**To add a new staging host** (e.g. a preview domain): add it to `STAGING_HOSTS` in `proxy.ts`, rebuild and deploy.
+
+**To promote marketing pages to production** (`.com`): add `"odum-research.com"` to `STAGING_HOSTS`. This replaces the React landing page with the static marketing pages on `.com`. The platform routes (`/dashboard`, `/services/*`, `/admin`) are unaffected — they always serve the React app regardless of host.
+
+**WARNING:** Never remove the host check entirely. Doing so serves marketing pages on ALL hosts including `.com`, replacing the production sign-in flow.
+
+### Marketing Page Routes (`.co.uk` only)
 
 | URL path               | Serves              |
 | ---------------------- | -------------------- |
@@ -250,9 +272,8 @@ The Next.js app serves both the marketing site (static HTML) and the platform (R
 | `/regulatory`          | `public/regulatory.html` |
 | `/firm`                | `public/firm.html`       |
 | `/contact`             | `public/contact.html`    |
-| `/dashboard`, `/services/*`, `/admin` | Next.js React app |
 
-To add or rename a marketing page: edit `proxy.ts`, add the HTML file to `public/`, rebuild and deploy.
+To add or rename a marketing page: edit the `MARKETING_ROUTES` map in `proxy.ts`, add the HTML file to `public/`, rebuild and deploy.
 
 ### Environment Variables
 
