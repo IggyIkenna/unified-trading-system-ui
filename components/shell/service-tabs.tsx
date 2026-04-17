@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 
 import { TabSectionHelp } from "@/components/shell/tab-section-help";
 import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
+import { checkTradingEntitlement, isTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
 import { cn } from "@/lib/utils";
 import { isServiceTabActive } from "@/lib/utils/nav-helpers";
 import type { LucideIcon } from "lucide-react";
@@ -52,7 +53,7 @@ export interface ServiceTab {
   /** If true, only `href` matches (no prefix) — use for section index routes like `/ml` vs `/ml/training` */
   exact?: boolean;
   /** Entitlement required to access this tab (undefined = always accessible) */
-  requiredEntitlement?: string;
+  requiredEntitlement?: string | TradingEntitlement;
   /** When true, tab is visible but not navigable (e.g. promote lifecycle gating) */
   navDisabled?: boolean;
   navDisabledTitle?: string;
@@ -69,7 +70,7 @@ interface ServiceTabsProps {
   /** Optional right-side slot for Live/As-Of toggle or other controls */
   rightSlot?: React.ReactNode;
   /** User's current entitlements — used for FOMO locking */
-  entitlements?: readonly string[];
+  entitlements?: readonly (string | TradingEntitlement)[];
   className?: string;
   /** When `"end"`, tab links align to the right (e.g. promote detail toolbar). */
   tabsAlign?: "start" | "end";
@@ -123,7 +124,7 @@ export function ServiceTabs({
   tabsSpread = false,
 }: ServiceTabsProps) {
   const pathname = usePathname() || "";
-  const hasWildcard = entitlements?.includes("*") ?? true;
+  const hasWildcard = (entitlements as readonly unknown[] | undefined)?.includes("*") ?? true;
   const alignEnd = tabsAlign === "end" && !tabsSpread;
 
   const tabItemClass = tabsSpread
@@ -151,7 +152,11 @@ export function ServiceTabs({
           {tabs.map((tab) => {
             const isActive = isServiceTabActive(pathname, tab);
             const isLocked =
-              tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
+              tab.requiredEntitlement &&
+              !hasWildcard &&
+              (isTradingEntitlement(tab.requiredEntitlement)
+                ? !checkTradingEntitlement((entitlements as never) ?? [], tab.requiredEntitlement)
+                : !(entitlements as readonly string[] | undefined)?.includes(tab.requiredEntitlement as string));
 
             if (isLocked) {
               return (
@@ -326,7 +331,12 @@ export const TRADING_TABS: ServiceTab[] = [
   { label: "P&L", href: "/services/trading/pnl", icon: BarChart3 },
   { label: "Accounts", href: "/services/trading/accounts", icon: Wallet },
   { label: "Instructions", href: "/services/trading/instructions", icon: ScrollText },
-  { label: "Markets", href: "/services/trading/markets", icon: Activity, requiredEntitlement: "markets-data" },
+  {
+    label: "Markets",
+    href: "/services/trading/markets",
+    icon: Activity,
+    requiredEntitlement: { domain: "trading-common", tier: "basic" } as TradingEntitlement,
+  },
   { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
@@ -337,7 +347,7 @@ export const TRADING_TABS: ServiceTab[] = [
     familyGroup: "DeFi",
     familyIcon: "Layers",
     exact: true,
-    requiredEntitlement: "defi-trading",
+    requiredEntitlement: { domain: "trading-defi", tier: "basic" } as TradingEntitlement,
   },
   {
     label: "Bundles",
@@ -345,7 +355,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "DeFi",
     familyGroup: "DeFi",
-    requiredEntitlement: "defi-bundles",
+    requiredEntitlement: { domain: "trading-defi", tier: "basic" } as TradingEntitlement,
   },
   {
     label: "Staking",
@@ -353,7 +363,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: Layers,
     group: "DeFi",
     familyGroup: "DeFi",
-    requiredEntitlement: "defi-staking",
+    requiredEntitlement: { domain: "trading-defi", tier: "basic" } as TradingEntitlement,
   },
   // ── Sports family ─────────────────────────────────────────────────────────
   {
@@ -364,7 +374,7 @@ export const TRADING_TABS: ServiceTab[] = [
     familyGroup: "Sports",
     familyIcon: "Trophy",
     exact: true,
-    requiredEntitlement: "sports-trading",
+    requiredEntitlement: { domain: "trading-sports", tier: "basic" } as TradingEntitlement,
   },
   {
     label: "Place Bets",
@@ -372,7 +382,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: Zap,
     group: "Sports",
     familyGroup: "Sports",
-    requiredEntitlement: "sports-trading",
+    requiredEntitlement: { domain: "trading-sports", tier: "basic" } as TradingEntitlement,
   },
   {
     label: "Accumulators",
@@ -380,7 +390,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "Sports",
     familyGroup: "Sports",
-    requiredEntitlement: "sports-trading",
+    requiredEntitlement: { domain: "trading-sports", tier: "basic" } as TradingEntitlement,
   },
   // ── Options & Futures family ──────────────────────────────────────────────
   {
@@ -391,7 +401,7 @@ export const TRADING_TABS: ServiceTab[] = [
     familyGroup: "Options & Futures",
     familyIcon: "BarChart3",
     exact: true,
-    requiredEntitlement: "options-trading",
+    requiredEntitlement: { domain: "trading-options", tier: "basic" } as TradingEntitlement,
   },
   {
     label: "Combo Builder",
@@ -399,7 +409,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "Options & Futures",
     familyGroup: "Options & Futures",
-    requiredEntitlement: "options-trading",
+    requiredEntitlement: { domain: "trading-options", tier: "basic" } as TradingEntitlement,
   },
   {
     label: "Pricing",
@@ -408,14 +418,14 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: LineChart,
     group: "Options & Futures",
     familyGroup: "Options & Futures",
-    requiredEntitlement: "options-trading",
+    requiredEntitlement: { domain: "trading-options", tier: "basic" } as TradingEntitlement,
   },
   // ── Predictions family ────────────────────────────────────────────────────
   {
     label: "Predictions",
     href: "/services/trading/predictions",
     icon: Lightbulb,
-    requiredEntitlement: "predictions-trading",
+    requiredEntitlement: { domain: "trading-predictions", tier: "basic" } as TradingEntitlement,
     group: "Predictions",
     familyGroup: "Predictions",
     familyIcon: "TrendingUp",
@@ -427,7 +437,7 @@ export const TRADING_TABS: ServiceTab[] = [
     icon: GitFork,
     group: "Predictions",
     familyGroup: "Predictions",
-    requiredEntitlement: "predictions-trading",
+    requiredEntitlement: { domain: "trading-predictions", tier: "basic" } as TradingEntitlement,
   },
 ];
 

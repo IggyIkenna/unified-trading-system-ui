@@ -56,7 +56,7 @@ registerPresets("pnl", [
   },
 ]);
 
-const PNL_ENTITLEMENTS = ["execution-basic", "execution-full"] as const;
+const PNL_ENTITLEMENTS = [{ domain: "trading-common" as const, tier: "basic" as const }];
 
 registerWidget({
   id: "pnl-waterfall",

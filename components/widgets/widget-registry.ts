@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ComponentType } from "react";
+import type { TradingEntitlement } from "@/lib/config/auth";
 
 export interface WidgetComponentProps {
   instanceId: string;
@@ -21,7 +22,7 @@ export interface WidgetDefinition {
   defaultW: number;
   defaultH: number;
 
-  requiredEntitlements: string[];
+  requiredEntitlements: (string | TradingEntitlement)[];
   availableOn: string[];
   singleton?: boolean;
   component: ComponentType<WidgetComponentProps>;

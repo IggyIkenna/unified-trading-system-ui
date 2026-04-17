@@ -5,6 +5,7 @@ import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { isTradingEntitlement, checkTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
@@ -19,15 +20,19 @@ interface WidgetCatalogDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-function useCanAccessWidget(): (required: string[]) => boolean {
-  const { hasEntitlement, isAdmin, isInternal } = useAuth();
+function useCanAccessWidget(): (required: (string | TradingEntitlement)[]) => boolean {
+  const { hasEntitlement, isAdmin, isInternal, user } = useAuth();
   return React.useCallback(
-    (required: string[]) => {
+    (required: (string | TradingEntitlement)[]) => {
       if (isAdmin() || isInternal()) return true;
       if (required.length === 0) return true;
-      return required.some((e) => hasEntitlement(e as never));
+      const userEnts = user?.entitlements ?? [];
+      return required.some((e) => {
+        if (isTradingEntitlement(e)) return checkTradingEntitlement(userEnts, e);
+        return hasEntitlement(e as never);
+      });
     },
-    [hasEntitlement, isAdmin, isInternal],
+    [hasEntitlement, isAdmin, isInternal, user],
   );
 }
 
@@ -41,7 +46,7 @@ function WidgetDetailPanel({
   selections: FinderSelections;
   tab: string;
   placedIds: Set<string>;
-  checkAccess: (entitlements: string[]) => boolean;
+  checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean;
   onAdd: (widgetId: string) => void;
 }) {
   const widgetSelection = selections["widget"];
@@ -144,19 +149,22 @@ function WidgetDetailPanel({
         <div className="space-y-1.5">
           <p className="text-xs text-muted-foreground">Required entitlements</p>
           <div className="flex flex-wrap gap-1">
-            {def.requiredEntitlements.map((e) => (
-              <Badge
-                key={e}
-                variant="outline"
-                className={cn(
-                  "text-[10px] h-5 px-1.5",
-                  hasAccess ? "border-emerald-400/30 text-emerald-400" : "border-amber-400/30 text-amber-400",
-                )}
-              >
-                {hasAccess ? <Check className="size-2.5 mr-0.5" /> : <Lock className="size-2.5 mr-0.5" />}
-                {e}
-              </Badge>
-            ))}
+            {def.requiredEntitlements.map((e) => {
+              const label = isTradingEntitlement(e) ? `${e.domain}/${e.tier}` : e;
+              return (
+                <Badge
+                  key={label}
+                  variant="outline"
+                  className={cn(
+                    "text-[10px] h-5 px-1.5",
+                    hasAccess ? "border-emerald-400/30 text-emerald-400" : "border-amber-400/30 text-amber-400",
+                  )}
+                >
+                  {hasAccess ? <Check className="size-2.5 mr-0.5" /> : <Lock className="size-2.5 mr-0.5" />}
+                  {label}
+                </Badge>
+              );
+            })}
           </div>
         </div>
       )}

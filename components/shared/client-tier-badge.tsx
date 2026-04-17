@@ -4,7 +4,13 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { deriveClientTier, CLIENT_TIER_FEATURES, type ClientTier, type EntitlementOrWildcard } from "@/lib/config/auth";
+import {
+  deriveClientTier,
+  CLIENT_TIER_FEATURES,
+  type ClientTier,
+  type EntitlementOrWildcard,
+  type TradingEntitlement,
+} from "@/lib/config/auth";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -17,7 +23,7 @@ const TIER_COLORS: Record<ClientTier, string> = {
   "DeFi Client": "bg-blue-500/10 text-blue-400 border-blue-400/30",
   "Data Pro": "bg-amber-500/10 text-amber-400 border-amber-400/30",
   "Data Basic": "bg-muted text-muted-foreground",
-  "Custom": "bg-muted text-muted-foreground",
+  Custom: "bg-muted text-muted-foreground",
 };
 
 // ---------------------------------------------------------------------------
@@ -26,7 +32,7 @@ const TIER_COLORS: Record<ClientTier, string> = {
 
 interface ClientTierBadgeProps {
   /** If provided, derive tier from this entitlement list instead of current user */
-  entitlements?: readonly string[];
+  entitlements?: readonly (EntitlementOrWildcard | TradingEntitlement)[];
   className?: string;
   showTooltip?: boolean;
 }
@@ -40,17 +46,13 @@ interface ClientTierBadgeProps {
 export function ClientTierBadge({ entitlements, className, showTooltip = true }: ClientTierBadgeProps) {
   const { user } = useAuth();
 
-  const rawEnts = entitlements ?? user?.entitlements ?? [];
-  const ents = rawEnts as readonly EntitlementOrWildcard[];
+  const ents = entitlements ?? user?.entitlements ?? [];
   const tier = deriveClientTier(ents);
   const features = CLIENT_TIER_FEATURES[tier];
   const colorClass = TIER_COLORS[tier];
 
   const badge = (
-    <Badge
-      variant="outline"
-      className={cn("text-[10px] font-medium", colorClass, className)}
-    >
+    <Badge variant="outline" className={cn("text-[10px] font-medium", colorClass, className)}>
       {tier}
     </Badge>
   );

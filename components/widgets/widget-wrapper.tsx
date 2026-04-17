@@ -6,6 +6,7 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { WidgetHeaderEndSlotContext } from "@/components/widgets/widget-chrome-context";
+import { isTradingEntitlement, checkTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
@@ -63,11 +64,15 @@ class WidgetErrorBoundary extends React.Component<
   }
 }
 
-function useHasAnyEntitlement(required: string[]): boolean {
-  const { hasEntitlement, isAdmin, isInternal } = useAuth();
+function useHasAnyEntitlement(required: (string | TradingEntitlement)[]): boolean {
+  const { hasEntitlement, isAdmin, isInternal, user } = useAuth();
   if (isAdmin() || isInternal()) return true;
   if (required.length === 0) return true;
-  return required.some((e) => hasEntitlement(e as never));
+  const userEnts = user?.entitlements ?? [];
+  return required.some((e) => {
+    if (isTradingEntitlement(e)) return checkTradingEntitlement(userEnts, e);
+    return hasEntitlement(e as never);
+  });
 }
 
 function WidgetBody({

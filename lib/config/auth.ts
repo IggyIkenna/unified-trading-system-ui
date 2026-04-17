@@ -16,13 +16,8 @@ export const ENTITLEMENTS = [
   "ml-full",
   "strategy-full",
   "strategy-families",
-  "markets-data",
-  "defi-trading",
   "defi-bundles",
   "defi-staking",
-  "sports-trading",
-  "predictions-trading",
-  "options-trading",
   "reporting",
   "investor-relations",
   "investor-board",
@@ -40,6 +35,52 @@ export const ALL_ENTITLEMENTS = "*" as const;
 /** Entitlement or wildcard — used in persona definitions and auth checks */
 export type EntitlementOrWildcard = Entitlement | typeof ALL_ENTITLEMENTS;
 
+// ---------------------------------------------------------------------------
+// Trading entitlement system — structured domain + tier model
+// ---------------------------------------------------------------------------
+
+export const TRADING_DOMAINS = [
+  "trading-common",
+  "trading-defi",
+  "trading-sports",
+  "trading-options",
+  "trading-predictions",
+] as const;
+
+export type TradingDomain = (typeof TRADING_DOMAINS)[number];
+
+export const TRADING_TIERS = ["basic", "premium"] as const;
+export type TradingTier = (typeof TRADING_TIERS)[number];
+
+export interface TradingEntitlement {
+  domain: TradingDomain;
+  tier: TradingTier;
+}
+
+export function isTradingEntitlement(e: unknown): e is TradingEntitlement {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    "domain" in e &&
+    "tier" in e &&
+    TRADING_DOMAINS.includes((e as TradingEntitlement).domain) &&
+    TRADING_TIERS.includes((e as TradingEntitlement).tier)
+  );
+}
+
+const TIER_ORDER: Record<TradingTier, number> = { basic: 0, premium: 1 };
+
+/** Premium tier satisfies basic requirements; basic only satisfies basic. */
+export function checkTradingEntitlement(
+  userEnts: readonly (EntitlementOrWildcard | TradingEntitlement)[],
+  required: TradingEntitlement,
+): boolean {
+  if ((userEnts as readonly unknown[]).includes("*")) return true;
+  return userEnts.some(
+    (e) => isTradingEntitlement(e) && e.domain === required.domain && TIER_ORDER[e.tier] >= TIER_ORDER[required.tier],
+  );
+}
+
 export interface Org {
   id: string;
   name: string;
@@ -52,7 +93,7 @@ export interface AuthPersona {
   displayName: string;
   role: UserRole;
   org: Org;
-  entitlements: readonly EntitlementOrWildcard[];
+  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[];
   description: string;
 }
 
@@ -155,10 +196,11 @@ export const SUBSCRIPTION_TIERS = [
  */
 export type ClientTier = "Client Full" | "Client Premium" | "DeFi Client" | "Data Pro" | "Data Basic" | "Custom";
 
-export function deriveClientTier(entitlements: readonly EntitlementOrWildcard[]): ClientTier {
-  const set = new Set(entitlements);
-  if (set.has("*")) return "Client Full"; // internal/admin — treat as full
-  if (set.has("defi-trading")) return "DeFi Client";
+export function deriveClientTier(entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[]): ClientTier {
+  if ((entitlements as readonly unknown[]).includes("*")) return "Client Full";
+  const hasDefi = entitlements.some((e) => isTradingEntitlement(e) && e.domain === "trading-defi");
+  if (hasDefi) return "DeFi Client";
+  const set = new Set(entitlements.filter((e) => !isTradingEntitlement(e))) as Set<EntitlementOrWildcard>;
   const hasMl = set.has("ml-full");
   const hasReporting = set.has("reporting");
   const hasExecutionFull = set.has("execution-full");

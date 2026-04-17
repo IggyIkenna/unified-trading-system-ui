@@ -81,7 +81,7 @@ registerPresets("markets", [
   },
 ]);
 
-const MARKETS_ENTITLEMENTS = ["markets-data"] as const;
+const MARKETS_ENTITLEMENTS = [{ domain: "trading-common" as const, tier: "basic" as const }];
 
 registerWidget({
   id: "markets-controls",

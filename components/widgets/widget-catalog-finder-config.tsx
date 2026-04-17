@@ -1,5 +1,6 @@
 "use client";
 
+import type { TradingEntitlement } from "@/lib/config/auth";
 import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type {
   FinderColumnDef,
@@ -36,7 +37,7 @@ function buildCategories(): FinderItem<CategoryData>[] {
 function buildWidgetItems(
   selections: FinderSelections,
   placedIds: Set<string>,
-  checkAccess: (entitlements: string[]) => boolean,
+  checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean,
 ): FinderItem<WidgetDefinition & { isPlaced: boolean; hasAccess: boolean }>[] {
   const categorySelection = selections["category"];
   if (!categorySelection) return [];
@@ -56,7 +57,7 @@ function buildWidgetItems(
 
 export function buildCatalogColumns(
   placedIds: Set<string>,
-  checkAccess: (entitlements: string[]) => boolean,
+  checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean,
 ): FinderColumnDef[] {
   return [
     {

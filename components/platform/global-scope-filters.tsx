@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/hooks/use-auth";
-import type { Entitlement } from "@/lib/config/auth";
+import { checkTradingEntitlement, type Entitlement } from "@/lib/config/auth";
 import {
   CLIENTS as TRADING_CLIENTS,
   ORGANIZATIONS as TRADING_ORGS,
@@ -310,13 +310,13 @@ function CompactMultiSelect<T extends { id: string }>({
 }
 
 /** Asset classes a user is entitled to see, derived from their entitlements. */
-function entitlementAssetClasses(hasEntitlement: (e: Entitlement) => boolean): Set<string> {
+function entitlementAssetClasses(userEnts: readonly (string | { domain: string; tier: string })[]): Set<string> {
   const allowed = new Set<string>();
-  if (hasEntitlement("defi-trading")) allowed.add("DeFi");
-  if (hasEntitlement("sports-trading")) allowed.add("Sports");
-  if (hasEntitlement("predictions-trading")) allowed.add("Prediction");
-  // CeFi / TradFi are gated on execution entitlements (the common trading tier)
-  if (hasEntitlement("execution-basic") || hasEntitlement("execution-full")) {
+  if (checkTradingEntitlement(userEnts as never, { domain: "trading-defi", tier: "basic" })) allowed.add("DeFi");
+  if (checkTradingEntitlement(userEnts as never, { domain: "trading-sports", tier: "basic" })) allowed.add("Sports");
+  if (checkTradingEntitlement(userEnts as never, { domain: "trading-predictions", tier: "basic" }))
+    allowed.add("Prediction");
+  if (checkTradingEntitlement(userEnts as never, { domain: "trading-common", tier: "basic" })) {
     allowed.add("CeFi");
     allowed.add("TradFi");
   }
@@ -324,7 +324,7 @@ function entitlementAssetClasses(hasEntitlement: (e: Entitlement) => boolean): S
 }
 
 export function GlobalScopeFilters({ className }: { className?: string }) {
-  const { isInternal, user, hasEntitlement } = useAuth();
+  const { isInternal, user } = useAuth();
   const { scope, setOrganizationIds, setClientIds, setStrategyIds, setStrategyFamilyIds, clearAll } = useGlobalScope();
 
   const internalUser = isInternal();
@@ -362,9 +362,9 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
     const orgStrategies = strategies.filter((s) => orgClientIds.includes(s.clientId));
     if (orgStrategies.length > 0) return orgStrategies;
     // Fallback: org not in mock hierarchy — scope by entitlement asset classes
-    const allowed = entitlementAssetClasses(hasEntitlement);
+    const allowed = entitlementAssetClasses(user?.entitlements ?? []);
     return strategies.filter((s) => allowed.has(s.assetClass));
-  }, [isClientScoped, user?.org?.id, hasEntitlement]);
+  }, [isClientScoped, user?.org?.id, user?.entitlements]);
 
   const filteredClients = React.useMemo(() => {
     if (scope.organizationIds.length === 0) return clients;
@@ -395,7 +395,7 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
 
   if (isClientScoped && user?.org) {
     const clientScopeActiveFilters = scope.strategyIds.length > 0 ? 1 : 0;
-    const allowedClasses = entitlementAssetClasses(hasEntitlement);
+    const allowedClasses = entitlementAssetClasses(user?.entitlements ?? []);
     const strategyAllLabel = allowedClasses.size === 1 ? `All ${[...allowedClasses][0]} Strategies` : "All Strategies";
     return (
       <div className={cn("flex items-center gap-0.5", className)}>

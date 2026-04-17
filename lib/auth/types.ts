@@ -1,17 +1,7 @@
-import type {
-  UserRole,
-  Entitlement,
-  EntitlementOrWildcard,
-  Org,
-} from "@/lib/config/auth";
+import type { UserRole, Entitlement, EntitlementOrWildcard, TradingEntitlement, Org } from "@/lib/config/auth";
 
 /** Account status from the backend user_profiles collection. */
-export type UserStatus =
-  | "active"
-  | "pending_approval"
-  | "rejected"
-  | "disabled"
-  | "unknown";
+export type UserStatus = "active" | "pending_approval" | "rejected" | "disabled" | "unknown";
 
 /** Authenticated user shape shared across all auth providers. */
 export interface AuthUser {
@@ -20,7 +10,7 @@ export interface AuthUser {
   displayName: string;
   role: UserRole;
   org: Org;
-  entitlements: readonly EntitlementOrWildcard[];
+  entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[];
   authorized?: boolean;
   status?: UserStatus;
   capabilities?: string[];

@@ -45,8 +45,11 @@ const SEVERITY_DOT: Record<NewsSeverity, string> = {
 };
 
 function TradingSidebar() {
-  const { hasEntitlement, isAdmin, isInternal } = useAuth();
-  const canSeeInternalData = isAdmin() || isInternal() || hasAnyEntitlement(["execution-basic"], hasEntitlement);
+  const { hasEntitlement, isAdmin, isInternal, user } = useAuth();
+  const canSeeInternalData =
+    isAdmin() ||
+    isInternal() ||
+    hasAnyEntitlement([{ domain: "trading-common", tier: "basic" }], hasEntitlement, user?.entitlements ?? []);
 
   const { data: positionsSummary } = usePositionsSummary();
   const { data: alertsSummary } = useAlertsSummary();
@@ -295,7 +298,7 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
             <div id="widget-fullscreen-boundary" className="h-full flex flex-col overflow-hidden relative">
               {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
               <div className="flex-1 overflow-auto">
-                <EntitlementGate entitlement="execution-basic" serviceName="Trading">
+                <EntitlementGate entitlement={{ domain: "trading-common", tier: "basic" }} serviceName="Trading">
                   <ErrorBoundary>{children}</ErrorBoundary>
                 </EntitlementGate>
               </div>

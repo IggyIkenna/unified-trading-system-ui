@@ -23,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { checkTradingEntitlement, isTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
 import { useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
 import { isPathActive, isServiceTabActive } from "@/lib/utils/nav-helpers";
@@ -56,7 +57,7 @@ const FAMILY_ICON_MAP: Record<string, LucideIcon> = {
 
 interface TradingVerticalNavProps {
   tabs: ServiceTab[];
-  entitlements?: readonly string[];
+  entitlements?: readonly (string | TradingEntitlement)[];
   /** Optional slot rendered at the bottom of the nav (e.g. Live/As-Of toggle) */
   bottomSlot?: React.ReactNode;
 }
@@ -70,7 +71,7 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
   const newPanelInputRef = useRef<HTMLInputElement>(null);
   const pathname = usePathname() || "";
   const router = useRouter();
-  const hasWildcard = entitlements?.includes("*") ?? true;
+  const hasWildcard = (entitlements as readonly unknown[] | undefined)?.includes("*") ?? true;
   const customPanels = useWorkspaceStore((s) => s.customPanels);
   const createCustomPanel = useWorkspaceStore((s) => s.createCustomPanel);
   const deleteCustomPanel = useWorkspaceStore((s) => s.deleteCustomPanel);
@@ -146,7 +147,13 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
   // Check if all tabs in a family are locked
   const isFamilyLocked = (familyTabs: ServiceTab[]) => {
     return familyTabs.every((tab) => {
-      return tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
+      return (
+        tab.requiredEntitlement &&
+        !hasWildcard &&
+        (isTradingEntitlement(tab.requiredEntitlement)
+          ? !checkTradingEntitlement((entitlements as never) ?? [], tab.requiredEntitlement)
+          : !(entitlements as readonly string[] | undefined)?.includes(tab.requiredEntitlement as string))
+      );
     });
   };
 
@@ -154,7 +161,12 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
 
   const renderTabItem = (tab: ServiceTab) => {
     const isActive = isServiceTabActive(pathname, tab);
-    const isLocked = tab.requiredEntitlement && !hasWildcard && !entitlements?.includes(tab.requiredEntitlement);
+    const isLocked =
+      tab.requiredEntitlement &&
+      !hasWildcard &&
+      (isTradingEntitlement(tab.requiredEntitlement)
+        ? !checkTradingEntitlement((entitlements as never) ?? [], tab.requiredEntitlement)
+        : !(entitlements as readonly string[] | undefined)?.includes(tab.requiredEntitlement as string));
 
     const Icon = tab.icon;
 
