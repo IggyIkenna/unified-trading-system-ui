@@ -1,5 +1,6 @@
 # Frontend Primer for Backend Engineers
 
+> **Last verified: 2026-04-17**
 > **Audience:** Python backend engineers joining the UI codebase for the first time.
 > **Goal:** Read this once (~15 min), then explore the code with confidence.
 > **Assumption:** You are comfortable with Python, REST APIs, and backend architecture.
@@ -16,7 +17,7 @@
 5. [How This Codebase is Structured](#5-how-this-codebase-is-structured)
 6. [The Data Layer — How the UI Gets Its Data](#6-the-data-layer--how-the-ui-gets-its-data)
 7. [Styling — Tailwind CSS](#7-styling--tailwind-css)
-8. [Testing — Jest and Testing Library](#8-testing--jest-and-testing-library)
+8. [Testing — Vitest and Testing Library](#8-testing--vitest-and-testing-library)
 9. [Key Files at the Project Root](#9-key-files-at-the-project-root)
 10. [Naming Conventions](#10-naming-conventions)
 11. [Vocabulary Glossary](#11-vocabulary-glossary)
@@ -33,7 +34,7 @@ Sort of — but not really. This is the single most common confusion for backend
 
 **React** renders UI components in the browser. It is purely frontend — no server, no routing, no data fetching strategy built in.
 
-**Next.js** is a framework built on top of React that adds:
+**Next.js** (this repo runs 16.2.1) is a framework built on top of React that adds:
 
 - A file-system-based router (no router config file)
 - The ability to run some code on a server (Node.js) before the browser loads the page
@@ -49,26 +50,26 @@ The browser is the opposite. It holds state continuously — the user is sitting
 
 ### Python → JavaScript analogy map
 
-| Python concept                 | JavaScript/Frontend equivalent            |
-| ------------------------------ | ----------------------------------------- |
-| `pyproject.toml`               | `package.json`                            |
-| `uv.lock`                      | `package-lock.json`                       |
-| `.venv/`                       | `node_modules/`                           |
-| `uv pip install`               | `npm install`                             |
-| `pytest`                       | Jest                                      |
-| `pytest.ini` / `[tool.pytest]` | `jest.config.js`                          |
-| `basedpyright`                 | TypeScript compiler (`tsc`)               |
-| `ruff`                         | ESLint                                    |
-| FastAPI `@app.get("/path")`    | `app/(platform)/service/trading/page.tsx` |
-| Pydantic model                 | TypeScript `interface` or `type`          |
-| Python `dict`                  | JavaScript `object` (`{}`)                |
-| Python `list`                  | JavaScript `array` (`[]`)                 |
-| `f"Hello {name}"`              | `` `Hello ${name}` `` (template literal)  |
-| `async def` / `await`          | `async function` / `await`                |
-| `None`                         | `null` or `undefined`                     |
-| `__init__.py` barrel export    | `index.ts` barrel export                  |
-| Jinja2 templates               | React components (JSX)                    |
-| `.env`                         | `.env.local`                              |
+| Python concept                 | JavaScript/Frontend equivalent             |
+| ------------------------------ | ------------------------------------------ |
+| `pyproject.toml`               | `package.json`                             |
+| `uv.lock`                      | `pnpm-lock.yaml`                           |
+| `.venv/`                       | `node_modules/`                            |
+| `uv pip install`               | `pnpm install`                             |
+| `pytest`                       | Vitest                                     |
+| `pytest.ini` / `[tool.pytest]` | `vitest.config.ts`                         |
+| `basedpyright`                 | TypeScript compiler (`tsc`)                |
+| `ruff`                         | ESLint                                     |
+| FastAPI `@app.get("/path")`    | `app/(platform)/services/trading/page.tsx` |
+| Pydantic model                 | TypeScript `interface` or `type`           |
+| Python `dict`                  | JavaScript `object` (`{}`)                 |
+| Python `list`                  | JavaScript `array` (`[]`)                  |
+| `f"Hello {name}"`              | `` `Hello ${name}` `` (template literal)   |
+| `async def` / `await`          | `async function` / `await`                 |
+| `None`                         | `null` or `undefined`                      |
+| `__init__.py` barrel export    | `index.ts` barrel export                   |
+| Jinja2 templates               | React components (JSX)                     |
+| `.env`                         | `.env.local`                               |
 
 ---
 
@@ -235,7 +236,7 @@ function Sidebar() {
 }
 ```
 
-Built-in hooks you will see constantly:
+Built-in hooks you will see constantly (React 19.2.4):
 
 | Hook          | What it does                                              | Python analogy                     |
 | ------------- | --------------------------------------------------------- | ---------------------------------- |
@@ -274,14 +275,15 @@ There is **no router configuration file**. The folder structure inside `app/` is
 ```
 app/
 ├── page.tsx                         →  renders at  /
-├── login/
-│   └── page.tsx                     →  renders at  /login
+├── (public)/
+│   └── login/
+│       └── page.tsx                 →  renders at  /login
 ├── (platform)/
-│   └── service/
+│   └── services/
 │       └── trading/
-│           ├── page.tsx             →  renders at  /service/trading
+│           ├── page.tsx             →  renders at  /services/trading
 │           └── positions/
-│               └── page.tsx         →  renders at  /service/trading/positions
+│               └── page.tsx         →  renders at  /services/trading/positions
 ```
 
 ### The reserved filenames
@@ -303,12 +305,15 @@ Folders wrapped in parentheses are **route groups**. They organise files without
 
 ```
 app/
-├── (public)/          ← group: not in URL
+├── (public)/          ← group: not in URL — landing, login, marketing
 │   └── login/
 │       └── page.tsx   →  /login  (not /(public)/login)
-├── (platform)/        ← group: not in URL
-│   └── service/
-│       └── page.tsx   →  /service  (not /(platform)/service)
+├── (platform)/        ← group: not in URL — signed-in app surface
+│   └── services/
+│       └── page.tsx   →  /services  (not /(platform)/services)
+├── (ops)/             ← group: not in URL — internal/admin/devops/compliance
+│   └── admin/
+│       └── page.tsx   →  /admin
 ```
 
 Route groups exist so each section can have its own `layout.tsx` — its own shell, auth wrapper, and navigation style.
@@ -320,12 +325,12 @@ A `layout.tsx` wraps every page inside its folder. When the user navigates betwe
 ```
 app/
 ├── (platform)/
-│   ├── layout.tsx           ← this wraps EVERYTHING below
-│   ├── service/
+│   ├── layout.tsx            ← this wraps EVERYTHING below
+│   ├── services/
 │   │   ├── trading/
-│   │   │   └── page.tsx     ← rendered inside (platform)/layout.tsx
+│   │   │   └── page.tsx      ← rendered inside (platform)/layout.tsx
 │   │   └── data/
-│   │       └── page.tsx     ← also rendered inside the same layout
+│   │       └── page.tsx      ← also rendered inside the same layout
 ```
 
 The layout receives `children` — a React prop representing whatever `page.tsx` rendered:
@@ -375,8 +380,8 @@ lib/          ← Everything non-component: types, stores, config, mocks, utilit
 
 | Group         | URL paths                          | Who sees it                          | Auth                  |
 | ------------- | ---------------------------------- | ------------------------------------ | --------------------- |
-| `(public)/`   | `/`, `/login`, `/services/*`, etc. | Anyone (unauthenticated)             | None                  |
-| `(platform)/` | `/dashboard`, `/service/*`         | Logged-in users (internal + clients) | Required              |
+| `(public)/`   | `/`, `/login`, `/services/*`, etc. | Anyone (unauthenticated landing)     | None                  |
+| `(platform)/` | `/dashboard`, `/services/*`        | Logged-in users (internal + clients) | Required              |
 | `(ops)/`      | `/admin`, `/devops`, `/compliance` | Internal operators only              | Required + role check |
 
 **The key insight:** Internal users and client users see **the same platform pages**. There is no separate "client portal" built from different components. What changes is the data the API returns — scoped by the user's organisation and subscription entitlements. The same `PositionsTable` component renders for both; it just gets different rows.
@@ -405,27 +410,37 @@ Components are organised by domain:
 lib/
 ├── config/          ← Static config constants (API URLs, branding, service registry)
 ├── stores/          ← Zustand state stores (auth, global filters, UI preferences)
-├── mocks/           ← MSW mock API handlers (fake backend for dev + tests)
-│   ├── handlers/    ← Per-domain mock handlers (strategy.ts, positions.ts, ...)
-│   └── fixtures/    ← Demo user personas
+├── mocks/           ← Mock data infrastructure (fake backend for dev + tests)
+│   ├── fixtures/    ← Static seed data keyed by domain (positions, strategies, …)
+│   └── generators/  ← Synthetic data generators used by fixtures + tests
 ├── types/           ← Shared TypeScript types
 ├── providers.tsx    ← Root React provider tree
 ├── query-client.ts  ← React Query configuration
 └── utils.ts         ← Shared utilities (cn(), date formatters, number formatters)
 ```
 
+The mock layer is fed to the app via `NEXT_PUBLIC_MOCK_API=true` — fixtures and generators produce the data that API hooks consume during development and tests. Historically this included MSW-style HTTP handlers; today the mock surface is primarily fixture/generator modules, with any request interception configured at the provider boundary when needed.
+
 ### Inside `hooks/`
 
 ```
 hooks/
-├── use-auth.tsx      ← Auth state (current user, login, logout)
-├── use-mobile.ts     ← Mobile breakpoint detection
-├── use-toast.ts      ← Toast notification trigger
-└── api/              ← One hook file per data domain
-    ├── use-positions.ts
-    ├── use-strategies.ts
-    ├── use-orders.ts
-    └── ...           ← All follow the same useQuery/useMutation pattern
+├── use-auth.tsx              ← Auth state (current user, login, logout)
+├── use-mobile.ts             ← Mobile breakpoint detection
+├── use-toast.ts              ← Toast notification trigger
+├── use-websocket.ts          ← Shared WebSocket subscription hook
+├── use-app-access.tsx        ← Entitlement / scope access checks
+├── use-protocol-status.ts    ← Live venue / protocol status
+├── use-scoped-categories.ts  ← Scope-aware category routing
+├── use-sports-live-updates.ts
+├── use-tab-param.ts
+├── use-ticking-now.ts
+├── api/                      ← One hook file per data domain (React Query wrappers)
+│   ├── use-positions.ts
+│   ├── use-strategies.ts
+│   ├── use-orders.ts
+│   └── ...                   ← All follow the same useQuery/useMutation pattern
+└── deployment/               ← Deployment-console hooks (legacy PascalCase filenames)
 ```
 
 ---
@@ -439,7 +454,7 @@ This is the most important section for backend engineers. Understanding this flo
 ```
 Python Backend API
        ↕  (HTTP fetch)
-MSW Mock Handler  ← intercepts in dev/test, bypasses in production
+Mock layer (fixtures/generators)  ← active when NEXT_PUBLIC_MOCK_API=true
        ↕
 React Query hook  (e.g. usePositions())
        ↕
@@ -484,24 +499,18 @@ export function PositionsPage() {
 }
 ```
 
-### Step 3: MSW intercepts in development
+### Step 3: The mock layer supplies data in development
 
-When `NEXT_PUBLIC_MOCK_API=true`, the fetch call never reaches the real Python backend. MSW intercepts it and returns fixture data:
+When `NEXT_PUBLIC_MOCK_API=true`, the hook reads from `lib/mocks/fixtures/` (and helpers in `lib/mocks/generators/`) instead of hitting the real Python backend. Fixtures are plain TypeScript modules:
 
 ```typescript
-// lib/mocks/handlers/positions.ts
-import { http, HttpResponse } from "msw";
-
-export const positionsHandlers = [
-  http.get("/api/positions", () => {
-    return HttpResponse.json({
-      data: [
-        { id: "1", symbol: "BTC/USD", quantity: 1.5, unrealized_pnl: 4200 },
-        { id: "2", symbol: "ETH/USD", quantity: 10, unrealized_pnl: -300 },
-      ],
-    });
-  }),
-];
+// lib/mocks/fixtures/positions.ts (illustrative)
+export const positionsFixture = {
+  data: [
+    { id: "1", symbol: "BTC/USD", quantity: 1.5, unrealized_pnl: 4200 },
+    { id: "2", symbol: "ETH/USD", quantity: 10, unrealized_pnl: -300 },
+  ],
+};
 ```
 
 This means you can develop and test the entire UI without the Python backend running. The component code is identical — only the data source changes.
@@ -535,6 +544,52 @@ const selectedOrg = useGlobalScopeStore((s) => s.selectedOrg);
 ```
 
 Think of it as a module-level singleton dict that triggers re-renders in any component that reads from it when it changes.
+
+#### Persisted stores — the real pattern
+
+Stores that need to survive page reloads wrap state in Zustand's `persist` middleware. The canonical example in this repo is `lib/stores/ui-prefs-store.ts`:
+
+```typescript
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+const STORAGE_KEY = "unified-ui-prefs";
+
+const initialState = {
+  sidebarCollapsed: false,
+  theme: "dark" as const,
+  // ...
+};
+
+export const useUIPrefsStore = create<UIPrefsState>()(
+  persist(
+    (set) => ({
+      ...initialState,
+      toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
+      reset: () => {
+        localStorage.removeItem(STORAGE_KEY);
+        set(initialState);
+      },
+    }),
+    {
+      name: STORAGE_KEY,
+      version: 1,
+      migrate: (persistedState, version) => {
+        // bump version + reshape fields when schema changes
+        return persistedState;
+      },
+      onRehydrateStorage: () => (_state, error) => {
+        if (error) {
+          console.warn("[ui-prefs-store] rehydration error — resetting", error);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      },
+    },
+  ),
+);
+```
+
+Mirror this shape for any new persisted store — always set `version`, always handle `migrate`, and always scrub `localStorage` on rehydration errors.
 
 ---
 
@@ -579,84 +634,108 @@ import { cn } from "@/lib/utils"
 
 ---
 
-## 8. Testing — Jest and Testing Library
+## 8. Testing — Vitest and Testing Library
 
-### What Jest does
+### What Vitest does
 
-**Jest** is the test runner — it finds test files, runs them, and reports pass/fail. It is the direct equivalent of `pytest`.
+**Vitest** (4.1.1) is the test runner — it finds test files, runs them, and reports pass/fail. It is the direct equivalent of `pytest`, and its API is largely compatible with Jest so older examples still port cleanly.
 
-| pytest            | Jest                                            |
-| ----------------- | ----------------------------------------------- |
-| `pytest tests/`   | `npm test`                                      |
-| `def test_foo():` | `it("foo", () => {})`                           |
-| `assert x == y`   | `expect(x).toBe(y)`                             |
-| `@pytest.fixture` | `beforeEach()` or fixtures from Testing Library |
-| `conftest.py`     | `jest.setup.js`                                 |
-| `pytest.ini`      | `jest.config.js`                                |
+| pytest            | Vitest                                                 |
+| ----------------- | ------------------------------------------------------ |
+| `pytest tests/`   | `pnpm test`                                            |
+| `def test_foo():` | `it("foo", () => {})` or `test("foo", () => {})`       |
+| `assert x == y`   | `expect(x).toBe(y)`                                    |
+| `@pytest.fixture` | `beforeEach()` / `vi.fn()` / Testing Library utilities |
+| `conftest.py`     | `vitest.config.ts` `setupFiles`                        |
+| `pytest.ini`      | `vitest.config.ts`                                     |
+| `pytest -k foo`   | `pnpm test -- -t foo`                                  |
+| `monkeypatch`     | `vi.mock(...)` / `vi.spyOn(...)` from `vitest`         |
+
+### Project layout for tests
+
+Tests live under the top-level `tests/` folder — not `__tests__/` — and Vitest is configured with separate projects for each layer:
+
+```
+tests/
+├── unit/           ← pure components, hooks, lib functions
+│   ├── components/
+│   └── lib/
+├── integration/    ← cross-store / cross-provider / middleware behaviour
+│   ├── api.integration.test.ts
+│   ├── cross-tab-widgets.test.tsx
+│   ├── filter-propagation.test.tsx
+│   ├── middleware.test.ts
+│   └── zustand-selectors.test.ts
+├── audit/          ← regulatory / compliance surface checks
+├── helpers/        ← shared test utilities (render wrappers, fixtures)
+└── e2e/            ← Playwright specs (run separately, excluded from Vitest)
+```
+
+Vitest only picks up files matching `tests/**/*.{test,spec}.{ts,tsx}` and explicitly excludes `tests/e2e/**`. Playwright owns end-to-end.
+
+### Running tests (pnpm)
+
+```bash
+pnpm test                  # interactive (vitest default)
+pnpm test -- --run         # single-shot, CI-style
+pnpm test:unit             # --project unit
+pnpm test:integration      # --project integration
+pnpm test:audit            # --project audit
+pnpm test:coverage         # v8 coverage → build-artifacts/coverage
+pnpm test:e2e              # Playwright
+```
+
+`CI=true pnpm test -- --run` is the pattern used in quality gates.
 
 ### What Testing Library does
 
 `@testing-library/react` renders components and lets you query them the way a user would interact with them — by text, by label, by role.
 
 ```tsx
+import { describe, it, expect } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { PositionsPage } from "./positions-page";
+import { PositionsPage } from "@/components/trading/positions-page";
 
-it("shows positions after loading", async () => {
-  render(<PositionsPage />);
+describe("PositionsPage", () => {
+  it("shows positions after loading", async () => {
+    render(<PositionsPage />);
+    await waitFor(() => {
+      expect(screen.getByText("BTC/USD")).toBeInTheDocument();
+    });
+  });
 
-  // Wait for async data to load
-  await waitFor(() => {
-    expect(screen.getByText("BTC/USD")).toBeInTheDocument();
+  it("filters by venue", async () => {
+    render(<PositionsPage />);
+    await userEvent.click(screen.getByRole("combobox", { name: /venue/i }));
+    await userEvent.click(screen.getByText("Binance"));
+    expect(screen.queryByText("Kraken")).not.toBeInTheDocument();
   });
 });
-
-it("filters by venue", async () => {
-  render(<PositionsPage />);
-  await userEvent.click(screen.getByRole("combobox", { name: /venue/i }));
-  await userEvent.click(screen.getByText("Binance"));
-  expect(screen.queryByText("Kraken")).not.toBeInTheDocument();
-});
 ```
 
-### Where tests live
+### happy-dom — the fake browser
 
-All tests live in `__tests__/` (double underscore — a Jest convention) and must end in `.test.ts` or `.test.tsx`.
+Vitest runs in Node.js, which has no browser. This project uses **happy-dom** (`environment: "happy-dom"` in `vitest.config.ts`) instead of jsdom — it is faster and implements enough of the DOM for React plus Testing Library.
 
-```
-__tests__/
-├── components/
-│   └── trading/
-│       └── positions-table.test.tsx
-├── hooks/
-│   └── use-positions.test.ts
-└── lib/
-    └── utils.test.ts
-```
-
-### jsdom — the fake browser
-
-Jest runs in Node.js, which has no browser. **jsdom** fakes the browser environment (it creates `window`, `document`, `localStorage`, etc.) so React components can render and DOM assertions can work. This is configured in `jest.config.js` with `testEnvironment: "jsdom"`.
-
-Some browser APIs (ResizeObserver, IntersectionObserver, matchMedia) are not implemented by jsdom — they are mocked manually in `jest.setup.js`.
+Some browser APIs (ResizeObserver, IntersectionObserver, matchMedia) are not implemented by happy-dom and are either mocked in a `setupFiles` entry or stubbed per-test with `vi.stubGlobal(...)`. The test runner uses `pool: "forks"` to prevent zombie node processes on parallel suites.
 
 ---
 
 ## 9. Key Files at the Project Root
 
-| File                 | Purpose                                                                                 |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| `package.json`       | Lists all dependencies and defines scripts (`npm run dev`, `npm test`, `npm run build`) |
-| `package-lock.json`  | Exact pinned versions of every dependency. Never edit manually.                         |
-| `next.config.mjs`    | Next.js configuration — redirect rules, environment variable exposure, image domains    |
-| `tsconfig.json`      | TypeScript compiler settings — defines the `@/` path alias, sets strict mode            |
-| `tailwind.config.ts` | Tailwind configuration — custom colours, fonts, animation definitions                   |
-| `jest.config.js`     | Jest configuration — test patterns, module aliases, coverage thresholds                 |
-| `jest.setup.js`      | Runs before tests — adds extra matchers, mocks browser APIs                             |
-| `.env.local`         | Local environment variables — never committed                                           |
-| `node_modules/`      | All installed packages — never edit, never commit                                       |
-| `.next/`             | Build output — never edit, never commit                                                 |
+| File                   | Purpose                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| `package.json`         | Lists all dependencies and defines scripts (`pnpm dev`, `pnpm test`, `pnpm build`)   |
+| `pnpm-lock.yaml`       | Exact pinned versions of every dependency. Never edit manually.                      |
+| `next.config.mjs`      | Next.js configuration — redirect rules, environment variable exposure, image domains |
+| `tsconfig.json`        | TypeScript compiler settings — defines the `@/` path alias, sets strict mode         |
+| `tailwind.config.ts`   | Tailwind configuration — custom colours, fonts, animation definitions                |
+| `vitest.config.ts`     | Vitest configuration — environment (happy-dom), projects, include/exclude, coverage  |
+| `playwright.config.ts` | Playwright configuration for the E2E suite in `tests/e2e/`                           |
+| `.env.local`           | Local environment variables — never committed                                        |
+| `node_modules/`        | All installed packages — never edit, never commit                                    |
+| `.next/`               | Build output — never edit, never commit                                              |
 
 ---
 
@@ -694,23 +773,23 @@ Understanding naming conventions tells you where to look for something without s
 | **Server Component**         | A component that runs on the server only. Can `await` directly. No `useState`. Default in Next.js.     |
 | **Client Component**         | A component that runs in the browser. Requires `"use client"`. Needed for interactivity.               |
 | **`"use client"`**           | Directive at the top of a file that opts it into browser execution.                                    |
-| **App Router**               | Next.js 13+ routing system based on the `app/` folder structure.                                       |
+| **App Router**               | Next.js routing system based on the `app/` folder structure (Next 16.2.1 in this repo).                |
 | **Route Group**              | A `(name)` folder that organises routes without affecting URLs.                                        |
 | **Layout**                   | A `layout.tsx` that wraps all pages in its folder. Persists across navigation.                         |
 | **Dynamic Route**            | A `[param]` folder that matches any value in that URL segment.                                         |
 | **React Query**              | Library that fetches, caches, and synchronises server data.                                            |
 | **Zustand**                  | Lightweight global state manager. Like a reactive singleton dict.                                      |
-| **MSW**                      | Mock Service Worker. Intercepts `fetch()` calls and returns fake data. Used in dev + tests.            |
+| **Mock layer**               | `lib/mocks/{fixtures,generators}/` — supplies fake data when `NEXT_PUBLIC_MOCK_API=true`.              |
 | **Tailwind**                 | CSS utility class library. Style things by adding class names directly to JSX.                         |
 | **shadcn/ui**                | A collection of pre-built, accessible UI components (Button, Dialog, Table, etc.) in `components/ui/`. |
-| **Jest**                     | The test runner. Equivalent to pytest.                                                                 |
-| **jsdom**                    | A fake browser environment that runs inside Node.js for tests.                                         |
+| **Vitest**                   | The test runner. Equivalent to pytest. Jest-compatible API.                                            |
+| **happy-dom**                | A fake browser environment that runs inside Node.js for tests. Faster than jsdom.                      |
 | **`@testing-library/react`** | Testing utilities — renders components and queries them like a user would.                             |
 | **Coverage**                 | What percentage of source code is executed during tests. Gated at 80% in this project.                 |
 | **Barrel export**            | An `index.ts` that re-exports from multiple files so importers use one path.                           |
 | **`cn()`**                   | Utility function from `lib/utils.ts` for merging Tailwind classes conditionally.                       |
 | **`@/`**                     | Path alias meaning "from the project root". `@/components/ui/button` → `components/ui/button.tsx`.     |
-| **`node_modules/`**          | Where npm packages are installed. Never edit.                                                          |
+| **`node_modules/`**          | Where pnpm packages are installed. Never edit.                                                         |
 | **`.next/`**                 | Build output directory. Never edit.                                                                    |
 | **`process.env`**            | How you access environment variables in Node.js/Next.js. Like Python's `os.environ`.                   |
 | **Hydration**                | When the browser takes server-rendered HTML and attaches JavaScript interactivity to it.               |
@@ -722,8 +801,8 @@ Understanding naming conventions tells you where to look for something without s
 
 Before writing any code, read these. They will save you from the most common mistakes.
 
-**1. Never create a page outside `app/(platform)/service/<domain>/`**
-All platform content lives under `/service/`. The old flat paths (`/trading/`, `/execution/`, `/ml/`) are redirect rules in `next.config.mjs` — files created there are unreachable.
+**1. Never create a page outside `app/(platform)/services/<domain>/`**
+All platform content lives under `/services/` (plural). The old flat paths (`/trading/`, `/execution/`, `/ml/`) are redirect rules in `next.config.mjs` — files created there are unreachable. Note also: the route is `/services/*`, not `/service/*` — any older docs that say the singular form are stale.
 
 **2. `"use client"` goes at the very top of the file, before all imports**
 It must be the first line. If you get an error about hooks in a Server Component, you forgot this.
@@ -740,8 +819,8 @@ All API paths come from `lib/config/api.ts`. Hardcoding creates invisible coupli
 **6. State that multiple components share goes in Zustand, not in multiple `useState` calls**
 If two components need the same filter value, it belongs in `lib/stores/`, not duplicated in each component.
 
-**7. Add the MSW handler before writing the component**
-If you're building a new feature, define the mock API response first in `lib/mocks/handlers/`. Then the component has something to render during development without a real backend.
+**7. Add mock data before writing the component**
+If you're building a new feature, define the fixture/generator in `lib/mocks/fixtures/` (or `lib/mocks/generators/`) first. Then the component has something to render during development without a real backend.
 
 **8. Check `UI_STRUCTURE_MANIFEST.json` before refactoring anything**
 The manifest tracks ongoing refactors and the target structure. Changes without updating it create confusion for the next person (or agent) who works in the codebase.
@@ -752,28 +831,32 @@ The manifest tracks ongoing refactors and the target structure. Changes without 
 
 | You want to...                         | Look here                                                   |
 | -------------------------------------- | ----------------------------------------------------------- |
-| Add a new page                         | `app/(platform)/service/<domain>/`                          |
+| Add a new page                         | `app/(platform)/services/<domain>/`                         |
 | Add cross-domain shared UI             | `components/shared/` (`components/shared/index.ts`)         |
 | Add a domain-only component            | `components/<domain>/` (trading, research, ops, …)          |
 | Add an API data fetching hook          | `hooks/api/use-<domain>.ts`                                 |
-| Add a mock API response                | `lib/mocks/handlers/<domain>.ts`                            |
+| Add mock data                          | `lib/mocks/fixtures/<domain>.ts` or `lib/mocks/generators/` |
 | Add a global config constant           | `lib/config/`                                               |
 | Add shared TypeScript types            | `lib/<domain>-types.ts`                                     |
 | Add global state (filters, user prefs) | `lib/stores/<name>-store.ts`                                |
 | Add `cn()` / class merging             | `lib/utils.ts`                                              |
 | Add formatters (numbers, dates, P&L)   | `lib/utils/formatters.ts`, `lib/utils/pnl.ts`, etc.         |
-| Add a test                             | `__tests__/<corresponding path>/`                           |
+| Add a unit test                        | `tests/unit/<corresponding path>/`                          |
+| Add an integration test                | `tests/integration/`                                        |
+| Add a compliance/audit test            | `tests/audit/`                                              |
+| Add an E2E test                        | `tests/e2e/`                                                |
 | Understand the route structure         | `docs/STRUCTURE_APP.md`                                     |
 | Understand available components        | `docs/STRUCTURE_COMPONENTS.md`                              |
 | Understand the lib/ layer              | `docs/STRUCTURE_LIB.md`                                     |
 | Understand hooks                       | `docs/STRUCTURE_HOOKS.md`                                   |
+| Understand the context layer           | `docs/STRUCTURE_CONTEXT.md`                                 |
 | Understand who sees what               | `app/(platform)/layout.tsx` + `hooks/use-auth.tsx`          |
 | Find where a URL renders               | Follow the path in `app/` matching the URL segments         |
-| Find the mock for an API call          | Match the endpoint path to `lib/mocks/handlers/<domain>.ts` |
-| Run the dev server                     | `npm run dev` (then open http://localhost:3000)             |
-| Run tests                              | `npm test`                                                  |
-| Run tests with coverage                | `npm test -- --coverage`                                    |
-| Build for production                   | `npm run build`                                             |
+| Find the fixture for an API call       | Match the endpoint path to `lib/mocks/fixtures/<domain>.ts` |
+| Run the dev server                     | `pnpm dev` (then open http://localhost:3000)                |
+| Run tests                              | `pnpm test`                                                 |
+| Run tests with coverage                | `pnpm test:coverage`                                        |
+| Build for production                   | `pnpm build`                                                |
 
 ---
 

@@ -1,90 +1,93 @@
 # Unified Trading System UI
 
-A unified institutional trading platform UI supporting data, research, execution, reporting, and internal operations.
+Next.js 16 App Router frontend for the unified trading platform — a customisable widget-based terminal for multi-asset, multi-venue operations across DeFi, CeFi, TradFi, sports prediction markets, and derivatives.
 
-## Quick Start
+## Prerequisites
 
-| Document                                                                         | Purpose                                                        |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| [CODEBASE_STRUCTURE.md](./CODEBASE_STRUCTURE.md)                                 | Folder map, state management, tech stack — **read this first** |
-| [AGENT_PROMPT.md](./AGENT_PROMPT.md)                                             | Compact agent orientation — rules, patterns, current state     |
-| [ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](./ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md) | Platform vision, role model, lifecycle, service areas          |
-| [START_HERE.md](./START_HERE.md)                                                 | Step-by-step onboarding for new developers and agents          |
+- **Node.js 22+**
+- **pnpm** (canonical package manager for this repo)
 
-## Tech Stack
+## Install
 
-- **Framework**: Next.js 15, App Router, TypeScript strict mode
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **State**: Zustand (client) + React Query (server)
-- **Testing**: Jest (unit) + Playwright (E2E)
-- **API mocking**: MSW (Mock Service Worker)
-- **Linting**: ESLint + 2 custom rules
-
-## Architecture
-
-Three route groups, one canonical content tree:
-
-```
-app/(public)/              Unauthenticated — marketing, login, signup
-app/(platform)/service/    Authenticated — ALL platform content lives here
-app/(ops)/                 Internal operators — admin, devops, compliance
+```bash
+pnpm install
 ```
 
-All legacy flat routes (`/trading/*`, `/execution/*`, `/ml/*`, `/research/*`, `/strategy-platform/*`) are permanent redirects to `/service/*` in `next.config.mjs`.
+## Develop
 
-## Key Concepts
+```bash
+pnpm dev
+```
 
-### Three Experience Modes
+Dev server starts on `http://localhost:3000`.
 
-1. **Public** — Prospective users, no auth
-2. **Client** — Authenticated, org-scoped, entitled services only
-3. **Internal** — Full platform, role-based access, admin/ops/compliance
+## Test
 
-### Service Areas
+Unit, integration, and audit suites run under Vitest (happy-dom):
 
-- Data (catalogue, subscriptions, venues, markets, **data completeness**)
-- Research & Simulation (strategy backtesting, ML models, quant workspace)
-- Trading & Execution (live trading, execution analytics, TCA)
-- Reporting (P&L, executive reports, settlement, reconciliation)
-- Admin (org management, user roles, billing)
-- Deployment & DevOps (infrastructure, CI/CD)
-- Observe (**event audit**, system health, alerts, risk, position recon)
-- Manage (clients, mandates, fees, compliance, **best execution audit**)
+```bash
+pnpm test                # all Vitest projects
+pnpm test:unit           # unit only
+pnpm test:integration    # integration only
+pnpm test:audit          # audit only
+pnpm test:ci             # CI run with coverage
+```
 
-> **Migrated from unified-admin-ui (2026-04-16):** Event Audit (`/services/observe/event-audit`),
-> Best Execution (`/services/manage/best-execution`), and Data Completeness
-> (`/services/data/completeness`) were migrated from the now-archived `unified-admin-ui` repo.
-> The archived repos (`unified-trading-ui-auth`, `unified-trading-ui-kit`, `unified-admin-ui`)
-> are read-only on GitHub — all functionality is now in this repo or inlined in `deployment-ui`.
+Static E2E (Playwright against a prebuilt mock-data bundle):
 
-### Core Workflow
+```bash
+pnpm exec playwright test --config playwright.static.config.ts
+```
 
-**Design -> Simulate -> Promote -> Run -> Monitor -> Explain -> Reconcile**
+## Build
 
-This lifecycle guides service naming, navigation, and feature organization.
+Mock-data build smoke (no backend required):
+
+```bash
+NEXT_PUBLIC_MOCK_API=true pnpm build
+```
+
+## Data Mode
+
+The UI runs in one of two modes, toggled by a single environment variable:
+
+- `NEXT_PUBLIC_MOCK_API=true` — all API calls served from in-repo fixtures; deterministic, offline, used for builds, static E2E, and demos.
+- `NEXT_PUBLIC_MOCK_API=false` (default) — live backend via `NEXT_PUBLIC_API_BASE_URL`.
+
+Fixtures, helper contracts, and fallback rules are documented in [`docs/DATA_MODE_IDEOLOGY.md`](docs/DATA_MODE_IDEOLOGY.md).
+
+## Project Structure
+
+```
+app/
+  (public)/        Unauthenticated routes — marketing, login, signup
+  (platform)/     Authenticated platform content (services/* canonical)
+    services/
+  (ops)/           Internal operators — admin, devops, compliance
+components/        Reusable UI (widgets, shadcn primitives, domain components)
+lib/               Types, stores, mocks, config, utilities
+hooks/             React hooks (api/, deployment/, shared)
+tests/
+  unit/
+  integration/
+  audit/
+  e2e/
+docs/              Architecture, deployment, testing, data-mode docs
+build-artifacts/   Build output
+```
+
+Routes under `/services/*` are plural and canonical; legacy singular paths redirect.
 
 ## Documentation
 
-| File                                                                                     | Covers                                                                                                               |
-| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| [docs/STRUCTURE_APP.md](docs/STRUCTURE_APP.md)                                           | Route groups, page inventory, redirect map, layout hierarchy                                                         |
-| [docs/STRUCTURE_COMPONENTS.md](docs/STRUCTURE_COMPONENTS.md)                             | All 11 component domains, key files, naming rules                                                                    |
-| [docs/STRUCTURE_LIB.md](docs/STRUCTURE_LIB.md)                                           | lib/ layout — types, stores, mocks, config, utilities                                                                |
-| [docs/STRUCTURE_HOOKS.md](docs/STRUCTURE_HOOKS.md)                                       | hooks/api/ and hooks/deployment/ — patterns                                                                          |
-| [docs/STRUCTURE_CONTEXT.md](docs/STRUCTURE_CONTEXT.md)                                   | context/ folder — backend reference material                                                                         |
-| [docs/STRUCTURE_REFERENCE.md](docs/STRUCTURE_REFERENCE.md)                               | \_reference/ Python services                                                                                         |
-| [docs/DATA_MODE_IDEOLOGY.md](docs/DATA_MODE_IDEOLOGY.md)                                 | Mock vs real data contract — single switch, helper usage, fallback rules                                            |
-| [ROUTES.md](./ROUTES.md)                                                                 | Full route reference with redirect map                                                                               |
-| [SERVICE_COMPLETION_STATUS.md](./SERVICE_COMPLETION_STATUS.md)                           | Per-service completion matrix                                                                                        |
-| [UX_FLOW_SPEC.md](./UX_FLOW_SPEC.md)                                                     | Canonical user journeys                                                                                              |
-| [TESTING.md](./TESTING.md)                                                               | Testing strategy and utilities                                                                                       |
-| [QA_GATES.md](./QA_GATES.md)                                                             | Pre-deploy verification steps                                                                                        |
-| [docs/MOCK_STATIC_BROWSER_AGENT_HANDBOOK.md](docs/MOCK_STATIC_BROWSER_AGENT_HANDBOOK.md) | **Browser-only / static mock:** full strategy catalog, dependencies, UI verification (hand to external agents + PDF) |
-| [docs/MOCK_STATIC_EVALUATION_SPEC.md](docs/MOCK_STATIC_EVALUATION_SPEC.md)               | Maintainer pointer: env, paths, link to handbook                                                                     |
-| [COMPLIANCE_REFACTOR.md](./COMPLIANCE_REFACTOR.md)                                       | FCA regulatory specification                                                                                         |
+| Document                                                                                                           | Purpose                                                   |
+| ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| [docs/under-review/CODEBASE_STRUCTURE.md](docs/under-review/CODEBASE_STRUCTURE.md)                                 | Folder map, state management, tech stack — **read first** |
+| [docs/under-review/ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md](docs/under-review/ARCHITECTURE_AND_WORKFLOW_OVERVIEW.md) | Platform vision, role model, lifecycle, service areas     |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)                                                                           | Deployment pipeline and environments                      |
+| [docs/under-review/TESTING.md](docs/under-review/TESTING.md)                                                       | Testing strategy, utilities, fixture conventions          |
+| [docs/DATA_MODE_IDEOLOGY.md](docs/DATA_MODE_IDEOLOGY.md)                                                           | Mock vs live data contract                                |
 
-## References
+## License
 
-- **Parent System:** `unified-trading-system-repos` (multi-repo workspace)
-- **PM & Codex:** `unified-trading-pm` (plans, standards, architecture)
-- **Architecture Standards:** `unified-trading-codex/00-SSOT-INDEX.md`
+UNLICENSED — proprietary. Copyright Odum Capital.

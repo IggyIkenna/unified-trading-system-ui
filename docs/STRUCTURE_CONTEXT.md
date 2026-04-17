@@ -1,5 +1,13 @@
 # context/ — Backend Reference Material for Agents
 
+**Last verified: 2026-04-17**
+
+**Re-sync:** to regenerate / re-verify this document, run
+`ls lib/stores/ && ls contexts/ 2>/dev/null` (note: `contexts/` does not
+currently exist in this repo — the folder described below is `context/`,
+which is read-only backend reference material, not React context) and
+compare counts / entries against the structure listed below.
+
 The `context/` folder is **not** React context files. It contains read-only reference material from the backend system — API contracts, internal schemas, configuration registry, and project management artefacts. It exists so agents working on the UI can understand the backend without accessing other repos.
 
 **Do not modify files in `context/`.** They are snapshots synced from source repos. Edits belong in the source repos listed at the bottom of this document.
