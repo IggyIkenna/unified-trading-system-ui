@@ -1,12 +1,12 @@
 import { PreviewBanner } from "@/components/preview-banner";
-import { ProtocolIndicator } from "@/components/ui/protocol-indicator";
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { StagingGate } from "@/components/staging-gate";
+import { ProtocolIndicator } from "@/components/ui/protocol-indicator";
 import { Toaster } from "@/components/ui/sonner";
 import { ExecutionModeProvider } from "@/lib/execution-mode-context";
 import { Providers } from "@/lib/providers";
-import { ThemeProvider } from "next-themes";
 import type { Metadata, Viewport } from "next";
+import { ThemeProvider } from "next-themes";
 import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   title: "Odum Research - Unified Trading Infrastructure",
   description:
     "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://odum-research.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://odumresearch.com"),
   openGraph: {
     title: "Odum Research",
     description:

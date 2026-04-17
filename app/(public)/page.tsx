@@ -271,7 +271,7 @@ export default function ServicesLandingPage() {
                 "Bybit",
                 "Deribit",
                 "Coinbase",
-                "Kraken",
+
                 "Hyperliquid",
               ].map((v) => (
                 <span
@@ -334,7 +334,7 @@ export default function ServicesLandingPage() {
                 "Bybit",
                 "Deribit",
                 "Coinbase",
-                "Kraken",
+
                 "Hyperliquid",
               ].map((v) => (
                 <span

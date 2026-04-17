@@ -57,9 +57,9 @@ export function BoardPresentationPageClient() {
   const slide = slides[currentSlide] as Record<string, any>;
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-background flex flex-col">
+    <div ref={containerRef} className="h-[calc(100vh-7rem)] bg-background flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-6 py-3 border-b border-border bg-card/50">
+      <header className="flex items-center justify-between px-6 py-2 border-b border-border bg-card/50 shrink-0">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
             <img src="/images/odum-logo.png" alt="Odum Research" className="size-7" />
@@ -86,7 +86,7 @@ export function BoardPresentationPageClient() {
       </header>
 
       {/* Slide Content */}
-      <main className="flex-1 flex items-center justify-center p-8 overflow-hidden">
+      <main className="flex-1 flex items-center justify-center p-6 overflow-auto min-h-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id}
@@ -103,7 +103,7 @@ export function BoardPresentationPageClient() {
       </main>
 
       {/* Navigation */}
-      <footer className="flex items-center justify-between px-6 py-4 border-t border-border bg-card/50">
+      <footer className="flex items-center justify-between px-6 py-2 border-t border-border bg-card/50 shrink-0">
         <Button variant="ghost" size="sm" onClick={prevSlide} disabled={currentSlide === 0}>
           <ChevronLeft className="size-4 mr-1" />
           Previous

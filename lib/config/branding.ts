@@ -9,7 +9,8 @@ export const COMPANY = {
   name: "Odum Research",
   legalName: "Odum Research Ltd",
   tagline: "Institutional-Grade Trading Infrastructure",
-  domain: "odumresearch.com",
+  /** Public marketing site (staging). Static HTML is served on this host via `proxy.ts`, not on .com. */
+  domain: "odumresearch.co.uk",
 } as const;
 
 export const BRAND_COLORS = {

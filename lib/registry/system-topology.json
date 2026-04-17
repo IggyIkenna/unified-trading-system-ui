@@ -3165,7 +3165,7 @@
     },
     {
       "strategy_id": "QUANT_CROSS_EXCHANGE_BTC",
-      "display_name": "Quant Cross-Exchange BTC (Binance/Kraken)",
+      "display_name": "Quant Cross-Exchange BTC (Binance)",
       "category": "QUANT",
       "subcategory": "CROSS_EXCHANGE",
       "domain": "cefi",
@@ -3173,12 +3173,10 @@
         "SPOT_PAIR"
       ],
       "venues": [
-        "BINANCE",
-        "KRAKEN"
+        "BINANCE"
       ],
       "instruments": [
-        "BINANCE:SPOT_PAIR:BTCUSDT",
-        "KRAKEN:SPOT_PAIR:BTCUSD"
+        "BINANCE:SPOT_PAIR:BTCUSDT"
       ],
       "data_sources": {
         "features": [

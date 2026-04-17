@@ -533,7 +533,6 @@ export const VENUES = {
   okx: { label: "OKX", assetClass: "CeFi", type: "exchange" },
   deribit: { label: "Deribit", assetClass: "CeFi", type: "exchange" },
   bybit: { label: "Bybit", assetClass: "CeFi", type: "exchange" },
-  kraken: { label: "Kraken", assetClass: "CeFi", type: "exchange" },
   coinbase: { label: "Coinbase", assetClass: "CeFi", type: "exchange" },
 
   // DeFi Protocols

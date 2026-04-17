@@ -7,7 +7,7 @@ import * as React from "react";
  * Preview banner — shown across the entire site to signal that the platform
  * is mid-migration. Dismissible per session (localStorage).
  *
- * Deployed to odum-research.co.uk while the unified trading infrastructure
+ * Deployed to odumresearch.co.uk (and odum-research.co.uk) while the unified trading infrastructure
  * is being built out. The business is 4 years old but this is a new platform.
  */
 

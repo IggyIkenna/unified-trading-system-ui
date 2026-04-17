@@ -19,8 +19,34 @@ const STORAGE_KEY = "staging-authenticated";
 
 const IS_STAGING = process.env.NEXT_PUBLIC_STAGING_AUTH === "true";
 
-// Public pages that don't require the staging password
-const PUBLIC_PATHS = ["/"];
+/** Canonical marketing paths (see `proxy.ts` MARKETING_ROUTES on staging hosts). */
+const PUBLIC_MARKETING_PATHS = [
+  "/",
+  "/investment-management",
+  "/platform",
+  "/regulatory",
+  "/firm",
+  "/contact",
+];
+
+/** Direct `public/*.html` hits (links in static marketing still use these). */
+const PUBLIC_MARKETING_HTML = [
+  "/homepage.html",
+  "/strategies.html",
+  "/platform.html",
+  "/regulatory.html",
+  "/firm.html",
+  "/contact.html",
+];
+
+function isStagingPublicPath(pathname: string): boolean {
+  if (PUBLIC_MARKETING_PATHS.includes(pathname)) return true;
+  if (PUBLIC_MARKETING_HTML.includes(pathname)) return true;
+  if (pathname.startsWith("/_next")) return true;
+  if (pathname.startsWith("/favicon")) return true;
+  if (pathname.startsWith("/images/")) return true;
+  return false;
+}
 
 export function StagingGate({ children }: { children: React.ReactNode }) {
   if (!IS_STAGING) {
@@ -57,8 +83,7 @@ function StagingAuthWall({ children }: { children: React.ReactNode }) {
   }
 
   if (checking) return null;
-  // Landing page is always accessible
-  if (PUBLIC_PATHS.includes(pathname)) return <>{children}</>;
+  if (isStagingPublicPath(pathname)) return <>{children}</>;
   if (authenticated) return <>{children}</>;
 
   return (

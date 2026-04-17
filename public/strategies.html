@@ -18,6 +18,7 @@
       --border-accent: rgba(255, 255, 255, 0.12);
       --text: #e4e4e7;
       --text-muted: #a1a1aa;
+      --text-secondary: #c4c4cc;
       --text-dim: #71717a;
       --primary: #22d3ee;
       --primary-dim: rgba(34, 211, 238, 0.12);
@@ -74,6 +75,11 @@
       height: 56px;
     }
 
+    header .container.header-inner {
+      padding-left: 10px;
+      padding-right: 24px;
+    }
+
     .logo-group {
       display: flex;
       align-items: center;
@@ -105,22 +111,134 @@
     nav {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 18px;
     }
 
-    nav a {
-      font-size: 14px;
-      color: var(--text-muted);
+    nav>a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
       transition: color 0.15s;
     }
 
-    nav a:hover,
-    nav a.active {
-      color: var(--text);
+    nav>a:hover {
+      color: var(--text-muted);
     }
 
-    nav a.active {
+    nav>a.active {
+      color: var(--text);
       font-weight: 600;
+    }
+
+    nav>span {
+      color: rgba(255, 255, 255, 0.06);
+      font-size: 10px;
+      font-weight: 300;
+      user-select: none;
+      padding: 0 1px;
+    }
+
+    nav .nav-dropdown>a {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: color 0.15s;
+    }
+
+    nav .nav-dropdown:nth-child(3)>a {
+      color: rgba(251, 113, 133, 0.88);
+    }
+
+    nav .nav-dropdown:nth-child(3)>a:hover {
+      color: #fda4af;
+    }
+
+    nav .nav-dropdown:nth-child(4)>a {
+      color: rgba(34, 211, 238, 0.88);
+    }
+
+    nav .nav-dropdown:nth-child(4)>a:hover {
+      color: #67e8f9;
+    }
+
+    nav .nav-dropdown:nth-child(5)>a {
+      color: #94a3b8;
+    }
+
+    nav .nav-dropdown:nth-child(5)>a:hover {
+      color: #cbd5e1;
+    }
+
+    nav .nav-dropdown>a.active {
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+      text-decoration-color: currentColor;
+    }
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-dropdown>a::after {
+      content: ' \25BE';
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 200px;
+      background: rgba(16, 16, 18, 0.98);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      padding: 8px 0;
+      margin-top: 12px;
+      z-index: 200;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 0;
+      right: 0;
+      height: 12px;
+    }
+
+    .nav-dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      font-weight: 400;
+    }
+
+    .dropdown-menu a:hover {
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.06);
+    }
+
+    .dropdown-menu .dd-heading {
+      display: block;
+      padding: 8px 20px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .header-actions {
@@ -309,8 +427,8 @@
     }
 
     .card p {
-      font-size: 14px;
-      color: var(--text-muted);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
       line-height: 1.6;
     }
 
@@ -320,8 +438,8 @@
     }
 
     .card ul li {
-      font-size: 13px;
-      color: var(--text-muted);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
       padding: 4px 0 4px 18px;
       position: relative;
     }
@@ -440,6 +558,159 @@
       color: var(--text-dim);
     }
 
+    /* Strategy universe explorer (same pattern as homepage “What each service looks like”) */
+    .strategy-explorer-shell {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.015);
+      min-height: 440px;
+      text-align: left;
+    }
+
+    .strategy-explorer-shell>nav {
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 8px 0;
+    }
+
+    .explorer-nav {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .explorer-nav li {
+      border-left: 3px solid transparent;
+    }
+
+    .explorer-nav button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 18px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font: inherit;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .explorer-nav button:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .explorer-nav li.active {
+      border-left-color: var(--cyan);
+      background: rgba(34, 211, 238, 0.04);
+    }
+
+    .explorer-nav li.active button {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .explorer-nav .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .explorer-panel {
+      display: none;
+    }
+
+    .explorer-panel.active {
+      display: block;
+    }
+
+    .explorer-detail {
+      padding: 28px 32px 32px;
+    }
+
+    .explorer-detail .strat-kicker {
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin: 0 0 8px;
+    }
+
+    .explorer-detail h3 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0 0 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .explorer-detail .strat-lead {
+      color: var(--text-dim);
+      font-size: 14px;
+      line-height: 1.65;
+      margin: 0 0 4px;
+    }
+
+    .explorer-detail .strat-bullets {
+      list-style: none;
+      margin: 16px 0 0;
+      padding: 0;
+    }
+
+    .explorer-detail .strat-bullets li {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      padding: 6px 0 6px 18px;
+      position: relative;
+    }
+
+    .explorer-detail .strat-bullets li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .explorer-detail .strat-cta {
+      margin-top: 22px;
+    }
+
+    .explorer-detail .strat-cta a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--cyan);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-color: rgba(34, 211, 238, 0.45);
+    }
+
+    .explorer-detail .strat-cta a:hover {
+      color: #67e8f9;
+      text-decoration-color: var(--cyan);
+    }
+
+    @media (max-width: 900px) {
+      .strategy-explorer-shell {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .strategy-explorer-shell>nav {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+    }
+
     @media (max-width: 768px) {
       nav {
         display: none;
@@ -475,14 +746,48 @@
   <header>
     <div class="container header-inner">
       <a href="homepage.html" class="logo-group">
-        <img src="/favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
+        <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
         <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
       </a>
       <nav>
-        <a href="strategies.html" class="active">Investment Management</a>
-        <a href="platform.html">Platform</a>
-        <a href="regulatory.html">Regulatory</a>
-        <a href="firm.html">Firm</a>
+        <a href="homepage.html">Home</a>
+        <span aria-hidden="true">|</span>
+        <div class="nav-dropdown">
+          <a href="strategies.html" class="active">Investment Management</a>
+          <div class="dropdown-menu">
+            <span class="dd-heading">Sections</span>
+            <a href="#strategies">Sleeves (detail)</a>
+            <a href="#breadth">Domain matrix</a>
+            <a href="#process">How It Works</a>
+            <a href="#allocators">What You Get</a>
+            <a href="#contact-cta">Get Started</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="platform.html">Platform</a>
+          <div class="dropdown-menu">
+            <span class="dd-heading">Sections</span>
+            <a href="platform.html#pipeline">Pipeline</a>
+            <a href="platform.html#data">Data</a>
+            <a href="platform.html#research">Research</a>
+            <a href="platform.html#execution">Execution</a>
+            <a href="platform.html#reporting">Reporting</a>
+            <a href="platform.html#who">Who It's For</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="regulatory.html">Regulatory</a>
+          <div class="dropdown-menu">
+            <span class="dd-heading">Sections</span>
+            <a href="regulatory.html#coverage">What's Covered</a>
+            <a href="regulatory.html#why">Why Structure Matters</a>
+            <a href="regulatory.html#onboarding">Onboarding</a>
+            <a href="regulatory.html#comparison">Umbrella vs Direct</a>
+            <a href="regulatory.html#reg-cta">Get Started</a>
+          </div>
+        </div>
+        <span aria-hidden="true">|</span>
+        <a href="firm.html">Who We Are</a>
         <a href="contact.html">Contact</a>
       </nav>
       <div class="header-actions">
@@ -514,221 +819,250 @@
     </div>
   </section>
 
-  <!-- STRATEGY CATEGORIES -->
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Strategy universe</p>
-        <h2>Systematic strategies across five asset classes</h2>
-        <p>Machine learning, mean reversion, momentum, stat arb, market making, yield, and more &mdash; deployed through
-          one infrastructure and one reporting layer. Every strategy runs on the highest resolution data available for
-          each venue and instrument.</p>
-      </div>
-      <div class="card-grid" style="grid-template-columns: repeat(2, 1fr);">
-        <article class="card" style="border-color: rgba(74,222,128,0.2);">
-          <p class="card-kicker" style="color:var(--emerald);">Crypto Exchanges</p>
-          <h3>Digital asset systematic</h3>
-          <p>ML-backed momentum, mean reversion, directional, stat arb, and market making across BTC, ETH, SOL, and
-            more on crypto exchanges.</p>
-          <ul>
-            <li style="color:var(--emerald);">Binance, OKX, Bybit, Deribit, Coinbase, Hyperliquid +5 more</li>
-            <li>Spot, perpetuals, futures, options</li>
-            <li>Highest resolution data available &mdash; tick, 1m, 5m to daily depending on venue and instrument</li>
-          </ul>
-        </article>
-        <article class="card" style="border-color: rgba(167,139,250,0.2);">
-          <p class="card-kicker" style="color:var(--violet);">DeFi Protocols</p>
-          <h3>On-chain yield and basis</h3>
-          <p>Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi protocols on 8+ blockchains.
-          </p>
-          <ul>
-            <li style="color:var(--violet);">Aave, Morpho, Lido, EtherFi, Uniswap, Curve, Compound +40 more</li>
-            <li>Basis trades, lending optimisation, yield farming, liquidity provision</li>
-            <li>Per-block resolution on EVM chains; real-time pool and rate data</li>
-          </ul>
-        </article>
-        <article class="card" style="border-color: rgba(34,211,238,0.2);">
-          <p class="card-kicker" style="color:var(--cyan);">Traditional Markets</p>
-          <h3>Quant directional and execution</h3>
-          <p>Systematic momentum, mean reversion, event-driven, and commodity regime strategies across equities,
-            futures, FX, and commodities.</p>
-          <ul>
-            <li style="color:var(--cyan);">CME, NASDAQ, NYSE, ICE, CBOE, FX +2 more</li>
-            <li>SPY, 6E (FX), CL (oil), equity indices, ETFs +more</li>
-            <li>Highest resolution available per venue &mdash; tick to daily multi-timeframe signals</li>
-          </ul>
-        </article>
-        <article class="card" style="border-color: rgba(251,191,36,0.2);overflow:hidden;">
-          <p class="card-kicker" style="color:var(--amber);">Sports</p>
-          <h3>Quantitative sports trading</h3>
-          <p>Cross-bookmaker odds comparison, live arbitrage scanning, closing line value (CLV) analytics, and
-            ML-powered match predictions. 100+ leagues, 20+ bookmakers, seven market types, and full backtest-to-live
-            parity.</p>
-          <ul>
-            <li style="color:var(--amber);">Betfair, Pinnacle +20 bookmakers</li>
-            <li>FT Result, O/U 2.5, BTTS, Asian Handicap, DNB, Corners, HT Result</li>
-            <li>EPL, La Liga, Bundesliga, Serie A, Ligue 1, UCL, UEL, MLS, Eredivisie +90 leagues</li>
-          </ul>
-          <!-- Mini sports dashboard -->
-          <div
-            style="margin-top:12px;padding:10px;background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.12);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;">
-            <div style="color:var(--text-muted);font-size:9px;font-weight:600;margin-bottom:6px;">ML PREDICTION &mdash;
-              ARS v LIV</div>
-            <div style="display:flex;gap:12px;margin-bottom:8px;">
-              <div style="flex:1;text-align:center;">
-                <div style="font-size:9px;color:var(--text-dim);">Home</div>
-                <div style="font-size:14px;color:var(--amber);font-weight:600;">42%</div>
-              </div>
-              <div style="flex:1;text-align:center;">
-                <div style="font-size:9px;color:var(--text-dim);">Draw</div>
-                <div style="font-size:14px;color:var(--text-muted);font-weight:600;">27%</div>
-              </div>
-              <div style="flex:1;text-align:center;">
-                <div style="font-size:9px;color:var(--text-dim);">Away</div>
-                <div style="font-size:14px;color:var(--text-muted);font-weight:600;">31%</div>
-              </div>
-            </div>
-            <div style="display:flex;gap:8px;font-size:9px;color:var(--text-dim);justify-content:center;"><span>xG: 1.7
-                - 1.2</span><span>|</span><span>O2.5: 68%</span><span>|</span><span>BTTS: 72%</span></div>
-            <div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);">
-              <div
-                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);">
-                <span>Book</span><span>H</span><span>D</span><span>A</span>
-              </div>
-              <div
-                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);margin-top:2px;">
-                <span style="color:var(--amber);">Pinnacle</span><span>2.35</span><span>3.40</span><span>3.10</span>
-              </div>
-              <div
-                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);margin-top:2px;">
-                <span style="color:var(--amber);">Betfair</span><span>2.38</span><span>3.50</span><span>3.05</span>
-              </div>
-              <div
-                style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);margin-top:2px;">
-                <span style="color:var(--text-muted);font-style:italic;">+20
-                  books</span><span>&hellip;</span><span>&hellip;</span><span>&hellip;</span>
-              </div>
-            </div>
-          </div>
-        </article>
-        <article class="card" style="border-color: rgba(251,113,133,0.2);overflow:hidden;">
-          <p class="card-kicker" style="color:var(--rose);">Prediction Markets</p>
-          <h3>Cross-venue prediction market trading and arbitrage</h3>
-          <p>Browse all markets, compare pricing across Polymarket and Kalshi, overlay prediction odds against
-            underlying
-            assets with ODUM divergence charts, and execute with Kelly-optimal sizing. Categories span crypto, macro,
-            geopolitics, elections, and sports outcomes.</p>
-          <ul>
-            <li style="color:var(--rose);">Polymarket, Kalshi +3 more &mdash; live arb stream</li>
-            <li>ODUM divergence: prediction odds vs underlying price</li>
-            <li>Crypto, macro, sports, geopolitics, elections</li>
-          </ul>
-          <!-- Mini predictions dashboard -->
-          <div
-            style="margin-top:12px;padding:10px;background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.12);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:10px;">
-            <div style="color:var(--text-muted);font-size:9px;font-weight:600;margin-bottom:6px;">LIVE MARKETS</div>
-            <div
-              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;font-weight:600;color:var(--text-muted);padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.06);">
-              <span>Market</span><span>Venue</span><span>YES</span><span>Vol</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>BTC above $100K</span><span style="color:var(--rose);">Poly</span><span
-                style="color:var(--emerald);">72%</span><span>$4.2M</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>Arsenal win EPL</span><span style="color:var(--rose);">Kalshi</span><span
-                style="color:var(--emerald);">58%</span><span>$1.8M</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-              <span>Fed cuts by Sept</span><span style="color:var(--rose);">Poly</span><span
-                style="color:var(--amber);">44%</span><span>$6.1M</span>
-            </div>
-            <div
-              style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr;gap:4px;font-size:9px;color:var(--text-dim);padding:4px 0;">
-              <span>S&amp;P above 6000</span><span style="color:var(--rose);">Kalshi</span><span
-                style="color:var(--emerald);">63%</span><span>$2.4M</span>
-            </div>
-            <div
-              style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.06);font-size:9px;color:var(--text-dim);">
-              <span style="color:var(--rose);font-weight:600;">ARB:</span> BTC $100K &mdash; Poly 72% / Kalshi 69%
-              &rarr; <span style="color:var(--emerald);">+1.4%</span>
-            </div>
-          </div>
-        </article>
-        <article class="card" style="border-color: rgba(96,165,250,0.2);">
-          <p class="card-kicker" style="color:#60a5fa;">Cross-Market</p>
-          <h3>Multi-venue stat arb and vol</h3>
-          <p>Relative value, volatility surface, and cross-exchange strategies that span multiple asset classes and
-            venues.</p>
-          <ul>
-            <li style="color:#60a5fa;">BTC/ETH cross-exchange arb, funding rate arb +more</li>
-            <li>Vol surface (Deribit options), term structure strategies</li>
-            <li>Event-driven macro (crypto + equity + prediction markets)</li>
-          </ul>
-        </article>
-      </div>
-    </div>
-  </section>
+  <!-- SECTION NAV -->
+  <style>
+    .section-nav {
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+      background: rgba(10, 10, 11, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
 
-  <!-- STRATEGY BREADTH TABLE -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+    .section-nav-inner {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .section-nav-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .section-nav a {
+      display: block;
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .section-nav a:hover {
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .section-nav a.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+  </style>
+  <div class="section-nav">
+    <div class="container section-nav-inner">
+      <a href="#strategies" class="active">Sleeves (detail)</a>
+      <a href="#breadth">Domain matrix</a>
+      <a href="#process">How It Works</a>
+      <a href="#allocators">What You Get</a>
+      <a href="#contact-cta">Get Started</a>
+    </div>
+  </div>
+
+  <!-- Strategy coverage: sleeve explorer + domain matrix -->
+  <section id="strategies" class="section-pad" style="scroll-margin-top: 108px;">
     <div class="container">
       <div class="section-header">
-        <h2>Strategy breadth at a glance</h2>
-        <p>20+ strategy types across five domains. Each runs on the same infrastructure, same reporting, same risk
-          controls.</p>
+        <p class="eyebrow">Strategy coverage</p>
+        <h2>Where we deploy, and how to read it</h2>
+        <p><strong>Sleeves (detail)</strong> &mdash; pick a market on the left for narrative scope, venues, and data
+          resolution. <strong>Domain matrix</strong> &mdash; the table further down is the same domains in one
+          scannable grid: strategy mechanisms, venues, and instruments side by side (plus cross-market). Both sit on
+          one infrastructure, reporting layer, and risk controls.</p>
       </div>
-      <table class="strategy-table">
-        <thead>
-          <tr>
-            <th>Domain</th>
-            <th>Strategy Types</th>
-            <th>Venues</th>
-            <th>Instruments</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><span class="cat-dot" style="background:var(--emerald);"></span>Crypto Exchanges</td>
-            <td>ML momentum, mean reversion, stat arb, market making, directional</td>
-            <td>Binance, OKX, Bybit, Deribit, Coinbase, Hyperliquid, Upbit +4</td>
-            <td>Spot, perpetuals, futures, options</td>
-          </tr>
-          <tr>
-            <td><span class="cat-dot" style="background:var(--violet);"></span>DeFi Protocols</td>
-            <td>Lending, basis, staked basis, recursive, yield optimisation</td>
-            <td>55+ protocol&times;chain pairs across Ethereum, Arbitrum, Optimism, Polygon, Base, Avalanche, BSC,
-              Solana</td>
-            <td>a-tokens, debt tokens, LSTs, pools, lending vaults</td>
-          </tr>
-          <tr>
-            <td><span class="cat-dot" style="background:var(--cyan);"></span>TradFi</td>
-            <td>Momentum, mean reversion, commodity regime, event-driven, FX</td>
-            <td>CME, NASDAQ, NYSE, ICE, CBOE, FX, Barchart, Yahoo Finance</td>
-            <td>Equities, futures, FX, commodities, ETFs</td>
-          </tr>
-          <tr>
-            <td><span class="cat-dot" style="background:var(--amber);"></span>Sports</td>
-            <td>Cross-book arb, value betting, Kelly, CLV analytics, ML xG prediction, pre-game/HT models</td>
-            <td>Betfair, Pinnacle +20 bookmakers</td>
-            <td>FT Result, O/U 2.5, BTTS, Asian HC, Corners, HT Result, DNB across 100+ leagues</td>
-          </tr>
-          <tr>
-            <td><span class="cat-dot" style="background:var(--rose);"></span>Predictions</td>
-            <td>Cross-venue arb, ODUM divergence (odds vs underlying), Kelly sizing, event-driven systematic</td>
-            <td>Polymarket, Kalshi +3 more</td>
-            <td>Crypto, macro, geopolitics, elections, sports outcomes</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="strategy-explorer-shell">
+        <nav aria-label="Strategy domains">
+          <ul class="explorer-nav" id="strategyExplorerNav">
+            <li class="active" data-panel="crypto">
+              <button type="button"><span class="nav-dot" style="background:var(--emerald);"></span>Crypto
+                exchanges</button>
+            </li>
+            <li data-panel="defi">
+              <button type="button"><span class="nav-dot" style="background:var(--violet);"></span>DeFi
+                protocols</button>
+            </li>
+            <li data-panel="tradfi">
+              <button type="button"><span class="nav-dot" style="background:var(--cyan);"></span>Traditional
+                markets</button>
+            </li>
+            <li data-panel="sports">
+              <button type="button"><span class="nav-dot" style="background:var(--amber);"></span>Sports</button>
+            </li>
+            <li data-panel="predictions">
+              <button type="button"><span class="nav-dot" style="background:var(--rose);"></span>Prediction
+                markets</button>
+            </li>
+            <li data-panel="cross">
+              <button type="button"><span class="nav-dot" style="background:#60a5fa;"></span>Cross-market</button>
+            </li>
+          </ul>
+        </nav>
+        <div id="strategyExplorerPanels">
+          <div class="explorer-panel active" id="panel-crypto">
+            <div class="explorer-detail">
+              <p class="strat-kicker" style="color:var(--emerald);">Crypto exchanges</p>
+              <h3 style="color:var(--emerald);">Digital asset systematic</h3>
+              <p class="strat-lead">ML-backed momentum, mean reversion, directional, stat arb, and market making across
+                BTC, ETH, SOL, and more on crypto exchanges.</p>
+              <ul class="strat-bullets">
+                <li style="color:var(--emerald);">Binance, OKX, Bybit, Deribit, Coinbase, Hyperliquid +5 more</li>
+                <li>Spot, perpetuals, futures, options</li>
+                <li>Highest resolution data available &mdash; tick, 1m, 5m to daily depending on venue and instrument
+                </li>
+              </ul>
+              <p class="strat-cta"><a href="contact.html">Discuss this sleeve &rarr;</a></p>
+            </div>
+          </div>
+          <div class="explorer-panel" id="panel-defi">
+            <div class="explorer-detail">
+              <p class="strat-kicker" style="color:var(--violet);">DeFi protocols</p>
+              <h3 style="color:var(--violet);">On-chain yield and basis</h3>
+              <p class="strat-lead">Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi
+                protocols on 8+ blockchains.</p>
+              <ul class="strat-bullets">
+                <li style="color:var(--violet);">Aave, Morpho, Lido, EtherFi, Uniswap, Curve, Compound +40 more</li>
+                <li>Basis trades, lending optimisation, yield farming, liquidity provision</li>
+                <li>Per-block resolution on EVM chains; real-time pool and rate data</li>
+              </ul>
+              <p class="strat-cta"><a href="contact.html">Discuss this sleeve &rarr;</a></p>
+            </div>
+          </div>
+          <div class="explorer-panel" id="panel-tradfi">
+            <div class="explorer-detail">
+              <p class="strat-kicker" style="color:var(--cyan);">Traditional markets</p>
+              <h3 style="color:var(--cyan);">Quant directional and execution</h3>
+              <p class="strat-lead">Systematic momentum, mean reversion, event-driven, and commodity regime strategies
+                across equities, futures, FX, and commodities.</p>
+              <ul class="strat-bullets">
+                <li style="color:var(--cyan);">CME, NASDAQ, NYSE, ICE, CBOE, FX +2 more</li>
+                <li>SPY, 6E (FX), CL (oil), equity indices, ETFs +more</li>
+                <li>Highest resolution available per venue &mdash; tick to daily multi-timeframe signals</li>
+              </ul>
+              <p class="strat-cta"><a href="contact.html">Discuss this sleeve &rarr;</a></p>
+            </div>
+          </div>
+          <div class="explorer-panel" id="panel-sports">
+            <div class="explorer-detail">
+              <p class="strat-kicker" style="color:var(--amber);">Sports</p>
+              <h3 style="color:var(--amber);">Quantitative sports trading</h3>
+              <p class="strat-lead">Cross-bookmaker odds comparison, live arbitrage scanning, closing line value (CLV)
+                analytics, and ML-powered match predictions. 100+ leagues, 20+ bookmakers, seven market types, and full
+                backtest-to-live parity.</p>
+              <ul class="strat-bullets">
+                <li style="color:var(--amber);">Betfair, Pinnacle +20 bookmakers</li>
+                <li>FT Result, O/U 2.5, BTTS, Asian Handicap, DNB, Corners, HT Result</li>
+                <li>EPL, La Liga, Bundesliga, Serie A, Ligue 1, UCL, UEL, MLS, Eredivisie +90 leagues</li>
+              </ul>
+              <p class="strat-cta"><a href="contact.html">Discuss this sleeve &rarr;</a></p>
+            </div>
+          </div>
+          <div class="explorer-panel" id="panel-predictions">
+            <div class="explorer-detail">
+              <p class="strat-kicker" style="color:var(--rose);">Prediction markets</p>
+              <h3 style="color:var(--rose);">Cross-venue prediction market trading and arbitrage</h3>
+              <p class="strat-lead">Browse all markets, compare pricing across Polymarket and Kalshi, overlay prediction
+                odds against underlying assets with ODUM divergence charts, and execute with Kelly-optimal sizing.
+                Categories span crypto, macro, geopolitics, elections, and sports outcomes.</p>
+              <ul class="strat-bullets">
+                <li style="color:var(--rose);">Polymarket, Kalshi +3 more &mdash; live arb stream</li>
+                <li>ODUM divergence: prediction odds vs underlying price</li>
+                <li>Crypto, macro, sports, geopolitics, elections</li>
+              </ul>
+              <p class="strat-cta"><a href="contact.html">Discuss this sleeve &rarr;</a></p>
+            </div>
+          </div>
+          <div class="explorer-panel" id="panel-cross">
+            <div class="explorer-detail">
+              <p class="strat-kicker" style="color:#60a5fa;">Cross-market</p>
+              <h3 style="color:#60a5fa;">Multi-venue stat arb and vol</h3>
+              <p class="strat-lead">Relative value, volatility surface, and cross-exchange strategies that span multiple
+                asset classes and venues.</p>
+              <ul class="strat-bullets">
+                <li style="color:#60a5fa;">BTC/ETH cross-exchange arb, funding rate arb +more</li>
+                <li>Vol surface (Deribit options), term structure strategies</li>
+                <li>Event-driven macro (crypto + equity + prediction markets)</li>
+              </ul>
+              <p class="strat-cta"><a href="contact.html">Discuss this sleeve &rarr;</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="breadth" class="strategy-matrix-wrap"
+        style="scroll-margin-top:108px;margin-top:56px;padding:48px 24px 32px;border-top:1px solid var(--border);background:var(--bg-surface);border-radius:12px;">
+        <h3 style="font-size:clamp(20px,2.4vw,28px);font-weight:700;letter-spacing:-0.01em;margin:0 0 10px;">Domain
+          matrix</h3>
+        <p style="font-size:15px;color:var(--text-muted);line-height:1.6;max-width:720px;margin:0 0 28px;">Use this when
+          you want a single pass across domains: what kinds of strategies run where, and on what instruments.</p>
+        <table class="strategy-table">
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>Strategy Types</th>
+              <th>Venues</th>
+              <th>Instruments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="cat-dot" style="background:var(--emerald);"></span>Crypto Exchanges</td>
+              <td>ML momentum, mean reversion, stat arb, market making, directional</td>
+              <td>Binance, OKX, Bybit, Deribit, Coinbase, Hyperliquid, Upbit +4</td>
+              <td>Spot, perpetuals, futures, options</td>
+            </tr>
+            <tr>
+              <td><span class="cat-dot" style="background:var(--violet);"></span>DeFi Protocols</td>
+              <td>Lending, basis, staked basis, recursive, yield optimisation</td>
+              <td>55+ protocol&times;chain pairs across Ethereum, Arbitrum, Optimism, Polygon, Base, Avalanche, BSC,
+                Solana</td>
+              <td>a-tokens, debt tokens, LSTs, pools, lending vaults</td>
+            </tr>
+            <tr>
+              <td><span class="cat-dot" style="background:var(--cyan);"></span>TradFi</td>
+              <td>Momentum, mean reversion, commodity regime, event-driven, FX</td>
+              <td>CME, NASDAQ, NYSE, ICE, CBOE, FX, Barchart, Yahoo Finance</td>
+              <td>Equities, futures, FX, commodities, ETFs</td>
+            </tr>
+            <tr>
+              <td><span class="cat-dot" style="background:var(--amber);"></span>Sports</td>
+              <td>Cross-book arb, value betting, Kelly, CLV analytics, ML xG prediction, pre-game/HT models</td>
+              <td>Betfair, Pinnacle +20 bookmakers</td>
+              <td>FT Result, O/U 2.5, BTTS, Asian HC, Corners, HT Result, DNB across 100+ leagues</td>
+            </tr>
+            <tr>
+              <td><span class="cat-dot" style="background:var(--rose);"></span>Predictions</td>
+              <td>Cross-venue arb, ODUM divergence (odds vs underlying), Kelly sizing, event-driven systematic</td>
+              <td>Polymarket, Kalshi +3 more</td>
+              <td>Crypto, macro, geopolitics, elections, sports outcomes</td>
+            </tr>
+            <tr>
+              <td><span class="cat-dot" style="background:#60a5fa;"></span>Cross-market</td>
+              <td>Cross-exchange stat arb, funding rate arb, vol surface / term structure, multi-venue relative value
+              </td>
+              <td>Crypto exchanges, Deribit, prediction venues, TradFi (cross-venue)</td>
+              <td>BTC/ETH basis across venues, vol instruments, macro-linked event sleeves</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
   <!-- HOW ALLOCATION WORKS -->
-  <section class="section-pad">
+  <section id="process" class="section-pad">
     <div class="container">
       <div class="section-header">
         <p class="eyebrow">Allocation process</p>
@@ -761,7 +1095,7 @@
   </section>
 
   <!-- WHAT YOU GET -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="allocators" class="section-pad" style="background: var(--bg-surface);">
     <div class="container">
       <div class="section-header">
         <h2>What allocators get</h2>
@@ -779,15 +1113,16 @@
             transparency.</p>
         </article>
         <article class="card">
-          <h3>Backtest-to-live parity</h3>
-          <p>Every strategy runs the same code in backtest and production. Daily reconciliation confirms alignment.</p>
+          <h3>Research-to-live continuity</h3>
+          <p>The same strategy logic runs from research through paper trading to live deployment. Daily reconciliation
+            confirms alignment.</p>
         </article>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section class="section-pad">
+  <section id="contact-cta" class="section-pad">
     <div class="container" style="text-align:center; max-width:600px;">
       <h2>Ready to discuss a mandate?</h2>
       <p style="margin-top:16px; font-size:16px; color:var(--text-muted);">
@@ -816,6 +1151,58 @@
     </div>
   </footer>
 
+  <script>
+    (function () {
+      var links = document.querySelectorAll('.section-nav a');
+      var sections = [];
+      links.forEach(function (a) { var t = document.querySelector(a.getAttribute('href')); if (t) sections.push({ el: t, link: a }); });
+      links.forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); var t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); });
+      window.addEventListener('scroll', function () { var y = window.scrollY + 120; sections.forEach(function (s) { s.link.classList.remove('active'); }); for (var i = sections.length - 1; i >= 0; i--) { if (sections[i].el.offsetTop <= y) { sections[i].link.classList.add('active'); break; } } });
+    })();
+  </script>
+  <script>
+    (function () {
+      var nav = document.getElementById('strategyExplorerNav');
+      var panels = document.getElementById('strategyExplorerPanels');
+      if (!nav || !panels) return;
+      var order = ['crypto', 'defi', 'tradfi', 'sports', 'predictions', 'cross'];
+      function show(panelId) {
+        nav.querySelectorAll('li').forEach(function (l) {
+          l.classList.toggle('active', l.getAttribute('data-panel') === panelId);
+        });
+        panels.querySelectorAll('.explorer-panel').forEach(function (p) {
+          p.classList.toggle('active', p.id === 'panel-' + panelId);
+        });
+      }
+      nav.addEventListener('click', function (e) {
+        var btn = e.target.closest('button');
+        if (!btn) return;
+        var li = btn.closest('li');
+        if (!li) return;
+        show(li.getAttribute('data-panel'));
+      });
+      function panelFromHash() {
+        var h = (location.hash || '').replace(/^#/, '');
+        if (order.indexOf(h) !== -1) return h;
+        return 'crypto';
+      }
+      function applyHash() {
+        var id = panelFromHash();
+        show(id);
+        if (location.hash && order.indexOf(location.hash.replace(/^#/, '')) !== -1) {
+          var sec = document.getElementById('strategies');
+          if (sec) {
+            requestAnimationFrame(function () {
+              sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+          }
+        }
+      }
+      window.addEventListener('hashchange', applyHash);
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyHash);
+      else applyHash();
+    })();
+  </script>
 </body>
 
 </html>

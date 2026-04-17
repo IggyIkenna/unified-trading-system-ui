@@ -35,7 +35,7 @@ export type BookCategoryTab = "cefi_spot" | "cefi_derivatives" | "defi" | "tradf
 export type BookAlgoType = "MARKET" | "TWAP" | "VWAP" | "ICEBERG" | "SOR" | "BEST_PRICE" | "BENCHMARK_FILL";
 
 export const BOOK_VENUES_BY_CATEGORY: Record<BookCategoryTab, string[]> = {
-  cefi_spot: ["Binance", "Coinbase", "OKX", "Bybit", "Kraken", "Gemini"],
+  cefi_spot: ["Binance", "Coinbase", "OKX", "Bybit", "Gemini"],
   cefi_derivatives: ["Deribit", "OKX", "Bybit", "Binance", "BitMEX"],
   defi: ["Uniswap", "Aave", "Hyperliquid", "SushiSwap", "Curve"],
   tradfi: ["NYSE", "NASDAQ", "LSE", "CME", "ICE", "Eurex"],

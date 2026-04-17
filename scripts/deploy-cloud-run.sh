@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
-# Deploy to Cloud Run (odum-research.com)
+# Deploy the Next.js image to Cloud Run service `odum-portal` (europe-west4).
+#
+# After deploy, verify the **staging marketing** host only:
+#   https://odum-research.co.uk/
+# (Static HTML rewrites are gated by Host in `proxy.ts` — not odum-research.com.)
 #
 # Usage:
 #   bash scripts/deploy-cloud-run.sh          # local Docker build + deploy
@@ -58,5 +62,6 @@ gcloud run revisions list \
     fi
   done
 
-echo "=== Done — live at https://odum-research.com ==="
+echo "=== Done — Cloud Run ${SERVICE} updated (${REGION}) ==="
+echo "  Verify staging (static marketing): https://odum-research.co.uk/"
 echo "  Active revision: ${LATEST}"

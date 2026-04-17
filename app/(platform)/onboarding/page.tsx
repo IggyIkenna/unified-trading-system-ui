@@ -13,7 +13,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
 
-const SUPPORTED_VENUES = ["Binance", "OKX", "Bybit", "Deribit", "Coinbase", "Kraken", "Hyperliquid", "IBKR"];
+const SUPPORTED_VENUES = ["Binance", "OKX", "Bybit", "Deribit", "Coinbase", "Hyperliquid", "IBKR"];
 
 type OnboardingStep = "fund" | "keys" | "complete";
 

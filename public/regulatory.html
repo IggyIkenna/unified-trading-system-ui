@@ -18,6 +18,7 @@
       --border-accent: rgba(255, 255, 255, 0.12);
       --text: #e4e4e7;
       --text-muted: #a1a1aa;
+      --text-secondary: #c4c4cc;
       --text-dim: #71717a;
       --primary: #22d3ee;
       --sky: #38bdf8;
@@ -73,6 +74,11 @@
       height: 56px;
     }
 
+    header .container.header-inner {
+      padding-left: 10px;
+      padding-right: 24px;
+    }
+
     .logo-group {
       display: flex;
       align-items: center;
@@ -104,22 +110,134 @@
     nav {
       display: flex;
       align-items: center;
-      gap: 28px;
+      gap: 18px;
     }
 
-    nav a {
-      font-size: 14px;
-      color: var(--text-muted);
+    nav>a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
       transition: color 0.15s;
     }
 
-    nav a:hover,
-    nav a.active {
-      color: var(--text);
+    nav>a:hover {
+      color: var(--text-muted);
     }
 
-    nav a.active {
+    nav>a.active {
+      color: var(--text);
       font-weight: 600;
+    }
+
+    nav>span {
+      color: rgba(255, 255, 255, 0.06);
+      font-size: 10px;
+      font-weight: 300;
+      user-select: none;
+      padding: 0 1px;
+    }
+
+    nav .nav-dropdown>a {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: color 0.15s;
+    }
+
+    nav .nav-dropdown:nth-child(3)>a {
+      color: rgba(251, 113, 133, 0.88);
+    }
+
+    nav .nav-dropdown:nth-child(3)>a:hover {
+      color: #fda4af;
+    }
+
+    nav .nav-dropdown:nth-child(4)>a {
+      color: rgba(34, 211, 238, 0.88);
+    }
+
+    nav .nav-dropdown:nth-child(4)>a:hover {
+      color: #67e8f9;
+    }
+
+    nav .nav-dropdown:nth-child(5)>a {
+      color: #94a3b8;
+    }
+
+    nav .nav-dropdown:nth-child(5)>a:hover {
+      color: #cbd5e1;
+    }
+
+    nav .nav-dropdown>a.active {
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+      text-decoration-color: currentColor;
+    }
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-dropdown>a::after {
+      content: ' \25BE';
+      font-size: 10px;
+      opacity: 0.5;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 200px;
+      background: rgba(16, 16, 18, 0.98);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-accent);
+      border-radius: 10px;
+      padding: 8px 0;
+      margin-top: 12px;
+      z-index: 200;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 0;
+      right: 0;
+      height: 12px;
+    }
+
+    .nav-dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 8px 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      font-weight: 400;
+    }
+
+    .dropdown-menu a:hover {
+      color: var(--cyan);
+      background: rgba(6, 182, 212, 0.06);
+    }
+
+    .dropdown-menu .dd-heading {
+      display: block;
+      padding: 8px 20px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .header-actions {
@@ -289,8 +407,8 @@
     }
 
     .card p {
-      font-size: 14px;
-      color: var(--text-muted);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
       line-height: 1.6;
     }
 
@@ -300,8 +418,8 @@
     }
 
     .card ul li {
-      font-size: 13px;
-      color: var(--text-muted);
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
       padding: 6px 0 6px 20px;
       position: relative;
     }
@@ -462,14 +580,48 @@
   <header>
     <div class="container header-inner">
       <a href="homepage.html" class="logo-group">
-        <img src="/favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
+        <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
         <div><span class="logo-text">Odum Research</span><span class="fca-badge">FCA 975797</span></div>
       </a>
       <nav>
-        <a href="strategies.html">Investment Management</a>
-        <a href="platform.html">Platform</a>
-        <a href="regulatory.html" class="active">Regulatory</a>
-        <a href="firm.html">Firm</a>
+        <a href="homepage.html">Home</a>
+        <span aria-hidden="true">|</span>
+        <div class="nav-dropdown">
+          <a href="strategies.html">Investment Management</a>
+          <div class="dropdown-menu">
+            <span class="dd-heading">Sections</span>
+            <a href="strategies.html#strategies">Sleeves (detail)</a>
+            <a href="strategies.html#breadth">Domain matrix</a>
+            <a href="strategies.html#process">How It Works</a>
+            <a href="strategies.html#allocators">What You Get</a>
+            <a href="strategies.html#contact-cta">Get Started</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="platform.html">Platform</a>
+          <div class="dropdown-menu">
+            <span class="dd-heading">Sections</span>
+            <a href="platform.html#pipeline">Pipeline</a>
+            <a href="platform.html#data">Data</a>
+            <a href="platform.html#research">Research</a>
+            <a href="platform.html#execution">Execution</a>
+            <a href="platform.html#reporting">Reporting</a>
+            <a href="platform.html#who">Who It's For</a>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="regulatory.html" class="active">Regulatory</a>
+          <div class="dropdown-menu">
+            <span class="dd-heading">Sections</span>
+            <a href="#coverage">What's Covered</a>
+            <a href="#why">Why Structure Matters</a>
+            <a href="#onboarding">Onboarding</a>
+            <a href="#comparison">Umbrella vs Direct</a>
+            <a href="#reg-cta">Get Started</a>
+          </div>
+        </div>
+        <span aria-hidden="true">|</span>
+        <a href="firm.html">Who We Are</a>
         <a href="contact.html">Contact</a>
       </nav>
       <div class="header-actions">
@@ -498,8 +650,61 @@
     </div>
   </section>
 
+  <!-- SECTION NAV -->
+  <style>
+    .section-nav {
+      position: sticky;
+      top: 56px;
+      z-index: 90;
+      background: rgba(10, 10, 11, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+    }
+
+    .section-nav-inner {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .section-nav-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .section-nav a {
+      display: block;
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .section-nav a:hover {
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .section-nav a.active {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+  </style>
+  <div class="section-nav">
+    <div class="container section-nav-inner">
+      <a href="#coverage" class="active">What's Covered</a>
+      <a href="#why">Why Structure Matters</a>
+      <a href="#onboarding">Onboarding</a>
+      <a href="#comparison">Umbrella vs Direct</a>
+      <a href="#reg-cta">Get Started</a>
+    </div>
+  </div>
+
   <!-- WHAT'S COVERED -->
-  <section class="section-pad">
+  <section id="coverage" class="section-pad">
     <div class="container">
       <div class="section-header">
         <p class="eyebrow">Regulatory coverage</p>
@@ -546,7 +751,7 @@
   </section>
 
   <!-- WHO IT'S FOR -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="why" class="section-pad" style="background: var(--bg-surface);">
     <div class="container">
       <div class="section-header">
         <h2>Why structure matters</h2>
@@ -580,7 +785,7 @@
   </section>
 
   <!-- TIMELINE -->
-  <section class="section-pad">
+  <section id="onboarding" class="section-pad">
     <div class="container">
       <div class="section-header">
         <p class="eyebrow">Onboarding process</p>
@@ -628,7 +833,7 @@
   </section>
 
   <!-- COMPARISON -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="comparison" class="section-pad" style="background: var(--bg-surface);">
     <div class="container">
       <div class="section-header">
         <h2>Umbrella vs. direct authorisation</h2>
@@ -694,7 +899,7 @@
   </section>
 
   <!-- CTA -->
-  <section class="section-pad">
+  <section id="reg-cta" class="section-pad">
     <div class="container" style="text-align:center; max-width:600px;">
       <h2>Check if the umbrella is right for you</h2>
       <p style="margin-top:16px; font-size:16px; color:var(--text-muted);">
@@ -723,6 +928,15 @@
     </div>
   </footer>
 
+  <script>
+    (function () {
+      var links = document.querySelectorAll('.section-nav a');
+      var sections = [];
+      links.forEach(function (a) { var t = document.querySelector(a.getAttribute('href')); if (t) sections.push({ el: t, link: a }); });
+      links.forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); var t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); });
+      window.addEventListener('scroll', function () { var y = window.scrollY + 120; sections.forEach(function (s) { s.link.classList.remove('active'); }); for (var i = sections.length - 1; i >= 0; i--) { if (sections[i].el.offsetTop <= y) { sections[i].link.classList.add('active'); break; } } });
+    })();
+  </script>
 </body>
 
 </html>

@@ -147,17 +147,6 @@ export const tradeHistory = [
     timestamp: "3m ago",
   },
   {
-    id: "TRD-8918",
-    strategy: "BTC Basis v3",
-    side: "SELL",
-    instrument: "BTC-SPOT",
-    qty: "0.5",
-    price: "$43,198",
-    venue: "Kraken",
-    pnl: "-$23",
-    timestamp: "5m ago",
-  },
-  {
     id: "TRD-8917",
     strategy: "ML Directional",
     side: "BUY",

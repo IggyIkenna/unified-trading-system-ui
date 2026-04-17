@@ -89,7 +89,7 @@ export const strategySchemas: Record<
         label: "Allowed Venues",
         type: "multiselect",
         value: ["BINANCE", "OKX", "BYBIT"],
-        options: ["BINANCE", "OKX", "BYBIT", "COINBASE", "KRAKEN", "DERIBIT"],
+        options: ["BINANCE", "OKX", "BYBIT", "COINBASE", "DERIBIT"],
         description: "Venues enabled for trading",
       },
       {

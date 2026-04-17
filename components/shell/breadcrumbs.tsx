@@ -29,6 +29,8 @@ export function Breadcrumbs() {
   const mapping = getRouteMapping(pathname);
   const normalizedPath = pathname.replace(/\/$/, "") || "/";
 
+  const isInvestorRelations = pathname.startsWith("/investor-relations");
+
   // Build crumbs from URL segments: /services/data/coverage -> ["data", "coverage"]
   const segments = pathname.replace("/services/", "").split("/").filter(Boolean);
   const serviceName = segments[0];
@@ -70,7 +72,10 @@ export function Breadcrumbs() {
         {serviceName && (
           <>
             <ChevronRight className="size-3" />
-            <Link href={`/services/${serviceName}/overview`} className="hover:text-foreground transition-colors">
+            <Link
+              href={isInvestorRelations ? "/investor-relations" : `/services/${serviceName}/overview`}
+              className="hover:text-foreground transition-colors"
+            >
               {serviceLabels[serviceName] ?? formatLabel(serviceName)}
             </Link>
           </>

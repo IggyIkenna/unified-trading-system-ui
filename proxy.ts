@@ -1,7 +1,20 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-const STAGING_HOSTS = ["odum-research.co.uk", "www.odum-research.co.uk"];
+/**
+ * Host header values for which we serve static marketing HTML from `public/`.
+ * Staging / preview only: **do not** add odumresearch.com here until you intend
+ * the public marketing bundle to replace the React landing on production.
+ *
+ * Includes both odumresearch.co.uk (no hyphen) and odum-research.co.uk (hyphen)
+ * so DNS/CNAME variants hit the same rewrite table.
+ */
+const STAGING_HOSTS = [
+  "odumresearch.co.uk",
+  "www.odumresearch.co.uk",
+  "odum-research.co.uk",
+  "www.odum-research.co.uk",
+];
 
 const MARKETING_ROUTES: Record<string, string> = {
   "/": "/homepage.html",

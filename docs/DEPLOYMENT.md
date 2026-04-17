@@ -1,6 +1,6 @@
 # Deploying the Odum Research Website
 
-Canonical steps for deploying to **odum-research.co.uk** or **odum-research.com**.
+Canonical steps for deploying to **odumresearch.co.uk** (primary staging marketing host), **odum-research.co.uk** (legacy CNAME), or **odumresearch.com** (production app — static marketing is **not** served there until `proxy.ts` is intentionally updated).
 
 Both domains point to the same Cloud Run service (`odum-portal`) in `europe-west4`.
 
@@ -137,9 +137,8 @@ gcloud run services update-traffic odum-portal \
 ### 6. Verify
 
 ```bash
-# Check HTTP status
+# Check HTTP status (use .co.uk only — static marketing rewrites apply here)
 curl -sI https://odum-research.co.uk/ | head -5
-curl -sI https://odum-research.com/ | head -5
 
 # Check page title
 curl -s https://odum-research.co.uk/ | grep -o '<title>[^<]*</title>'
@@ -242,25 +241,31 @@ Use `deploy-cloud-run.sh` for day-to-day deploys. Use `deploy.sh --local` only i
 
 Both domains point to the same Cloud Run service, but `proxy.ts` checks the `Host` header to decide what to serve:
 
-| Domain                  | What it serves                          |
-| ----------------------- | --------------------------------------- |
-| `odum-research.com`     | **Production React app** (auth, sign-in, full platform) |
-| `odum-research.co.uk`   | **Marketing pages** (static HTML, internal review) |
-| `localhost:*`           | **Production React app** (default)      |
+| Domain                     | What it serves |
+| -------------------------- | -------------- |
+| `odumresearch.com`         | **Production React app** (auth, sign-in, full platform). Static marketing from `public/*.html` is **not** rewritten here unless you deliberately add this host to `STAGING_HOSTS` in `proxy.ts`. |
+| `odumresearch.co.uk`       | **Staging marketing** — same Next container, but `proxy.ts` rewrites selected paths to static HTML. |
+| `odum-research.co.uk`      | Same as above (hyphenated hostname; kept for DNS/CNAME compatibility). |
+| `localhost:*`              | **Production React app** (default) — no marketing rewrites. |
 
 The staging host list is defined in `proxy.ts`:
 
 ```typescript
-const STAGING_HOSTS = ["odum-research.co.uk", "www.odum-research.co.uk"];
+const STAGING_HOSTS = [
+  "odumresearch.co.uk",
+  "www.odumresearch.co.uk",
+  "odum-research.co.uk",
+  "www.odum-research.co.uk",
+];
 ```
 
-Only requests with a `Host` header matching a staging host get rewritten to the static HTML marketing pages. All other hosts (including `.com`, `localhost`, and the raw Cloud Run URL) serve the normal Next.js React app.
+Only requests with a `Host` header matching a staging host get rewritten to the static HTML marketing pages. All other hosts (including `odumresearch.com`, `localhost`, and the raw Cloud Run URL) serve the normal Next.js React app.
 
 **To add a new staging host** (e.g. a preview domain): add it to `STAGING_HOSTS` in `proxy.ts`, rebuild and deploy.
 
-**To promote marketing pages to production** (`.com`): add `"odum-research.com"` to `STAGING_HOSTS`. This replaces the React landing page with the static marketing pages on `.com`. The platform routes (`/dashboard`, `/services/*`, `/admin`) are unaffected — they always serve the React app regardless of host.
+**To promote marketing pages to production** (`odumresearch.com`): add `"odumresearch.com"` (and `www.` if needed) to `STAGING_HOSTS`. This replaces the React landing page with the static marketing pages on that host for the mapped paths only. Platform routes (`/dashboard`, `/services/*`, `/admin`) are unaffected — they always serve the React app regardless of host.
 
-**WARNING:** Never remove the host check entirely. Doing so serves marketing pages on ALL hosts including `.com`, replacing the production sign-in flow.
+**WARNING:** Never remove the host check entirely. Doing so serves marketing pages on **every** host, including production.
 
 ### Marketing Page Routes (`.co.uk` only)
 

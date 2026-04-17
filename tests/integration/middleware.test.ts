@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/server", () => {
   class MockNextResponse {
@@ -53,9 +53,17 @@ describe("Staging proxy", () => {
 
   it("passes through on non-staging domain", async () => {
     const { proxy } = await import("@/proxy");
-    const request = makeRequest("https://odum-research.com/", "odum-research.com");
+    const request = makeRequest("https://odumresearch.com/", "odumresearch.com");
     const result = proxy(request as never);
     expect(result).toMatchObject({ type: "next" });
+  });
+
+  it("rewrites root to homepage.html on odumresearch.co.uk (no hyphen)", async () => {
+    const { proxy } = await import("@/proxy");
+    const request = makeRequest("https://odumresearch.co.uk/", "odumresearch.co.uk");
+    const result = proxy(request as never);
+    expect(result).toMatchObject({ type: "rewrite" });
+    expect((result as { url: string }).url).toContain("/homepage.html");
   });
 
   it("passes through on localhost", async () => {
