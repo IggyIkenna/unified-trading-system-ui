@@ -24,3 +24,5 @@ export * from "./unity";
 export * from "./allocator";
 export * from "./venue-capability";
 export * from "./legacy-mapping";
+export * from "./coverage";
+export * from "./availability";

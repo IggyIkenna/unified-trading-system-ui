@@ -302,6 +302,38 @@ export const ML_SUB_TABS: ServiceTab[] = [
 // Strategy sub-tabs — shown inside Strategy section pages.
 // v2 family/archetype/allocator/unity/venues tabs are appended after the
 // legacy catalog/backtest tabs so existing links keep working.
+/**
+ * Strategy Catalogue service sub-tabs (Phase 10 UI). Separate from the
+ * research-side STRATEGY_SUB_TABS — this service is a sibling to Research /
+ * Trading / Investment Management and owns the fixed combinatoric universe.
+ *
+ * SSOT: `unified-trading-pm/codex/09-strategy/architecture-v2/cross-cutting/strategy-availability-and-locking.md`.
+ */
+export const STRATEGY_CATALOGUE_SUB_TABS: ServiceTab[] = [
+  {
+    label: "Overview",
+    href: "/services/strategy-catalogue",
+    exact: true,
+  },
+  {
+    label: "Coverage",
+    href: "/services/strategy-catalogue/coverage",
+    matchPrefix: "/services/strategy-catalogue/coverage",
+  },
+  {
+    label: "By combination",
+    href: "/services/strategy-catalogue/coverage/by-combination",
+  },
+  {
+    label: "Blocked",
+    href: "/services/strategy-catalogue/coverage/blocked",
+  },
+  {
+    label: "Admin · Lock state",
+    href: "/services/strategy-catalogue/admin/lock-state",
+  },
+];
+
 export const STRATEGY_SUB_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/research/strategy/overview" },
   { label: "Families", href: "/services/research/strategy/families", matchPrefix: "/services/research/strategy/families" },
