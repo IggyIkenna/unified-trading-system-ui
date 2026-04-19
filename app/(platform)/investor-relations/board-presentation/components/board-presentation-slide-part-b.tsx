@@ -373,7 +373,7 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
                     Trader View
                   </Button>
                 </Link>
-                <Link href="/login?redirect=/executive" target="_blank">
+                <Link href="/login?redirect=/services/reports/executive" target="_blank">
                   <Button size="lg" className="gap-2">
                     <Play className="size-4" />
                     Executive View

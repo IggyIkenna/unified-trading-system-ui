@@ -105,7 +105,7 @@ export function PnLAttributionPanel({
 
       {/* Links */}
       <div className="flex flex-col gap-1 pt-2">
-        <Link href="/markets/pnl" passHref>
+        <Link href="/services/trading/pnl" passHref>
           <Button
             variant="ghost"
             size="sm"
