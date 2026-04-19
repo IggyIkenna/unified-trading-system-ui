@@ -26,3 +26,5 @@ export * from "./venue-capability";
 export * from "./legacy-mapping";
 export * from "./coverage";
 export * from "./availability";
+export * from "./availability-store";
+export * from "./block-list";
