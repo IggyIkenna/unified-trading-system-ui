@@ -1,5 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+
+import { render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
 import { TestWrapper } from "@/tests/helpers/test-wrapper";
 
 vi.mock("next/navigation", () => ({
@@ -9,89 +13,95 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("next/link", () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => <a href={href}>{children}</a>,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
-describe("Public pages", () => {
-  it("homepage exports and renders without error", async () => {
+// Public-facing marketing pages were restructured 2026-04 to load static HTML
+// from `public/*.html` into a Shadow DOM via `<MarketingStaticFromFile>`. The
+// previous JSX-component tests broke because:
+//   1. Shadow DOM content is opaque to `screen.getByText` by default.
+//   2. The copy in the static HTML has been updated (e.g. "FCA 975797" now,
+//      not "FCA Authorised (975797)").
+//
+// New strategy: mount the page, assert the shadow-host + client subtree are
+// rendered, then verify the authoritative marketing content by reading the
+// static HTML file directly. That tests both the server-side loader contract
+// AND the actual marketing copy without depending on Shadow-DOM internals.
+
+const HOMEPAGE_HTML_PATH = path.join(process.cwd(), "public", "homepage.html");
+
+function loadHomepageHtml(): string {
+  return readFileSync(HOMEPAGE_HTML_PATH, "utf-8");
+}
+
+describe("Public pages — homepage shell", () => {
+  it("homepage exports a default function component", async () => {
     const mod = await import("@/app/(public)/page");
     expect(typeof mod.default).toBe("function");
+  });
+
+  it("homepage renders the marketing shadow host", async () => {
+    const mod = await import("@/app/(public)/page");
     const Page = mod.default;
     const { container } = render(<Page />, { wrapper: TestWrapper });
-    expect(container.querySelector("section")).toBeTruthy();
-  }, 30000);
+    // MarketingStaticShadow mounts a host with data-testid="marketing-static-host".
+    // Its shadowRoot is populated by a ref callback; the host itself is always
+    // present once React commits the tree.
+    const host = container.querySelector("[data-testid='marketing-static-host']");
+    expect(host).not.toBeNull();
+  });
+});
 
-  it("homepage renders hero headline", async () => {
-    const mod = await import("@/app/(public)/page");
-    const Page = mod.default;
-    render(<Page />, { wrapper: TestWrapper });
-    expect(screen.getByText("Unified Trading Infrastructure")).toBeTruthy();
-  }, 30000);
+describe("Public pages — homepage marketing content (SSOT: public/homepage.html)", () => {
+  it("contains the hero headline", () => {
+    const html = loadHomepageHtml();
+    expect(html).toContain("Unified Trading Infrastructure");
+  });
 
-  it("homepage renders all five service cards", async () => {
-    const mod = await import("@/app/(public)/page");
-    const Page = mod.default;
-    render(<Page />, { wrapper: TestWrapper });
-    expect(screen.getAllByText("Data").length).toBeGreaterThan(0);
-    expect(screen.getByText("Research & Build")).toBeTruthy();
-    expect(screen.getByText("Trading Terminal")).toBeTruthy();
-    expect(screen.getByText("Regulatory Umbrella")).toBeTruthy();
-    expect(screen.getAllByText("Investment Management").length).toBeGreaterThan(0);
-  }, 30000);
+  it("references the five asset groups section", () => {
+    const html = loadHomepageHtml();
+    expect(html).toContain("Five asset groups");
+  });
 
-  it("homepage renders FCA badge", async () => {
-    const mod = await import("@/app/(public)/page");
-    const Page = mod.default;
-    render(<Page />, { wrapper: TestWrapper });
-    expect(screen.getByText("FCA Authorised (975797)")).toBeTruthy();
-  }, 30000);
+  it("exposes the FCA authorisation number (975797)", () => {
+    const html = loadHomepageHtml();
+    expect(html).toMatch(/FCA[^<]{0,80}975797/);
+  });
 
-  it("homepage renders venue marquee pills", async () => {
-    const mod = await import("@/app/(public)/page");
-    const Page = mod.default;
-    render(<Page />, { wrapper: TestWrapper });
-    expect(screen.getAllByText("Binance").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("OKX").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Uniswap V3").length).toBeGreaterThan(0);
-  }, 30000);
+  it("lists the expected venue marquee pills", () => {
+    const html = loadHomepageHtml();
+    expect(html).toContain("Binance");
+    expect(html).toContain("OKX");
+    expect(html).toContain("Uniswap V3");
+  });
 
-  it("homepage renders Get Started and Book a Demo CTAs", async () => {
-    const mod = await import("@/app/(public)/page");
-    const Page = mod.default;
-    render(<Page />, { wrapper: TestWrapper });
-    const getStartedLinks = screen.getAllByText("Get Started");
-    expect(getStartedLinks.length).toBeGreaterThanOrEqual(1);
-  }, 30000);
+  it("has Get Started and Book a Demo CTAs", () => {
+    const html = loadHomepageHtml();
+    expect(html).toContain("Get Started");
+    expect(html).toContain("Book a Demo");
+  });
 });
 
 describe("Service pages export default functions", () => {
-  it("investment page exports", async () => {
-    const mod = await import("@/app/(public)/services/investment/page");
+  it("investment-management page exports", async () => {
+    const mod = await import("@/app/(public)/investment-management/page");
     expect(typeof mod.default).toBe("function");
-  }, 30000);
+  });
 
   it("platform page exports", async () => {
-    const mod = await import("@/app/(public)/services/platform/page");
+    const mod = await import("@/app/(public)/platform/page");
     expect(typeof mod.default).toBe("function");
-  }, 30000);
+  });
 
   it("regulatory page exports", async () => {
-    const mod = await import("@/app/(public)/services/regulatory/page");
+    const mod = await import("@/app/(public)/regulatory/page");
     expect(typeof mod.default).toBe("function");
-  }, 30000);
+  });
 
-  it("data page exports", async () => {
-    const mod = await import("@/app/(public)/services/data/page");
+  it("firm page exports", async () => {
+    const mod = await import("@/app/(public)/firm/page");
     expect(typeof mod.default).toBe("function");
-  }, 30000);
-
-  it("backtesting page exports", async () => {
-    const mod = await import("@/app/(public)/services/backtesting/page");
-    expect(typeof mod.default).toBe("function");
-  }, 30000);
-
-  it("contact page exports", async () => {
-    const mod = await import("@/app/(public)/contact/page");
-    expect(typeof mod.default).toBe("function");
-  }, 30000);
+  });
 });

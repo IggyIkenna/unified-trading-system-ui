@@ -16,7 +16,10 @@ export default defineConfig({
     exclude: ["**/node_modules/**", "**/.git/**", "**/.next/**", "tests/e2e/**"],
     coverage: {
       reporter: ["text", "json-summary"],
-      reportsDirectory: "./build-artifacts/coverage",
+      // Default dir (./coverage) — the canonical quality-gates-base/base-ui.sh
+      // reads `coverage/coverage-summary.json` for the MIN_UI_COVERAGE floor
+      // check; keeping vitest's default here lets the shared gate work
+      // without per-repo patches.
     },
   },
 });

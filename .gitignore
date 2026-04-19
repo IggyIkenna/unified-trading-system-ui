@@ -11,11 +11,14 @@ next.user-config.*
 .env*.local
 .env
 .env.production
+# Staging Firebase bake file (copy of config/docker-build.env.staging.firebase.example)
+config/docker-build.env.staging.firebase.local
 
 # Common ignores
 node_modules/
 .next/
 .DS_Store
+/coverage/
 
 # pnpm is canonical — block npm's lockfile from being re-committed
 package-lock.json
