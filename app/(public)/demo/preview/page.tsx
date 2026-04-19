@@ -155,7 +155,7 @@ export default function DemoPreview() {
               Demo Mode
             </Badge>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/presentation">Back to Presentation</Link>
+              <Link href="/investor-relations/board-presentation">Back to Presentation</Link>
             </Button>
           </div>
         </div>
