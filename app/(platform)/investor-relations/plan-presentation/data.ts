@@ -74,7 +74,7 @@ export const slides = [
         date: "End 2026",
         value: "$10M+",
         detail:
-          "Elysium DeFi + upsells live (signals-only DART). BTC ML directional IM with 10 clients \u00d7 $500k. CME S&P co-invest Sept (asymmetric 70/10). India Options Oct ($100k onboarding, $5-10M allocation IM). Desmond Reg Umbrella + DART signals-only. 2 sports ML clients. Signal leasing to 2 institutional counterparties active. ~\u00a3692k annual revenue, ~\u00a3464k December cash.",
+          "Elysium DeFi + upsells live (signals-only DART). BTC ML directional IM with 10 clients \u00d7 $500k. CME S&P co-invest Sept (asymmetric 70/10). India Options Oct ($100k onboarding, $5-10M allocation IM). Desmond Reg Umbrella + DART signals-only. 2 sports ML clients. Signal leasing to 2 institutional counterparties live Sept 2026 at ~$5k/mo combined. ~\u00a3636k annual revenue, ~\u00a3408k December cash.",
       },
       {
         date: "End 2027",
@@ -342,14 +342,14 @@ export const slides = [
       },
       {
         text: "Signal leasing to 2 institutional counterparties",
-        detail: "Q3-Q4 go-live at ~\u00a312k/mo each",
+        detail: "Sept 2026 go-live, both live simultaneously at ~\u00a34k/mo combined ($5k/mo) via hybrid pricing model",
       },
       {
         text: "6+ months track record on new strategy families",
         detail: "BTC ML + sports ML + DeFi basis",
       },
       {
-        text: "Annual revenue ~\u00a3692k, December cash ~\u00a3464k",
+        text: "Annual revenue ~\u00a3636k, December cash ~\u00a3408k",
         detail: "Self-funded \u2014 no bridge capital required",
       },
     ],

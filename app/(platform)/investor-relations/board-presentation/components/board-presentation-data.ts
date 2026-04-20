@@ -464,20 +464,20 @@ export const slides = [
     type: "trajectory",
     title: "2026 Cashflow Shape \u2014 Self-Funded",
     subtitle:
-      "Starts April at \u00a3240k. Minimum \u00a3198k (April). October flip to \u00a3348k. December \u00a3464k. No bridge capital required.",
+      "Starts April at \u00a3240k. Minimum \u00a3198k (April). October flip to \u00a3333k. December \u00a3413k. No bridge capital required.",
     milestones: [
       { date: "Apr", value: "\u00a3240k", detail: "Opening position. ~\u00a334k steady-state burn.", active: true },
       { date: "May", value: "\u00a3219k", detail: "Elysium onboarding + Desmond Reg Umbrella closes. First DART revenue lands." },
       { date: "Jun", value: "\u00a3238k", detail: "BTC ML IM go-live (10 clients \u00d7 $500k). Sports ML IM live (2 clients)." },
       { date: "Jul", value: "\u00a3260k", detail: "IM performance fees accrue. Elysium upsell path opens (MEV + Solana + recursive staking)." },
-      { date: "Aug", value: "\u00a3289k", detail: "Signal leasing to 1st institutional counterparty at ~\u00a312k/mo." },
-      { date: "Sep", value: "\u00a3327k", detail: "CME S&P co-invest goes live. $500k client + $50k Odum skin-in-game. Asymmetric 70% profits / 10% losses." },
-      { date: "Oct", value: "\u00a3426k", detail: "India Options $100k onboarding lands. Cash steps up \u00a399k in one month. $5-10M IM allocation follows." },
-      { date: "Nov", value: "\u00a3445k", detail: "2nd signal leasing counterparty live. CME ramp accelerating." },
-      { date: "Dec", value: "\u00a3464k", detail: "~\u00a3692k annual revenue, ~\u00a3143k net profit. Self-funded entry into 2027.", active: true },
+      { date: "Aug", value: "\u00a3277k", detail: "BTC ML perf fees compounding. Desmond DART signals-only monthly baseline steady at \u00a322k/mo." },
+      { date: "Sep", value: "\u00a3280k", detail: "CME S&P co-invest goes live ($500k client + $50k Odum skin). Asymmetric 70/10. Signal leasing live to 2 institutional counterparties at ~$5k/mo combined." },
+      { date: "Oct", value: "\u00a3372k", detail: "India Options $100k onboarding lands. Cash steps up \u00a392k in one month. $5-10M IM allocation follows." },
+      { date: "Nov", value: "\u00a3392k", detail: "CME ramp accelerating. BTC ML, Sports ML, Elysium DART, Desmond, Signal leasing all compounding." },
+      { date: "Dec", value: "\u00a3413k", detail: "~\u00a3636k annual revenue, ~\u00a392k net profit. Self-funded entry into 2027. Target 4-6 signal-leasing counterparties by end-2027.", active: true },
     ],
     callout:
-      "October 2026 is the key inflection: India Options onboarding delivers a \u00a399k single-month step-up. No bridge capital required \u2014 the business self-funds through the $7.5M to $25M AUM transition.",
+      "October 2026 is the key inflection: India Options onboarding delivers a \u00a392k single-month step-up. No bridge capital required \u2014 the business self-funds through the $7.5M to $25M AUM transition.",
   },
 
   // ── Slide 12: FAQ ──────────────────────────────────────────
