@@ -27,8 +27,9 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * 4. UI route-gating semantics: admin reaches `/services/*`; IM client
  *    cannot reach research-gated routes (guarded by G1.6 access_control
  *    which now pre-checks scope).
- * 5. prospect-dart + prospect-regulatory skipped with TODO(G1.10) — those
- *    personas land with the questionnaire flow.
+ * 5. prospect-dart + prospect-regulatory asserted against rule-12 scope —
+ *    both personas landed via G1.4 persona combinatorial expansion
+ *    (unblocks TODO(G1.10) deferrals).
  *
  * Plan: unified-trading-pm/plans/active/refactor_g1_11_service_family_scope_rules_2026_04_20.plan.md
  * Rule: unified-trading-pm/codex/14-playbooks/_ssot-rules/12-service-family-scope-rules.md
@@ -123,17 +124,30 @@ test.describe("refactor G1.11 — service-family scope rules (rule 12)", () => {
     ).toBeLessThan(400);
   });
 
-  test("prospect-dart persona — DEFERRED until G1.10", () => {
-    // Stage-3E G1.10 questionnaire flow provisions prospect-dart +
-    // prospect-regulatory personas. Until then, scope-rule coverage for
-    // those audiences lives in the UAC Python unit tests only.
-    test.skip(true, "prospect-dart seed missing — tracked in G1.10 questionnaire plan");
+  test("prospect-dart persona reaches /services/trading (DART scope allow)", async ({
+    page,
+  }) => {
+    // prospect-dart maps to DART service-family. Rule 12 allows DART audiences
+    // to reach /services/trading/**. Shipped with G1.4 persona expansion.
+    await seedPersona(page, "prospect-dart");
+    const response = await page.goto("/services/trading");
+    expect(
+      response?.status(),
+      "prospect-dart (DART scope) must reach /services/trading",
+    ).toBeLessThan(400);
   });
 
-  test("prospect-regulatory persona — DEFERRED until G1.10", () => {
-    test.skip(
-      true,
-      "prospect-regulatory seed missing — tracked in G1.10 questionnaire plan",
-    );
+  test("prospect-regulatory persona reaches /services/reports (Reg Umbrella reporting scope)", async ({
+    page,
+  }) => {
+    // prospect-regulatory maps to RegUmbrella service-family. Rule 12 allows
+    // reporting-capable audiences to reach /services/reports/**. Shipped with
+    // G1.4 persona expansion.
+    await seedPersona(page, "prospect-regulatory");
+    const response = await page.goto("/services/reports");
+    expect(
+      response?.status(),
+      "prospect-regulatory (Reg Umbrella reporting scope) must reach /services/reports",
+    ).toBeLessThan(400);
   });
 });
