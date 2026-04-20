@@ -21,11 +21,19 @@ export interface BriefingCta {
   readonly href: string;
 }
 
+export type BriefingAppliesTo = "signals-in" | "full-pipeline" | "both";
+
 export interface BriefingSection {
   readonly title: string;
   readonly body: string;
   readonly bullets?: readonly string[];
   readonly bodyAfter?: string;
+  /**
+   * Optional path-applicability tag. Only meaningful on the `platform`
+   * briefing where sections describe one or both of the two DART paths.
+   * Rendered as a small badge next to the section title.
+   */
+  readonly appliesTo?: BriefingAppliesTo;
 }
 
 export interface BriefingPillar {
@@ -155,6 +163,18 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
         title: "Commitment and packs",
         body:
           "Twelve-month minimum engagement. Your scope is defined by venue packs, chain packs, and instrument-type packs. A typical signals-only shape is three venues, two chains, two instrument types; full-pipeline shapes add research breadth. Pricing is per block, mixable across tiers. Numbers live in the second call.",
+      },
+      {
+        title: "Where to go next — the three deeper briefings",
+        body:
+          "This is an orientation briefing, not a depth briefing. Each path has its own dedicated briefing with the schema, mechanics, lock-matrix, and commercial structure spelled out in full:",
+        bullets: [
+          "DART Signals-In (your signals → our execution) — full eight-field instruction schema, venue/instrument compatibility matrix, lifecycle semantics, what signals-only does NOT enable. Read: /briefings/dart-signals-in.",
+          "DART Full Pipeline (your research → your promote → our stack) — research surface walkthrough, 8-stage maturity ladder, three-band metered research (baseline / complex / full-matrix sweep), four-tier exclusivity anchor (commodity → targeted → carved-out → uniquely-differentiated). Read: /briefings/dart-full.",
+          "Odum Signals (our signals → your execution) — full signal payload schema, webhook + REST-pull delivery mechanics, HMAC signing, idempotency, light observability UI, hybrid commercial shape. A distinct fourth path outside DART. Read: /briefings/signals-out.",
+        ],
+        bodyAfter:
+          "Pick the briefing that fits your intended engagement — reading all three is fine if you are deciding between them. The fit-check in each briefing resolves whether the path is right for you before the second call is scheduled. For the two capital-running paths (Investment Management and Regulatory Umbrella) see /briefings/investment-management and /briefings/regulatory respectively.",
       },
     ],
     keyMessages: [
@@ -443,7 +463,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       {
         title: "Delivery mechanics",
         body:
-          "Signals emit from Odum's strategy-service through the signal_broadcast sub-package (under build in unified-api-contracts/unified_api_contracts/signal_broadcast/ — LOCKED D1-D10 design per the Phase 2 plan; the commercial framing and licensability posture are the SSOT in codex/14-playbooks/commercial-model/signal-leasing.md). Primary transport is webhook HTTP POST to a counterparty endpoint, authenticated per counterparty with an API key held in Odum's Secret Manager plus an HMAC signature over the payload (D2/D3 locked). A REST pull endpoint sits alongside the webhook for counterparty-initiated reconciliation and backfill — the hybrid D2 shape gives counterparties who prefer pull semantics (for audit-first deployments or endpoints behind restrictive networks) a symmetric path to the same emission stream. Delivery is at-least-once with an idempotency key on every emission; the counterparty's handler must be idempotent on the key, and Odum retries on transport failure until acknowledgement or the retry budget is exhausted (D5 locked). Per-counterparty-per-strategy rate limits apply on top (D7) so a noisy strategy never starves quiet ones on the same counterparty contract.",
+          "Signals emit from Odum's strategy-service through the signal-broadcast surface. The delivery design is locked end-to-end (D1-D10) and the specific engagement details — transport choice, payload depth, rate limits, retry budgets — are shaped with you during the standard three-month onboarding window so the integration lands with your engagement. Primary transport is webhook HTTP POST to a counterparty endpoint, authenticated per counterparty with an API key held in Odum's Secret Manager plus an HMAC signature over the payload. A REST pull endpoint sits alongside the webhook for counterparty-initiated reconciliation and backfill — the hybrid shape gives counterparties who prefer pull semantics (for audit-first deployments or endpoints behind restrictive networks) a symmetric path to the same emission stream. Delivery is at-least-once with an idempotency key on every emission; the counterparty's handler must be idempotent on the key, and Odum retries on transport failure until acknowledgement or the retry budget is exhausted. Per-counterparty-per-strategy rate limits apply on top so a noisy strategy never starves quiet ones on the same counterparty contract.",
       },
       {
         title: "Signal payload — full D8 schema",
