@@ -4,6 +4,7 @@ import type { AuthUser } from "@/lib/auth/types";
 import {
   COUNTERPARTY_POST_AUTH_REDIRECT,
   COUNTERPARTY_USER_TYPE,
+  getCounterpartyId,
   isCounterpartyUser,
   postAuthRedirectFor,
 } from "@/lib/auth/counterparty";
@@ -56,5 +57,40 @@ describe("counterparty persona wiring", () => {
   it("postAuthRedirectFor falls back for non-counterparty users", () => {
     expect(postAuthRedirectFor(BASE_USER, "/dashboard")).toBe("/dashboard");
     expect(postAuthRedirectFor(null, "/login")).toBe("/login");
+  });
+
+  it("isCounterpartyUser prefers userType JWT-claim discriminator", () => {
+    const cpUser: AuthUser = { ...BASE_USER, userType: "counterparty" };
+    expect(isCounterpartyUser(cpUser)).toBe(true);
+  });
+
+  it("isCounterpartyUser treats userType and entitlement marker as equivalent", () => {
+    const viaUserType: AuthUser = { ...BASE_USER, userType: "counterparty" };
+    const viaEntitlement: AuthUser = {
+      ...BASE_USER,
+      entitlements: ["counterparty-tenant" as never],
+    };
+    expect(isCounterpartyUser(viaUserType)).toBe(
+      isCounterpartyUser(viaEntitlement),
+    );
+  });
+
+  it("getCounterpartyId returns the stamped id for counterparty users", () => {
+    const cpUser: AuthUser = {
+      ...BASE_USER,
+      userType: "counterparty",
+      counterpartyId: "signal-lease-cp1-staging",
+    };
+    expect(getCounterpartyId(cpUser)).toBe("signal-lease-cp1-staging");
+  });
+
+  it("getCounterpartyId returns null for non-counterparty users", () => {
+    expect(getCounterpartyId(BASE_USER)).toBeNull();
+    expect(getCounterpartyId(null)).toBeNull();
+  });
+
+  it("getCounterpartyId returns null when counterparty has no id stamped (safety against cross-tenant leak)", () => {
+    const cpUser: AuthUser = { ...BASE_USER, userType: "counterparty" };
+    expect(getCounterpartyId(cpUser)).toBeNull();
   });
 });

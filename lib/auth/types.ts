@@ -3,6 +3,15 @@ import type { UserRole, Entitlement, EntitlementOrWildcard, TradingEntitlement, 
 /** Account status from the backend user_profiles collection. */
 export type UserStatus = "active" | "pending_approval" | "rejected" | "disabled" | "unknown";
 
+/**
+ * Discriminator for tenants outside the admin/internal/client axis.
+ * Currently only `counterparty` (Signal Leasing tenants — see
+ * `lib/auth/counterparty.ts` + plan `signal_leasing_broadcast_architecture_2026_04_20`).
+ * Stamped from custom JWT claims (Firebase custom claim `userType` /
+ * OAuth introspection `user_type`) by the active `AuthProvider`.
+ */
+export type AuthUserType = "counterparty";
+
 /** Authenticated user shape shared across all auth providers. */
 export interface AuthUser {
   id: string;
@@ -14,6 +23,21 @@ export interface AuthUser {
   authorized?: boolean;
   status?: UserStatus;
   capabilities?: string[];
+  /**
+   * Tenant-type discriminator outside the standard role axis. `role` stays
+   * as-is (typically `"client"`) for counterparty tenants so existing
+   * entitlement checks still work; `userType` lets the router / middleware
+   * branch to the counterparty dashboard on login. See
+   * `lib/auth/counterparty.ts`.
+   */
+  userType?: AuthUserType;
+  /**
+   * Canonical counterparty identifier (matches UAC `Counterparty.id`).
+   * Populated by the auth provider from custom JWT claim `counterparty_id`.
+   * Used by the dashboard + observability API to scope queries to the
+   * counterparty's entitled slots only.
+   */
+  counterpartyId?: string;
 }
 
 /**

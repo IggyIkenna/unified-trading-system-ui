@@ -32,27 +32,49 @@ export const COUNTERPARTY_USER_TYPE = "counterparty" as const;
 export const COUNTERPARTY_POST_AUTH_REDIRECT =
   "/services/signals/dashboard" as const;
 
+/** Legacy entitlement marker — retained for backward compatibility with the
+ * stub-era wiring. Prefer the `AuthUser.userType === "counterparty"` JWT-claim
+ * discriminator for new code. Both paths resolve to `isCounterpartyUser`. */
+const COUNTERPARTY_ENTITLEMENT_MARKER = "counterparty-tenant" as const;
+
 /**
  * Return true if the authenticated user is a counterparty-type tenant.
  *
- * Looks for an explicit `userType === "counterparty"` discriminator on the
- * user object. The field doesn't exist on the current `AuthUser` shape — the
- * FirebaseAuthProvider / OAuthProvider must stamp it from org metadata /
- * custom JWT claims once the full counterparty-auth flow lands.
+ * Resolution order:
+ *   1. `user.userType === "counterparty"` — canonical. Stamped from the
+ *      custom JWT claim `userType` (Firebase) / `user_type` (OAuth) by the
+ *      active `AuthProvider`.
+ *   2. `user.entitlements` contains `"counterparty-tenant"` — legacy marker
+ *      kept for the stub-era fixtures. Safe to delete once every provider
+ *      stamps `userType`.
  *
- * Until then, this helper returns `false` for every existing persona (safe
- * default: no existing user is routed to the counterparty dashboard).
+ * Safe default: `false` if neither signal is present — no existing persona
+ * is accidentally routed to the counterparty dashboard.
  */
 export function isCounterpartyUser(
   user: AuthUser | null | undefined,
 ): boolean {
   if (user == null) return false;
-  // Discriminator is attached via `entitlements` until full JWT claims land.
-  // Look for the counterparty-tenant marker; strictly opt-in so no existing
-  // persona is accidentally mis-routed.
+  if (user.userType === COUNTERPARTY_USER_TYPE) return true;
   return user.entitlements.includes(
-    "counterparty-tenant" as never,
+    COUNTERPARTY_ENTITLEMENT_MARKER as never,
   );
+}
+
+/**
+ * Return the canonical counterparty identifier for a counterparty-type user.
+ * Matches UAC `Counterparty.id`. Used by the dashboard + observability API
+ * to scope queries to the counterparty's entitled slots.
+ *
+ * Returns `null` for non-counterparty users or when the JWT claim is not yet
+ * stamped. Callers MUST handle `null` explicitly (never default to a
+ * hardcoded counterparty id — cross-tenant-leak risk).
+ */
+export function getCounterpartyId(
+  user: AuthUser | null | undefined,
+): string | null {
+  if (!isCounterpartyUser(user)) return null;
+  return user?.counterpartyId ?? null;
 }
 
 /**
