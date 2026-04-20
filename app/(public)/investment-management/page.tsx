@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
+import { Term } from "@/components/marketing/term";
 
 /**
  * Investment Management — public marketing page.
@@ -40,9 +41,15 @@ export default function InvestmentManagementPage() {
           {/* Hero */}
           <div className="mb-12">
             <div className="mb-3 flex flex-wrap items-center gap-2">
-              <Badge variant="outline">Investment Management</Badge>
-              <Badge variant="outline">FCA 975797</Badge>
-              <Badge variant="outline">Pooled fund or SMA</Badge>
+              <Badge variant="outline">
+                <Term id="im">Investment Management</Term>
+              </Badge>
+              <Badge variant="outline">
+                <Term id="fca">FCA</Term> 975797
+              </Badge>
+              <Badge variant="outline">
+                <Term id="pooled">Pooled</Term> fund or <Term id="sma">SMA</Term>
+              </Badge>
             </div>
             <h1 className="text-3xl font-bold">Investment Management</h1>
             <p className="mt-4 text-lg text-muted-foreground">

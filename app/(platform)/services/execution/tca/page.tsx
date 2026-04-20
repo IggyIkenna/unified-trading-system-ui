@@ -10,9 +10,8 @@ import Link from "next/link";
 
 export default function TcaPage() {
   return (
-    <ResearchFamilyShell>
-      <ExecutionNav />
-      <div className="space-y-6">
+    <ResearchFamilyShell platform="execution" tabs={<ExecutionNav />}>
+      <div className="platform-page-width p-6 space-y-6">
         <PageHeader
           title="Transaction Cost Analysis"
           description="Per-order execution quality vs benchmarks — coming soon."

@@ -6,6 +6,7 @@ import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarc
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
 import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
+import { composeRenderers } from "@/components/marketing/render-with-terms";
 import {
   BRIEFING_PILLARS,
   type BriefingAppliesTo,
@@ -55,6 +56,16 @@ function linkify(text: string): React.ReactNode[] {
     nodes.push(text.slice(lastIndex));
   }
   return nodes.length > 0 ? nodes : [text];
+}
+
+/**
+ * Render briefing copy through both the `/briefings/<slug>` linkify pass
+ * and the glossary-token substitution pass (`{{term:cefi}}` → <Term>).
+ * Order: linkify first so the outer structure is preserved; term tokens
+ * then apply inside each remaining string chunk.
+ */
+function renderBody(text: string): React.ReactNode[] {
+  return composeRenderers(text, linkify);
 }
 
 const APPLIES_TO_LABEL: Readonly<Record<BriefingAppliesTo, string>> = {
@@ -129,18 +140,18 @@ function Section({ section }: { section: BriefingSection }) {
         {section.appliesTo && <AppliesToBadge value={section.appliesTo} />}
       </div>
       <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-        {linkify(section.body)}
+        {renderBody(section.body)}
       </p>
       {section.bullets && (
         <ul className="list-disc pl-5 text-sm text-foreground/80 space-y-1.5 max-w-2xl leading-relaxed">
           {section.bullets.map((b) => (
-            <li key={b}>{linkify(b)}</li>
+            <li key={b}>{renderBody(b)}</li>
           ))}
         </ul>
       )}
       {section.bodyAfter && (
         <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {linkify(section.bodyAfter)}
+          {renderBody(section.bodyAfter)}
         </p>
       )}
     </section>
@@ -165,7 +176,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
 
       <section className="space-y-3">
         <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">
-          {linkify(pillar.frame)}
+          {renderBody(pillar.frame)}
         </p>
       </section>
 
@@ -218,7 +229,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
         </h2>
         <ol className="list-decimal pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl leading-relaxed">
           {pillar.keyMessages.map((m) => (
-            <li key={m}>{linkify(m)}</li>
+            <li key={m}>{renderBody(m)}</li>
           ))}
         </ol>
       </section>
@@ -228,7 +239,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           The second call
         </h2>
         <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {linkify(pillar.nextCall)}
+          {renderBody(pillar.nextCall)}
         </p>
       </section>
 

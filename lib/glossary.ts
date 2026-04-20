@@ -12,6 +12,11 @@
  * - UK English
  * - Present tense, concrete
  * - No pricing numbers
+ *
+ * TODO(static-html): Static HTML marketing pages under `public/*.html` cannot
+ * use the React <Term> primitive. A follow-up sweep will introduce either a
+ * CSS + `title` attribute tooltip or a JS-injected equivalent so terms in
+ * static copy get the same treatment. Out of scope for this change.
  */
 
 export interface GlossaryEntry {
@@ -154,6 +159,66 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     label: "slippage",
     definition:
       "The difference between an order's intended price (arrival or mid) and its executed price. A core execution-quality metric tracked per fill.",
+  },
+  im: {
+    id: "im",
+    label: "IM",
+    definition:
+      "Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
+  },
+  nav: {
+    id: "nav",
+    label: "NAV",
+    definition:
+      "Net Asset Value — the per-share or per-partition value of a fund or managed account, struck at the published valuation point by the fund administrator.",
+  },
+  mtm: {
+    id: "mtm",
+    label: "mark-to-market",
+    definition:
+      "Valuing a position at the prevailing market price rather than entry price. Underlies live P&L, margin, and exposure calculations.",
+  },
+  perpetual: {
+    id: "perpetual",
+    label: "perpetual",
+    definition:
+      "A derivative with no fixed expiry, anchored to spot price via a periodic funding payment between longs and shorts. The dominant crypto derivative form.",
+  },
+  "best-execution": {
+    id: "best-execution",
+    label: "best execution",
+    definition:
+      "The regulatory obligation to take all sufficient steps to obtain the best possible result for a client across price, cost, speed, likelihood of execution, and settlement.",
+  },
+  mtd: {
+    id: "mtd",
+    label: "MTD",
+    definition:
+      "Month-to-date — cumulative return or P&L from the first day of the current calendar month to the current point.",
+  },
+  tca: {
+    id: "tca",
+    label: "TCA",
+    definition:
+      "Transaction Cost Analysis — post-trade measurement of execution quality against benchmarks such as arrival price, VWAP, and implementation shortfall.",
+  },
+  "mean-reversion": {
+    id: "mean-reversion",
+    label: "mean reversion",
+    definition:
+      "A strategy posture that bets prices return to an average level after dislocations. Common in pairs stat-arb and short-term signals.",
+  },
+  twap: {
+    id: "twap",
+    label: "TWAP",
+    definition:
+      "Time-Weighted Average Price — an execution algorithm that slices an order evenly across a time window, benchmarked against the average price over the same window.",
+  },
+  vwap: {
+    id: "vwap",
+    label: "VWAP",
+    definition:
+      "Volume-Weighted Average Price — an execution algorithm that paces participation with observed venue volume, and the corresponding price benchmark.",
   },
 };
 

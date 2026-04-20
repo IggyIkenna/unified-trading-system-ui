@@ -1,8 +1,29 @@
 import { PERSONAS, getPersonaByEmail, getPersonaById } from "@/lib/auth/personas";
 
 describe("PERSONAS", () => {
-  it("has 11 demo personas", () => {
-    expect(PERSONAS).toHaveLength(11);
+  // Count intentionally asserted as a floor rather than an exact number.
+  // New personas are added as G1.x/G2.x waves layer in (e.g. G1.4 Wave F
+  // added 6 axis-coverage personas). We enforce the curated minimum set
+  // via ``REQUIRED_PERSONA_IDS`` below instead of pinning the total length.
+  it("contains at least the curated minimum persona set", () => {
+    const REQUIRED_PERSONA_IDS = [
+      "admin",
+      "internal-trader",
+      "client-full",
+      "client-data-only",
+      "client-premium",
+      "investor",
+      "advisor",
+      "prospect-im",
+      "prospect-platform",
+      "prospect-regulatory",
+      "elysium-defi",
+    ];
+    expect(PERSONAS.length).toBeGreaterThanOrEqual(REQUIRED_PERSONA_IDS.length);
+    const ids = PERSONAS.map((p) => p.id);
+    for (const requiredId of REQUIRED_PERSONA_IDS) {
+      expect(ids).toContain(requiredId);
+    }
   });
 
   it("every persona has required fields", () => {

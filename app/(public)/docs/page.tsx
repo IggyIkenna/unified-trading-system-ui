@@ -2,9 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { BriefingHero } from "@/components/briefings/briefing-hero";
 import { DocsNav, type DocsNavSection } from "@/components/docs/docs-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   BookOpen,
+  Building2,
   Database,
   FileCode2,
   KeyRound,
@@ -13,6 +15,7 @@ import {
   Lock,
   Map,
   Route,
+  Terminal,
   Workflow,
 } from "lucide-react";
 import Link from "next/link";
@@ -158,10 +161,212 @@ const NAV_SECTIONS: ReadonlyArray<DocsNavSection> = [
   { id: "catalogues", label: "The four catalogues" },
   { id: "paths", label: "Three integration paths" },
   { id: "uac", label: "UAC — schema surface" },
+  { id: "api-reference", label: "API reference" },
   { id: "access", label: "Access & authentication" },
+  { id: "org-scoping", label: "Organisation & entitlements" },
   { id: "briefings", label: "Business context" },
   { id: "roadmap", label: "Roadmap" },
   { id: "contact", label: "Contact" },
+];
+
+interface ApiRef {
+  readonly anchorId: string;
+  readonly facade: string;
+  readonly title: string;
+  readonly status: "planned" | "internal";
+  readonly method: "GET" | "POST" | "DELETE" | "WS";
+  readonly path: string;
+  readonly description: string;
+  readonly uacType: string;
+  readonly pythonType: string;
+  readonly curl: string;
+  readonly responseJson: string;
+}
+
+const API_REFERENCES: ReadonlyArray<ApiRef> = [
+  {
+    anchorId: "api-market-orderbook",
+    facade: "market",
+    title: "Fetch normalised orderbook",
+    status: "planned",
+    method: "GET",
+    path: "/v1/market/orderbook/{venue}/{symbol}",
+    description:
+      "L2 snapshot normalised across 100+ venues. Same `CanonicalOrderBook` shape regardless of asset class — CeFi perps, DeFi AMM pools, TradFi futures, prediction-market outcome books.",
+    uacType: "CanonicalOrderBook",
+    pythonType: `from unified_api_contracts.market import CanonicalOrderBook
+
+class CanonicalOrderBook:
+    venue: str
+    symbol: str
+    timestamp: AwareDatetime
+    bids: list[tuple[Decimal, Decimal]]     # [(price, qty), ...]
+    asks: list[tuple[Decimal, Decimal]]     # [(price, qty), ...]
+    sequence_number: int | None
+    instrument_key: str | None              # "VENUE:TYPE:SYMBOL"
+    levels: int | None
+    schema_version: str = "1.0"`,
+    curl: `curl -H "Authorization: Bearer $ODUM_TOKEN" \\
+  "https://api.odum.io/v1/market/orderbook/BINANCE/BTC-USDT?levels=20"`,
+    responseJson: `{
+  "venue": "BINANCE",
+  "symbol": "BTC-USDT",
+  "timestamp": "2026-04-20T14:22:01.245Z",
+  "bids": [["69421.10", "0.842"], ["69421.00", "1.503"]],
+  "asks": [["69421.30", "0.615"], ["69421.40", "0.900"]],
+  "sequence_number": 18230519,
+  "instrument_key": "BINANCE:SPOT:BTC-USDT",
+  "levels": 20,
+  "schema_version": "1.0"
+}`,
+  },
+  {
+    anchorId: "api-execution-order",
+    facade: "execution",
+    title: "Submit order",
+    status: "planned",
+    method: "POST",
+    path: "/v1/execution/orders",
+    description:
+      "Submit a parent order. The executor routes children through the configured algorithm (VWAP / TWAP / POV / IS) and streams `CanonicalFill` events back. Returns a `CanonicalOrder` with `status=PENDING` immediately; subsequent fills arrive on the execution WebSocket.",
+    uacType: "CanonicalOrder",
+    pythonType: `from unified_api_contracts.execution import CanonicalOrder, OrderSide, OrderType
+
+class CanonicalOrder:
+    order_id: str
+    client_order_id: str | None
+    timestamp: AwareDatetime
+    venue: str
+    instrument_id: str
+    side: OrderSide                     # BUY | SELL
+    order_type: OrderType               # MARKET | LIMIT | STOP | ...
+    quantity: Decimal
+    price: Decimal | None
+    time_in_force: TimeInForce = GTC
+    status: OrderStatus = PENDING
+    filled_quantity: Decimal = 0
+    strategy_id: str | None
+    client_id: str | None               # scoped by JWT
+    # ... plus 15+ optional derivative / DeFi fields`,
+    curl: `curl -X POST -H "Authorization: Bearer $ODUM_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  https://api.odum.io/v1/execution/orders \\
+  -d '{
+    "venue": "BINANCE",
+    "instrument_id": "BTC-USDT-PERP",
+    "side": "BUY",
+    "order_type": "LIMIT",
+    "quantity": "0.5",
+    "price": "69200.00",
+    "time_in_force": "GTC",
+    "strategy_id": "stat-arb-pairs-fixed-btc-eth",
+    "client_id": "alpha-share-class-a"
+  }'`,
+    responseJson: `{
+  "order_id": "ord_01JS4AKX2Z7MFW",
+  "client_order_id": null,
+  "timestamp": "2026-04-20T14:22:04.118Z",
+  "venue": "BINANCE",
+  "instrument_id": "BTC-USDT-PERP",
+  "side": "BUY",
+  "order_type": "LIMIT",
+  "quantity": "0.5",
+  "price": "69200.00",
+  "time_in_force": "GTC",
+  "status": "PENDING",
+  "filled_quantity": "0",
+  "strategy_id": "stat-arb-pairs-fixed-btc-eth",
+  "client_id": "alpha-share-class-a",
+  "schema_version": "1.0"
+}`,
+  },
+  {
+    anchorId: "api-strategy-availability",
+    facade: "strategy",
+    title: "List available strategies",
+    status: "planned",
+    method: "GET",
+    path: "/v1/strategy/availability",
+    description:
+      "Returns the strategy catalogue sliced to what your principal is entitled to see. Applies role × lock-state × maturity filtering server-side — a SaaS subscriber sees only PUBLIC strategies, an IM client sees their CLIENT_EXCLUSIVE plus PUBLIC, Odum admin sees everything.",
+    uacType: "StrategyAvailabilityEntry",
+    pythonType: `from unified_api_contracts.strategy import (
+    StrategyAvailabilityEntry, LockState, StrategyMaturity
+)
+
+class StrategyAvailabilityEntry:
+    slot_label: str                     # "stat-arb-pairs-fixed-btc-eth"
+    archetype: str                      # "STAT_ARB_PAIRS_FIXED"
+    category: str                       # "CEFI" | "DEFI" | "TRADFI" | ...
+    instrument_type: str                # "spot" | "perp" | "dated_future" | ...
+    lock_state: LockState               # PUBLIC | IM_RESERVED | CLIENT_EXCLUSIVE
+    maturity: StrategyMaturity          # CODE_NOT_WRITTEN → LIVE_ALLOCATED
+    exclusive_client_id: str | None
+    reserving_business_unit_id: str | None`,
+    curl: `curl -H "Authorization: Bearer $ODUM_TOKEN" \\
+  "https://api.odum.io/v1/strategy/availability?category=CEFI&min_maturity=BACKTESTED"`,
+    responseJson: `{
+  "entries": [
+    {
+      "slot_label": "stat-arb-pairs-fixed-btc-eth",
+      "archetype": "STAT_ARB_PAIRS_FIXED",
+      "category": "CEFI",
+      "instrument_type": "perp",
+      "lock_state": "PUBLIC",
+      "maturity": "LIVE_ALLOCATED",
+      "exclusive_client_id": null,
+      "reserving_business_unit_id": null
+    }
+  ],
+  "total": 1,
+  "sliced_by": { "role": "saas_subscriber", "org_id": "alpha-capital" }
+}`,
+  },
+  {
+    anchorId: "api-position-snapshot",
+    facade: "position",
+    title: "Account snapshot (positions + balances)",
+    status: "planned",
+    method: "GET",
+    path: "/v1/position/snapshot",
+    description:
+      "Current positions and balances scoped to your org's funds and clients by the JWT claims. Pass `client_id` to narrow to a single client (must be in your org); omit for all clients you can see.",
+    uacType: "CanonicalAccountSnapshot",
+    pythonType: `from unified_api_contracts.position import CanonicalAccountSnapshot
+
+class CanonicalAccountSnapshot:
+    timestamp: AwareDatetime
+    org_id: str
+    fund_id: str
+    client_id: str
+    positions: list[CanonicalPosition]
+    balances: list[CanonicalBalance]
+    total_nav: Decimal
+    schema_version: str = "1.0"`,
+    curl: `curl -H "Authorization: Bearer $ODUM_TOKEN" \\
+  "https://api.odum.io/v1/position/snapshot?client_id=alpha-share-class-a"`,
+    responseJson: `{
+  "timestamp": "2026-04-20T14:22:10.000Z",
+  "org_id": "alpha-capital",
+  "fund_id": "alpha-pooled-fund",
+  "client_id": "alpha-share-class-a",
+  "positions": [
+    {
+      "venue": "BINANCE",
+      "instrument_id": "BTC-USDT-PERP",
+      "quantity": "0.5",
+      "entry_price": "69180.00",
+      "mark_price": "69421.30",
+      "unrealised_pnl": "120.65"
+    }
+  ],
+  "balances": [
+    { "venue": "BINANCE", "asset": "USDT", "free": "24830.50", "locked": "500.00" }
+  ],
+  "total_nav": "58420.15",
+  "schema_version": "1.0"
+}`,
+  },
 ];
 
 const BRIEFINGS: ReadonlyArray<{ slug: string; title: string; summary: string }> = [
@@ -188,6 +393,56 @@ const BRIEFINGS: ReadonlyArray<{ slug: string; title: string; summary: string }>
     summary: "Regulatory hosting and supervisory artifacts for appointed representatives.",
   },
 ];
+
+function ApiRefBlock({ apiRef }: { apiRef: ApiRef }) {
+  const statusBadge =
+    apiRef.status === "planned"
+      ? { label: "Planned v1 REST", tone: "amber" }
+      : { label: "Live internal route", tone: "emerald" };
+  return (
+    <div id={apiRef.anchorId} className="scroll-mt-24 space-y-3 rounded-md border border-border/60 bg-background p-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <code className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{apiRef.facade}</code>
+        <span
+          className={cn(
+            "rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+            statusBadge.tone === "amber"
+              ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+              : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+          )}
+        >
+          {statusBadge.label}
+        </span>
+      </div>
+      <div className="flex items-baseline gap-2 flex-wrap">
+        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase">{apiRef.method}</span>
+        <code className="text-sm font-semibold break-all">{apiRef.path}</code>
+      </div>
+      <p className="text-sm font-medium">{apiRef.title}</p>
+      <p className="text-sm text-muted-foreground leading-relaxed">{apiRef.description}</p>
+      <div className="space-y-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+          UAC schema (source of truth)
+        </p>
+        <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 text-xs leading-relaxed">
+          <code>{apiRef.pythonType}</code>
+        </pre>
+      </div>
+      <div className="space-y-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Request</p>
+        <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 text-xs leading-relaxed">
+          <code>{apiRef.curl}</code>
+        </pre>
+      </div>
+      <div className="space-y-2">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Response</p>
+        <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 text-xs leading-relaxed">
+          <code>{apiRef.responseJson}</code>
+        </pre>
+      </div>
+    </div>
+  );
+}
 
 function AuthCard({
   tier,
@@ -228,13 +483,21 @@ function AuthCard({
 export default function DocsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-6">
-      <div className="lg:grid lg:grid-cols-[220px_minmax(0,1fr)] lg:gap-10 xl:gap-14">
-        <aside className="hidden lg:block">
-          <div className="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pb-10">
-            <DocsNav sections={NAV_SECTIONS} />
-          </div>
+      <div className="md:flex md:items-start md:gap-8 lg:gap-10 xl:gap-14">
+        <aside
+          className="hidden shrink-0 self-start md:block"
+          style={{
+            position: "sticky",
+            top: "5rem",
+            width: "220px",
+            maxHeight: "calc(100vh - 6rem)",
+            overflowY: "auto",
+            paddingBottom: "2.5rem",
+          }}
+        >
+          <DocsNav sections={NAV_SECTIONS} />
         </aside>
-        <main className="min-w-0 space-y-12">
+        <div className="min-w-0 flex-1 space-y-12">
           <section id="intro" className="space-y-6 scroll-mt-24">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="text-xs">
@@ -378,6 +641,30 @@ export default function DocsPage() {
             </div>
           </section>
 
+          <section id="api-reference" className="space-y-4 scroll-mt-24">
+            <div className="flex items-center gap-2">
+              <Terminal className="size-4 text-muted-foreground" aria-hidden />
+              <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">API reference</h2>
+            </div>
+            <p className="text-sm text-foreground/85 leading-relaxed">
+              Concrete request / response shapes per UAC facade. Endpoints marked{" "}
+              <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                Planned v1 REST
+              </span>{" "}
+              map one-to-one onto the UAC canonical types — the schema is stable and already enforced internally; the
+              HTTP surface that exposes it is still on the{" "}
+              <Link href="#roadmap" className="text-primary underline-offset-2 hover:underline">
+                roadmap
+              </Link>
+              . Examples here use real canonical types so you can build clients against them today.
+            </p>
+            <div className="space-y-4">
+              {API_REFERENCES.map((entry) => (
+                <ApiRefBlock key={entry.anchorId} apiRef={entry} />
+              ))}
+            </div>
+          </section>
+
           <section id="access" className="space-y-4 scroll-mt-24">
             <div className="flex items-center gap-2">
               <KeyRound className="size-4 text-muted-foreground" aria-hidden />
@@ -405,11 +692,132 @@ export default function DocsPage() {
               />
               <AuthCard
                 tier="Production — clients & internal"
-                purpose="Live entitlements, real fund scoping, per-client catalogue slicing."
-                how="Firebase prod with SSO options. Server-side enforcement: role × entitlement × lock state × maturity."
-                example="IM client sees only their SMA / share classes. Odum admin sees the full stack."
+                purpose="Live entitlements, real fund scoping, per-client catalogue slicing. Your email maps to an org; the JWT carries org_id, fund_id and client_id as custom claims."
+                how="Firebase prod (SSO on request). Every response is filtered by role × org × entitlement × lock state × maturity before it leaves the API — clients see only their org's funds and clients, Odum admin sees the full stack."
+                example="trader@alpha-capital.com → org=alpha-capital → can list Alpha's funds and share classes, submit orders scoped to their client_id, read TCA for their own fills. Cannot see other orgs."
                 icon={<Lock className="size-4 text-muted-foreground" aria-hidden />}
               />
+            </div>
+          </section>
+
+          <section id="org-scoping" className="space-y-4 scroll-mt-24">
+            <div className="flex items-center gap-2">
+              <Building2 className="size-4 text-muted-foreground" aria-hidden />
+              <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+                Organisation & entitlements
+              </h2>
+            </div>
+            <p className="text-sm text-foreground/85 leading-relaxed">
+              Production auth is organisation-scoped: your email maps to an org, your JWT carries that identity, and
+              every API response is server-side filtered to the fund / client rows you can see. The hierarchy is four
+              levels deep.
+            </p>
+
+            <div className="rounded-md border border-border/60 bg-muted/40 p-4">
+              <pre className="overflow-x-auto text-xs leading-relaxed">
+                <code>{`Organisation (org)
+  └── Fund (Pooled or SMA)
+        └── Client (share class, or sole client for SMA)
+              └── API keys (per venue, per client — never shared)`}</code>
+              </pre>
+              <p className="mt-3 text-xs text-muted-foreground leading-relaxed">
+                SSOT:{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-[11px]">
+                  codex/14-playbooks/cross-cutting/fund-org-hierarchy.md
+                </code>
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2 rounded-md border border-border/60 bg-background p-4 text-sm">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  JWT custom claims (production Firebase)
+                </p>
+                <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 text-xs leading-relaxed">
+                  <code>{`{
+  "sub": "trader@alpha-capital.com",
+  "role": "im_client",
+  "org_id": "alpha-capital",
+  "fund_ids": ["alpha-pooled-fund"],
+  "client_ids": [
+    "alpha-share-class-a",
+    "alpha-share-class-b"
+  ],
+  "entitlements": [
+    "strategy:read",
+    "execution:submit:alpha-share-class-a",
+    "reports:read:org"
+  ]
+}`}</code>
+                </pre>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <span className="font-medium text-foreground/85">Today:</span>{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-[11px]">org_id</code> ships as a custom claim.{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-[11px]">fund_ids</code> and{" "}
+                  <code className="rounded bg-muted px-1 py-0.5 text-[11px]">client_ids</code> are a tracked gap — until
+                  they ship, the UI narrows via a dropdown picker + one API roundtrip per page.
+                </p>
+              </div>
+
+              <div className="space-y-2 rounded-md border border-border/60 bg-background p-4 text-sm">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Example — list clients in your org
+                </p>
+                <pre className="overflow-x-auto rounded-md border border-border/60 bg-muted/40 p-3 text-xs leading-relaxed">
+                  <code>{`curl -H "Authorization: Bearer $ODUM_TOKEN" \\
+  https://api.odum.io/v1/account/clients
+
+{
+  "org_id": "alpha-capital",
+  "funds": [
+    {
+      "fund_id": "alpha-pooled-fund",
+      "structure": "POOLED",
+      "clients": [
+        { "client_id": "alpha-share-class-a", "tier": "retail" },
+        { "client_id": "alpha-share-class-b", "tier": "institutional" },
+        { "client_id": "alpha-share-class-c", "tier": "founder" }
+      ]
+    }
+  ]
+}`}</code>
+                </pre>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  No <code className="rounded bg-muted px-1 py-0.5 text-[11px]">?org_id=</code> query param — the JWT is
+                  the scope. You only ever see your own org.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-md border border-border/60 bg-background p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                What org-scoping enforces, per endpoint
+              </p>
+              <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground leading-relaxed">
+                <li>
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/account/clients</code> — returns only
+                  funds / clients in your <code>org_id</code>.
+                </li>
+                <li>
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/position/snapshot</code> — requires{" "}
+                  <code>client_id</code> to be in your claim&apos;s <code>client_ids</code>; 403 otherwise.
+                </li>
+                <li>
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">POST /v1/execution/orders</code> — rejects if
+                  the <code>client_id</code> on the order is outside your entitlement, or the <code>strategy_id</code>{" "}
+                  is lock-state <code>CLIENT_EXCLUSIVE</code> for a different client.
+                </li>
+                <li>
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/strategy/availability</code> —
+                  pre-filters by role × lock state × maturity before returning. SaaS subscriber sees PUBLIC only; IM
+                  client sees PUBLIC + their CLIENT_EXCLUSIVE; admin sees everything.
+                </li>
+                <li>
+                  <code className="rounded bg-muted px-1 py-0.5 text-xs">GET /v1/reports/*</code> — pooled funds vs SMA
+                  funds render different aggregation shapes; the report surface is shared between Investment Management
+                  and the Regulatory Umbrella — the narrative differs, the code path does not.
+                </li>
+              </ul>
             </div>
           </section>
 
@@ -488,7 +896,7 @@ export default function DocsPage() {
               </Link>
             </div>
           </section>
-        </main>
+        </div>
       </div>
     </div>
   );
