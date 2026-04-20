@@ -12,7 +12,7 @@
  */
 
 import type {
-  BacktestVsLiveRow,
+  BacktestPaperLiveRow,
   Counterparty,
   DeliveryHealth,
   PnlAttributionRow,
@@ -350,27 +350,49 @@ export const MOCK_SIGNAL_EMISSIONS: readonly SignalEmission[] = [
   },
 ];
 
-export const MOCK_BACKTEST_COMPARISON: readonly BacktestVsLiveRow[] = [
+export const MOCK_BACKTEST_PAPER_LIVE: readonly BacktestPaperLiveRow[] = [
+  // Slot 0 — past LIVE_ALLOCATED, full ladder populated, live slightly decays
+  // vs backtest (realistic), paper sits between the two.
   {
     slot_label: SLOTS[0],
+    window_start: iso(30),
+    window_end: iso(0),
     backtest_sharpe: 1.82,
     backtest_return_pct: 14.3,
+    paper_sharpe: 1.64,
+    paper_return_pct: 12.1,
+    paper_signal_count: 108,
     live_signal_count: 112,
     live_signal_hit_rate: 0.58,
+    live_return_pct: 11.4,
   },
+  // Slot 1 — LIVE_TINY, paper validated, live sample small.
   {
     slot_label: SLOTS[1],
+    window_start: iso(30),
+    window_end: iso(0),
     backtest_sharpe: 1.41,
     backtest_return_pct: 9.6,
+    paper_sharpe: 1.29,
+    paper_return_pct: 8.3,
+    paper_signal_count: 82,
     live_signal_count: 84,
     live_signal_hit_rate: 0.54,
+    live_return_pct: 7.1,
   },
+  // Slot 2 — BACKTESTED only; no paper yet. Illustrates null paper/live_return.
   {
     slot_label: SLOTS[2],
+    window_start: iso(30),
+    window_end: iso(0),
     backtest_sharpe: 2.07,
     backtest_return_pct: 18.2,
+    paper_sharpe: null,
+    paper_return_pct: null,
+    paper_signal_count: null,
     live_signal_count: 63,
     live_signal_hit_rate: 0.62,
+    live_return_pct: null,
   },
 ];
 

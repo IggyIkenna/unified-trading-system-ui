@@ -1,6 +1,6 @@
 export * from "./types";
 export {
-  MOCK_BACKTEST_COMPARISON,
+  MOCK_BACKTEST_PAPER_LIVE,
   MOCK_COUNTERPARTY,
   MOCK_DELIVERY_HEALTH,
   MOCK_PNL_ATTRIBUTION,
@@ -12,3 +12,10 @@ export {
   useCounterpartyStore,
 } from "./counterparty-store";
 export type { CounterpartyRecord } from "./counterparty-store";
+export {
+  useBacktestPaperLive,
+  useDeliveryHealth,
+  usePnlAttribution,
+  useSignalEmissions,
+} from "./hooks";
+export type { FetchState } from "./hooks";

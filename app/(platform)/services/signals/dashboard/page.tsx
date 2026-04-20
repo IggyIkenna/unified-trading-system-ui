@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+"use client";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,29 +15,36 @@ import {
   SignalHistoryTable,
 } from "@/components/signal-broadcast";
 import {
-  MOCK_BACKTEST_COMPARISON,
   MOCK_COUNTERPARTY,
-  MOCK_DELIVERY_HEALTH,
-  MOCK_PNL_ATTRIBUTION,
-  MOCK_SIGNAL_EMISSIONS,
+  useBacktestPaperLive,
+  useDeliveryHealth,
+  usePnlAttribution,
+  useSignalEmissions,
 } from "@/lib/signal-broadcast";
-
-export const metadata: Metadata = {
-  title: "Signals dashboard — Odum Research",
-  description:
-    "Counterparty-scoped observability for signal-leasing deliveries: signal history, backtest comparison, delivery health, optional P&L attribution.",
-};
 
 /**
  * Counterparty observability dashboard.
  *
  * Tenant-scoped view for institutional quant shops (QRT-style) integrated
  * primarily via webhook. Observability only — NO catalogue / execution /
- * research / reporting surface. Plan SSOT: signal_leasing_broadcast_architecture
- * 2026-04-20 § Phase 5.
+ * research / reporting surface.
+ *
+ * Data source: `useSignalEmissions` / `useBacktestPaperLive` /
+ * `useDeliveryHealth` / `usePnlAttribution` hooks, which transparently
+ * serve mock fixtures in demo/tier-0 (`NEXT_PUBLIC_MOCK_API=true`) and
+ * live strategy-service REST-pull responses in staging/prod.
+ *
+ * Plan SSOT: signal_leasing_broadcast_architecture 2026-04-20 § Phase 5 + 9.
  */
 export default function CounterpartyDashboardPage() {
   const cp = MOCK_COUNTERPARTY;
+  const emissions = useSignalEmissions(cp.id);
+  const backtest = useBacktestPaperLive(cp.id);
+  const health = useDeliveryHealth(cp.id);
+  const pnl = usePnlAttribution(cp.id);
+
+  const anyMock =
+    emissions.isMock || backtest.isMock || health.isMock || pnl.isMock;
 
   return (
     <div
@@ -53,6 +60,15 @@ export default function CounterpartyDashboardPage() {
             <Badge variant="outline" className="font-mono text-xs">
               counterparty view
             </Badge>
+            {anyMock && (
+              <Badge
+                variant="outline"
+                className="border-amber-500/40 font-mono text-xs text-amber-600"
+                data-testid="signal-dashboard-mock-badge"
+              >
+                demo / mock data
+              </Badge>
+            )}
             {!cp.active && (
               <Badge
                 variant="outline"
@@ -65,8 +81,9 @@ export default function CounterpartyDashboardPage() {
           <p className="text-body text-muted-foreground max-w-3xl">
             Observability for the signals Odum delivers to your webhook
             endpoint. Odum does not see your fills, positions, or P&amp;L —
-            this dashboard is a delivery-audit surface. The full signal payload
-            flows only through your HTTPS endpoint.
+            this dashboard is a delivery-audit surface plus a backtest-paper-live
+            parity view. The full signal payload flows only through your HTTPS
+            endpoint.
           </p>
         </header>
 
@@ -113,19 +130,38 @@ export default function CounterpartyDashboardPage() {
           </CardContent>
         </Card>
 
-        <DeliveryHealthPanel health={MOCK_DELIVERY_HEALTH} />
+        {health.data !== null && <DeliveryHealthPanel health={health.data} />}
+        {health.error !== null && (
+          <FetchErrorBanner label="delivery health" detail={health.error} />
+        )}
 
-        <SignalHistoryTable
-          emissions={MOCK_SIGNAL_EMISSIONS}
-          entitledSlots={cp.allowed_slots}
-        />
+        {emissions.data !== null && (
+          <SignalHistoryTable
+            emissions={emissions.data}
+            entitledSlots={cp.allowed_slots}
+          />
+        )}
+        {emissions.error !== null && (
+          <FetchErrorBanner label="signal history" detail={emissions.error} />
+        )}
 
-        <BacktestComparisonPanel rows={MOCK_BACKTEST_COMPARISON} />
+        {backtest.data !== null && (
+          <BacktestComparisonPanel rows={backtest.data} />
+        )}
+        {backtest.error !== null && (
+          <FetchErrorBanner
+            label="backtest vs paper vs live"
+            detail={backtest.error}
+          />
+        )}
 
         <PnlAttributionPanel
           enabled={cp.pnl_reporting_enabled}
-          rows={MOCK_PNL_ATTRIBUTION}
+          rows={pnl.data ?? []}
         />
+        {pnl.error !== null && cp.pnl_reporting_enabled && (
+          <FetchErrorBanner label="P&L attribution" detail={pnl.error} />
+        )}
 
         <section className="rounded-lg border border-dashed border-border/60 bg-muted/30 p-4 text-sm text-muted-foreground">
           <p className="font-medium text-foreground">Not seeing recent data?</p>
@@ -138,6 +174,25 @@ export default function CounterpartyDashboardPage() {
           </p>
         </section>
       </div>
+    </div>
+  );
+}
+
+function FetchErrorBanner({
+  label,
+  detail,
+}: {
+  readonly label: string;
+  readonly detail: string;
+}) {
+  return (
+    <div
+      className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 text-sm"
+      data-testid={`signal-dashboard-fetch-error-${label.replace(/\s+/g, "-").toLowerCase()}`}
+    >
+      <span className="font-medium text-red-600">Fetch failed:</span>{" "}
+      <span className="text-muted-foreground">{label}</span>{" "}
+      <span className="font-mono text-xs">({detail})</span>
     </div>
   );
 }

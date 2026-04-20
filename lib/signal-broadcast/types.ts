@@ -47,12 +47,27 @@ export interface SignalEmission {
   readonly idempotency_key: string;
 }
 
-export interface BacktestVsLiveRow {
+/**
+ * Three-way comparison across the full maturity ladder (backtest → paper → live)
+ * over the SAME period window. Mirrors the DART trading-platform strategy
+ * detail-page semantics (see lib/architecture-v2 StrategyMaturity ladder).
+ *
+ * `window_start` / `window_end` bound every metric on the row so numbers are
+ * comparable. Paper metrics are null when the slot hasn't yet reached the
+ * `PAPER_TRADING` maturity stage.
+ */
+export interface BacktestPaperLiveRow {
   readonly slot_label: string;
+  readonly window_start: string;
+  readonly window_end: string;
   readonly backtest_sharpe: number;
   readonly backtest_return_pct: number;
+  readonly paper_sharpe: number | null;
+  readonly paper_return_pct: number | null;
+  readonly paper_signal_count: number | null;
   readonly live_signal_count: number;
   readonly live_signal_hit_rate: number;
+  readonly live_return_pct: number | null;
 }
 
 export interface DeliveryHealth {
