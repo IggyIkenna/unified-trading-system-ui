@@ -88,10 +88,10 @@
       "notes": "1.1 Data sourced from useBundlesData() hook (steps, readOnly). 1.2 Context calls useGlobalScope() and filters templates by org DeFi desk presence. 1.3 Org filter changes scoped templates via hasDefiDesk memo. 1.4-1.5 Bundle context filters templates by org scope; client/strategy cascade N/A for this action-panel widget (no per-client data). 1.6 Empty scope arrays → hasDefiDesk=true → unfiltered templates returned. 1.7 Reference data (BUNDLE_INSTRUMENTS, BUNDLE_VENUES, ALL_OPERATION_TYPES) in lib/config/services/bundle.config — correct location."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "Simulate (dry run) button has no onClick handler — dead button (L4 scope)",

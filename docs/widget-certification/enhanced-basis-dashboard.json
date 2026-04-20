@@ -88,10 +88,10 @@
       "notes": "1.1: Widget reads exclusively via useDeFiData() hook — PASS. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 and filters by scope (strategyIds filter on tradeHistory at line 210, org filter via hasDefiDesk at line 191) — PASS. 1.3–1.5: Org/client/strategy filters cascade in context via hasDefiDesk (org) and scopeStrategyIds (strategy); client-level cascade not explicitly present but org filter covers it — PARTIAL (context does not have explicit client-level cascade; noted as gap for L1 re-check when context is updated). 1.6: globalScope.organizationIds.length===0 returns true (all data) — PASS. 1.7: This widget does not import from lib/mocks/; venue labels are inline constants in the widget (short lookup tables, not reference data needing lib/constants/). No lib/mocks/ reference data present — PASS."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "L1.4: Client-level filter cascade not explicitly wired in defi-data-context.tsx — org filter subsumes it for now. Track for context update.",

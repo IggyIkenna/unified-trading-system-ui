@@ -88,10 +88,10 @@
       "notes": "1.1 pass — reads btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData exclusively from useRiskData() hook. 1.2 pass — use-risk-page-data.ts calls useGlobalScope(); isBatchMode derived from scope.mode; portfolioGreeks from scoped API. 1.3 pass — org scope reduces scopeReductionFactor which scales VaR/risk metrics that feed estimatedPnl. 1.4 pass — clientIds threaded through scope. 1.5 pass — strategyIds threaded through scope. 1.6 pass — empty scope = full portfolio Greeks returned. 1.7 N/A — no reference data; btcSpot=65000 is a display constant for dS calculation, not a reference data list."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [],
   "findings": [

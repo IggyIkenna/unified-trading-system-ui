@@ -88,10 +88,10 @@
       "notes": "1.1 Data via hook: PASS — reads ordersData/ordersLoading exclusively via useOverviewDataSafe(). 1.2 Context reads useGlobalScope: PASS — use-overview-page-data.ts calls useGlobalScope(). 1.3 Org filter: N/A for orders — orders API returns fills for the authenticated user; org filter applies via strategyPerformance scope but orders endpoint is not org-scoped in the current API layer. Documented as known limitation. 1.4 Client filter: N/A — same reason; orders endpoint is not client-scoped. Documented as known limitation. 1.5 Strategy filter: N/A — orders are not strategy-filtered at context level. Documented as known limitation. 1.6 Empty scope = all data: PASS — no scope filtering applied means full orders dataset returned. 1.7 Reference data location: PASS — no fixture constants embedded in widget."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "Orders data is not filtered by org/client/strategy scope — the useOrders() hook does not accept scope parameters. Widget shows all fills for the authenticated user regardless of scope selection. Future work: wire scope into useOrders() or filter ordersData in context."

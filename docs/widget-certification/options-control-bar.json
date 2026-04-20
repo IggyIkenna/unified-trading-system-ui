@@ -88,10 +88,10 @@
       "notes": "1.1 pass — widget reads all state and setters exclusively from useOptionsData(). 1.2 pass — options-data-context.tsx calls useGlobalScope() (line 130). 1.3 N/A — control bar drives asset/venue selection; it is the input, not a filtered output. 1.4 N/A — control bar is not filtered by client. 1.5 N/A — control bar is not filtered by strategy. 1.6 N/A — control bar renders unconditionally; empty scope means no filter applied to the downstream widgets it drives. 1.7 N/A — no reference data constants in widget file."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [],
   "findings": [],

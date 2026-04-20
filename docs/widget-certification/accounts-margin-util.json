@@ -88,10 +88,10 @@
       "notes": "1.1 data sourced exclusively via useAccountsData() ✓. 1.2 context calls useGlobalScope() ✓. 1.3 org filter: globalScope.organizationIds drives orgVenues set that filters balances ✓. 1.4 N/A — context scopes to org level only; no client sub-filter in accounts domain. 1.5 N/A — no strategy filter in accounts domain. 1.6 organizationIds.length===0 returns null (show all) ✓. 1.7 ACCOUNTS and MOCK_SAFTS from lib/mocks/fixtures are reference/seed data in context (org-venue mapping); noted as tech debt but not a widget-file violation — context is read-only in L1."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "accounts-data-context.tsx imports ACCOUNTS and MOCK_SAFTS from lib/mocks/fixtures — org-venue mapping uses mock seed data; should move to lib/constants/ or API-backed reference data (L1 tech debt, context file)"

@@ -88,10 +88,10 @@
       "notes": "1.1 Data via useRiskData() hook only. 1.2 use-risk-page-data.ts calls useGlobalScope() line 78. 1.3-1.5 Scope filters via getStrategyIdsForScope, riskLimits filtered by strategy entity. 1.6 scopeStrategyIds.length===0 returns unfiltered riskLimitsRaw. 1.7 FINDING (context only, cannot fix in widget pass): MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data.ts via context line 179 — these constants should live in lib/constants/risk.ts."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "L1.7: MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE in lib/mocks/fixtures/risk-data.ts re-exported via context — move to lib/constants/risk.ts (context-level fix, not widget-level)"

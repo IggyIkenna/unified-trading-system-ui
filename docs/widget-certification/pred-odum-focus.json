@@ -88,10 +88,10 @@
       "notes": "1.1: Widget reads odumTypeFilter, setOdumTypeFilter, odumTfFilter, setOdumTfFilter exclusively via usePredictionsData(); ODUM_INSTRUMENTS list passed through context (odumInstruments field) though OdumFocusBody currently re-imports it directly from lib/mocks/ — this is a trading component concern, not the widget file. 1.2: predictions-data-context.tsx calls useGlobalScope(). 1.3: ODUM instruments are market-level signals (crypto/TradFi/football prediction instruments) — not org-scoped by domain design. 1.4: clientIds not wired — same open gap as other domains. 1.5: Strategy filter N/A for ODUM signal display. 1.6: Empty scope shows all instruments. 1.7: ODUM_INSTRUMENTS defined in lib/mocks/fixtures/predictions-data.ts and re-imported in odum-focus-tab.tsx (trading component). Context already exposes odumInstruments — OdumFocusBody could read from context prop instead; deferred as trading component change outside widget scope."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "OdumFocusBody (trading component) directly imports ODUM_INSTRUMENTS from lib/mocks/ rather than receiving it via prop from context — trading component change, not widget scope"

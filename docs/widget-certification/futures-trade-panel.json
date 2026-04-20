@@ -88,10 +88,10 @@
       "notes": "1.1 pass — widget reads selectedFuture exclusively from useOptionsData(). 1.2 pass — options-data-context.tsx calls useGlobalScope() (line 130). 1.3 N/A — futures trade panel is an order entry form; scope org filter does not directly affect selected future instrument display. 1.4 N/A — no client filter applicable to trade panel. 1.5 N/A — no strategy filter applicable. 1.6 N/A — pure order entry; no data list to filter. 1.7 pass — no reference data in widget file; TradePanel sub-component uses mock fixtures (outside widget file scope)."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "context does not expose isLoading or error fields — loading/error states at widget level require context update",

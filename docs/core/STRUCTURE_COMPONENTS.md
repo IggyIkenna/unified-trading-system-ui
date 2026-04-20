@@ -34,7 +34,7 @@ File counts below are **top-level files only** (non-recursive). Sub-directories 
 | `shared/`             | 28    | Cross-cutting primitives — data tables, KPI strips, filter/form widgets, finder                         |
 | `widgets/`            | 16    | Widget registry + providers (+ 17 domain subfolders listed below)                                       |
 
-**Root-level component files** (not in any subfolder): `runtime-mode-badge.tsx`, `staging-gate.tsx`, `theme-provider.tsx`.
+**Root-level component files** (not in any subfolder): `preview-banner.tsx`, `runtime-mode-badge.tsx`, `staging-gate.tsx`, `theme-provider.tsx`.
 
 ---
 
@@ -190,6 +190,7 @@ Domain subfolders: `accounts/`, `alerts/`, `book/`, `bundles/`, `defi/`, `instru
 
 | File                     | Purpose                                       |
 | ------------------------ | --------------------------------------------- |
+| `preview-banner.tsx`     | Preview/staging environment banner            |
 | `runtime-mode-badge.tsx` | Runtime mode badge (mock / live)              |
 | `staging-gate.tsx`       | Feature flag gate — hides unreleased features |
 | `theme-provider.tsx`     | Theme context provider (dark/light)           |

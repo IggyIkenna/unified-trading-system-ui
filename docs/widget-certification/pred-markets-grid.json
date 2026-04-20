@@ -88,10 +88,10 @@
       "notes": "1.1: Widget reads filteredMarkets, marketsFilterDefs, marketsFilterValues, handleMarketsFilterChange, resetMarketsFilters exclusively via usePredictionsData() — no inline fetch or direct import. 1.2: predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3: Market catalogue is global across orgs (prediction markets are not org-scoped instruments). Scope filtering applies to positions. 1.4: clientIds not wired into predictions context — same open gap as other domains. 1.5: Strategy filter N/A for market catalogue display. 1.6: Empty scope returns full market catalogue. 1.7: Category/venue/sort options (CATEGORY_OPTIONS, SORT_OPTIONS) are defined in the context file — appropriate location for domain filter options."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [],
   "findings": [

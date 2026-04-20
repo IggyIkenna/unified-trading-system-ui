@@ -224,8 +224,7 @@
         "isPreset": false,
         "layouts": [
           { "widgetId": "order-book", "instanceId": "audit-ob-main", "x": 0, "y": 0, "w": 4, "h": 5 },
-          { "widgetId": "depth-chart", "instanceId": "audit-ob-depth", "x": 4, "y": 0, "w": 4, "h": 5 },
-          { "widgetId": "markets-live-book", "instanceId": "audit-ob-live-book", "x": 8, "y": 0, "w": 4, "h": 5 }
+          { "widgetId": "markets-live-book", "instanceId": "audit-ob-live-book", "x": 4, "y": 0, "w": 4, "h": 5 }
         ],
         "createdAt": "2026-04-16T00:00:00Z",
         "updatedAt": "2026-04-16T00:00:00Z"

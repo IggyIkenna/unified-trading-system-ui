@@ -88,10 +88,10 @@
       "notes": "1.1: Widget reads selectedInstrument exclusively via useOptionsData() and passes it as the single prop to TradePanel. TradePanel itself manages form state locally (direction, orderType, price, amount) — appropriate for a pure UI form. However, TradePanel also calls placeMockOrder directly rather than delegating to context handleSubmitOrder. This creates a dual submit path: context has handleSubmitOrder (wired to placeMockOrder + toast + qty reset) but TradePanel bypasses it and calls placeMockOrder internally. Open finding: widget should pass handleSubmitOrder from context to TradePanel instead of letting TradePanel re-implement submission. 1.2: options-data-context.tsx calls useGlobalScope() (line 130). 1.3: Org filter scopes watchlists; instrument selection is user-driven. 1.4: clientIds not applicable — order entry is instrument-scoped. 1.5: Strategy filter not applicable to individual instrument order entry. 1.6: Empty organizationIds returns full watchlist scope. 1.7: placeMockOrder, formatUsd from lib/mocks/ and lib/api/mock-trade-ledger used inside TradePanel — should route all order submission through context in a future refactor."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "TradePanel calls placeMockOrder directly (4 separate call sites for option/future/spread/combo modes) rather than delegating to context handleSubmitOrder — dual submit path. Widget should pass handleSubmitOrder from context as a prop to TradePanel.",

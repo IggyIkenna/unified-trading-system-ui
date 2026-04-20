@@ -88,10 +88,10 @@
       "notes": "1.1 PASS — data sourced exclusively from useInstructionsData() hook; no inline fetch or direct import. 1.2 PASS — context calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3 PASS — organizationIds in scope drives scopeStrategyIds which filters allInstructions. 1.4 PASS — clientIds in scope drives scopeStrategyIds cascade via getStrategyIdsForScope(). 1.5 PASS — strategyIds in scope drives scopeStrategyIds filter directly. 1.6 PASS — when scopeStrategyIds.length === 0 the filter is skipped so all instructions are returned. 1.7 PASS — INSTRUCTION_STRATEGY_TYPES in lib/config/services/instructions.config; TRADING_OPERATION_TYPES in lib/config/services/trading.config."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "context does not expose isLoading or error; LiveFeedWidget base already supports both props but they are not wired — add when real API replaces mock data"

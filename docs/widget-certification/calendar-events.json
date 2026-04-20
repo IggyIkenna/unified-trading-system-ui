@@ -88,10 +88,10 @@
       "notes": "1.1 Data sourced from useEconomicResults and useCorporateActions hooks (hooks/api/use-calendar.ts) via CalendarEventFeed — no inline fetch/import in widget file — pass. 1.2 hooks/api/use-calendar.ts uses useAuth() for user-scoped queries; terminal-data-context.tsx calls useGlobalScope() for instrument/account scope — calendar data is user-scoped but not filtered by org/client/strategy (correct for an economic calendar domain) — N/A for org/client/strategy filtering. 1.3 N/A — calendar data is global macro/corporate-action data, not org-filtered. 1.4 N/A — calendar data is not client-scoped. 1.5 N/A — calendar data is not strategy-scoped. 1.6 N/A — no scope filtering applies; hook fetches all events in the time window. 1.7 No reference data in lib/mocks — pass."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [],
   "findings": [

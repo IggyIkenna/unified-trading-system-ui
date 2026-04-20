@@ -88,10 +88,10 @@
       "notes": "1.1: data via useSportsData() for fixtures; MOCK_PREDICTIONS is a context gap (predictions not in SportsDataContextValue) — needs context promotion. 1.2: context calls useGlobalScope() — pass. 1.3: league filter applies via allFixtures from context — pass. 1.4: N/A for predictions (no client sub-filter). 1.5: N/A. 1.6: filters.leagues.length===0 → show all — pass. 1.7: MOCK_PREDICTIONS in lib/mocks — context gap; needs promotion to SportsDataProvider."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "MOCK_PREDICTIONS still imported from lib/mocks/fixtures/sports-data — SportsDataContext does not expose predictions; requires context owner to add predictions to SportsDataContextValue and SportsDataProvider"

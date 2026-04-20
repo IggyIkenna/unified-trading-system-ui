@@ -88,10 +88,10 @@
       "notes": "1.1: Widget reads ctx.watchlists, ctx.watchlistId, ctx.setWatchlistId, ctx.selectedWatchlistSymbolId, ctx.handleWatchlistSelect exclusively via useOptionsData() hook. No inline fetch or mock import. 1.2: options-data-context.tsx calls useGlobalScope() (line 130); globalScope.organizationIds used to build scopedWatchlists (lines 273-279). 1.3: Org filter — when organizationIds is set and does not include 'odum', only crypto watchlists are shown (watchlist 'crypto-top', 'crypto-defi' etc. pass filter; 'tradfi-us' is excluded). Widget displays only the org-scoped watchlists, so org change visibly changes the available watchlist tabs. 1.4: clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,33 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
   },
   "knownIssues": [
     "DEFAULT_WATCHLISTS reference data lives in lib/mocks/fixtures/options-futures-mock — should be moved to lib/config/services/options.config.ts or lib/constants/options.ts."
