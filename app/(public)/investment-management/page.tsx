@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
 
 /**
  * Investment Management — public marketing page (pb3b narrative).
@@ -101,20 +102,8 @@ export default function InvestmentManagementPage() {
             </CardContent>
           </Card>
 
-          {/* Fund / SMA hierarchy visual slot (Phase 4) */}
-          <div
-            className="mb-8 rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-sm text-muted-foreground"
-            data-testid="fund-sma-hierarchy-diagram-slot"
-          >
-            {/* fund-sma-hierarchy-diagram slot — Phase 4 */}
-            <p className="font-medium text-foreground/80">
-              Fund / SMA hierarchy diagram
-            </p>
-            <p className="mt-2">
-              Static visual (org &rarr; pooled fund with share classes or SMA
-              per client &rarr; venue API keys) lands in Phase 4.
-            </p>
-          </div>
+          {/* Fund / SMA hierarchy diagram — Phase 4 visual */}
+          <FundSmaHierarchyDiagram />
 
           {/* Performance fee framing (mechanic only, no numbers) */}
           <Card className="mb-8">
