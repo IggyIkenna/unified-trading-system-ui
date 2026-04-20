@@ -27,6 +27,8 @@ import {
   type LifecycleStage,
   lifecycleStages,
 } from "@/lib/lifecycle-mapping";
+import { type Phase } from "@/lib/phase/types";
+import { phaseForPath, usePhaseFromRoute } from "@/lib/phase/use-phase-from-route";
 import { cn } from "@/lib/utils";
 import {
   ArrowUpCircle,
@@ -83,6 +85,10 @@ export function LifecycleNav({
   className,
 }: LifecycleNavProps) {
   const pathname = usePathname() || "";
+  // G1.1 phase unification: single source of truth for phase context. Drives
+  // both the entitlement gate below (no more `path.startsWith("/services/...")`
+  // branching on the render side) and the `data-phase` Playwright hook.
+  const phase: Phase = usePhaseFromRoute();
   const [searchOpen, setSearchOpen] = React.useState(false);
   const { user, hasEntitlement, isAdmin, isInternal, logout: doLogout } = useAuth();
   const { mode: execMode, setMode } = useExecutionMode();
@@ -96,17 +102,24 @@ export function LifecycleNav({
   // Internal-only routes — visible to internal traders AND admins, hidden from clients
   const internalRoutes = ["/services/manage"];
 
-  // Check if an item is accessible (unlocked) for the current user
+  // Check if an item is accessible (unlocked) for the current user.
+  //
+  // G1.1: research/trading/execution branching is derived through
+  // `phaseForPath()` — same-system-principle sub-claims (b)-(e) require that
+  // the shell not reason about "trading" vs "research" as forked trees; it
+  // reasons about `phase` as an attribute of the destination route. The
+  // entitlement gates stay identical; only the derivation changes.
   const isItemAccessible = (path: string): boolean => {
     // Promote hub spans strategy + ml lanes — requires either full entitlement
     if (path === "/services/promote" || path.startsWith("/services/promote/"))
       return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
     if (adminOnlyRoutes.some((r) => path === r || path.startsWith(r + "/"))) return isAdmin();
     if (internalRoutes.some((r) => path === r || path.startsWith(r + "/"))) return isInternal();
-    if (path.startsWith("/services/research")) return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
-    if (path.startsWith("/services/trading") || path.startsWith("/services/execution"))
-      return hasEntitlement("execution-basic") || hasEntitlement("execution-full");
     if (path.startsWith("/services/reports")) return hasEntitlement("reporting");
+    const itemPhase = phaseForPath(path);
+    if (itemPhase === "research") return hasEntitlement("strategy-full") || hasEntitlement("ml-full");
+    if (itemPhase === "live" || itemPhase === "paper")
+      return hasEntitlement("execution-basic") || hasEntitlement("execution-full");
     return true;
   };
 
@@ -155,6 +168,8 @@ export function LifecycleNav({
         "flex shrink-0 items-center justify-between gap-2 overflow-x-auto border-b border-border bg-card/95 px-3 py-1.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/90",
         className,
       )}
+      data-testid="phase-root"
+      data-phase={phase}
     >
       {/* Left: Logo + Lifecycle stages */}
       <div className="flex items-center gap-2 min-w-0">

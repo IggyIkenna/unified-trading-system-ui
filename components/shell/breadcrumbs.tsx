@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
 import { getRouteMapping } from "@/lib/lifecycle-mapping";
+import { type Phase } from "@/lib/phase/types";
+import { usePhaseFromRoute } from "@/lib/phase/use-phase-from-route";
 import {
   getTradingIntermediateBreadcrumbItems,
   getTradingNavLeafLabel,
@@ -13,6 +15,11 @@ import { PageHelp } from "@/components/platform/page-help";
 
 export function Breadcrumbs() {
   const pathname = usePathname() || "";
+  // G1.1: emit `data-phase` on the breadcrumb bar for Playwright assertions.
+  // Phase unification rule — every navigation chrome surface advertises its
+  // current phase so the same-system-principle can be verified by a DOM probe
+  // rather than by URL inspection.
+  const phase: Phase = usePhaseFromRoute();
 
   // Don't show on dashboard or top-level routes
   if (
@@ -63,6 +70,8 @@ export function Breadcrumbs() {
     <nav
       aria-label="Breadcrumb"
       className="flex items-center justify-between flex-wrap gap-y-1.5 gap-x-2 px-4 py-1.5 text-xs text-muted-foreground bg-card/50 border-b border-border"
+      data-testid="breadcrumb-root"
+      data-phase={phase}
     >
       <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
         <Link href="/dashboard" className="hover:text-foreground transition-colors flex items-center gap-1 shrink-0">

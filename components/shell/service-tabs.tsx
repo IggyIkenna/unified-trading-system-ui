@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 import { TabSectionHelp } from "@/components/shell/tab-section-help";
 import { DATA_SERVICE_SECTION_LABELS } from "@/lib/config/services/data-service.config";
 import { checkTradingEntitlement, isTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
+import { type Phase } from "@/lib/phase/types";
 import { cn } from "@/lib/utils";
 import { isServiceTabActive } from "@/lib/utils/nav-helpers";
 import type { LucideIcon } from "lucide-react";
@@ -76,6 +77,14 @@ interface ServiceTabsProps {
   tabsAlign?: "start" | "end";
   /** When true, tabs share full row width equally (each tab flex-1, centered). */
   tabsSpread?: boolean;
+  /**
+   * G1.1 phase unification: optional phase attribute emitted as `data-phase`
+   * on the tab container. Phased surfaces pass this so Playwright can assert
+   * the DOM structure is identical across phase toggles. DO NOT rewrite tab
+   * URLs based on this — each tab row is a distinct logical surface; phase
+   * routing happens upstream in the layout via `usePhaseBinding`.
+   */
+  phase?: Phase;
 }
 
 function TabLabel({ tab, spread }: { tab: ServiceTab; spread: boolean }) {
@@ -122,6 +131,7 @@ export function ServiceTabs({
   className,
   tabsAlign = "start",
   tabsSpread = false,
+  phase,
 }: ServiceTabsProps) {
   const pathname = usePathname() || "";
   const hasWildcard = (entitlements as readonly unknown[] | undefined)?.includes("*") ?? true;
@@ -132,7 +142,11 @@ export function ServiceTabs({
     : "inline-flex items-center gap-1.5 px-3 py-2 whitespace-nowrap";
 
   return (
-    <div className={cn("border-b border-border bg-card/30", className)}>
+    <div
+      className={cn("border-b border-border bg-card/30", className)}
+      data-testid="service-tabs-root"
+      {...(phase ? { "data-phase": phase } : {})}
+    >
       <div
         className={cn(
           "flex flex-wrap items-center gap-2 px-4 sm:px-6",
