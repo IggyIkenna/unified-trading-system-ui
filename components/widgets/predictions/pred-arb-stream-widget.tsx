@@ -38,7 +38,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
   if (error) {
     return (
       <div className="flex h-full items-center justify-center p-4">
-        <p className="text-xs text-rose-400">{error}</p>
+        <p className="text-xs text-destructive">{error}</p>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
     <div className="flex flex-col gap-3 h-full min-h-0 overflow-auto">
       <div className="flex flex-wrap items-center gap-3 shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-[11px] text-muted-foreground">Min arb:</span>
+          <span className="text-caption text-muted-foreground">Min arb:</span>
           <div className="flex items-center gap-0.5 rounded-md border border-zinc-800 bg-zinc-900/60 p-0.5">
             {ARB_THRESHOLD_OPTIONS.map((t) => (
               <button
@@ -55,7 +55,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
                 type="button"
                 onClick={() => setArbThreshold(t)}
                 className={cn(
-                  "px-2 py-1 text-[10px] font-bold rounded transition-colors tabular-nums",
+                  "px-2 py-1 text-micro font-bold rounded transition-colors tabular-nums",
                   arbThreshold === t ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300",
                 )}
               >
@@ -72,7 +72,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
               type="button"
               onClick={() => setArbMarketTypeFilter(type as PredictionArbMarketType | "all")}
               className={cn(
-                "px-2.5 py-1 text-[10px] font-bold rounded transition-colors capitalize",
+                "px-2.5 py-1 text-micro font-bold rounded transition-colors capitalize",
                 arbMarketTypeFilter === type ? "bg-zinc-700 text-white" : "text-zinc-500 hover:text-zinc-300",
               )}
             >
@@ -81,7 +81,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
           ))}
         </div>
 
-        <div className="ml-auto flex items-center gap-1.5 text-[10px] text-zinc-600">
+        <div className="ml-auto flex items-center gap-1.5 text-micro text-zinc-600">
           <Info className="size-3" />
           Refreshes every 8s · decay bar = time remaining
         </div>
@@ -89,12 +89,12 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
 
       <div className="space-y-2 min-h-0">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Live Opportunities</span>
+          <span className="text-micro font-black uppercase tracking-widest text-zinc-500">Live Opportunities</span>
           {activeArbs.length > 0 && (
-            <span className="flex items-center gap-1 text-[10px] text-[#4ade80]">
+            <span className="flex items-center gap-1 text-micro text-[var(--pnl-positive)]">
               <span className="relative flex size-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#4ade80] opacity-60" />
-                <span className="relative inline-flex rounded-full size-1.5 bg-[#4ade80]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--pnl-positive)] opacity-60" />
+                <span className="relative inline-flex rounded-full size-1.5 bg-[var(--pnl-positive)]" />
               </span>
               {activeArbs.length} active
             </span>
@@ -106,7 +106,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
             <CardContent className="py-10 text-center space-y-2">
               <Clock className="size-8 text-zinc-700 mx-auto" />
               <p className="text-xs text-zinc-600">No arbs above {arbThreshold}% threshold</p>
-              <p className="text-[10px] text-zinc-700">Stream re-checks every 8s</p>
+              <p className="text-micro text-zinc-700">Stream re-checks every 8s</p>
             </CardContent>
           </Card>
         ) : (

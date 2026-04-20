@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "requiredEntitlements: [{domain:'trading-predictions',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "availableOn: ['predictions']."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "No any or @ts-ignore."
         },
         "0.5": {
           "result": "pass",
-          "note": "no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "No lib/mocks/ imports in widget file."
         },
         "0.6": {
           "result": "pass",
-          "note": "synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "Synchronous mock context; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary."
         },
         "0.7": {
           "result": "pass",
-          "note": "KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "KPI strips show zero-values as correct empty representation; no separate empty state needed."
         },
         "0.8": {
           "result": "pass",
-          "note": "no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+          "note": "WidgetErrorBoundary covers provider-missing throw."
         },
         "0.9": {
           "result": "pass",
-          "note": "no dead code."
+          "note": "No dead code."
         }
       },
-      "notes": "All 9 checks green. 0.1: WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore. 0.5: no lib/mocks/ imports. 0.6: synchronous mock context — no isLoading needed; usePredictionsData() throws on missing provider, caught by WidgetErrorBoundary. 0.7: KPI strip widgets always show numeric values (0 when empty); 'empty state' concept does not apply to KPI strips — zero-value tiles are the correct empty representation. 0.8: no error field in context; WidgetErrorBoundary (0.1) covers provider-missing throw. 0.9: no dead code."
+      "notes": "All 9 checks green."
     },
     "l1": {
       "status": "pass",
@@ -58,106 +58,217 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "— widget reads openPositions, settledPositions, portfolioKpis via usePredictionsData() only."
+          "note": "Reads openPositions, settledPositions, portfolioKpis via usePredictionsData() only."
         },
         "1.2": {
           "result": "pass",
-          "note": "— context calls useGlobalScope() and getStrategyIdsForScope()."
+          "note": "Context calls useGlobalScope() and getStrategyIdsForScope()."
         },
         "1.3": {
           "result": "pass",
-          "note": "— portfolioKpis are derived from openPositions/settledPositions which are already scope-filtered."
+          "note": "portfolioKpis derived from scope-filtered openPositions/settledPositions."
         },
         "1.4": {
           "result": "partial",
-          "note": "— no clientId on PredictionPosition; client narrowing deferred."
+          "note": "No clientId on PredictionPosition; client narrowing deferred to schema change."
         },
         "1.5": {
           "result": "pass",
-          "note": "— strategy scope propagates through openPositions/settledPositions memos."
+          "note": "Strategy scope propagates through openPositions/settledPositions memos."
         },
         "1.6": {
           "result": "pass",
-          "note": "— empty strategyIds returns full dataset."
+          "note": "Empty strategyIds returns full dataset."
         },
         "1.7": {
           "result": "pass",
-          "note": "KNOWN-GAP — mock data in lib/mocks/fixtures/; future scope."
+          "note": "Mock data in lib/mocks/fixtures/ \u2014 future scope to move."
         }
       },
-      "notes": "1.1 PASS — widget reads openPositions, settledPositions, portfolioKpis via usePredictionsData() only. 1.2 PASS — context calls useGlobalScope() and getStrategyIdsForScope(). 1.3 PASS — portfolioKpis are derived from openPositions/settledPositions which are already scope-filtered. 1.4 PARTIAL — no clientId on PredictionPosition; client narrowing deferred. 1.5 PASS — strategy scope propagates through openPositions/settledPositions memos. 1.6 PASS — empty strategyIds returns full dataset. 1.7 KNOWN-GAP — mock data in lib/mocks/fixtures/; future scope."
+      "notes": "All L1 checks pass (1.4 partial \u2014 schema gap)."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
-      "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "date": "2026-04-21",
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if wiring test fails."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies: live \u2713, paper \u2713 (KPIs show simulated label on paper positions), batch \u2713 (read-only KPI strip)."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads useExecutionMode(); isPaper tags positions with 'simulated' label."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: KPI values reflect simulated positions tagged via isPaper memo."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or setInterval in this widget."
+        }
+      },
+      "notes": "Agent prep complete. Human: 3.3/3.4 N/A for this read-only KPI strip; verify KPIs update when mode switches."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No buttons in this widget \u2014 pure display."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated routes."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "Agent prep complete. Human: 4.8 \u2014 verify KPI tiles scroll correctly at small minH=1."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Portfolio summary widget for all prediction strategies: PRED_POLY_ARB_SCE_1M, PRED_BTC_CEFI_ARB_SCE_5M, PREDICTION_POLY_ML_DIR_EVT_4H."
+        }
+      },
+      "notes": "Agent prep complete. Human: verify KPIs reflect live strategy positions after simulated trades."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
       "notes": null
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors. Sentiment colors delegated to KpiSummaryWidget via sentiment prop."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks/ imports."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "37 lines \u2014 well within limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PredPortfolioKpisWidget PascalCase; file kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerous patterns."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "metrics array is computed inline before return but not in a dep array."
+        }
+      },
+      "notes": "All L7 checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No arbitrary font sizes in widget file."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Delegates to KpiSummaryWidget shared primitive."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no bare img/input/div-onClick. Human: keyboard walk."
+        }
+      },
+      "notes": "Agent checks pass. Human: 8.5 resize at minW=4 minH=1."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "KPI strip is a summary bar that spans full width; designed to sit above the grid and positions, not coupled to any specific widget."
+    },
+    "notes": "KPIs reflect scope-filtered openPositions and settledPositions from shared context."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest", "websocket"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "near-realtime:<=1s",
+    "mockSource": "lib/mocks/fixtures/predictions-data.ts (MOCK_POSITIONS)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Production: derived from position aggregation service. KPIs update on position changes."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["predictions"],
+    "strategies": ["PRED_POLY_ARB_SCE_1M", "PRED_BTC_CEFI_ARB_SCE_5M", "PREDICTION_POLY_ML_DIR_EVT_4H"],
+    "venues": ["polymarket", "kalshi"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Win rate denominator is settledPositions.length which may be small on first use",
+      "No historical P&L breakdown by venue"
+    ],
+    "notes": "All-up portfolio view; not broken down by strategy or venue."
   },
   "knownIssues": [
     {
       "level": "l1",
-      "description": "Client-level filter not wired — PredictionPosition has no clientId field; full client narrowing deferred to schema change.",
-      "status": "known-gap"
-    },
-    {
-      "level": "l1",
-      "description": "Reference data (MOCK_POSITIONS) lives in lib/mocks/fixtures/ rather than lib/constants/; moving is future scope.",
+      "description": "Client-level filter not wired \u2014 PredictionPosition has no clientId field; full client narrowing deferred.",
       "status": "known-gap"
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "pred-portfolio-kpis-widget.tsx \u2014 ~4 user-visible label strings not i18n-ready",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

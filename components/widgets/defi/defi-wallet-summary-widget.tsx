@@ -168,7 +168,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
   return (
     <div className="space-y-2 p-1">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] text-muted-foreground shrink-0">Chain</span>
+        <span className="text-micro text-muted-foreground shrink-0">Chain</span>
         <Select value={selectedChain} onValueChange={setSelectedChain}>
           <SelectTrigger className="h-7 w-[140px] text-xs">
             <SelectValue />
@@ -187,7 +187,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
       <div className="flex flex-wrap items-center gap-2 px-1">
         <div className="flex items-center gap-1.5 text-xs">
           <span className="text-muted-foreground">Treasury</span>
-          <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 font-mono", treasuryStatusColor)}>
+          <Badge variant="outline" className={cn("text-micro px-1.5 py-0 font-mono", treasuryStatusColor)}>
             {treasury.status.toUpperCase()}
           </Badge>
           <span className="font-mono text-muted-foreground">
@@ -212,7 +212,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
           variant="outline"
           size="sm"
           className={cn(
-            "h-6 text-[10px] px-2 ml-auto",
+            "h-6 text-micro px-2 ml-auto",
             treasury.status !== "normal" && "border-amber-500/50 text-amber-400 hover:bg-amber-500/10",
           )}
           onClick={triggerRebalance}
@@ -234,7 +234,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
           ) : (
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                <tr className="text-micro text-muted-foreground border-b border-border/50">
                   <th className="text-left py-1 font-medium">Chain</th>
                   <th className="text-right py-1 font-medium">Value (USD)</th>
                   <th className="text-right py-1 font-medium">Gas Token</th>
@@ -282,11 +282,11 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
       <CollapsibleSection title="Key Rates" defaultOpen={false} count={keyRateRows.length}>
         <div className="px-1 pb-1">
           {keyRateRows.length === 0 ? (
-            <p className="text-[10px] text-muted-foreground py-1">No rate data</p>
+            <p className="text-micro text-muted-foreground py-1">No rate data</p>
           ) : (
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                <tr className="text-micro text-muted-foreground border-b border-border/50">
                   <th className="text-left py-1 font-medium">Protocol</th>
                   <th className="text-left py-1 font-medium">Asset</th>
                   <th className="text-right py-1 font-medium">Supply APY</th>
@@ -316,7 +316,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
           <div className="px-1 pb-1">
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                <tr className="text-micro text-muted-foreground border-b border-border/50">
                   <th className="text-left py-1 font-medium">Class</th>
                   <th className="text-right py-1 font-medium">NAV (USD)</th>
                   <th className="text-right py-1 font-medium">NAV (native)</th>

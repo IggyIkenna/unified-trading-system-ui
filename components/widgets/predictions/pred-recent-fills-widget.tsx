@@ -25,7 +25,7 @@ export function PredRecentFillsWidget(_props: WidgetComponentProps) {
                 <Badge
                   variant="outline"
                   className={cn(
-                    "text-[9px] font-bold",
+                    "text-nano font-bold",
                     fill.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
                   )}
                 >
@@ -35,10 +35,10 @@ export function PredRecentFillsWidget(_props: WidgetComponentProps) {
             </div>
             <div className="text-right shrink-0 ml-2">
               <p className="tabular-nums font-semibold">${formatNumber(fill.total, 0)}</p>
-              <p className="text-[10px] text-muted-foreground tabular-nums">
+              <p className="text-micro text-muted-foreground tabular-nums">
                 {fill.pricePerShare}¢ · {fill.shares.toLocaleString()} sh
               </p>
-              <p className="text-[10px] text-muted-foreground">{fmtRelativeTime(fill.filledAt)}</p>
+              <p className="text-micro text-muted-foreground">{fmtRelativeTime(fill.filledAt)}</p>
             </div>
           </div>
         ))}

@@ -12,6 +12,18 @@ export interface TerminalInstrument {
   change: number;
 }
 
+export type TerminalEventSeverity = "INFO" | "WARNING" | "CRITICAL";
+export type TerminalEventDomain = "EXECUTION" | "RISK" | "DATA" | "SYSTEM" | "STRATEGY";
+
+export interface TerminalEvent {
+  id: string;
+  timestamp: string;
+  domain: TerminalEventDomain;
+  severity: TerminalEventSeverity;
+  title: string;
+  detail: string;
+}
+
 export interface TerminalData {
   instruments: TerminalInstrument[];
   instrumentsByCategory: Record<string, TerminalInstrument[]>;
@@ -57,6 +69,10 @@ export interface TerminalData {
   // TODO: wire from API hook when real endpoint exists
   isLoading: boolean;
   error: string | null;
+  // Platform event feed (events-feed-widget). TODO: wire to WS/SSE event bus when backend owner resolved.
+  events: TerminalEvent[];
+  isLoadingEvents: boolean;
+  errorEvents: string | null;
 }
 
 const TerminalDataContext = React.createContext<TerminalData | null>(null);

@@ -18,7 +18,7 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
   if (!showTemplates) {
     return (
       <div className="p-2 flex flex-col gap-2 h-full min-h-0">
-        <p className="text-[10px] text-muted-foreground">
+        <p className="text-micro text-muted-foreground">
           {steps.length > 0
             ? "Templates stay tucked away while you edit legs."
             : "Template gallery is hidden. Open it to load a pre-built flow, or add legs from Execution Steps."}
@@ -42,7 +42,7 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="p-2 flex flex-col gap-2 h-full min-h-0 overflow-auto">
-      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pick a starting point</p>
+      <p className="text-micro text-muted-foreground uppercase tracking-wider">Pick a starting point</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
         {templates.map((template) => (
           <button
@@ -55,24 +55,24 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="text-xs font-medium truncate">{template.name}</span>
-                <Badge variant="secondary" className="text-[9px] px-1 py-0 shrink-0">
+                <Badge variant="secondary" className="text-nano px-1 py-0 shrink-0">
                   {template.category}
                 </Badge>
               </div>
-              <div className="flex items-center gap-2 text-[10px] shrink-0">
+              <div className="flex items-center gap-2 text-micro shrink-0">
                 <span className="text-rose-400 font-mono">-${formatNumber(template.estimatedCost, 0)}</span>
                 {template.estimatedProfit > 0 && (
                   <span className="text-emerald-400 font-mono">+${formatNumber(template.estimatedProfit, 0)}</span>
                 )}
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{template.description}</p>
+            <p className="text-micro text-muted-foreground mt-0.5 line-clamp-2">{template.description}</p>
             <div className="flex items-center gap-1 mt-1.5 flex-wrap">
               {template.steps.map((s, i) => (
                 <React.Fragment key={i}>
                   <Badge
                     variant="outline"
-                    className={cn("text-[8px] px-1 py-0", getOperationBadgeClass(s.operationType))}
+                    className={cn("text-pico px-1 py-0", getOperationBadgeClass(s.operationType))}
                   >
                     {s.operationType}
                   </Badge>
@@ -84,7 +84,7 @@ export function BundleTemplatesWidget(_props: WidgetComponentProps) {
         ))}
       </div>
       <CollapsibleSection title="Why templates?" defaultOpen={false}>
-        <p className="text-[10px] text-muted-foreground px-2 pb-2">
+        <p className="text-micro text-muted-foreground px-2 pb-2">
           Each template loads a realistic multi-leg flow. You can still add, remove, or reorder legs afterward.
         </p>
       </CollapsibleSection>

@@ -46,7 +46,7 @@ const columns: ColumnDef<LendingArbRow, unknown>[] = [
       const bps = row.getValue<number>("spreadBps");
       return (
         <div className="flex justify-end">
-          <Badge variant={bps > 50 ? "success" : "secondary"} className="text-[10px]">
+          <Badge variant={bps > 50 ? "success" : "secondary"} className="text-micro">
             {bps} bps
           </Badge>
         </div>

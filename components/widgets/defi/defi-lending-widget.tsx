@@ -77,7 +77,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
             {lendingProtocols.map((p) => (
               <SelectItem key={p.name} value={p.name}>
                 <span>{p.name}</span>
-                <span className="text-[10px] text-muted-foreground ml-1.5 font-mono">{p.venue_id}</span>
+                <span className="text-micro text-muted-foreground ml-1.5 font-mono">{p.venue_id}</span>
               </SelectItem>
             ))}
           </SelectContent>
@@ -116,7 +116,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
             {selectedProtocol.assets.map((a) => (
               <SelectItem key={a} value={a}>
                 <span className="font-mono">{a}</span>
-                <span className="text-[10px] text-muted-foreground ml-2">
+                <span className="text-micro text-muted-foreground ml-2">
                   Supply {formatPercent(selectedProtocol.supplyApy[a] ?? 0, 1)} / Borrow{" "}
                   {formatPercent(selectedProtocol.borrowApy[a] ?? 0, 1)}
                 </span>
@@ -214,7 +214,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         </p>
         <div className="flex items-center gap-3">
           <div className="text-center">
-            <p className="text-[10px] text-muted-foreground">Current</p>
+            <p className="text-micro text-muted-foreground">Current</p>
             <p
               className={cn(
                 "text-lg font-mono font-bold",
@@ -227,7 +227,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
           </div>
           <ArrowDown className="size-4 text-muted-foreground rotate-[-90deg]" />
           <div className="text-center">
-            <p className="text-[10px] text-muted-foreground">After</p>
+            <p className="text-micro text-muted-foreground">After</p>
             <p
               className={cn(
                 "text-lg font-mono font-bold",

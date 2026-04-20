@@ -49,7 +49,7 @@
           "note": null
         }
       },
-      "notes": "All 9 checks pass. Error boundary: WidgetErrorBoundary covers all grid widgets globally. requiredEntitlements: [defi-trading]. availableOn: [defi]. No any types or @ts-ignore. No lib/mocks imports in widget file. Loading: context does not expose isLoading; FormWidget shows skeleton when isLoading prop is set; marked N/A for context-level loading. Empty state: guard on !pool (fixed: removed '(mock)' text). Error state: FormWidget shows dismissible error banner from useFormSubmit — covers submission errors; context has no error field. No dead code."
+      "notes": "All 9 checks pass. Error boundary: WidgetErrorBoundary covers all grid widgets globally. requiredEntitlements: [defi-trading]. availableOn: [defi]. No any types or @ts-ignore. No lib/mocks imports in widget file. Loading: context does not expose isLoading; FormWidget shows skeleton when isLoading prop is set; marked N/A for context-level loading. Empty state: guard on !pool (fixed: removed '(mock)' text). Error state: FormWidget shows dismissible error banner from useFormSubmit \u2014 covers submission errors; context has no error field. No dead code."
     },
     "l1": {
       "status": "pass",
@@ -70,7 +70,7 @@
         },
         "1.4": {
           "result": "partial",
-          "note": "clientIds destructured and acknowledged; LiquidityPool has no clientId field — full narrowing requires schema change (BP-5)."
+          "note": "clientIds destructured and acknowledged; LiquidityPool has no clientId field \u2014 full narrowing requires schema change (BP-5)."
         },
         "1.5": {
           "result": "partial",
@@ -85,7 +85,7 @@
           "note": "KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
         }
       },
-      "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 PASS: adjustedLiquidityPools memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 PARTIAL: clientIds destructured and acknowledged; LiquidityPool has no clientId field — full narrowing requires schema change (BP-5). 1.5 PARTIAL: strategyIds filter applied to tradeHistory; LiquidityPool has no strategyId field so pool-level strategy filter is N/A. 1.6 PASS: empty scope arrays return all data. 1.7 KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
+      "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 PASS: adjustedLiquidityPools memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 PARTIAL: clientIds destructured and acknowledged; LiquidityPool has no clientId field \u2014 full narrowing requires schema change (BP-5). 1.5 PARTIAL: strategyIds filter applied to tradeHistory; LiquidityPool has no strategyId field so pool-level strategy filter is N/A. 1.6 PASS: empty scope arrays return all data. 1.7 KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
       "status": "pass",
@@ -94,66 +94,170 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "live \u2713 / paper \u2713 / batch: ADD/REMOVE buttons should be disabled."
+        },
+        "3.2": {
+          "result": "partial",
+          "note": "Context reads useGlobalScope() but does not consume scope.mode."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode spec: execute disabled; pool TVL/APR still displayed."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or interval. N/A."
+        }
+      },
+      "notes": "3.3/3.4: Human must verify batch-mode button disable."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Add/Remove liquidity buttons and fee tier buttons functional."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No cross-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "4.3/4.4/4.7/4.8: Human walkthrough required."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: MARKET_MAKING_CONTINUOUS (Uniswap V3 concentrated LP). Operations: ADD_LIQUIDITY, REMOVE_LIQUIDITY. Fee tiers: 0.01%, 0.05%, 0.3%, 1%."
+        }
+      },
+      "notes": "5.2-5.6: Human walkthrough required. Price range inputs need verification."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "L6 deferred \u2014 tests to be written after L5 human sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "190 lines \u2014 within 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "DeFiLiquidityWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security violations."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No inline objects in deps."
+        }
+      },
+      "notes": "All mechanical checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px] at lines 69, 86, 102, 112 migrated to text-micro utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Button, Input, Select from components/ui/*. FormWidget and CollapsibleSection used."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no img without alt. Inputs have label wrappers. Human: keyboard pass required."
+        }
+      },
+      "notes": "8.1 deferred pending --text-label-micro. 8.5: human required."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
+    "keepSeparate": {
+      "rationale": "LP provision is a distinct action flow from staking/lending. Pool-specific price range config is unique to this widget."
+    },
     "notes": null
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/defi-liquidity.ts",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Pool TVL/APR should refresh on interval:60s in production."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi"],
+    "strategies": ["MARKET_MAKING_CONTINUOUS"],
+    "venues": ["UNISWAPV3-ETHEREUM", "UNISWAPV3-ARBITRUM", "UNISWAPV3-POLYGON"],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
       {
         "status": "SUPPORTED",
-        "notes": "MARKET_MAKING_CONTINUOUS §13 DeFi (per chain)/lp (PASSIVE_LP — Curve / Balancer / Uniswap V2): IL dynamics need archetype sub-section"
+        "notes": "MARKET_MAKING_CONTINUOUS \u00a713 DeFi (per chain)/lp (PASSIVE_LP \u2014 Curve / Balancer / Uniswap V2): IL dynamics need archetype sub-section"
       },
       {
         "status": "BLOCKED",
-        "notes": "MARKET_MAKING_CONTINUOUS §13 DeFi/perp: DeFi perp MM not exposed as third-party role (protocol-level MM on Hyperliquid / GMX)"
+        "notes": "MARKET_MAKING_CONTINUOUS \u00a713 DeFi/perp: DeFi perp MM not exposed as third-party role (protocol-level MM on Hyperliquid / GMX)"
       },
       {
         "status": "BLOCKED",
-        "notes": "MARKET_MAKING_CONTINUOUS §13 DeFi/option: No supported DeFi options venue"
+        "notes": "MARKET_MAKING_CONTINUOUS \u00a713 DeFi/option: No supported DeFi options venue"
       }
     ],
     "notes": null
@@ -162,31 +266,32 @@
   "findings": [
     {
       "level": "l0",
-      "description": "Empty state message contained '(mock)' text — removed and replaced with user-facing message 'No liquidity pools available.'",
-      "status": "fixed"
-    },
-    {
-      "level": "l0",
-      "description": "Context (defi-data-context.tsx) does not expose isLoading or error fields; FormWidget isLoading prop receives no value (undefined = content shown immediately). Context-level loading/error states are N/A for this widget.",
-      "status": "open"
+      "description": "Empty state message contained '(mock)' text \u2014 removed.",
+      "status": "fixed",
+      "fix": "Replaced with 'No liquidity pools available.'"
     },
     {
       "level": "l1",
-      "description": "liquidityPools was not filtered by org scope — fixed: adjustedLiquidityPools memo returns [] when !hasDefiDesk.",
-      "status": "fixed"
+      "description": "liquidityPools not filtered by org scope \u2014 fixed: adjustedLiquidityPools memo returns [] when !hasDefiDesk.",
+      "status": "fixed",
+      "fix": "defi-data-context.tsx adjustedLiquidityPools memo."
     },
     {
-      "level": "l1",
-      "description": "No client-level (clientIds) cascading filter applicable — LiquidityPool has no clientId field. clientIds acknowledged in context; narrowing deferred to BP-5 schema change.",
-      "status": "known-gap"
+      "level": "l7",
+      "check": "7.5",
+      "description": "~14 user-visible strings present.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
-      "level": "l1",
-      "description": "LIQUIDITY_POOLS constant is in lib/mocks/fixtures/defi-liquidity.ts — should be in lib/constants/ or lib/config/. Requires context file migration (BP-5 scope).",
-      "status": "known-gap"
+      "level": "l8",
+      "check": "8.1",
+      "description": "defi-liquidity-widget.tsx:69,86,102,112 \u2014 text-[10px] for sub-xs label sizing in fee tier buttons and pool info.",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro Tailwind utility backed by --text-micro token (0.625rem) added to globals.css @theme."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17",
-  "l1FixedBy": "defi-data-context.tsx — adjustedLiquidityPools memo with hasDefiDesk guard"
+  "updatedAt": "2026-04-21",
+  "l1FixedBy": "defi-data-context.tsx \u2014 adjustedLiquidityPools memo with hasDefiDesk guard"
 }

@@ -110,9 +110,7 @@ function PnlCell({ abs, pct }: { abs: number; pct: number }) {
       <span className={cn("font-mono font-medium", abs >= 0 ? "pnl-positive" : "pnl-negative")}>
         {abs >= 0 ? "+" : ""}${formatCurrency(Math.abs(abs))}
       </span>
-      <span
-        className={cn("text-[10px] font-mono", pct >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]")}
-      >
+      <span className={cn("text-caption font-mono", pct >= 0 ? "pnl-positive" : "pnl-negative")}>
         {pct >= 0 ? "+" : ""}
         {formatPercent(pct, 2)}
       </span>
@@ -149,14 +147,14 @@ function buildColumns(
                   </TooltipTrigger>
                   <TooltipContent side="top" className="max-w-[280px]">
                     <div className="space-y-0.5">
-                      <p className="text-[10px] font-medium text-muted-foreground">Canonical ID</p>
+                      <p className="text-caption font-medium text-muted-foreground">Canonical ID</p>
                       <p className="font-mono text-xs select-all">{canonicalId}</p>
                     </div>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <span className="text-[10px] text-muted-foreground">{r.strategy_name}</span>
+            <span className="text-caption text-muted-foreground">{r.strategy_name}</span>
           </div>
         );
       },
@@ -173,7 +171,7 @@ function buildColumns(
             <Badge
               variant="outline"
               className={cn(
-                "font-mono text-[10px]",
+                "font-mono text-micro",
                 side === "LONG"
                   ? "border-[var(--pnl-positive)] text-[var(--pnl-positive)]"
                   : "border-[var(--pnl-negative)] text-[var(--pnl-negative)]",
@@ -196,7 +194,7 @@ function buildColumns(
       meta: { type: "number" },
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-right font-mono text-[11px]">{row.getValue<number>("quantity").toLocaleString()}</div>
+        <div className="text-right font-mono text-caption">{row.getValue<number>("quantity").toLocaleString()}</div>
       ),
     },
     {
@@ -205,7 +203,7 @@ function buildColumns(
       meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-right font-mono text-[11px]">
+        <div className="text-right font-mono text-caption">
           $
           {row
             .getValue<number>("entry_price")
@@ -219,7 +217,7 @@ function buildColumns(
       meta: { type: "currency" },
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-right font-mono text-[11px]">
+        <div className="text-right font-mono text-caption">
           $
           {row
             .getValue<number>("current_price")
@@ -251,7 +249,7 @@ function buildColumns(
         return delta != null ? (
           <span
             className={cn(
-              "font-mono text-[11px] block text-right",
+              "font-mono text-caption block text-right",
               delta > 0 ? "pnl-positive" : delta < 0 ? "pnl-negative" : "text-muted-foreground",
             )}
           >
@@ -259,7 +257,7 @@ function buildColumns(
             {delta.toFixed(2)}
           </span>
         ) : (
-          <span className="text-muted-foreground text-[10px] block text-right">--</span>
+          <span className="text-muted-foreground text-micro block text-right">--</span>
         );
       },
     },
@@ -275,7 +273,7 @@ function buildColumns(
             <Badge
               variant="outline"
               className={cn(
-                "font-mono text-[10px] px-1.5 py-0",
+                "font-mono text-micro px-1.5 py-0",
                 hf >= 1.5
                   ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
                   : hf >= 1.25
@@ -287,7 +285,7 @@ function buildColumns(
             </Badge>
           </div>
         ) : (
-          <span className="text-muted-foreground text-[10px] block text-right">--</span>
+          <span className="text-muted-foreground text-micro block text-right">--</span>
         );
       },
     },
@@ -299,9 +297,9 @@ function buildColumns(
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("client_name");
         return val ? (
-          <span className="text-[11px]">{val}</span>
+          <span className="text-caption">{val}</span>
         ) : (
-          <span className="text-muted-foreground text-[10px]">--</span>
+          <span className="text-muted-foreground text-micro">--</span>
         );
       },
     },
@@ -313,9 +311,9 @@ function buildColumns(
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("category");
         return val ? (
-          <span className="text-[11px]">{val}</span>
+          <span className="text-caption">{val}</span>
         ) : (
-          <span className="text-muted-foreground text-[10px]">--</span>
+          <span className="text-muted-foreground text-micro">--</span>
         );
       },
     },
@@ -327,9 +325,9 @@ function buildColumns(
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("strategy_family");
         return val ? (
-          <span className="text-[11px]">{val}</span>
+          <span className="text-caption">{val}</span>
         ) : (
-          <span className="text-muted-foreground text-[10px]">--</span>
+          <span className="text-muted-foreground text-micro">--</span>
         );
       },
     },
@@ -340,7 +338,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("chain");
-        return val ? <span className="text-[11px]">{val}</span> : null;
+        return val ? <span className="text-caption">{val}</span> : null;
       },
     },
     {
@@ -348,7 +346,7 @@ function buildColumns(
       header: "Venue",
       meta: { type: "text" },
       enableSorting: true,
-      cell: ({ row }) => <span className="text-[11px]">{row.getValue<string>("venue")}</span>,
+      cell: ({ row }) => <span className="text-caption">{row.getValue<string>("venue")}</span>,
     },
     {
       accessorKey: "updated_at",
@@ -356,7 +354,7 @@ function buildColumns(
       meta: { type: "datetime" },
       enableSorting: true,
       cell: ({ row }) => (
-        <div className="text-right text-[11px] text-muted-foreground font-mono">
+        <div className="text-right text-caption text-muted-foreground font-mono">
           {row.getValue<string>("updated_at")}
         </div>
       ),

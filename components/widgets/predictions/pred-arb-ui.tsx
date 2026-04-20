@@ -28,7 +28,7 @@ export function PredDecayBar({ detectedAt, maxLifetimeMs = 120_000 }: { detected
     return () => clearInterval(id);
   }, [detectedAt, maxLifetimeMs]);
 
-  const colour = pct > 60 ? "#4ade80" : pct > 30 ? "#fbbf24" : "#f87171";
+  const colour = pct > 60 ? "var(--pnl-positive)" : pct > 30 ? "var(--status-warning)" : "var(--pnl-negative)";
   return (
     <div className="h-0.5 w-full rounded-full bg-zinc-800 overflow-hidden">
       <div
@@ -47,19 +47,19 @@ function marketTypeBadge(t: PredictionArbMarketType) {
   switch (t) {
     case "football":
       return (
-        <Badge variant="outline" className="text-[10px] border-emerald-500/30 text-emerald-400">
+        <Badge variant="outline" className="text-micro border-emerald-500/30 text-emerald-400">
           ⚽ Football
         </Badge>
       );
     case "crypto":
       return (
-        <Badge variant="outline" className="text-[10px] border-blue-500/30 text-blue-400">
+        <Badge variant="outline" className="text-micro border-blue-500/30 text-blue-400">
           ₿ Crypto
         </Badge>
       );
     case "tradfi":
       return (
-        <Badge variant="outline" className="text-[10px] border-purple-500/30 text-purple-400">
+        <Badge variant="outline" className="text-micro border-purple-500/30 text-purple-400">
           📈 TradFi
         </Badge>
       );
@@ -84,30 +84,32 @@ export function PredActiveArbCard({
     <div
       className={cn(
         "relative rounded-xl border overflow-hidden flex flex-col gap-0 transition-all",
-        "border-[#4ade80]/30 bg-[#0d140d]",
+        "border-[var(--pnl-positive)]/30 bg-[#0d140d]",
         isNew && "animate-in slide-in-from-top-3 duration-400",
       )}
     >
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#4ade80]/60 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--pnl-positive)]/60 to-transparent" />
       <PredDecayBar detectedAt={arb.detectedAt} />
 
       <div className="px-3 py-2.5 flex flex-col gap-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-1.5 flex-wrap">
             {isNew && (
-              <Badge className="text-[9px] bg-[#4ade80]/20 text-[#4ade80] border border-[#4ade80]/30 font-black uppercase tracking-widest">
+              <Badge className="text-nano bg-[var(--pnl-positive)]/20 text-[var(--pnl-positive)] border border-[var(--pnl-positive)]/30 font-black uppercase tracking-widest">
                 NEW
               </Badge>
             )}
             {marketTypeBadge(arb.marketType)}
           </div>
           <div className="text-right shrink-0">
-            <span className="text-xl font-black text-[#4ade80] tabular-nums">+{formatPercent(arb.arbPct, 2)}</span>
+            <span className="text-xl font-black text-[var(--pnl-positive)] tabular-nums">
+              +{formatPercent(arb.arbPct, 2)}
+            </span>
           </div>
         </div>
 
         <p className="text-xs font-semibold leading-snug">{arb.question}</p>
-        <p className="text-[10px] text-zinc-400">
+        <p className="text-micro text-zinc-400">
           Outcome: <span className="text-zinc-200 font-medium">{arb.outcome}</span>
         </p>
 
@@ -116,26 +118,26 @@ export function PredActiveArbCard({
             <div key={i} className="rounded-lg border border-zinc-700/50 bg-zinc-900/60 p-2 space-y-1">
               <VenueDisplay venue={leg.venue} />
               <p className="text-sm font-bold tabular-nums text-white">{leg.oddsDisplay}</p>
-              <p className="text-[10px] text-zinc-500">
+              <p className="text-micro text-zinc-500">
                 Stake: <span className="text-zinc-300 tabular-nums">${formatNumber(i === 0 ? s1 : s2, 0)}</span>
               </p>
             </div>
           ))}
         </div>
 
-        <div className="flex items-center justify-between text-[11px]">
+        <div className="flex items-center justify-between text-caption">
           <span className="text-zinc-500">Profit on $10K stake:</span>
-          <span className="text-[#4ade80] font-bold tabular-nums">+${formatNumber(profit, 2)}</span>
+          <span className="text-[var(--pnl-positive)] font-bold tabular-nums">+${formatNumber(profit, 2)}</span>
         </div>
 
-        <div className="flex items-center justify-between text-[10px] text-zinc-600">
+        <div className="flex items-center justify-between text-micro text-zinc-600">
           <span className="flex items-center gap-1">
             <Clock className="size-3" />
             {fmtRelativeTime(arb.detectedAt)}
           </span>
           <Button
             size="sm"
-            className="h-7 text-xs bg-[#4ade80]/20 hover:bg-[#4ade80]/30 text-[#4ade80] border border-[#4ade80]/30"
+            className="h-7 text-xs bg-[var(--pnl-positive)]/20 hover:bg-[var(--pnl-positive)]/30 text-[var(--pnl-positive)] border border-[var(--pnl-positive)]/30"
             onClick={() => onExecute(arb.id)}
           >
             <Zap className="size-3 mr-1" />
@@ -155,7 +157,7 @@ export function PredClosedArbCard({ arb }: { arb: PredictionArbOpportunity }) {
         <p className="text-xs truncate text-zinc-400">{arb.question}</p>
         {marketTypeBadge(arb.marketType)}
       </div>
-      <div className="flex items-center gap-3 shrink-0 text-[11px]">
+      <div className="flex items-center gap-3 shrink-0 text-caption">
         <span className="text-zinc-500 tabular-nums">{formatPercent(arb.arbPct, 2)}</span>
         <span className="text-zinc-600">{arb.decayedAt ? fmtRelativeTime(arb.decayedAt) : "closed"}</span>
       </div>

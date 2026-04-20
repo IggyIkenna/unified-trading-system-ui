@@ -39,6 +39,7 @@ export interface OverviewData {
   perfLoading: boolean;
   timeseriesLoading: boolean;
   liveBatchLoading: boolean;
+  error: unknown;
   formatCurrency: (v: number) => string;
   formatDollar: (v: number) => string;
 }

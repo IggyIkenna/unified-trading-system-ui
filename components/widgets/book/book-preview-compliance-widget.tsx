@@ -41,7 +41,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
 
   if (orderState === "idle") {
     return (
-      <div className="p-2 text-[11px] text-muted-foreground">
+      <div className="p-2 text-caption text-muted-foreground">
         Preview summary and compliance appear after you run Preview Order.
       </div>
     );
@@ -53,10 +53,10 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
         <>
           <div className="p-3 rounded-md border bg-muted/30 space-y-2">
             <p className="text-xs font-medium">Summary</p>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-caption">
               <span className="text-muted-foreground">Mode</span>
               <span>
-                <Badge variant="outline" className="text-[9px]">
+                <Badge variant="outline" className="text-nano">
                   {executionMode === "execute" ? "EXECUTE" : "RECORD ONLY"}
                 </Badge>
               </span>
@@ -125,7 +125,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
 
           {executionMode === "execute" && (
             <div className="p-3 rounded-md border space-y-2">
-              <p className="text-[10px] font-medium flex items-center gap-1.5">
+              <p className="text-caption font-medium flex items-center gap-1.5">
                 {complianceLoading && <Spinner size="sm" className="size-3 text-muted-foreground" />}
                 {!complianceLoading && complianceResult?.passed && <ShieldCheck className="size-3 text-emerald-500" />}
                 {!complianceLoading && complianceResult && !complianceResult.passed && (
@@ -135,12 +135,12 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
                 Pre-Trade Compliance
               </p>
 
-              {complianceLoading && <p className="text-[10px] text-muted-foreground">Running compliance checks...</p>}
+              {complianceLoading && <p className="text-caption text-muted-foreground">Running compliance checks...</p>}
 
               {complianceUnavailable && (
                 <div className="flex items-center gap-2 p-2 rounded bg-amber-500/10 border border-amber-500/30">
                   <AlertTriangle className="size-3 text-amber-500 shrink-0" />
-                  <span className="text-[10px] text-amber-600 dark:text-amber-400">
+                  <span className="text-caption text-amber-600 dark:text-amber-400">
                     Compliance check unavailable — submission permitted with caution
                   </span>
                 </div>
@@ -150,12 +150,12 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
                 <>
                   <div className="space-y-1">
                     {complianceResult.checks.map((check) => (
-                      <div key={check.name} className="flex items-center justify-between text-[10px]">
+                      <div key={check.name} className="flex items-center justify-between text-caption">
                         <div className="flex items-center gap-1">
                           <Badge
                             variant={check.passed ? "outline" : "destructive"}
                             className={cn(
-                              "text-[9px] px-1 py-0",
+                              "text-nano px-1 py-0",
                               check.passed && "border-emerald-500/50 text-emerald-600 dark:text-emerald-400",
                             )}
                           >
@@ -163,7 +163,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
                           </Badge>
                           <span className="text-muted-foreground">{check.name}</span>
                         </div>
-                        <div className="flex items-center gap-1 font-mono text-[9px]">
+                        <div className="flex items-center gap-1 font-mono text-nano">
                           <span className="text-muted-foreground" title="Limit">
                             {check.limit_value}
                           </span>
@@ -180,7 +180,7 @@ export function BookPreviewComplianceWidget(_props: WidgetComponentProps) {
 
                   <div
                     className={cn(
-                      "flex items-center gap-2 p-2 rounded text-[10px]",
+                      "flex items-center gap-2 p-2 rounded text-caption",
                       complianceResult.passed
                         ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                         : "bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400",

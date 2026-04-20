@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "— WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+          "note": "\u2014 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
         },
         "0.2": {
           "result": "pass",
-          "note": "— requiredEntitlements: [execution-basic, execution-full]."
+          "note": "\u2014 requiredEntitlements: [execution-basic, execution-full]."
         },
         "0.3": {
           "result": "pass",
-          "note": "— availableOn: [risk]."
+          "note": "\u2014 availableOn: [risk]."
         },
         "0.4": {
           "result": "pass",
-          "note": "— no any types or @ts-ignore."
+          "note": "\u2014 no any types or @ts-ignore."
         },
         "0.5": {
           "result": "pass",
-          "note": "— no direct lib/mocks imports in widget file."
+          "note": "\u2014 no direct lib/mocks imports in widget file."
         },
         "0.6": {
           "result": "pass",
-          "note": "applied — added isLoading -> Spinner guard (widget computes from portfolioGreeks which requires API data)."
+          "note": "applied \u2014 added isLoading -> Spinner guard (widget computes from portfolioGreeks which requires API data)."
         },
         "0.7": {
           "result": "n/a",
-          "note": "— widget is a pure interactive control with numeric defaults (btcPriceChangePct=0, estimatedPnl=0); no data array to be empty."
+          "note": "\u2014 widget is a pure interactive control with numeric defaults (btcPriceChangePct=0, estimatedPnl=0); no data array to be empty."
         },
         "0.8": {
           "result": "pass",
-          "note": "applied — added hasError -> rose-400 message guard."
+          "note": "applied \u2014 added hasError -> rose-400 message guard."
         },
         "0.9": {
           "result": "pass",
-          "note": "— no dead code."
+          "note": "\u2014 no dead code."
         }
       },
-      "notes": "0.1 pass — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 pass — requiredEntitlements: [execution-basic, execution-full]. 0.3 pass — availableOn: [risk]. 0.4 pass — no any types or @ts-ignore. 0.5 pass — no direct lib/mocks imports in widget file. 0.6 fix applied — added isLoading -> Spinner guard (widget computes from portfolioGreeks which requires API data). 0.7 N/A — widget is a pure interactive control with numeric defaults (btcPriceChangePct=0, estimatedPnl=0); no data array to be empty. 0.8 fix applied — added hasError -> rose-400 message guard. 0.9 pass — no dead code."
+      "notes": "0.1 pass \u2014 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 pass \u2014 requiredEntitlements: [execution-basic, execution-full]. 0.3 pass \u2014 availableOn: [risk]. 0.4 pass \u2014 no any types or @ts-ignore. 0.5 pass \u2014 no direct lib/mocks imports in widget file. 0.6 fix applied \u2014 added isLoading -> Spinner guard (widget computes from portfolioGreeks which requires API data). 0.7 N/A \u2014 widget is a pure interactive control with numeric defaults (btcPriceChangePct=0, estimatedPnl=0); no data array to be empty. 0.8 fix applied \u2014 added hasError -> rose-400 message guard. 0.9 pass \u2014 no dead code."
     },
     "l1": {
       "status": "pass",
@@ -58,99 +58,249 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "— reads btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData exclusively from useRiskData() hook."
+          "note": "\u2014 reads btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData exclusively from useRiskData() hook."
         },
         "1.2": {
           "result": "pass",
-          "note": "— use-risk-page-data.ts calls useGlobalScope(); isBatchMode derived from scope.mode; portfolioGreeks from scoped API."
+          "note": "\u2014 use-risk-page-data.ts calls useGlobalScope(); isBatchMode derived from scope.mode; portfolioGreeks from scoped API."
         },
         "1.3": {
           "result": "pass",
-          "note": "— org scope reduces scopeReductionFactor which scales VaR/risk metrics that feed estimatedPnl."
+          "note": "\u2014 org scope reduces scopeReductionFactor which scales VaR/risk metrics that feed estimatedPnl."
         },
         "1.4": {
           "result": "pass",
-          "note": "— clientIds threaded through scope."
+          "note": "\u2014 clientIds threaded through scope."
         },
         "1.5": {
           "result": "pass",
-          "note": "— strategyIds threaded through scope."
+          "note": "\u2014 strategyIds threaded through scope."
         },
         "1.6": {
           "result": "pass",
-          "note": "— empty scope = full portfolio Greeks returned."
+          "note": "\u2014 empty scope = full portfolio Greeks returned."
         },
         "1.7": {
           "result": "n/a",
-          "note": "— no reference data; btcSpot=65000 is a display constant for dS calculation, not a reference data list."
+          "note": "\u2014 no reference data; btcSpot=65000 is a display constant for dS calculation, not a reference data list."
         }
       },
-      "notes": "1.1 pass — reads btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData exclusively from useRiskData() hook. 1.2 pass — use-risk-page-data.ts calls useGlobalScope(); isBatchMode derived from scope.mode; portfolioGreeks from scoped API. 1.3 pass — org scope reduces scopeReductionFactor which scales VaR/risk metrics that feed estimatedPnl. 1.4 pass — clientIds threaded through scope. 1.5 pass — strategyIds threaded through scope. 1.6 pass — empty scope = full portfolio Greeks returned. 1.7 N/A — no reference data; btcSpot=65000 is a display constant for dS calculation, not a reference data list."
+      "notes": "1.1 pass \u2014 reads btcPriceChangePct, setBtcPriceChangePct, estimatedPnl, portfolioGreeks, portfolioGreeksData exclusively from useRiskData() hook. 1.2 pass \u2014 use-risk-page-data.ts calls useGlobalScope(); isBatchMode derived from scope.mode; portfolioGreeks from scoped API. 1.3 pass \u2014 org scope reduces scopeReductionFactor which scales VaR/risk metrics that feed estimatedPnl. 1.4 pass \u2014 clientIds threaded through scope. 1.5 pass \u2014 strategyIds threaded through scope. 1.6 pass \u2014 empty scope = full portfolio Greeks returned. 1.7 N/A \u2014 no reference data; btcSpot=65000 is a display constant for dS calculation, not a reference data list."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 (live Greeks), paper \u2713, batch \u2713. Analysis tool \u2014 no execution. BTC spot price is currently hardcoded at $65,000."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "isBatchMode in context; not used by this widget (no action buttons)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: same estimation using paper Greeks."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget."
+        }
+      },
+      "notes": "Human must verify 3.4 (batch indicator visible in layout)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Range input calls setBtcPriceChangePct \u2014 real state handler. estimatedPnl computed from delta + gamma approximation."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "Human must verify 4.4 (slider movement updates estimated PnL in real time), 4.8 (widget fits in compact 2-row height)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: options-bearing and delta-exposed strategies (defi-basis-trade, cefi-options-spread). Uses delta + gamma approximation: PnL \u2248 delta*dS + 0.5*gamma*dS\u00b2."
+        }
+      },
+      "notes": "Human walkthrough required. BTC-only; no other spot price shocks yet."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing phase."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex colors. accent-blue-500 is a Tailwind utility, not an arbitrary value."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "90 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "RiskWhatIfSliderWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "estimatedPnl computed in context (not in widget). No problematic deps."
+        }
+      },
+      "notes": "L7 all pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px]/text-[9px] replaced with text-micro/text-nano tokens per consolidated globals.css; no arbitrary typography classes remain."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No bracket spacing violations. min-w-[140px] on PnL display is a fixed width constraint, not a spacing token."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Spinner shared component."
+        },
+        "8.4": {
+          "result": "fixed",
+          "note": "Added aria-label='BTC price change percentage' to range input."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: resize test at minW=4, minH=2 required (compact widget)."
+        }
+      },
+      "notes": "8.1 fixed (tokens applied). 8.2/8.3 pass. 8.4 fixed. 8.5 needs human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Unique slider-based what-if tool; no equivalent widget."
+    },
+    "notes": "btcPriceChangePct and estimatedPnl are context state shared with other risk widgets (Greeks used in calculation)."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/risk-data (portfolioGreeks via context)",
+    "backendOwner": "unified-trading-api",
+    "notes": "portfolioGreeks from usePortfolioGreeks() hook or fallback computed Greeks. btcSpot hardcoded at 65000 \u2014 should be API-sourced."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi"],
+    "strategies": ["defi-basis-trade", "cefi-options-spread"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "BTC spot price hardcoded at $65,000 \u2014 not live-sourced",
+      "Only BTC shock; no ETH/SOL/other asset shocks"
+    ],
+    "notes": "Delta + gamma approximation. Suitable for short-range shocks (-30% to +30%)."
   },
   "knownIssues": [],
   "findings": [
-    "L0.6: Added isLoading -> Spinner guard (was missing; greeks/portfolio data needed before slider is meaningful)",
-    "L0.7: N/A — pure interactive control, no data array empty state applicable",
-    "L0.8: Added hasError -> error message guard (was missing)"
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "L0.6: Added isLoading -> Spinner guard (was missing; greeks/portfolio data needed before slider is meaningful)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "L0.7: N/A \u2014 pure interactive control, no data array empty state applicable",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "L0.8: Added hasError -> error message guard (was missing)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-what-if-slider-widget.tsx \u2014 ~8 user-visible strings (labels, slider range, footnote)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "risk-what-if-slider-widget.tsx \u2014 text-[10px] on labels, text-[9px] on slider range marks and footnote",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l8",
+      "check": "8.4",
+      "description": "risk-what-if-slider-widget.tsx:55 \u2014 <input type='range'> without aria-label",
+      "status": "fixed",
+      "fix": "Added aria-label='BTC price change percentage' to range input"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

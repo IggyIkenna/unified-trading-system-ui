@@ -33,6 +33,7 @@ import {
   type DefiOp,
   type DefiTemplate,
 } from "@/lib/config/services/defi-bundles.config";
+import { toast } from "sonner";
 import { useBundlesData } from "./bundles-data-context";
 
 // ---------------------------------------------------------------------------
@@ -119,7 +120,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
           <Zap className="size-4 text-amber-400" />
           <span className="text-xs font-semibold uppercase tracking-wider">DeFi Atomic Bundles</span>
         </div>
-        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-500/50 text-amber-400">
+        <Badge variant="outline" className="text-nano px-1.5 py-0 border-amber-500/50 text-amber-400">
           All-or-Nothing
         </Badge>
       </div>
@@ -127,7 +128,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
       {/* Pre-built templates */}
       {showTemplates && operations.length === 0 && (
         <div className="space-y-1.5">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Pre-built Templates</p>
+          <p className="text-micro text-muted-foreground uppercase tracking-wider">Pre-built Templates</p>
           <div className="grid grid-cols-1 gap-1.5">
             {DEFI_TEMPLATES.map((t) => (
               <button
@@ -138,7 +139,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-medium">{t.name}</span>
-                  <div className="flex items-center gap-2 text-[10px] shrink-0">
+                  <div className="flex items-center gap-2 text-micro shrink-0">
                     <span className="text-muted-foreground font-mono flex items-center gap-0.5">
                       <Fuel className="size-2.5" />
                       {formatNumber(t.estimatedGas / 1000, 0)}K
@@ -146,13 +147,13 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                     {t.estimatedProfit > 0 && <span className="text-emerald-400 font-mono">+${t.estimatedProfit}</span>}
                   </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{t.description}</p>
+                <p className="text-micro text-muted-foreground mt-0.5">{t.description}</p>
                 <div className="flex items-center gap-1 mt-1.5 flex-wrap">
                   {t.operations.map((op, i) => (
                     <React.Fragment key={op.id}>
                       <Badge
                         variant="outline"
-                        className={cn("text-[8px] px-1 py-0", getOperationBadgeClass(op.operationType))}
+                        className={cn("text-pico px-1 py-0", getOperationBadgeClass(op.operationType))}
                       >
                         {DEFI_OPERATIONS.find((d) => d.value === op.operationType)?.label ?? op.operationType}
                       </Badge>
@@ -179,20 +180,18 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                   <div className="flex flex-col items-center gap-0.5 shrink-0">
                     <div
                       className={cn(
-                        "w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-mono font-bold",
+                        "w-7 h-7 rounded-full border-2 flex items-center justify-center text-micro font-mono font-bold",
                         getOperationBadgeClass(op.operationType),
                       )}
                     >
                       {i + 1}
                     </div>
-                    <span className={cn("text-[8px] truncate max-w-[60px]", getOperationColor(op.operationType))}>
+                    <span className={cn("text-pico truncate max-w-[60px]", getOperationColor(op.operationType))}>
                       {DEFI_OPERATIONS.find((d) => d.value === op.operationType)?.label.split(" ")[0] ??
                         op.operationType}
                     </span>
                   </div>
-                  {i < operations.length - 1 && (
-                    <ArrowRight className="size-3 text-muted-foreground shrink-0 mt-[-12px]" />
-                  )}
+                  {i < operations.length - 1 && <ArrowRight className="size-3 text-muted-foreground shrink-0 -mt-3" />}
                 </React.Fragment>
               ))}
             </div>
@@ -205,7 +204,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                 <div className="flex items-center gap-2 min-w-0">
                   <Badge
                     variant="outline"
-                    className={cn("text-[10px] px-1.5 py-0 shrink-0", getOperationBadgeClass(op.operationType))}
+                    className={cn("text-micro px-1.5 py-0 shrink-0", getOperationBadgeClass(op.operationType))}
                   >
                     Step {index + 1}
                   </Badge>
@@ -217,6 +216,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                     className="h-6 w-6 p-0"
                     onClick={() => moveOp(op.id, "up")}
                     disabled={index === 0}
+                    aria-label={`Move step ${index + 1} up`}
                   >
                     <ChevronUp className="size-3" />
                   </Button>
@@ -226,6 +226,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                     className="h-6 w-6 p-0"
                     onClick={() => moveOp(op.id, "down")}
                     disabled={index === operations.length - 1}
+                    aria-label={`Move step ${index + 1} down`}
                   >
                     <ChevronDown className="size-3" />
                   </Button>
@@ -234,6 +235,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                     size="sm"
                     className="h-6 w-6 p-0 hover:text-rose-400"
                     onClick={() => removeOp(op.id)}
+                    aria-label={`Remove step ${index + 1}`}
                   >
                     <Trash2 className="size-3" />
                   </Button>
@@ -242,7 +244,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
 
               <div className="grid grid-cols-3 gap-2">
                 <div className="space-y-1 col-span-2">
-                  <label className="text-[10px] text-muted-foreground">Operation</label>
+                  <label className="text-micro text-muted-foreground">Operation</label>
                   <Select value={op.operationType} onValueChange={(v) => updateOp(op.id, "operationType", v)}>
                     <SelectTrigger className="h-7 text-xs">
                       <SelectValue />
@@ -257,7 +259,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Token</label>
+                  <label className="text-micro text-muted-foreground">Token</label>
                   <Select value={op.token} onValueChange={(v) => updateOp(op.id, "token", v)}>
                     <SelectTrigger className="h-7 text-xs">
                       <SelectValue />
@@ -275,7 +277,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Amount</label>
+                  <label className="text-micro text-muted-foreground">Amount</label>
                   <Input
                     type="text"
                     placeholder="0.00"
@@ -285,7 +287,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Est. Gas</label>
+                  <label className="text-micro text-muted-foreground">Est. Gas</label>
                   <div className="h-7 flex items-center text-xs font-mono text-muted-foreground px-2 border rounded-md bg-muted/20">
                     <Fuel className="size-3 mr-1.5 shrink-0" />
                     {`${formatNumber(op.estimatedGas / 1000, 0)}K (${formatCurrency(gasToUsd(op.estimatedGas), "USD", 2)} USD)`}
@@ -346,17 +348,17 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
         <>
           <Separator />
           <div className="p-3 rounded-lg border bg-muted/30 space-y-3">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Simulation Preview</p>
+            <p className="text-micro text-muted-foreground uppercase tracking-wider">Simulation Preview</p>
 
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <span className="text-[10px] text-muted-foreground">Total Gas Cost</span>
+                <span className="text-micro text-muted-foreground">Total Gas Cost</span>
                 <p className="text-sm font-mono font-bold text-rose-400">
                   {`${formatNumber(totalGas / 1000, 0)}K gas (~${formatCurrency(totalGasUsd, "USD", 2)})`}
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] text-muted-foreground">Operations</span>
+                <span className="text-micro text-muted-foreground">Operations</span>
                 <p className="text-sm font-mono font-bold">{operations.length} steps</p>
               </div>
             </div>
@@ -365,14 +367,24 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
             <div className="flex items-center gap-2 p-2 rounded-md border border-amber-500/30 bg-amber-500/5">
               <ShieldCheck className="size-4 text-amber-400 shrink-0" />
               <div>
-                <p className="text-[10px] font-medium text-amber-400">Atomic Guarantee</p>
-                <p className="text-[10px] text-muted-foreground">All or nothing -- reverts if any step fails</p>
+                <p className="text-micro font-medium text-amber-400">Atomic Guarantee</p>
+                <p className="text-micro text-muted-foreground">All or nothing -- reverts if any step fails</p>
               </div>
             </div>
 
             {/* Actions */}
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="text-xs flex-1 gap-1.5" disabled={readOnly}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs flex-1 gap-1.5"
+                disabled={readOnly}
+                onClick={() =>
+                  toast.info("Tenderly simulation", {
+                    description: `Simulating ${operations.length}-step bundle (${formatNumber(totalGas / 1000, 0)}K gas)`,
+                  })
+                }
+              >
                 <FlaskConical className="size-3" />
                 Simulate on Tenderly
               </Button>
@@ -380,6 +392,11 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                 size="sm"
                 className="text-xs flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700"
                 disabled={readOnly}
+                onClick={() =>
+                  toast.success("Bundle submitted", {
+                    description: `Executing ${operations.length}-step atomic bundle (~${formatCurrency(totalGasUsd, "USD", 2)} gas)`,
+                  })
+                }
               >
                 <Rocket className="size-3" />
                 Execute Bundle

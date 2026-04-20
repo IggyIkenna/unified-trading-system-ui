@@ -38,10 +38,10 @@ export function RiskCircuitBreakersWidget(_props: WidgetComponentProps) {
         {venueCircuitBreakers.map((vcb) => (
           <div key={`${vcb.venue}-${vcb.strategy_id}`} className="p-2.5 rounded-lg border bg-card">
             <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-[11px]">{vcb.venue}</span>
+              <span className="font-medium text-caption">{vcb.venue}</span>
               <Badge
                 className={cn(
-                  "text-[9px] h-4",
+                  "text-nano h-4",
                   vcb.status === "CLOSED" && "bg-emerald-500/20 text-emerald-400",
                   vcb.status === "HALF_OPEN" && "bg-amber-500/20 text-amber-400",
                   vcb.status === "OPEN" && "bg-rose-500/20 text-rose-400",
@@ -50,9 +50,9 @@ export function RiskCircuitBreakersWidget(_props: WidgetComponentProps) {
                 {vcb.status}
               </Badge>
             </div>
-            <div className="text-[10px] text-muted-foreground truncate">{vcb.strategy_id}</div>
+            <div className="text-micro text-muted-foreground truncate">{vcb.strategy_id}</div>
             {vcb.kill_switch_active && (
-              <Badge variant="destructive" className="mt-1 text-[9px] h-4">
+              <Badge variant="destructive" className="mt-1 text-nano h-4">
                 Kill Switch Active
               </Badge>
             )}

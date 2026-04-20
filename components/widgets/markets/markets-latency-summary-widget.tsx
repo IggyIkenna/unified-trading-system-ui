@@ -53,12 +53,12 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
     <div className="p-2 space-y-3">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] text-muted-foreground">View</span>
+          <span className="text-micro text-muted-foreground">View</span>
           <div className="flex rounded-md border border-border overflow-hidden">
             <Button
               variant={latencyViewMode === "cross-section" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-none gap-1 h-7 text-[10px] px-2"
+              className="rounded-none gap-1 h-7 text-micro px-2"
               onClick={() => setLatencyViewMode("cross-section")}
             >
               <LayoutGrid className="size-3" />
@@ -67,19 +67,19 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
             <Button
               variant={latencyViewMode === "time-series" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-none gap-1 h-7 text-[10px] px-2"
+              className="rounded-none gap-1 h-7 text-micro px-2"
               onClick={() => setLatencyViewMode("time-series")}
             >
               <LineChart className="size-3" />
               Series
             </Button>
           </div>
-          <span className="text-[10px] text-muted-foreground ml-1">Data</span>
+          <span className="text-micro text-muted-foreground ml-1">Data</span>
           <div className="flex rounded-md border border-border overflow-hidden">
             <Button
               variant={latencyDataMode === "live" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-none gap-1 h-7 text-[10px] px-2"
+              className="rounded-none gap-1 h-7 text-micro px-2"
               onClick={() => setLatencyDataMode("live")}
             >
               <Radio className="size-3" />
@@ -88,7 +88,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
             <Button
               variant={latencyDataMode === "batch" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-none gap-1 h-7 text-[10px] px-2"
+              className="rounded-none gap-1 h-7 text-micro px-2"
               onClick={() => setLatencyDataMode("batch")}
             >
               <Database className="size-3" />
@@ -97,7 +97,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
             <Button
               variant={latencyDataMode === "compare" ? "secondary" : "ghost"}
               size="sm"
-              className="rounded-none gap-1 h-7 text-[10px] px-2"
+              className="rounded-none gap-1 h-7 text-micro px-2"
               onClick={() => setLatencyDataMode("compare")}
             >
               <BarChart3 className="size-3" />
@@ -109,7 +109,7 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
           <Button
             variant="outline"
             size="sm"
-            className="h-7 text-[10px]"
+            className="h-7 text-micro"
             onClick={() => setSelectedLatencyService(null)}
           >
             Clear selection
@@ -118,8 +118,8 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
       </div>
 
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[10px] font-mono text-muted-foreground">Service latency (ms)</span>
-        <Badge variant="outline" className="text-[10px] font-mono">
+        <span className="text-micro font-mono text-muted-foreground">Service latency (ms)</span>
+        <Badge variant="outline" className="text-micro font-mono">
           {latencyDataMode === "live" ? "Live" : latencyDataMode === "batch" ? "Batch (sim)" : "Live vs batch"}
         </Badge>
       </div>
@@ -150,23 +150,23 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                     "size-2 rounded-full shrink-0",
                     metric.status === "healthy" && "bg-[var(--status-live)]",
                     metric.status === "warning" && "bg-[var(--status-warning)]",
-                    metric.status === "critical" && "bg-[var(--status-error)]",
+                    metric.status === "critical" && "bg-[var(--status-critical)]",
                   )}
                 />
                 <div className="min-w-0">
                   <div className="text-xs font-medium truncate">{metric.service}</div>
-                  <div className="text-[10px] text-muted-foreground">{metric.lifecycle.length} stages</div>
+                  <div className="text-micro text-muted-foreground">{metric.lifecycle.length} stages</div>
                 </div>
               </div>
               <div className="flex items-center gap-4 shrink-0">
                 {latencyDataMode === "compare" ? (
                   <>
                     <div className="text-center">
-                      <div className="text-[9px] text-muted-foreground">p50</div>
-                      <div className="font-mono text-[10px]">{formatNumber(metric.p50, 1)}</div>
+                      <div className="text-nano text-muted-foreground">p50</div>
+                      <div className="font-mono text-micro">{formatNumber(metric.p50, 1)}</div>
                       <div
                         className={cn(
-                          "text-[9px] font-mono",
+                          "text-nano font-mono",
                           deltaP50 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
                         )}
                       >
@@ -175,11 +175,11 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[9px] text-muted-foreground">p95</div>
-                      <div className="font-mono text-[10px]">{formatNumber(metric.p95, 1)}</div>
+                      <div className="text-nano text-muted-foreground">p95</div>
+                      <div className="font-mono text-micro">{formatNumber(metric.p95, 1)}</div>
                       <div
                         className={cn(
-                          "text-[9px] font-mono",
+                          "text-nano font-mono",
                           deltaP95 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
                         )}
                       >
@@ -188,15 +188,15 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[9px] text-muted-foreground">p99</div>
+                      <div className="text-nano text-muted-foreground">p99</div>
                       <div
-                        className={cn("font-mono text-[10px]", metric.p99 > 30 ? "text-[var(--status-warning)]" : "")}
+                        className={cn("font-mono text-micro", metric.p99 > 30 ? "text-[var(--status-warning)]" : "")}
                       >
                         {formatNumber(metric.p99, 1)}
                       </div>
                       <div
                         className={cn(
-                          "text-[9px] font-mono",
+                          "text-nano font-mono",
                           deltaP99 > 0 ? "text-[var(--pnl-negative)]" : "text-[var(--pnl-positive)]",
                         )}
                       >
@@ -208,17 +208,17 @@ export function MarketsLatencySummaryWidget(_props: WidgetComponentProps) {
                 ) : (
                   <>
                     <div className="text-center">
-                      <div className="text-[9px] text-muted-foreground">p50</div>
-                      <div className="font-mono text-[10px]">{formatNumber(displayP50, 1)}</div>
+                      <div className="text-nano text-muted-foreground">p50</div>
+                      <div className="font-mono text-micro">{formatNumber(displayP50, 1)}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[9px] text-muted-foreground">p95</div>
-                      <div className="font-mono text-[10px]">{formatNumber(displayP95, 1)}</div>
+                      <div className="text-nano text-muted-foreground">p95</div>
+                      <div className="font-mono text-micro">{formatNumber(displayP95, 1)}</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-[9px] text-muted-foreground">p99</div>
+                      <div className="text-nano text-muted-foreground">p99</div>
                       <div
-                        className={cn("font-mono text-[10px]", displayP99 > 30 ? "text-[var(--status-warning)]" : "")}
+                        className={cn("font-mono text-micro", displayP99 > 30 ? "text-[var(--status-warning)]" : "")}
                       >
                         {formatNumber(displayP99, 1)}
                       </div>

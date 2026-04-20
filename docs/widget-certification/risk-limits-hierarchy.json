@@ -82,76 +82,213 @@
         },
         "1.7": {
           "result": "partial",
-          "note": "(context only, cannot fix in widget pass): MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data.ts via context line 179 — these constants should live in lib/constants/risk.ts."
+          "note": "(context only, cannot fix in widget pass): MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data.ts via context line 179 \u2014 these constants should live in lib/constants/risk.ts."
         }
       },
-      "notes": "1.1 Data via useRiskData() hook only. 1.2 use-risk-page-data.ts calls useGlobalScope() line 78. 1.3-1.5 Scope filters via getStrategyIdsForScope, riskLimits filtered by strategy entity. 1.6 scopeStrategyIds.length===0 returns unfiltered riskLimitsRaw. 1.7 FINDING (context only, cannot fix in widget pass): MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data.ts via context line 179 — these constants should live in lib/constants/risk.ts."
+      "notes": "1.1 Data via useRiskData() hook only. 1.2 use-risk-page-data.ts calls useGlobalScope() line 78. 1.3-1.5 Scope filters via getStrategyIdsForScope, riskLimits filtered by strategy entity. 1.6 scopeStrategyIds.length===0 returns unfiltered riskLimitsRaw. 1.7 FINDING (context only, cannot fix in widget pass): MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data.ts via context line 179 \u2014 these constants should live in lib/constants/risk.ts."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713, paper \u2713, batch \u2713. Read-only hierarchy view; no mode-specific behavior."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "isBatchMode in context; not used by this widget (no action buttons)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: same hierarchy with paper account limits."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget."
+        }
+      },
+      "notes": "Human must verify 3.4 (batch indicator visible in layout)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Hierarchy row onClick calls setSelectedNode with real state handler. 'Clear' button calls setSelectedNode(null). CollapsibleSection handled by shared component."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "Human must verify 4.4 (row click highlights selected node and shows breadcrumb), 4.7 (All Limits Detail collapsible toggles), 4.8 (TableWidget scrolls within bounds)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all risk-bearing strategies. Shows 6-level hierarchy: company \u2192 client \u2192 account \u2192 strategy \u2192 underlying \u2192 instrument."
+        }
+      },
+      "notes": "Human walkthrough required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing phase."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex colors in widget."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "207 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "RiskLimitsHierarchyWidget PascalCase, detailColumns defined at module level. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "selectedHierarchyNode computed inline but no useMemo needed (simple find on small array). detailColumns is module-level stable ref."
+        }
+      },
+      "notes": "L7 all pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px]/text-[11px] replaced with text-micro/text-caption tokens per consolidated globals.css; no arbitrary typography classes remain."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No bracket spacing violations. paddingLeft set via style prop (not Tailwind \u2014 structural indent not a spacing token violation)."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Skeleton, Table, StatusBadge, CollapsibleSection, TableWidget from ui/shared."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: interactive TableRow has cursor-pointer but no role/tabIndex. Will defer full a11y to human walkthrough. ChevronRight icon inside breadcrumb is decorative."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: resize test at minW=6, minH=3 required."
+        }
+      },
+      "notes": "8.1 fixed (tokens applied). 8.2/8.3 pass. 8.4 partially clean (TableRow onClick needs human a11y check). 8.5 needs human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
-    "mergeCandidate": null,
+    "mergeCandidate": {
+      "with": "risk-utilization",
+      "rationale": "Both show limit utilization. Limits hierarchy shows full 6-level tree; utilization shows top-N sorted. Complementary \u2014 keep separate."
+    },
     "keepSeparate": null,
-    "notes": null
+    "notes": "selectedNode is widget-local state. Row click sets a breadcrumb context within the widget only (not cross-widget)."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:30000",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/risk-data (RISK_LIMITS hierarchy)",
+    "backendOwner": "unified-trading-api",
+    "notes": "riskLimits from useRiskLimits() SWR hook. sortedLimits derived in context. First 6 rows shown in hierarchy tree; all limits in detail table."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Hierarchy tree shows first 6 limits (not truly hierarchy-aware \u2014 riskLimits.slice(0,6)); should filter by parentId for true tree rendering"
+    ],
+    "notes": "6-level hierarchy: company \u2192 client \u2192 account \u2192 strategy \u2192 underlying \u2192 instrument."
   },
   "knownIssues": [
-    "L1.7: MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE in lib/mocks/fixtures/risk-data.ts re-exported via context — move to lib/constants/risk.ts (context-level fix, not widget-level)"
+    "L1.7: MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE in lib/mocks/fixtures/risk-data.ts re-exported via context \u2014 move to lib/constants/risk.ts (context-level fix, not widget-level)"
   ],
   "findings": [
-    "Added Skeleton loading guard to hierarchy tree section (was missing — only TableWidget had loading state)",
-    "Added hasError early-return guard to hierarchy tree section"
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "Added Skeleton loading guard to hierarchy tree section (was missing \u2014 only TableWidget had loading state)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "Added hasError early-return guard to hierarchy tree section",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-limits-hierarchy-widget.tsx \u2014 ~20 user-visible strings (column headers, level labels, scope breadcrumb)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "risk-limits-hierarchy-widget.tsx \u2014 text-[10px], text-[11px] used for dense hierarchy row labels",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

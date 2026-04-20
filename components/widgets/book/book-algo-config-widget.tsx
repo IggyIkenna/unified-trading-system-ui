@@ -28,7 +28,9 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
   } = useBookTradeData();
 
   if (executionMode !== "execute") {
-    return <div className="p-2 text-[11px] text-muted-foreground">Switch to Execute mode to configure algorithms.</div>;
+    return (
+      <div className="p-2 text-caption text-muted-foreground">Switch to Execute mode to configure algorithms.</div>
+    );
   }
 
   // DeFi algo config — shows a summary of the selections made in the order form
@@ -41,23 +43,23 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
           <Card className="border-0 shadow-none">
             <CardContent className="space-y-3 pt-1 px-2 pb-2">
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Instruction</label>
+                <label className="text-caption text-muted-foreground">Instruction</label>
                 <div className="text-xs font-medium">{defiInstructionType.replace(/_/g, " ")}</div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Selected Algo</label>
+                <label className="text-caption text-muted-foreground">Selected Algo</label>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-medium">{algoMeta?.label ?? defiAlgo}</span>
-                  <Badge variant="outline" className="text-[9px]">
+                  <Badge variant="outline" className="text-nano">
                     {availableDefiAlgos.length} available
                   </Badge>
                 </div>
-                {algoMeta && <p className="text-[10px] text-muted-foreground">{algoMeta.description}</p>}
+                {algoMeta && <p className="text-caption text-muted-foreground">{algoMeta.description}</p>}
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Max Slippage</label>
+                <label className="text-caption text-muted-foreground">Max Slippage</label>
                 <div className="text-xs font-mono">
                   {(maxSlippageBps / 100).toFixed(2)}% ({maxSlippageBps} bps)
                 </div>
@@ -66,7 +68,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
               {defiAlgo === "SOR_TWAP" && (
                 <>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-muted-foreground">Duration (seconds)</label>
+                    <label className="text-caption text-muted-foreground">Duration (seconds)</label>
                     <Input
                       type="number"
                       placeholder="3600"
@@ -76,7 +78,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-muted-foreground">Slices</label>
+                    <label className="text-caption text-muted-foreground">Slices</label>
                     <Input
                       type="number"
                       placeholder="10"
@@ -90,7 +92,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
 
               {defiAlgo === "BENCHMARK_FILL" && (
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Benchmark</label>
+                  <label className="text-caption text-muted-foreground">Benchmark</label>
                   <Select value={algoParams.benchmark} onValueChange={(v) => setAlgoParam("benchmark", v)}>
                     <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Select benchmark" />
@@ -118,7 +120,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
         <Card className="border-0 shadow-none">
           <CardContent className="space-y-3 pt-1 px-2 pb-2">
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Algorithm</label>
+              <label className="text-caption text-muted-foreground">Algorithm</label>
               <Select value={algo} onValueChange={(v) => setAlgo(v as BookAlgoType)}>
                 <SelectTrigger className="h-8 text-xs">
                   <SelectValue />
@@ -136,7 +138,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
             {(algo === "TWAP" || algo === "VWAP") && (
               <>
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Duration (seconds)</label>
+                  <label className="text-caption text-muted-foreground">Duration (seconds)</label>
                   <Input
                     type="number"
                     placeholder="3600"
@@ -146,7 +148,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] text-muted-foreground">Slices</label>
+                  <label className="text-caption text-muted-foreground">Slices</label>
                   <Input
                     type="number"
                     placeholder="10"
@@ -160,7 +162,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
 
             {algo === "ICEBERG" && (
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Display Quantity</label>
+                <label className="text-caption text-muted-foreground">Display Quantity</label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -173,7 +175,7 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
 
             {algo === "BENCHMARK_FILL" && (
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Benchmark</label>
+                <label className="text-caption text-muted-foreground">Benchmark</label>
                 <Select value={algoParams.benchmark} onValueChange={(v) => setAlgoParam("benchmark", v)}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Select benchmark" />

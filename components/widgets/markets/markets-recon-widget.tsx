@@ -16,7 +16,7 @@ const columns: ColumnDef<ReconRun, unknown>[] = [
     accessorKey: "date",
     header: "Date",
     enableSorting: true,
-    cell: ({ row }) => <span className="font-mono text-[10px]">{row.getValue<string>("date")}</span>,
+    cell: ({ row }) => <span className="font-mono text-micro">{row.getValue<string>("date")}</span>,
   },
   {
     accessorKey: "breaks",
@@ -27,7 +27,7 @@ const columns: ColumnDef<ReconRun, unknown>[] = [
       return (
         <Badge
           variant={r.breaks === 0 ? "default" : r.resolved === r.breaks ? "secondary" : "destructive"}
-          className="text-[10px]"
+          className="text-micro"
         >
           {r.breaks === 0 ? "Clean" : `${r.resolved}/${r.breaks} resolved`}
         </Badge>
@@ -60,7 +60,7 @@ export function MarketsReconWidget(_props: WidgetComponentProps) {
 
   const actionsConfig: TableActionsConfig = {
     extraActions: (
-      <Badge variant="outline" className="gap-1 text-[10px] shrink-0">
+      <Badge variant="outline" className="gap-1 text-micro shrink-0">
         <AlertTriangle className="size-3" />
         Recon summary (mock)
       </Badge>

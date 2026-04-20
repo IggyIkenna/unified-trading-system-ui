@@ -58,6 +58,9 @@ export function StrategyFamilyBrowserWidget(_props: WidgetComponentProps) {
           {DOMAINS.map((d) => (
             <button
               key={d}
+              type="button"
+              aria-label={`Filter by ${d === "all" ? "all domains" : d.toUpperCase()}`}
+              aria-pressed={selectedDomain === d}
               onClick={() => setSelectedDomain(d)}
               className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                 selectedDomain === d
@@ -96,7 +99,7 @@ export function StrategyFamilyBrowserWidget(_props: WidgetComponentProps) {
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {entry.params.map((p) => (
-                          <Badge key={p} variant="secondary" className="text-[10px] py-0">
+                          <Badge key={p} variant="secondary" className="text-micro py-0">
                             {p}
                           </Badge>
                         ))}

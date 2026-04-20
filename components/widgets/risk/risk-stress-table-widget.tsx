@@ -90,7 +90,7 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
       {regimeData && (
         <Badge
           className={cn(
-            "text-[10px]",
+            "text-micro",
             String(regimeData.regime) === "normal" && "bg-emerald-500/20 text-emerald-400",
             String(regimeData.regime) === "stressed" && "bg-amber-500/20 text-amber-400",
             String(regimeData.regime) === "crisis" && "bg-rose-500/20 text-rose-400",
@@ -100,8 +100,8 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
         </Badge>
       )}
       <div className="flex items-center gap-1.5">
-        <span className="text-[10px] text-muted-foreground">Stress</span>
-        <span className="text-[10px] font-mono font-bold">{formatNumber(regimeMultiplier, 1)}x</span>
+        <span className="text-micro text-muted-foreground">Stress</span>
+        <span className="text-micro font-mono font-bold">{formatNumber(regimeMultiplier, 1)}x</span>
         <input
           type="range"
           min={0.5}
@@ -109,11 +109,12 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
           step={0.1}
           value={regimeMultiplier}
           onChange={(e) => setRegimeMultiplier(Number(e.target.value))}
+          aria-label="Stress multiplier"
           className="w-20 h-1.5 rounded appearance-none cursor-pointer bg-muted accent-blue-500"
         />
       </div>
       <Select value={selectedStressScenario ?? ""} onValueChange={(v) => setSelectedStressScenario(v || null)}>
-        <SelectTrigger className="w-[160px] h-7 text-[10px]">
+        <SelectTrigger className="w-[160px] h-7 text-micro">
           <SelectValue placeholder="On-demand test..." />
         </SelectTrigger>
         <SelectContent>
@@ -143,19 +144,19 @@ export function RiskStressTableWidget(_props: WidgetComponentProps) {
       ) : stressTestResult ? (
         <div className="grid grid-cols-3 gap-2">
           <div className="p-2 rounded bg-muted/30 text-center">
-            <div className="text-[10px] text-muted-foreground">Expected Loss</div>
+            <div className="text-micro text-muted-foreground">Expected Loss</div>
             <div className="text-sm font-bold font-mono text-rose-400">
               {formatCurrency(-Number(stressTestResult.expected_loss_usd ?? 0))}
             </div>
           </div>
           <div className="p-2 rounded bg-muted/30 text-center">
-            <div className="text-[10px] text-muted-foreground">Portfolio Impact</div>
+            <div className="text-micro text-muted-foreground">Portfolio Impact</div>
             <div className="text-sm font-bold font-mono text-rose-400">
               {formatPercent(Number(stressTestResult.portfolio_impact_pct ?? 0), 1)}
             </div>
           </div>
           <div className="p-2 rounded bg-muted/30 text-center">
-            <div className="text-[10px] text-muted-foreground">Worst Strategy</div>
+            <div className="text-micro text-muted-foreground">Worst Strategy</div>
             <div className="text-sm font-bold font-mono">{String(stressTestResult.worst_strategy ?? "—")}</div>
           </div>
         </div>

@@ -59,7 +59,7 @@ const columns: ColumnDef<TransferHistoryEntry, unknown>[] = [
         <Badge
           variant="outline"
           className={cn(
-            "text-[10px]",
+            "text-micro",
             status === "Completed" && "border-emerald-500/50 text-emerald-400",
             status === "Processing" && "border-amber-500/50 text-amber-400",
             status === "Pending" && "border-blue-500/50 text-blue-400",

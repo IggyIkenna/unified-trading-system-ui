@@ -65,12 +65,12 @@ export function RiskLiveAlertFeedWidget(_props: WidgetComponentProps) {
           <span
             className={cn("size-2 rounded-full", isConnected ? "bg-emerald-500 animate-pulse" : "bg-muted-foreground")}
           />
-          <span className="text-[10px] text-muted-foreground">{isConnected ? "Live" : "Disconnected"}</span>
+          <span className="text-micro text-muted-foreground">{isConnected ? "Live" : "Disconnected"}</span>
         </div>
         {alertFeed.length > 0 && (
           <button
             onClick={clearFeed}
-            className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+            className="text-micro text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear ({alertFeed.length})
           </button>
@@ -90,16 +90,16 @@ export function RiskLiveAlertFeedWidget(_props: WidgetComponentProps) {
                   <div className="flex items-center justify-between gap-2 mb-0.5">
                     <div className="flex items-center gap-1.5">
                       <span className={cn("size-1.5 rounded-full shrink-0", style.dot)} />
-                      <Badge className={cn("text-[9px] h-4", style.badge)}>{alert.severity}</Badge>
-                      <span className="text-[10px] font-medium truncate">{alert.category}</span>
+                      <Badge className={cn("text-nano h-4", style.badge)}>{alert.severity}</Badge>
+                      <span className="text-micro font-medium truncate">{alert.category}</span>
                     </div>
-                    <span className="text-[9px] text-muted-foreground whitespace-nowrap">
+                    <span className="text-nano text-muted-foreground whitespace-nowrap">
                       {formatAlertTime(alert.timestamp)}
                     </span>
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight">{alert.message}</p>
+                  <p className="text-micro text-muted-foreground leading-tight">{alert.message}</p>
                   {alert.strategy_id && (
-                    <span className="text-[9px] text-muted-foreground mt-0.5 block">Strategy: {alert.strategy_id}</span>
+                    <span className="text-nano text-muted-foreground mt-0.5 block">Strategy: {alert.strategy_id}</span>
                   )}
                 </div>
               );

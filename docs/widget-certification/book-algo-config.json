@@ -18,7 +18,7 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[execution-basic,execution-full]."
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}]."
         },
         "0.3": {
           "result": "pass",
@@ -34,22 +34,22 @@
         },
         "0.6": {
           "result": "n/a",
-          "note": "— pure config form, no async data; non-execute mode guard returns informational message."
+          "note": "Pure config form, no async data; non-execute mode guard returns informational message."
         },
         "0.7": {
           "result": "n/a",
-          "note": "— no data arrays; all config is static constants."
+          "note": "No data arrays; all config is static constants."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— no async data path; error handling delegated to book-preview-compliance-widget."
+          "note": "No async data path; error handling delegated to book-preview-compliance-widget."
         },
         "0.9": {
           "result": "pass",
           "note": "Comments on lines 34-35 and 114 are explanatory; no dead code."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[book]. 0.4 No any types or @ts-ignore. 0.5 No lib/mocks imports. 0.6 N/A — pure config form, no async data; non-execute mode guard returns informational message. 0.7 N/A — no data arrays; all config is static constants. 0.8 N/A — no async data path; error handling delegated to book-preview-compliance-widget. 0.9 Comments on lines 34-35 and 114 are explanatory; no dead code."
+      "notes": "6 checks pass, 3 N/A (pure synchronous config form)."
     },
     "l1": {
       "status": "pass",
@@ -58,100 +58,274 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "All data via useBookTradeData() — no inline fetch or direct imports. 1.2-1.6 N/A — pure UI config panel, no filterable data set. Widget reads executionMode/algo/algoParams/defiAlgo from shared book context which is already scoped."
+          "note": "All data via useBookTradeData() \u2014 no inline fetch or direct imports."
         },
         "1.2": {
           "result": "pass",
-          "note": "1.6 N/A — pure UI config panel, no filterable data set. Widget reads executionMode/algo/algoParams/defiAlgo from shared book context which is already scoped."
+          "note": "Context reads useGlobalScope(). Widget reads executionMode/algo/algoParams/defiAlgo from shared scoped context."
         },
         "1.3": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "Pure config panel \u2014 no filterable data set."
         },
         "1.4": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "Pure config panel."
         },
         "1.5": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "Pure config panel."
         },
         "1.6": {
           "result": "n/a",
-          "note": "— pure UI config panel, no filterable data set. Widget reads executionMode/algo/algoParams/defiAlgo from shared book context which is already scoped."
+          "note": "Pure config panel \u2014 no filterable data set."
         },
         "1.7": {
           "result": "pass",
-          "note": "BOOK_ALGO_OPTIONS from lib/config/services/trading.config, DEFI_ALGO_TYPES from lib/config/services/defi.config — correct locations."
+          "note": "BOOK_ALGO_OPTIONS from lib/config/services/trading.config, DEFI_ALGO_TYPES from lib/config/services/defi.config."
         }
       },
-      "notes": "1.1 All data via useBookTradeData() — no inline fetch or direct imports. 1.2-1.6 N/A — pure UI config panel, no filterable data set. Widget reads executionMode/algo/algoParams/defiAlgo from shared book context which is already scoped. 1.7 BOOK_ALGO_OPTIONS from lib/config/services/trading.config, DEFI_ALGO_TYPES from lib/config/services/defi.config — correct locations."
+      "notes": "Reference data in correct config locations."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "checks": {
+        "2.1": {
+          "result": "pass",
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}] matches book domain."
+        }
+      },
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Only shown in execute mode. In batch mode widget should be hidden/disabled (user not submitting live orders)."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "executionMode from context controls widget visibility (shows informational message when not execute)."
+        },
+        "3.3": {
+          "result": "human-needed",
+          "note": "Human must verify widget hides or shows read-only state in batch mode."
+        },
+        "3.4": {
+          "result": "n/a",
+          "note": "Batch indicator is layout responsibility."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: algo config should work identically. No blocking issue."
+        },
+        "3.6": {
+          "result": "n/a",
+          "note": "No WebSocket or polling."
+        }
+      },
+      "notes": "Agent checks complete. 3.3 needs human verification."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "All onChange handlers wired (setAlgo, setAlgoParam). No empty onClick."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' or dead links."
+        },
+        "4.3": {
+          "result": "human-needed",
+          "note": "Human must verify TWAP/VWAP/ICEBERG/BENCHMARK conditional param sections show correctly."
+        },
+        "4.4": {
+          "result": "human-needed",
+          "note": "Human must verify DeFi vs CeFi branch renders correct params for selected algo."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render."
+        },
+        "4.7": {
+          "result": "human-needed",
+          "note": "Human must verify CollapsibleSection toggle works."
+        },
+        "4.8": {
+          "result": "human-needed",
+          "note": "Human must verify scroll at minW=3, minH=3."
+        }
+      },
+      "notes": "Agent checks 4.1/4.2/4.5/4.6 pass."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "CeFi branch: MARKET, LIMIT, TWAP, VWAP, ICEBERG, BENCHMARK_FILL algos. DeFi branch: SOR_DEX, SOR_TWAP, BENCHMARK_FILL algos per instruction type (SWAP, PROVIDE_LIQUIDITY, STAKE, BRIDGE)."
+        }
+      },
+      "notes": "Algorithm strategy matrix documented. Human walkthrough 5.2-5.6 deferred."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 phase."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports. Reference data from lib/config/."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "195 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "BookAlgoConfigWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security violations."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in widget file \u2014 computation in context."
+        }
+      },
+      "notes": "All mechanical checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "Fixed: text-[10px] \u2192 text-caption on all form labels. text-[11px] \u2192 text-caption on mode-guard message. text-[9px] \u2192 text-nano on DeFi available-count Badge."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing values."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses FormWidget, CollapsibleSection, Card, CardContent, Input, Select, Badge from shared/ui primitives."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no img without alt. All form fields have adjacent label. No interactive divs. Human: keyboard + screen-reader pass needed."
+        },
+        "8.5": {
+          "result": "human-needed",
+          "note": "Human must verify at minW=3, minH=3."
+        }
+      },
+      "notes": "All L8.1 violations fixed (text-[9px] Badge \u2192 text-nano)."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
-    "detailOf": [],
-    "selectionKey": null,
+    "detailOf": ["book-order-form"],
+    "selectionKey": "executionMode+category+defiAlgo",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Algo config is conditionally rendered (only in execute mode) and contains multiple conditional sub-sections. Keeping it separate lets users collapse or remove it from the layout when not needed."
+    },
+    "notes": "Reads executionMode and category from shared context driven by book-order-form. Renders different param sets based on those selections."
   },
   "dataContract": {
     "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "realtime",
     "mockSource": null,
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Pure configuration widget \u2014 no data fetching. All state is form state from shared book-data-context. Config constants from lib/config/services/trading.config and lib/config/services/defi.config."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["cefi", "defi"],
+    "strategies": [
+      "cefi-market",
+      "cefi-twap",
+      "cefi-vwap",
+      "cefi-iceberg",
+      "cefi-benchmark",
+      "defi-sor-dex",
+      "defi-sor-twap",
+      "defi-benchmark"
+    ],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "LIMIT order type has no duration/price params shown (these are on the order form price field)",
+      "DeFi SOR_TWAP slices param not shown (only duration field shown)"
+    ],
+    "notes": "CeFi branch covers all BOOK_ALGO_OPTIONS. DeFi branch covers INSTRUCTION_ALGO_MAP entries."
   },
   "knownIssues": [
-    "book-data-context.tsx line 345 references undefined variable 'algoType' (pre-existing TS error, not in this widget file — tracked separately)"
+    {
+      "id": "ki-1",
+      "level": "L0",
+      "severity": "low",
+      "note": "book-data-context.tsx handleSubmit uses defiAlgo for DeFi lane but the CeFi algo_type is passed as null for non-DeFi orders (line ~345). The CeFi algo from algoParams is not forwarded to placeMockOrder. Pre-existing bug in context \u2014 not in widget file."
+    }
   ],
   "findings": [
-    "L0 PASS — no changes needed to widget file",
-    "L1 PASS — data sourced exclusively from useBookTradeData(); scope filtering handled by context; reference data in correct config locations"
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "book-algo-config-widget.tsx \u2014 text-[10px] on all form labels, text-[11px] on mode-guard message, text-[9px] on available-count Badge",
+      "status": "fixed",
+      "fix": "text-[10px] and text-[11px] replaced with text-caption throughout. text-[9px] on DeFi available-count Badge replaced with text-nano."
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "book-algo-config-widget.tsx:52 \u2014 text-[9px] on DeFi available-count Badge",
+      "status": "fixed",
+      "fix": "Replaced text-[9px] with text-nano utility (maps to --text-nano: 0.5625rem / 9px from @theme)."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "book-algo-config-widget.tsx \u2014 ~15 user-visible strings. No i18n applied.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

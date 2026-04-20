@@ -63,7 +63,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
             {stakingProtocols.map((p) => (
               <SelectItem key={p.name} value={p.name}>
                 {p.name}
-                <span className="text-[10px] text-muted-foreground ml-2">
+                <span className="text-micro text-muted-foreground ml-2">
                   APY {formatPercent(p.apy, 1)} / TVL ${formatNumber(p.tvl / 1_000_000_000, 1)}B
                 </span>
               </SelectItem>
@@ -87,7 +87,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
               key={pct}
               variant="ghost"
               size="sm"
-              className="h-6 px-2 text-[10px] flex-1"
+              className="h-6 px-2 text-micro flex-1"
               onClick={() => setAmount(formatNumber((balanceForAsset * pct) / 100, 4))}
             >
               {pct}%

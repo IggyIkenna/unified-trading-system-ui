@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2: requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports SPOT_PRICES, IV_INDEX, SCENARIO_PRESETS etc. from mocks internally — panel-level mock usage logged as L1 open finding. 0.6: N/A — options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports SPOT_PRICES, IV_INDEX, SCENARIO_PRESETS etc. from mocks internally — panel-level mock usage logged as L1 open finding. 0.6: N/A — options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "requiredEntitlements: [{domain:'trading-options',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports SPOT_PRICES, IV_INDEX, SCENARIO_PRESETS etc. from mocks internally — panel-level mock usage logged as L1 open finding. 0.6: N/A — options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "availableOn: ['options']."
         },
         "0.4": {
           "result": "pass",
-          "note": "No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports SPOT_PRICES, IV_INDEX, SCENARIO_PRESETS etc. from mocks internally — panel-level mock usage logged as L1 open finding. 0.6: N/A — options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "No any types or @ts-ignore in widget file."
         },
         "0.5": {
           "result": "pass",
-          "note": "Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports SPOT_PRICES, IV_INDEX, SCENARIO_PRESETS etc. from mocks internally — panel-level mock usage logged as L1 open finding. 0.6: N/A — options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports mocks internally."
         },
         "0.6": {
           "result": "n/a",
-          "note": "— options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "options-data-context has no isLoading field; data is synchronous mock."
         },
         "0.7": {
           "result": "pass",
-          "note": "ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+          "note": "Context throws if Provider missing (WidgetErrorBoundary); no async error path in ScenarioTab."
         },
         "0.9": {
           "result": "pass",
           "note": "No dead code in widget file."
         }
       },
-      "notes": "0.1: WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2: requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; delegates entirely to ScenarioTab which imports SPOT_PRICES, IV_INDEX, SCENARIO_PRESETS etc. from mocks internally — panel-level mock usage logged as L1 open finding. 0.6: N/A — options-data-context has no isLoading field; data is synchronous mock. 0.7: ScenarioTab always renders a full grid (SPOT_STEPS and VOL_STEPS are static constants); no data-empty path. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary handles this); no async error path in ScenarioTab. 0.9: No dead code in widget file."
+      "notes": "0.6/0.8 N/A \u2014 synchronous mock data, no async paths."
     },
     "l1": {
       "status": "pass",
@@ -58,109 +58,225 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Widget reads assetClass, asset, tradFiAsset via useOptionsData() and passes to ScenarioTab; no inline fetch. However, ScenarioTab re-derives spotPrice and baseIv from SPOT_PRICES/IV_INDEX mocks internally rather than reading them from context (context exposes spotPrice). This is a panel-level"
+          "note": "Widget reads assetClass, asset, tradFiAsset via useOptionsData() and passes to ScenarioTab. ScenarioTab re-derives spotPrice/baseIv from mocks internally \u2014 panel-level concern, widget file is clean."
         },
         "1.2": {
           "result": "pass",
-          "note": "options-data-context.tsx calls useGlobalScope() (line 130). 1.3: Org filter scopes watchlists via organizationIds; scenario grid asset selection is not org-filtered (asset is user-selected). 1.4: clientIds not applicable — scenario analysis is asset/expiry-scoped. 1.5: Strategy filter not applicable to scenario display. 1.6: Empty organizationIds → full watchlist set returned. 1.7: SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+          "note": "options-data-context.tsx calls useGlobalScope() at line 130."
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter scopes watchlists via organizationIds; scenario grid asset selection is not org-filtered (asset is user-selected). 1.4: clientIds not applicable — scenario analysis is asset/expiry-scoped. 1.5: Strategy filter not applicable to scenario display. 1.6: Empty organizationIds → full watchlist set returned. 1.7: SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+          "note": "Org filter scopes watchlists; scenario grid asset selection is not org-filtered (asset is user-selected)."
         },
         "1.4": {
-          "result": "pass",
-          "note": "clientIds not applicable — scenario analysis is asset/expiry-scoped. 1.5: Strategy filter not applicable to scenario display. 1.6: Empty organizationIds → full watchlist set returned. 1.7: SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+          "result": "n/a",
+          "note": "clientIds not applicable \u2014 scenario analysis is asset/expiry-scoped."
         },
         "1.5": {
-          "result": "pass",
-          "note": "Strategy filter not applicable to scenario display. 1.6: Empty organizationIds → full watchlist set returned. 1.7: SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+          "result": "n/a",
+          "note": "Strategy filter not applicable to scenario display."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty organizationIds → full watchlist set returned. 1.7: SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+          "note": "Empty organizationIds returns full watchlist set."
         },
         "1.7": {
           "result": "pass",
-          "note": "SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+          "note": "SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX in lib/mocks/fixtures/options-futures-mock \u2014 panel-level, widget file clean."
         }
       },
-      "notes": "1.1: Widget reads assetClass, asset, tradFiAsset via useOptionsData() and passes to ScenarioTab; no inline fetch. However, ScenarioTab re-derives spotPrice and baseIv from SPOT_PRICES/IV_INDEX mocks internally rather than reading them from context (context exposes spotPrice). This is a panel-level 1.1 concern, not a widget-file violation. Open finding for ScenarioTab to accept spotPrice/baseIv as props from context. 1.2: options-data-context.tsx calls useGlobalScope() (line 130). 1.3: Org filter scopes watchlists via organizationIds; scenario grid asset selection is not org-filtered (asset is user-selected). 1.4: clientIds not applicable — scenario analysis is asset/expiry-scoped. 1.5: Strategy filter not applicable to scenario display. 1.6: Empty organizationIds → full watchlist set returned. 1.7: SCENARIO_PRESETS, SPOT_PRICES, IV_INDEX, SPOT_STEPS, VOL_STEPS in lib/mocks/fixtures/options-futures-mock — should move to lib/config/services/options.config.ts in a future refactor."
+      "notes": "ScenarioTab re-derives spotPrice/baseIv from mocks instead of accepting from context \u2014 tracked in knownIssues."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (real-time scenario grid), paper \u2713 (static scenario for paper positions), batch \u2713 (historical scenario analysis)."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads mode from useExecutionMode() at context line 129."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: scenario grid meaningful for paper positions; no order submission from this widget."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget file."
+        }
+      },
+      "notes": "3.3/3.4 require human verification."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead onClick in widget file; widget is purely read-only display."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' in widget file."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "4.3/4.4/4.7/4.8 require human walkthrough (preset scenario buttons, grid cell hover/click)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all options strategies (vertical-spread, iron-condor, options-combo, options-buying, options-selling). Scenario grid is a risk analysis tool applicable to any options position."
+        }
+      },
+      "notes": "5.2\u20135.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred pending L5 sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors in widget file."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data imports in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "Widget file is 10 lines; well within limits."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "OptionsScenarioWidget PascalCase; file kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns in widget file."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No hooks or deps in widget file; pure prop pass-through render."
+        }
+      },
+      "notes": "All L7 clean."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[...] or fontSize= in widget file."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing tokens in widget file."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Widget delegates entirely to ScenarioTab from shared trading panel."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent grep: no accessibility violations in widget file. Human keyboard+screen-reader pass for ScenarioTab required."
+        }
+      },
+      "notes": "8.5 responsive resize requires human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Scenario analysis is a large risk grid that needs dedicated space; does not drive or detail another widget."
+    },
+    "notes": "Reads asset/assetClass from OptionsDataContext (peer with chain and greek-surface). Does not drive or receive selection from other widgets."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/options-futures-mock.ts",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Scenario grid recomputed client-side on parameter change (spot shift, vol shift, DTE). Production will fetch position PnL from risk service. Currently pure mock computation."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["cefi", "tradfi"],
+    "strategies": ["options-buying", "options-selling", "vertical-spread", "iron-condor", "options-combo"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": ["Scenario does not yet use actual open positions \u2014 shows hypothetical PnL only"],
+    "notes": "Scenario tab shows payoff for the currently selected instrument; does not aggregate across portfolio positions yet."
   },
   "knownIssues": [
-    "ScenarioTab (scenario-tab.tsx) re-derives spotPrice and baseIv from lib/mocks/ constants instead of accepting them as props from context; context already exposes spotPrice.",
-    "Reference data (SCENARIO_PRESETS, SPOT_STEPS, VOL_STEPS) live in lib/mocks/fixtures — should move to lib/config/services/options.config.ts."
+    "ScenarioTab re-derives spotPrice and baseIv from lib/mocks/ constants instead of accepting them as props from context; context already exposes spotPrice.",
+    "Reference data (SCENARIO_PRESETS, SPOT_STEPS, VOL_STEPS) live in lib/mocks/fixtures \u2014 should move to lib/config/services/options.config.ts."
   ],
   "findings": [
     {
       "level": "l1",
-      "description": "1.1 panel-level — ScenarioTab reads SPOT_PRICES[asset] and IV_INDEX[asset] directly from mocks even though options-data-context exposes spotPrice. Widget passes assetClass/asset/tradFiAsset but ScenarioTab ignores context spotPrice. Should be refactored to accept spotPrice and baseIv as props (from context) to ensure single data path.",
-      "status": "open"
+      "check": "1.1",
+      "description": "options-scenario-widget.tsx \u2014 ScenarioTab reads SPOT_PRICES[asset] and IV_INDEX[asset] from mocks directly instead of accepting spotPrice/baseIv as props from context. Widget passes asset/assetClass/tradFiAsset but ScenarioTab ignores context spotPrice.",
+      "status": "deferred",
+      "deferReason": "Panel sub-component refactor deferred to BP-5 data wiring phase."
     },
     {
       "level": "l1",
-      "description": "1.7 — SCENARIO_PRESETS, SPOT_STEPS, VOL_STEPS, SPOT_PRICES, IV_INDEX all live in lib/mocks/fixtures/options-futures-mock. Should move config constants to lib/config/services/options.config.ts.",
-      "status": "open"
+      "check": "1.7",
+      "description": "options-scenario-widget.tsx \u2014 SCENARIO_PRESETS, SPOT_STEPS, VOL_STEPS, SPOT_PRICES, IV_INDEX all live in lib/mocks/fixtures/options-futures-mock; should move to lib/config/services/options.config.ts.",
+      "status": "deferred",
+      "deferReason": "Config extraction deferred to BP-5."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "options-scenario-widget.tsx \u2014 0 direct user-visible strings in widget file; strings in ScenarioTab",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

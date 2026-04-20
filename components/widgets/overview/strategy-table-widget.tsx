@@ -46,12 +46,12 @@ function LatencyBadge({ archetype }: { archetype: string }) {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge variant="outline" className={cn("text-[9px] h-4 px-1 font-normal", LATENCY_COLORS[cls])}>
+          <Badge variant="outline" className={cn("text-nano h-4 px-1 font-normal", LATENCY_COLORS[cls])}>
             {cls}
           </Badge>
         </TooltipTrigger>
         <TooltipContent side="top">
-          <span className="text-[10px]">Latency class: {cls}</span>
+          <span className="text-micro">Latency class: {cls}</span>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -294,7 +294,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                         <span className="flex items-center gap-1.5">
                           <ChevronDown className={cn("size-3 transition-transform", isCollapsed && "-rotate-90")} />
                           {group}
-                          <Badge variant="outline" className="text-[9px] h-4 px-1">
+                          <Badge variant="outline" className="text-nano h-4 px-1">
                             {items.length}
                           </Badge>
                         </span>
@@ -352,13 +352,13 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                               {formatDollar(Number(s.nav) || 0)}
                             </TableCell>
                             <TableCell>
-                              <span className="text-[10px] text-muted-foreground">{String(s.assetClass)}</span>
+                              <span className="text-micro text-muted-foreground">{String(s.assetClass)}</span>
                             </TableCell>
                             <TableCell>
                               <Badge
                                 variant="outline"
                                 className={cn(
-                                  "text-[10px]",
+                                  "text-micro",
                                   s.status === "live" && "text-emerald-500 border-emerald-500/30",
                                   s.status === "warning" && "text-amber-500 border-amber-500/30",
                                   s.status === "paused" && "text-muted-foreground",
@@ -368,19 +368,20 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                  "h-6 px-2 text-[10px]",
-                                  s.status === "live" || s.status === "warning"
-                                    ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
-                                    : "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10",
-                                )}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {s.status === "live" || s.status === "warning" ? "Pause" : "Resume"}
-                              </Button>
+                              <Link href={`/services/trading/strategies/${s.id}`} onClick={(e) => e.stopPropagation()}>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className={cn(
+                                    "h-6 px-2 text-micro",
+                                    s.status === "live" || s.status === "warning"
+                                      ? "text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
+                                      : "text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10",
+                                  )}
+                                >
+                                  {s.status === "live" || s.status === "warning" ? "Pause" : "Resume"}
+                                </Button>
+                              </Link>
                             </TableCell>
                           </TableRow>
                         );

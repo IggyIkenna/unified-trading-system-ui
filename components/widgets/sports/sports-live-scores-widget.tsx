@@ -15,7 +15,7 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
 
   if (liveRows.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full min-h-[2rem] px-2 text-[10px] text-muted-foreground uppercase tracking-wider">
+      <div className="flex items-center justify-center h-full min-h-[2rem] px-2 text-micro text-muted-foreground uppercase tracking-wider">
         No live matches
       </div>
     );
@@ -35,7 +35,7 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
                 : "bg-red-400",
           )}
         />
-        <span className="text-[8px] text-muted-foreground ml-1 uppercase">
+        <span className="text-pico text-muted-foreground ml-1 uppercase">
           {wsStatus === "connected" ? "live" : (wsStatus ?? "off")}
         </span>
       </div>
@@ -55,12 +55,12 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
               f.status === "SUSP" ? "bg-amber-400" : "bg-emerald-400 animate-pulse",
             )}
           />
-          <span className="text-[10px] font-bold text-foreground truncate max-w-[100px]">{f.home.shortName}</span>
-          <span className="text-[10px] font-mono tabular-nums text-muted-foreground">
+          <span className="text-micro font-bold text-foreground truncate max-w-[100px]">{f.home.shortName}</span>
+          <span className="text-micro font-mono tabular-nums text-muted-foreground">
             {f.score ? `${f.score.home}–${f.score.away}` : "vs"}
           </span>
-          <span className="text-[10px] font-bold text-foreground truncate max-w-[100px]">{f.away.shortName}</span>
-          {f.minute != null && <span className="text-[9px] text-muted-foreground tabular-nums">{f.minute}′</span>}
+          <span className="text-micro font-bold text-foreground truncate max-w-[100px]">{f.away.shortName}</span>
+          {f.minute != null && <span className="text-nano text-muted-foreground tabular-nums">{f.minute}′</span>}
         </button>
       ))}
     </div>

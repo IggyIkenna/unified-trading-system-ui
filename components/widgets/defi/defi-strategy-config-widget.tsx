@@ -94,7 +94,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
       <div className="flex h-full min-h-[120px] items-center justify-center p-4">
         <div className="text-center space-y-1">
           <p className="text-xs font-medium text-rose-400">Failed to load strategy configs</p>
-          <p className="text-[10px] text-muted-foreground">{loadError}</p>
+          <p className="text-micro text-muted-foreground">{loadError}</p>
         </div>
       </div>
     );
@@ -122,7 +122,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
             <SelectContent>
               {DEFI_STRATEGY_FAMILIES.map((family) => (
                 <React.Fragment key={family.label}>
-                  <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  <div className="px-2 py-1.5 text-micro font-semibold text-muted-foreground uppercase tracking-wider">
                     {family.label}
                   </div>
                   {family.strategies.map((s) => (
@@ -161,7 +161,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
       >
         <span className="font-mono font-medium">{shareClass}</span>
         <span className="text-muted-foreground">— {SHARE_CLASS_LABELS[shareClass]}</span>
-        <span className="ml-auto text-muted-foreground text-[10px]">P&L denominated in {shareClass}</span>
+        <span className="ml-auto text-muted-foreground text-micro">P&L denominated in {shareClass}</span>
       </div>
 
       {/* Locked banner for recursive staked basis */}
@@ -179,8 +179,8 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
       {/* Client restrictions panel */}
       <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Client Config</span>
-          <Badge variant="outline" className="text-[9px] h-4 px-1">
+          <span className="text-micro font-medium text-muted-foreground uppercase tracking-wide">Client Config</span>
+          <Badge variant="outline" className="text-nano h-4 px-1">
             DeFi Client
           </Badge>
         </div>
@@ -206,7 +206,7 @@ export function DeFiStrategyConfigWidget(_props: WidgetComponentProps) {
 
       {/* Risk indicators */}
       <div className="rounded-lg border border-border bg-muted/20 p-3 space-y-2">
-        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">Risk Indicators</span>
+        <span className="text-micro font-medium text-muted-foreground uppercase tracking-wide">Risk Indicators</span>
         <div className="space-y-1.5">
           {[
             { label: "Oracle Depeg (weETH/ETH)", value: "0.12%", status: "green" },

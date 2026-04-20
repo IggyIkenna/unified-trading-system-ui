@@ -39,7 +39,7 @@ export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
     <div className="flex items-center gap-4 h-full px-2">
       <div className="flex-1">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] font-medium">BTC Price Change</span>
+          <span className="text-micro font-medium">BTC Price Change</span>
           <span
             className={cn(
               "font-mono font-bold text-sm",
@@ -59,9 +59,10 @@ export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
           step={1}
           value={btcPriceChangePct}
           onChange={(e) => setBtcPriceChangePct(Number(e.target.value))}
+          aria-label="BTC price change percentage"
           className="w-full h-1.5 rounded appearance-none cursor-pointer bg-muted accent-blue-500"
         />
-        <div className="flex justify-between mt-0.5 text-[9px] text-muted-foreground">
+        <div className="flex justify-between mt-0.5 text-nano text-muted-foreground">
           <span>-30%</span>
           <span>0%</span>
           <span>+30%</span>
@@ -69,7 +70,7 @@ export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
       </div>
       <div className="w-px h-10 bg-border" />
       <div className="text-center min-w-[140px]">
-        <div className="text-[10px] text-muted-foreground mb-0.5">Estimated Portfolio PnL</div>
+        <div className="text-micro text-muted-foreground mb-0.5">Estimated Portfolio PnL</div>
         <div
           className={cn(
             "text-xl font-bold font-mono",
@@ -81,7 +82,7 @@ export function RiskWhatIfSliderWidget(_props: WidgetComponentProps) {
           {estimatedPnl >= 0 ? "+" : ""}
           {formatCurrency(estimatedPnl)}
         </div>
-        <div className="text-[9px] text-muted-foreground mt-0.5">
+        <div className="text-nano text-muted-foreground mt-0.5">
           dS={formatCurrency(dS)} | Δ={formatNumber(greeks.delta, 2)} | Γ={formatNumber(greeks.gamma, 4)}
         </div>
       </div>

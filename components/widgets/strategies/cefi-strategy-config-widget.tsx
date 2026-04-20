@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { SchemaForm } from "@/components/shared/schema-driven-form";
 import { buildDefaults, CEFI_STRATEGY_FAMILIES, CEFI_STRATEGY_SCHEMAS } from "@/lib/config/strategy-config-schemas";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -35,7 +36,8 @@ function loadInitialConfigs(): Record<string, Record<string, unknown>> {
 export function CeFiStrategyConfigWidget(_props: WidgetComponentProps) {
   const [selectedId, setSelectedId] = React.useState(ALL_STRATEGIES[0].id);
   const [configs, setConfigs] = React.useState(loadInitialConfigs);
-  const mode = "Paper" as "Paper" | "Active";
+  const { mode: execMode, isLive } = useExecutionMode();
+  const modeLabel = isLive ? "Active" : execMode === "paper" ? "Paper" : "Batch";
 
   const schema = CEFI_STRATEGY_SCHEMAS[selectedId];
   const current = configs[selectedId] ?? (schema ? buildDefaults(schema) : {});
@@ -53,7 +55,7 @@ export function CeFiStrategyConfigWidget(_props: WidgetComponentProps) {
             <SelectContent>
               {CEFI_STRATEGY_FAMILIES.map((family) => (
                 <React.Fragment key={family.label}>
-                  <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  <div className="px-2 py-1.5 text-micro font-semibold text-muted-foreground uppercase tracking-wider">
                     {family.label}
                   </div>
                   {family.strategies.map((s) => (
@@ -67,7 +69,7 @@ export function CeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           </Select>
         </div>
         <div className="pt-5">
-          <Badge variant={mode === "Active" ? "success" : "warning"}>{mode}</Badge>
+          <Badge variant={isLive ? "success" : "warning"}>{modeLabel}</Badge>
         </div>
       </div>
 
@@ -103,7 +105,7 @@ export function CeFiStrategyConfigWidget(_props: WidgetComponentProps) {
           className="flex-1"
           size="sm"
           onClick={() => {
-            toast.success("Strategy deployed", { description: `${selectedName} deployed in ${mode} mode.` });
+            toast.success("Strategy deployed", { description: `${selectedName} deployed in ${modeLabel} mode.` });
           }}
         >
           Deploy

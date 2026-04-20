@@ -138,7 +138,7 @@ export function DeFiTradeHistoryWidget() {
                 >
                   <td className="px-1 py-1 text-muted-foreground text-center">
                     {!isChild && row.execution_chain ? (
-                      <span className="text-[10px]">{expandedRows.has(row.seq) ? "▾" : "▸"}</span>
+                      <span className="text-micro">{expandedRows.has(row.seq) ? "▾" : "▸"}</span>
                     ) : null}
                   </td>
                   <td className="px-1 py-1 text-muted-foreground">
@@ -148,7 +148,7 @@ export function DeFiTradeHistoryWidget() {
                   <td className="px-1 py-1">
                     {!isChild && row.strategy_id ? (
                       <span
-                        className="font-mono text-[10px] text-muted-foreground truncate max-w-[80px] inline-block"
+                        className="font-mono text-micro text-muted-foreground truncate max-w-[80px] inline-block"
                         title={row.strategy_id}
                       >
                         {row.strategy_id}
@@ -157,7 +157,7 @@ export function DeFiTradeHistoryWidget() {
                   </td>
                   <td className="px-1 py-1">
                     {isChild ? (
-                      <span className="text-[10px] text-muted-foreground">fill</span>
+                      <span className="text-micro text-muted-foreground">fill</span>
                     ) : (
                       <Badge variant="outline" className={TYPE_COLORS[row.instruction_type] ?? ""}>
                         {row.instruction_type}
@@ -227,7 +227,7 @@ export function DeFiTradeHistoryWidget() {
                 {!isChild && expandedRows.has(row.seq) && row.execution_chain && (
                   <tr key={`${row.seq}-chain`} className="bg-muted/30">
                     <td colSpan={16} className="px-3 py-2">
-                      <div className="flex items-center gap-1 text-[10px]">
+                      <div className="flex items-center gap-1 text-micro">
                         {row.execution_chain.map((step, i) => (
                           <React.Fragment key={step.label}>
                             <div className="flex flex-col items-center gap-0.5 min-w-[60px]">

@@ -16,7 +16,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     header: "Exch Time",
     enableSorting: false,
     cell: ({ row }) => (
-      <span className="font-mono text-[10px]">
+      <span className="font-mono text-micro">
         {new Date(row.getValue<string>("exchangeTime")).toLocaleTimeString()}
       </span>
     ),
@@ -26,7 +26,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     header: "Local",
     enableSorting: false,
     cell: ({ row }) => (
-      <span className="font-mono text-[10px] text-muted-foreground">
+      <span className="font-mono text-micro text-muted-foreground">
         {new Date(row.getValue<string>("localTime")).toLocaleTimeString()}
       </span>
     ),
@@ -36,7 +36,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     header: () => <span className="flex justify-end">Delay</span>,
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="text-right font-mono text-[10px] text-muted-foreground">{row.getValue<number>("delayMs")}ms</div>
+      <div className="text-right font-mono text-micro text-muted-foreground">{row.getValue<number>("delayMs")}ms</div>
     ),
   },
   {
@@ -46,7 +46,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     cell: ({ row }) => {
       const type = row.getValue<string>("type");
       return (
-        <Badge variant={type === "trade" ? "default" : "outline"} className="text-[10px] px-1 py-0">
+        <Badge variant={type === "trade" ? "default" : "outline"} className="text-micro px-1 py-0">
           {type}
         </Badge>
       );
@@ -81,7 +81,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     accessorKey: "venue",
     header: "Venue",
     enableSorting: false,
-    cell: ({ row }) => <span className="text-muted-foreground text-[10px]">{row.getValue<string>("venue")}</span>,
+    cell: ({ row }) => <span className="text-muted-foreground text-micro">{row.getValue<string>("venue")}</span>,
   },
   {
     accessorKey: "aggressor",
@@ -92,7 +92,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
       if (!aggressor) return <span>—</span>;
       return (
         <span
-          className={`text-[10px] ${aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+          className={`text-micro ${aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
         >
           {aggressor}
         </span>
@@ -108,10 +108,10 @@ export function MarketsOrderFlowWidget(_props: WidgetComponentProps) {
   const actionsConfig: TableActionsConfig = {
     extraActions: (
       <div className="flex items-center gap-2 shrink-0">
-        <Badge variant="outline" className="text-[10px]">
+        <Badge variant="outline" className="text-micro">
           {assetClass === "crypto" ? "Crypto" : assetClass === "tradfi" ? "TradFi" : "DeFi"}
         </Badge>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="text-micro text-muted-foreground">
           {orderFlowRange.toUpperCase()} · {orderFlowData.length} orders
         </span>
       </div>

@@ -87,20 +87,20 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
                 />
                 <span className="font-mono font-medium truncate">{row.strategy}</span>
                 {isTripped && (
-                  <Badge variant="destructive" className="text-[10px] h-4 shrink-0">
+                  <Badge variant="destructive" className="text-micro h-4 shrink-0">
                     HALTED
                   </Badge>
                 )}
-                {isKilled && <Badge className="bg-rose-600 text-white text-[10px] h-4 shrink-0">KILLED</Badge>}
+                {isKilled && <Badge className="bg-rose-600 text-white text-micro h-4 shrink-0">KILLED</Badge>}
                 {scaleFactor !== undefined && (
-                  <Badge variant="secondary" className="text-[10px] h-4 shrink-0">
+                  <Badge variant="secondary" className="text-micro h-4 shrink-0">
                     Scaled to {Math.round(scaleFactor * 100)}%
                   </Badge>
                 )}
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
-                <div className="hidden lg:flex items-center gap-4 font-mono text-[11px] text-muted-foreground">
+                <div className="hidden lg:flex items-center gap-4 font-mono text-caption text-muted-foreground">
                   {row.delta && (
                     <span>
                       Δ: <strong className="text-foreground">{row.delta}</strong>
@@ -131,7 +131,7 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 px-1.5 text-[10px]"
+                            className="h-6 px-1.5 text-micro"
                             disabled={isBatchMode || circuitBreakerPending}
                             onClick={() => handleResetCircuitBreaker(strategyId, row.strategy)}
                           >
@@ -149,7 +149,7 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-6 px-1.5 text-[10px] text-amber-400 border-amber-500/50 hover:bg-amber-500/10"
+                            className="h-6 px-1.5 text-micro text-amber-400 border-amber-500/50 hover:bg-amber-500/10"
                             disabled={isBatchMode || isKilled || circuitBreakerPending}
                             onClick={() => handleTripCircuitBreaker(strategyId, row.strategy)}
                           >
@@ -168,7 +168,7 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="h-6 px-1.5 text-[10px]"
+                          className="h-6 px-1.5 text-micro"
                           disabled={isBatchMode || isKilled}
                           onClick={() => handleScale(strategyId, row.strategy, 0.5)}
                         >
@@ -188,7 +188,7 @@ export function RiskStrategyHeatmapWidget(_props: WidgetComponentProps) {
                             <Button
                               variant="destructive"
                               size="sm"
-                              className="h-6 px-1.5 text-[10px]"
+                              className="h-6 px-1.5 text-micro"
                               disabled={isBatchMode || isKilled}
                             >
                               <Power className="size-3 mr-0.5" />

@@ -14,7 +14,7 @@ export function BookRecordDetailsWidget(_props: WidgetComponentProps) {
 
   if (executionMode !== "record_only") {
     return (
-      <div className="p-2 text-[11px] text-muted-foreground">
+      <div className="p-2 text-caption text-muted-foreground">
         Switch to Record Only mode for counterparty and fee fields.
       </div>
     );
@@ -26,7 +26,7 @@ export function BookRecordDetailsWidget(_props: WidgetComponentProps) {
         <Card className="border-0 shadow-none">
           <CardContent className="space-y-3 pt-1 px-2 pb-2">
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Counterparty</label>
+              <label className="text-caption text-muted-foreground">Counterparty</label>
               <Input
                 value={counterparty}
                 onChange={(e) => setCounterparty(e.target.value)}
@@ -35,7 +35,7 @@ export function BookRecordDetailsWidget(_props: WidgetComponentProps) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Source Reference</label>
+              <label className="text-caption text-muted-foreground">Source Reference</label>
               <Input
                 value={sourceReference}
                 onChange={(e) => setSourceReference(e.target.value)}
@@ -44,7 +44,7 @@ export function BookRecordDetailsWidget(_props: WidgetComponentProps) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Fee</label>
+              <label className="text-caption text-muted-foreground">Fee</label>
               <Input
                 type="number"
                 value={fee}

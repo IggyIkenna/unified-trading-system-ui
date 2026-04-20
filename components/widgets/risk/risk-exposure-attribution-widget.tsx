@@ -66,12 +66,12 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
     <WidgetScroll axes="vertical">
       <div className="space-y-2 p-1">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-micro text-muted-foreground">
             {filteredExposureRows.length} of 23 risk types
             {selectedStrategy && ` for ${selectedStrategy.name}`}
           </span>
           <Select value={riskFilterStrategy} onValueChange={setRiskFilterStrategy}>
-            <SelectTrigger className="w-[200px] h-7 text-[10px]">
+            <SelectTrigger className="w-[200px] h-7 text-micro">
               <SelectValue placeholder="All strategies" />
             </SelectTrigger>
             <SelectContent>
@@ -95,12 +95,12 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
-                  <TableHead className="text-[10px]">Component</TableHead>
-                  <TableHead className="text-[10px] text-right">P&L</TableHead>
-                  <TableHead className="text-[10px] text-right">Exposure</TableHead>
-                  <TableHead className="text-[10px] text-right">Limit</TableHead>
-                  <TableHead className="text-[10px] text-right">Util</TableHead>
-                  <TableHead className="text-[10px]">Status</TableHead>
+                  <TableHead className="text-micro">Component</TableHead>
+                  <TableHead className="text-micro text-right">P&L</TableHead>
+                  <TableHead className="text-micro text-right">Exposure</TableHead>
+                  <TableHead className="text-micro text-right">Limit</TableHead>
+                  <TableHead className="text-micro text-right">Util</TableHead>
+                  <TableHead className="text-micro">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -108,17 +108,17 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
                   const status = getStatusFromUtil(row.utilization);
                   return (
                     <TableRow key={row.component}>
-                      <TableCell className="text-[11px] font-medium">{row.component}</TableCell>
+                      <TableCell className="text-caption font-medium">{row.component}</TableCell>
                       <TableCell className="text-right">
                         <PnLValue value={row.pnl} size="sm" />
                       </TableCell>
-                      <TableCell className="text-right font-mono text-[11px] tabular-nums">
+                      <TableCell className="text-right font-mono text-caption tabular-nums">
                         {formatExp(row.exposure)}
                       </TableCell>
-                      <TableCell className="text-right font-mono text-[11px] tabular-nums text-muted-foreground">
+                      <TableCell className="text-right font-mono text-caption tabular-nums text-muted-foreground">
                         {formatExp(row.limit)}
                       </TableCell>
-                      <TableCell className="text-right font-mono text-[11px] tabular-nums">
+                      <TableCell className="text-right font-mono text-caption tabular-nums">
                         {formatPercent(row.utilization, 0)}
                       </TableCell>
                       <TableCell>
@@ -135,7 +135,7 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
         {exposureTimeSeries.length > 0 && (
           <div className="pt-2">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-medium text-muted-foreground">Exposure Time Series (Top 3)</span>
+              <span className="text-micro font-medium text-muted-foreground">Exposure Time Series (Top 3)</span>
               <div className="flex items-center gap-0.5">
                 {(["1W", "1M", "3M"] as const).map((period) => (
                   <Button
@@ -143,7 +143,7 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
                     variant={exposurePeriod === period ? "secondary" : "ghost"}
                     size="sm"
                     onClick={() => setExposurePeriod(period)}
-                    className="text-[10px] h-5 px-1.5"
+                    className="text-micro h-5 px-1.5"
                   >
                     {period}
                   </Button>
@@ -169,11 +169,18 @@ export function RiskExposureAttributionWidget(_props: WidgetComponentProps) {
                     }}
                   />
                   <Legend wrapperStyle={{ fontSize: "10px" }} />
-                  <Line type="monotone" dataKey="delta" stroke="#3b82f6" name="Delta" strokeWidth={1.5} dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="delta"
+                    stroke="var(--chart-3)"
+                    name="Delta"
+                    strokeWidth={1.5}
+                    dot={false}
+                  />
                   <Line
                     type="monotone"
                     dataKey="funding"
-                    stroke="#22c55e"
+                    stroke="var(--chart-2)"
                     name="Funding"
                     strokeWidth={1.5}
                     dot={false}

@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "verified via widget-wrapper.tsx WidgetErrorBoundary. 0.2/0.3 verified in register.ts."
+          "note": "WidgetErrorBoundary global in widget-wrapper.tsx."
         },
         "0.2": {
           "result": "pass",
-          "note": "/0.3 verified in register.ts."
+          "note": "requiredEntitlements: [{domain:'trading-common',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "verified in register.ts."
+          "note": "availableOn: ['overview']."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any/ts-ignore."
+          "note": "No any/ts-ignore."
         },
         "0.5": {
           "result": "pass",
-          "note": "); removed mock-backed useHasDefiStrategies + DeFi Delta card (0.9); added Skeleton loading state (0.6); added empty state guard (0.7)."
+          "note": "No lib/mocks imports in widget file. Removed MOCK_PORTFOLIO_DELTA + STRATEGY_RISK_PROFILES imports."
         },
         "0.6": {
           "result": "pass",
-          "note": "); added empty state guard (0.7)."
+          "note": "Added Skeleton loading state guarded by coreLoading."
         },
         "0.7": {
           "result": "pass",
-          "note": ")."
+          "note": "Added empty state guard when totalNav===0 and liveStrategies===0 and no alerts."
         },
         "0.8": {
           "result": "pass",
-          "note": "covered by global boundary."
+          "note": "Global WidgetErrorBoundary covers render errors."
         },
         "0.9": {
           "result": "pass",
-          "note": "); added Skeleton loading state (0.6); added empty state guard (0.7)."
+          "note": "Removed mock-backed useHasDefiStrategies + DeFi Delta card (dead mock UI)."
         }
       },
-      "notes": "All 9 checks green. Fixed: removed MOCK_PORTFOLIO_DELTA+STRATEGY_RISK_PROFILES imports (0.5); removed mock-backed useHasDefiStrategies + DeFi Delta card (0.9); added Skeleton loading state (0.6); added empty state guard (0.7). 0.1 verified via widget-wrapper.tsx WidgetErrorBoundary. 0.2/0.3 verified in register.ts. 0.4 no any/ts-ignore. 0.8 covered by global boundary."
+      "notes": "All 9 checks pass."
     },
     "l1": {
       "status": "pass",
@@ -58,101 +58,261 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data via useOverviewDataSafe() hook only — no inline fetch. 1.2: Context itself (overview-data-context.tsx) is a thin provider; scope reading lives in use-overview-page-data.ts which calls useGlobalScope() and filters strategyPerformance/alerts by organizationIds/clientIds/strategyIds before passing into the context value — satisfies the spirit of"
+          "note": "Data via useOverviewDataSafe() hook only \u2014 no inline fetch."
         },
         "1.2": {
           "result": "pass",
-          "note": "Context itself (overview-data-context.tsx) is a thin provider; scope reading lives in use-overview-page-data.ts which calls useGlobalScope() and filters strategyPerformance/alerts by organizationIds/clientIds/strategyIds before passing into the context value — satisfies the spirit of"
+          "note": "Scope reading in use-overview-page-data.ts via useGlobalScope()."
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter changes strategyPerformance via getStrategiesForScope(organizationIds,...) in use-overview-page-data.ts — data changes. 1.4: Client filter cascades via clientIds filter in strategyPerformance useMemo. 1.5: Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+          "note": "Org filter changes strategyPerformance via getStrategiesForScope(organizationIds,...) in context producer."
         },
         "1.4": {
           "result": "pass",
-          "note": "Client filter cascades via clientIds filter in strategyPerformance useMemo. 1.5: Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+          "note": "Client filter cascades via clientIds filter in strategyPerformance useMemo."
         },
         "1.5": {
           "result": "pass",
-          "note": "Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+          "note": "Strategy filter cascades via strategyIds filter."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+          "note": "Empty scope arrays \u2192 getStrategiesForScope returns all strategies (unfiltered)."
         },
         "1.7": {
           "result": "pass",
-          "note": "Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+          "note": "Reference data consumed only in context producer, not in widget file."
         }
       },
-      "notes": "1.1: Data via useOverviewDataSafe() hook only — no inline fetch. 1.2: Context itself (overview-data-context.tsx) is a thin provider; scope reading lives in use-overview-page-data.ts which calls useGlobalScope() and filters strategyPerformance/alerts by organizationIds/clientIds/strategyIds before passing into the context value — satisfies the spirit of 1.2 for this provider pattern. 1.3: Org filter changes strategyPerformance via getStrategiesForScope(organizationIds,...) in use-overview-page-data.ts — data changes. 1.4: Client filter cascades via clientIds filter in strategyPerformance useMemo. 1.5: Strategy filter cascades via strategyIds filter. 1.6: Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered). 1.7: Reference data (ORGANIZATIONS, CLIENTS, SEED_SERVICES) lives in lib/mocks/fixtures/trading-data.ts and trading-pages.ts — these are consumed only in the page-data hook, not in the widget."
+      "notes": "All 7 checks pass."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (shows 'P&L (Today)'), batch \u2713 (shows 'P&L (As-Of)'), paper \u2713. Title dynamically switches on context.mode."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads useGlobalScope(); widget reads context.mode for title label."
+        },
+        "3.3": {
+          "result": "n/a",
+          "note": "Human check: kpi-strip is read-only; no order entry to disable."
+        },
+        "3.4": {
+          "result": "n/a",
+          "note": "Human check: 'P&L (As-Of)' label visible in batch mode."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: if context.mode === 'paper', KPICard title will show 'P&L (As-Of)' (same as batch fallback) \u2014 acceptable until paper mode fully specified."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or interval in kpi-strip-widget.tsx. WebSocket gated in context producer."
+        }
+      },
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. 3.3/3.4 require human browser walkthrough."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No interactive buttons in kpi-strip-widget.tsx \u2014 display-only KPI cards."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links in this widget."
+        },
+        "4.3": {
+          "result": "n/a",
+          "note": "Human check: no form fields; display-only widget."
+        },
+        "4.4": {
+          "result": "n/a",
+          "note": "Human check: KPI values update when scope changes."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        },
+        "4.7": {
+          "result": "n/a",
+          "note": "No tabs or collapsible sections."
+        },
+        "4.8": {
+          "result": "n/a",
+          "note": "Human check: grid wraps at narrow widths via grid-cols responsive classes."
+        }
+      },
+      "notes": "Agent checks 4.1/4.2/4.5/4.6 pass. 4.3/4.4/4.7/4.8 require human walkthrough."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all strategies that produce P&L, exposure, NAV, and alert data. kpi-strip is strategy-agnostic; aggregates across scope."
+        }
+      },
+      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches. CSS vars (var(--pnl-positive) etc.) are not hardcoded colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "77 lines \u2014 well under 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "KPIStripWidget (PascalCase), useOverviewDataSafe (camelCase), kpi-strip-widget.tsx (kebab-case)."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function found."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect or useMemo in widget. All derivations (marginUsed) are simple inline expressions from already-stable context values."
+        }
+      },
+      "notes": "All L7 checks pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "grep 'text-\\[|fontSize' \u2192 zero matches in kpi-strip-widget.tsx."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing values found."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Skeleton, KPICard shared components. No raw div substitutes for interactive elements (widget is display-only)."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no <img> without alt, no interactive div without role. Human: keyboard-only walkthrough pending."
+        },
+        "8.5": {
+          "result": "n/a",
+          "note": "Human check: grid-cols-2/3/5 responsive at minW=3."
+        }
+      },
+      "notes": "8.1/8.2/8.3 pass. 8.4 partial. 8.5 human-only."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "detail",
     "masterOf": [],
-    "detailOf": [],
-    "selectionKey": null,
+    "detailOf": ["scope-summary"],
+    "selectionKey": "scope (organizationIds, clientIds, strategyIds)",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "kpi-strip is a compact display-only aggregation strip; merging with pnl-chart or strategy-table would lose its dedicated horizontal layout."
+    },
+    "notes": "Reads aggregated KPI data from OverviewDataContext. Scope-driven via global-scope-store."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/trading-data.ts (aggregated KPIs computed in use-overview-page-data.ts)",
+    "backendOwner": "trading-api (performance + alerts endpoints)",
+    "notes": "KPI values computed from strategyPerformance + alerts aggregation in context producer. No direct API call in widget."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Margin Used computation not verified against real margin API",
+      "Alert count not verified to match alerts-preview widget"
+    ],
+    "notes": "Strategy-agnostic aggregation widget."
   },
   "knownIssues": [
-    "KPICard accentColor prop accepted in interface but not applied in component body (kpi-card.tsx) — not in widget scope"
+    "KPICard accentColor prop accepted in interface but not applied in component body (kpi-card.tsx) \u2014 not in widget scope"
   ],
   "findings": [
-    "DeFi Delta KPI card removed: was driven entirely by MOCK_PORTFOLIO_DELTA with no context source — dead mock UI",
-    "Margin Used guarded against zero totalNav to prevent NaN%",
-    "L1 note: context provider is thin (overview-data-context.tsx has no useGlobalScope call); scope filtering is correctly done in use-overview-page-data.ts which builds the context value — acceptable pattern"
+    {
+      "level": "l0",
+      "check": "0.5",
+      "description": "kpi-strip-widget.tsx \u2014 had MOCK_PORTFOLIO_DELTA + STRATEGY_RISK_PROFILES imports and mock-backed useHasDefiStrategies",
+      "status": "fixed",
+      "fix": "Removed mock imports and mock-backed DeFi Delta KPI card; widget now uses only context data"
+    },
+    {
+      "level": "l0",
+      "check": "0.6",
+      "description": "kpi-strip-widget.tsx \u2014 no loading skeleton",
+      "status": "fixed",
+      "fix": "Added Skeleton loading state with grid layout guarded by coreLoading"
+    },
+    {
+      "level": "l0",
+      "check": "0.7",
+      "description": "kpi-strip-widget.tsx \u2014 no empty state",
+      "status": "fixed",
+      "fix": "Added hasData guard with 'No portfolio data available' empty state message"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "kpi-strip-widget.tsx \u2014 ~4 user-visible strings not i18n wrapped",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

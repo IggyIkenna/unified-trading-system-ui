@@ -18,11 +18,11 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"]"
+          "note": "requiredEntitlements: [{domain: 'trading-common', tier: 'basic'}]"
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: [\"alerts\"]"
+          "note": "availableOn: ['alerts']"
         },
         "0.4": {
           "result": "pass",
@@ -38,7 +38,7 @@
         },
         "0.7": {
           "result": "pass",
-          "note": "emptyMessage=\"No active alerts — all systems operating normally\" passed to TableWidget"
+          "note": "emptyMessage='No active alerts \u2014 all systems operating normally' passed to TableWidget"
         },
         "0.8": {
           "result": "pass",
@@ -82,10 +82,10 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "ALERT_EXPORT_COLUMNS imported from lib/config/services/alerts.config — correct location"
+          "note": "ALERT_EXPORT_COLUMNS imported from lib/config/services/alerts.config \u2014 correct location"
         }
       },
-      "notes": "Most complete widget in the alerts domain. Full filter chain: scope → status/severity/source/search. BatchGuardButton disables mutations in batch mode."
+      "notes": "Most complete widget in the alerts domain. Full filter chain: scope \u2192 status/severity/source/search. BatchGuardButton disables mutations in batch mode."
     },
     "l2": {
       "status": "pass",
@@ -94,59 +94,197 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (real-time alert stream, mutation actions enabled), paper \u2713 (alerts visible, mutations disabled by BatchGuardButton when isBatchMode), batch \u2713 (historical alerts shown, all action buttons disabled via BatchGuardButton + isBatchMode check)."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "AlertsDataProvider reads scope.mode via useGlobalScope(); isBatchMode = scope.mode === 'batch'. useAlerts hook disables refetchInterval in batch. BatchGuardButton wraps all mutation buttons."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: same behavior as live \u2014 alerts visible, mutations active. Paper mode distinguishes from batch (paper uses real-time pubsub, batch reads GCS). BatchGuardButton checks isBatchMode only, not paper mode."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or polling interval in widget itself. useAlerts refetchInterval: false in batch (use-alerts.ts:20). dataFreshness.isWebSocket: false correctly set."
+        }
+      },
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 complete. Human checks 3.3/3.4 pending: 3.3 \u2014 batch mode disables Ack/Escalate/Resolve buttons via BatchGuardButton; 3.4 \u2014 isBatchMode renders 'Batch \u2014 actions disabled' badge in header."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead buttons. Ack: onClick={() => acknowledgeAlert(alert.id)} \u2713. Escalate: onClick={() => escalateAlert(alert)} \u2713. Resolve: onClick={() => resolveAlert(alert.id)} \u2713. ChevronRight SheetTrigger: opens detail sheet \u2713."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' or link elements found."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No navigation links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render. All handled at widget-wrapper level via registry."
+        }
+      },
+      "notes": "Agent prep complete. Human checks 4.3/4.4/4.7/4.8 pending. 4.3: columns (Severity, Alert, Entity, Value/Threshold, Status, Time, Actions) cover domain function. 4.4: mutation buttons \u2192 toast feedback. 4.7: Sheet detail panel open/close. 4.8: table scroll within widget bounds."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: cross-domain monitoring widget. Serves all strategy types \u2014 defi (basis-trade, recursive-staked-basis, amm-lp, lending-borrowing, staking, cross-chain-bridge), cefi, tradfi, sports, predictions. Alert entities include strategy, venue, service, position entity types."
+        }
+      },
+      "notes": "5.1 complete. Human checks 5.2-5.6 pending. 5.3: Ack/Escalate/Resolve flow through mutation API. 5.4: empty state message shown when filteredAlerts=[]. 5.5: downstream impact on kpi-strip counts. 5.6: venue-agnostic."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred \u2014 L6 (tests) not in scope for this agent pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "fixed",
+          "note": "Mapped --status-error \u2192 text-status-critical / bg-status-critical / border-status-critical (existing token surfaced in rollout). All arbitrary var(--status-error) usages in getSeverityColor, getStatusColor, and highCount Badge converted to utility classes.",
+          "fix": "Substituted text-[var(--status-error)] \u2192 text-status-critical, bg-[var(--status-error)]/10 \u2192 bg-status-critical/10, border-[var(--status-error)] \u2192 border-status-critical throughout helper fns and badge rendering."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports. ALERT_EXPORT_COLUMNS from lib/config/services/alerts.config. No duplicated fixtures."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "459 lines \u2014 within 500-line limit. Largest single component (alertColumns useMemo) is ~240 lines but spans JSX cells, not complex logic. No single function exceeds 200 lines of logic."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "AlertsTableWidget: PascalCase \u2713. BatchGuardButton: PascalCase \u2713. getSeverityColor/getStatusColor/getSeverityIcon: camelCase helper fns \u2713. File: alerts-table-widget.tsx kebab-case \u2713."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, or innerHTML= found."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "alertColumns useMemo has stable dep array: [isBatchMode, acknowledgePending, escalatePending, resolvePending, acknowledgeAlert, escalateAlert, resolveAlert]. filterConfig and actionsConfig are JSX-adjacent locals \u2014 they reconstruct each render but contain no expensive derivation. No inline object/array literals in useEffect/useMemo deps."
+        }
+      },
+      "notes": "7.1 fixed via --status-error \u2192 text-status-critical mapping. 7.5 deferred (i18n). All other checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "fixed",
+          "note": "text-[10px] \u2192 text-micro applied at line 378 ('Batch \u2014 actions disabled' badge).",
+          "fix": "Substituted text-[10px] \u2192 text-micro (new 0.625rem / 10px token in @theme inline)."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No spacing arbitrary values (p-[...], m-[...], gap-[...]) found."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses TableWidget, Badge, Button, Card, CardContent, Sheet family, Tooltip family \u2014 all from components/ui/*. No raw div replacements for shared primitives."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: No <img>. No interactive divs without role. aria-label='Acknowledge alert' on Ack buttons \u2713. All interactive elements are Button or SheetTrigger. Human a11y walkthrough pending."
+        },
+        "8.5": {
+          "result": null,
+          "note": "Human pending: resize test at minW=6, minH=5."
+        }
+      },
+      "notes": "8.1 fixed via text-micro token. 8.2/8.3/8.4(agent) pass. 8.5 requires human."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "master",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Primary alerts interaction surface. The inline Sheet detail panel already integrates detail view \u2014 no separate detail widget needed. Kill-switch is a separate action panel with distinct emergency intervention scope."
+    },
+    "notes": "Effectively a self-contained master+detail widget (table rows open detail Sheet inline). Peer relationship with alerts-kpi-strip (both read same filteredAlerts dataset). No cross-widget selection key emitted."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/mock-data-index.ts (getAlertsForScope fallback), lib/api/mock-trade-ledger.ts (defiAlerts reactive)",
+    "backendOwner": "alerts-service",
+    "notes": "useAlerts() queries /api/alerts/list via REST. No auto-refetch in live mode unless React Query staleTime triggers. Batch: refetchInterval disabled. Mutations: useAcknowledgeAlert, useEscalateAlert, useResolveAlert \u2192 POST /api/alerts/{id}/acknowledge|escalate|resolve. defiAlerts generated reactively from mock-trade-ledger on mock-order-filled / mock-ledger-reset window events."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Source filter only has 'recovery' option \u2014 other source categories (market-data, risk-engine, etc.) not filterable",
+      "Entity filter missing \u2014 can only filter by entityType indirectly through search",
+      "Batch-mode: mutations disabled but no explicit batch-mode empty-state messaging beyond the badge"
+    ],
+    "notes": "Cross-domain widget. Handles all alert entity types (strategy, venue, service, position). DeFi-reactive alerts generated from ledger events."
   },
   "knownIssues": [],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "alerts-table-widget.tsx:45,47,49,51,60,62,64,372 \u2014 var(--status-error) used but not defined in globals.css",
+      "status": "fixed",
+      "fix": "Mapped --status-error \u2192 text-status-critical / bg-status-critical / border-status-critical (existing token). Converted getSeverityColor critical+high branches (lines 45,47), getStatusColor active branch (line 60), and highCount Badge (line 372)."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "alerts-table-widget.tsx \u2014 ~30 user-visible strings (column headers, filter labels, badge labels, empty/error messages)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "alerts-table-widget.tsx:378 \u2014 text-[10px] arbitrary font size for batch-mode badge label",
+      "status": "fixed",
+      "fix": "Substituted text-[10px] \u2192 text-micro (new 0.625rem token in @theme inline) on 'Batch \u2014 actions disabled' badge label at line 378."
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21",
+  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical and text-[10px] \u2192 text-micro per landed tokens"
 }

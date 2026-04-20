@@ -84,7 +84,7 @@ export function BookHierarchyBarWidget(_props: WidgetComponentProps) {
                 <SelectItem key={s.id} value={s.id}>
                   <div className="flex items-center gap-2">
                     <span>{s.name}</span>
-                    <span className="text-[10px] text-muted-foreground">{s.assetClass}</span>
+                    <span className="text-caption text-muted-foreground">{s.assetClass}</span>
                   </div>
                 </SelectItem>
               ))}

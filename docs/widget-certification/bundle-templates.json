@@ -18,7 +18,7 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[execution-basic,execution-full]."
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}]."
         },
         "0.3": {
           "result": "pass",
@@ -34,22 +34,22 @@
         },
         "0.6": {
           "result": "n/a",
-          "note": "— context is pure local state (no async fetch); no isLoading field."
+          "note": "Context is pure local state (no async fetch); no isLoading field."
         },
         "0.7": {
           "result": "pass",
-          "note": "added empty state when templates.length===0 (was rendering an empty grid with no message)."
+          "note": "Empty state present: hidden-gallery state and templates.length===0 guard with informative message."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— context has no error field; WidgetErrorBoundary handles render errors."
+          "note": "Context has no error field; WidgetErrorBoundary handles render errors."
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code. Fixed: wired readOnly from context to disable template load buttons in batch mode."
+          "note": "No dead code. readOnly from context disables template load buttons in batch mode."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[bundles]. 0.4 No any types or @ts-ignore. 0.5 No mock imports in widget file. 0.6 N/A — context is pure local state (no async fetch); no isLoading field. 0.7 Fixed: added empty state when templates.length===0 (was rendering an empty grid with no message). 0.8 N/A — context has no error field; WidgetErrorBoundary handles render errors. 0.9 No dead code. Fixed: wired readOnly from context to disable template load buttons in batch mode."
+      "notes": "All 9 checks pass (0.6, 0.8 N/A for pure local-state context)."
     },
     "l1": {
       "status": "pass",
@@ -66,26 +66,26 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter: hasDefiDesk filters FLASH_BORROW/FLASH_REPAY templates for orgs without a DeFi desk. 1.4-1.5 N/A — template list is scoped by org; client/strategy sub-filtering not applicable for template gallery."
+          "note": "Org filter: hasDefiDesk filters FLASH_BORROW/FLASH_REPAY templates for orgs without a DeFi desk."
         },
         "1.4": {
-          "result": "pass",
-          "note": "1.5 N/A — template list is scoped by org; client/strategy sub-filtering not applicable for template gallery."
+          "result": "n/a",
+          "note": "Template list is org-scoped; client sub-filtering not applicable for template gallery."
         },
         "1.5": {
           "result": "n/a",
-          "note": "— template list is scoped by org; client/strategy sub-filtering not applicable for template gallery."
+          "note": "Template list is org-scoped; strategy sub-filtering not applicable for template gallery."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty org scope → hasDefiDesk=true → full template list returned."
+          "note": "Empty org scope \u2192 hasDefiDesk=true \u2192 full template list returned."
         },
         "1.7": {
-          "result": "pass",
-          "note": "BUNDLE_TEMPLATES fixture still in lib/mocks/fixtures/bundle-templates (context concern, not widget). Template reference data in lib/config/services/bundle.config is correct."
+          "result": "partial",
+          "note": "BUNDLE_TEMPLATES fixture still in lib/mocks/fixtures/bundle-templates \u2014 context-level concern. Template reference config in lib/config/services/bundle.config is correct."
         }
       },
-      "notes": "1.1 All data from useBundlesData() hook (templates, loadTemplate, showTemplates, setShowTemplates, steps, readOnly). 1.2 Context calls useGlobalScope(); hasDefiDesk derived from organizationIds. 1.3 Org filter: hasDefiDesk filters FLASH_BORROW/FLASH_REPAY templates for orgs without a DeFi desk. 1.4-1.5 N/A — template list is scoped by org; client/strategy sub-filtering not applicable for template gallery. 1.6 Empty org scope → hasDefiDesk=true → full template list returned. 1.7 BUNDLE_TEMPLATES fixture still in lib/mocks/fixtures/bundle-templates (context concern, not widget). Template reference data in lib/config/services/bundle.config is correct."
+      "notes": "All checks pass. 1.4, 1.5 N/A. 1.7 partial: BUNDLE_TEMPLATES in lib/mocks/ (context-level debt, not widget-level)."
     },
     "l2": {
       "status": "pass",
@@ -94,64 +94,204 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live=full template loading; paper=full loading (testnet preview); batch=readOnly=true \u2014 template buttons disabled."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads isBatch from useExecutionMode(); readOnly=isBatch propagated to widget."
+        },
+        "3.3": {
+          "result": "partial",
+          "note": "Human verify: batch mode \u2192 template load buttons visually disabled."
+        },
+        "3.4": {
+          "result": "partial",
+          "note": "Human verify: batch/as-of indicator visible in surrounding layout."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: template loading enabled; loaded steps produce testnet gas estimates in context."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or setInterval in this widget or bundles context."
+        }
+      },
+      "notes": "Agent checks 3.1, 3.2, 3.5, 3.6 complete. Human must verify 3.3, 3.4."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Template buttons call loadTemplate(template); show/hide buttons call setShowTemplates(). No empty or console-only handlers."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' or dead links."
+        },
+        "4.3": {
+          "result": "partial",
+          "note": "Human: verify template cards show name, category badge, cost/profit estimates, and step flow preview."
+        },
+        "4.4": {
+          "result": "partial",
+          "note": "Human: click template \u2192 steps load in bundle-steps widget."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks inside widget render."
+        }
+      },
+      "notes": "Agent checks 4.1, 4.2, 4.5, 4.6 pass. Human must complete 4.3, 4.4."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: Flash Loan Arb (DeFi, FLASH_BORROW+SWAP+FLASH_REPAY template), Basis Trade (CeFi, multi-leg buy/sell), DeFi Deleverage (BORROW+SWAP+LEND template). Template gallery is the onboarding entry point for all bundle strategies."
+        }
+      },
+      "notes": "5.1 documented. Human must complete 5.2\u20135.6 walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
       "notes": null
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors. Semantic classes (text-rose-400, text-emerald-400) are design-system sentiment colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock imports in widget file. BUNDLE_TEMPLATES accessed via context hook, not directly."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "97 lines \u2014 well within 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "Component PascalCase (BundleTemplatesWidget), file kebab-case (bundle-templates-widget.tsx)."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in widget file; no inline object/array literals in deps."
+        }
+      },
+      "notes": "All L7 checks pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "fixed",
+          "note": "Replaced text-[10px] with text-micro (--text-micro), text-[9px] with text-nano (--text-nano), and text-[8px] with text-pico (--text-pico). Tokens landed in globals.css."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing values (p-[, m-[, gap-[)."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Badge, CollapsibleSection, Separator from shared components/ui/*. Template cards use native <button> with type='button' (correct). No custom interactive divs."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "No img without alt. No unlabeled inputs. Template buttons are native <button type='button'> with visible text content \u2014 accessible by default. No interactive divs."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: verify at minW=3, minH=3 \u2014 template card grid (sm:grid-cols-2) should compress to single column on small widget width."
+        }
+      },
+      "notes": "8.1 fixed (text-micro/text-nano/text-pico applied). 8.2\u20138.4 pass. 8.5 human verify."
     }
   },
   "relationships": {
-    "mode": null,
-    "masterOf": [],
+    "mode": "master",
+    "masterOf": ["bundle-steps"],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Template gallery is toggled on/off by the user (showTemplates flag). It's a distinct browsing surface separate from the editing surface (bundle-steps). Keeping separate allows independent resizing and the collapsed state UX."
+    },
+    "notes": "Drives bundle-steps by calling loadTemplate() which populates the steps array in BundlesDataContext. Master in the sense of initiating the bundle workflow."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "minutes",
+    "mockSource": "lib/mocks/fixtures/bundle-templates.ts",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "BUNDLE_TEMPLATES currently sourced from lib/mocks/fixtures/bundle-templates.ts via context. In production, templates should be fetched from a bundle template API endpoint on-demand. Migration tracked as known issue."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "sports", "options"],
+    "strategies": ["DEFI_ETH_BASIS_HUF_1H", "CEFI_BTC_BASIS_BINANCE_HL"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "BUNDLE_TEMPLATES fixture in lib/mocks/ should migrate to lib/config/ or backend API (L1.7 partial)",
+      "Template search/filter not implemented for large template sets",
+      "No template preview modal \u2014 only inline step badge strip"
+    ],
+    "notes": "Template gallery covers DeFi, CeFi, Sports, Options categories per fixture data. Coverage verification depends on production template API providing the same breadth."
   },
   "knownIssues": [
-    "BUNDLE_TEMPLATES fixture still in lib/mocks/fixtures/bundle-templates — should migrate to lib/config/ or lib/constants/ (context-level fix, not widget-level)"
+    "BUNDLE_TEMPLATES fixture still in lib/mocks/fixtures/bundle-templates \u2014 should migrate to lib/config/ or lib/constants/ (context-level fix, not widget-level)"
   ],
   "findings": [
-    "Fixed: empty state added when templates array is empty (scope-filtered to zero)",
-    "readOnly flag wired to disable template load buttons in batch mode"
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "bundle-templates-widget.tsx \u2014 ~11 user-visible strings not i18n-ready",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "bundle-templates-widget.tsx \u2014 text-[10px] at lines 21,45,62,69,87; text-[9px] at line 58; text-[8px] at line 75. No tailwind token for sub-xs sizes.",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro (--text-micro 0.625rem), text-[9px] with text-nano (--text-nano 0.5625rem), and text-[8px] with text-pico (--text-pico 0.5rem) (2026-04-21)"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

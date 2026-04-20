@@ -18,15 +18,15 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [execution-basic, execution-full]."
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: [strategies]."
+          "note": "availableOn=[strategies]."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any / @ts-ignore (StrategyCatalogEntry[] cast is typed, not any)."
+          "note": "no any/ts-ignore (StrategyCatalogEntry[] cast is typed, not any)."
         },
         "0.5": {
           "result": "pass",
@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "— added error guard: renders 'Failed to load strategy catalog.' in text-destructive when useStrategyCatalog returns error."
+          "note": "error guard added: renders 'Failed to load strategy catalog.' in text-destructive when useStrategyCatalog returns error."
         },
         "0.9": {
           "result": "pass",
           "note": "no dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [strategies]. 0.4 ✓ no any / @ts-ignore (StrategyCatalogEntry[] cast is typed, not any). 0.5 ✓ no lib/mocks imports. 0.6 ✓ Spinner rendered when isLoading. 0.7 ✓ 'No strategies found' when strategies.length === 0. 0.8 FIXED — added error guard: renders 'Failed to load strategy catalog.' in text-destructive when useStrategyCatalog returns error. 0.9 ✓ no dead code."
+      "notes": "All 9 checks pass."
     },
     "l1": {
       "status": "pass",
@@ -62,93 +62,260 @@
         },
         "1.2": {
           "result": "n/a",
-          "note": "— this is a strategy type catalog widget showing all 65+ strategy definitions system-wide; it is not scoped to org/client/strategy. Scope filtering does not apply to a reference catalog. 1.3–1.6 N/A — same reason as 1.2."
+          "note": "strategy type catalog widget showing all 65+ strategy definitions system-wide; not scoped to org/client/strategy. Scope filtering does not apply to a reference catalog."
         },
         "1.3": {
-          "result": "pass",
-          "note": "1.6 N/A — same reason as 1.2."
+          "result": "n/a",
+          "note": "same reason as 1.2."
         },
         "1.4": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "same reason as 1.2."
         },
         "1.5": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "same reason as 1.2."
         },
         "1.6": {
           "result": "n/a",
-          "note": "— same reason as 1.2."
+          "note": "same reason as 1.2."
         },
         "1.7": {
           "result": "pass",
           "note": "DOMAIN_COLORS is a local display constant (not reference data needing migration); catalog data served from API."
         }
       },
-      "notes": "1.1 ✓ data from useStrategyCatalog() hook, no inline fetch/import. 1.2 N/A — this is a strategy type catalog widget showing all 65+ strategy definitions system-wide; it is not scoped to org/client/strategy. Scope filtering does not apply to a reference catalog. 1.3–1.6 N/A — same reason as 1.2. 1.7 ✓ DOMAIN_COLORS is a local display constant (not reference data needing migration); catalog data served from API."
+      "notes": "1.1 pass; 1.2-1.6 N/A (reference catalog widget). 1.7 pass."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (browse available strategy types), paper \u2713 (same), batch \u2713 (same \u2014 reference catalog is mode-agnostic)."
+        },
+        "3.2": {
+          "result": "n/a",
+          "note": "Widget does not read scope or mode \u2014 it is a reference catalog. Mode does not change its data."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: widget behavior unchanged \u2014 it's a read-only catalog browser."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval. Data via useStrategyCatalog() (REST/react-query)."
+        },
+        "3.3": {
+          "result": "n/a",
+          "note": "No order entry buttons \u2014 read-only catalog."
+        },
+        "3.4": {
+          "result": "pending",
+          "note": "Human verify: batch indicator behavior (may not need one for catalog)."
+        }
+      },
+      "notes": "Agent checks done. Widget is effectively mode-agnostic. Human should verify 3.4."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead onClick handlers. Domain filter buttons call setSelectedDomain \u2014 functional."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href links in this widget."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No route links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        },
+        "4.3": {
+          "result": "pending",
+          "note": "Human verify: strategy table shows ID, label, domain badge, parameters for each family."
+        },
+        "4.4": {
+          "result": "pending",
+          "note": "Human verify: domain filter buttons (all/defi/cefi/tradfi/sports) filter correctly."
+        },
+        "4.7": {
+          "result": "n/a",
+          "note": "No tabs/collapsible sections (family groupings are always visible)."
+        },
+        "4.8": {
+          "result": "pending",
+          "note": "Human verify: max-h-[500px] overflow-y-auto scroll works within widget bounds."
+        }
+      },
+      "notes": "Agent checks pass. Human must verify 4.3, 4.4, 4.8."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all 65+ strategy types across DeFi, CeFi, TradFi, Sports. Widget is a discovery/reference browser \u2014 not tied to execution."
+        }
+      },
+      "notes": "5.1 documented. Human must verify 5.2-5.6 \u2014 in this case, primarily 5.6 (all domain filters work for each asset class)."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "L6 not started \u2014 deferred until L5 human walkthrough complete."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors. DOMAIN_COLORS uses Tailwind class strings, not hex literals. CLEAN."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data in widget; data from useStrategyCatalog() hook."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "117 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PascalCase, kebab-case file. Compliant."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns. CLEAN."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo deps to check. CLEAN."
+        }
+      },
+      "notes": "All mechanical checks pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "fixed",
+          "note": "Replaced text-[10px] with text-micro on Badge (line 102). --text-micro (0.625rem/10px) is defined in globals.css @theme inline block.",
+          "fix": "Replaced text-[10px] \u2192 text-micro on parameter Badge."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing. CLEAN."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Card, CardContent, CardHeader, CardTitle (ui), Badge (ui), Table (ui), Spinner (shared). Shared primitives."
+        },
+        "8.4": {
+          "result": "fixed",
+          "note": "Domain filter buttons lacked type='button' and aria attributes. Fixed: added type='button', aria-label, and aria-pressed.",
+          "fix": "Added type='button', aria-label='Filter by {domain}', aria-pressed={selectedDomain === d} to each domain filter button"
+        },
+        "8.5": {
+          "result": "pending",
+          "note": "Human verify: renders at minW=6, minH=5. max-h-[500px] scroll area may conflict with widget height constraints."
+        }
+      },
+      "notes": "8.1 fixed (text-micro token applied). 8.4 fixed. 8.2-8.3 pass. 8.5 human-verify pending \u2014 max-h-[500px] is a potential layout issue at minH."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
-    "mergeCandidate": null,
+    "mergeCandidate": {
+      "with": "strategies-catalogue",
+      "rationale": "Both are strategy browsing widgets. strategies-catalogue shows live instances; strategy-family-browser shows strategy type definitions. Could be merged as tabs within one widget \u2014 but semantics differ (instances vs. types)."
+    },
     "keepSeparate": null,
-    "notes": null
+    "notes": "Reference catalog widget \u2014 displays strategy type definitions from useStrategyCatalog API, not live strategy instances. Distinct from strategies-catalogue which shows running strategy instances."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "batch",
     "mockSource": null,
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Data via useStrategyCatalog(domain?) hook (react-query). Hook likely calls /api/strategies/catalog. Currently returns mock data from API mock layer. Production: strategy catalog service."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
-    "commonTabs": null,
+    "assetClasses": ["defi", "cefi", "tradfi", "sports"],
+    "strategies": ["all-65plus-strategy-types"],
+    "venues": ["all"],
+    "commonTabs": ["strategies"],
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "max-h-[500px] hardcoded may overflow/conflict with widget height at minH=5",
+      "No parameter editing in this view \u2014 read-only catalog",
+      "'predictions' domain not in DOMAINS filter array"
+    ],
+    "notes": "Widget does not include 'predictions' in DOMAINS filter (only all/defi/cefi/tradfi/sports). If prediction strategies are in catalog, they may be hidden."
   },
   "knownIssues": [],
   "findings": [
-    "L0-0.8: Widget was missing error state handling — useStrategyCatalog returns error from react-query but it was ignored. Fixed: added error guard before empty-state check."
+    {
+      "level": "l0",
+      "check": "0.8",
+      "description": "strategy-family-browser-widget.tsx \u2014 error state was missing; useStrategyCatalog returns error from react-query but it was ignored",
+      "status": "fixed",
+      "fix": "Added error guard before empty-state check \u2014 renders 'Failed to load strategy catalog.' in text-destructive"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "strategy-family-browser-widget.tsx \u2014 ~6 user-visible strings",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "strategy-family-browser-widget.tsx:102 \u2014 text-[10px] arbitrary font-size on Badge; no text-2xs token in globals.css",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro (--text-micro=0.625rem/10px) on parameter Badge."
+    },
+    {
+      "level": "l8",
+      "check": "8.4",
+      "description": "strategy-family-browser-widget.tsx:59 \u2014 domain filter <button> elements missing type='button', aria-label, aria-pressed",
+      "status": "fixed",
+      "fix": "Added type='button', aria-label='Filter by {domain}', aria-pressed={selectedDomain === d} to each domain filter button"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

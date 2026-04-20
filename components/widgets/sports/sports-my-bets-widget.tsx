@@ -97,7 +97,7 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
     <WidgetScroll className="h-full flex flex-col gap-2 p-2">
       <KpiStrip metrics={metrics} columns={5} className="shrink-0" />
 
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1">Open singles</div>
+      <div className="text-micro font-semibold uppercase tracking-wider text-muted-foreground px-1">Open singles</div>
       <DataTableWidget
         columns={openColumns}
         data={open}
@@ -125,7 +125,7 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
               <div
                 key={b.id}
                 className={cn(
-                  "rounded-md border border-border/60 px-2 py-1.5 text-[11px] flex flex-wrap gap-x-3 gap-y-0.5 bg-card/40",
+                  "rounded-md border border-border/60 px-2 py-1.5 text-caption flex flex-wrap gap-x-3 gap-y-0.5 bg-card/40",
                   b.status === "open" && "border-primary/30",
                 )}
               >
@@ -133,7 +133,7 @@ export function SportsMyBetsWidget(_props: WidgetComponentProps) {
                 <span className="text-muted-foreground">
                   {b.accumulatorLegs?.length ?? 0} legs · {fmtOdds(b.odds)} · {fmtCurrency(b.stake)}
                 </span>
-                <span className="ml-auto uppercase text-[9px] font-bold text-muted-foreground">{b.status}</span>
+                <span className="ml-auto uppercase text-nano font-bold text-muted-foreground">{b.status}</span>
               </div>
             ))
           )}

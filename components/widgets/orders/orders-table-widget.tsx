@@ -19,7 +19,7 @@ const STATUS_COLORS: Record<string, string> = {
   PARTIAL: "border-[var(--status-warning)] text-[var(--status-warning)]",
   OPEN: "border-[var(--chart-1)] text-[var(--chart-1)]",
   CANCELLED: "border-muted-foreground text-muted-foreground",
-  REJECTED: "border-[var(--status-error)] text-[var(--status-error)]",
+  REJECTED: "border-status-critical text-status-critical",
 };
 
 function getStatusColor(status: string): string {
@@ -152,7 +152,7 @@ function buildColumns(
       cell: ({ row }) => {
         const edge = row.getValue<number>("edge_bps") ?? 0;
         return (
-          <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-emerald-400" : "text-rose-400")}>
+          <div className={cn("text-right font-mono text-xs", edge >= 0 ? "text-pnl-positive" : "text-pnl-negative")}>
             {edge >= 0 ? "+" : ""}
             {formatNumber(edge, 1)} bps
           </div>
@@ -168,7 +168,7 @@ function buildColumns(
         const pnl = row.getValue<number>("instant_pnl") ?? 0;
         const fmt = Math.abs(pnl) >= 1000 ? `$${formatNumber(pnl / 1000, 1)}K` : `$${formatNumber(pnl, 0)}`;
         return (
-          <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-emerald-400" : "text-rose-400")}>
+          <div className={cn("text-right font-mono font-medium", pnl >= 0 ? "text-pnl-positive" : "text-pnl-negative")}>
             {pnl >= 0 ? "+" : ""}
             {fmt}
           </div>
@@ -193,11 +193,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("client_name");
-        return val ? (
-          <span className="text-xs">{val}</span>
-        ) : (
-          <span className="text-muted-foreground text-[10px]">--</span>
-        );
+        return val ? <span className="text-xs">{val}</span> : <span className="text-muted-foreground text-xs">--</span>;
       },
     },
     {
@@ -207,11 +203,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("category");
-        return val ? (
-          <span className="text-xs">{val}</span>
-        ) : (
-          <span className="text-muted-foreground text-[10px]">--</span>
-        );
+        return val ? <span className="text-xs">{val}</span> : <span className="text-muted-foreground text-xs">--</span>;
       },
     },
     {
@@ -221,11 +213,7 @@ function buildColumns(
       enableSorting: true,
       cell: ({ row }) => {
         const val = row.getValue<string | undefined>("strategy_family");
-        return val ? (
-          <span className="text-xs">{val}</span>
-        ) : (
-          <span className="text-muted-foreground text-[10px]">--</span>
-        );
+        return val ? <span className="text-xs">{val}</span> : <span className="text-muted-foreground text-xs">--</span>;
       },
     },
     {
@@ -249,7 +237,7 @@ function buildColumns(
         return (
           <div className="flex flex-col items-end">
             <span className="font-mono">{filled.toLocaleString()}</span>
-            <span className="text-[10px] text-muted-foreground">{formatPercent(fillPct, 0)}</span>
+            <span className="text-xs text-muted-foreground">{formatPercent(fillPct, 0)}</span>
           </div>
         );
       },

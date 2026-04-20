@@ -54,15 +54,15 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
       {/* Summary strip */}
       <div className="grid grid-cols-3 gap-2">
         <div className="rounded-lg border bg-muted/30 p-2 text-center">
-          <p className="text-[10px] text-muted-foreground">Accrued</p>
+          <p className="text-micro text-muted-foreground">Accrued</p>
           <p className="font-mono text-sm font-bold text-amber-400">${formatNumber(totalAccrued, 2)}</p>
         </div>
         <div className="rounded-lg border bg-muted/30 p-2 text-center">
-          <p className="text-[10px] text-muted-foreground">Claimed</p>
+          <p className="text-micro text-muted-foreground">Claimed</p>
           <p className="font-mono text-sm font-bold text-blue-400">{formatNumber(totalClaimed, 2)}</p>
         </div>
         <div className="rounded-lg border bg-muted/30 p-2 text-center">
-          <p className="text-[10px] text-muted-foreground">Sold</p>
+          <p className="text-micro text-muted-foreground">Sold</p>
           <p className="font-mono text-sm font-bold text-emerald-400">${formatNumber(totalSold, 2)}</p>
         </div>
       </div>
@@ -79,7 +79,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
                 <Gift className="size-4 text-amber-400" />
                 <span className="text-sm font-medium">{reward.token} Rewards</span>
               </div>
-              <Badge variant="outline" className="text-[10px]">
+              <Badge variant="outline" className="text-micro">
                 {reward.frequency}
               </Badge>
             </div>

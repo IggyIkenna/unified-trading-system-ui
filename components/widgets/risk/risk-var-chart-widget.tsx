@@ -47,7 +47,7 @@ export function RiskVarChartWidget(_props: WidgetComponentProps) {
             variant={varMethod === method ? "secondary" : "ghost"}
             size="sm"
             onClick={() => setVarMethod(method)}
-            className="text-[10px] h-6 px-1.5 capitalize"
+            className="text-micro h-6 px-1.5 capitalize"
           >
             {method.replace("_", " ")}
           </Button>
@@ -84,7 +84,7 @@ export function RiskVarChartWidget(_props: WidgetComponentProps) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div className="flex items-center gap-4 px-1 pt-1 text-[10px] text-muted-foreground shrink-0">
+      <div className="flex items-center gap-4 px-1 pt-1 text-micro text-muted-foreground shrink-0">
         {[
           { label: "DeFi", color: "var(--surface-config)" },
           { label: "CeFi", color: "var(--surface-trading)" },

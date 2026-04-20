@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
+import { MOCK_TERMINAL_EVENTS } from "@/lib/config/services/terminal-events.config";
 import { useInstruments } from "@/hooks/api/use-instruments";
 import { useCandles, useOrderBook, useTickers } from "@/hooks/api/use-market-data";
 import { useBalances, usePositions } from "@/hooks/api/use-positions";
@@ -811,6 +812,9 @@ export function useTerminalPageData(): TerminalPageResult {
       // TODO: wire from API hook when real endpoint exists
       isLoading: false,
       error: null,
+      events: MOCK_TERMINAL_EVENTS,
+      isLoadingEvents: false,
+      errorEvents: null,
     }),
     [
       instruments,

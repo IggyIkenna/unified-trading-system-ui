@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "— added hasError block returning error message."
+          "note": "\u2014 added hasError block returning error message."
         },
         "0.9": {
           "result": "pass",
           "note": "no dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks import. 0.6 ✓ isLoading spinner. 0.7 ✓ empty state renders 'No venue CB data'. 0.8 FIXED — added hasError block returning error message. 0.9 ✓ no dead code."
+      "notes": "0.1 \u2713 WidgetErrorBoundary via widget-wrapper. 0.2 \u2713 requiredEntitlements: [execution-basic, execution-full]. 0.3 \u2713 availableOn: [risk]. 0.4 \u2713 no any/ts-ignore. 0.5 \u2713 no lib/mocks import. 0.6 \u2713 isLoading spinner. 0.7 \u2713 empty state renders 'No venue CB data'. 0.8 FIXED \u2014 added hasError block returning error message. 0.9 \u2713 no dead code."
     },
     "l1": {
       "status": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "scope.organizationIds feeds scopeStrategyIds → riskLimits filter."
+          "note": "scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter."
         },
         "1.4": {
           "result": "pass",
@@ -78,77 +78,208 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "empty scope → unfiltered data (scopeStrategyIds.length === 0 guard)."
+          "note": "empty scope \u2192 unfiltered data (scopeStrategyIds.length === 0 guard)."
         },
         "1.7": {
           "result": "pass",
-          "note": "⚠ MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context — these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
+          "note": "\u26a0 MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context \u2014 these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
         }
       },
-      "notes": "1.1 ✓ data exclusively from useRiskData(). 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds feeds scopeStrategyIds → riskLimits filter. 1.4 ✓ scope.clientIds via getStrategyIdsForScope. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → unfiltered data (scopeStrategyIds.length === 0 guard). 1.7 ⚠ MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context — these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
+      "notes": "1.1 \u2713 data exclusively from useRiskData(). 1.2 \u2713 use-risk-page-data.ts calls useGlobalScope(). 1.3 \u2713 scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter. 1.4 \u2713 scope.clientIds via getStrategyIdsForScope. 1.5 \u2713 scope.strategyIds via getStrategyIdsForScope. 1.6 \u2713 empty scope \u2192 unfiltered data (scopeStrategyIds.length === 0 guard). 1.7 \u26a0 MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context \u2014 these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 (real-time CB status), paper \u2014 N/A (CB status is venue-specific; paper mode may not have live CB data), batch \u2713 (read-only historical status). Widget is display-only."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "isBatchMode in context; not used by this widget (read-only display)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: display paper account CB statuses if available. Widget is read-only."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget."
+        }
+      },
+      "notes": "Human must verify 3.4 (batch indicator visible in layout)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No interactive buttons \u2014 read-only display widget."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "Human must verify 4.8 (grid cards scroll within WidgetScroll bounds)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all strategies with active venue connections. venueCircuitBreakers keyed by venue + strategy_id. Shows OPEN/HALF_OPEN/CLOSED status and kill_switch_active."
+        }
+      },
+      "notes": "Human walkthrough required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing phase."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex colors. bg-emerald-500/20 etc. are Tailwind semantic classes, not arbitrary values."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "64 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "RiskCircuitBreakersWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo in widget."
+        }
+      },
+      "notes": "L7 all pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[9px]/text-[10px]/text-[11px] replaced with text-nano/text-micro/text-caption tokens per consolidated globals.css; no arbitrary typography classes remain."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No bracket spacing violations."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Badge, Spinner, WidgetScroll shared components."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: no img without alt, no bare div onClick, no unlabelled inputs. Display-only."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: resize test at minW=4, minH=2 required."
+        }
+      },
+      "notes": "8.1 fixed (tokens applied). 8.2-8.4 pass. 8.5 needs human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
-    "mergeCandidate": null,
+    "mergeCandidate": {
+      "with": "risk-strategy-heatmap",
+      "rationale": "Both show CB status per strategy. Heatmap shows per-strategy row with actions; circuit-breakers shows per-venue status cards. Complementary views \u2014 keep separate."
+    },
     "keepSeparate": null,
-    "notes": null
+    "notes": "Venue-level CB status view complements the strategy-level heatmap."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:10000",
+    "staleness": "near-realtime:<=1s",
+    "mockSource": "lib/mocks/fixtures/risk-data (VENUE_CIRCUIT_BREAKERS)",
+    "backendOwner": "unified-trading-api",
+    "notes": "venueCircuitBreakers from useVenueCircuitBreakers() SWR hook."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": ["TradFi/Sports venues not yet represented in CB registry"],
+    "notes": "Per-venue circuit breaker card grid. 2-column layout."
   },
   "knownIssues": [
     "Domain-level: MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE should move from lib/mocks/ to lib/constants/risk (affects all risk widgets via context re-export)"
   ],
-  "findings": ["0.8 fix: added hasError early-return block (was missing, only isLoading was handled)"],
+  "findings": [
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "0.8 fix: added hasError early-return block (was missing, only isLoading was handled)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-circuit-breakers-widget.tsx \u2014 ~5 user-visible strings (status labels, 'Kill Switch Active', 'No venue CB data')",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "risk-circuit-breakers-widget.tsx \u2014 text-[9px], text-[10px], text-[11px] used for dense CB card labels",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

@@ -57,7 +57,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
               key={ct}
               variant={chartType === ct ? "secondary" : "ghost"}
               size="sm"
-              className="h-6 px-2 text-[10px]"
+              className="h-6 px-2 text-micro"
               onClick={() => setChartType(ct)}
             >
               {ct.charAt(0).toUpperCase() + ct.slice(1)}
@@ -70,7 +70,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
               key={ind.id}
               variant={activeIndicators.has(ind.id) ? "secondary" : "ghost"}
               size="sm"
-              className="h-5 px-1.5 text-[9px]"
+              className="h-5 px-1.5 text-nano"
               onClick={() => toggleIndicator(ind.id)}
             >
               {ind.label}
@@ -82,7 +82,7 @@ export function PriceChartWidget(_props: WidgetComponentProps) {
               key={tf}
               variant={timeframe === tf ? "secondary" : "ghost"}
               size="sm"
-              className="h-5 px-1.5 text-[9px]"
+              className="h-5 px-1.5 text-nano"
               onClick={() => setTimeframe(tf)}
             >
               {tf}

@@ -18,7 +18,7 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [execution-basic, execution-full]."
+          "note": "requiredEntitlements: [{ domain: trading-common, tier: basic }]."
         },
         "0.3": {
           "result": "pass",
@@ -34,11 +34,11 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— added isLoading skeleton (Skeleton import + early-return guard before empty-state check)."
+          "note": "isLoading skeleton added (header + chart area + footer skeletons)."
         },
         "0.7": {
           "result": "pass",
-          "note": "Empty guard: timeSeriesData.length === 0 && backtestVsLive.length === 0 returns 'No P&L time series data available'."
+          "note": "timeSeriesData.length === 0 && backtestVsLive.length === 0 \u2192 'No P&L time series data available'."
         },
         "0.8": {
           "result": "pass",
@@ -49,7 +49,7 @@
           "note": "No dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper.tsx. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [pnl]. 0.4 ✓ No any types or @ts-ignore. 0.5 ✓ No direct lib/mocks imports. 0.6 FIXED — added isLoading skeleton (Skeleton import + early-return guard before empty-state check). 0.7 ✓ Empty guard: timeSeriesData.length === 0 && backtestVsLive.length === 0 returns 'No P&L time series data available'. 0.8 ✓ Error handled at PnLDataProvider level. 0.9 ✓ No dead code."
+      "notes": "All 9 checks passed."
     },
     "l1": {
       "status": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "timeSeriesData, timeSeriesNetPnL, backtestVsLive all from usePnLData()."
+          "note": "timeSeriesData, timeSeriesNetPnL, backtestVsLive from usePnLData()."
         },
         "1.2": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "filterMultiplier reacts to selectedOrgIds from global scope — timeSeriesData is re-derived on change."
+          "note": "filterMultiplier reacts to selectedOrgIds \u2014 timeSeriesData re-derived on change."
         },
         "1.4": {
           "result": "pass",
@@ -78,78 +78,236 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope arrays → filterMultiplier=1 → unfiltered."
+          "note": "Empty scope arrays \u2192 filterMultiplier=1 \u2192 unfiltered."
         },
         "1.7": {
           "result": "pass",
-          "note": "PNL_FACTOR_CHART_COLORS from lib/config/services/pnl.config; FACTORS inline constant (not from mocks)."
+          "note": "PNL_FACTOR_CHART_COLORS from lib/config/services/pnl.config; FACTORS inline constant (not mocks)."
         }
       },
-      "notes": "1.1 ✓ timeSeriesData, timeSeriesNetPnL, backtestVsLive all from usePnLData(). 1.2 ✓ Context reads useGlobalScope(). 1.3 ✓ filterMultiplier reacts to selectedOrgIds from global scope — timeSeriesData is re-derived on change. 1.4 ✓ selectedClientIds cascade wired in context. 1.5 ✓ selectedStrategyIds wired in context. 1.6 ✓ Empty scope arrays → filterMultiplier=1 → unfiltered. 1.7 ✓ PNL_FACTOR_CHART_COLORS from lib/config/services/pnl.config; FACTORS inline constant (not from mocks)."
+      "notes": "All 7 checks passed."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 paper \u2713 batch \u2713. Time series renders historical data \u2014 meaningful in all modes. Backtest overlay is specifically useful in batch mode for comparison."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "pnl-data-context.tsx: generateTimeSeriesData called with dataMode==='batch' flag (line 238). Batch flag adjusts data generation in context."
+        },
+        "3.3": {
+          "result": "pass",
+          "note": "N/A \u2014 display-only chart widget. No order entry or submission controls."
+        },
+        "3.4": {
+          "result": "human-needed",
+          "note": "Human to confirm batch mode visual indicator is visible when in batch mode (expected: batch badge in waterfall controls bar above this widget)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: chart renders paper trade P&L time series. Expected behavior = identical rendering with paper trade data from context. No UI changes needed."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "useWidgetChartHeight uses ResizeObserver (layout measurement only, not data polling). No WebSocket or setInterval. No connections to disable in batch mode."
+        }
+      },
+      "notes": "Agent checks (3.1, 3.2, 3.3 N/A, 3.5, 3.6) pass. 3.4 needs human visual confirmation."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead buttons. Overlay toggle (Factor Lines / Backtest vs Live) and factor chip toggles all have meaningful handlers (setOverlay, toggleFactor)."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' or dead links."
+        },
+        "4.3": {
+          "result": "human-needed",
+          "note": "Human to confirm factor chip UI and overlay toggle are discoverable."
+        },
+        "4.4": {
+          "result": "human-needed",
+          "note": "Human to confirm overlay switch animates correctly, factor chips show/hide lines."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No inline entitlement checks in render path."
+        },
+        "4.7": {
+          "result": "human-needed",
+          "note": "Human to confirm Factor Lines / Backtest overlay toggle switches chart view correctly."
+        },
+        "4.8": {
+          "result": "human-needed",
+          "note": "Human to confirm chart does not overflow widget bounds at various heights."
+        }
+      },
+      "notes": "Agent checks (4.1, 4.2, 4.5, 4.6) pass. Human walkthrough needed for 4.3, 4.4, 4.7, 4.8."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all. Widget renders cumulative P&L factor lines for any strategies in global scope. Strategy-agnostic \u2014 FACTORS array is fixed (Funding, Carry, Basis, Delta, Gamma, Rebates, Slippage, Fees, Theta, Vega). Backtest overlay is relevant for all backtestable strategies."
+        }
+      },
+      "notes": "5.1 documented. 5.2-5.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "BacktestVsLiveChart had #3b82f6 and #10b981 hardcoded. Fixed: replaced with var(--chart-1) and var(--pnl-positive). PNL_FACTOR_CHART_COLORS is in lib/config (read-only boundary) \u2014 not a widget violation."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports. PNL_FACTOR_CHART_COLORS from lib/config/services/pnl.config."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "File 303 lines (\u2264500). Largest function BacktestVsLiveChart ~30 lines, FactorLinesChart ~66 lines, PnlTimeSeriesWidget ~70 lines. All within limits."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PascalCase components, useCamelCase hooks (useWidgetChartHeight), kebab-case file."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, innerHTML."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "useMemo/useCallback deps are stable. ResizeObserver cleanup in layoutEffect return. No inline objects in deps."
+        }
+      },
+      "notes": "All mechanical checks pass. 7.1 fixed (backtest/live line colors). 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "deferred",
+          "note": "text-[11px], text-[10px] used for chip labels and footer text. fontSize props in Recharts tick objects (fontSize: 10/11/12) are Recharts API props, not tailwind classes \u2014 exempt. Tailwind arbitrary sizes deferred pending --text-2xs token."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing classes in this widget."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button from components/ui. Recharts primitives for charting (not substitutable). No custom div reimplementations of standard UI."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: No <img> without alt. No bare <input>. Factor chips are <button> elements \u2014 properly accessible. Recharts chart interaction is library-managed. Human: keyboard-only + screen-reader pass needed."
+        },
+        "8.5": {
+          "result": "human-needed",
+          "note": "Human to verify at minW=4, minH=4 the chart renders correctly. useWidgetChartHeight ResizeObserver approach should handle dynamic sizing."
+        }
+      },
+      "notes": "8.2-8.3 pass. 8.1 deferred (micro-typography). 8.4 agent portion clean, human walk needed. 8.5 human."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Separate widget gives users the ability to show/hide the time series independently from the waterfall. Different layout dimension requirements (defaultH=7 vs waterfall's 11)."
+    },
+    "notes": "Peer to pnl-waterfall \u2014 both read from same PnLDataProvider context but neither drives the other's selection. Standalone chart widget."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "minutes",
+    "mockSource": "components/widgets/pnl/pnl-data-context.tsx (generateTimeSeriesData inline mock)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Currently mock-generated in data context. Production: REST fetch on date-range/mode/scope change. Time-series data could be cached and reused across sessions for performance."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi"],
+    "strategies": ["all-registry-strategies"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Production REST endpoint not wired",
+      "FACTORS array is hardcoded to 10 factors \u2014 dynamic factor discovery from backend not implemented",
+      "PNL_FACTOR_CHART_COLORS in lib/config uses hardcoded hex values \u2014 not theme-aware"
+    ],
+    "notes": "Widget renders any time-series data from context. Factor colors defined in lib/config are the primary styling concern for future theme work."
   },
-  "knownIssues": [],
+  "knownIssues": [
+    "PNL_FACTOR_CHART_COLORS in lib/config/services/pnl.config.ts uses hardcoded hex colors \u2014 these are outside widget scope (lib/config is read-only boundary) but noted for future theme token work.",
+    "text-[10px]/text-[11px] micro-typography pending --text-2xs token."
+  ],
   "findings": [
-    "L0 — 0.6 FAILED (no isLoading handling). Fixed: added Skeleton import and isLoading early-return skeleton above the existing empty-state check. 8 of 9 checks already passed.",
-    "L1 — All 7 checks passed. timeSeriesData reactive to filterMultiplier which reads org/client/strategy scope from global store."
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "pnl-time-series-widget.tsx:222-223 \u2014 BacktestVsLiveChart used hardcoded #3b82f6 (backtest line) and #10b981 (live line).",
+      "status": "fixed",
+      "fix": "Replaced #3b82f6 with var(--chart-1) (blue/cyan token) and #10b981 with var(--pnl-positive) (green token). Both tokens exist in globals.css."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "pnl-time-series-widget.tsx \u2014 ~25 user-visible strings not wrapped in i18n helper.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "pnl-time-series-widget.tsx \u2014 text-[11px] (chip labels), text-[10px] (footer text) arbitrary tailwind size classes.",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro (0.625rem/10px) using newly-added --text-micro token. Remaining text-[11px] (chip labels) has no matching token \u2014 retained as arbitrary class."
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

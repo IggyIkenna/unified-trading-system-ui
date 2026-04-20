@@ -18,7 +18,7 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[execution-basic,execution-full]."
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}]."
         },
         "0.3": {
           "result": "pass",
@@ -34,7 +34,7 @@
         },
         "0.6": {
           "result": "n/a",
-          "note": "— context is pure local state (no async fetch); no isLoading field."
+          "note": "Context is pure local state (no async fetch); no isLoading field."
         },
         "0.7": {
           "result": "pass",
@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "n/a",
-          "note": "— context has no error field; WidgetErrorBoundary handles render errors."
+          "note": "Context has no error field; WidgetErrorBoundary handles render errors."
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code. Fixed: wired readOnly from context to disable Simulate and Submit buttons in batch mode."
+          "note": "No dead code. readOnly from context disables Simulate and Submit buttons in batch mode."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[bundles]. 0.4 No any types or @ts-ignore. 0.5 No mock imports in widget file. 0.6 N/A — context is pure local state (no async fetch); no isLoading field. 0.7 Empty state present (steps.length===0 guard). 0.8 N/A — context has no error field; WidgetErrorBoundary handles render errors. 0.9 No dead code. Fixed: wired readOnly from context to disable Simulate and Submit buttons in batch mode."
+      "notes": "All 9 checks pass (0.6, 0.8 N/A for pure local-state context)."
     },
     "l1": {
       "status": "pass",
@@ -66,26 +66,26 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter changes scoped templates via hasDefiDesk memo. 1.4-1.5 Bundle context filters templates by org scope; client/strategy cascade N/A for this action-panel widget (no per-client data)."
+          "note": "Org filter changes scoped templates via hasDefiDesk memo."
         },
         "1.4": {
-          "result": "pass",
-          "note": "1.5 Bundle context filters templates by org scope; client/strategy cascade N/A for this action-panel widget (no per-client data)."
+          "result": "n/a",
+          "note": "Action-panel widget; no per-client data to cascade."
         },
         "1.5": {
-          "result": "pass",
-          "note": "Bundle context filters templates by org scope; client/strategy cascade N/A for this action-panel widget (no per-client data)."
+          "result": "n/a",
+          "note": "Action-panel widget; no per-strategy data to cascade."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope arrays → hasDefiDesk=true → unfiltered templates returned."
+          "note": "Empty scope arrays \u2192 hasDefiDesk=true \u2192 unfiltered templates returned."
         },
         "1.7": {
           "result": "pass",
-          "note": "Reference data (BUNDLE_INSTRUMENTS, BUNDLE_VENUES, ALL_OPERATION_TYPES) in lib/config/services/bundle.config — correct location."
+          "note": "Reference data (BUNDLE_INSTRUMENTS, BUNDLE_VENUES, ALL_OPERATION_TYPES) in lib/config/services/bundle.config."
         }
       },
-      "notes": "1.1 Data sourced from useBundlesData() hook (steps, readOnly). 1.2 Context calls useGlobalScope() and filters templates by org DeFi desk presence. 1.3 Org filter changes scoped templates via hasDefiDesk memo. 1.4-1.5 Bundle context filters templates by org scope; client/strategy cascade N/A for this action-panel widget (no per-client data). 1.6 Empty scope arrays → hasDefiDesk=true → unfiltered templates returned. 1.7 Reference data (BUNDLE_INSTRUMENTS, BUNDLE_VENUES, ALL_OPERATION_TYPES) in lib/config/services/bundle.config — correct location."
+      "notes": "All checks pass. 1.4, 1.5 N/A for action-panel widget."
     },
     "l2": {
       "status": "pass",
@@ -94,62 +94,209 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live=full actions available; paper=full actions (testnet); batch=readOnly=true, buttons disabled."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads isBatch and isPaper from useExecutionMode(); readOnly=isBatch wired to widget."
+        },
+        "3.3": {
+          "result": "partial",
+          "note": "Human verify: batch mode \u2192 Simulate and Submit buttons visually disabled."
+        },
+        "3.4": {
+          "result": "partial",
+          "note": "Human verify: batch/as-of indicator visible in layout."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: gas estimate halved (testnet gas cheaper); buttons remain enabled for paper execution."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or setInterval in this widget or bundles context; no realtime connections to disable."
+        }
+      },
+      "notes": "Agent checks 3.1, 3.2, 3.5, 3.6 complete. Human must verify 3.3 (visual button disable in batch) and 3.4 (layout batch indicator)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Known L4 issue: Simulate and Submit buttons have no onClick handlers — dead buttons. Needs wiring in L4."
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "partial",
+          "note": "Simulate and Submit buttons have no onClick handlers \u2014 dead buttons. Known issue flagged for L4 wiring."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' or dead links."
+        },
+        "4.3": {
+          "result": "partial",
+          "note": "Human: verify leg count badge and button states are correct."
+        },
+        "4.4": {
+          "result": "partial",
+          "note": "Human: click Simulate \u2192 expected dry-run flow; Submit \u2192 bundle submission."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages in this widget."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks inside the widget render \u2014 entitlements gate at page/registry level."
+        }
+      },
+      "notes": "Agent checks 4.2, 4.5, 4.6 pass. 4.1 FAIL \u2014 dead buttons (known issue, L4 scope). Human must complete 4.3, 4.4."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all bundle-based strategies that produce multi-leg execution plans (Flash Loan Arb, Basis Trade, DeFi Deleverage, CeFi multi-leg). Widget is the final submission gate for any bundle regardless of strategy."
+        }
+      },
+      "notes": "5.1 documented. Human must complete 5.2\u20135.6 walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
       "notes": null
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock imports in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "37 lines \u2014 well within 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "Component PascalCase (BundleActionsWidget), file kebab-case (bundle-actions-widget.tsx)."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in this widget; no perf anti-patterns."
+        }
+      },
+      "notes": "All L7 checks pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "fixed",
+          "note": "Replaced text-[11px] (line 15) with text-caption and text-[10px] (line 22) with text-micro. Tokens landed in globals.css (--text-caption, --text-micro)."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing values (p-[, m-[, gap-[)."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Badge from components/ui/*. No custom interactive divs."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "No img, no unlabeled inputs, no interactive divs without role. Icon-only buttons use text labels (Simulate/Submit text visible)."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: verify at minW=3, minH=1 \u2014 flex-wrap layout should adapt."
+        }
+      },
+      "notes": "8.1 fixed (text-caption/text-micro applied). 8.2\u20138.4 pass. 8.5 human verify."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
-    "detailOf": [],
+    "detailOf": ["bundle-steps", "bundle-pnl"],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Actions widget is a narrow action bar (minH:1) that sits below the step editor and PnL strip. Merging into bundle-steps would significantly inflate that widget's height contract and break the preset layouts."
+    },
+    "notes": "Reads steps and readOnly from shared BundlesDataContext. Triggers are downstream of bundle-steps (step list) and bundle-pnl (P&L summary). Acts as the terminal action gate for the entire bundle workflow."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
+    "channels": ["pubsub"],
+    "primary": "pubsub",
+    "cadence": "event-driven",
+    "staleness": "realtime",
     "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "backendOwner": "unified-trade-execution-interface",
+    "notes": "Widget dispatches bundle submission commands. In production, Simulate calls Tenderly simulation API; Submit routes to execution service. No polling \u2014 command/response pattern."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi"],
+    "strategies": [
+      "DEFI_ETH_BASIS_HUF_1H",
+      "DEFI_ETH_RECURSIVE_BASIS_HUF_1H",
+      "DEFI_ETH_MM_LP_V3_EVT",
+      "CEFI_BTC_BASIS_BINANCE_HL"
+    ],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Simulate button has no onClick handler \u2014 dry-run not wired",
+      "Submit button has no onClick handler \u2014 submission not wired"
+    ],
+    "notes": "Widget is strategy-agnostic at the UI level \u2014 it submits whatever steps are in the bundle context. Coverage is limited by the dead-button gap (L4 issue)."
   },
   "knownIssues": [
-    "Simulate (dry run) button has no onClick handler — dead button (L4 scope)",
-    "Submit bundle button has no onClick handler — dead button (L4 scope)"
+    "Simulate (dry run) button has no onClick handler \u2014 dead button (L4 scope)",
+    "Submit bundle button has no onClick handler \u2014 dead button (L4 scope)"
   ],
-  "findings": ["readOnly flag from context wired to disable Simulate and Submit in batch mode"],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "bundle-actions-widget.tsx \u2014 ~3 user-visible strings not i18n-ready",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "bundle-actions-widget.tsx:15 \u2014 text-[11px] used; bundle-actions-widget.tsx:22 \u2014 text-[10px] used. No tailwind token exists for sub-xs sizes.",
+      "status": "fixed",
+      "fix": "Replaced text-[11px] with text-caption (--text-caption 0.6875rem, existing 11px token) and text-[10px] with text-micro (--text-micro 0.625rem, new 10px token) (2026-04-21)"
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

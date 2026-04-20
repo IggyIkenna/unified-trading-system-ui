@@ -15,7 +15,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     header: "Order ID",
     enableSorting: false,
     cell: ({ row }) => (
-      <span className="font-mono text-[10px] text-yellow-500">{row.getValue<string | null>("orderId") ?? "—"}</span>
+      <span className="font-mono text-micro text-yellow-500">{row.getValue<string | null>("orderId") ?? "—"}</span>
     ),
   },
   {
@@ -23,7 +23,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     header: "Exch Time",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="font-mono text-[10px]">
+      <span className="font-mono text-micro">
         {new Date(row.getValue<string>("exchangeTime")).toLocaleTimeString()}
       </span>
     ),
@@ -33,7 +33,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     header: "Local",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="font-mono text-[10px] text-muted-foreground">
+      <span className="font-mono text-micro text-muted-foreground">
         {new Date(row.getValue<string>("localTime")).toLocaleTimeString()}
       </span>
     ),
@@ -53,7 +53,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     cell: ({ row }) => {
       const type = row.getValue<string>("type");
       return (
-        <Badge variant={type === "trade" ? "default" : "outline"} className="text-[10px] px-1 py-0">
+        <Badge variant={type === "trade" ? "default" : "outline"} className="text-micro px-1 py-0">
           {type === "trade" ? "Fill" : type}
         </Badge>
       );
@@ -88,7 +88,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
     accessorKey: "venue",
     header: "Venue",
     enableSorting: false,
-    cell: ({ row }) => <span className="text-muted-foreground text-[10px]">{row.getValue<string>("venue")}</span>,
+    cell: ({ row }) => <span className="text-muted-foreground text-micro">{row.getValue<string>("venue")}</span>,
   },
   {
     accessorKey: "aggressor",
@@ -99,7 +99,7 @@ const columns: ColumnDef<OrderFlowEntry, unknown>[] = [
       if (!aggressor) return <span>—</span>;
       return (
         <span
-          className={`text-[10px] ${aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+          className={`text-micro ${aggressor === "buyer" ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
         >
           {aggressor}
         </span>

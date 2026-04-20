@@ -180,7 +180,7 @@ export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
           return (
             <button
               key={s.strategy_id}
-              className={`px-2 py-0.5 text-[10px] rounded-full border transition-all ${
+              className={`px-2 py-0.5 text-micro rounded-full border transition-all ${
                 active ? "border-current opacity-100" : "border-border opacity-40 hover:opacity-70"
               }`}
               style={{ color: s.color }}

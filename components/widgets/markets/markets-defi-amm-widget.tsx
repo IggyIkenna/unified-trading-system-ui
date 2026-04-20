@@ -33,7 +33,7 @@ export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
                 <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />
                 <div>
                   <p className="text-xs font-medium">DeFi market structure</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                  <p className="text-micro text-muted-foreground mt-0.5">
                     AMM pricing — swap and LP activity below, not a classic limit order book.
                   </p>
                 </div>
@@ -44,7 +44,7 @@ export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
       }
       footer={
         !isNotDefi ? (
-          <p className="text-[10px] text-muted-foreground px-2 pb-2">
+          <p className="text-micro text-muted-foreground px-2 pb-2">
             Mock DeFi activity — replace with `useLiveBook` / venue feeds when wired.
           </p>
         ) : undefined
@@ -69,17 +69,17 @@ export function MarketsDefiAmmWidget(_props: WidgetComponentProps) {
                 key={order.id}
                 className={`border-t border-border hover:bg-muted/30 ${order.isOwn ? "bg-yellow-500/10" : ""}`}
               >
-                <td className="p-2 font-mono text-[10px]">{new Date(order.exchangeTime).toLocaleTimeString()}</td>
-                <td className="p-2 text-[10px]">{order.venue}</td>
+                <td className="p-2 font-mono text-micro">{new Date(order.exchangeTime).toLocaleTimeString()}</td>
+                <td className="p-2 text-micro">{order.venue}</td>
                 <td className="p-2">
-                  <Badge variant="outline" className="text-[10px]">
+                  <Badge variant="outline" className="text-micro">
                     {order.type === "trade" ? "Swap" : "LP"}
                   </Badge>
                 </td>
-                <td className="p-2 text-right font-mono text-[10px]">{formatNumber(order.size, 4)} ETH</td>
-                <td className="p-2 text-right font-mono text-[10px]">${order.price.toLocaleString()}</td>
-                <td className="p-2 text-right font-mono text-[10px] text-muted-foreground">0.25%</td>
-                <td className="p-2 text-right font-mono text-[10px] text-muted-foreground">35 gwei</td>
+                <td className="p-2 text-right font-mono text-micro">{formatNumber(order.size, 4)} ETH</td>
+                <td className="p-2 text-right font-mono text-micro">${order.price.toLocaleString()}</td>
+                <td className="p-2 text-right font-mono text-micro text-muted-foreground">0.25%</td>
+                <td className="p-2 text-right font-mono text-micro text-muted-foreground">35 gwei</td>
               </tr>
             ))}
           </tbody>

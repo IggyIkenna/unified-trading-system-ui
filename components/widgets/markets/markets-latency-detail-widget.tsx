@@ -73,11 +73,11 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
             "size-2.5 rounded-full shrink-0",
             metric.status === "healthy" && "bg-[var(--status-live)]",
             metric.status === "warning" && "bg-[var(--status-warning)]",
-            metric.status === "critical" && "bg-[var(--status-error)]",
+            metric.status === "critical" && "bg-[var(--status-critical)]",
           )}
         />
         <span className="text-sm font-medium truncate">{metric.service}</span>
-        <Badge variant="outline" className="text-[10px] ml-auto">
+        <Badge variant="outline" className="text-micro ml-auto">
           {latencyDataMode === "live" ? "Live" : latencyDataMode === "batch" ? "Batch" : "Compare"}
         </Badge>
       </div>
@@ -85,7 +85,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
       <KpiStrip metrics={kpiMetrics} columns={3} className="rounded-md" />
 
       {latencyDataMode === "compare" && (
-        <div className="text-[10px] text-muted-foreground px-0.5">
+        <div className="text-micro text-muted-foreground px-0.5">
           Compare row uses live vs simulated batch multipliers per stage (stable).
         </div>
       )}
@@ -101,12 +101,12 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
               const percentage = (stage.p50 / totalP50) * 100;
               return (
                 <div key={stage.stage} className="space-y-1">
-                  <div className="flex items-center justify-between gap-2 text-[10px]">
+                  <div className="flex items-center justify-between gap-2 text-micro">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <span className="font-mono text-muted-foreground w-3">{idx + 1}</span>
                       <span className="font-medium truncate">{stage.stage}</span>
                     </div>
-                    <div className="flex gap-3 font-mono text-[10px] shrink-0">
+                    <div className="flex gap-3 font-mono text-micro shrink-0">
                       <span className="text-muted-foreground w-12 text-right">{formatNumber(stage.p50, 2)}</span>
                       <span className="text-muted-foreground w-12 text-right">{formatNumber(stage.p95, 2)}</span>
                       <span className={cn("w-12 text-right", stage.p99 > 5 ? "text-[var(--status-warning)]" : "")}>
@@ -116,19 +116,16 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-[var(--accent-blue)] rounded-full"
-                        style={{ width: `${percentage}%` }}
-                      />
+                      <div className="h-full bg-chart-3 rounded-full" style={{ width: `${percentage}%` }} />
                     </div>
-                    <span className="text-[9px] text-muted-foreground w-10 text-right">
+                    <span className="text-nano text-muted-foreground w-10 text-right">
                       {formatPercent(percentage, 0)}
                     </span>
                   </div>
                 </div>
               );
             })}
-            <div className="flex justify-end gap-3 pt-2 border-t text-[9px] text-muted-foreground font-mono">
+            <div className="flex justify-end gap-3 pt-2 border-t text-nano text-muted-foreground font-mono">
               <span className="w-12 text-right">p50</span>
               <span className="w-12 text-right">p95</span>
               <span className="w-12 text-right">p99</span>
@@ -177,8 +174,8 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                     type="monotone"
                     dataKey="p95"
                     stackId="2"
-                    stroke="var(--accent-blue)"
-                    fill="var(--accent-blue)"
+                    stroke="var(--chart-3)"
+                    fill="var(--chart-3)"
                     fillOpacity={0.3}
                     name="p95"
                   />
@@ -201,7 +198,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
       {latencyDataMode === "compare" && (
         <CollapsibleSection title="Live vs batch by stage" defaultOpen count={metric.lifecycle.length}>
           <div className="overflow-x-auto px-1 pb-2">
-            <table className="w-full text-[10px]">
+            <table className="w-full text-micro">
               <thead>
                 <tr className="border-b">
                   <th className="text-left p-1.5 font-medium">Stage</th>

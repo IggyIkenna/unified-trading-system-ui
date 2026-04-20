@@ -18,7 +18,7 @@ export function OptionsFuturesTradePanelWidget(_props: WidgetComponentProps) {
   const instrument = selectedFuture ? futureRowToInstrument(selectedFuture) : null;
   return (
     <div className="space-y-2">
-      <p className="text-[10px] text-muted-foreground px-1">
+      <p className="text-xs text-muted-foreground px-1">
         Select a row in the futures table to populate this panel. Clearing chain selection avoids ambiguity.
       </p>
       <TradePanel instrument={instrument} />

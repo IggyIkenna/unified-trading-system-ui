@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2: requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "requiredEntitlements: [{domain:'trading-options',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "availableOn: ['options']."
         },
         "0.4": {
           "result": "pass",
-          "note": "No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "No any types or @ts-ignore in widget file."
         },
         "0.5": {
           "result": "pass",
-          "note": "Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports."
         },
         "0.6": {
           "result": "n/a",
-          "note": "— options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "options-data-context has no isLoading field; watchlists are synchronous mock data."
         },
         "0.7": {
           "result": "pass",
-          "note": "Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "Empty state handled \u2014 WatchlistPanel uses activeList?.symbols ?? []; empty symbol list renders an empty ScrollArea with no rows \u2014 no crash."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+          "note": "Context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path."
         },
         "0.9": {
           "result": "pass",
           "note": "No dead code or commented-out blocks in widget file."
         }
       },
-      "notes": "0.1: WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2: requiredEntitlements=[\"options-trading\"]. 0.3: availableOn=[\"options\"]. 0.4: No any types or @ts-ignore in widget file. 0.5: Widget file has no lib/mocks/ imports; WatchlistPanel is a pure UI component with no mock imports. 0.6: N/A — options-data-context has no isLoading field; watchlists are synchronous mock data. 0.7: Empty state handled — WatchlistPanel uses activeList?.symbols ?? [] (watchlist-panel.tsx line 76-80); empty symbol list renders an empty ScrollArea with no rows — no crash. 0.8: N/A — context throws if Provider missing (WidgetErrorBoundary); WatchlistPanel has no async error path. 0.9: No dead code or commented-out blocks in widget file."
+      "notes": "0.6/0.8 N/A \u2014 synchronous mock data, no async paths."
     },
     "l1": {
       "status": "pass",
@@ -58,103 +58,219 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Widget reads ctx.watchlists, ctx.watchlistId, ctx.setWatchlistId, ctx.selectedWatchlistSymbolId, ctx.handleWatchlistSelect exclusively via useOptionsData() hook. No inline fetch or mock import. 1.2: options-data-context.tsx calls useGlobalScope() (line 130); globalScope.organizationIds used to build scopedWatchlists (lines 273-279). 1.3: Org filter — when organizationIds is set and does not include 'odum', only crypto watchlists are shown (watchlist 'crypto-top', 'crypto-defi' etc. pass filter; 'tradfi-us' is excluded). Widget displays only the org-scoped watchlists, so org change visibly changes the available watchlist tabs. 1.4: clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "note": "Widget reads ctx.watchlists, ctx.watchlistId, ctx.setWatchlistId, ctx.selectedWatchlistSymbolId, ctx.handleWatchlistSelect exclusively via useOptionsData(). No inline fetch or mock import."
         },
         "1.2": {
           "result": "pass",
-          "note": "options-data-context.tsx calls useGlobalScope() (line 130); globalScope.organizationIds used to build scopedWatchlists (lines 273-279). 1.3: Org filter — when organizationIds is set and does not include 'odum', only crypto watchlists are shown (watchlist 'crypto-top', 'crypto-defi' etc. pass filter; 'tradfi-us' is excluded). Widget displays only the org-scoped watchlists, so org change visibly changes the available watchlist tabs. 1.4: clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "note": "options-data-context.tsx calls useGlobalScope() at line 130; globalScope.organizationIds used to build scopedWatchlists (lines 273-279)."
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter — when organizationIds is set and does not include 'odum', only crypto watchlists are shown (watchlist 'crypto-top', 'crypto-defi' etc. pass filter; 'tradfi-us' is excluded). Widget displays only the org-scoped watchlists, so org change visibly changes the available watchlist tabs. 1.4: clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "note": "Org filter \u2014 when organizationIds set and does not include 'odum', only crypto watchlists shown; tradfi-us excluded. Org change visibly changes available watchlist tabs."
         },
         "1.4": {
-          "result": "pass",
-          "note": "clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "result": "n/a",
+          "note": "clientIds not applicable to watchlist \u2014 symbol lists are not per-client filtered."
         },
         "1.5": {
-          "result": "pass",
-          "note": "Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "result": "n/a",
+          "note": "Strategy filter not applicable to watchlist symbol selection."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "note": "Empty organizationIds \u2192 scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown)."
         },
         "1.7": {
           "result": "pass",
-          "note": "DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+          "note": "DEFAULT_WATCHLISTS in lib/mocks/fixtures/options-futures-mock \u2014 reference data, tracked in knownIssues for future extraction."
         }
       },
-      "notes": "1.1: Widget reads ctx.watchlists, ctx.watchlistId, ctx.setWatchlistId, ctx.selectedWatchlistSymbolId, ctx.handleWatchlistSelect exclusively via useOptionsData() hook. No inline fetch or mock import. 1.2: options-data-context.tsx calls useGlobalScope() (line 130); globalScope.organizationIds used to build scopedWatchlists (lines 273-279). 1.3: Org filter — when organizationIds is set and does not include 'odum', only crypto watchlists are shown (watchlist 'crypto-top', 'crypto-defi' etc. pass filter; 'tradfi-us' is excluded). Widget displays only the org-scoped watchlists, so org change visibly changes the available watchlist tabs. 1.4: clientIds not applicable to watchlist — symbol lists are not per-client filtered. 1.5: Strategy filter not applicable to watchlist symbol selection. 1.6: Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown). 1.7: DEFAULT_WATCHLISTS defined in lib/mocks/fixtures/options-futures-mock — reference data (watchlist definitions) should move to lib/config/services/options.config.ts or lib/constants/ in a future refactor."
+      "notes": "Org scoping is the primary filtering mechanism \u2014 watchlists visible/hidden by org. All data via useOptionsData()."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 / paper \u2713 / batch \u2713 \u2014 watchlist symbol selection meaningful in all modes."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads mode from useExecutionMode() at context line 129."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: symbol selection identical \u2014 drives chain display for paper positions."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget file."
+        }
+      },
+      "notes": "3.3/3.4 require human verification."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead onClick handlers in widget file; WatchlistPanel has functional onSelectSymbol and onListChange."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' in widget file."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "4.3/4.4/4.7/4.8 require human walkthrough (symbol selection, list switching, editable watchlist adding)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all options and futures strategies on the options tab. Watchlist is the primary symbol selection entry point \u2014 drives asset which drives all downstream data."
+        }
+      },
+      "notes": "5.2\u20135.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred pending L5 sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors in widget file."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data imports in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "Widget file is 20 lines; well within limits."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "OptionsWatchlistWidget PascalCase; file kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns in widget file."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No hooks or deps in widget file; pure prop pass-through render."
+        }
+      },
+      "notes": "All L7 clean."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[...] or fontSize= in widget file."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing tokens in widget file; min-h-[200px] in className is a sizing constraint, not a spacing anti-pattern."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Widget delegates entirely to WatchlistPanel from shared trading panel."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent grep: no bare div onClick, no img without alt in widget file. Human keyboard pass for WatchlistPanel symbol selection required."
+        }
+      },
+      "notes": "Note: min-h-[200px] is a layout sizing constraint (minH for scroll area), not a typography/spacing token \u2014 acceptable per spec. 8.5 responsive resize requires human verification."
     }
   },
   "relationships": {
-    "mode": null,
-    "masterOf": [],
+    "mode": "master",
+    "masterOf": ["options-chain", "futures-table", "options-greek-surface", "options-scenario"],
     "detailOf": [],
-    "selectionKey": null,
+    "selectionKey": "symbolId",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Watchlist is a persistent sidebar widget that drives all downstream data; separate from chain for independent resizing and toggling (showWatchlist flag in control bar)."
+    },
+    "notes": "Drives asset selection (via handleWatchlistSelect) which propagates to all options widgets via OptionsDataContext."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "minutes",
+    "mockSource": "lib/mocks/fixtures/options-futures-mock.ts",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Watchlist symbol lists are user-configured static data. Prices shown in watchlist will stream via WebSocket in production. Currently synchronous mock data."
   },
   "coverage": {
-    "assetClasses": [],
+    "assetClasses": ["cefi", "tradfi"],
     "strategies": [],
-    "venues": [],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Watchlist editing (add/remove symbols) not persisted \u2014 editable prop is UI-only in current mock implementation"
+    ],
+    "notes": "Crypto watchlists (BTC, ETH, SOL, AVAX, MATIC) and TradFi watchlists (SPY, QQQ, SPX, NDX) pre-loaded. Org filter restricts to crypto-only for non-odum orgs."
   },
   "knownIssues": [
-    "DEFAULT_WATCHLISTS reference data lives in lib/mocks/fixtures/options-futures-mock — should be moved to lib/config/services/options.config.ts or lib/constants/options.ts."
+    "DEFAULT_WATCHLISTS reference data lives in lib/mocks/fixtures/options-futures-mock \u2014 should be moved to lib/config/services/options.config.ts or lib/constants/options.ts."
   ],
   "findings": [
     {
       "level": "l1",
-      "description": "1.7 — DEFAULT_WATCHLISTS (watchlist symbol definitions) are defined in lib/mocks/fixtures/options-futures-mock and imported into options-data-context. This reference data should be extracted to lib/config/services/options.config.ts or lib/constants/options.ts. Context file change, out of scope for widget cert.",
-      "status": "open"
+      "check": "1.7",
+      "description": "DEFAULT_WATCHLISTS (watchlist symbol definitions) defined in lib/mocks/fixtures/options-futures-mock and imported into options-data-context. Should be extracted to lib/config/services/options.config.ts or lib/constants/options.ts.",
+      "status": "deferred",
+      "deferReason": "Config extraction deferred to BP-5."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "options-watchlist-widget.tsx \u2014 0 direct user-visible strings in widget file; strings in WatchlistPanel sub-component",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

@@ -149,7 +149,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 {DEFI_TOKENS.map((t) => (
                   <SelectItem key={t} value={t}>
                     <span className="font-mono">{t}</span>
-                    <span className="text-[10px] text-muted-foreground ml-2">
+                    <span className="text-micro text-muted-foreground ml-2">
                       Bal: {(tokenBalances[t] ?? 0).toLocaleString()}
                     </span>
                   </SelectItem>
@@ -161,7 +161,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs text-muted-foreground">Amount</label>
-              <span className="text-[10px] text-muted-foreground font-mono">
+              <span className="text-micro text-muted-foreground font-mono">
                 Balance: {balance.toLocaleString()} {token}
               </span>
             </div>
@@ -290,7 +290,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 {DEFI_TOKENS.map((t) => (
                   <SelectItem key={t} value={t}>
                     <span className="font-mono">{t}</span>
-                    <span className="text-[10px] text-muted-foreground ml-2">
+                    <span className="text-micro text-muted-foreground ml-2">
                       Bal: {(tokenBalances[t] ?? 0).toLocaleString()}
                     </span>
                   </SelectItem>
@@ -302,7 +302,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="text-xs text-muted-foreground">Amount</label>
-              <span className="text-[10px] text-muted-foreground font-mono">
+              <span className="text-micro text-muted-foreground font-mono">
                 Balance: {balance.toLocaleString()} {token}
               </span>
             </div>
@@ -319,7 +319,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium">Available routes</span>
-                <span className="text-[10px] text-muted-foreground">
+                <span className="text-micro text-muted-foreground">
                   {fromChain} <ArrowRight className="inline size-2.5" /> {toChain}
                 </span>
               </div>
@@ -348,13 +348,13 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                         </div>
                         <span className="text-xs font-medium">{route.protocol}</span>
                         {route.isBestReturn && (
-                          <Badge variant="default" className="h-4 px-1 text-[9px] gap-0.5">
+                          <Badge variant="default" className="h-4 px-1 text-nano gap-0.5">
                             <Trophy className="size-2.5" />
                             Best Return
                           </Badge>
                         )}
                         {route.isFastest && (
-                          <Badge variant="outline" className="h-4 px-1 text-[9px] gap-0.5">
+                          <Badge variant="outline" className="h-4 px-1 text-nano gap-0.5">
                             <Clock className="size-2.5" />
                             Fastest
                           </Badge>
@@ -365,10 +365,10 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                       </span>
                     </div>
                     <div className="flex items-center justify-between mt-1.5 pl-5">
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-micro text-muted-foreground">
                         Fee: {route.feePct}% (${formatNumber(route.feeUsd, 2)})
                       </span>
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                      <span className="text-micro text-muted-foreground flex items-center gap-0.5">
                         <Clock className="size-2.5" />~{route.estimatedTimeMin} min
                       </span>
                     </div>

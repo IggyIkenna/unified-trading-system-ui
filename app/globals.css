@@ -52,6 +52,9 @@
   --risk-healthy: #16a34a;
   --risk-warning: #d97706;
   --risk-critical: #dc2626;
+  --risk-emergency: #f97316;
+
+  --surface-arb-card: #ecfdf5;
 
   --chart-1: #0891b2;
   --chart-2: #16a34a;
@@ -128,6 +131,9 @@
   --risk-healthy: #4ade80;
   --risk-warning: #fbbf24;
   --risk-critical: #f87171;
+  --risk-emergency: #fb923c;
+
+  --surface-arb-card: #0d140d;
 
   --chart-1: #22d3ee;
   --chart-2: #4ade80;
@@ -174,6 +180,13 @@
   --text-label: 0.75rem;
   --text-caption: 0.6875rem;
   --text-data: 0.8125rem;
+  /* Sub-caption scale for dense badge / sparkline overlays.
+     micro = 10px, nano = 9px, pico = 8px. Reserved for numeric annotations
+     where 11px caption is still too large (e.g. sparkline corner labels,
+     compact status chips in table cells). Use sparingly. */
+  --text-micro: 0.625rem;
+  --text-nano: 0.5625rem;
+  --text-pico: 0.5rem;
 
   /* ── Spacing scale ──────────────────────────────────────────────────────
      4px-base geometric scale for information-dense layouts.
@@ -226,6 +239,9 @@
   --color-risk-healthy: var(--risk-healthy);
   --color-risk-warning: var(--risk-warning);
   --color-risk-critical: var(--risk-critical);
+  --color-risk-emergency: var(--risk-emergency);
+
+  --color-surface-arb-card: var(--surface-arb-card);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);

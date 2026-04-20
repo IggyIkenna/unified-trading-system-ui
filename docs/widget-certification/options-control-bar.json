@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "— WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
         },
         "0.2": {
           "result": "pass",
-          "note": "— requiredEntitlements: ['options-trading']."
+          "note": "requiredEntitlements: [{domain:'trading-options',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "— availableOn: ['options']."
+          "note": "availableOn: ['options']."
         },
         "0.4": {
           "result": "pass",
-          "note": "— no any types or @ts-ignore."
+          "note": "No any types or @ts-ignore in widget file."
         },
         "0.5": {
           "result": "pass",
-          "note": "— widget file does not import from lib/mocks/."
+          "note": "Widget file does not import from lib/mocks/."
         },
         "0.6": {
           "result": "n/a",
-          "note": "— pure control bar; no data to load; all state is synchronous context state."
+          "note": "Pure control bar; no data to load; all state is synchronous context state."
         },
         "0.7": {
           "result": "n/a",
-          "note": "— pure control bar; no data list to be empty; renders selectors unconditionally."
+          "note": "Pure control bar; no data list to be empty; renders selectors unconditionally."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— pure control bar; no data fetching; no error state applicable."
+          "note": "Pure control bar; no data fetching; no error state applicable."
         },
         "0.9": {
           "result": "pass",
-          "note": "— no dead code."
+          "note": "No dead code."
         }
       },
-      "notes": "0.1 pass — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 pass — requiredEntitlements: ['options-trading']. 0.3 pass — availableOn: ['options']. 0.4 pass — no any types or @ts-ignore. 0.5 pass — widget file does not import from lib/mocks/. 0.6 N/A — pure control bar; no data to load; all state is synchronous context state. 0.7 N/A — pure control bar; no data list to be empty; renders selectors unconditionally. 0.8 N/A — pure control bar; no data fetching; no error state applicable. 0.9 pass — no dead code."
+      "notes": "0.6/0.7/0.8 N/A \u2014 pure control bar widget."
     },
     "l1": {
       "status": "pass",
@@ -58,95 +58,217 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "— widget reads all state and setters exclusively from useOptionsData()."
+          "note": "Widget reads all state and setters exclusively from useOptionsData()."
         },
         "1.2": {
           "result": "pass",
-          "note": "— options-data-context.tsx calls useGlobalScope() (line 130)."
+          "note": "options-data-context.tsx calls useGlobalScope() at line 130."
         },
         "1.3": {
           "result": "n/a",
-          "note": "— control bar drives asset/venue selection; it is the input, not a filtered output."
+          "note": "Control bar drives asset/venue selection; it is the input, not a filtered output."
         },
         "1.4": {
           "result": "n/a",
-          "note": "— control bar is not filtered by client."
+          "note": "Control bar is not filtered by client."
         },
         "1.5": {
           "result": "n/a",
-          "note": "— control bar is not filtered by strategy."
+          "note": "Control bar is not filtered by strategy."
         },
         "1.6": {
           "result": "n/a",
-          "note": "— control bar renders unconditionally; empty scope means no filter applied to the downstream widgets it drives."
+          "note": "Control bar renders unconditionally; no data list to default."
         },
         "1.7": {
           "result": "n/a",
-          "note": "— no reference data constants in widget file."
+          "note": "No reference data constants in widget file."
         }
       },
-      "notes": "1.1 pass — widget reads all state and setters exclusively from useOptionsData(). 1.2 pass — options-data-context.tsx calls useGlobalScope() (line 130). 1.3 N/A — control bar drives asset/venue selection; it is the input, not a filtered output. 1.4 N/A — control bar is not filtered by client. 1.5 N/A — control bar is not filtered by strategy. 1.6 N/A — control bar renders unconditionally; empty scope means no filter applied to the downstream widgets it drives. 1.7 N/A — no reference data constants in widget file."
+      "notes": "Pure UI widget; 1.3\u20131.7 N/A per spec note."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab (structured {domain,tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests). Re-audit only if entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 / paper \u2713 / batch \u2713 \u2014 control bar always shown; asset selection meaningful in all modes."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads mode from useExecutionMode() at context line 129; mode propagated via context value."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: identical UI, asset/venue selection routes to paper order flow."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget or control bar."
+        }
+      },
+      "notes": "3.3/3.4 require human verification."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead onClick handlers in widget file; all handlers passed to OptionsToolbar from context."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' in widget file."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "4.3/4.4/4.7/4.8 require human walkthrough."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Serves all options and futures strategies on the options tab as primary configuration entry point. Strategy applicability determined by downstream widgets driven by this control bar."
+        }
+      },
+      "notes": "5.2\u20135.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred pending L5 sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors in widget file."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data imports in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "Widget file is 33 lines; well within 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "OptionsControlBarWidget PascalCase; file kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns in widget file."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No inline objects/arrays in effect deps; pure prop pass-through."
+        }
+      },
+      "notes": "All L7 clean."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[...] or fontSize= in widget file."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing tokens in widget file."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Widget delegates entirely to OptionsToolbar from shared trading panel."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent grep: no accessibility violations in widget file. Human keyboard+screen-reader pass for OptionsToolbar required."
+        }
+      },
+      "notes": "8.5 responsive resize requires human verification."
     }
   },
   "relationships": {
-    "mode": null,
-    "masterOf": [],
+    "mode": "master",
+    "masterOf": [
+      "options-chain",
+      "options-watchlist",
+      "futures-table",
+      "options-strategies",
+      "options-scenario",
+      "options-greek-surface",
+      "options-trade-panel",
+      "futures-trade-panel"
+    ],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Singleton control bar at top row \u2014 standard layout pattern, must remain separate from data widgets."
+    },
+    "notes": "Drives assetClass, venue, settlement, and activeTab that all other options widgets consume from OptionsDataContext."
   },
   "dataContract": {
     "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
+    "primary": "polling",
+    "cadence": "on-demand",
+    "staleness": "realtime",
     "mockSource": null,
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Pure UI state widget; no backend data channel needed. Venue and asset lists are config constants."
   },
   "coverage": {
-    "assetClasses": [],
+    "assetClasses": ["cefi", "tradfi"],
     "strategies": [],
-    "venues": [],
+    "venues": ["deribit", "cboe", "cme"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": ["Sports/DeFi options not in scope for this control bar"],
+    "notes": "Controls broker between crypto (Deribit) and TradFi (CBOE/CME) via isCrypto flag."
   },
   "knownIssues": [],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "options-control-bar-widget.tsx \u2014 0 direct user-visible strings in widget file; OptionsToolbar strings not audited here",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

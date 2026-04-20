@@ -78,6 +78,8 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
     <div ref={containerRef} className="space-y-4">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
         <button
+          type="button"
+          aria-label={showFilters ? "Hide filters" : "Show filters"}
           onClick={() => setShowFilters((f) => !f)}
           className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
         >
@@ -108,7 +110,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                   <Filter className="size-3.5" />
                   Asset Class
                   {selectedAssetClasses.length > 0 && (
-                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                    <Badge variant="secondary" className="h-5 px-1.5 text-micro">
                       {selectedAssetClasses.length}
                     </Badge>
                   )}
@@ -142,7 +144,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                 >
                   Archetype
                   {selectedArchetypes.length > 0 && (
-                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                    <Badge variant="secondary" className="h-5 px-1.5 text-micro">
                       {selectedArchetypes.length}
                     </Badge>
                   )}
@@ -173,7 +175,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                 >
                   Status
                   {selectedStatuses.length > 0 && (
-                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]">
+                    <Badge variant="secondary" className="h-5 px-1.5 text-micro">
                       {selectedStatuses.length}
                     </Badge>
                   )}
@@ -207,7 +209,12 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
               >
                 <span className="size-1.5 rounded-full" style={{ backgroundColor: ASSET_CLASS_COLORS[ac] }} />
                 {ac}
-                <button type="button" onClick={() => toggleAssetClass(ac)} className="hover:bg-secondary rounded p-0.5">
+                <button
+                  type="button"
+                  aria-label={`Remove ${ac} filter`}
+                  onClick={() => toggleAssetClass(ac)}
+                  className="hover:bg-secondary rounded p-0.5"
+                >
                   <X className="size-3" />
                 </button>
               </Badge>
@@ -220,6 +227,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                   {label}
                   <button
                     type="button"
+                    aria-label={`Remove ${label} filter`}
                     onClick={() => toggleArchetype(arch)}
                     className="hover:bg-secondary rounded p-0.5"
                   >
@@ -255,10 +263,10 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
               {Object.entries(byArchetype).map(([arch, archStrategies]) => (
                 <div key={arch} className="space-y-1.5">
                   <div className="flex items-center gap-2 px-1 pt-1">
-                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <span className="text-micro font-semibold text-muted-foreground uppercase tracking-wider">
                       {archetypeLabel(arch)}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">({archStrategies.length})</span>
+                    <span className="text-micro text-muted-foreground">({archStrategies.length})</span>
                   </div>
                   <div className={cn("grid gap-3 pb-2", narrow ? "grid-cols-1" : "grid-cols-2")}>
                     {archStrategies.map((strategy) => {
@@ -280,7 +288,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                                     className="text-base font-semibold"
                                   />
                                   <StatusBadge status={strategy.status} />
-                                  <Badge variant="outline" className="font-mono text-[10px]">
+                                  <Badge variant="outline" className="font-mono text-micro">
                                     {strategy.version}
                                   </Badge>
                                 </div>
@@ -290,7 +298,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                                 <span className="text-xs font-medium px-2 py-1 rounded bg-secondary text-secondary-foreground">
                                   {strategy.strategyType}
                                 </span>
-                                <Badge variant="outline" className="text-[10px] font-mono" title={exec.title}>
+                                <Badge variant="outline" className="text-micro font-mono" title={exec.title}>
                                   {exec.code}
                                 </Badge>
                               </div>
@@ -299,12 +307,12 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                           <CardContent className="pt-0">
                             <div className="flex items-center gap-1 mb-2 flex-wrap">
                               {strategy.venues.slice(0, 3).map((venue) => (
-                                <Badge key={venue} variant="outline" className="text-[10px] px-1.5 py-0">
+                                <Badge key={venue} variant="outline" className="text-micro px-1.5 py-0">
                                   {venue}
                                 </Badge>
                               ))}
                               {strategy.venues.length > 3 && (
-                                <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                <Badge variant="outline" className="text-micro px-1.5 py-0">
                                   +{strategy.venues.length - 3}
                                 </Badge>
                               )}
@@ -312,7 +320,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
 
                             <div className="flex items-center gap-1 mb-3 flex-wrap">
                               {inst.map((instType) => (
-                                <Badge key={instType} variant="secondary" className="text-[9px] px-1.5 py-0 font-mono">
+                                <Badge key={instType} variant="secondary" className="text-nano px-1.5 py-0 font-mono">
                                   {instType}
                                 </Badge>
                               ))}
@@ -368,12 +376,16 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                                   Details
                                 </Button>
                               </Link>
-                              <Link href={`/config/strategies/${strategy.id}`} className="flex-1 min-w-0">
-                                <Button variant="outline" size="sm" className="w-full gap-2">
-                                  <Settings className="size-3" />
-                                  Config
-                                </Button>
-                              </Link>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1 min-w-0 w-full gap-2"
+                                disabled
+                                title="Per-strategy config page not yet implemented"
+                              >
+                                <Settings className="size-3" />
+                                Config
+                              </Button>
                             </div>
                           </CardContent>
                         </Card>

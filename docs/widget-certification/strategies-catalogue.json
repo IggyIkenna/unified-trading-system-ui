@@ -14,19 +14,19 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary in widget-wrapper covers all grid widgets."
+          "note": "WidgetErrorBoundary in widget-wrapper."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [execution-basic, execution-full]."
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: [strategies]."
+          "note": "availableOn=[strategies]."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any / @ts-ignore."
+          "note": "no any/ts-ignore."
         },
         "0.5": {
           "result": "pass",
@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "error surfaced at WidgetErrorBoundary level; StrategiesDataProvider silently falls back to mock data — no error field exposed by context, boundary is the correct gate."
+          "note": "error surfaced at WidgetErrorBoundary level; StrategiesDataProvider silently falls back to mock data."
         },
         "0.9": {
           "result": "pass",
-          "note": "no dead code. Prettier applied (fixed indentation in grouped section)."
+          "note": "no dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper covers all grid widgets. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [strategies]. 0.4 ✓ no any / @ts-ignore. 0.5 ✓ no lib/mocks imports in widget file. 0.6 ✓ Spinner rendered when isLoading. 0.7 ✓ empty message when filteredStrategies.length === 0. 0.8 ✓ error surfaced at WidgetErrorBoundary level; StrategiesDataProvider silently falls back to mock data — no error field exposed by context, boundary is the correct gate. 0.9 ✓ no dead code. Prettier applied (fixed indentation in grouped section)."
+      "notes": "All 9 checks pass."
     },
     "l1": {
       "status": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "org filter change → scopeClientIds rebuilds → strategies re-filtered."
+          "note": "org filter change \u2192 scopeClientIds rebuilds \u2192 strategies re-filtered."
         },
         "1.4": {
           "result": "pass",
@@ -78,77 +78,252 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "empty scope arrays → returns DEFAULT_STRATEGIES (all)."
+          "note": "empty scope arrays \u2192 returns DEFAULT_STRATEGIES (all)."
         },
         "1.7": {
           "result": "pass",
           "note": "ARCHETYPES/ASSET_CLASS_COLORS/STATUSES in lib/config/services/strategies.config."
         }
       },
-      "notes": "1.1 ✓ data from useStrategiesData() only, no inline fetch. 1.2 ✓ context calls useGlobalScope() and filters via getStrategyIdsForScope + getClientIdsForOrgs. 1.3 ✓ org filter change → scopeClientIds rebuilds → strategies re-filtered. 1.4 ✓ client filter cascades via getClientIdsForOrgs in context. 1.5 ✓ strategy filter via getStrategyIdsForScope. 1.6 ✓ empty scope arrays → returns DEFAULT_STRATEGIES (all). 1.7 ✓ ARCHETYPES/ASSET_CLASS_COLORS/STATUSES in lib/config/services/strategies.config."
+      "notes": "All 7 checks pass."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (shows live strategy statuses), paper \u2713 (shows paper strategy cards), batch \u2713 (shows historical snapshot)."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "context reads useExecutionMode(); isLoading is mode-aware."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: View Live, Details, Config action buttons still visible \u2014 acceptable for a catalogue that links to other views."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval polling in widget."
+        },
+        "3.3": {
+          "result": "pending",
+          "note": "Human verify: in batch mode, View Live button behavior (should it be disabled?)."
+        },
+        "3.4": {
+          "result": "pending",
+          "note": "Human verify: batch indicator visible when in batch mode."
+        }
+      },
+      "notes": "Agent checks done. Human must verify 3.3, 3.4 \u2014 particularly whether 'View Live' button should be disabled in batch mode."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead onClick handlers. All onClick handlers are functional (filter toggles, clear filters, show/hide filters)."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "Links checked: /positions?strategy_id=${strategy.id} \u2014 route is at /services/trading/positions (different path). /services/trading/strategies/${strategy.id} \u2014 [id] route exists. /config/strategies/${strategy.id} \u2014 no /config/strategies route found in app/. Flag for L4 human verification."
+        },
+        "4.5": {
+          "result": "partial",
+          "note": "3 link targets verified: /services/trading/strategies/[id] exists. /positions?strategy_id= redirects to /services/trading/positions (query param routing \u2014 may work via middleware or layout). /config/strategies/[id] route NOT found in app/ \u2014 possible 404. Human must verify."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        },
+        "4.3": {
+          "result": "pending",
+          "note": "Human verify: strategy cards show all relevant fields (name, description, venues, metrics, sparkline)."
+        },
+        "4.4": {
+          "result": "pending",
+          "note": "Human verify: filter dropdowns work (Asset Class, Archetype, Status)."
+        },
+        "4.7": {
+          "result": "pending",
+          "note": "Human verify: CollapsibleSection toggles per asset class group."
+        },
+        "4.8": {
+          "result": "pending",
+          "note": "Human verify: card grid scrolls within widget bounds."
+        }
+      },
+      "notes": "L4 FLAG: /config/strategies/[id] route not found in app/. Human must verify 4.3, 4.4, 4.5 (route targets), 4.7, 4.8."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all 65+ strategies across DeFi, CeFi, TradFi, Sports, Predictions. Widget is the primary catalogue/discovery surface for all strategy types."
+        }
+      },
+      "notes": "5.1 documented. Human must walk through 5.2-5.6 \u2014 particularly cross-asset-class filter combinations."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "L6 not started \u2014 deferred until L5 human walkthrough complete."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "deferred",
+          "note": "strategies-catalogue-widget.tsx:278 \u2014 hover:shadow-[0_2px_8px_rgba(0,0,0,0.4)] retained as widget-local inline hover elevation. Not promoted to a cross-widget token.",
+          "deferReason": "shadow-hover is widget-local, not a cross-widget token \u2014 accepted inline implementation"
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data in widget; data from context. ARCHETYPES/STATUSES from lib/config/."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "401 lines \u2014 within 500 limit. No single function > 200 lines."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PascalCase, kebab-case file, useCamelCase hooks. Compliant."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns. CLEAN."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "ResizeObserver in useEffect has stable deps. useMemo deps are primitive values. CLEAN."
+        }
+      },
+      "notes": "7.1 deferred (shadow rgba). 7.5 globally deferred. All other checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "fixed",
+          "note": "Replaced 9 text-[10px] instances with text-micro and 1 text-[9px] with text-nano. --text-micro (0.625rem/10px) and --text-nano (0.5625rem/9px) are defined in globals.css @theme inline block.",
+          "fix": "Replaced text-[10px] \u2192 text-micro (\u00d79) and text-[9px] \u2192 text-nano (\u00d71) via replace_all."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing utilities. CLEAN."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Card, CardContent, CardHeader (ui), Button (ui), Input (ui), Badge (ui), DropdownMenu (ui), CollapsibleSection (shared). Shared primitives used."
+        },
+        "8.4": {
+          "result": "fixed",
+          "note": "3 plain <button> elements without aria-label \u2014 fixed: added type='button' + aria-label to filter toggle, asset class chip remove, archetype chip remove buttons.",
+          "fix": "Added type='button' and aria-label attributes to all 3 interactive button elements"
+        },
+        "8.5": {
+          "result": "pending",
+          "note": "Human verify: renders at minW=6, minH=6. Narrow mode (grid-cols-1) activates at <560px container width via ResizeObserver."
+        }
+      },
+      "notes": "8.1 fixed (text-micro/text-nano tokens applied). 8.3 pass. 8.4 fixed (aria-labels added). 8.5 human-verify pending."
     }
   },
   "relationships": {
-    "mode": null,
-    "masterOf": [],
+    "mode": "master",
+    "masterOf": ["cefi-strategy-config"],
     "detailOf": [],
-    "selectionKey": null,
+    "selectionKey": "strategyId",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Primary catalogue/discovery widget for all strategies. Driving widget that links to detail pages and config panels. Merging would lose the card-grid browsing UX."
+    },
+    "notes": "Master widget \u2014 strategy card click drives navigation to /services/trading/strategies/[id] and /config/strategies/[id]. Strategy selection in catalogue could potentially drive cefi-strategy-config widget in future (not yet wired)."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "minutes",
+    "mockSource": "lib/strategy-registry.ts (DEFAULT_STRATEGIES) + lib/mocks/fixtures/mock-data-index.ts (getStrategiesForScope)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Strategy list served from strategy registry (local) with scope-filtered seed data from mock-data-index. Production: should fetch from strategy management service with live status/performance data."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
-    "commonTabs": null,
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all-registered-strategies"],
+    "venues": ["all"],
+    "commonTabs": ["strategies"],
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "/config/strategies/[id] route may not exist \u2014 needs verification",
+      "View Live button links to /positions not /services/trading/positions",
+      "sparklineData not connected to real performance history",
+      "Performance metrics (Sharpe, Return, Max DD) are from strategy registry static data"
+    ],
+    "notes": "Largest widget in domain (401 lines). Most complex \u2014 covers all asset classes and 65+ strategies."
   },
   "knownIssues": [],
   "findings": [
-    "L0-0.8: StrategiesDataProvider does not expose an error field — it silently falls back to DEFAULT_STRATEGIES on API failure. Error boundary at WidgetWrapper level is the error gate. No widget-level fix possible without modifying context (READ ONLY for this pass)."
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "strategies-catalogue-widget.tsx:278 \u2014 hover:shadow-[0_2px_8px_rgba(0,0,0,0.4)] contains rgba() literal; no --shadow-hover token in globals.css",
+      "status": "deferred",
+      "deferReason": "shadow-hover is widget-local, not a cross-widget token \u2014 accepted inline implementation"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "strategies-catalogue-widget.tsx \u2014 ~11 user-visible strings",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "strategies-catalogue-widget.tsx \u2014 text-[10px] (\u00d79 instances) and text-[9px] (\u00d71 instance); no text-2xs/text-3xs tokens in globals.css",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro (--text-micro=0.625rem/10px) at all 9 sites and text-[9px] with text-nano (--text-nano=0.5625rem/9px) at the 1 instruction-type chip site."
+    },
+    {
+      "level": "l8",
+      "check": "8.4",
+      "description": "strategies-catalogue-widget.tsx:80,210,221 \u2014 3 plain <button> elements without type='button' or aria-label (filter toggle, asset class chip remove, archetype chip remove)",
+      "status": "fixed",
+      "fix": "Added type='button' and aria-label to filter toggle button; added aria-label to asset class and archetype chip remove buttons"
+    },
+    {
+      "level": "l4",
+      "check": "4.5",
+      "description": "strategies-catalogue-widget.tsx:371 \u2014 Link href='/config/strategies/${strategy.id}' \u2014 no /config/strategies route found in app/; possible 404",
+      "status": "deferred",
+      "deferReason": "route existence requires human browser verification \u2014 may be behind (ops) route group"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

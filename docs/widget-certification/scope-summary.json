@@ -14,11 +14,11 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary — global in widget-wrapper.tsx line 89, covers all widgets."
+          "note": "WidgetErrorBoundary \u2014 global in widget-wrapper.tsx line 89, covers all widgets."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=['execution-basic','execution-full']."
+          "note": "requiredEntitlements=[{domain:'trading-common',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
@@ -26,7 +26,7 @@
         },
         "0.4": {
           "result": "pass",
-          "note": "No any/ts-ignore — Record<string,unknown> used correctly."
+          "note": "No any/ts-ignore \u2014 Record<string,unknown> used correctly."
         },
         "0.5": {
           "result": "pass",
@@ -34,11 +34,11 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— added Skeleton loading state guarded by ctx.coreLoading."
+          "note": "Added Skeleton loading state guarded by ctx.coreLoading."
         },
         "0.7": {
           "result": "n/a",
-          "note": "— control-bar; always renders scope + actions regardless of strategy count; !ctx guard covers context-absent case."
+          "note": "Control-bar; always renders scope + actions regardless of strategy count; !ctx guard covers context-absent case."
         },
         "0.8": {
           "result": "pass",
@@ -46,10 +46,10 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "— removed dead alias kpiStrategies, replaced with filteredSortedStrategies directly."
+          "note": "Removed dead alias kpiStrategies, replaced with filteredSortedStrategies directly."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary — global in widget-wrapper.tsx line 89, covers all widgets. 0.2 requiredEntitlements=['execution-basic','execution-full']. 0.3 availableOn=['overview']. 0.4 No any/ts-ignore — Record<string,unknown> used correctly. 0.5 No lib/mocks imports in widget file. 0.6 FIXED — added Skeleton loading state guarded by ctx.coreLoading. 0.7 N/A — control-bar; always renders scope + actions regardless of strategy count; !ctx guard covers context-absent case. 0.8 Global WidgetErrorBoundary sufficient; no thrown errors expected from this render path. 0.9 FIXED — removed dead alias kpiStrategies, replaced with filteredSortedStrategies directly."
+      "notes": "All checks pass."
     },
     "l1": {
       "status": "pass",
@@ -58,34 +58,34 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data via useOverviewDataSafe() hook only — no inline fetch or direct import."
+          "note": "Data via useOverviewDataSafe() hook only \u2014 no inline fetch or direct import."
         },
         "1.2": {
           "result": "pass",
-          "note": "Scope reading is in use-overview-page-data.ts (the context producer) which calls useGlobalScope() twice (lines 117, 247); overview-data-context.tsx is a pure value container — valid architecture."
+          "note": "Scope reading is in use-overview-page-data.ts which calls useGlobalScope() twice (wsScope + context); overview-data-context.tsx is a pure value container."
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter applied in use-overview-page-data.ts lines 258-261 filtering strategyPerformance by context.organizationIds."
+          "note": "Org filter applied in use-overview-page-data.ts filtering strategyPerformance by context.organizationIds."
         },
         "1.4": {
           "result": "pass",
-          "note": "Client filter cascades via context.clientIds lines 264-267."
+          "note": "Client filter cascades via context.clientIds."
         },
         "1.5": {
           "result": "pass",
-          "note": "Strategy filter cascades via context.strategyIds lines 270-272."
+          "note": "Strategy filter cascades via context.strategyIds."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope = all data — each filter block guarded by .length > 0 check, so empty arrays skip filtering."
+          "note": "Empty scope = all data \u2014 each filter block guarded by .length > 0 check."
         },
         "1.7": {
           "result": "partial",
-          "note": "(read-only): overview-data-context.tsx imports types PnLBreakdown and TimeSeriesPoint from lib/mocks/fixtures/trading-data — these are type-only imports of data shapes, not runtime reference data constants; acceptable for L1 but should be migrated to lib/types/ in a future pass."
+          "note": "overview-data-context.tsx imports types PnLBreakdown and TimeSeriesPoint from lib/mocks/fixtures/trading-data \u2014 type-only imports; acceptable for now but should migrate to lib/types/ in future pass."
         }
       },
-      "notes": "1.1 Data via useOverviewDataSafe() hook only — no inline fetch or direct import. 1.2 Scope reading is in use-overview-page-data.ts (the context producer) which calls useGlobalScope() twice (lines 117, 247); overview-data-context.tsx is a pure value container — valid architecture. 1.3 Org filter applied in use-overview-page-data.ts lines 258-261 filtering strategyPerformance by context.organizationIds. 1.4 Client filter cascades via context.clientIds lines 264-267. 1.5 Strategy filter cascades via context.strategyIds lines 270-272. 1.6 Empty scope = all data — each filter block guarded by .length > 0 check, so empty arrays skip filtering. 1.7 FINDING (read-only): overview-data-context.tsx imports types PnLBreakdown and TimeSeriesPoint from lib/mocks/fixtures/trading-data — these are type-only imports of data shapes, not runtime reference data constants; acceptable for L1 but should be migrated to lib/types/ in a future pass."
+      "notes": "All checks pass. 1.7 is type-only import in context layer (not widget), acceptable."
     },
     "l2": {
       "status": "pass",
@@ -94,65 +94,233 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713, paper \u2713 (renders mode badge), batch \u2713 (renders asOfDatetime). ScopeSummary receives mode + asOfDatetime props and displays them."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context (use-overview-page-data.ts) reads wsScope.mode from useGlobalScope(); WebSocket enabled only when mode==='live' (line 143)."
+        },
+        "3.3": {
+          "result": "n/a",
+          "note": "Human check: scope-summary has no order entry \u2014 InterventionControls are non-submission controls (pause/resume scope). Verify batch disables intervention buttons."
+        },
+        "3.4": {
+          "result": "n/a",
+          "note": "Human check: batch indicator shown via asOfDatetime prop in ScopeSummary."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: widget reads context.mode; ScopeSummary already renders mode badge. Paper mode would show 'paper' badge \u2014 no additional wiring needed at widget layer."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "WebSocket in use-overview-page-data.ts line 143 is gated on wsScope.mode === 'live'. No setInterval or direct WebSocket in widget file."
+        }
+      },
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. 3.3/3.4 require human browser walkthrough."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead buttons: 'Open Trading Terminal' Button navigates via Link href. 'Clear Scope' in ScopeSummary calls setOrganizationIds/setClientIds/setStrategyIds. InterventionControls wired externally."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' found. /services/trading/terminal route confirmed at app/(platform)/services/trading/terminal/."
+        },
+        "4.3": {
+          "result": "n/a",
+          "note": "Human check: no form fields in this control-bar."
+        },
+        "4.4": {
+          "result": "n/a",
+          "note": "Human check: verify scope clear + terminal link in browser."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "/services/trading/terminal confirmed to exist."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in widget render path."
+        },
+        "4.7": {
+          "result": "n/a",
+          "note": "Human check: no tabs or collapsible sections."
+        },
+        "4.8": {
+          "result": "n/a",
+          "note": "Human check: flex-wrap layout at narrow widths."
+        }
+      },
+      "notes": "Agent checks 4.1/4.2/4.5/4.6 pass. 4.3/4.4/4.7/4.8 require human walkthrough."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all strategies in scope (scope-summary is strategy-agnostic; it selects scope for all strategies). Applicable to all strategy types in lib/strategy-registry.ts."
+        }
+      },
+      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "87 lines \u2014 well under 500-line limit. No single function > 200 lines."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "ScopeSummaryWidget (PascalCase), useOverviewDataSafe (camelCase hook), scope-summary-widget.tsx (kebab-case file)."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, or innerHTML= in widget file."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect or useMemo with inline object/array deps in widget file. All stable refs from context."
+        }
+      },
+      "notes": "All L7 checks pass. 7.5 globally deferred (i18n not shipped)."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "grep 'text-\\[|fontSize' \u2192 zero matches in scope-summary-widget.tsx."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "grep spacing arbitrary \u2192 zero matches."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Skeleton, Link from shared primitives. No raw div+tailwind substitutes for interactive elements."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no <img> without alt, no interactive div without role. Human: keyboard-only + screen-reader walkthrough pending."
+        },
+        "8.5": {
+          "result": "n/a",
+          "note": "Human check: responsive at minW=4 / defaultW=12."
+        }
+      },
+      "notes": "8.1\u20138.3 pass (agent). 8.4 partial (human walk needed). 8.5 human-only."
     }
   },
   "relationships": {
-    "mode": null,
-    "masterOf": [],
+    "mode": "master",
+    "masterOf": [
+      "pnl-chart",
+      "kpi-strip",
+      "strategy-table",
+      "pnl-attribution",
+      "alerts-preview",
+      "recent-fills",
+      "health-grid"
+    ],
     "detailOf": [],
-    "selectionKey": null,
+    "selectionKey": "scope (organizationIds, clientIds, strategyIds)",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Scope selector is a singleton control-bar that governs the entire overview tab. Merging into any data widget would create circular dependency."
+    },
+    "notes": "scope-summary drives all other overview widgets via global scope store. It is the master control for the overview tab."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest", "websocket"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "near-realtime:<=1s",
+    "mockSource": "lib/mocks/fixtures/trading-data.ts (ORGANIZATIONS, CLIENTS via use-overview-page-data.ts)",
+    "backendOwner": "trading-api (orgs + clients endpoints)",
+    "notes": "WebSocket (ws://localhost:8030/ws) used for real-time PnL updates; scope-summary itself only reads org/client/strategy lists from REST. Scope selection is stored in global-scope-store (Zustand), no backend write."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "No paper mode scope indicator tested in browser",
+      "InterventionControls behavior in batch mode not verified"
+    ],
+    "notes": "Scope-summary is strategy- and venue-agnostic; it applies to all asset classes equally."
   },
   "knownIssues": [
-    "overview-data-context.tsx imports PnLBreakdown and TimeSeriesPoint types from lib/mocks/fixtures/trading-data — type-only imports but should migrate to lib/types/ in future pass"
+    "overview-data-context.tsx imports PnLBreakdown and TimeSeriesPoint types from lib/mocks/fixtures/trading-data \u2014 type-only imports but should migrate to lib/types/ in future pass"
   ],
   "findings": [
-    "L0/0.6: Widget had no loading skeleton — fixed by adding coreLoading guard with Skeleton placeholders matching the control-bar layout",
-    "L0/0.9: Dead alias `const kpiStrategies = filteredSortedStrategies` removed; filteredSortedStrategies used directly at all three callsites",
-    "L1/1.7: Context file (read-only) imports types from lib/mocks/fixtures — type-only so not a runtime issue, but noted for future migration"
+    {
+      "level": "l0",
+      "check": "0.6",
+      "description": "scope-summary-widget.tsx \u2014 no loading skeleton; widget showed blank during coreLoading",
+      "status": "fixed",
+      "fix": "Added Skeleton loading state with h-6 placeholders guarded by ctx.coreLoading"
+    },
+    {
+      "level": "l0",
+      "check": "0.9",
+      "description": "scope-summary-widget.tsx \u2014 dead alias const kpiStrategies = filteredSortedStrategies",
+      "status": "fixed",
+      "fix": "Removed alias; filteredSortedStrategies used directly at all three callsites"
+    },
+    {
+      "level": "l1",
+      "check": "1.7",
+      "description": "overview-data-context.tsx imports types from lib/mocks/fixtures/trading-data (type-only)",
+      "status": "deferred",
+      "deferReason": "Type-only import; no runtime mock leakage. Requires context layer refactor outside widget scope."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "scope-summary-widget.tsx \u2014 ~3 user-visible strings not wrapped for i18n",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

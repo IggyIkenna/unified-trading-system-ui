@@ -1,10 +1,16 @@
 "use client";
 
 import { isCompleted, isLive, isUpcoming } from "@/components/trading/sports/helpers";
-import type { Bet, CLVRecord, Fixture, FootballLeague, Standing } from "@/components/trading/sports/types";
+import type { Bet, CLVRecord, Fixture, FootballLeague, Prediction, Standing } from "@/components/trading/sports/types";
 import { useSportsLiveUpdates } from "@/hooks/use-sports-live-updates";
 import { useExecutionMode } from "@/lib/execution-mode-context";
-import { MOCK_BETS, MOCK_CLV_RECORDS, MOCK_FIXTURES, MOCK_STANDINGS } from "@/lib/mocks/fixtures/sports-data";
+import {
+  MOCK_BETS,
+  MOCK_CLV_RECORDS,
+  MOCK_FIXTURES,
+  MOCK_PREDICTIONS,
+  MOCK_STANDINGS,
+} from "@/lib/mocks/fixtures/sports-data";
 import { DEFAULT_ARB_THRESHOLD, FOOTBALL_LEAGUES } from "@/lib/mocks/fixtures/sports-fixtures";
 
 export { FOOTBALL_LEAGUES };
@@ -182,6 +188,7 @@ interface SportsDataContextValue {
   standings: Standing[];
 
   clvRecords: CLVRecord[];
+  predictions: Record<string, Prediction>;
   modelFamilies: ModelFamily[];
   featureFreshness: FeatureFreshness[];
 
@@ -325,6 +332,7 @@ export function SportsDataProvider({ children }: { children: React.ReactNode }) 
       allBets: adjustedBets,
       standings,
       clvRecords: MOCK_CLV_RECORDS,
+      predictions: MOCK_PREDICTIONS,
       modelFamilies: MOCK_MODEL_FAMILIES,
       featureFreshness: MOCK_FEATURE_FRESHNESS,
       activeTab,

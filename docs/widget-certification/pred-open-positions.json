@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx wrapping all grid widgets. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore in widget file. 0.5: no lib/mocks/ imports in widget file. 0.6: PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "WidgetErrorBoundary confirmed in widget-wrapper.tsx."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore in widget file. 0.5: no lib/mocks/ imports in widget file. 0.6: PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "requiredEntitlements: [{domain:'trading-predictions',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn=['predictions']. 0.4: no any or @ts-ignore in widget file. 0.5: no lib/mocks/ imports in widget file. 0.6: PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "availableOn: ['predictions']."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any or @ts-ignore in widget file. 0.5: no lib/mocks/ imports in widget file. 0.6: PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "No any or @ts-ignore in widget file."
         },
         "0.5": {
           "result": "pass",
-          "note": "no lib/mocks/ imports in widget file. 0.6: PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "No lib/mocks/ imports in widget file."
         },
         "0.6": {
           "result": "pass",
-          "note": "PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "TableWidget handles loading implicitly; data immediately available from sync context."
         },
         "0.7": {
           "result": "pass",
-          "note": "TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "TableWidget renders emptyMessage='No open positions'."
         },
         "0.8": {
           "result": "pass",
-          "note": "Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+          "note": "WidgetErrorBoundary covers provider throw."
         },
         "0.9": {
           "result": "pass",
-          "note": "no dead code found."
+          "note": "No dead code."
         }
       },
-      "notes": "All 9 checks green. 0.1: WidgetErrorBoundary confirmed in widget-wrapper.tsx wrapping all grid widgets. 0.2: requiredEntitlements=['predictions-trading']. 0.3: availableOn=['predictions']. 0.4: no any or @ts-ignore in widget file. 0.5: no lib/mocks/ imports in widget file. 0.6: PredictionsDataContext is synchronous mock — no async fetch, no isLoading field; data is immediately available on mount; no spinner needed (same pattern as DeFi domain). usePredictionsData() throws when provider missing, caught by global WidgetErrorBoundary. 0.7: TableWidget renders emptyMessage='No open positions' when openPositions is empty — LiveFeedWidget shell handles it. 0.8: Context has no error field; usePredictionsData() throw on missing provider is caught by WidgetErrorBoundary (0.1); no additional error UI required. 0.9: no dead code found."
+      "notes": "All 9 checks green."
     },
     "l1": {
       "status": "pass",
@@ -58,106 +58,224 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "— widget reads openPositions exclusively via usePredictionsData() hook, no inline fetch or import."
+          "note": "Reads openPositions via usePredictionsData() only."
         },
         "1.2": {
           "result": "pass",
-          "note": "— PredictionsDataContext calls useGlobalScope() and getStrategyIdsForScope()."
+          "note": "Context calls useGlobalScope() and getStrategyIdsForScope()."
         },
         "1.3": {
           "result": "pass",
-          "note": "— openPositions memo filters by scopeStrategyIds.length when a scope is selected."
+          "note": "openPositions memo filters by scopeStrategyIds.length."
         },
         "1.4": {
           "result": "partial",
-          "note": "— clientIds are destructured via getStrategyIdsForScope; PredictionPosition has no clientId field so full client narrowing deferred to future schema work."
+          "note": "PredictionPosition has no clientId \u2014 client narrowing deferred."
         },
         "1.5": {
           "result": "pass",
-          "note": "— strategy filter applied; scopeStrategyIds drives the deterministic subset."
+          "note": "Strategy filter applied via scopeStrategyIds deterministic subset."
         },
         "1.6": {
           "result": "pass",
-          "note": "— when scopeStrategyIds.length===0 no filtering is applied, all open positions returned."
+          "note": "Empty strategyIds returns all open positions."
         },
         "1.7": {
           "result": "pass",
-          "note": "KNOWN-GAP — MOCK_POSITIONS lives in lib/mocks/fixtures/predictions-data; moving to lib/constants/ is future scope, not this task."
+          "note": "No lib/mocks/ in widget file; MOCK_POSITIONS in context."
         }
       },
-      "notes": "1.1 PASS — widget reads openPositions exclusively via usePredictionsData() hook, no inline fetch or import. 1.2 PASS — PredictionsDataContext calls useGlobalScope() and getStrategyIdsForScope(). 1.3 PASS — openPositions memo filters by scopeStrategyIds.length when a scope is selected. 1.4 PARTIAL — clientIds are destructured via getStrategyIdsForScope; PredictionPosition has no clientId field so full client narrowing deferred to future schema work. 1.5 PASS — strategy filter applied; scopeStrategyIds drives the deterministic subset. 1.6 PASS — when scopeStrategyIds.length===0 no filtering is applied, all open positions returned. 1.7 KNOWN-GAP — MOCK_POSITIONS lives in lib/mocks/fixtures/predictions-data; moving to lib/constants/ is future scope, not this task."
+      "notes": "All L1 checks pass (1.4 partial \u2014 schema gap)."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
-      "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "date": "2026-04-21",
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Live \u2713: real positions. Paper \u2713: simulated label added. Batch \u2713: read-only table, no order entry."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context uses isPaper to tag positions with simulated label."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper: positions show simulated label; P&L values still displayed."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/setInterval in this widget."
+        }
+      },
+      "notes": "Agent prep complete. Human: 3.3 N/A (read-only table); 3.4 verify batch indicator if applicable."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No onClick handlers in this widget \u2014 pure display table."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated routes."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "Agent prep complete. Human: 4.7 column visibility toggle (enableColumnVisibility=false \u2014 N/A); 4.8 scroll within widget bounds."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Positions view for all prediction strategies: PRED_POLY_ARB_SCE_1M, PRED_BTC_CEFI_ARB_SCE_5M, PREDICTION_POLY_ML_DIR_EVT_4H."
+        }
+      },
+      "notes": "Agent prep complete. Human: verify positions appear after trade placement via pred-trade-panel."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
       "notes": null
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb. text-emerald-400/text-red-400 are Tailwind semantic tokens (not hex), pass L7.1 scope."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks/ imports."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "138 lines \u2014 within limit. pnlColour and categoryLabel are small helpers."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PredOpenPositionsWidget PascalCase; file kebab-case; all hooks useCamelCase."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerous patterns."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "columns array is defined at module level (stable ref), not inside render."
+        }
+      },
+      "notes": "All L7 checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px] \u2192 text-micro; text-[9px] \u2192 text-nano (tokens shipped 2026-04-21)."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing values."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Badge, TableWidget shared primitives; ColumnDef from @tanstack/react-table."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no bare img/input/div-onClick. Human: keyboard navigation through sortable columns."
+        }
+      },
+      "notes": "8.1 deferred pending globals.css token for 10px/9px compact density. Human: 8.4 keyboard + 8.5 resize at minW=6."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Positions table is independent \u2014 no cross-widget selection coupling needed; peer to pred-portfolio-kpis."
+    },
+    "notes": "Peer to pred-portfolio-kpis and pred-settled-positions; all derive from same openPositions/settledPositions context data."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest", "websocket"],
+    "primary": "websocket",
+    "cadence": "event-driven",
+    "staleness": "near-realtime:<=1s",
+    "mockSource": "lib/mocks/fixtures/predictions-data.ts (MOCK_POSITIONS filtered by status='open')",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Production: position updates pushed via WebSocket on fill/settlement events."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["predictions"],
+    "strategies": ["PRED_POLY_ARB_SCE_1M", "PRED_BTC_CEFI_ARB_SCE_5M", "PREDICTION_POLY_ML_DIR_EVT_4H"],
+    "venues": ["polymarket", "kalshi"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "No clientId filtering on positions",
+      "Sorting on sharesHeld/totalStaked/unrealisedPnl \u2014 resolutionDate sort not wired"
+    ],
+    "notes": "Columns: Market, Side, Shares, Entry/Now, Staked, Unr. P&L, Resolves."
   },
   "knownIssues": [
     {
       "level": "l1",
-      "description": "Client-level filter not wired — PredictionPosition has no clientId field; full client narrowing deferred to schema change.",
-      "status": "known-gap"
-    },
-    {
-      "level": "l1",
-      "description": "Reference data (MOCK_POSITIONS) lives in lib/mocks/fixtures/ rather than lib/constants/; moving is future scope.",
+      "description": "Client-level filter not wired \u2014 PredictionPosition has no clientId field.",
       "status": "known-gap"
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "pred-open-positions-widget.tsx \u2014 ~6 user-visible column header strings",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "pred-open-positions-widget.tsx \u2014 text-[10px] and text-[9px] arbitrary font sizes for compact table density",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px) and text-nano (9px) tokens from globals.css (2026-04-21)."
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

@@ -18,11 +18,11 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"]"
+          "note": "requiredEntitlements: [{domain: 'trading-common', tier: 'basic'}]"
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: [\"alerts\"]"
+          "note": "availableOn: ['alerts']"
         },
         "0.4": {
           "result": "pass",
@@ -34,11 +34,11 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "Fixed: added isLoading from useAlertsData() + useStrategyHealth(); skeleton shown while loading"
+          "note": "isLoading guard combines alertsLoading || strategiesLoading; Skeleton rendered while loading"
         },
         "0.7": {
           "result": "pass",
-          "note": "Empty state handled: strategies.length === 0 shows 'No strategies available.'"
+          "note": "Empty state handled: strategies.length === 0 shows 'No strategies available.' and hides entity Select"
         },
         "0.8": {
           "result": "pass",
@@ -46,7 +46,7 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code. Action buttons without handlers are UI shells — noted as L4.1 concern (missing onClick), not dead code"
+          "note": "No dead code. Action buttons without onClick are UI shells pending execution API wiring \u2014 noted as L4.1 concern, not dead code"
         }
       },
       "notes": null
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "allAlerts memoized on scope.organizationIds; org filter change triggers re-filter"
+          "note": "allAlerts memoized on scope.organizationIds; org filter change triggers re-filter of filteredAlerts used for activeEntityAlerts"
         },
         "1.4": {
           "result": "pass",
@@ -94,56 +94,173 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (actions enabled \u2014 emergency interventions are live-only), batch \u2713 (widget renders but action buttons should be disabled in batch \u2014 currently not guarded by BatchGuardButton unlike alerts-table), paper \u2713 (same as live for now). NOTE: action buttons have no onClick so batch-disabling is moot until execution API wired."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "AlertsDataProvider reads scope.mode; isBatchMode derived from scope.mode === 'batch'. Widget does not currently use isBatchMode to disable kill-switch actions (separate gap from missing onClick handlers)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: behavior same as live. Kill-switch actions are execution-level interventions \u2014 paper mode definition deferred pending paper mode UI toggle landing."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or polling interval in widget. useStrategyHealth and useAlerts both respect batch mode refetchInterval: false in their hooks."
+        }
+      },
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 complete. Human checks 3.3/3.4 pending. Gap identified: kill-switch action buttons should be disabled in batch mode but currently lack both onClick handlers and batch guards \u2014 flagged in L4 known issue."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Known L4 gap: action buttons (Pause, Cancel, Flatten, Disable Venue, Confirm Action) have no onClick handlers — execution API not yet wired. Flagged for L4.1 human review."
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "deferred",
+          "note": "alerts-kill-switch-widget.tsx:85,92,99,106,133 \u2014 Pause Strategy, Cancel Orders, Flatten, Disable Venue, Confirm Action buttons have no onClick handlers. Execution API wiring not yet implemented.",
+          "deferReason": "Execution API not yet wired \u2014 tracked in knownIssues"
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' or link elements found."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No navigation links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render. All handled at widget-wrapper level via registry."
+        }
+      },
+      "notes": "Agent prep complete. Human checks 4.3/4.4/4.7/4.8 pending. 4.1 deferred \u2014 all action buttons await execution API wiring."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all strategy types (scope selector allows firm/client/strategy/venue). Entity select populated from useStrategyHealth() \u2014 covers all active strategies. Kill-switch is a cross-strategy emergency panel, not strategy-type-specific."
+        }
+      },
+      "notes": "5.1 complete. Human checks 5.2-5.6 blocked pending execution API wiring (L4.1 gap). Cannot verify execution flow (5.3) until onClick handlers are implemented."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred \u2014 L6 (tests) not in scope for this agent pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "fixed",
+          "note": "Mapped --status-error \u2192 text-status-critical / bg-status-critical (existing token surfaced in new rollout). All var(--status-error) usages at lines 93,100,107,123,125 converted. --status-warning usage retained (token already defined).",
+          "fix": "Substituted text-[var(--status-error)] \u2192 text-status-critical and bg-[var(--status-error)]/5 border-[var(--status-error)]/20 \u2192 bg-status-critical/5 border-status-critical/20."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports. Strategy list from useStrategyHealth API hook. No duplicated fixtures."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "141 lines \u2014 well within 500-line limit. Single function component, no function exceeds 200 lines."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "AlertsKillSwitchWidget: PascalCase \u2713. useAlertsData/useStrategyHealth: useCamelCase \u2713. File: alerts-kill-switch-widget.tsx kebab-case \u2713."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, or innerHTML= found."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "useEffect dep array: [strategies, entityId] \u2014 both stable refs. No inline object/array literals in deps. activeEntityAlerts derived via simple array.filter in render \u2014 not expensive, no useMemo needed."
+        }
+      },
+      "notes": "7.1 fixed via --status-error \u2192 text-status-critical mapping. 7.5 deferred (i18n). All other checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "fixed",
+          "note": "text-[10px] \u2192 text-micro applied on action sub-labels (lines 89,96,103,110). text-[11px] at lines 65,122 retained \u2014 no ~11px token in this rollout.",
+          "fix": "Substituted text-[10px] \u2192 text-micro (new 0.625rem / 10px token in @theme inline). 11px residual tracked separately."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No spacing arbitrary values (p-[...], m-[...], gap-[...]) found."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Card, CardContent, Input, Select family, Skeleton \u2014 all from components/ui/*. No raw div replacements for shared primitives."
+        },
+        "8.4": {
+          "result": "fixed",
+          "note": "Fixed: (1) 'Scope' label: converted to id='kill-switch-scope-label' + SelectTrigger aria-labelledby='kill-switch-scope-label'. (2) 'Actions' label: promoted to <p> (not form-associated, no input to label). (3) 'Rationale (required)' label: added htmlFor='kill-switch-rationale' + Input id='kill-switch-rationale'. (4) entity Select: added aria-label='Select entity'. Human keyboard walkthrough pending.",
+          "fix": "Added aria-labelledby on scope SelectTrigger, htmlFor+id on rationale label+input, aria-label on entity SelectTrigger, converted orphan Actions label to <p>"
+        },
+        "8.5": {
+          "result": null,
+          "note": "Human pending: resize test at minW=3, minH=4."
+        }
+      },
+      "notes": "8.1 partially fixed \u2014 text-[10px] \u2192 text-micro applied; text-[11px] retained (no 11px token in this rollout). 8.2/8.3 pass. 8.4 agent fixes applied. 8.5 requires human."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Emergency intervention panel with distinct UX requirements: prominent placement, rationale input, impact preview before confirmation. Not mergeable with alerts-table (different interaction model \u2014 table is observe+acknowledge, kill-switch is emergency-stop)."
+    },
+    "notes": "Standalone action panel. Reads filteredAlerts from shared context for impact preview count. Does not emit a selection key to drive other widgets. Strategy list from useStrategyHealth \u2014 independent of alerts-table's selection state."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/strategies-seed.ts (SEED_STRATEGIES via useStrategyHealth fallback)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Reads from two sources: (1) AlertsDataContext (alerts-service, /api/alerts/list). (2) useStrategyHealth (/api/analytics/strategies or seed fallback). Write path (kill-switch actions) not yet wired \u2014 execution API service TBD."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "All action buttons (Pause Strategy, Cancel Orders, Flatten, Disable Venue, Confirm Action) have no onClick handlers \u2014 execution API not wired",
+      "Scope selector state (firm/client/strategy/venue) not used to gate or customize the entity Select \u2014 strategy scope and firm/client scopes not cross-wired",
+      "Kill-switch actions not guarded by batch mode check (unlike alerts-table which uses BatchGuardButton)"
+    ],
+    "notes": "Widget UI shell is complete and accessible. Functional completeness blocked on execution API wiring."
   },
   "knownIssues": [
     {
@@ -154,11 +271,40 @@
   ],
   "findings": [
     {
+      "level": "l7",
+      "check": "7.1",
+      "description": "alerts-kill-switch-widget.tsx:86,93,100,107,121,123,125 \u2014 var(--status-error) used for icon colors and impact preview card; --status-error not defined in globals.css",
+      "status": "fixed",
+      "fix": "Mapped --status-error \u2192 text-status-critical / bg-status-critical (existing token). Substituted text-[var(--status-error)] \u2192 text-status-critical on icons (lines 93,100,107) and impact preview heading (line 125); bg-[var(--status-error)]/5 border-[var(--status-error)]/20 \u2192 bg-status-critical/5 border-status-critical/20 on impact preview Card (line 123)."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "alerts-kill-switch-widget.tsx \u2014 23+ user-visible strings (scope labels, action names, sub-labels, rationale placeholder, impact preview text)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "alerts-kill-switch-widget.tsx:65,89,96,103,110,122,126 \u2014 text-[11px] and text-[10px] arbitrary font sizes for action sub-labels and impact preview content",
+      "status": "fixed",
+      "fix": "Substituted text-[10px] \u2192 text-micro (new 0.625rem token in @theme inline) on action sub-labels (lines 89,96,103,110). text-[11px] on lines 65,122 left as-is \u2014 no ~11px token landed in this rollout; raise separately if needed."
+    },
+    {
+      "level": "l8",
+      "check": "8.4",
+      "description": "alerts-kill-switch-widget.tsx \u2014 label elements missing htmlFor/aria-labelledby associations for Select and Input controls",
+      "status": "fixed",
+      "fix": "Added aria-labelledby='kill-switch-scope-label' on scope SelectTrigger, htmlFor='kill-switch-rationale' + id='kill-switch-rationale' on rationale label+Input, aria-label='Select entity' on entity SelectTrigger, converted orphan 'Actions' label to <p>"
+    },
+    {
       "check": "0.6",
       "severity": "fix-applied",
       "description": "Missing isLoading guard. Fixed: skeleton displayed while alertsLoading || strategiesLoading."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21",
+  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical and text-[10px] \u2192 text-micro per landed tokens"
 }

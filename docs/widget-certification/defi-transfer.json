@@ -30,7 +30,7 @@
         },
         "0.5": {
           "result": "pass",
-          "note": "stale known-issue cleared — getMockPrice and chainPortfolios already flow through useDeFiData() context, no direct mock imports in widget."
+          "note": "stale known-issue cleared \u2014 getMockPrice and chainPortfolios already flow through useDeFiData() context, no direct mock imports in widget."
         },
         "0.6": {
           "result": "pass",
@@ -49,7 +49,7 @@
           "note": null
         }
       },
-      "notes": "All 9 checks pass. Fixed: (1) added isLoading={false} placeholder to FormWidget for future real-data wiring, (2) added empty state guard for null connectedWallet, (3) removed duplicate isFastest badge branch (dead code). 0.5 stale known-issue cleared — getMockPrice and chainPortfolios already flow through useDeFiData() context, no direct mock imports in widget."
+      "notes": "All 9 checks pass. Fixed: (1) added isLoading={false} placeholder to FormWidget for future real-data wiring, (2) added empty state guard for null connectedWallet, (3) removed duplicate isFastest badge branch (dead code). 0.5 stale known-issue cleared \u2014 getMockPrice and chainPortfolios already flow through useDeFiData() context, no direct mock imports in widget."
     },
     "l1": {
       "status": "pass",
@@ -58,34 +58,34 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data exclusively from useDeFiData() hook — pass. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 — pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "Data exclusively from useDeFiData() hook \u2014 pass. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 \u2014 pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access \u2014 pass. 1.4: Client filter N/A \u2014 context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         },
         "1.2": {
           "result": "pass",
-          "note": "defi-data-context.tsx calls useGlobalScope() at line 188 — pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "defi-data-context.tsx calls useGlobalScope() at line 188 \u2014 pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access \u2014 pass. 1.4: Client filter N/A \u2014 context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access \u2014 pass. 1.4: Client filter N/A \u2014 context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         },
         "1.4": {
           "result": "pass",
-          "note": "Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "Client filter N/A \u2014 context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         },
         "1.5": {
           "result": "pass",
-          "note": "Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         },
         "1.7": {
           "result": "pass",
-          "note": "Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+          "note": "Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
         }
       },
-      "notes": "1.1: Data exclusively from useDeFiData() hook — pass. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 — pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access — pass. 1.4: Client filter N/A — context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) — pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config — pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget — acceptable under current mock-data architecture."
+      "notes": "1.1: Data exclusively from useDeFiData() hook \u2014 pass. 1.2: defi-data-context.tsx calls useGlobalScope() at line 188 \u2014 pass. 1.3: Org filter: hasDefiDesk derived from globalScope.organizationIds; zeros token balances and returns empty bridge routes when org lacks DeFi access \u2014 pass. 1.4: Client filter N/A \u2014 context filters at org level, no sub-client cascade for DeFi. 1.5: Strategy filter: tradeHistory filters by scopeStrategyIds (line 211); transfer widget itself is action-only, not data-display, so N/A for strategy scoping. 1.6: Empty scope arrays return all data (hasDefiDesk returns true when organizationIds.length === 0) \u2014 pass. 1.7: Reference data (DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS) in lib/config/services/defi.config \u2014 pass. getMockPrice and MOCK_CHAIN_PORTFOLIOS are mock fixtures exposed via context, not imported directly by the widget \u2014 acceptable under current mock-data architecture."
     },
     "l2": {
       "status": "pass",
@@ -94,62 +94,166 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "live \u2713 / paper \u2713 / batch: Send/Bridge execution should be disabled."
+        },
+        "3.2": {
+          "result": "partial",
+          "note": "Context reads useGlobalScope() but does not consume scope.mode."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode spec: Send/Bridge buttons disabled; wallet and chain info still displayed."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or interval. N/A."
+        }
+      },
+      "notes": "3.3/3.4: Human must verify batch-mode behavior."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Send/Bridge buttons, mode toggle, route selection, and chain/token selects are functional."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No cross-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "4.3/4.4/4.7/4.8: Human walkthrough required."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: YIELD_ROTATION_LENDING (send mode for fund movement), ARBITRAGE_PRICE_DISPERSION (bridge mode for cross-chain arb), CARRY_STAKED_BASIS (bridge to Hyperliquid margin). Operations: TRANSFER (send), TRANSFER+SOR_CROSS_CHAIN (bridge)."
+        }
+      },
+      "notes": "5.2-5.6: Human walkthrough required for bridge route verification."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "L6 deferred."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data in widget file."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "418 lines \u2014 within 500-line limit but approaching threshold. Consider splitting bridge route section."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "DeFiTransferWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security violations."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "routes useMemo deps stable [getBridgeRoutes, token, amountNum, fromChain, toChain]. useEffect deps stable [routes]."
+        }
+      },
+      "notes": "7.3 advisory: 418 lines approaches 500 limit. No action required yet."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "deferred",
+          "note": "text-[9px] at lines 351, 357 migrated to text-nano; text-[10px] at lines 152, 164, 293, 305, 322, 368, 371 migrated to text-micro. text-[11px] at line 107 remains \u2014 no 11px token in scale (nearest are text-nano 9px and text-xs 12px); product decision required."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Button, Input, Select, Badge, FormWidget from components/ui/* and shared."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no img without alt. Route selection uses native <button> with accessible text. Human: keyboard pass required."
+        }
+      },
+      "notes": "8.1 deferred pending --text-label-micro token. 8.5: human required."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
+    "keepSeparate": {
+      "rationale": "Transfer+Bridge combines two distinct operations in one widget \u2014 appropriate given DeFi workflow where bridge and send are closely related."
+    },
     "notes": null
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/defi-transfer.ts (via context getBridgeRoutes)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Bridge routes computed on-demand. Gas estimates are hardcoded per chain \u2014 need production pricing API."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi"],
+    "strategies": ["YIELD_ROTATION_LENDING", "ARBITRAGE_PRICE_DISPERSION", "CARRY_STAKED_BASIS"],
+    "venues": ["ACROSS", "STARGATE", "HOP", "WORMHOLE"],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
       {
         "status": "SUPPORTED",
-        "notes": "YIELD_ROTATION_LENDING §9 DeFi/lending + bridge: Bridge cost + latency modeled in rotation decision"
+        "notes": "YIELD_ROTATION_LENDING \u00a79 DeFi/lending + bridge: Bridge cost + latency modeled in rotation decision"
       },
       {
         "status": "PARTIAL",
-        "notes": "CARRY_BASIS_PERP §6 DeFi/spot + perp (cross chain): Bridge latency breaks LEADER_HEDGE deadline — needs longer max_hedge_delay_ms config + bridge state machine integration"
+        "notes": "CARRY_BASIS_PERP \u00a76 DeFi/spot + perp (cross chain): Bridge latency breaks LEADER_HEDGE deadline \u2014 needs longer max_hedge_delay_ms config + bridge state machine integration"
       }
     ],
     "notes": null
@@ -158,30 +262,44 @@
   "findings": [
     {
       "level": "l0",
-      "description": "0.6 isLoading not passed to FormWidget — FormWidget supports skeleton via isLoading prop but it was omitted.",
+      "description": "0.6 isLoading not passed to FormWidget \u2014 FormWidget supports skeleton via isLoading prop but it was omitted.",
       "status": "fixed"
     },
     {
       "level": "l0",
-      "description": "0.7 No empty state for null connectedWallet — widget rendered without a connected wallet guard.",
+      "description": "0.7 No empty state for null connectedWallet \u2014 widget rendered without a connected wallet guard.",
       "status": "fixed"
     },
     {
       "level": "l0",
-      "description": "0.9 Dead code — duplicate Fastest badge rendered for isFastest && isBestReturn branch, identical to isFastest && !isBestReturn branch.",
+      "description": "0.9 Dead code \u2014 duplicate Fastest badge rendered for isFastest && isBestReturn branch, identical to isFastest && !isBestReturn branch.",
       "status": "fixed"
     },
     {
       "level": "l0",
-      "description": "0.5 Stale known-issue label — MOCK_CHAIN_PORTFOLIOS and getMockPrice were flagged as direct mock imports but already flow through useDeFiData() context.",
+      "description": "0.5 Stale known-issue label \u2014 MOCK_CHAIN_PORTFOLIOS and getMockPrice were flagged as direct mock imports but already flow through useDeFiData() context.",
       "status": "fixed"
     },
     {
       "level": "l1",
-      "description": "1.4 Client filter cascade — context filters at org level only; no sub-client cascade implemented for DeFi domain. Marked N/A as DeFi data is org-scoped, not client-scoped.",
+      "description": "1.4 Client filter cascade \u2014 context filters at org level only; no sub-client cascade implemented for DeFi domain. Marked N/A as DeFi data is org-scoped, not client-scoped.",
       "status": "open"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "~25 user-visible strings present.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "defi-transfer-widget.tsx:107,152,164,293,305,322,351,357,368,371 \u2014 text-[9px]/text-[10px]/text-[11px] for sub-xs sizing.",
+      "status": "deferred",
+      "deferReason": "text-[10px] migrated to text-micro and text-[9px] migrated to text-nano; text-[11px] at :107 remains \u2014 no 11px token in scale (nearest are text-nano 9px and text-xs 12px); product decision required for 11px resolution"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

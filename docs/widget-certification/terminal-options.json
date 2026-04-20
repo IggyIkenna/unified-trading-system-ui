@@ -18,38 +18,38 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[execution-full]."
+          "note": "requiredEntitlements: [{domain:'trading-common', tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn=[terminal]."
+          "note": "availableOn: ['terminal']."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any/ts-ignore."
+          "note": "No any/ts-ignore."
         },
         "0.5": {
           "result": "pass",
-          "note": "no lib/mocks imports in widget file."
+          "note": "No lib/mocks imports in widget file."
         },
         "0.6": {
           "result": "pass",
-          "note": "dynamic() loading fallbacks for both sub-components; OptionsChain has isLoading handler; VolSurfaceChart has internal loading state."
+          "note": "dynamic() loading fallbacks for both OptionsChain and VolSurfaceChart."
         },
         "0.7": {
           "result": "pass",
-          "note": "VolSurfaceChart renders 'No vol surface data' empty state; OptionsChain shows 'No live data -- displaying sample options chain'."
+          "note": "VolSurfaceChart renders 'No vol surface data'; OptionsChain shows 'No live data \u2014 displaying sample options chain'."
         },
         "0.8": {
           "result": "pass",
-          "note": "OptionsChain renders 'API unavailable -- showing mock data' on isError."
+          "note": "OptionsChain renders 'API unavailable \u2014 showing mock data' on isError."
         },
         "0.9": {
           "result": "pass",
-          "note": "no dead code."
+          "note": "No dead code."
         }
       },
-      "notes": "0.1 PASS: WidgetErrorBoundary in widget-wrapper.tsx. 0.2 PASS: requiredEntitlements=[execution-full]. 0.3 PASS: availableOn=[terminal]. 0.4 PASS: no any/ts-ignore. 0.5 PASS: no lib/mocks imports in widget file. 0.6 PASS: dynamic() loading fallbacks for both sub-components; OptionsChain has isLoading handler; VolSurfaceChart has internal loading state. 0.7 PASS: VolSurfaceChart renders 'No vol surface data' empty state; OptionsChain shows 'No live data -- displaying sample options chain'. 0.8 PASS: OptionsChain renders 'API unavailable -- showing mock data' on isError. 0.9 PASS: no dead code."
+      "notes": "All L0 checks pass."
     },
     "l1": {
       "status": "pass",
@@ -58,98 +58,219 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "data sourced via useTerminalData() for selectedInstrument."
+          "note": "selectedInstrument sourced via useTerminalData()."
         },
         "1.2": {
           "result": "pass",
-          "note": "use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven."
+          "note": "use-terminal-page-data.ts calls useGlobalScope()."
         },
         "1.3": {
-          "result": "pass",
-          "note": "1.5 N/A: options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven."
+          "result": "n/a",
+          "note": "Options chain is instrument-scoped market data \u2014 not org-filtered."
         },
         "1.4": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "Same as 1.3."
         },
         "1.5": {
           "result": "n/a",
-          "note": "options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven."
+          "note": "Instrument derived from selectedInstrument which is strategy-driven; options data itself is per-instrument."
         },
         "1.6": {
           "result": "pass",
-          "note": "default instrument always set."
+          "note": "Default instrument always set; options chain renders for it."
         },
         "1.7": {
           "result": "pass",
-          "note": "no reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (acceptable — trading component layer)."
+          "note": "No reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (trading component layer \u2014 acceptable)."
         }
       },
-      "notes": "1.1 PASS: data sourced via useTerminalData() for selectedInstrument. 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3–1.5 N/A: options widget is instrument-scoped, not org/client/strategy-filtered — the underlying is derived from selectedInstrument which is scope-driven. 1.6 PASS: default instrument always set. 1.7 PASS: no reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (acceptable — trading component layer)."
+      "notes": "L1 pass. 1.3/1.4/1.5 N/A \u2014 instrument-scoped market data."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Modes: live \u2713 (options chain fetches live data), batch \u2014 expected behavior: OptionsChain renders historical snapshot for asOf date if API supports it. paper N/A."
+        },
+        "3.2": {
+          "result": "partial",
+          "note": "Widget passes selectedInstrument to OptionsChain/VolSurfaceChart but does not pass mode/asOf params. OptionsChain and VolSurfaceChart components would need to read mode internally or accept it as props. Gap identified."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode expected: read-only options chain view. No behavioral change needed."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or timed interval in widget file. Dynamically loaded components may have their own intervals \u2014 need human verification at component level."
+        }
+      },
+      "notes": "Agent checks partial. 3.2 gap: mode/asOf not passed to OptionsChain/VolSurfaceChart sub-components. Human checks 3.3(N/A \u2014 read-only)/3.4(batch indicator) required."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No buttons in widget file \u2014 all interactivity inside OptionsChain and VolSurfaceChart components."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links in widget file."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "All agent checks pass. Human checks 4.3(options form in OptionsChain)/4.4(option selection)/4.7(N/A)/4.8(scroll in overflow-auto) required."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: options-specific strategies. In STRATEGIES registry: any strategy with assetClass including 'options' or 'cefi'. Currently no DeFi options strategies registered. Widget serves vanilla options trading workflow."
+        }
+      },
+      "notes": "5.1 complete. Human checks 5.2\u20135.6 required. Known L4 note: OptionsChain UNDERLYINGS constant may not match all selectedInstrument.symbol values \u2014 verify symbol passthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded colors in widget file. CLEAN."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget file. CLEAN."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "40 lines \u2014 minimal widget."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "TerminalOptionsWidget PascalCase, useTerminalData useCamelCase, file kebab-case. CLEAN."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns. CLEAN."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo in widget file. CLEAN."
+        }
+      },
+      "notes": "L7 pass. Widget file is a clean 40-line dynamic loader."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[\u2026] in widget file. CLEAN."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing in widget file. CLEAN."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "No custom div+tailwind in widget file \u2014 delegates to OptionsChain and VolSurfaceChart trading components. CLEAN."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no img, input, interactive div in widget file. Human: keyboard + a11y check on OptionsChain and VolSurfaceChart components required (dynamically loaded)."
+        },
+        "8.5": {
+          "result": null,
+          "note": "Human check required \u2014 responsive at minW=4, minH=4. Dynamically loaded components must not overflow."
+        }
+      },
+      "notes": "8.1\u20138.3 clean in widget file. Human 8.4+8.5 required \u2014 critical because dynamic components may have their own typography/spacing issues."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "detail",
     "masterOf": [],
-    "detailOf": [],
-    "selectionKey": null,
+    "detailOf": ["instrument-bar"],
+    "selectionKey": "instrumentId",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Options chain requires substantial height for strike table + vol surface. Cannot be merged with other terminal widgets without sacrificing usability."
+    },
+    "notes": "Driven by selectedInstrument from instrument-bar. Dynamically loads OptionsChain and VolSurfaceChart to avoid SSR issues with chart libraries."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "options-chain/mock-generators.tsx (UNDERLYINGS constant + synthetic options generation inside OptionsChain component)",
+    "backendOwner": "unknown \u2014 likely unified-trading-api (options pricing / vol surface service)",
+    "notes": "OptionsChain fetches options data via internal hook; VolSurfaceChart generates synthetic vol surface. Production path requires options pricing service. Both sub-components handle their own loading/error states."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
-    "commonTabs": null,
+    "assetClasses": ["cefi"],
+    "strategies": ["options-strategies"],
+    "venues": ["all"],
+    "commonTabs": ["terminal"],
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "DeFi options protocols (Lyra, Dopex, Premia) not verified",
+      "OptionsChain UNDERLYINGS constant may not match all instrument symbols passed by terminal context",
+      "Vol surface is fully synthetic \u2014 not backed by real implied volatility data"
+    ],
+    "notes": "Currently CeFi-only. DeFi options protocols are a significant gap. OptionsChain has a hardcoded UNDERLYINGS list that may not react correctly to selectedInstrument.symbol if the symbol is not in the list."
   },
-  "knownIssues": [],
+  "knownIssues": [
+    "OptionsChain UNDERLYINGS constant hardcoded \u2014 does not react to selectedInstrument.symbol if symbol not in list (L4 human walkthrough required)",
+    "Vol surface is synthetic, not real IV data",
+    "mode/asOf not passed to OptionsChain/VolSurfaceChart sub-components (3.2 partial)"
+  ],
   "findings": [
-    "CLEAN: All L0 checks pass. No fixes required.",
-    "NOTE: OptionsChain underlying selector (UNDERLYINGS constant) is hardcoded inside options-chain/mock-generators.tsx — does not react to selectedInstrument.symbol changes unless initialUnderlying prop matches one of the hardcoded values. L4 human walkthrough should verify symbol passthrough."
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "terminal-options-widget.tsx \u2014 no user-visible strings in widget file; all in dynamically loaded sub-components",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

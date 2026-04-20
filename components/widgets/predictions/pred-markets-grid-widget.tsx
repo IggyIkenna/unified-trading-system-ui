@@ -34,7 +34,7 @@ export function PredMarketsGridWidget(_props: WidgetComponentProps) {
   if (error) {
     return (
       <div className="flex h-full items-center justify-center p-4">
-        <p className="text-xs text-rose-400">{error}</p>
+        <p className="text-xs text-destructive">{error}</p>
       </div>
     );
   }

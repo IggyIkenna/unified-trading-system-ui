@@ -58,14 +58,14 @@ export function CommodityRegimeWidget(_props: WidgetComponentProps) {
       </CardHeader>
       <CardContent className="space-y-3 pt-0">
         <div className="space-y-1">
-          <div className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">Factor Scores</div>
+          <div className="text-micro text-muted-foreground uppercase tracking-wide font-medium">Factor Scores</div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-[10px]">Factor</TableHead>
-                <TableHead className="text-[10px] text-right">Score</TableHead>
-                <TableHead className="text-[10px]">Signal</TableHead>
-                <TableHead className="text-[10px] text-right">Weight</TableHead>
+                <TableHead className="text-micro">Factor</TableHead>
+                <TableHead className="text-micro text-right">Score</TableHead>
+                <TableHead className="text-micro">Signal</TableHead>
+                <TableHead className="text-micro text-right">Weight</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,7 +79,7 @@ export function CommodityRegimeWidget(_props: WidgetComponentProps) {
                     {f.score.toFixed(2)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={signalBadgeVariant(f.signal)} className="text-[10px]">
+                    <Badge variant={signalBadgeVariant(f.signal)} className="text-micro">
                       {f.signal}
                     </Badge>
                   </TableCell>
@@ -91,16 +91,16 @@ export function CommodityRegimeWidget(_props: WidgetComponentProps) {
         </div>
 
         <div className="space-y-1">
-          <div className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">Active Positions</div>
+          <div className="text-micro text-muted-foreground uppercase tracking-wide font-medium">Active Positions</div>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-[10px]">Commodity</TableHead>
-                <TableHead className="text-[10px]">Dir</TableHead>
-                <TableHead className="text-[10px] text-right">Entry</TableHead>
-                <TableHead className="text-[10px] text-right">Current</TableHead>
-                <TableHead className="text-[10px] text-right">P&L</TableHead>
-                <TableHead className="text-[10px]">Regime</TableHead>
+                <TableHead className="text-micro">Commodity</TableHead>
+                <TableHead className="text-micro">Dir</TableHead>
+                <TableHead className="text-micro text-right">Entry</TableHead>
+                <TableHead className="text-micro text-right">Current</TableHead>
+                <TableHead className="text-micro text-right">P&L</TableHead>
+                <TableHead className="text-micro">Regime</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -108,7 +108,7 @@ export function CommodityRegimeWidget(_props: WidgetComponentProps) {
                 <TableRow key={pos.commodity}>
                   <TableCell className="text-xs font-medium">{pos.commodity}</TableCell>
                   <TableCell>
-                    <Badge variant={pos.direction === "LONG" ? "success" : "error"} className="text-[10px]">
+                    <Badge variant={pos.direction === "LONG" ? "success" : "error"} className="text-micro">
                       {pos.direction}
                     </Badge>
                   </TableCell>
@@ -120,7 +120,7 @@ export function CommodityRegimeWidget(_props: WidgetComponentProps) {
                     {formatPnl(pos.pnl)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={regimeBadgeVariant(pos.regimeAtEntry)} className="text-[10px]">
+                    <Badge variant={regimeBadgeVariant(pos.regimeAtEntry)} className="text-micro">
                       {pos.regimeAtEntry}
                     </Badge>
                   </TableCell>

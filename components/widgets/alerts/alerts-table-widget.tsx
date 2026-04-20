@@ -42,9 +42,9 @@ function getSeverityIcon(severity: AlertSeverity) {
 function getSeverityColor(severity: AlertSeverity) {
   switch (severity) {
     case "critical":
-      return "text-[var(--status-error)] bg-[var(--status-error)]/10 border-[var(--status-error)]";
+      return "text-status-critical bg-status-critical/10 border-status-critical";
     case "high":
-      return "text-[var(--status-error)] bg-[var(--status-error)]/10 border-[var(--status-error)]";
+      return "text-status-critical bg-status-critical/10 border-status-critical";
     case "medium":
       return "text-[var(--status-warning)] bg-[var(--status-warning)]/10 border-[var(--status-warning)]";
     case "low":
@@ -57,7 +57,7 @@ function getSeverityColor(severity: AlertSeverity) {
 function getStatusColor(status: AlertStatus) {
   switch (status) {
     case "active":
-      return "text-[var(--status-error)]";
+      return "text-status-critical";
     case "acknowledged":
       return "text-[var(--status-warning)]";
     case "resolved":
@@ -369,13 +369,13 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
         </Badge>
       )}
       {highCount > 0 && (
-        <Badge variant="outline" className="gap-1 text-xs text-[var(--status-error)] border-[var(--status-error)]">
+        <Badge variant="outline" className="gap-1 text-xs text-status-critical border-status-critical">
           <AlertCircle className="size-3" />
           {highCount} High
         </Badge>
       )}
       {isBatchMode && (
-        <span className="text-[10px] text-[var(--status-warning)] shrink-0">Batch — actions disabled</span>
+        <span className="text-micro text-[var(--status-warning)] shrink-0">Batch — actions disabled</span>
       )}
     </div>
   );

@@ -41,7 +41,7 @@ const columns: ColumnDef<AtRiskPosition, unknown>[] = [
     cell: ({ row }) => (
       <span className="text-xs">
         <span className="font-mono">{row.original.collateral}</span>
-        <span className="text-muted-foreground ml-1 text-[10px]">{formatUsd(row.original.collateralUsd)}</span>
+        <span className="text-muted-foreground ml-1 text-micro">{formatUsd(row.original.collateralUsd)}</span>
       </span>
     ),
   },
@@ -52,7 +52,7 @@ const columns: ColumnDef<AtRiskPosition, unknown>[] = [
     cell: ({ row }) => (
       <span className="text-xs">
         <span className="font-mono">{row.original.debt}</span>
-        <span className="text-muted-foreground ml-1 text-[10px]">{formatUsd(row.original.debtUsd)}</span>
+        <span className="text-muted-foreground ml-1 text-micro">{formatUsd(row.original.debtUsd)}</span>
       </span>
     ),
   },
@@ -64,7 +64,7 @@ const columns: ColumnDef<AtRiskPosition, unknown>[] = [
       const hf = row.getValue<number>("healthFactor");
       return (
         <div className="flex justify-end">
-          <Badge variant={hfBadgeVariant(hf)} className="text-[10px] font-mono">
+          <Badge variant={hfBadgeVariant(hf)} className="text-micro font-mono">
             {hf.toFixed(2)}
           </Badge>
         </div>
@@ -101,7 +101,7 @@ const columns: ColumnDef<AtRiskPosition, unknown>[] = [
 ];
 
 export function LiquidationMonitorWidget(_props: WidgetComponentProps) {
-  const { liquidationPositions, isLoading } = useStrategiesData();
+  const { liquidationPositions, isLoading, cascadeZoneUsd, liquidated24hUsd } = useStrategiesData();
 
   const atRiskCount = React.useMemo(
     () => liquidationPositions.filter((p) => p.healthFactor < 1.5).length,
@@ -110,8 +110,8 @@ export function LiquidationMonitorWidget(_props: WidgetComponentProps) {
 
   const headerMetrics: KpiMetric[] = [
     { label: "At Risk", value: String(atRiskCount), sentiment: atRiskCount > 0 ? "negative" : "neutral" },
-    { label: "Cascade Zone", value: "$2,740", sentiment: "negative" },
-    { label: "24h Liquidated", value: "$4.2M", sentiment: "neutral" },
+    { label: "Cascade Zone", value: formatUsd(cascadeZoneUsd), sentiment: cascadeZoneUsd > 0 ? "negative" : "neutral" },
+    { label: "24h Liquidated", value: formatUsd(liquidated24hUsd), sentiment: "neutral" },
   ];
 
   return (

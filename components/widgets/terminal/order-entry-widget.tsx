@@ -104,7 +104,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
         {/* Price */}
         {orderType === "limit" && (
           <div className="space-y-1">
-            <label className="text-[10px] text-muted-foreground">Price</label>
+            <label className="text-micro text-muted-foreground">Price</label>
             <Input
               type="number"
               value={orderPrice}
@@ -117,7 +117,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
 
         {/* Size */}
         <div className="space-y-1">
-          <label className="text-[10px] text-muted-foreground">Size</label>
+          <label className="text-micro text-muted-foreground">Size</label>
           <Input
             type="number"
             value={orderSize}
@@ -131,7 +131,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
                 key={pct}
                 variant="ghost"
                 size="sm"
-                className="flex-1 h-5 text-[9px]"
+                className="flex-1 h-5 text-nano"
                 onClick={() => setOrderSize(String(pct / 10))}
               >
                 {pct}%
@@ -150,7 +150,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
 
         {/* Strategy link */}
         <div className="space-y-1">
-          <label className="text-[10px] text-muted-foreground">Strategy</label>
+          <label className="text-micro text-muted-foreground">Strategy</label>
           <Select
             value={linkedStrategyId ?? "manual"}
             onValueChange={(v) => setLinkedStrategyId(v === "manual" ? null : v)}
@@ -174,14 +174,14 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
         {/* Strategy constraints */}
         {linkedStrategy && (
           <Collapsible open={constraintsOpen} onOpenChange={setConstraintsOpen}>
-            <CollapsibleTrigger className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground transition-colors w-full">
+            <CollapsibleTrigger className="flex items-center gap-1 text-micro text-muted-foreground hover:text-foreground transition-colors w-full">
               {constraintsOpen ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
               <Shield className="size-3" /> Strategy Constraints
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-1 p-2 rounded-md bg-muted/30 text-[10px] space-y-1">
+            <CollapsibleContent className="mt-1 p-2 rounded-md bg-muted/30 text-micro space-y-1">
               <div className="flex justify-between">
                 <span>Archetype:</span>
-                <Badge variant="outline" className="text-[9px] h-4">
+                <Badge variant="outline" className="text-nano h-4">
                   {String((linkedStrategy as Record<string, unknown>).archetype ?? "")}
                 </Badge>
               </div>
@@ -201,7 +201,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
             {strategyWarnings.map((w, i) => (
               <div
                 key={i}
-                className="flex items-start gap-1.5 p-2 rounded-md bg-amber-500/10 text-[10px] text-amber-400"
+                className="flex items-start gap-1.5 p-2 rounded-md bg-amber-500/10 text-micro text-amber-400"
               >
                 <AlertTriangle className="size-3 shrink-0 mt-0.5" />
                 {w}
@@ -223,7 +223,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
         </Button>
 
         {isBatchMode && (
-          <p className="text-[10px] text-amber-500 text-center">Order submission disabled in batch mode</p>
+          <p className="text-micro text-amber-500 text-center">Order submission disabled in batch mode</p>
         )}
       </FormWidget>
     </Card>

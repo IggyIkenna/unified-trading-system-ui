@@ -71,7 +71,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
       <Tabs value={category} onValueChange={(v) => setCategory(v as BookCategoryTab)}>
         <TabsList className="w-full flex-wrap h-auto gap-0.5">
           {categoryEntries.map(([key, label]) => (
-            <TabsTrigger key={key} value={key} className="flex-1 text-[10px] px-1">
+            <TabsTrigger key={key} value={key} className="flex-1 text-caption px-1">
               {label}
             </TabsTrigger>
           ))}
@@ -84,7 +84,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
         </CardHeader>
         <CardContent className="space-y-3 px-3 pb-3">
           <div className="space-y-1">
-            <label className="text-[10px] text-muted-foreground">Venue</label>
+            <label className="text-caption text-muted-foreground">Venue</label>
             <Select value={venue} onValueChange={setVenue}>
               <SelectTrigger className="h-8 text-xs">
                 <SelectValue placeholder="Select venue" />
@@ -100,7 +100,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] text-muted-foreground">Instrument</label>
+            <label className="text-caption text-muted-foreground">Instrument</label>
             <Input
               value={instrument}
               onChange={(e) => setInstrument(e.target.value)}
@@ -112,7 +112,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
           {isDefiCategory ? (
             <>
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Instruction Type</label>
+                <label className="text-caption text-muted-foreground">Instruction Type</label>
                 <Select value={defiInstructionType} onValueChange={(v) => setDefiInstructionType(v as InstructionType)}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Select instruction" />
@@ -121,7 +121,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
                     {DEFI_INSTRUCTION_TYPES.map((it) => (
                       <SelectItem key={it.value} value={it.value}>
                         <span className="font-medium">{it.label}</span>
-                        <span className="ml-1.5 text-muted-foreground text-[10px]">{it.description}</span>
+                        <span className="ml-1.5 text-muted-foreground text-caption">{it.description}</span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -129,7 +129,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Algo</label>
+                <label className="text-caption text-muted-foreground">Algo</label>
                 <Select value={defiAlgo} onValueChange={(v) => setDefiAlgo(v as AlgoType)}>
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue placeholder="Select algo" />
@@ -145,7 +145,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] text-muted-foreground">Max Slippage</label>
+                <label className="text-caption text-muted-foreground">Max Slippage</label>
                 <Select value={String(maxSlippageBps)} onValueChange={(v) => setMaxSlippageBps(Number(v))}>
                   <SelectTrigger className="h-8 text-xs font-mono">
                     <SelectValue />
@@ -162,7 +162,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
             </>
           ) : (
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Side</label>
+              <label className="text-caption text-muted-foreground">Side</label>
               <div className="grid grid-cols-2 gap-1.5">
                 <Button
                   type="button"
@@ -189,7 +189,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
           )}
 
           <div className="space-y-1">
-            <label className="text-[10px] text-muted-foreground">Quantity</label>
+            <label className="text-caption text-muted-foreground">Quantity</label>
             <Input
               type="number"
               placeholder="0.00"
@@ -200,7 +200,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] text-muted-foreground">Price</label>
+            <label className="text-caption text-muted-foreground">Price</label>
             <Input
               type="number"
               placeholder="0.00"
@@ -215,7 +215,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
       {!canExecute && executionMode === "execute" && (
         <div className="flex items-center gap-2 p-2 rounded-md bg-amber-500/10 border border-amber-500/30">
           <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
-          <span className="text-[11px] text-amber-600 dark:text-amber-400">
+          <span className="text-caption text-amber-600 dark:text-amber-400">
             Execution access required — contact admin to upgrade
           </span>
         </div>
@@ -232,8 +232,8 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
       )}
 
       {user && (
-        <div className="flex items-center gap-2 pt-1 text-[10px] text-muted-foreground">
-          <Badge variant="outline" className="text-[9px]">
+        <div className="flex items-center gap-2 pt-1 text-caption text-muted-foreground">
+          <Badge variant="outline" className="text-nano">
             {user.org?.id ?? "unknown org"}
           </Badge>
           <span>Submitted by {user.displayName ?? user.email ?? "unknown"}</span>

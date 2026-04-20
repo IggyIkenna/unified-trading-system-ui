@@ -52,7 +52,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
       <div className={cn("rounded-lg border p-4 text-center space-y-1", hfBgColor(hf.current_hf))}>
         <p className="text-xs text-muted-foreground">Health Factor</p>
         <p className={cn("text-3xl font-mono font-bold", hfColor(hf.current_hf))}>{formatNumber(hf.current_hf, 2)}</p>
-        <Badge variant="outline" className={cn("text-[10px]", hfColor(hf.current_hf))}>
+        <Badge variant="outline" className={cn("text-micro", hfColor(hf.current_hf))}>
           {hfLabel(hf.current_hf)}
         </Badge>
       </div>
@@ -73,7 +73,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
             style={{ width: `${barPct}%` }}
           />
         </div>
-        <div className="flex justify-between text-[10px] text-muted-foreground">
+        <div className="flex justify-between text-micro text-muted-foreground">
           <span>Liquidation ({formatNumber(hf.liquidation_at, 1)})</span>
           <span>Warning ({formatNumber(hf.warning_at, 1)})</span>
           <span>2.0</span>
@@ -186,7 +186,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
               <p className="text-xs font-medium text-muted-foreground">Unwind Plan</p>
               {emergencyExit.steps.map((step, idx) => (
                 <div key={idx} className="flex items-center gap-2 text-xs">
-                  <span className="size-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-mono shrink-0">
+                  <span className="size-5 rounded-full bg-muted flex items-center justify-center text-micro font-mono shrink-0">
                     {idx + 1}
                   </span>
                   <span>{step}</span>

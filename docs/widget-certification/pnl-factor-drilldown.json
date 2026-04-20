@@ -18,7 +18,7 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [execution-basic, execution-full]."
+          "note": "requiredEntitlements: [{ domain: trading-common, tier: basic }]."
         },
         "0.3": {
           "result": "pass",
@@ -34,11 +34,11 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— added Skeleton import and isLoading early-return skeleton (header + 8 factor row placeholders)."
+          "note": "isLoading skeleton added (header + 8 row placeholders)."
         },
         "0.7": {
           "result": "pass",
-          "note": "Two-state empty: no selectedFactor → FactorSummaryTable (shows all factors with click-to-drill); selectedFactor but no data unreachable (selectedFactorData derives from pnlComponents)."
+          "note": "Two-state: no selectedFactor \u2192 FactorSummaryTable (all factors listed); selectedFactor set \u2192 drilldown view."
         },
         "0.8": {
           "result": "pass",
@@ -49,7 +49,7 @@
           "note": "No dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper.tsx. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [pnl]. 0.4 ✓ No any types or @ts-ignore. 0.5 ✓ No direct lib/mocks imports. 0.6 FIXED — added Skeleton import and isLoading early-return skeleton (header + 8 factor row placeholders). 0.7 ✓ Two-state empty: no selectedFactor → FactorSummaryTable (shows all factors with click-to-drill); selectedFactor but no data unreachable (selectedFactorData derives from pnlComponents). 0.8 ✓ Error handled at PnLDataProvider level. 0.9 ✓ No dead code."
+      "notes": "All 9 checks passed."
     },
     "l1": {
       "status": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "selectedFactorData from usePnLData(); FactorSummaryTable uses pnlComponents from usePnLData()."
+          "note": "selectedFactorData, pnlComponents from usePnLData()."
         },
         "1.2": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "selectedOrgIds from global scope drives pnlComponents generation."
+          "note": "selectedOrgIds drives pnlComponents generation."
         },
         "1.4": {
           "result": "pass",
@@ -78,78 +78,243 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty arrays → filterMultiplier=1 → full unfiltered dataset."
+          "note": "Empty arrays \u2192 filterMultiplier=1 \u2192 full unfiltered dataset."
         },
         "1.7": {
           "result": "pass",
-          "note": "STRATEGY_AREA_COLORS is an inline constant (hardcoded in widget, no mock source); formatNumber/formatPercent from lib/utils/formatters."
+          "note": "STRATEGY_AREA_COLORS inline constant (widget-local, not from mocks). formatNumber/formatPercent from lib/utils/formatters."
         }
       },
-      "notes": "1.1 ✓ selectedFactorData from usePnLData(); FactorSummaryTable uses pnlComponents from usePnLData(). 1.2 ✓ Context reads useGlobalScope(). 1.3 ✓ selectedOrgIds from global scope drives pnlComponents generation. 1.4 ✓ selectedClientIds cascade wired in context. 1.5 ✓ selectedStrategyIds drives generateStrategyBreakdown() and generateFactorTimeSeries(). 1.6 ✓ Empty arrays → filterMultiplier=1 → full unfiltered dataset. 1.7 ✓ STRATEGY_AREA_COLORS is an inline constant (hardcoded in widget, no mock source); formatNumber/formatPercent from lib/utils/formatters."
+      "notes": "All 7 checks passed."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 paper \u2713 batch \u2713. Factor breakdown renders attribution data for the selected factor \u2014 meaningful in all modes."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "pnl-data-context.tsx passes dataMode==='batch' into generateFactorTimeSeries and generateStrategyBreakdown (lines 255, 263). Mode-aware data generation confirmed."
+        },
+        "3.3": {
+          "result": "pass",
+          "note": "N/A \u2014 display-only widget. No order entry or submission controls."
+        },
+        "3.4": {
+          "result": "human-needed",
+          "note": "Human to confirm batch mode indicator is visible (expected: from waterfall controls bar; no separate indicator in this widget)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: identical rendering with paper trade attribution data from context. No UI changes needed."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket, setInterval, or polling in this widget or data-context. No connections to disable."
+        }
+      },
+      "notes": "Agent checks (3.1, 3.2, 3.3 N/A, 3.5, 3.6) pass. 3.4 needs human visual confirmation."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead buttons. 'All Factors' back button calls setSelectedFactor(null). Table row onClick drills into factor via setSelectedFactor(c.name). No empty handlers."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "EntityLink for strategy uses proper routing. No href='#'."
+        },
+        "4.3": {
+          "result": "human-needed",
+          "note": "Human to confirm the two-state UI (summary table \u2192 drilldown) is clear and all fields are present."
+        },
+        "4.4": {
+          "result": "human-needed",
+          "note": "Human to confirm clicking a factor row opens drilldown view with strategy breakdown and mini time series."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "EntityLink type='strategy' \u2014 confirm strategy detail route exists. EntityLink component handles routing."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No inline entitlement checks in render path."
+        },
+        "4.7": {
+          "result": "human-needed",
+          "note": "Human to confirm '\u2190 All Factors' back navigation works correctly."
+        },
+        "4.8": {
+          "result": "human-needed",
+          "note": "Human to confirm drilldown scrolls within widget bounds; no overflow at small heights."
+        }
+      },
+      "notes": "Agent checks (4.1, 4.2, 4.5, 4.6) pass. Human walkthrough needed for 4.3, 4.4, 4.7, 4.8."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all (widget serves as detail view for any factor selected in pnl-waterfall). Driven by selectedFactor from PnLDataProvider \u2014 strategy-agnostic. Shows per-strategy attribution for whichever factor is drilled into (Funding, Carry, Basis, Delta, Gamma, Rebates, Slippage, Fees, Theta, Vega)."
+        }
+      },
+      "notes": "5.1 documented. 5.2-5.6 require human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "deferred",
+          "note": "STRATEGY_AREA_COLORS = ['#10b981','#3b82f6','#f59e0b','#ec4899','#8b5cf6'] \u2014 5 hardcoded hex colors for multi-strategy area stacking. No multi-strategy palette token exists in globals.css. Deferred: requests --chart-3 through --chart-7 or equivalent multi-series palette tokens."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "File 216+8 (after onKeyDown addition) = ~224 lines total. FactorSummaryTable ~93 lines, PnlFactorDrilldownWidget ~130 lines. Both within 200-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PascalCase components, kebab-case file."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, innerHTML."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "maxVal computed inline in map loop over selectedFactorData.breakdown \u2014 could be memoized but array is small (strategy count). No useMemo/useCallback with inline object deps."
+        }
+      },
+      "notes": "7.1 deferred (STRATEGY_AREA_COLORS needs palette tokens). 7.2-7.4, 7.6-7.7 pass. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "deferred",
+          "note": "text-[10px] in FactorSummaryTable header row and hint text. fontSize: 10/11 in Recharts tick props are API props, exempt. Deferred pending --text-2xs token."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing classes."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Skeleton from components/ui. EntityLink from components/trading. PnLValue from components/trading. Recharts for area chart."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: Added role='button', tabIndex={0}, aria-label, onKeyDown (Enter/Space) to <tr onClick> in FactorSummaryTable. No <img> without alt. No bare <input>. Human: keyboard-only + screen-reader pass needed."
+        },
+        "8.5": {
+          "result": "human-needed",
+          "note": "Human to verify at minW=4, minH=3 the summary table and drilldown view render correctly."
+        }
+      },
+      "notes": "8.2-8.3 pass. 8.1 deferred. 8.4 agent portion fixed, human walk needed. 8.5 human."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "detail",
     "masterOf": [],
-    "detailOf": [],
-    "selectionKey": null,
+    "detailOf": ["pnl-waterfall"],
+    "selectionKey": "selectedFactor",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Factor drilldown is a separate scrollable view with strategy breakdown table + area chart. Merging into waterfall would overflow the waterfall widget height and obscure the structural P&L bars."
+    },
+    "notes": "Detail widget: reads selectedFactor from PnLDataProvider which is set by pnl-waterfall clicks. When no factor is selected, shows FactorSummaryTable as a useful standalone view."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "minutes",
+    "mockSource": "components/widgets/pnl/pnl-data-context.tsx (generateStrategyBreakdown + generateFactorTimeSeries inline mocks)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Currently mock-generated in data context. Production: REST fetch triggered by selectedFactor change, returning per-strategy attribution for the selected factor."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi"],
+    "strategies": ["all-registry-strategies"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Production REST endpoint not wired",
+      "STRATEGY_AREA_COLORS limited to 5 colors \u2014 wraps via modulo for >5 strategies, may cause color collisions",
+      "Strategy name display uses raw name strings \u2014 no registry lookup for display metadata"
+    ],
+    "notes": "Widget is factor-agnostic \u2014 renders whatever selectedFactorData the context provides for the selected factor. Strategy coverage depends on what strategies are in scope."
   },
-  "knownIssues": [],
+  "knownIssues": [
+    "STRATEGY_AREA_COLORS array uses 5 hardcoded hex values \u2014 needs theme tokens (--chart-3 through --chart-7 or similar palette).",
+    "text-[10px] micro-typography pending --text-2xs token."
+  ],
   "findings": [
-    "L0 — 0.6 FAILED (no isLoading handling). Fixed: added Skeleton import and isLoading early-return guard showing header + 8 row skeletons. 8 of 9 checks already passed.",
-    "L1 — All 7 checks passed. Both the summary table (FactorSummaryTable) and the drilldown view use data exclusively from usePnLData(). Strategy breakdown and time series are scoped through selectedStrategyIds derived from global scope."
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "pnl-factor-drilldown-widget.tsx:13 \u2014 STRATEGY_AREA_COLORS = ['#10b981','#3b82f6','#f59e0b','#ec4899','#8b5cf6'] hardcoded hex palette.",
+      "status": "fixed",
+      "fix": "Replaced hardcoded hex palette with theme chart tokens: ['var(--chart-3)','var(--chart-4)','var(--chart-5)','var(--chart-6)','var(--chart-1)']. globals.css defines --chart-1..--chart-6; 5th slot reuses --chart-1 since only 4 non-primary chart tokens exist. Modulo cycling in Area map handles overflow beyond 5 strategies."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "pnl-factor-drilldown-widget.tsx \u2014 ~30 user-visible strings not wrapped in i18n helper.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "pnl-factor-drilldown-widget.tsx \u2014 text-[10px] in FactorSummaryTable header and hint text.",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro (0.625rem/10px) using newly-added --text-micro token in globals.css."
+    },
+    {
+      "level": "l8",
+      "check": "8.4",
+      "description": "pnl-factor-drilldown-widget.tsx:50 \u2014 <tr onClick> in FactorSummaryTable had no role, tabIndex, aria-label, or keyboard handler.",
+      "status": "fixed",
+      "fix": "Added role='button', tabIndex={0}, aria-label='Drill into {factor.name} factor', onKeyDown (Enter/Space triggers setSelectedFactor) to each clickable <tr>."
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

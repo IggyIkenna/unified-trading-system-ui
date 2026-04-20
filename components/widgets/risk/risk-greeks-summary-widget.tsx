@@ -62,43 +62,43 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead className="text-[10px]">Instrument</TableHead>
-                <TableHead className="text-[10px]">Venue</TableHead>
-                <TableHead className="text-[10px] text-right">Qty</TableHead>
-                <TableHead className="text-[10px] text-right">Delta</TableHead>
-                <TableHead className="text-[10px] text-right">Gamma</TableHead>
-                <TableHead className="text-[10px] text-right">Vega</TableHead>
-                <TableHead className="text-[10px] text-right">Theta</TableHead>
+                <TableHead className="text-micro">Instrument</TableHead>
+                <TableHead className="text-micro">Venue</TableHead>
+                <TableHead className="text-micro text-right">Qty</TableHead>
+                <TableHead className="text-micro text-right">Delta</TableHead>
+                <TableHead className="text-micro text-right">Gamma</TableHead>
+                <TableHead className="text-micro text-right">Vega</TableHead>
+                <TableHead className="text-micro text-right">Theta</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {positionGreeks.map((pos) => (
                 <TableRow key={pos.instrument as string}>
-                  <TableCell className="text-[11px] font-medium">{pos.instrument as string}</TableCell>
-                  <TableCell className="text-[11px] text-muted-foreground">{pos.venue as string}</TableCell>
-                  <TableCell className="text-[11px] text-right font-mono">{pos.qty as number}</TableCell>
-                  <TableCell className="text-[11px] text-right font-mono">
+                  <TableCell className="text-caption font-medium">{pos.instrument as string}</TableCell>
+                  <TableCell className="text-caption text-muted-foreground">{pos.venue as string}</TableCell>
+                  <TableCell className="text-caption text-right font-mono">{pos.qty as number}</TableCell>
+                  <TableCell className="text-caption text-right font-mono">
                     {formatNumber(pos.delta as number, 2)}
                   </TableCell>
-                  <TableCell className="text-[11px] text-right font-mono">
+                  <TableCell className="text-caption text-right font-mono">
                     {formatNumber(pos.gamma as number, 3)}
                   </TableCell>
-                  <TableCell className="text-[11px] text-right font-mono">
+                  <TableCell className="text-caption text-right font-mono">
                     ${(pos.vega as number).toLocaleString()}
                   </TableCell>
-                  <TableCell className="text-[11px] text-right font-mono text-rose-400">
+                  <TableCell className="text-caption text-right font-mono text-rose-400">
                     ${(pos.theta as number).toLocaleString()}
                   </TableCell>
                 </TableRow>
               ))}
               <TableRow className="bg-muted/30 font-bold">
-                <TableCell className="text-[11px]">Portfolio Total</TableCell>
+                <TableCell className="text-caption">Portfolio Total</TableCell>
                 <TableCell />
                 <TableCell />
-                <TableCell className="text-[11px] text-right font-mono">{formatNumber(greeks.delta, 2)}</TableCell>
-                <TableCell className="text-[11px] text-right font-mono">{formatNumber(greeks.gamma, 3)}</TableCell>
-                <TableCell className="text-[11px] text-right font-mono">${greeks.vega.toLocaleString()}</TableCell>
-                <TableCell className="text-[11px] text-right font-mono text-rose-400">
+                <TableCell className="text-caption text-right font-mono">{formatNumber(greeks.delta, 2)}</TableCell>
+                <TableCell className="text-caption text-right font-mono">{formatNumber(greeks.gamma, 3)}</TableCell>
+                <TableCell className="text-caption text-right font-mono">${greeks.vega.toLocaleString()}</TableCell>
+                <TableCell className="text-caption text-right font-mono text-rose-400">
                   ${greeks.theta.toLocaleString()}
                 </TableCell>
               </TableRow>
@@ -133,7 +133,7 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                   yAxisId="left"
                   type="monotone"
                   dataKey="delta"
-                  stroke="#3b82f6"
+                  stroke="var(--chart-3)"
                   name="Delta"
                   strokeWidth={1.5}
                   dot={false}
@@ -142,7 +142,7 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                   yAxisId="left"
                   type="monotone"
                   dataKey="gamma"
-                  stroke="#f59e0b"
+                  stroke="var(--chart-5)"
                   name="Gamma"
                   strokeWidth={1.5}
                   dot={false}
@@ -151,7 +151,7 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
                   yAxisId="right"
                   type="monotone"
                   dataKey="vega"
-                  stroke="#22c55e"
+                  stroke="var(--chart-2)"
                   name="Vega ($)"
                   strokeWidth={1.5}
                   dot={false}
@@ -164,23 +164,23 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
         <CollapsibleSection title="Second-Order Risks" defaultOpen={false}>
           <div className="grid grid-cols-3 gap-2">
             <div className="p-2 rounded bg-muted/30 text-center">
-              <div className="text-[10px] text-muted-foreground">Volga (d²V/dσ²)</div>
+              <div className="text-micro text-muted-foreground">Volga (d²V/dσ²)</div>
               <div className="text-sm font-bold font-mono">${secondOrderRisks.volga.toLocaleString()}</div>
-              <div className="text-[9px] text-muted-foreground">per 1% vol move</div>
+              <div className="text-nano text-muted-foreground">per 1% vol move</div>
             </div>
             <div className="p-2 rounded bg-muted/30 text-center">
-              <div className="text-[10px] text-muted-foreground">Vanna (d²V/dS·dσ)</div>
+              <div className="text-micro text-muted-foreground">Vanna (d²V/dS·dσ)</div>
               <div className="text-sm font-bold font-mono text-rose-400">
                 ${secondOrderRisks.vanna.toLocaleString()}
               </div>
-              <div className="text-[9px] text-muted-foreground">per 1% spot × 1% vol</div>
+              <div className="text-nano text-muted-foreground">per 1% spot × 1% vol</div>
             </div>
             <div className="p-2 rounded bg-muted/30 text-center">
-              <div className="text-[10px] text-muted-foreground">Slide (vol decay)</div>
+              <div className="text-micro text-muted-foreground">Slide (vol decay)</div>
               <div className="text-sm font-bold font-mono text-rose-400">
                 ${secondOrderRisks.slide.toLocaleString()}
               </div>
-              <div className="text-[9px] text-muted-foreground">per day</div>
+              <div className="text-nano text-muted-foreground">per day</div>
             </div>
           </div>
         </CollapsibleSection>
@@ -190,21 +190,21 @@ export function RiskGreeksSummaryWidget(_props: WidgetComponentProps) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
-                  <TableHead className="text-[10px]">Underlying</TableHead>
-                  <TableHead className="text-[10px] text-right">Delta</TableHead>
-                  <TableHead className="text-[10px] text-right">Gamma</TableHead>
-                  <TableHead className="text-[10px] text-right">Vega</TableHead>
-                  <TableHead className="text-[10px] text-right">Theta</TableHead>
+                  <TableHead className="text-micro">Underlying</TableHead>
+                  <TableHead className="text-micro text-right">Delta</TableHead>
+                  <TableHead className="text-micro text-right">Gamma</TableHead>
+                  <TableHead className="text-micro text-right">Vega</TableHead>
+                  <TableHead className="text-micro text-right">Theta</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {portfolioGreeksData.per_underlying.map((row) => (
                   <TableRow key={row.underlying}>
-                    <TableCell className="text-[11px] font-medium">{row.underlying}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono">{formatNumber(row.delta, 2)}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono">{formatNumber(row.gamma, 4)}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono">${row.vega.toLocaleString()}</TableCell>
-                    <TableCell className="text-[11px] text-right font-mono text-rose-400">
+                    <TableCell className="text-caption font-medium">{row.underlying}</TableCell>
+                    <TableCell className="text-caption text-right font-mono">{formatNumber(row.delta, 2)}</TableCell>
+                    <TableCell className="text-caption text-right font-mono">{formatNumber(row.gamma, 4)}</TableCell>
+                    <TableCell className="text-caption text-right font-mono">${row.vega.toLocaleString()}</TableCell>
+                    <TableCell className="text-caption text-right font-mono text-rose-400">
                       ${row.theta.toLocaleString()}
                     </TableCell>
                   </TableRow>

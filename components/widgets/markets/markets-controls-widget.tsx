@@ -104,7 +104,7 @@ export function MarketsControlsWidget(_props: WidgetComponentProps) {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-muted-foreground">Asset</span>
+            <span className="text-micro text-muted-foreground">Asset</span>
             <Select value={assetClass} onValueChange={(v) => setAssetClass(v as typeof assetClass)}>
               <SelectTrigger className="w-[100px] h-8 text-xs">
                 <SelectValue />
@@ -117,7 +117,7 @@ export function MarketsControlsWidget(_props: WidgetComponentProps) {
             </Select>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-muted-foreground">Range</span>
+            <span className="text-micro text-muted-foreground">Range</span>
             <Select value={orderFlowRange} onValueChange={(v) => setOrderFlowRange(v as "1d" | "1w" | "1m")}>
               <SelectTrigger className="w-[100px] h-8 text-xs">
                 <SelectValue />
@@ -131,7 +131,7 @@ export function MarketsControlsWidget(_props: WidgetComponentProps) {
           </div>
           {orderFlowView === "book" && assetClass !== "defi" && (
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-muted-foreground">Depth</span>
+              <span className="text-micro text-muted-foreground">Depth</span>
               <Select value={bookDepth.toString()} onValueChange={(v) => setBookDepth(parseInt(v, 10))}>
                 <SelectTrigger className="w-[72px] h-8 text-xs">
                   <SelectValue />

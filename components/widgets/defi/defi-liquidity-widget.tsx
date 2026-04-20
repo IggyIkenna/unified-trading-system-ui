@@ -66,7 +66,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             {liquidityPools.map((p) => (
               <SelectItem key={p.name} value={p.name}>
                 <span className="font-mono">{p.name}</span>
-                <span className="text-[10px] text-muted-foreground ml-2">
+                <span className="text-micro text-muted-foreground ml-2">
                   TVL ${formatNumber(p.tvl / 1_000_000, 0)}M / APR {formatPercent(p.apr24h, 1)}
                 </span>
               </SelectItem>
@@ -83,7 +83,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
               key={ft.value}
               variant={feeTier === ft.value ? "default" : "outline"}
               size="sm"
-              className="text-[10px] h-10 flex flex-col gap-0 px-1"
+              className="text-micro h-10 flex flex-col gap-0 px-1"
               onClick={() => setFeeTier(ft.value)}
             >
               <span className="font-mono font-bold">{ft.label}</span>
@@ -99,7 +99,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
         </label>
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <span className="text-[10px] text-muted-foreground">Min price</span>
+            <span className="text-micro text-muted-foreground">Min price</span>
             <Input
               type="number"
               placeholder="0.00"
@@ -109,7 +109,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             />
           </div>
           <div className="space-y-1">
-            <span className="text-[10px] text-muted-foreground">Max price</span>
+            <span className="text-micro text-muted-foreground">Max price</span>
             <Input
               type="number"
               placeholder="0.00"

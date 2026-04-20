@@ -123,7 +123,7 @@ export function DeFiRewardPnlWidget(_props: WidgetComponentProps) {
       </div>
 
       {/* Breakdown legend */}
-      <div className="flex items-center gap-3 flex-wrap text-[10px] text-muted-foreground pt-1">
+      <div className="flex items-center gap-3 flex-wrap text-micro text-muted-foreground pt-1">
         {rewardPnl.map((factor) => (
           <span key={factor.key} className="flex items-center gap-1">
             <span className={cn("size-2 rounded-full", factorColor(factor.key))} />

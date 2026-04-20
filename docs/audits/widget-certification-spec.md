@@ -165,15 +165,15 @@ _Widget has automated tests covering its certified behavior._
 
 _Grep-able code-level hygiene against the modules in [`docs/audit-scripts/`](../audit-scripts/). Each check is a **find → log → fix → mark-done** cycle inside the same per-widget session. Every violation is recorded in the widget's own `docs/widget-certification/<widget-id>.json` under `findings[]` with `level: "l7"`. The JSON is the tracker — no separate doc._
 
-| #   | Check                                | Audit-script module | How to verify                                                                                                   | Fix action                                                                           |
-| --- | ------------------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 7.1 | No hardcoded colors                  | B color-tokens      | `grep -En '#[0-9a-fA-F]{3,8}\b\|rgb[a]?\(\|hsl[a]?\(' <widget-file>` — zero matches outside allowlisted escapes | Replace with tailwind tokens (`bg-muted`, `text-foreground`, …) or CSS vars          |
-| 7.2 | Mock data placement clean            | E mock-data         | Reference data imported only from `lib/constants/` or `lib/config/`; no duplicated fixtures                     | Move to correct location, delete duplicates                                          |
-| 7.3 | File size + complexity within limits | J perf, K code-org  | Widget file ≤ 500 lines; no single function / component > 200 lines                                             | Split into subcomponents or extract custom hooks                                     |
-| 7.4 | Naming conventions                   | M naming            | Components PascalCase, hooks `useCamelCase`, files kebab-case                                                   | Rename + update every importer                                                       |
-| 7.5 | i18n-readiness logged                | N i18n              | Count user-visible strings; no fix required until i18n ships                                                    | Log count in `findings[]` with `status: "deferred", deferReason: "i18n not shipped"` |
-| 7.6 | Security patterns clean              | O security          | No `dangerouslySetInnerHTML`, `eval`, `new Function`, or `innerHTML =` with non-static input                    | Sanitize or remove                                                                   |
-| 7.7 | Performance anti-patterns absent     | J perf              | No inline object/array literals in `useEffect` / `useMemo` deps; expensive derives memoized                     | Extract stable refs, add `useMemo` / `useCallback`                                   |
+| #   | Check                                | Audit-script module | How to verify                                                                                                                                      | Fix action                                                                   |
+| --- | ------------------------------------ | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 7.1 | No hardcoded colors                  | B color-tokens      | `grep -En '#[0-9a-fA-F]{3,8}\b\|rgb[a]?\(\|hsl[a]?\(' <widget-file>` — zero matches outside allowlisted escapes                                    | Replace with tailwind tokens (`bg-muted`, `text-foreground`, …) or CSS vars  |
+| 7.2 | Mock data placement clean            | E mock-data         | Reference data imported only from `lib/constants/` or `lib/config/`; no duplicated fixtures                                                        | Move to correct location, delete duplicates                                  |
+| 7.3 | File size + complexity within limits | J perf, K code-org  | Widget file ≤ 500 lines; no single function / component > 200 lines                                                                                | Split into subcomponents or extract custom hooks                             |
+| 7.4 | Naming conventions                   | M naming            | Components PascalCase, hooks `useCamelCase`, files kebab-case                                                                                      | Rename + update every importer                                               |
+| 7.5 | UTC datetime rendering               | N utc-datetime      | Grep for `toLocaleDateString`/`toLocaleTimeString`/`toLocaleString` without explicit `timeZone: "UTC"`; no raw `new Date().toString()` for display | Replace with shared UTC-aware formatter or explicit `timeZone: "UTC"` option |
+| 7.6 | Security patterns clean              | O security          | No `dangerouslySetInnerHTML`, `eval`, `new Function`, or `innerHTML =` with non-static input                                                       | Sanitize or remove                                                           |
+| 7.7 | Performance anti-patterns absent     | J perf              | No inline object/array literals in `useEffect` / `useMemo` deps; expensive derives memoized                                                        | Extract stable refs, add `useMemo` / `useCallback`                           |
 
 **Workflow per check:**
 
@@ -185,7 +185,9 @@ _Grep-able code-level hygiene against the modules in [`docs/audit-scripts/`](../
 6. Flip each `findings[]` entry's `status` from `"todo"` → `"fixed"` (add a `fix:` string), or → `"deferred"` with a `deferReason:` if it cannot be fixed in this pass.
 7. Only then mark the check `pass`.
 
-**Pass criteria:** 7.1–7.4, 7.6, 7.7 all `pass` and every `level: "l7"` `findings[]` entry flipped to `"fixed"` or `"deferred"`. 7.5 remains globally `deferred` until i18n ships. Status → `L7 ✓`.
+**Pass criteria:** 7.1–7.7 all `pass` and every `level: "l7"` `findings[]` entry flipped to `"fixed"` or `"deferred"`. Status → `L7 ✓`.
+
+_Note: The previous 7.5 i18n-readiness check was retired on 2026-04-21. Product decision: UI is English-only. A future "local timezone toggle" feature may route timestamps through a shared formatter, but translation catalogues are out of scope. 7.5 now covers UTC-default datetime rendering._
 
 **Rule — `app/globals.css` is read-only during L7 / L8:** Agents must NOT edit `app/globals.css` while executing a widget's L7 or L8 session. If a widget legitimately needs a token that doesn't exist yet, log the violation in `findings[]` with `status: "deferred"` and `deferReason: "missing token — requests --<proposed-name> in globals.css"`. A single consolidation pass lands all deferred token requests after the sweep completes. This keeps parallel agents from fighting over the theme file.
 

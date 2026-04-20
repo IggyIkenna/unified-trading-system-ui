@@ -18,11 +18,11 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [\"execution-basic\", \"execution-full\"]"
+          "note": "requiredEntitlements: [{domain: 'trading-common', tier: 'basic'}]"
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: [\"alerts\"]"
+          "note": "availableOn: ['alerts']"
         },
         "0.4": {
           "result": "pass",
@@ -34,7 +34,7 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "isLoading from useAlertsData() used: metric values show '—' while loading"
+          "note": "isLoading from useAlertsData() used: metric values show '\u2014' while loading"
         },
         "0.7": {
           "result": "pass",
@@ -46,7 +46,7 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code. AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY are placeholder constants pending API — documented in file comment, not dead code"
+          "note": "No dead code. AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY are placeholder constants pending API \u2014 documented in file comment, not dead code"
         }
       },
       "notes": null
@@ -85,7 +85,7 @@
           "note": "AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY are module-level constants (correct placement for placeholder values awaiting API)"
         }
       },
-      "notes": "Pure display widget — reads 3 computed values from context. No direct filtering required in widget itself."
+      "notes": "Pure display widget \u2014 reads 3 computed values from context. No direct filtering required in widget itself."
     },
     "l2": {
       "status": "pass",
@@ -94,56 +94,168 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live \u2713 (shows real-time counts), paper \u2713 (same as live), batch \u2713 (shows historical counts). Pure read-only display \u2014 no mode-specific UI changes needed."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "AlertsDataProvider reads scope.mode; useAlerts hook sets refetchInterval: false in batch mode (use-alerts.ts:20). activeCount/criticalCount derived from same memoized allAlerts."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: counts reflect paper-mode alert data from API. No special handling needed \u2014 this is a pure display widget."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or timer in this widget. useAlerts refetchInterval disabled in batch (use-alerts.ts:20)."
+        }
+      },
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 complete. Human checks 3.3/3.4 pending \u2014 N/A for this widget (no order entry buttons, no batch-mode visual indicator needed for a read-only KPI strip)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No buttons in this widget. Pure display \u2014 no onClick handlers."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links in this widget."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks running in the widget component itself. All handled at registry/wrapper level."
+        }
+      },
+      "notes": "Agent prep complete. Human checks 4.3/4.4/4.7/4.8 pending. 4.3: only 4 KPI tiles, no form fields. 4.4/4.7/4.8 require browser walkthrough."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: cross-domain (all strategies). This widget shows aggregate alert counts across all strategy types. Not specific to any single strategy archetype. Serves: basis-trade, recursive-staked-basis, amm-lp, lending-borrowing, staking, cross-chain-bridge, and all CeFi/TradFi strategies."
+        }
+      },
+      "notes": "5.1 complete. Human checks 5.2-5.6 pending \u2014 this is a read-only aggregate widget, not strategy-execution-specific. 5.2-5.5 largely N/A (no params to set, no submit action). 5.6: venue-agnostic."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
+      "notes": "Deferred \u2014 L6 (tests) not in scope for this agent pass."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors. No var(--status-error) usage in this file."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports. No duplicated fixtures."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "38 lines \u2014 well within 500-line limit. Single function component."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "AlertsKpiStripWidget: PascalCase \u2713. useAlertsData: useCamelCase \u2713. File: alerts-kpi-strip-widget.tsx kebab-case \u2713."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, or innerHTML= found."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in this widget. metrics array defined in render body but is simple value-derived array \u2014 no expensive computation."
+        }
+      },
       "notes": null
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[...] or fontSize arbitrary values found in this widget."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No spacing arbitrary values (p-[...], m-[...], gap-[...]) found."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses KpiSummaryWidget (shared primitive). No raw div replacements for Card/Button/Input."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: No <img>, no unlabeled inputs, no interactive divs without role. KpiSummaryWidget handles its own a11y. Human walkthrough pending."
+        },
+        "8.5": {
+          "result": null,
+          "note": "Human pending: resize test at minW=4, minH=1."
+        }
+      },
+      "notes": "8.1-8.4 agent checks complete. 8.5 requires human browser resize test."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Singleton KPI strip \u2014 fixed at top of alerts tab layout. Serves a distinct role from alerts-table (which is the master list) and alerts-kill-switch (which is the action panel)."
+    },
+    "notes": "Peer widget \u2014 reads the same allAlerts dataset as alerts-table but renders a summary strip. No cross-widget selection coupling."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:30000ms",
+    "staleness": "near-realtime:<=1s",
+    "mockSource": "lib/mocks/fixtures/mock-data-index.ts (getAlertsForScope fallback)",
+    "backendOwner": "alerts-service",
+    "notes": "useAlerts() polls /api/alerts/list via REST. refetchInterval is undefined in live mode (React Query default ~0 \u2014 no auto-refetch unless staleTime configured). In batch mode: refetchInterval: false. activeCount/criticalCount computed client-side from API response."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "AVG_RESOLUTION_DISPLAY hardcoded to '12m' \u2014 not sourced from API",
+      "LAST_24H_DISPLAY hardcoded to '23' \u2014 not sourced from API"
+    ],
+    "notes": "Cross-domain aggregate widget. Coverage is all strategies/venues by design. Gaps are known API shape gaps, not widget code gaps."
   },
   "knownIssues": [
     {
@@ -152,7 +264,15 @@
       "description": "AVG_RESOLUTION_DISPLAY ('12m') and LAST_24H_DISPLAY ('23') are hardcoded placeholder constants. Real values pending alerts API response shape extension."
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "alerts-kpi-strip-widget.tsx \u2014 4 user-visible strings: 'Active Alerts', 'Critical', 'Avg Resolution', 'Last 24h'",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

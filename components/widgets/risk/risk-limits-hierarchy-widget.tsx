@@ -27,27 +27,27 @@ const detailColumns: ColumnDef<RiskLimit, unknown>[] = [
     header: "Level",
     enableSorting: true,
     cell: ({ row }) => (
-      <span className="text-[11px] capitalize text-muted-foreground">{row.getValue<string>("entityType")}</span>
+      <span className="text-caption capitalize text-muted-foreground">{row.getValue<string>("entityType")}</span>
     ),
   },
   {
     accessorKey: "entity",
     header: "Entity",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-[11px] font-medium">{row.getValue<string>("entity")}</span>,
+    cell: ({ row }) => <span className="text-caption font-medium">{row.getValue<string>("entity")}</span>,
   },
   {
     accessorKey: "name",
     header: "Type",
     enableSorting: true,
-    cell: ({ row }) => <span className="text-[11px]">{row.getValue<string>("name")}</span>,
+    cell: ({ row }) => <span className="text-caption">{row.getValue<string>("name")}</span>,
   },
   {
     accessorKey: "value",
     header: () => <span className="flex justify-end">Value</span>,
     enableSorting: true,
     cell: ({ row }) => (
-      <div className="text-[11px] text-right font-mono tabular-nums">
+      <div className="text-caption text-right font-mono tabular-nums">
         {fmtVal(row.original.value, row.original.unit)}
       </div>
     ),
@@ -57,7 +57,7 @@ const detailColumns: ColumnDef<RiskLimit, unknown>[] = [
     header: () => <span className="flex justify-end">Limit</span>,
     enableSorting: true,
     cell: ({ row }) => (
-      <div className="text-[11px] text-right font-mono tabular-nums text-muted-foreground">
+      <div className="text-caption text-right font-mono tabular-nums text-muted-foreground">
         {fmtVal(row.original.limit, row.original.unit)}
       </div>
     ),
@@ -68,7 +68,7 @@ const detailColumns: ColumnDef<RiskLimit, unknown>[] = [
     enableSorting: false,
     cell: ({ row }) => {
       const util = getUtilization(row.original.value, row.original.limit);
-      return <div className="text-[11px] text-right font-mono tabular-nums">{formatPercent(util, 0)}</div>;
+      return <div className="text-caption text-right font-mono tabular-nums">{formatPercent(util, 0)}</div>;
     },
   },
   {
@@ -127,7 +127,7 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="ml-auto h-5 px-1.5 text-[10px]"
+              className="ml-auto h-5 px-1.5 text-micro"
               onClick={() => setSelectedNode(null)}
             >
               <X className="size-2.5 mr-0.5" />
@@ -139,12 +139,12 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30">
-              <TableHead className="text-[10px]">Entity</TableHead>
-              <TableHead className="text-[10px]">Level</TableHead>
-              <TableHead className="text-[10px] text-right">Exposure</TableHead>
-              <TableHead className="text-[10px] text-right">VaR 95%</TableHead>
-              <TableHead className="text-[10px] text-right">Util</TableHead>
-              <TableHead className="text-[10px]">Status</TableHead>
+              <TableHead className="text-micro">Entity</TableHead>
+              <TableHead className="text-micro">Level</TableHead>
+              <TableHead className="text-micro text-right">Exposure</TableHead>
+              <TableHead className="text-micro text-right">VaR 95%</TableHead>
+              <TableHead className="text-micro text-right">Util</TableHead>
+              <TableHead className="text-micro">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -165,19 +165,19 @@ export function RiskLimitsHierarchyWidget(_props: WidgetComponentProps) {
                   onClick={() => setSelectedNode(isSelected ? null : limit.entity)}
                 >
                   <TableCell>
-                    <div className="flex items-center text-[11px]" style={{ paddingLeft: `${indent}px` }}>
+                    <div className="flex items-center text-caption" style={{ paddingLeft: `${indent}px` }}>
                       {limit.level > 0 && <span className="text-muted-foreground mr-1">└</span>}
                       <span className={cn("font-medium", isLeaf && "text-muted-foreground")}>{limit.entity}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-[11px] capitalize text-muted-foreground">{limit.entityType}</TableCell>
-                  <TableCell className="text-[11px] text-right font-mono tabular-nums">
+                  <TableCell className="text-caption capitalize text-muted-foreground">{limit.entityType}</TableCell>
+                  <TableCell className="text-caption text-right font-mono tabular-nums">
                     {formatCurrency(limit.value)}
                   </TableCell>
-                  <TableCell className="text-[11px] text-right font-mono tabular-nums text-muted-foreground">
+                  <TableCell className="text-caption text-right font-mono tabular-nums text-muted-foreground">
                     {limit.var95 ? formatCurrency(limit.var95) : "—"}
                   </TableCell>
-                  <TableCell className="text-[11px] text-right font-mono tabular-nums">
+                  <TableCell className="text-caption text-right font-mono tabular-nums">
                     {formatPercent(util, 0)}
                   </TableCell>
                   <TableCell>

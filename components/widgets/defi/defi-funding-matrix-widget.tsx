@@ -125,7 +125,7 @@ export function DeFiFundingMatrixWidget(_props: WidgetComponentProps) {
         </table>
       </div>
 
-      <div className="flex items-center gap-4 text-[10px] text-muted-foreground pt-1">
+      <div className="flex items-center gap-4 text-micro text-muted-foreground pt-1">
         <span className="flex items-center gap-1">
           <span className="size-2 rounded-full bg-emerald-400" /> &gt;5%
         </span>

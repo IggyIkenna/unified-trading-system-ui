@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets — pass."
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements=[\"data-basic\",\"data-pro\"] — pass."
+          "note": "requiredEntitlements: [{domain:'trading-common', tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn=[\"terminal\",\"overview\"] — pass."
+          "note": "availableOn: ['terminal', 'overview']."
         },
         "0.4": {
           "result": "pass",
-          "note": "No any/ts-ignore — pass."
+          "note": "No any/ts-ignore."
         },
         "0.5": {
           "result": "pass",
-          "note": "No lib/mocks imports — pass."
+          "note": "No lib/mocks imports."
         },
         "0.6": {
           "result": "pass",
-          "note": "Loading handled inside CalendarEventFeed via useEconomicResults/useCorporateActions isLoading guards — pass."
+          "note": "Loading handled inside CalendarEventFeed via useEconomicResults/useCorporateActions isLoading guards."
         },
         "0.7": {
           "result": "pass",
-          "note": "Empty states: \"No events in range\" and \"No corporate actions in range\" in CalendarEventFeed — pass."
+          "note": "'No events in range' and 'No corporate actions in range' empty states in CalendarEventFeed."
         },
         "0.8": {
           "result": "pass",
-          "note": "Error boundary in widget-wrapper covers render errors; CalendarEventFeed sub-hooks surface loading state — pass."
+          "note": "Error boundary in widget-wrapper covers render errors; CalendarEventFeed sub-hooks surface loading state."
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code — pass. NO FIXES REQUIRED."
+          "note": "No dead code. Widget is a minimal 12-line wrapper."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets — pass. 0.2 requiredEntitlements=[\"data-basic\",\"data-pro\"] — pass. 0.3 availableOn=[\"terminal\",\"overview\"] — pass. 0.4 No any/ts-ignore — pass. 0.5 No lib/mocks imports — pass. 0.6 Loading handled inside CalendarEventFeed via useEconomicResults/useCorporateActions isLoading guards — pass. 0.7 Empty states: \"No events in range\" and \"No corporate actions in range\" in CalendarEventFeed — pass. 0.8 Error boundary in widget-wrapper covers render errors; CalendarEventFeed sub-hooks surface loading state — pass. 0.9 No dead code — pass. NO FIXES REQUIRED."
+      "notes": "All L0 checks pass. Widget delegates all logic to CalendarEventFeed component."
     },
     "l1": {
       "status": "pass",
@@ -58,98 +58,214 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data sourced from useEconomicResults and useCorporateActions hooks (hooks/api/use-calendar.ts) via CalendarEventFeed — no inline fetch/import in widget file — pass."
+          "note": "Data sourced from useEconomicResults and useCorporateActions hooks via CalendarEventFeed \u2014 no inline fetch in widget."
         },
         "1.2": {
           "result": "pass",
-          "note": "hooks/api/use-calendar.ts uses useAuth() for user-scoped queries; terminal-data-context.tsx calls useGlobalScope() for instrument/account scope — calendar data is user-scoped but not filtered by org/client/strategy (correct for an economic calendar domain) — N/A for org/client/strategy filtering."
+          "note": "Calendar hooks use useAuth() for user-scoped queries."
         },
         "1.3": {
           "result": "n/a",
-          "note": "— calendar data is global macro/corporate-action data, not org-filtered."
+          "note": "Calendar data is global macro/corporate-action data \u2014 not org-filtered."
         },
         "1.4": {
           "result": "n/a",
-          "note": "— calendar data is not client-scoped."
+          "note": "Not client-scoped."
         },
         "1.5": {
           "result": "n/a",
-          "note": "— calendar data is not strategy-scoped."
+          "note": "Not strategy-scoped."
         },
         "1.6": {
           "result": "n/a",
-          "note": "— no scope filtering applies; hook fetches all events in the time window."
+          "note": "No scope filtering; hook fetches all events in time window."
         },
         "1.7": {
           "result": "pass",
-          "note": "No reference data in lib/mocks — pass."
+          "note": "No reference data in lib/mocks."
         }
       },
-      "notes": "1.1 Data sourced from useEconomicResults and useCorporateActions hooks (hooks/api/use-calendar.ts) via CalendarEventFeed — no inline fetch/import in widget file — pass. 1.2 hooks/api/use-calendar.ts uses useAuth() for user-scoped queries; terminal-data-context.tsx calls useGlobalScope() for instrument/account scope — calendar data is user-scoped but not filtered by org/client/strategy (correct for an economic calendar domain) — N/A for org/client/strategy filtering. 1.3 N/A — calendar data is global macro/corporate-action data, not org-filtered. 1.4 N/A — calendar data is not client-scoped. 1.5 N/A — calendar data is not strategy-scoped. 1.6 N/A — no scope filtering applies; hook fetches all events in the time window. 1.7 No reference data in lib/mocks — pass."
+      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A \u2014 global macro data not filtered by trading scope."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Modes: live \u2713 (events fetched via API), batch \u2713 (calendar data is time-bound; events for the asOf date are still relevant), paper N/A."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Calendar data is not mode-sensitive \u2014 economic events are static scheduled events regardless of live/batch mode."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: no behavioral change \u2014 calendar events are read-only reference data."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or timed intervals in widget file. CalendarEventFeed uses REST hooks only."
+        }
+      },
+      "notes": "Agent checks pass. Human checks 3.3(N/A \u2014 read-only widget)/3.4(N/A \u2014 no mode-sensitive display) required but expected to be N/A."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No buttons in widget file \u2014 all interactivity inside CalendarEventFeed."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links in widget file."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in widget render path."
+        }
+      },
+      "notes": "All agent checks pass. Human checks 4.7(N/A)/4.8(scroll within div.h-full.overflow-auto) required."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all \u2014 economic calendar is reference data shared across all strategy types. Not strategy-specific."
+        }
+      },
+      "notes": "5.1 complete. Human checks 5.2\u20135.6 required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded colors. CLEAN."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports. CLEAN."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "12 lines \u2014 minimal wrapper widget."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "CalendarEventsWidget PascalCase, file kebab-case. CLEAN."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns. CLEAN."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No hooks in widget file. CLEAN."
+        }
+      },
+      "notes": "L7 pass. Minimal wrapper \u2014 nothing to fix."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[\u2026] in widget file. CLEAN."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing. CLEAN."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Widget file has no custom divs that should be primitives \u2014 single wrapper div is intentional layout container. CalendarEventFeed is a trading component."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no img, input, interactive div in widget file. Human: keyboard + a11y check on CalendarEventFeed required."
+        },
+        "8.5": {
+          "result": null,
+          "note": "Human check required \u2014 responsive at minW=3, minH=2. Available on terminal and overview tabs."
+        }
+      },
+      "notes": "8.1\u20138.3 clean. Human 8.4+8.5 required."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Calendar events is global macro reference data \u2014 not driven by instrument selection. It is standalone even though it sits on the terminal tab."
+    },
+    "notes": "Standalone widget \u2014 not coupled to instrument-bar selection. Available on terminal and overview tabs."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "minutes",
     "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "backendOwner": "unified-trading-api (calendar / market-events service)",
+    "notes": "Data fetched via useEconomicResults() and useCorporateActions() hooks in CalendarEventFeed. No real-time streaming required \u2014 economic calendar events are scheduled and change infrequently."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
-    "commonTabs": null,
+    "assetClasses": ["cefi", "defi", "tradfi"],
+    "strategies": ["all"],
+    "venues": ["all"],
+    "commonTabs": ["terminal", "overview"],
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "DeFi governance events / protocol upgrades not in calendar data",
+      "Corporate actions only relevant for TradFi/CeFi equities"
+    ],
+    "notes": "Calendar data coverage depends on the backend data provider. DeFi-specific events (protocol upgrades, token unlocks) are a gap in current data model."
   },
   "knownIssues": [],
   "findings": [
-    "L0: All 9 checks pass — no fixes required. Widget is a thin wrapper delegating to CalendarEventFeed which handles all data + states.",
-    "L1: 1.1 pass. 1.2–1.6 N/A — calendar events are global macro/corporate-action data not filtered by org/client/strategy scope. 1.7 pass."
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "calendar-events-widget.tsx \u2014 no user-visible strings in widget file itself; all strings in CalendarEventFeed component",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

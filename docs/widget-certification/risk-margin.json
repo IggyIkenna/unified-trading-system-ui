@@ -46,10 +46,10 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code — SPAN Margin section uses static mock values (known; data wiring is an L1/L3 concern, not dead code)."
+          "note": "No dead code \u2014 SPAN Margin section uses static mock values (known; data wiring is an L1/L3 concern, not dead code)."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[risk]. 0.4 No any/ts-ignore. 0.5 No lib/mocks imports. 0.6 Added Skeleton loading guard (4 skeleton rows). 0.7 Added isEmpty guard when marginLimits, ltvLimits, and hfTimeSeries are all empty; CollapsibleSections are individually guarded by length>0. 0.8 Added hasError guard returning 'Failed to load margin data'. 0.9 No dead code — SPAN Margin section uses static mock values (known; data wiring is an L1/L3 concern, not dead code)."
+      "notes": "0.1 WidgetErrorBoundary in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[risk]. 0.4 No any/ts-ignore. 0.5 No lib/mocks imports. 0.6 Added Skeleton loading guard (4 skeleton rows). 0.7 Added isEmpty guard when marginLimits, ltvLimits, and hfTimeSeries are all empty; CollapsibleSections are individually guarded by length>0. 0.8 Added hasError guard returning 'Failed to load margin data'. 0.9 No dead code \u2014 SPAN Margin section uses static mock values (known; data wiring is an L1/L3 concern, not dead code)."
     },
     "l1": {
       "status": "pass",
@@ -82,76 +82,227 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "No mock constants in widget file. FINDING: SPAN Margin section (lines 77-75) uses hardcoded values ($180k, $135k, 79%) — not wired to context. This is acceptable as stub UI pending IBKR SPAN API; should be tracked as L3/L5 item."
+          "note": "No mock constants in widget file. FINDING: SPAN Margin section (lines 77-75) uses hardcoded values ($180k, $135k, 79%) \u2014 not wired to context. This is acceptable as stub UI pending IBKR SPAN API; should be tracked as L3/L5 item."
         }
       },
-      "notes": "1.1 Data via useRiskData() hook; sortedLimits/hfTimeSeries/distanceToLiquidation all from context. 1.2 use-risk-page-data.ts calls useGlobalScope() for scope. 1.3-1.5 sortedLimits is scope-filtered (riskLimits filtered by strategy entity in context). 1.6 Empty scope returns unfiltered data. 1.7 No mock constants in widget file. FINDING: SPAN Margin section (lines 77-75) uses hardcoded values ($180k, $135k, 79%) — not wired to context. This is acceptable as stub UI pending IBKR SPAN API; should be tracked as L3/L5 item."
+      "notes": "1.1 Data via useRiskData() hook; sortedLimits/hfTimeSeries/distanceToLiquidation all from context. 1.2 use-risk-page-data.ts calls useGlobalScope() for scope. 1.3-1.5 sortedLimits is scope-filtered (riskLimits filtered by strategy entity in context). 1.6 Empty scope returns unfiltered data. 1.7 No mock constants in widget file. FINDING: SPAN Margin section (lines 77-75) uses hardcoded values ($180k, $135k, 79%) \u2014 not wired to context. This is acceptable as stub UI pending IBKR SPAN API; should be tracked as L3/L5 item."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 (real-time HF/margin), paper \u2713, batch \u2713. Read-only display widget."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "isBatchMode in context; not used by this widget (no action buttons)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: margin/HF from paper account positions."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget."
+        }
+      },
+      "notes": "Human must verify 3.4 (batch indicator visible in layout)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No interactive buttons. CollapsibleSection handled by shared component."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "Human must verify 4.7 (CollapsibleSection toggles for CeFi/DeFi/HF/Distance sections), 4.8 (WidgetScroll works)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: defi-lending-borrowing (HF/LTV), cefi-spot-arbitrage (margin), defi-amm-lp (margin). Both CeFi margin bars and DeFi HF sections render."
+        }
+      },
+      "notes": "Human walkthrough required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing phase."
+    },
+    "l7": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "#3b82f6 replaced with var(--chart-3). #f97316 replaced with var(--risk-emergency) after token landed in globals.css."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "231 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "RiskMarginWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No problematic useEffect/useMemo deps."
+        }
+      },
+      "notes": "7.1 fixed; both hardcoded hexes now use CSS variable tokens (chart-3, risk-emergency)."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px]/text-[11px]/text-[9px] replaced with text-micro/text-caption/text-nano tokens per consolidated globals.css; no arbitrary typography classes remain."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No bracket spacing violations."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Badge, Progress, Table, Skeleton, LimitBar, CollapsibleSection from ui/shared."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: no img without alt, no bare div onClick, no unlabelled inputs. Display-only widget."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: resize test at minW=4, minH=3 required."
+        }
+      },
+      "notes": "8.1 fixed (tokens applied). 8.2-8.4 pass. 8.5 needs human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Unique CeFi+DeFi margin health widget combining SPAN, LTV/HF, and distance-to-liquidation."
+    },
+    "notes": "SPAN values ($180K/$135K) are currently static stubs. distanceToLiquidation from context."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:30000",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/risk-data (RISK_LIMITS with category=margin/ltv, hfTimeSeries, distanceToLiquidation)",
+    "backendOwner": "unified-trading-api",
+    "notes": "marginLimits and ltvLimits filtered from sortedLimits in context. SPAN values currently hardcoded stubs."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi"],
+    "strategies": ["defi-lending-borrowing", "defi-amm-lp", "cefi-spot-arbitrage"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "SPAN margin values ($180K/$135K) are hardcoded stubs \u2014 should come from IBKR gateway",
+      "Sports/TradFi margin not yet represented"
+    ],
+    "notes": "CeFi margin bars and DeFi HF/LTV both rendered when respective limit categories present."
   },
   "knownIssues": [
-    "SPAN Margin section has hardcoded values ($180k initial, $135k maintenance, 79% utilization) — pending IBKR SPAN API wiring; track for L3/L5"
+    "SPAN Margin section has hardcoded values ($180k initial, $135k maintenance, 79% utilization) \u2014 pending IBKR SPAN API wiring; track for L3/L5"
   ],
   "findings": [
-    "Widget was missing isLoading/hasError entirely — added Skeleton loading guard and error state",
-    "Added explicit isEmpty guard for when all margin data arrays are empty"
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "Widget was missing isLoading/hasError entirely \u2014 added Skeleton loading guard and error state",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "Added explicit isEmpty guard for when all margin data arrays are empty",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "risk-margin-widget.tsx:165-166 \u2014 stroke='#3b82f6' and fill='#3b82f6' on AreaChart for HF time series",
+      "status": "fixed",
+      "fix": "Replaced with var(--chart-3)"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "risk-margin-widget.tsx:152 \u2014 stroke='#f97316' for emergency threshold ReferenceLine",
+      "status": "fixed",
+      "fix": "Replaced with var(--risk-emergency) after token landed in globals.css (#f97316 light / #fb923c dark)"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-margin-widget.tsx \u2014 ~25 user-visible strings (section titles, margin labels, threshold labels)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "risk-margin-widget.tsx \u2014 text-[10px], text-[11px], text-[9px] used for dense labels and chart annotations",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

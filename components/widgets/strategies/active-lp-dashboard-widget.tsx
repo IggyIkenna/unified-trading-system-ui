@@ -45,7 +45,7 @@ const columns: ColumnDef<LPPosition, unknown>[] = [
     cell: ({ row }) => {
       const inRange = row.getValue<boolean>("inRange");
       return (
-        <Badge variant={inRange ? "success" : "error"} className="text-[10px]">
+        <Badge variant={inRange ? "success" : "error"} className="text-micro">
           {inRange ? "Yes" : "No"}
         </Badge>
       );
@@ -107,7 +107,7 @@ export function ActiveLPDashboardWidget(_props: WidgetComponentProps) {
   const actionsConfig: TableActionsConfig = {
     extraActions:
       outOfRangeCount > 0 ? (
-        <Badge variant="warning" className="text-[10px] shrink-0">
+        <Badge variant="warning" className="text-micro shrink-0">
           {outOfRangeCount} out of range
         </Badge>
       ) : undefined,

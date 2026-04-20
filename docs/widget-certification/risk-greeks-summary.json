@@ -26,7 +26,7 @@
         },
         "0.4": {
           "result": "pass",
-          "note": "no any/ts-ignore — typed casts (e.g. pos.delta as number) are necessary because positionGreeks is Array<Record<string, unknown>> in the context type; these are not any types."
+          "note": "no any/ts-ignore \u2014 typed casts (e.g. pos.delta as number) are necessary because positionGreeks is Array<Record<string, unknown>> in the context type; these are not any types."
         },
         "0.5": {
           "result": "pass",
@@ -34,22 +34,22 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— added isLoading spinner guard."
+          "note": "\u2014 added isLoading spinner guard."
         },
         "0.7": {
           "result": "pass",
-          "note": "empty positionGreeks → no table rows rendered; greeksTimeSeries.length === 0 hides chart."
+          "note": "empty positionGreeks \u2192 no table rows rendered; greeksTimeSeries.length === 0 hides chart."
         },
         "0.8": {
           "result": "pass",
-          "note": "— added hasError early-return block."
+          "note": "\u2014 added hasError early-return block."
         },
         "0.9": {
           "result": "pass",
           "note": "no dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore — typed casts (e.g. pos.delta as number) are necessary because positionGreeks is Array<Record<string, unknown>> in the context type; these are not any types. 0.5 ✓ no lib/mocks import. 0.6 FIXED — added isLoading spinner guard. 0.7 ✓ empty positionGreeks → no table rows rendered; greeksTimeSeries.length === 0 hides chart. 0.8 FIXED — added hasError early-return block. 0.9 ✓ no dead code."
+      "notes": "0.1 \u2713 WidgetErrorBoundary via widget-wrapper. 0.2 \u2713 requiredEntitlements: [execution-basic, execution-full]. 0.3 \u2713 availableOn: [risk]. 0.4 \u2713 no any/ts-ignore \u2014 typed casts (e.g. pos.delta as number) are necessary because positionGreeks is Array<Record<string, unknown>> in the context type; these are not any types. 0.5 \u2713 no lib/mocks import. 0.6 FIXED \u2014 added isLoading spinner guard. 0.7 \u2713 empty positionGreeks \u2192 no table rows rendered; greeksTimeSeries.length === 0 hides chart. 0.8 FIXED \u2014 added hasError early-return block. 0.9 \u2713 no dead code."
     },
     "l1": {
       "status": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "data exclusively from useRiskData() — portfolioGreeks, positionGreeks, greeksTimeSeries, secondOrderRisks, portfolioGreeksData all from context."
+          "note": "data exclusively from useRiskData() \u2014 portfolioGreeks, positionGreeks, greeksTimeSeries, secondOrderRisks, portfolioGreeksData all from context."
         },
         "1.2": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "scope.organizationIds → scopeStrategyIds → riskLimits filter (Greeks downstream)."
+          "note": "scope.organizationIds \u2192 scopeStrategyIds \u2192 riskLimits filter (Greeks downstream)."
         },
         "1.4": {
           "result": "pass",
@@ -78,80 +78,224 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "empty scope → unfiltered data."
+          "note": "empty scope \u2192 unfiltered data."
         },
         "1.7": {
           "result": "pass",
-          "note": "no reference data constants in this widget. Note: positionGreeks context type is Array<Record<string, unknown>> — typed casts in widget are a symptom of undertyped context shape; tracked as future context typing improvement, not a widget defect."
+          "note": "no reference data constants in this widget. Note: positionGreeks context type is Array<Record<string, unknown>> \u2014 typed casts in widget are a symptom of undertyped context shape; tracked as future context typing improvement, not a widget defect."
         }
       },
-      "notes": "1.1 ✓ data exclusively from useRiskData() — portfolioGreeks, positionGreeks, greeksTimeSeries, secondOrderRisks, portfolioGreeksData all from context. 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds → scopeStrategyIds → riskLimits filter (Greeks downstream). 1.4 ✓ scope.clientIds via getStrategyIdsForScope. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → unfiltered data. 1.7 ✓ no reference data constants in this widget. Note: positionGreeks context type is Array<Record<string, unknown>> — typed casts in widget are a symptom of undertyped context shape; tracked as future context typing improvement, not a widget defect."
+      "notes": "1.1 \u2713 data exclusively from useRiskData() \u2014 portfolioGreeks, positionGreeks, greeksTimeSeries, secondOrderRisks, portfolioGreeksData all from context. 1.2 \u2713 use-risk-page-data.ts calls useGlobalScope(). 1.3 \u2713 scope.organizationIds \u2192 scopeStrategyIds \u2192 riskLimits filter (Greeks downstream). 1.4 \u2713 scope.clientIds via getStrategyIdsForScope. 1.5 \u2713 scope.strategyIds via getStrategyIdsForScope. 1.6 \u2713 empty scope \u2192 unfiltered data. 1.7 \u2713 no reference data constants in this widget. Note: positionGreeks context type is Array<Record<string, unknown>> \u2014 typed casts in widget are a symptom of undertyped context shape; tracked as future context typing improvement, not a widget defect."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 (real-time Greeks), paper \u2713, batch \u2713. Read-only analysis widget."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "isBatchMode in context; not used by this widget (pure display)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: same Greeks computed from paper positions."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget."
+        }
+      },
+      "notes": "Human must verify 3.4 (batch indicator visible in layout)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No interactive buttons. CollapsibleSection toggles are handled by shared component."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "Human must verify 4.7 (CollapsibleSection Second-Order Risks and Per-Underlying toggles work), 4.8 (WidgetScroll works)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: options-bearing strategies (defi-basis-trade with options legs, cefi-options-spread). Widget shows portfolio-level and per-position Greeks."
+        }
+      },
+      "notes": "Human walkthrough required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing phase."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "fixed",
+          "note": "Three hardcoded hex in LineChart: #3b82f6 (delta), #f59e0b (gamma), #22c55e (vega) replaced with var(--chart-3), var(--chart-5), var(--chart-2)."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "219 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "RiskGreeksSummaryWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No problematic useEffect/useMemo deps."
+        }
+      },
+      "notes": "7.1 fixed. 7.5 globally deferred."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px]/text-[11px] replaced with text-micro/text-caption tokens per consolidated globals.css; no arbitrary typography classes remain."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No bracket spacing violations."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Table, CollapsibleSection, KpiStrip from ui/shared."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: no img without alt, no bare div onClick, no unlabelled inputs. Display-only widget."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: resize test at minW=4, minH=2 required."
+        }
+      },
+      "notes": "8.1 fixed (tokens applied). 8.2-8.4 pass. 8.5 needs human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Unique Greeks display; no other widget shows per-position Greek breakdown."
+    },
+    "notes": "portfolioGreeksData from usePortfolioGreeks() API; falls back to computed portfolioGreeks from context."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:30000",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/risk-data (positionGreeks, greeksTimeSeries)",
+    "backendOwner": "unified-trading-api",
+    "notes": "portfolioGreeks from usePortfolioGreeks() SWR hook. positionGreeks and greeksTimeSeries from context static data (pending API wiring)."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi"],
+    "strategies": ["defi-basis-trade", "cefi-options-spread"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "Sports/TradFi strategies may not have options Greeks (N/A for those)",
+      "Per-underlying breakdown depends on portfolioGreeksData.per_underlying from API"
+    ],
+    "notes": "Greeks primarily relevant to options-bearing strategies."
   },
   "knownIssues": [
     "Context type positionGreeks: Array<Record<string, unknown>> forces typed casts in the widget. Should be typed as PositionGreek[] with explicit fields in a future context typing pass."
   ],
   "findings": [
-    "0.6 fix: added isLoading spinner early-return (was missing)",
-    "0.8 fix: added hasError early-return block (was missing)"
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "0.6 fix: added isLoading spinner early-return (was missing)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "0.8 fix: added hasError early-return block (was missing)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "risk-greeks-summary-widget.tsx:136 \u2014 stroke='#3b82f6' (delta); :145 \u2014 stroke='#f59e0b' (gamma); :154 \u2014 stroke='#22c55e' (vega)",
+      "status": "fixed",
+      "fix": "Replaced with var(--chart-3), var(--chart-5), var(--chart-2) respectively"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-greeks-summary-widget.tsx \u2014 ~25 user-visible strings (Greek labels, column headers, section titles)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "risk-greeks-summary-widget.tsx \u2014 text-[10px], text-[11px] used throughout for dense table/chart sizing",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

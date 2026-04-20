@@ -23,19 +23,19 @@ function settlementBadge(outcome: SettlementOutcome) {
   switch (outcome) {
     case "won":
       return (
-        <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-400">
+        <Badge variant="outline" className="text-micro border-emerald-500/40 text-emerald-400">
           Won
         </Badge>
       );
     case "lost":
       return (
-        <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-400">
+        <Badge variant="outline" className="text-micro border-red-500/40 text-red-400">
           Lost
         </Badge>
       );
     case "void":
       return (
-        <Badge variant="outline" className="text-[10px] border-zinc-600 text-zinc-400">
+        <Badge variant="outline" className="text-micro border-zinc-600 text-zinc-400">
           Void
         </Badge>
       );
@@ -55,7 +55,7 @@ export function PredSettledPositionsWidget(_props: WidgetComponentProps) {
             <p className="font-medium leading-snug line-clamp-2 text-left font-sans">{row.marketQuestion}</p>
             <div className="flex items-center gap-1.5 mt-1">
               <VenueChip venue={row.venue} />
-              <Badge variant="outline" className="text-[9px] border-zinc-700/50 text-zinc-500">
+              <Badge variant="outline" className="text-nano border-zinc-700/50 text-zinc-500">
                 {categoryLabel(row.category)}
               </Badge>
             </div>
@@ -71,7 +71,7 @@ export function PredSettledPositionsWidget(_props: WidgetComponentProps) {
           <Badge
             variant="outline"
             className={cn(
-              "font-bold text-[10px]",
+              "font-bold text-micro",
               row.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
             )}
           >

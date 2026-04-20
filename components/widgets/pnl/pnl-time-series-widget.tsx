@@ -132,7 +132,7 @@ function FactorLinesChart({ data }: { data: Array<Record<string, number | string
             <button
               key={f.key}
               onClick={() => toggleFactor(f.key)}
-              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-opacity ${
+              className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-micro font-medium border transition-opacity ${
                 isHidden ? "opacity-30" : "opacity-100"
               }`}
               style={{
@@ -184,7 +184,7 @@ function FactorLinesChart({ data }: { data: Array<Record<string, number | string
         </LineChart>
       </ResponsiveContainer>
 
-      <p className="text-[10px] text-muted-foreground shrink-0">
+      <p className="text-micro text-muted-foreground shrink-0">
         Cumulative P&L per factor · solid = positive drivers · dashed = cost factors · click chip to hide
       </p>
     </div>
@@ -219,8 +219,15 @@ function BacktestVsLiveChart({ data }: { data: Array<Record<string, number | str
             formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
           />
           <Legend wrapperStyle={{ fontSize: "11px" }} iconSize={10} />
-          <Line type="monotone" dataKey="backtest" stroke="#3b82f6" strokeWidth={2} dot={false} name="Backtest" />
-          <Line type="monotone" dataKey="live" stroke="#10b981" strokeWidth={2} dot={false} name="Live" />
+          <Line
+            type="monotone"
+            dataKey="backtest"
+            stroke="var(--chart-1)"
+            strokeWidth={2}
+            dot={false}
+            name="Backtest"
+          />
+          <Line type="monotone" dataKey="live" stroke="var(--pnl-positive)" strokeWidth={2} dot={false} name="Live" />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -293,7 +300,7 @@ export function PnlTimeSeriesWidget(_props: WidgetComponentProps) {
       ) : (
         <>
           <BacktestVsLiveChart data={backtestVsLive} />
-          <p className="text-[10px] text-muted-foreground shrink-0">
+          <p className="text-micro text-muted-foreground shrink-0">
             Blue = backtest prediction · Green = live result · Shaded gap = tracking error
           </p>
         </>

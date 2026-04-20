@@ -108,7 +108,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
           </Select>
 
           <div className="ml-auto flex items-center gap-2">
-            <Badge variant={dataMode === "live" ? "default" : "secondary"} className="gap-1 text-[10px]">
+            <Badge variant={dataMode === "live" ? "default" : "secondary"} className="gap-1 text-micro">
               {dataMode === "live" ? <Radio className="size-3" /> : <Database className="size-3" />}
               {dataMode === "live" ? "Live" : "Batch"}
             </Badge>
@@ -121,7 +121,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
 
         {/* Row 2: Group-by · Factor view · Currency */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[10px] text-muted-foreground shrink-0">Group:</span>
+          <span className="text-micro text-muted-foreground shrink-0">Group:</span>
           <div className="flex gap-0.5">
             {["all", "client", "strategy", "venue", "asset"].map((g) => (
               <Button
@@ -178,17 +178,17 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground">Ccy:</span>
+            <span className="text-micro text-muted-foreground">Ccy:</span>
             <Select value={shareClass} onValueChange={(v) => setShareClass(v as ShareClass | "all")}>
-              <SelectTrigger className="h-6 w-[110px] text-[10px]">
+              <SelectTrigger className="h-6 w-[110px] text-micro">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all" className="text-[10px]">
+                <SelectItem value="all" className="text-micro">
                   All (USD)
                 </SelectItem>
                 {SHARE_CLASSES.map((sc) => (
-                  <SelectItem key={sc} value={sc} className="text-[10px] font-mono">
+                  <SelectItem key={sc} value={sc} className="text-micro font-mono">
                     {sc} — {SHARE_CLASS_LABELS[sc]}
                   </SelectItem>
                 ))}
@@ -199,7 +199,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
 
         {/* Residual alert */}
         {isResidualAlert && (
-          <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30 text-[10px] text-[var(--status-warning)]">
+          <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30 text-micro text-[var(--status-warning)]">
             <AlertTriangle className="size-3 shrink-0" />
             <span>
               Unexplained residual <strong>${Math.abs(residualPnL.value).toLocaleString()}</strong> exceeds{" "}
@@ -259,7 +259,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
                     <div className="h-5 bg-muted rounded-md overflow-hidden">
                       <div
                         className={`h-full rounded-md transition-all duration-300 ${
-                          component.name === "Realized" ? "bg-[var(--pnl-positive)]/70" : "bg-[var(--accent-blue)]/60"
+                          component.name === "Realized" ? "bg-[var(--pnl-positive)]/70" : "bg-chart-3/60"
                         }`}
                         style={{ width: `${width}%` }}
                       />
@@ -288,10 +288,19 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
                   return (
                     <div
                       key={component.name}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isSelected}
                       className={`group cursor-pointer rounded-lg p-2 -mx-1 transition-colors ${
                         isSelected ? "bg-primary/10 ring-1 ring-primary/30" : "hover:bg-muted/50"
                       }`}
                       onClick={() => setSelectedFactor(isSelected ? null : component.name)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelectedFactor(isSelected ? null : component.name);
+                        }
+                      }}
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className={`text-sm font-medium ${isSelected ? "text-primary" : ""}`}>
@@ -453,11 +462,11 @@ function FactorTooltipCard({
     <div className="rounded-md border border-border/80 bg-popover/95 shadow-lg px-2.5 py-2 backdrop-blur-sm min-w-[160px]">
       <div className="flex items-center justify-between gap-3 pb-1.5 mb-1.5 border-b border-border/60">
         <span className="text-[11px] font-semibold tracking-tight text-foreground truncate">{name}</span>
-        <span className="text-[9px] font-mono tabular-nums text-muted-foreground shrink-0">
+        <span className="text-nano font-mono tabular-nums text-muted-foreground shrink-0">
           #{rank} / {total}
         </span>
       </div>
-      <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-[10px]">
+      <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-micro">
         <span className="text-muted-foreground">P&amp;L</span>
         <span
           className="font-mono tabular-nums text-right font-semibold"
@@ -655,6 +664,97 @@ function renderActiveSector(props: unknown) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Pie legend table extracted to keep FactorPie under the 200-line limit
+// ---------------------------------------------------------------------------
+
+interface PieLegendProps {
+  visibleLegend: PieDatum[];
+  allCount: number;
+  selectedFactor: string | null;
+  hoverName: string | null;
+  hasEmphasis: boolean;
+  showAll: boolean;
+  onToggleAll: () => void;
+  onSelect: (name: string) => void;
+  onHover: (name: string | null) => void;
+}
+
+function PieLegend({
+  visibleLegend,
+  allCount,
+  selectedFactor,
+  hoverName,
+  hasEmphasis,
+  showAll,
+  onToggleAll,
+  onSelect,
+  onHover,
+}: PieLegendProps) {
+  return (
+    <div className="w-[44%] min-w-[180px] max-w-[260px] shrink-0 overflow-auto pr-0.5">
+      <div className="grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 text-nano uppercase tracking-[0.08em] text-muted-foreground/60 border-b border-border/60 pb-1 mb-1 sticky top-0 bg-background/95 backdrop-blur-sm">
+        <span />
+        <span>Factor</span>
+        <span className="text-right">Value</span>
+        <span className="text-right w-[38px]">%</span>
+      </div>
+      <div className="space-y-[1px]">
+        {visibleLegend.map((d) => {
+          const isSelected = selectedFactor === d.name;
+          const isHovered = hoverName === d.name;
+          const emphasized = isSelected || isHovered;
+          const dim = hasEmphasis && !emphasized;
+          return (
+            <button
+              key={d.name}
+              type="button"
+              onClick={() => onSelect(d.name)}
+              onMouseEnter={() => onHover(d.name)}
+              onMouseLeave={() => onHover(null)}
+              className={`w-full grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 rounded px-1.5 py-0.5 text-left transition-colors duration-150 ${
+                isSelected ? "bg-primary/12 ring-1 ring-primary/25" : isHovered ? "bg-muted/60" : "hover:bg-muted/40"
+              } ${dim ? "opacity-55" : "opacity-100"}`}
+            >
+              <span
+                className="h-3 w-[3px] rounded-[1px]"
+                style={{
+                  backgroundColor: d.isNegative ? NEG_FILL : POS_FILL,
+                  opacity: 0.9,
+                }}
+              />
+              <span
+                className={`truncate text-[11px] ${isSelected ? "text-primary font-medium" : "text-foreground/90"}`}
+                title={`${d.name} · rank #${d.rank}`}
+              >
+                {d.name}
+              </span>
+              <span
+                className="text-[10.5px] font-mono tabular-nums text-right whitespace-nowrap"
+                style={{ color: d.isNegative ? "var(--pnl-negative)" : "var(--pnl-positive)" }}
+              >
+                {formatSignedCompact(d.signed)}
+              </span>
+              <span className="text-[10.5px] font-mono tabular-nums text-right text-muted-foreground w-[38px]">
+                {d.pctOfAbs.toFixed(1)}%
+              </span>
+            </button>
+          );
+        })}
+        {allCount > 8 && (
+          <button
+            type="button"
+            onClick={onToggleAll}
+            className="w-full text-micro text-muted-foreground/80 hover:text-foreground transition-colors pt-1.5 text-left pl-3.5"
+          >
+            {showAll ? "\u2212 Show top 8" : `+ Show all ${allCount}`}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function FactorPie({ components, selectedFactor, onSelect }: FactorSubviewProps) {
   const totalAbs = React.useMemo(() => components.reduce((s, c) => s + Math.abs(c.value), 0) || 1, [components]);
   const netSigned = React.useMemo(() => components.reduce((s, c) => s + c.value, 0), [components]);
@@ -783,7 +883,7 @@ function FactorPie({ components, selectedFactor, onSelect }: FactorSubviewProps)
           >
             {formatSignedCompact(netSigned)}
           </span>
-          <div className="mt-2 flex items-center gap-1.5 text-[9px] font-mono tabular-nums text-muted-foreground/80">
+          <div className="mt-2 flex items-center gap-1.5 text-nano font-mono tabular-nums text-muted-foreground/80">
             <span>{data.length} factors</span>
             <span className="h-2 w-px bg-border/70" />
             <span className="inline-flex items-center gap-0.5">
@@ -799,66 +899,17 @@ function FactorPie({ components, selectedFactor, onSelect }: FactorSubviewProps)
       </div>
 
       {/* ── Compact legend/data table on right ─────────────────────── */}
-      <div className="w-[44%] min-w-[180px] max-w-[260px] shrink-0 overflow-auto pr-0.5">
-        <div className="grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 text-[9px] uppercase tracking-[0.08em] text-muted-foreground/60 border-b border-border/60 pb-1 mb-1 sticky top-0 bg-background/95 backdrop-blur-sm">
-          <span />
-          <span>Factor</span>
-          <span className="text-right">Value</span>
-          <span className="text-right w-[38px]">%</span>
-        </div>
-        <div className="space-y-[1px]">
-          {visibleLegend.map((d) => {
-            const isSelected = selectedFactor === d.name;
-            const isHovered = hoverName === d.name;
-            const emphasized = isSelected || isHovered;
-            const dim = hasEmphasis && !emphasized;
-            return (
-              <button
-                key={d.name}
-                type="button"
-                onClick={() => onSelect(d.name)}
-                onMouseEnter={() => setHoverName(d.name)}
-                onMouseLeave={() => setHoverName(null)}
-                className={`w-full grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 rounded-[3px] px-1.5 py-[3px] text-left transition-colors duration-150 ${
-                  isSelected ? "bg-primary/12 ring-1 ring-primary/25" : isHovered ? "bg-muted/60" : "hover:bg-muted/40"
-                } ${dim ? "opacity-55" : "opacity-100"}`}
-              >
-                <span
-                  className="h-3 w-[3px] rounded-[1px]"
-                  style={{
-                    backgroundColor: d.isNegative ? NEG_FILL : POS_FILL,
-                    opacity: 0.9,
-                  }}
-                />
-                <span
-                  className={`truncate text-[11px] ${isSelected ? "text-primary font-medium" : "text-foreground/90"}`}
-                  title={`${d.name} · rank #${d.rank}`}
-                >
-                  {d.name}
-                </span>
-                <span
-                  className="text-[10.5px] font-mono tabular-nums text-right whitespace-nowrap"
-                  style={{ color: d.isNegative ? "var(--pnl-negative)" : "var(--pnl-positive)" }}
-                >
-                  {formatSignedCompact(d.signed)}
-                </span>
-                <span className="text-[10.5px] font-mono tabular-nums text-right text-muted-foreground w-[38px]">
-                  {d.pctOfAbs.toFixed(1)}%
-                </span>
-              </button>
-            );
-          })}
-          {data.length > 8 && (
-            <button
-              type="button"
-              onClick={() => setShowAllLegend((v) => !v)}
-              className="w-full text-[10px] text-muted-foreground/80 hover:text-foreground transition-colors pt-1.5 text-left pl-3.5"
-            >
-              {showAllLegend ? "\u2212 Show top 8" : `+ Show all ${data.length}`}
-            </button>
-          )}
-        </div>
-      </div>
+      <PieLegend
+        visibleLegend={visibleLegend}
+        allCount={data.length}
+        selectedFactor={selectedFactor}
+        hoverName={hoverName}
+        hasEmphasis={hasEmphasis}
+        showAll={showAllLegend}
+        onToggleAll={() => setShowAllLegend((v) => !v)}
+        onSelect={onSelect}
+        onHover={setHoverName}
+      />
     </div>
   );
 }

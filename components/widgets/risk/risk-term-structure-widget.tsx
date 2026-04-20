@@ -71,7 +71,7 @@ export function RiskTermStructureWidget(_props: WidgetComponentProps) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <div className="px-1 pt-1 text-[9px] text-muted-foreground shrink-0">
+      <div className="px-1 pt-1 text-nano text-muted-foreground shrink-0">
         DeFi/CeFi perpetuals classified as Overnight (8h funding settlement).
       </div>
     </div>

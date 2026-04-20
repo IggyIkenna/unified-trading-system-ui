@@ -75,7 +75,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
         )}
 
         <CollapsibleSection title="SPAN Margin — IBKR" defaultOpen={true}>
-          <div className="space-y-1.5 text-[11px] pt-1">
+          <div className="space-y-1.5 text-caption pt-1">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Initial Margin</span>
               <span className="font-mono font-medium">$180,000</span>
@@ -125,7 +125,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
 
         {hfTimeSeries.length > 0 && (
           <div>
-            <div className="text-[10px] font-medium text-muted-foreground mb-1">HF Time Series (7d)</div>
+            <div className="text-micro font-medium text-muted-foreground mb-1">HF Time Series (7d)</div>
             <div className="h-[120px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={hfTimeSeries}>
@@ -149,7 +149,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                   />
                   <ReferenceLine
                     y={1.2}
-                    stroke="#f97316"
+                    stroke="var(--risk-emergency)"
                     strokeDasharray="4 4"
                     label={{ value: "Emergency 1.2", position: "right", fontSize: 8 }}
                   />
@@ -162,8 +162,8 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                   <Area
                     type="monotone"
                     dataKey="hf"
-                    stroke="#3b82f6"
-                    fill="#3b82f6"
+                    stroke="var(--chart-3)"
+                    fill="var(--chart-3)"
                     fillOpacity={0.2}
                     strokeWidth={1.5}
                   />
@@ -178,17 +178,17 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
-                  <TableHead className="text-[10px]">Venue</TableHead>
-                  <TableHead className="text-[10px]">HF / Margin</TableHead>
-                  <TableHead className="text-[10px] text-right">Dist.</TableHead>
-                  <TableHead className="text-[10px]">Status</TableHead>
+                  <TableHead className="text-micro">Venue</TableHead>
+                  <TableHead className="text-micro">HF / Margin</TableHead>
+                  <TableHead className="text-micro text-right">Dist.</TableHead>
+                  <TableHead className="text-micro">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {distanceToLiquidation.map((row) => (
                   <TableRow key={row.venue as string}>
-                    <TableCell className="text-[11px] font-medium">{row.venue as string}</TableCell>
-                    <TableCell className="text-[11px] font-mono">{row.metric as string}</TableCell>
+                    <TableCell className="text-caption font-medium">{row.venue as string}</TableCell>
+                    <TableCell className="text-caption font-mono">{row.metric as string}</TableCell>
                     <TableCell className="text-right">
                       <Badge
                         variant={
@@ -199,7 +199,7 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
                               : "destructive"
                         }
                         className={cn(
-                          "font-mono text-[10px]",
+                          "font-mono text-micro",
                           (row.distToLiq as number) > 20 && "bg-emerald-500/20 text-emerald-400",
                           (row.distToLiq as number) <= 20 &&
                             (row.distToLiq as number) > 10 &&

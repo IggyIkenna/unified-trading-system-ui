@@ -13,9 +13,9 @@ const statusColors: Record<ModelFamily["status"], string> = {
 };
 
 const stalenessColors: Record<FeatureFreshness["staleness"], string> = {
-  fresh: "text-emerald-400",
-  ok: "text-amber-400",
-  stale: "text-red-400",
+  fresh: "text-[var(--status-live)]",
+  ok: "text-[var(--status-warning)]",
+  stale: "text-[var(--status-critical)]",
 };
 
 function timeSince(iso: string): string {
@@ -60,74 +60,76 @@ export function SportsMLStatusWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-zinc-800 shrink-0">
-        <span className="text-xs font-black uppercase tracking-widest text-zinc-500">ML Pipeline Status</span>
-        <span className="ml-auto text-[10px] text-zinc-600">{modelFamilies.length} families</span>
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-border shrink-0">
+        <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">ML Pipeline Status</span>
+        <span className="ml-auto text-nano text-muted-foreground/60">{modelFamilies.length} families</span>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {/* KPI strip */}
-        <div className="grid grid-cols-4 gap-2 p-3 border-b border-zinc-800">
+        <div className="grid grid-cols-4 gap-2 p-3 border-b border-border">
           <div className="text-center">
-            <div className="text-lg font-mono font-bold text-emerald-400">
+            <div className="text-lg font-mono font-bold text-[var(--status-live)]">
               {healthyCount}/{modelFamilies.length}
             </div>
-            <div className="text-[10px] text-zinc-500">Models Healthy</div>
+            <div className="text-micro text-muted-foreground">Models Healthy</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-mono font-bold text-zinc-200">{(avgAccuracy * 100).toFixed(1)}%</div>
-            <div className="text-[10px] text-zinc-500">Avg Accuracy</div>
+            <div className="text-lg font-mono font-bold text-foreground">{(avgAccuracy * 100).toFixed(1)}%</div>
+            <div className="text-micro text-muted-foreground">Avg Accuracy</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-mono font-bold text-blue-400">
+            <div className="text-lg font-mono font-bold text-[var(--status-running)]">
               {freshCount}/{featureFreshness.length}
             </div>
-            <div className="text-[10px] text-zinc-500">Features Fresh</div>
+            <div className="text-micro text-muted-foreground">Features Fresh</div>
           </div>
           <div className="text-center">
-            <div className="text-lg font-mono font-bold text-zinc-200">{totalFeatures}</div>
-            <div className="text-[10px] text-zinc-500">Total Columns</div>
+            <div className="text-lg font-mono font-bold text-foreground">{totalFeatures}</div>
+            <div className="text-micro text-muted-foreground">Total Columns</div>
           </div>
         </div>
 
         {/* Model families */}
         <div className="p-2 space-y-1">
-          <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider px-1 py-1">Model Families</div>
+          <div className="text-micro font-bold text-muted-foreground uppercase tracking-wider px-1 py-1">
+            Model Families
+          </div>
           {modelFamilies.map((m) => (
-            <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-zinc-900/40 hover:bg-zinc-800/60">
+            <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded bg-card/40 hover:bg-muted/60">
               <div className={cn("w-2 h-2 rounded-full shrink-0", statusColors[m.status])} />
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-zinc-200 truncate">{m.name}</div>
-                <div className="text-[10px] text-zinc-500 truncate">
+                <div className="text-micro font-medium text-foreground truncate">{m.name}</div>
+                <div className="text-nano text-muted-foreground truncate">
                   {m.targets.slice(0, 3).join(", ")}
                   {m.targets.length > 3 && ` +${m.targets.length - 3}`}
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <div className="text-xs font-mono font-bold text-zinc-200">{(m.accuracy * 100).toFixed(1)}%</div>
-                <div className="text-[10px] text-zinc-500">{timeSince(m.lastTrained)}</div>
+                <div className="text-micro font-mono font-bold text-foreground">{(m.accuracy * 100).toFixed(1)}%</div>
+                <div className="text-nano text-muted-foreground">{timeSince(m.lastTrained)}</div>
               </div>
             </div>
           ))}
         </div>
 
         {/* Feature freshness */}
-        <div className="p-2 space-y-1 border-t border-zinc-800">
-          <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider px-1 py-1">
+        <div className="p-2 space-y-1 border-t border-border">
+          <div className="text-micro font-bold text-muted-foreground uppercase tracking-wider px-1 py-1">
             Feature Freshness
           </div>
           <div className="grid grid-cols-2 gap-1">
             {featureFreshness.map((f) => (
-              <div key={f.group} className="flex items-center justify-between px-2 py-1 rounded bg-zinc-900/40">
+              <div key={f.group} className="flex items-center justify-between px-2 py-1 rounded bg-card/40">
                 <div>
-                  <div className="text-[10px] font-medium text-zinc-300">{f.group}</div>
-                  <div className="text-[9px] text-zinc-600">{f.columns} cols</div>
+                  <div className="text-micro font-medium text-foreground/80">{f.group}</div>
+                  <div className="text-nano text-muted-foreground/60">{f.columns} cols</div>
                 </div>
                 <div className="text-right">
-                  <div className={cn("text-[10px] font-mono font-bold", stalenessColors[f.staleness])}>
+                  <div className={cn("text-micro font-mono font-bold", stalenessColors[f.staleness])}>
                     {(f.coverage * 100).toFixed(0)}%
                   </div>
-                  <div className="text-[9px] text-zinc-600">{timeSince(f.lastUpdated)}</div>
+                  <div className="text-nano text-muted-foreground/60">{timeSince(f.lastUpdated)}</div>
                 </div>
               </div>
             ))}

@@ -105,7 +105,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               type="button"
               variant={transferType === p.id ? "default" : "outline"}
               size="sm"
-              className="h-8 text-[10px] px-1"
+              className="h-8 text-micro px-1"
               onClick={() => setTransferType(p.id)}
             >
               {p.label}
@@ -178,11 +178,11 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               <span className="text-muted-foreground shrink-0">Available (venue free USD)</span>
               <span className="font-mono text-right">${formatCurrency(availableUsd)}</span>
             </div>
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+            <div className="flex items-center justify-between text-micro text-muted-foreground">
               <span>Asset</span>
               <span className="font-mono">{asset}</span>
             </div>
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1 text-micro text-muted-foreground">
               <Clock className="size-3 shrink-0" />
               ~30 min (chain confirmation)
             </div>
@@ -219,7 +219,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               type="button"
               variant={direction === "sub-to-main" ? "default" : "outline"}
               size="sm"
-              className="text-[10px] h-8"
+              className="text-micro h-8"
               onClick={() => setDirection("sub-to-main")}
             >
               Sub → Main
@@ -228,7 +228,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               type="button"
               variant={direction === "main-to-sub" ? "default" : "outline"}
               size="sm"
-              className="text-[10px] h-8"
+              className="text-micro h-8"
               onClick={() => setDirection("main-to-sub")}
             >
               Main → Sub
@@ -274,7 +274,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               className="h-8 font-mono text-xs"
             />
           </div>
-          <div className="p-2 rounded-md border bg-muted/30 text-[10px]">
+          <div className="p-2 rounded-md border bg-muted/30 text-micro">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Speed</span>
               <span className="text-emerald-400">Instant</span>
@@ -310,7 +310,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               </Select>
             </div>
             <div className="shrink-0 pb-1.5 text-right">
-              <p className="text-[10px] text-muted-foreground">Available</p>
+              <p className="text-micro text-muted-foreground">Available</p>
               <p className="text-xs font-mono">${formatCurrency(availableUsd)}</p>
             </div>
           </div>
@@ -417,15 +417,15 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
           </div>
           <div className="p-2 rounded-md border bg-muted/30 space-y-2">
             <div className="space-y-1">
-              <p className="text-[10px] text-muted-foreground">Deposit address</p>
+              <p className="text-micro text-muted-foreground">Deposit address</p>
               <div className="flex items-center gap-1.5">
-                <code className="text-[10px] font-mono bg-background px-1.5 py-0.5 rounded flex-1 truncate">
+                <code className="text-micro font-mono bg-background px-1.5 py-0.5 rounded flex-1 truncate">
                   0x7a23b8c1d9e4f6a2b3c5d7e8f0a1b2c3d4e5f691
                 </code>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 gap-1 text-[10px] shrink-0 px-2"
+                  className="h-7 gap-1 text-micro shrink-0 px-2"
                   onClick={handleCopyAddress}
                 >
                   {copied ? <CheckCircle2 className="size-3 text-emerald-400" /> : <Copy className="size-3" />}
@@ -434,7 +434,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               </div>
             </div>
             <div className="flex items-center justify-center w-20 h-20 mx-auto rounded-md border border-dashed border-muted-foreground/30 bg-background">
-              <span className="text-[10px] text-muted-foreground">QR</span>
+              <span className="text-micro text-muted-foreground">QR</span>
             </div>
           </div>
           <Button variant="outline" className="w-full h-8 text-xs" onClick={() => handleSubmit(handleDepositConfirm)}>

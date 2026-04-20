@@ -65,7 +65,7 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <p className="text-xs font-medium text-muted-foreground">Pillar 1: Coin Allocation</p>
-          <Badge variant="outline" className="text-[10px]">
+          <Badge variant="outline" className="text-micro">
             Patrick (restricted)
           </Badge>
         </div>
@@ -98,7 +98,7 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
               <div key={venue} className="flex items-center gap-1">
                 <HorizontalBar label={venue.slice(0, 6)} pct={weight} colorIdx={idx + 2} />
                 {waterfallWeights.restricted_venues.includes(venue) && (
-                  <Badge variant="destructive" className="text-[9px] h-4 px-1">
+                  <Badge variant="destructive" className="text-nano h-4 px-1">
                     Restricted
                   </Badge>
                 )}

@@ -31,7 +31,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
           <p className="font-medium leading-snug line-clamp-2 text-left font-sans">{r.marketQuestion}</p>
           <div className="flex items-center gap-1.5 mt-1">
             <VenueChip venue={r.venue} />
-            <Badge variant="outline" className="text-[9px] border-zinc-700/50 text-zinc-500">
+            <Badge variant="outline" className="text-nano border-zinc-700/50 text-zinc-500">
               {categoryLabel(r.category)}
             </Badge>
           </div>
@@ -50,7 +50,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
           <Badge
             variant="outline"
             className={cn(
-              "font-bold text-[10px]",
+              "font-bold text-micro",
               r.side === "yes" ? "border-emerald-500/40 text-emerald-400" : "border-red-500/40 text-red-400",
             )}
           >
@@ -78,7 +78,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
           <span>{r.entryPricePerShare}¢</span>
           <span
             className={cn(
-              "text-[10px] font-sans",
+              "text-micro font-sans",
               priceChange > 0 ? "text-emerald-400" : priceChange < 0 ? "text-red-400" : "text-zinc-500",
             )}
           >
@@ -115,7 +115,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
     cell: ({ row }) => {
       const date = row.getValue<string | undefined>("resolutionDate");
       return date ? (
-        <div className="text-right font-mono text-[10px]">{date}</div>
+        <div className="text-right font-mono text-micro">{date}</div>
       ) : (
         <div className="text-right text-zinc-600">—</div>
       );

@@ -268,7 +268,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
               <div className="flex items-center gap-1.5 text-xs font-mono">
                 {route.path.map((token, i) => (
                   <React.Fragment key={token}>
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                    <Badge variant="outline" className="text-micro px-1.5 py-0">
                       {token}
                     </Badge>
                     {i < route.path.length - 1 && (
@@ -298,10 +298,10 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             {/* Per-venue fill breakdown */}
             {route.venue_fills && route.venue_fills.length > 0 && (
               <div className="rounded-lg border overflow-hidden">
-                <div className="bg-muted/50 px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                <div className="bg-muted/50 px-2 py-1 text-micro font-medium text-muted-foreground">
                   SOR Venue Splits ({route.venue_fills.length} venues)
                 </div>
-                <table className="w-full text-[10px]">
+                <table className="w-full text-micro">
                   <thead>
                     <tr className="border-b text-muted-foreground">
                       <th className="px-2 py-1 text-left">Venue</th>

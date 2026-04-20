@@ -72,9 +72,9 @@ const columns: ColumnDef<BalanceRow, unknown>[] = [
           <Badge
             variant="outline"
             className={cn(
-              "font-mono text-[10px]",
+              "font-mono text-micro",
               util >= 90
-                ? "border-[var(--status-error)] text-[var(--status-error)]"
+                ? "border-[var(--status-critical)] text-[var(--status-critical)]"
                 : util >= 75
                   ? "border-[var(--status-warning)] text-[var(--status-warning)]"
                   : "border-[var(--status-live)] text-[var(--status-live)]",

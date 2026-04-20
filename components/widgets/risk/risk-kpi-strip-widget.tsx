@@ -23,16 +23,16 @@ const RISK_LEVEL_COLORS: Record<RiskLevel, string> = {
 
 function RiskLevelBadge({ level }: { level: RiskLevel }) {
   return (
-    <Badge variant="outline" className={cn("text-[9px] font-mono uppercase px-1.5 py-0", RISK_LEVEL_COLORS[level])}>
+    <Badge variant="outline" className={cn("text-nano font-mono uppercase px-1.5 py-0", RISK_LEVEL_COLORS[level])}>
       {level}
     </Badge>
   );
 }
 
 const RISK_CHART_COLORS = {
-  healthFactor: "#10b981",
-  netDeltaUsd: "#3b82f6",
-  treasuryPct: "#f59e0b",
+  healthFactor: "var(--chart-2)",
+  netDeltaUsd: "var(--chart-3)",
+  treasuryPct: "var(--chart-5)",
 };
 
 function DeFiRiskTimeSeriesChart({ data }: { data: Array<Record<string, number | string>> }) {
@@ -40,7 +40,7 @@ function DeFiRiskTimeSeriesChart({ data }: { data: Array<Record<string, number |
     <div className="space-y-3">
       {/* Health Factor */}
       <div>
-        <p className="text-[10px] text-muted-foreground mb-1 px-1">Health Factor</p>
+        <p className="text-micro text-muted-foreground mb-1 px-1">Health Factor</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
@@ -65,7 +65,7 @@ function DeFiRiskTimeSeriesChart({ data }: { data: Array<Record<string, number |
               <Line
                 type="monotone"
                 dataKey={() => 1.0}
-                stroke="#ef4444"
+                stroke="var(--destructive)"
                 strokeDasharray="6 3"
                 strokeWidth={1}
                 dot={false}
@@ -87,7 +87,7 @@ function DeFiRiskTimeSeriesChart({ data }: { data: Array<Record<string, number |
 
       {/* Net Delta USD */}
       <div>
-        <p className="text-[10px] text-muted-foreground mb-1 px-1">Net Delta USD</p>
+        <p className="text-micro text-muted-foreground mb-1 px-1">Net Delta USD</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
@@ -123,7 +123,7 @@ function DeFiRiskTimeSeriesChart({ data }: { data: Array<Record<string, number |
 
       {/* Treasury % */}
       <div>
-        <p className="text-[10px] text-muted-foreground mb-1 px-1">Treasury %</p>
+        <p className="text-micro text-muted-foreground mb-1 px-1">Treasury %</p>
         <div className="h-[140px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
@@ -248,25 +248,25 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
           <CollapsibleSection title="DeFi Delta Exposure" defaultOpen={true}>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
               <div className="rounded-lg border border-border bg-muted/30 p-2">
-                <span className="text-[10px] text-muted-foreground block">Delta USD</span>
+                <span className="text-micro text-muted-foreground block">Delta USD</span>
                 <span className="text-sm font-mono font-semibold">
                   {liveDelta.total_delta_usd > 0 ? "+" : ""}
                   {formatCurrency(liveDelta.total_delta_usd)}
                 </span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
-                <span className="text-[10px] text-muted-foreground block">Delta ETH</span>
+                <span className="text-micro text-muted-foreground block">Delta ETH</span>
                 <span className="text-sm font-mono font-semibold">
                   {liveDelta.total_delta_eth > 0 ? "+" : ""}
                   {formatNumber(liveDelta.total_delta_eth, 1)}
                 </span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
-                <span className="text-[10px] text-muted-foreground block">Delta SOL</span>
+                <span className="text-micro text-muted-foreground block">Delta SOL</span>
                 <span className="text-sm font-mono font-semibold">{formatNumber(liveDelta.total_delta_sol, 1)}</span>
               </div>
               <div className="rounded-lg border border-border bg-muted/30 p-2">
-                <span className="text-[10px] text-muted-foreground block">Liq. Cost %</span>
+                <span className="text-micro text-muted-foreground block">Liq. Cost %</span>
                 <span
                   className={cn(
                     "text-sm font-mono font-semibold",
@@ -289,7 +289,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
               <Button
                 variant={defiRiskView === "table" ? "secondary" : "ghost"}
                 size="sm"
-                className="h-6 px-2 gap-1 text-[11px]"
+                className="h-6 px-2 gap-1 text-caption"
                 onClick={() => setDefiRiskView("table")}
               >
                 <LayoutGrid className="size-3" />
@@ -298,7 +298,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
               <Button
                 variant={defiRiskView === "chart" ? "secondary" : "ghost"}
                 size="sm"
-                className="h-6 px-2 gap-1 text-[11px]"
+                className="h-6 px-2 gap-1 text-caption"
                 onClick={() => setDefiRiskView("chart")}
               >
                 <LineChartIcon className="size-3" />
@@ -310,18 +310,18 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/30">
-                    <TableHead className="text-[10px]">Strategy</TableHead>
-                    <TableHead className="text-[10px] text-center">Protocol</TableHead>
-                    <TableHead className="text-[10px] text-center">Coin</TableHead>
-                    <TableHead className="text-[10px] text-center">Basis</TableHead>
-                    <TableHead className="text-[10px] text-center">Funding</TableHead>
-                    <TableHead className="text-[10px] text-right">Liq. Risk</TableHead>
+                    <TableHead className="text-micro">Strategy</TableHead>
+                    <TableHead className="text-micro text-center">Protocol</TableHead>
+                    <TableHead className="text-micro text-center">Coin</TableHead>
+                    <TableHead className="text-micro text-center">Basis</TableHead>
+                    <TableHead className="text-micro text-center">Funding</TableHead>
+                    <TableHead className="text-micro text-right">Liq. Risk</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {defiRiskProfiles.map((profile) => (
                     <TableRow key={profile.strategy_id}>
-                      <TableCell className="text-[11px] font-medium">
+                      <TableCell className="text-caption font-medium">
                         {STRATEGY_DISPLAY_NAMES[profile.strategy_id]}
                       </TableCell>
                       <TableCell className="text-center">
@@ -339,7 +339,7 @@ export function RiskKpiStripWidget(_props: WidgetComponentProps) {
                       <TableCell className="text-right">
                         <span
                           className={cn(
-                            "font-mono text-[11px]",
+                            "font-mono text-caption",
                             profile.liquidity_risk_pct > 1
                               ? "text-rose-400"
                               : profile.liquidity_risk_pct > 0.5

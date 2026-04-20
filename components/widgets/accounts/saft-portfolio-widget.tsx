@@ -88,8 +88,8 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--accent-blue)]/10">
-                <DollarSign className="size-5" style={{ color: "var(--accent-blue)" }} />
+              <div className="p-2 rounded-lg bg-chart-3/10">
+                <DollarSign className="size-5 text-chart-3" />
               </div>
               <div>
                 <p className="text-2xl font-semibold font-mono">{formatCurrencyCompact(TOTAL_COMMITTED)}</p>
@@ -175,7 +175,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                         <Lock className="size-3" />
                       )}
                       <span>{saft.cliffDate}</span>
-                      <span className="text-[10px]">({dateLabel(saft.cliffDate, now)})</span>
+                      <span className="text-micro">({dateLabel(saft.cliffDate, now)})</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground">
@@ -234,7 +234,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                 </div>
               );
             })}
-            <div className="flex flex-wrap items-center gap-4 text-[10px] text-muted-foreground pt-2">
+            <div className="flex flex-wrap items-center gap-4 text-micro text-muted-foreground pt-2">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-2 rounded bg-muted-foreground/20" />
                 <span>Cliff (locked)</span>
@@ -330,12 +330,12 @@ function formatTokens(v: number): string {
 function roundBadge(round: SAFTRecord["round"]) {
   const styles: Record<SAFTRecord["round"], string> = {
     Seed: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    "Series A": "bg-[var(--accent-blue)]/10 text-[var(--accent-blue)] border-[var(--accent-blue)]/20",
+    "Series A": "bg-chart-3/10 text-chart-3 border-chart-3/20",
     Strategic: "bg-purple-500/10 text-purple-400 border-purple-500/20",
     Private: "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/20",
   };
   return (
-    <Badge variant="outline" className={`text-[10px] ${styles[round]}`}>
+    <Badge variant="outline" className={`text-micro ${styles[round]}`}>
       {round}
     </Badge>
   );
@@ -343,7 +343,7 @@ function roundBadge(round: SAFTRecord["round"]) {
 
 function vestingColor(pct: number): string {
   if (pct >= 75) return "bg-[var(--status-live)]";
-  if (pct >= 50) return "bg-[var(--accent-blue)]";
+  if (pct >= 50) return "bg-chart-3";
   if (pct >= 25) return "bg-[var(--status-warning)]";
   return "bg-muted-foreground";
 }

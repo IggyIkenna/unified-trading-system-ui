@@ -73,6 +73,10 @@ export interface StrategiesData {
 
   lendingArbData: LendingArbRow[];
   liquidationPositions: AtRiskPosition[];
+  /** Sum of debt in USD for positions at highest cascade risk (HF ≤ 1.2). */
+  cascadeZoneUsd: number;
+  /** Mock 24h rolling total of liquidations in USD (replace with backend feed when wired). */
+  liquidated24hUsd: number;
   lpPositions: LPPosition[];
   commodityRegime: CommodityRegimeData;
 
@@ -455,6 +459,15 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
   const totalMTDPnL = React.useMemo(() => getTotalMTDPnL(strategies), [strategies]);
   const activeCount = React.useMemo(() => strategies.filter((s) => s.status === "live").length, [strategies]);
 
+  const cascadeZoneUsd = React.useMemo(
+    () => MOCK_LIQUIDATION_POSITIONS.filter((p) => p.healthFactor <= 1.2).reduce((sum, p) => sum + p.debtUsd, 0),
+    [],
+  );
+  const liquidated24hUsd = React.useMemo(
+    () => MOCK_LIQUIDATION_POSITIONS.reduce((sum, p) => sum + p.debtUsd * 0.18, 0),
+    [],
+  );
+
   const value = React.useMemo(
     () => ({
       strategies,
@@ -477,6 +490,8 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
       activeCount,
       lendingArbData: MOCK_LENDING_ARB,
       liquidationPositions: MOCK_LIQUIDATION_POSITIONS,
+      cascadeZoneUsd,
+      liquidated24hUsd,
       lpPositions: MOCK_LP_POSITIONS,
       commodityRegime: MOCK_COMMODITY_REGIME,
       isLive,
@@ -500,6 +515,8 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
       totalPnL,
       totalMTDPnL,
       activeCount,
+      cascadeZoneUsd,
+      liquidated24hUsd,
       isLive,
       mode,
     ],

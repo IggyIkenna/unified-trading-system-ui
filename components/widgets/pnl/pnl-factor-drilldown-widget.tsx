@@ -10,7 +10,9 @@ import { usePnLData } from "./pnl-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { MousePointerClick } from "lucide-react";
 
-const STRATEGY_AREA_COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ec4899", "#8b5cf6"];
+// Multi-series palette for stacked area chart. Uses theme chart tokens --chart-3..--chart-6.
+// For >4 series we cycle back to --chart-1 (reuses primary chart color at index 4, 8, ...).
+const STRATEGY_AREA_COLORS = ["var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "var(--chart-6)", "var(--chart-1)"];
 
 // ---------------------------------------------------------------------------
 // Empty-state factor summary table — shown when no factor is selected.
@@ -24,7 +26,7 @@ function FactorSummaryTable() {
     <div className="flex flex-col h-full min-h-0 gap-2">
       <div className="flex items-center justify-between shrink-0">
         <p className="text-xs text-muted-foreground">All factors · click any row to drill in</p>
-        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-1 text-micro text-muted-foreground">
           <MousePointerClick className="size-3" />
           Select to see per-strategy attribution
         </div>
@@ -33,7 +35,7 @@ function FactorSummaryTable() {
       <div className="flex-1 min-h-0 overflow-auto">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-background z-10">
-            <tr className="text-[10px] text-muted-foreground uppercase tracking-wider border-b border-border">
+            <tr className="text-micro text-muted-foreground uppercase tracking-wider border-b border-border">
               <th className="text-left py-1.5 px-2 font-medium">Factor</th>
               <th className="text-right py-1.5 px-2 font-medium">Value</th>
               <th className="text-right py-1.5 px-2 font-medium hidden sm:table-cell">% of Net</th>
@@ -49,8 +51,17 @@ function FactorSummaryTable() {
               return (
                 <tr
                   key={c.name}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Drill into ${c.name} factor`}
                   className="group cursor-pointer hover:bg-muted/50 transition-colors border-b border-border/40 last:border-0"
                   onClick={() => setSelectedFactor(c.name)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedFactor(c.name);
+                    }
+                  }}
                 >
                   <td className="py-1.5 px-2 font-medium group-hover:text-primary transition-colors">{c.name}</td>
                   <td className="py-1.5 px-2 text-right">

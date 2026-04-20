@@ -53,7 +53,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="p-2 space-y-3 h-full min-h-0 overflow-auto">
-      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Visual order</p>
+      <p className="text-micro text-muted-foreground uppercase tracking-wider">Visual order</p>
 
       <div className="flex items-center gap-1 px-1 py-2 overflow-x-auto">
         {steps.map((step, i) => (
@@ -61,17 +61,17 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
             <div className="flex flex-col items-center gap-0.5 shrink-0">
               <div
                 className={cn(
-                  "w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-mono font-bold",
+                  "w-7 h-7 rounded-full border-2 flex items-center justify-center text-micro font-mono font-bold",
                   getOperationBadgeClass(step.operationType),
                 )}
               >
                 {i + 1}
               </div>
-              <span className={cn("text-[8px] truncate max-w-[60px]", getOperationColor(step.operationType))}>
+              <span className={cn("text-pico truncate max-w-[60px]", getOperationColor(step.operationType))}>
                 {step.operationType}
               </span>
             </div>
-            {i < steps.length - 1 && <ArrowRight className="size-3 text-muted-foreground shrink-0 mt-[-12px]" />}
+            {i < steps.length - 1 && <ArrowRight className="size-3 text-muted-foreground shrink-0 -mt-3" />}
           </React.Fragment>
         ))}
       </div>
@@ -83,7 +83,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
               <GripVertical className="size-3.5 text-muted-foreground cursor-grab shrink-0" />
               <Badge
                 variant="outline"
-                className={cn("text-[10px] px-1.5 py-0 shrink-0", getOperationBadgeClass(step.operationType))}
+                className={cn("text-micro px-1.5 py-0 shrink-0", getOperationBadgeClass(step.operationType))}
               >
                 Leg {index + 1}
               </Badge>
@@ -95,6 +95,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
                 className="h-6 w-6 p-0"
                 onClick={() => moveStep(step.id, "up")}
                 disabled={index === 0}
+                aria-label={`Move leg ${index + 1} up`}
               >
                 <ChevronUp className="size-3" />
               </Button>
@@ -104,10 +105,17 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
                 className="h-6 w-6 p-0"
                 onClick={() => moveStep(step.id, "down")}
                 disabled={index === steps.length - 1}
+                aria-label={`Move leg ${index + 1} down`}
               >
                 <ChevronDown className="size-3" />
               </Button>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => duplicateStep(step.id)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0"
+                onClick={() => duplicateStep(step.id)}
+                aria-label={`Duplicate leg ${index + 1}`}
+              >
                 <Copy className="size-3" />
               </Button>
               <Button
@@ -115,6 +123,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
                 size="sm"
                 className="h-6 w-6 p-0 hover:text-rose-400"
                 onClick={() => removeStep(step.id)}
+                aria-label={`Remove leg ${index + 1}`}
               >
                 <Trash2 className="size-3" />
               </Button>
@@ -123,7 +132,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
 
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Operation</label>
+              <label className="text-micro text-muted-foreground">Operation</label>
               <Select value={step.operationType} onValueChange={(v) => updateStep(step.id, "operationType", v)}>
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
@@ -138,7 +147,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
               </Select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Instrument</label>
+              <label className="text-micro text-muted-foreground">Instrument</label>
               <Select value={step.instrument} onValueChange={(v) => updateStep(step.id, "instrument", v)}>
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
@@ -156,7 +165,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
 
           <div className="grid grid-cols-3 gap-2">
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Venue</label>
+              <label className="text-micro text-muted-foreground">Venue</label>
               <Select value={step.venue} onValueChange={(v) => updateStep(step.id, "venue", v)}>
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
@@ -171,12 +180,12 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
               </Select>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Side</label>
+              <label className="text-micro text-muted-foreground">Side</label>
               <div className="grid grid-cols-2 gap-0.5">
                 <Button
                   variant={step.side === "BUY" ? "default" : "outline"}
                   size="sm"
-                  className={cn("h-7 text-[10px]", step.side === "BUY" && "bg-emerald-600 hover:bg-emerald-700")}
+                  className={cn("h-7 text-micro", step.side === "BUY" && "bg-emerald-600 hover:bg-emerald-700")}
                   onClick={() => updateStep(step.id, "side", "BUY")}
                 >
                   BUY
@@ -184,7 +193,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
                 <Button
                   variant={step.side === "SELL" ? "default" : "outline"}
                   size="sm"
-                  className={cn("h-7 text-[10px]", step.side === "SELL" && "bg-rose-600 hover:bg-rose-700")}
+                  className={cn("h-7 text-micro", step.side === "SELL" && "bg-rose-600 hover:bg-rose-700")}
                   onClick={() => updateStep(step.id, "side", "SELL")}
                 >
                   SELL
@@ -192,7 +201,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
               </div>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Depends on</label>
+              <label className="text-micro text-muted-foreground">Depends on</label>
               <Select
                 value={step.dependsOn ?? "none"}
                 onValueChange={(v) => updateStep(step.id, "dependsOn", v === "none" ? null : v)}
@@ -216,7 +225,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
 
           <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Quantity</label>
+              <label className="text-micro text-muted-foreground">Quantity</label>
               <Input
                 type="number"
                 placeholder="0.00"
@@ -226,7 +235,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] text-muted-foreground">Price</label>
+              <label className="text-micro text-muted-foreground">Price</label>
               <Input
                 type="number"
                 placeholder="0.00"
@@ -238,7 +247,7 @@ export function BundleStepsWidget(_props: WidgetComponentProps) {
           </div>
 
           {(parseFloat(step.quantity) || 0) > 0 && (parseFloat(step.price) || 0) > 0 && (
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1">
+            <div className="flex items-center justify-between text-micro text-muted-foreground pt-1">
               <span>Notional</span>
               <span className={cn("font-mono", step.side === "BUY" ? "text-rose-400" : "text-emerald-400")}>
                 {step.side === "BUY" ? "-" : "+"}$

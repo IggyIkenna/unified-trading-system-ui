@@ -130,7 +130,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
             <span className="font-medium">Best Opportunity:</span> {bestOpportunity.pair} ({bestOpportunity.spotVenue} /{" "}
             {bestOpportunity.perpVenue})
           </div>
-          <Badge variant="success" className="text-[10px]">
+          <Badge variant="success" className="text-micro">
             {bestOpportunity.annualisedYield.toFixed(1)}% APY
           </Badge>
         </div>
@@ -139,14 +139,14 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-[10px]">Pair</TableHead>
-                <TableHead className="text-[10px]">Spot Venue</TableHead>
-                <TableHead className="text-[10px]">Perp Venue</TableHead>
-                <TableHead className="text-[10px] text-right">Spot</TableHead>
-                <TableHead className="text-[10px] text-right">Perp</TableHead>
-                <TableHead className="text-[10px] text-right">Basis</TableHead>
-                <TableHead className="text-[10px] text-right">Funding 8h</TableHead>
-                <TableHead className="text-[10px] text-right">APY</TableHead>
+                <TableHead className="text-micro">Pair</TableHead>
+                <TableHead className="text-micro">Spot Venue</TableHead>
+                <TableHead className="text-micro">Perp Venue</TableHead>
+                <TableHead className="text-micro text-right">Spot</TableHead>
+                <TableHead className="text-micro text-right">Perp</TableHead>
+                <TableHead className="text-micro text-right">Basis</TableHead>
+                <TableHead className="text-micro text-right">Funding 8h</TableHead>
+                <TableHead className="text-micro text-right">APY</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -158,7 +158,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
                   <TableCell className="text-xs font-mono text-right">{formatPrice(row.spotPrice)}</TableCell>
                   <TableCell className="text-xs font-mono text-right">{formatPrice(row.perpPrice)}</TableCell>
                   <TableCell className="text-xs font-mono text-right">
-                    <Badge variant={row.basisBps > 50 ? "success" : "secondary"} className="text-[10px]">
+                    <Badge variant={row.basisBps > 50 ? "success" : "secondary"} className="text-micro">
                       {row.basisBps} bps
                     </Badge>
                   </TableCell>

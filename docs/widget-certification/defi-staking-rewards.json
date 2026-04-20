@@ -58,34 +58,34 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "— data exclusively via useDeFiData()."
+          "note": "\u2014 data exclusively via useDeFiData()."
         },
         "1.2": {
           "result": "pass",
-          "note": "— context calls useGlobalScope() and reads organizationIds+strategyIds."
+          "note": "\u2014 context calls useGlobalScope() and reads organizationIds+strategyIds."
         },
         "1.3": {
           "result": "pass",
-          "note": "— adjustedStakingRewards memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx)."
+          "note": "\u2014 adjustedStakingRewards memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx)."
         },
         "1.4": {
           "result": "partial",
-          "note": "— clientIds destructured and acknowledged; StakingReward has no clientId field — full client narrowing deferred to BP-5 schema change."
+          "note": "\u2014 clientIds destructured and acknowledged; StakingReward has no clientId field \u2014 full client narrowing deferred to BP-5 schema change."
         },
         "1.5": {
           "result": "partial",
-          "note": "— StakingReward has no strategyId field — strategy narrowing cannot be applied; comment added to adjustedStakingRewards memo with TODO for BP-5."
+          "note": "\u2014 StakingReward has no strategyId field \u2014 strategy narrowing cannot be applied; comment added to adjustedStakingRewards memo with TODO for BP-5."
         },
         "1.6": {
           "result": "pass",
-          "note": "— empty org arrays return all data (hasDefiDesk=true)."
+          "note": "\u2014 empty org arrays return all data (hasDefiDesk=true)."
         },
         "1.7": {
           "result": "pass",
-          "note": "known-gap — MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
+          "note": "known-gap \u2014 MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
         }
       },
-      "notes": "1.1 pass — data exclusively via useDeFiData(). 1.2 pass — context calls useGlobalScope() and reads organizationIds+strategyIds. 1.3 pass — adjustedStakingRewards memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 partial — clientIds destructured and acknowledged; StakingReward has no clientId field — full client narrowing deferred to BP-5 schema change. 1.5 partial — StakingReward has no strategyId field — strategy narrowing cannot be applied; comment added to adjustedStakingRewards memo with TODO for BP-5. 1.6 pass — empty org arrays return all data (hasDefiDesk=true). 1.7 known-gap — MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
+      "notes": "1.1 pass \u2014 data exclusively via useDeFiData(). 1.2 pass \u2014 context calls useGlobalScope() and reads organizationIds+strategyIds. 1.3 pass \u2014 adjustedStakingRewards memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 partial \u2014 clientIds destructured and acknowledged; StakingReward has no clientId field \u2014 full client narrowing deferred to BP-5 schema change. 1.5 partial \u2014 StakingReward has no strategyId field \u2014 strategy narrowing cannot be applied; comment added to adjustedStakingRewards memo with TODO for BP-5. 1.6 pass \u2014 empty org arrays return all data (hasDefiDesk=true). 1.7 known-gap \u2014 MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
       "status": "pass",
@@ -94,62 +94,162 @@
       "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "notes": "3.3/3.4: N/A (claim action, not order entry).",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "live \u2713 / paper \u2713 / batch \u2713 \u2014 display + claim actions. Claim should be gated in paper mode."
+        },
+        "3.2": {
+          "result": "partial",
+          "note": "Context reads useGlobalScope() but scope.mode not consumed in claim handlers."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode spec: claim/sell actions should no-op or show warning."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or interval. N/A."
+        }
+      }
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "notes": "4.7/4.8: Human walkthrough required.",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Claim Reward and Claim & Sell buttons have onClick handlers at lines 134, 147."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href='#' links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No cross-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      }
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "notes": "5.2-5.6: Human walkthrough required.",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: YIELD_STAKING_SIMPLE, CARRY_RECURSIVE_STAKED \u2014 reward claiming and sell flow directly supports staking yield realization."
+        }
+      }
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "L6 deferred."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data in widget file. Data via useDeFiData()."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "196 lines \u2014 within 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "DeFiStakingRewardsWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security violations."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No inline objects in useMemo/useCallback deps."
+        }
+      },
+      "notes": "All mechanical checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px] at lines 57, 61, 65, 82, 128 migrated to text-micro utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "TableWidget, KpiStrip, Badge, Button from shared components."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no img without alt. Human: keyboard pass required."
+        }
+      },
+      "notes": "8.1 deferred pending --text-label-micro token. 8.5: human resize test required."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "peer",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
-    "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "mergeCandidate": "defi-staking",
+    "keepSeparate": {
+      "rationale": "Staking rewards (claim/sell/rewardPnl) is operationally distinct from staking position entry \u2014 separate widget is intentional."
+    },
+    "notes": "mergeCandidate with defi-staking considered; kept separate to reduce form widget size."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:30000",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/ (stakingRewards, rewardPnl via context)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Reward balances should poll every 30s in production. Claim and claim+sell are REST mutations."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi"],
+    "strategies": ["YIELD_STAKING_SIMPLE", "CARRY_RECURSIVE_STAKED"],
+    "venues": ["LIDO-ETHEREUM", "ROCKETPOOL-ETHEREUM", "AAVEV3-ETHEREUM"],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
       {
-        "status": "SUPPORTED",
-        "notes": "YIELD_STAKING_SIMPLE §10 DeFi (Ethereum)/staking: Ether.fi capability declaration minor pending"
-      },
-      {
         "status": "PARTIAL",
-        "notes": "YIELD_STAKING_SIMPLE §10 DeFi/staking (multi-LST rotation): Rotation mode exists in code but no instance declared"
+        "notes": "Claim & Sell flow not wired to DEX execution \u2014 sell leg is mock-only."
       }
     ],
     "notes": null
@@ -173,26 +273,40 @@
     },
     {
       "level": "l1",
-      "description": "stakingRewards data was not filtered by org scope — fixed: adjustedStakingRewards memo returns [] when !hasDefiDesk.",
+      "description": "stakingRewards data was not filtered by org scope \u2014 fixed: adjustedStakingRewards memo returns [] when !hasDefiDesk.",
       "status": "fixed"
     },
     {
       "level": "l1",
-      "description": "stakingRewards data not filterable by strategy scope — StakingReward has no strategyId field. Comment and TODO added in context for BP-5 schema change.",
+      "description": "stakingRewards data not filterable by strategy scope \u2014 StakingReward has no strategyId field. Comment and TODO added in context for BP-5 schema change.",
       "status": "known-gap"
     },
     {
       "level": "l1",
-      "description": "clientIds filter not applicable to stakingRewards — StakingReward has no clientId field. clientIds acknowledged in context; narrowing deferred to BP-5.",
+      "description": "clientIds filter not applicable to stakingRewards \u2014 StakingReward has no clientId field. clientIds acknowledged in context; narrowing deferred to BP-5.",
       "status": "known-gap"
     },
     {
       "level": "l1",
       "description": "MOCK_STAKING_REWARDS and MOCK_REWARD_PNL seed data live in lib/mocks/fixtures/defi-walkthrough instead of lib/constants/ or lib/config/. Moving is BP-5 scope.",
       "status": "known-gap"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "~15 user-visible strings in widget.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "defi-staking-rewards-widget.tsx:57,61,65,82,128 text-[10px] for dense metric labels.",
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro Tailwind utility backed by --text-micro token (0.625rem) added to globals.css @theme."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17",
-  "l1FixedBy": "defi-data-context.tsx — adjustedStakingRewards memo with hasDefiDesk guard; strategyId and clientId gaps documented with TODO"
+  "updatedAt": "2026-04-21",
+  "l1FixedBy": "defi-data-context.tsx \u2014 adjustedStakingRewards memo with hasDefiDesk guard; strategyId and clientId gaps documented with TODO"
 }

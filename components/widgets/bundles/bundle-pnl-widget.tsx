@@ -15,7 +15,7 @@ export function BundlePnlWidget(_props: WidgetComponentProps) {
 
   if (steps.length === 0) {
     return (
-      <div className="p-3 text-[11px] text-muted-foreground text-center">
+      <div className="p-3 text-caption text-muted-foreground text-center">
         Add legs to see buy/sell notionals and net P&amp;L.
       </div>
     );
@@ -69,7 +69,7 @@ export function BundlePnlWidget(_props: WidgetComponentProps) {
             </span>
           </div>
           {netPnl < 0 && (
-            <div className="flex items-center gap-1.5 text-[10px] text-amber-400 pt-1">
+            <div className="flex items-center gap-1.5 text-micro text-amber-400 pt-1">
               <AlertTriangle className="size-3 shrink-0" />
               Bundle shows negative expected P&amp;L
             </div>

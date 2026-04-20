@@ -34,7 +34,7 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— added isLoading spinner guard."
+          "note": "\u2014 added isLoading spinner guard."
         },
         "0.7": {
           "result": "pass",
@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "— added hasError early-return block."
+          "note": "\u2014 added hasError early-return block."
         },
         "0.9": {
           "result": "pass",
           "note": "no dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ MOCK_STRATEGIES imported from ./risk-data-context (re-export), not directly from lib/mocks. 0.6 FIXED — added isLoading spinner guard. 0.7 ✓ empty filteredExposureRows renders no table rows; empty time series hides the chart section. 0.8 FIXED — added hasError early-return block. 0.9 ✓ no dead code."
+      "notes": "0.1 \u2713 WidgetErrorBoundary via widget-wrapper. 0.2 \u2713 requiredEntitlements: [execution-basic, execution-full]. 0.3 \u2713 availableOn: [risk]. 0.4 \u2713 no any/ts-ignore. 0.5 \u2713 MOCK_STRATEGIES imported from ./risk-data-context (re-export), not directly from lib/mocks. 0.6 FIXED \u2014 added isLoading spinner guard. 0.7 \u2713 empty filteredExposureRows renders no table rows; empty time series hides the chart section. 0.8 FIXED \u2014 added hasError early-return block. 0.9 \u2713 no dead code."
     },
     "l1": {
       "status": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "data exclusively from useRiskData() — filteredExposureRows, groupedExposure, exposureTimeSeries all from context."
+          "note": "data exclusively from useRiskData() \u2014 filteredExposureRows, groupedExposure, exposureTimeSeries all from context."
         },
         "1.2": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "scope.organizationIds feeds scopeStrategyIds → riskLimits filter."
+          "note": "scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter."
         },
         "1.4": {
           "result": "pass",
@@ -78,80 +78,224 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "empty scope → unfiltered data."
+          "note": "empty scope \u2192 unfiltered data."
         },
         "1.7": {
           "result": "pass",
-          "note": "⚠ MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data — these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels — functional but reference data location is wrong."
+          "note": "\u26a0 MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data \u2014 these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels \u2014 functional but reference data location is wrong."
         }
       },
-      "notes": "1.1 ✓ data exclusively from useRiskData() — filteredExposureRows, groupedExposure, exposureTimeSeries all from context. 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds feeds scopeStrategyIds → riskLimits filter. 1.4 ✓ scope.clientIds via getStrategyIdsForScope. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → unfiltered data. 1.7 ⚠ MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data — these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels — functional but reference data location is wrong."
+      "notes": "1.1 \u2713 data exclusively from useRiskData() \u2014 filteredExposureRows, groupedExposure, exposureTimeSeries all from context. 1.2 \u2713 use-risk-page-data.ts calls useGlobalScope(). 1.3 \u2713 scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter. 1.4 \u2713 scope.clientIds via getStrategyIdsForScope. 1.5 \u2713 scope.strategyIds via getStrategyIdsForScope. 1.6 \u2713 empty scope \u2192 unfiltered data. 1.7 \u26a0 MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data \u2014 these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels \u2014 functional but reference data location is wrong."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab and f9f29ea. Re-audit only if wiring test fails or entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Applies to: live \u2713 (real-time exposure), paper \u2713, batch \u2713. Read-only analysis widget."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "isBatchMode available in context; not used by this widget (pure display)."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: same exposure table with paper account positions."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval in widget."
+        }
+      },
+      "notes": "Human must verify 3.4 (batch indicator visible in layout)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Strategy filter Select calls setRiskFilterStrategy. Period buttons (1W/1M/3M) call setExposurePeriod. Both are real handlers."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated-page links."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        }
+      },
+      "notes": "Human must verify 4.4 (strategy filter changes table rows), 4.7 (CollapsibleSection toggles work), 4.8 (WidgetScroll contains content)."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: defi-basis-trade, defi-amm-lp, defi-lending-borrowing, cefi-stat-arb, and all others. MOCK_STRATEGIES used in filter dropdown."
+        }
+      },
+      "notes": "Human walkthrough required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 testing phase."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "fixed",
+          "note": "#3b82f6 on delta line and #22c55e on funding line replaced with var(--chart-3) and var(--chart-2)."
+        },
+        "7.2": {
+          "result": "warn",
+          "note": "Widget imports MOCK_STRATEGIES from ./risk-data-context, which re-exports from @/lib/mocks/fixtures/risk-data. This is a L1.7 carry-over \u2014 mock data flows through context layer. Widget itself does not import lib/mocks directly."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "189 lines \u2014 within 500 limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "RiskExposureAttributionWidget PascalCase. File kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "slicedTimeSeries computed inline but depends only on stable context values and exposurePeriod state."
+        }
+      },
+      "notes": "7.1 fixed. MOCK_STRATEGIES import from context layer (not lib/mocks directly) \u2014 logged as known issue."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "text-[10px]/text-[11px] replaced with text-micro/text-caption tokens per consolidated globals.css; no arbitrary typography classes remain."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No bracket spacing violations. w-[200px] SelectTrigger is a fixed width, not spacing."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Select, Table, CollapsibleSection from ui/shared."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Agent: no img without alt, no bare div onClick, no unlabelled inputs."
+        },
+        "8.5": {
+          "result": "partial",
+          "note": "Human: resize test at minW=6, minH=3 required."
+        }
+      },
+      "notes": "8.1 fixed (tokens applied). 8.2-8.4 pass. 8.5 needs human verification."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Grouped exposure table with 5 risk categories; no equivalent widget in domain."
+    },
+    "notes": "Strategy filter is widget-local state. Time series shows top-3 exposure types."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "interval:30000",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/risk-data (EXPOSURE_ROWS, MOCK_STRATEGIES, exposureTimeSeries)",
+    "backendOwner": "unified-trading-api",
+    "notes": "exposureRows, groupedExposure, exposureTimeSeries all computed in use-risk-page-data.ts context."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports"],
+    "strategies": ["defi-basis-trade", "defi-amm-lp", "defi-lending-borrowing", "cefi-stat-arb", "all"],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "MOCK_STRATEGIES in filter dropdown \u2014 strategy list should be API-sourced",
+      "exposureTimeSeries only shows top-2 components (delta/funding)"
+    ],
+    "notes": "5 exposure categories: first_order, second_order, structural, operational, domain_specific."
   },
   "knownIssues": [
-    "1.7: MOCK_STRATEGIES (strategy archetype reference data) travels through lib/mocks/fixtures/risk-data → context re-export → widget. Should be in lib/constants/risk instead. Affects strategy filter dropdown labels."
+    "1.7: MOCK_STRATEGIES (strategy archetype reference data) travels through lib/mocks/fixtures/risk-data \u2192 context re-export \u2192 widget. Should be in lib/constants/risk instead. Affects strategy filter dropdown labels."
   ],
   "findings": [
-    "0.6 fix: added isLoading spinner early-return (was missing)",
-    "0.8 fix: added hasError early-return block (was missing)"
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "0.6 fix: added isLoading spinner early-return (was missing)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l0",
+      "check": "0.x",
+      "description": "0.8 fix: added hasError early-return block (was missing)",
+      "status": "fixed",
+      "fix": "Applied in previous session"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "risk-exposure-attribution-widget.tsx:172 \u2014 stroke='#3b82f6' on delta line; :176 \u2014 stroke='#22c55e' on funding line",
+      "status": "fixed",
+      "fix": "Replaced with var(--chart-3) and var(--chart-2) respectively"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-exposure-attribution-widget.tsx \u2014 ~30 user-visible strings (category headers, column headers, period buttons, strategy names)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "risk-exposure-attribution-widget.tsx \u2014 text-[10px], text-[11px] used throughout for dense table/label sizing",
+      "status": "fixed",
+      "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

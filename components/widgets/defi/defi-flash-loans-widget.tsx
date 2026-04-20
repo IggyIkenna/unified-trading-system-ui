@@ -47,7 +47,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         <div className="px-2 pb-2">
           <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-2">
             <div className="flex items-center gap-1.5">
-              <Badge variant="destructive" className="text-[9px] px-1.5 py-0">
+              <Badge variant="destructive" className="text-nano px-1.5 py-0">
                 FLASH_BORROW
               </Badge>
               <span className="text-xs text-muted-foreground">Auto-prepended</span>
@@ -67,7 +67,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
       </CollapsibleSection>
 
       <div className="space-y-2">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Operations</p>
+        <p className="text-micro text-muted-foreground uppercase tracking-wider">Operations</p>
         {flashSteps.length === 0 && (
           <div className="py-4 text-center text-xs text-muted-foreground">
             No steps added. Click &ldquo;Add step&rdquo; to build your flash bundle.
@@ -76,7 +76,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         {flashSteps.map((step, index) => (
           <div key={step.id} className="p-2.5 rounded-lg border space-y-2">
             <div className="flex items-center justify-between">
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+              <Badge variant="outline" className="text-micro px-1.5 py-0">
                 Step {index + 1}
               </Badge>
               <Button
@@ -192,7 +192,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         <div className="px-2 pb-2">
           <div className="p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 space-y-2">
             <div className="flex items-center gap-1.5">
-              <Badge variant="destructive" className="text-[9px] px-1.5 py-0">
+              <Badge variant="destructive" className="text-nano px-1.5 py-0">
                 FLASH_REPAY
               </Badge>
               <span className="text-xs text-muted-foreground">Auto-appended</span>
@@ -220,7 +220,17 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="outline" className="text-xs" type="button">
+        <Button
+          variant="outline"
+          className="text-xs"
+          type="button"
+          disabled={flashSteps.length === 0}
+          onClick={() => {
+            toast.info("Simulation not yet implemented", {
+              description: "Flash bundle simulation requires backend integration.",
+            });
+          }}
+        >
           <Fuel className="size-3.5 mr-1.5" />
           Simulate
         </Button>

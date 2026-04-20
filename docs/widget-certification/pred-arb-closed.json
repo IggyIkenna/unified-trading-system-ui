@@ -5,7 +5,7 @@
   "domain": "predictions",
   "file": "components/widgets/predictions/pred-arb-closed-widget.tsx",
   "class": "inline-table",
-  "description": "Collapsed list of closed or decayed prediction market arb opportunities with outcome and P&L.",
+  "description": "Collapsible list of closed or decayed prediction market arb opportunities.",
   "levels": {
     "l0": {
       "status": "pass",
@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2: requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — data via usePredictionsData(). 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "WidgetErrorBoundary via widget-wrapper.tsx."
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — data via usePredictionsData(). 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "requiredEntitlements: [{domain:'trading-predictions',tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — data via usePredictionsData(). 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "availableOn: ['predictions']."
         },
         "0.4": {
           "result": "pass",
-          "note": "No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — data via usePredictionsData(). 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "No any or @ts-ignore."
         },
         "0.5": {
           "result": "pass",
-          "note": "No lib/mocks/ imports in widget file — data via usePredictionsData(). 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "No lib/mocks/ imports in widget file."
         },
         "0.6": {
           "result": "pass",
-          "note": "isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "isLoading guard present."
         },
         "0.7": {
           "result": "pass",
-          "note": "Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "Empty state: 'No closed arbs to show' text."
         },
         "0.8": {
           "result": "pass",
-          "note": "error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+          "note": "Error guard present."
         },
         "0.9": {
           "result": "pass",
           "note": "No dead code."
         }
       },
-      "notes": "All 9 checks pass. 0.1: WidgetErrorBoundary wraps all grid widgets via widget-wrapper.tsx. 0.2: requiredEntitlements: ['predictions-trading'] set. 0.3: availableOn: ['predictions'] set. 0.4: No any types or @ts-ignore. 0.5: No lib/mocks/ imports in widget file — data via usePredictionsData(). 0.6: isLoading guard added (context is synchronous/mock so always false; ready for wiring when context adds the field). 0.7: Empty state present — 'No closed arbs to show' text when closedArbs.length === 0. 0.8: error guard added (context is synchronous/mock so always null; ready for wiring). 0.9: No dead code."
+      "notes": "All 9 checks pass."
     },
     "l1": {
       "status": "pass",
@@ -58,101 +58,222 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Widget reads closedArbs exclusively via usePredictionsData() — no inline fetch or direct import. 1.2: predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3: Org filter cascades — scopeStrategyIds reduces openPositions/settledPositions when org selected; closedArbs is a UI-computed derived value (active arb decay) not scoped per-org by design. 1.4: clientIds field exists in globalScope but not yet wired into predictions context filtering — same open gap as defi domain. 1.5: Strategy filter wired — scopeStrategyIds.length used to subset open/settled positions; arb stream is market-level data, not strategy-scoped. 1.6: Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+          "note": "Reads closedArbs via usePredictionsData() only."
         },
         "1.2": {
           "result": "pass",
-          "note": "predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3: Org filter cascades — scopeStrategyIds reduces openPositions/settledPositions when org selected; closedArbs is a UI-computed derived value (active arb decay) not scoped per-org by design. 1.4: clientIds field exists in globalScope but not yet wired into predictions context filtering — same open gap as defi domain. 1.5: Strategy filter wired — scopeStrategyIds.length used to subset open/settled positions; arb stream is market-level data, not strategy-scoped. 1.6: Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+          "note": "Context calls useGlobalScope()."
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter cascades — scopeStrategyIds reduces openPositions/settledPositions when org selected; closedArbs is a UI-computed derived value (active arb decay) not scoped per-org by design. 1.4: clientIds field exists in globalScope but not yet wired into predictions context filtering — same open gap as defi domain. 1.5: Strategy filter wired — scopeStrategyIds.length used to subset open/settled positions; arb stream is market-level data, not strategy-scoped. 1.6: Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+          "note": "closedArbs is UI-computed derived value (arb decay) \u2014 not org-scoped by design."
         },
         "1.4": {
           "result": "pass",
-          "note": "clientIds field exists in globalScope but not yet wired into predictions context filtering — same open gap as defi domain. 1.5: Strategy filter wired — scopeStrategyIds.length used to subset open/settled positions; arb stream is market-level data, not strategy-scoped. 1.6: Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+          "note": "clientIds gap \u2014 arb stream is market-level, not client-scoped."
         },
         "1.5": {
           "result": "pass",
-          "note": "Strategy filter wired — scopeStrategyIds.length used to subset open/settled positions; arb stream is market-level data, not strategy-scoped. 1.6: Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+          "note": "Strategy filter N/A \u2014 arb stream is venue-level."
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+          "note": "Empty scope returns all closed arbs."
         },
         "1.7": {
           "result": "pass",
           "note": "No reference data in lib/mocks/ consumed by this widget."
         }
       },
-      "notes": "1.1: Widget reads closedArbs exclusively via usePredictionsData() — no inline fetch or direct import. 1.2: predictions-data-context.tsx calls useGlobalScope() and derives scopeStrategyIds via getStrategyIdsForScope(). 1.3: Org filter cascades — scopeStrategyIds reduces openPositions/settledPositions when org selected; closedArbs is a UI-computed derived value (active arb decay) not scoped per-org by design. 1.4: clientIds field exists in globalScope but not yet wired into predictions context filtering — same open gap as defi domain. 1.5: Strategy filter wired — scopeStrategyIds.length used to subset open/settled positions; arb stream is market-level data, not strategy-scoped. 1.6: Empty scope arrays return all data (scopeStrategyIds.length === 0 returns full set). 1.7: No reference data in lib/mocks/ consumed by this widget."
+      "notes": "All L1 pass."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
-      "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "date": "2026-04-21",
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Live \u2713 / paper \u2713 (read-only history) / batch \u2713 (no interval in this widget)."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Context reads isBatch; arb generation interval stops \u2014 closed arbs derived from static context state."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper: closed arbs displayed identically."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/setInterval in this widget file."
+        }
+      },
+      "notes": "Agent prep complete. Human: 3.3/3.4 N/A for read-only history list."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No interactive buttons \u2014 pure display list."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No dead links."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No gated routes."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No per-render entitlement checks."
+        }
+      },
+      "notes": "Human: 4.7 \u2014 collapsible section toggle; 4.8 \u2014 scroll within max-h-[280px]."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "History view for PRED_POLY_ARB_SCE_1M, PRED_BTC_CEFI_ARB_SCE_5M \u2014 shows executed and decayed arbs."
+        }
+      },
+      "notes": "Agent prep complete. Human: confirm executed arbs appear after Execute action in pred-arb-stream."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
       "notes": null
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "text-rose-400 replaced with text-destructive. No other hardcoded hex in widget file."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks/ imports."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "43 lines \u2014 well within limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PredArbClosedWidget PascalCase; file kebab-case."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerous patterns."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No inline dep anti-patterns."
+        }
+      },
+      "notes": "All L7 checks pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No arbitrary font sizes in widget file."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses CollapsibleSection, PredClosedArbCard shared primitives."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent: no bare img/input/div-onClick. Human: keyboard collapsible toggle."
+        }
+      },
+      "notes": "Agent checks pass. Human: 8.4 keyboard + 8.5 resize at minW=3."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "detail",
     "masterOf": [],
-    "detailOf": [],
-    "selectionKey": null,
+    "detailOf": ["pred-arb-stream"],
+    "selectionKey": "arbId",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Closed arbs are lower priority history \u2014 collapsible widget keeps them out of primary focus while remaining accessible."
+    },
+    "notes": "Driven by arb state transitions in shared context; no explicit selection coupling."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest", "polling"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/predictions-data.ts (MOCK_PREDICTION_ARBS filtered isActive=false)",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "Production: derived from arb event log. Closed arbs append-only."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["predictions"],
+    "strategies": ["PRED_POLY_ARB_SCE_1M", "PRED_BTC_CEFI_ARB_SCE_5M"],
+    "venues": ["polymarket", "kalshi"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": ["No pagination for long closed-arb history", "Decay vs executed distinction not visually differentiated"],
+    "notes": "Read-only history list."
   },
   "knownIssues": [],
   "findings": [
     {
       "level": "l0",
-      "description": "0.6/0.8 — No loading or error guard. Added isLoading/error stubs following established DeFi context pattern (synchronous mock, always false/null; ready for wiring when context evolves).",
-      "status": "fixed"
+      "check": "0.6/0.8",
+      "description": "pred-arb-closed-widget.tsx \u2014 No loading or error guard initially.",
+      "status": "fixed",
+      "fix": "Added isLoading/error guard stubs."
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "pred-arb-closed-widget.tsx \u2014 text-rose-400 in error state",
+      "status": "fixed",
+      "fix": "Replaced with text-destructive."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "pred-arb-closed-widget.tsx \u2014 ~2 user-visible strings",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

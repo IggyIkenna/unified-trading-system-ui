@@ -31,10 +31,10 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
       header={
         !isDefi ? (
           <div className="flex flex-wrap items-center gap-2 p-2">
-            <Badge variant="outline" className="text-[10px] max-w-full truncate font-normal">
+            <Badge variant="outline" className="text-micro max-w-full truncate font-normal">
               {venueLabel}
             </Badge>
-            <Badge variant="outline" className="text-[10px]">
+            <Badge variant="outline" className="text-micro">
               {liveBookUpdates.length} updates
             </Badge>
           </div>
@@ -42,7 +42,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
       }
       footer={
         !isDefi ? (
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-muted-foreground p-2">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-micro text-muted-foreground p-2">
             <span className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 bg-cyan-500/40 rounded shrink-0" /> Market Trade
             </span>
@@ -62,7 +62,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
     >
       <div className="border rounded-md overflow-hidden bg-black/20 mx-2 mb-2">
         <div className="overflow-x-auto">
-          <table className="w-full text-[10px] font-mono">
+          <table className="w-full text-micro font-mono">
             <thead className="bg-muted/30 sticky top-0 z-[1]">
               <tr>
                 <th className="text-left p-1.5 font-medium whitespace-nowrap">Exch Time</th>
@@ -146,7 +146,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
                         <span className="text-muted-foreground">x{formatNumber(update.trade.size, 2)}</span>
                         <span
                           className={cn(
-                            "text-[9px]",
+                            "text-nano",
                             update.trade.aggressor === "buyer"
                               ? "text-[var(--pnl-positive)]"
                               : "text-[var(--pnl-negative)]",

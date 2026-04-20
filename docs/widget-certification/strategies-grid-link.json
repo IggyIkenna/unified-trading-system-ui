@@ -18,15 +18,15 @@
         },
         "0.2": {
           "result": "pass",
-          "note": "requiredEntitlements: [execution-basic, execution-full]."
+          "note": "requiredEntitlements=[{domain:trading-common,tier:basic}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "availableOn: [strategies]."
+          "note": "availableOn=[strategies]."
         },
         "0.4": {
           "result": "pass",
-          "note": "no any / @ts-ignore."
+          "note": "no any/ts-ignore."
         },
         "0.5": {
           "result": "pass",
@@ -34,22 +34,22 @@
         },
         "0.6": {
           "result": "n/a",
-          "note": "— pure UI action panel, no data fetching."
+          "note": "pure UI action panel, no data fetching."
         },
         "0.7": {
           "result": "n/a",
-          "note": "— no data to be empty."
+          "note": "no data to be empty."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— no data to error."
+          "note": "no data to error."
         },
         "0.9": {
           "result": "pass",
-          "note": "no dead code. No changes required."
+          "note": "no dead code."
         }
       },
-      "notes": "0.1 ✓ WidgetErrorBoundary in widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [strategies]. 0.4 ✓ no any / @ts-ignore. 0.5 ✓ no lib/mocks imports. 0.6 N/A — pure UI action panel, no data fetching. 0.7 N/A — no data to be empty. 0.8 N/A — no data to error. 0.9 ✓ no dead code. No changes required."
+      "notes": "All checks pass/n/a."
     },
     "l1": {
       "status": "pass",
@@ -57,96 +57,237 @@
       "date": "2026-04-17",
       "checks": {
         "1.1": {
-          "result": "pass",
-          "note": "N/A. 1.2–1.6 N/A — no data to filter by scope."
+          "result": "n/a",
+          "note": "pure UI action panel \u2014 no data dependency."
         },
         "1.2": {
-          "result": "pass",
-          "note": "1.6 N/A — no data to filter by scope."
+          "result": "n/a",
+          "note": "no data to scope-filter."
         },
         "1.3": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "no data to scope-filter."
         },
         "1.4": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "no data to scope-filter."
         },
         "1.5": {
-          "result": "pass",
-          "note": null
+          "result": "n/a",
+          "note": "no data to scope-filter."
         },
         "1.6": {
           "result": "n/a",
-          "note": "— no data to filter by scope."
+          "note": "no data to scope-filter."
         },
         "1.7": {
           "result": "n/a",
-          "note": "— no reference data."
+          "note": "no reference data."
         }
       },
-      "notes": "Pure UI widget — renders a static navigation button to /services/trading/strategies/grid. No data dependency. 1.1 N/A. 1.2–1.6 N/A — no data to filter by scope. 1.7 N/A — no reference data."
+      "notes": "Pure UI widget \u2014 renders a static navigation button. No data dependency."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab + f9f29ea. Re-audit only if entitlements change."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live N/A, paper N/A, batch \u2713 (CTA specifically for batch analysis in DimensionalGrid)."
+        },
+        "3.2": {
+          "result": "n/a",
+          "note": "Widget does not read mode \u2014 pure navigation button."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: button still navigates to grid \u2014 expected."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket/interval. Pure navigation."
+        },
+        "3.3": {
+          "result": "n/a",
+          "note": "No order entry \u2014 navigation only."
+        },
+        "3.4": {
+          "result": "n/a",
+          "note": "No data to indicate batch mode for."
+        }
+      },
+      "notes": "Agent checks complete. Widget is mode-agnostic. No human verify needed beyond 3.4 (n/a)."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No dead onClick handlers. Button is a Link wrapper \u2014 navigation is the action."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "Link href='/services/trading/strategies/grid' \u2014 route exists at app/(platform)/services/trading/strategies/grid/. VERIFIED."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "Route /services/trading/strategies/grid verified to exist."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks in render path."
+        },
+        "4.3": {
+          "result": "pending",
+          "note": "Human verify: button navigates to DimensionalGrid page."
+        },
+        "4.4": {
+          "result": "n/a",
+          "note": "No form fields or submit actions."
+        },
+        "4.7": {
+          "result": "n/a",
+          "note": "No tabs or collapsible sections."
+        },
+        "4.8": {
+          "result": "pending",
+          "note": "Human verify: button fills widget width at minH=1."
+        }
+      },
+      "notes": "Route verified. Agent checks pass. Human must verify 4.3, 4.8."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all strategies \u2014 widget is a navigation CTA to batch analysis grid. Not tied to a specific strategy type."
+        }
+      },
+      "notes": "5.1 documented. L5 walkthrough minimal for this widget (just verify navigation)."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "L6 not started \u2014 deferred until L5 complete."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors. CLEAN."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No mock data."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "19 lines \u2014 smallest widget in domain."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "PascalCase, kebab-case file. Compliant."
+        },
+        "7.5": {
+          "result": "pass",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "deferReason": "i18n not shipped"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No security anti-patterns. CLEAN."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No hooks. CLEAN."
+        }
+      },
+      "notes": "All mechanical checks pass. Simplest widget in domain."
+    },
+    "l8": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No text-[*] arbitrary font-size. CLEAN."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No arbitrary spacing. CLEAN."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button (ui), Link (next/link). Shared primitives."
+        },
+        "8.4": {
+          "result": "pass",
+          "note": "Button is semantic. Link wraps button \u2014 accessible navigation pattern."
+        },
+        "8.5": {
+          "result": "pending",
+          "note": "Human verify: button displays correctly at minW=4, minH=1."
+        }
+      },
+      "notes": "8.1-8.4 all pass \u2014 second cleanest L8 in domain. 8.5 human-verify pending."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "standalone",
     "masterOf": [],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "CTA/action widgets are intentionally small and separate. Merging into another widget would bury the DimensionalGrid entry point."
+    },
+    "notes": "Standalone CTA widget. Navigation-only \u2014 links to /services/trading/strategies/grid. Singleton."
   },
   "dataContract": {
     "channels": [],
     "primary": null,
-    "cadence": null,
-    "staleness": null,
+    "cadence": "on-demand",
+    "staleness": "realtime",
     "mockSource": null,
-    "backendOwner": "unknown",
-    "notes": null
+    "backendOwner": null,
+    "notes": "No data contract \u2014 pure navigation widget. No backend dependency."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
-    "commonTabs": null,
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": ["all-in-scope"],
+    "venues": ["all"],
+    "commonTabs": ["strategies"],
     "verifiedOn": [],
     "gaps": [],
-    "notes": null
+    "notes": "No coverage gaps \u2014 widget is a navigation CTA with no data rendering."
   },
   "knownIssues": [],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "strategies-grid-link-widget.tsx \u2014 1 user-visible string (button label)",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

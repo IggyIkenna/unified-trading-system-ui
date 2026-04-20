@@ -28,13 +28,13 @@ export function InstructionPipelineRows({
   return (
     <div className="flex flex-col flex-1 min-h-0 min-w-0">
       <div className="grid grid-cols-3 gap-0 border-b border-border shrink-0">
-        <div className="px-3 py-1.5 bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+        <div className="px-3 py-1.5 bg-muted/30 text-caption font-medium text-muted-foreground uppercase tracking-wider">
           Signal
         </div>
-        <div className="px-3 py-1.5 bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wider border-x border-border">
+        <div className="px-3 py-1.5 bg-muted/30 text-caption font-medium text-muted-foreground uppercase tracking-wider border-x border-border">
           Instruction
         </div>
-        <div className="px-3 py-1.5 bg-muted/30 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+        <div className="px-3 py-1.5 bg-muted/30 text-caption font-medium text-muted-foreground uppercase tracking-wider">
           Fill / Diff
         </div>
       </div>
@@ -108,14 +108,14 @@ function InstructionPipelineRow({
             >
               {inst.signal.direction}
             </span>
-            <span className={cn("text-[10px] font-mono", getInstructionConfidenceColor(inst.signal.confidence))}>
+            <span className={cn("text-caption font-mono", getInstructionConfidenceColor(inst.signal.confidence))}>
               {formatPercent(inst.signal.confidence * 100, 0)}
             </span>
           </div>
-          <div className="text-[10px] text-muted-foreground font-mono truncate" title={inst.strategyId}>
+          <div className="text-caption text-muted-foreground font-mono truncate" title={inst.strategyId}>
             {inst.strategyId}
           </div>
-          <Badge variant="outline" className="text-[9px] px-1 py-0">
+          <Badge variant="outline" className="text-nano px-1 py-0">
             {inst.strategyType}
           </Badge>
         </div>
@@ -124,7 +124,7 @@ function InstructionPipelineRow({
           <div className="flex items-center gap-1.5">
             <Badge
               variant={getInstructionOperationBadgeVariant(inst.instruction.operationType)}
-              className="text-[9px] px-1.5 py-0"
+              className="text-nano px-1.5 py-0"
             >
               {inst.instruction.operationType}
             </Badge>
@@ -143,7 +143,7 @@ function InstructionPipelineRow({
               minimumFractionDigits: 2,
             })}
           </div>
-          <div className="text-[10px] text-muted-foreground">{inst.instruction.venue}</div>
+          <div className="text-caption text-muted-foreground">{inst.instruction.venue}</div>
         </div>
 
         <div className="px-3 py-2.5 space-y-1">
@@ -162,12 +162,12 @@ function InstructionPipelineRow({
                 })}
               </div>
               <div className="flex items-center gap-2">
-                <span className={cn("text-[10px] font-mono", getInstructionSlippageColor(inst.fill.slippageBps))}>
+                <span className={cn("text-caption font-mono", getInstructionSlippageColor(inst.fill.slippageBps))}>
                   {inst.fill.slippageBps > 0 ? "+" : ""}
                   {formatNumber(inst.fill.slippageBps, 1)} bps
                 </span>
                 {fillQtyPct < 100 && (
-                  <span className="text-[10px] text-amber-400 font-mono">{formatPercent(fillQtyPct, 0)} filled</span>
+                  <span className="text-caption text-amber-400 font-mono">{formatPercent(fillQtyPct, 0)} filled</span>
                 )}
               </div>
             </>

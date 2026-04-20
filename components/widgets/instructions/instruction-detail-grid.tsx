@@ -13,7 +13,7 @@ export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
   return (
     <div className="grid grid-cols-3 gap-4 text-xs">
       <div className="space-y-1">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Signal Detail</p>
+        <p className="text-caption text-muted-foreground uppercase tracking-wider">Signal Detail</p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
           <span className="text-muted-foreground">Time</span>
           <span className="font-mono">{formatInstructionTimestamp(inst.signal.timestamp)}</span>
@@ -26,7 +26,7 @@ export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
         </div>
       </div>
       <div className="space-y-1">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Instruction Detail</p>
+        <p className="text-caption text-muted-foreground uppercase tracking-wider">Instruction Detail</p>
         <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
           <span className="text-muted-foreground">Op Type</span>
           <span className="font-mono">{inst.instruction.operationType}</span>
@@ -42,7 +42,7 @@ export function InstructionDetailGrid({ inst }: { inst: StrategyInstruction }) {
         </div>
       </div>
       <div className="space-y-1">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Discrepancy</p>
+        <p className="text-caption text-muted-foreground uppercase tracking-wider">Discrepancy</p>
         {inst.fill ? (
           <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
             <span className="text-muted-foreground">Price Diff</span>

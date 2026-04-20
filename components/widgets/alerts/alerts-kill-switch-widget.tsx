@@ -47,9 +47,11 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
     <div className="flex flex-col gap-2 h-full min-h-0 p-1">
       <div className="px-2 pb-2 space-y-4">
         <div className="space-y-2">
-          <label className="text-xs font-medium">Scope</label>
+          <label id="kill-switch-scope-label" className="text-xs font-medium">
+            Scope
+          </label>
           <Select defaultValue="strategy">
-            <SelectTrigger className="h-8 text-xs">
+            <SelectTrigger className="h-8 text-xs" aria-labelledby="kill-switch-scope-label">
               <SelectValue placeholder="Select scope" />
             </SelectTrigger>
             <SelectContent>
@@ -63,7 +65,7 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
             <p className="text-[11px] text-muted-foreground">No strategies available.</p>
           ) : (
             <Select value={entityId} onValueChange={setEntityId}>
-              <SelectTrigger className="h-8 text-xs">
+              <SelectTrigger className="h-8 text-xs" aria-label="Select entity">
                 <SelectValue placeholder="Select entity" />
               </SelectTrigger>
               <SelectContent>
@@ -78,47 +80,49 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-medium">Actions</label>
+          <p className="text-xs font-medium">Actions</p>
           <div className="grid grid-cols-1 gap-2">
             <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
               <Pause className="size-3.5 text-[var(--status-warning)] shrink-0" />
               <div className="text-left">
                 <div className="text-xs font-medium">Pause Strategy</div>
-                <div className="text-[10px] text-muted-foreground">Stop new orders</div>
+                <div className="text-micro text-muted-foreground">Stop new orders</div>
               </div>
             </Button>
             <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <XCircle className="size-3.5 text-[var(--status-error)] shrink-0" />
+              <XCircle className="size-3.5 text-status-critical shrink-0" />
               <div className="text-left">
                 <div className="text-xs font-medium">Cancel Orders</div>
-                <div className="text-[10px] text-muted-foreground">Cancel all open</div>
+                <div className="text-micro text-muted-foreground">Cancel all open</div>
               </div>
             </Button>
             <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <Square className="size-3.5 text-[var(--status-error)] shrink-0" />
+              <Square className="size-3.5 text-status-critical shrink-0" />
               <div className="text-left">
                 <div className="text-xs font-medium">Flatten</div>
-                <div className="text-[10px] text-muted-foreground">Close all positions</div>
+                <div className="text-micro text-muted-foreground">Close all positions</div>
               </div>
             </Button>
             <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <Power className="size-3.5 text-[var(--status-error)] shrink-0" />
+              <Power className="size-3.5 text-status-critical shrink-0" />
               <div className="text-left">
                 <div className="text-xs font-medium">Disable Venue</div>
-                <div className="text-[10px] text-muted-foreground">Block venue access</div>
+                <div className="text-micro text-muted-foreground">Block venue access</div>
               </div>
             </Button>
           </div>
         </div>
 
         <div className="space-y-2">
-          <label className="text-xs font-medium">Rationale (required)</label>
-          <Input className="h-8 text-xs" placeholder="Describe reason for intervention..." />
+          <label htmlFor="kill-switch-rationale" className="text-xs font-medium">
+            Rationale (required)
+          </label>
+          <Input id="kill-switch-rationale" className="h-8 text-xs" placeholder="Describe reason for intervention..." />
         </div>
 
-        <Card className="bg-[var(--status-error)]/5 border-[var(--status-error)]/20">
+        <Card className="bg-status-critical/5 border-status-critical/20">
           <CardContent className="p-3">
-            <div className="text-xs font-medium text-[var(--status-error)] mb-1.5">Impact preview</div>
+            <div className="text-xs font-medium text-status-critical mb-1.5">Impact preview</div>
             <div className="text-[11px] text-muted-foreground space-y-1">
               <div>Active alerts for selected entity: {activeEntityAlerts}</div>
               <div>Position and order impact requires execution API wiring.</div>

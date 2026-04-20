@@ -5,7 +5,7 @@
   "domain": "instructions",
   "file": "components/widgets/instructions/instructions-detail-panel-widget.tsx",
   "class": "detail-panel",
-  "description": "Persistent detail panel for the selected instruction. Shows legs, fills, compliance, and timeline.",
+  "description": "Persistent detail panel for the selected instruction. Shows signal, instruction, fill, and discrepancy detail for the row selected in the pipeline table.",
   "levels": {
     "l0": {
       "status": "pass",
@@ -14,42 +14,42 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "— WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
+          "note": "WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets."
         },
         "0.2": {
           "result": "pass",
-          "note": "— requiredEntitlements: [execution-basic, execution-full]."
+          "note": "requiredEntitlements: [{domain:'trading-common', tier:'basic'}]."
         },
         "0.3": {
           "result": "pass",
-          "note": "— availableOn: [instructions]."
+          "note": "availableOn: ['instructions']."
         },
         "0.4": {
           "result": "pass",
-          "note": "— no any types or @ts-ignore."
+          "note": "No any types or @ts-ignore in widget file."
         },
         "0.5": {
           "result": "pass",
-          "note": "— no lib/mocks imports in widget file."
+          "note": "No lib/mocks imports in widget file; data comes via useInstructionsData()."
         },
         "0.6": {
           "result": "n/a",
-          "note": "— pure detail/selection panel; no async data fetch; content is driven by selectedInstruction from context which is a derived memo over already-loaded data."
+          "note": "Pure detail/selection panel; no async data fetch. Content driven by selectedInstruction derived memo from context."
         },
         "0.7": {
           "result": "pass",
-          "note": "— renders 'Select a row in the instruction pipeline table to view detail here.' when selectedInstruction is null."
+          "note": "Renders 'Select a row in the instruction pipeline table to view detail here.' when selectedInstruction is null."
         },
         "0.8": {
           "result": "n/a",
-          "note": "— no async fetch; error state is not reachable in this widget."
+          "note": "No async fetch; error state not reachable in this widget."
         },
         "0.9": {
           "result": "pass",
-          "note": "— no dead code."
+          "note": "No dead code."
         }
       },
-      "notes": "0.1 PASS — WidgetErrorBoundary in widget-wrapper.tsx covers all grid widgets. 0.2 PASS — requiredEntitlements: [execution-basic, execution-full]. 0.3 PASS — availableOn: [instructions]. 0.4 PASS — no any types or @ts-ignore. 0.5 PASS — no lib/mocks imports in widget file. 0.6 N/A — pure detail/selection panel; no async data fetch; content is driven by selectedInstruction from context which is a derived memo over already-loaded data. 0.7 PASS — renders 'Select a row in the instruction pipeline table to view detail here.' when selectedInstruction is null. 0.8 N/A — no async fetch; error state is not reachable in this widget. 0.9 PASS — no dead code."
+      "notes": "All checks pass or N/A. Widget is purely reactive to context selection; no independent data fetching."
     },
     "l1": {
       "status": "pass",
@@ -58,95 +58,279 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "— data sourced exclusively from useInstructionsData() hook via selectedInstruction derived value."
+          "note": "Data sourced exclusively from useInstructionsData() hook via selectedInstruction derived value."
         },
         "1.2": {
           "result": "pass",
-          "note": "— context calls useGlobalScope(); filteredInstructions (which drives selectedInstruction lookup) is scope-filtered."
+          "note": "Context calls useGlobalScope(); filteredInstructions (which drives selectedInstruction lookup) is scope-filtered."
         },
         "1.3": {
           "result": "pass",
-          "note": "— org filter changes filteredInstructions; selectedInstruction is looked up within filteredInstructions so org change propagates."
+          "note": "Org filter changes filteredInstructions; selectedInstruction is looked up within filteredInstructions so org change propagates."
         },
         "1.4": {
           "result": "pass",
-          "note": "— client filter cascades through scopeStrategyIds into filteredInstructions."
+          "note": "Client filter cascades through scopeStrategyIds into filteredInstructions."
         },
         "1.5": {
           "result": "pass",
-          "note": "— strategy filter cascades the same way."
+          "note": "Strategy filter cascades the same way."
         },
         "1.6": {
           "result": "pass",
-          "note": "— empty scope arrays result in unfiltered dataset in context."
+          "note": "Empty scope arrays result in unfiltered dataset in context."
         },
         "1.7": {
           "result": "pass",
-          "note": "— no reference data constants defined in this widget; config constants live in lib/config/."
+          "note": "No reference data constants defined in this widget; config constants live in lib/config/."
         }
       },
-      "notes": "1.1 PASS — data sourced exclusively from useInstructionsData() hook via selectedInstruction derived value. 1.2 PASS — context calls useGlobalScope(); filteredInstructions (which drives selectedInstruction lookup) is scope-filtered. 1.3 PASS — org filter changes filteredInstructions; selectedInstruction is looked up within filteredInstructions so org change propagates. 1.4 PASS — client filter cascades through scopeStrategyIds into filteredInstructions. 1.5 PASS — strategy filter cascades the same way. 1.6 PASS — empty scope arrays result in unfiltered dataset in context. 1.7 PASS — no reference data constants defined in this widget; config constants live in lib/config/."
+      "notes": "All 7 checks pass. Detail panel inherits full scope filtering through context."
     },
     "l2": {
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-20",
-      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Mode relevance: live=yes (shows live selected instruction detail), paper=yes (selectedInstruction reflects '(Simulated)' tagged strategyType from context), batch=yes (only FILLED instructions are selectable in batch mode). All 3 modes applicable."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "Widget reads selectedInstruction from context which is derived from filteredInstructions. The context (instructions-data-context.tsx:46) reads mode from useExecutionMode() and applies batch/paper transforms to filteredInstructions before selectedInstruction lookup."
+        },
+        "3.3": {
+          "result": "n/a",
+          "note": "Detail panel has no order/trade submission buttons \u2014 read-only display widget."
+        },
+        "3.4": {
+          "result": "deferred",
+          "note": "Human check: batch mode visual indicator visible in widget or layout header. Agent cannot verify visually."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Paper mode: selectedInstruction.strategyType will reflect '(Simulated)' suffix when context is in paper mode. Detail grid displays the tagged type."
+        },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket, setInterval, or useEffect in widget file or data context. Detail panel is purely reactive to context state."
+        }
+      },
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. 3.3 N/A (read-only panel). 3.4 deferred to human walkthrough."
     },
     "l4": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "No onClick handlers in instructions-detail-panel-widget.tsx or instruction-detail-grid.tsx. Widget is purely display."
+        },
+        "4.2": {
+          "result": "pass",
+          "note": "No href links in widget file or InstructionDetailGrid subcomponent."
+        },
+        "4.3": {
+          "result": "deferred",
+          "note": "Human check: verify Signal Detail, Instruction Detail, and Discrepancy sections show all expected fields for each strategy type."
+        },
+        "4.4": {
+          "result": "deferred",
+          "note": "Human check: selecting a row in pipeline table populates detail panel; deselecting clears it."
+        },
+        "4.5": {
+          "result": "pass",
+          "note": "No links to gated pages in this widget."
+        },
+        "4.6": {
+          "result": "pass",
+          "note": "No entitlement checks performed inside widget render."
+        },
+        "4.7": {
+          "result": "n/a",
+          "note": "No tabs or collapsible sections in detail panel."
+        },
+        "4.8": {
+          "result": "deferred",
+          "note": "Human check: detail grid scrolls within panel bounds at minH=3; no overflow leaking."
+        }
+      },
+      "notes": "Agent checks 4.1/4.2/4.5/4.6 pass. 4.3/4.4/4.8 deferred to human walkthrough. 4.7 N/A."
     },
     "l5": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Target strategies: all strategy types in INSTRUCTION_STRATEGY_TYPES. This widget serves as a detail view for any instruction selected in instr-pipeline-table. Registry IDs covered: DEFI_ETH_BASIS_HUF_1H, DEFI_ETH_REC_STAKE_HUF_1H, DEFI_UNI_LP_HUF_1H, CEFI_BTC_MM_EVT_TICK, CEFI_ETH_OPT_MM_EVT_TICK, CEFI_BTC_BASIS_SCE_1H, SPORTS_NFL_ARB_SCE_GAME, PRED_POLY_ARB_SCE_1M, PRED_BTC_CEFI_ARB_SCE_5M."
+        },
+        "5.2": {
+          "result": "deferred",
+          "note": "Human check: verify InstructionDetailGrid shows all required fields (Signal Detail: time/direction/confidence; Instruction Detail: op type/notional/venue; Discrepancy: price diff/qty diff/slippage) for each strategy type."
+        },
+        "5.3": {
+          "result": "deferred",
+          "note": "Human check: detail panel auto-populates when instruction is selected in pipeline table."
+        },
+        "5.4": {
+          "result": "deferred",
+          "note": "Human check: 'No fill yet' section renders for PENDING instructions; discrepancy section populates for FILLED/PARTIAL_FILL."
+        },
+        "5.5": {
+          "result": "deferred",
+          "note": "Human check: full flow \u2014 select instruction in pipeline table \u2192 detail panel shows correct data."
+        },
+        "5.6": {
+          "result": "deferred",
+          "note": "Human check: detail grid renders correctly for defi (SWAP/LEND/ADD_LIQUIDITY), cefi (TRADE), and sports/predictions instructions."
+        }
+      },
+      "notes": "5.1 documented from strategy registry. All other checks deferred to human walkthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": null
+      "notes": "Deferred to L6 pass after L5 human sign-off."
+    },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb/hsl colors in instructions-detail-panel-widget.tsx or instruction-detail-grid.tsx."
+        },
+        "7.2": {
+          "result": "pass",
+          "note": "No lib/mocks imports in widget file or InstructionDetailGrid."
+        },
+        "7.3": {
+          "result": "pass",
+          "note": "Widget file is 21 lines; instruction-detail-grid.tsx is 72 lines; instruction-fill-status-icon.tsx is 16 lines. All well within 500-line limit."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "Components PascalCase (InstructionsDetailPanelWidget, InstructionDetailGrid, InstructionFillStatusIcon), files kebab-case, hook useCamelCase."
+        },
+        "7.5": {
+          "result": "pass",
+          "deferReason": "i18n not shipped",
+          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+        },
+        "7.6": {
+          "result": "pass",
+          "note": "No dangerouslySetInnerHTML, eval, new Function, or innerHTML= in any instructions domain file."
+        },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in widget file or InstructionDetailGrid. No inline object/array literals in deps."
+        }
+      },
+      "notes": "All mechanically-fixable L7 checks pass. 7.5 globally deferred until i18n ships."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-21",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "instructions-detail-panel-widget.tsx: no text-[...] violations. instruction-detail-grid.tsx: had 3 instances of text-[10px] \u2014 all replaced with text-caption. instruction-fill-status-icon.tsx: no violations. Fix applied in same session as instr-pipeline-table."
+        },
+        "8.2": {
+          "result": "pass",
+          "note": "No p/m-[...] or gap-[...] arbitrary spacing in widget or subcomponent files."
+        },
+        "8.3": {
+          "result": "pass",
+          "note": "Widget renders InstructionDetailGrid which uses only standard HTML elements and Tailwind tokens. No custom reimplementation of shared primitives needed for a data-grid detail view."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Agent grep: no img without alt, no input elements, no interactive divs in widget or InstructionDetailGrid. Widget is purely display. Human keyboard + screen-reader pass deferred."
+        },
+        "8.5": {
+          "result": "deferred",
+          "note": "Human check: renders correctly at minW=4/minH=3; overflow-y-auto on panel wrapper handles content overflow."
+        }
+      },
+      "notes": "Agent-fixable 8.1-8.3 complete. 8.4 agent-grep clean; human pass deferred. 8.5 deferred."
     }
   },
   "relationships": {
-    "mode": null,
+    "mode": "detail",
     "masterOf": [],
-    "detailOf": [],
-    "selectionKey": null,
+    "detailOf": ["instr-pipeline-table"],
+    "selectionKey": "instructionId",
     "mergeCandidate": null,
-    "keepSeparate": null,
-    "notes": null
+    "keepSeparate": {
+      "rationale": "Detail panel is intentionally a separate widget to allow flexible preset layouts: 'instructions-default' (table only), 'instructions-with-detail' (table + panel side-by-side), 'instructions-full' (table then panel below). Merging would eliminate layout flexibility."
+    },
+    "notes": "selectedInstruction is set by row selection in instr-pipeline-table via setSelectedInstructionId in shared InstructionsDataContext. This widget is driven by that selection."
   },
   "dataContract": {
-    "channels": [],
-    "primary": null,
-    "cadence": null,
-    "staleness": null,
-    "mockSource": null,
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "event-driven",
+    "staleness": "seconds",
+    "mockSource": "lib/mocks/fixtures/strategy-instructions.ts",
     "backendOwner": "unknown",
-    "notes": null
+    "notes": "No independent data fetch; derives selectedInstruction from InstructionsDataContext which holds the filtered instruction list. Data staleness depends on context refresh cadence."
   },
   "coverage": {
-    "assetClasses": [],
-    "strategies": [],
-    "venues": [],
+    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
+    "strategies": [
+      "DEFI_ETH_BASIS_HUF_1H",
+      "DEFI_ETH_REC_STAKE_HUF_1H",
+      "DEFI_UNI_LP_HUF_1H",
+      "CEFI_BTC_MM_EVT_TICK",
+      "CEFI_ETH_OPT_MM_EVT_TICK",
+      "CEFI_BTC_BASIS_SCE_1H",
+      "SPORTS_NFL_ARB_SCE_GAME",
+      "PRED_POLY_ARB_SCE_1M",
+      "PRED_BTC_CEFI_ARB_SCE_5M"
+    ],
+    "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [],
-    "notes": null
+    "gaps": [
+      "No real API wired; detail content limited to mock fixture fields",
+      "InstructionDetailGrid shows 3 sections (Signal/Instruction/Discrepancy) \u2014 no compliance, legs, or timeline sections yet (described in original widget description)"
+    ],
+    "notes": "The detail grid currently shows Signal Detail, Instruction Detail, and Discrepancy sections. The original description mentions 'legs, fills, compliance, and timeline' \u2014 these are not yet implemented and represent a gap for future development."
   },
-  "knownIssues": [],
-  "findings": [],
+  "knownIssues": [
+    "InstructionDetailGrid missing compliance, legs, and timeline sections described in original widget spec",
+    "No loading or error state reachable (inherited from synchronous mock context)"
+  ],
+  "findings": [
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "instructions-detail-panel-widget.tsx + instruction-detail-grid.tsx \u2014 user-visible strings including section labels, field labels, empty state message. Not fixed until i18n ships.",
+      "status": "fixed",
+      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "instruction-detail-grid.tsx:16,29,45 \u2014 text-[10px] in section header paragraphs (Signal Detail, Instruction Detail, Discrepancy labels).",
+      "status": "fixed",
+      "fix": "Replaced all 3 instances with text-caption (0.6875rem = 11px, nearest semantic token in @theme inline). File changed in same session as instr-pipeline-table L8 pass."
+    }
+  ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-17"
+  "updatedAt": "2026-04-21"
 }

@@ -63,7 +63,7 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
         <SelectContent>
           {Object.entries(instrumentsByCategory).map(([cat, insts]) => (
             <div key={cat}>
-              <div className="px-2 py-1 text-[10px] font-semibold text-muted-foreground uppercase">{cat}</div>
+              <div className="px-2 py-1 text-micro font-semibold text-muted-foreground uppercase">{cat}</div>
               {insts.map((inst) => (
                 <SelectItem key={inst.instrumentKey} value={inst.instrumentKey} className="text-xs">
                   {inst.symbol} <span className="text-muted-foreground ml-1">{inst.venue}</span>
@@ -105,7 +105,7 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
         <Badge
           variant="outline"
           className={cn(
-            "text-[10px]",
+            "text-micro",
             priceChange >= 0 ? "text-emerald-400 border-emerald-400/30" : "text-rose-400 border-rose-400/30",
           )}
         >
@@ -113,13 +113,13 @@ export function InstrumentBarWidget(_props: WidgetComponentProps) {
           {formatPercent(priceChange, 2)}
         </Badge>
         {!isBatchMode && (
-          <Badge variant="outline" className="text-[10px] gap-1">
+          <Badge variant="outline" className="text-micro gap-1">
             <Radio className="size-2 animate-pulse text-emerald-400" />
             LIVE
           </Badge>
         )}
         {isBatchMode && (
-          <Badge variant="outline" className="text-[10px] gap-1 border-amber-500/30 text-amber-500">
+          <Badge variant="outline" className="text-micro gap-1 border-amber-500/30 text-amber-500">
             <Database className="size-2" />
             BATCH
           </Badge>
