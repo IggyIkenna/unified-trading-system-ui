@@ -10,7 +10,6 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
-import { asDeFiStrategyId } from "@/lib/types/defi";
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -220,7 +219,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 const price = getMockPrice(token);
                 executeDeFiOrder({
                   client_id: "internal-trader",
-                  strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AAVE_LENDING",
+                  strategy_id: activeStrategyId ?? "YIELD_ROTATION_LENDING@aave-multichain-usdc-prod",
                   instruction_type: "TRANSFER",
                   algo_type: "DIRECT",
                   instrument_id: `TRANSFER:${token}@${selectedChain}`,
@@ -387,7 +386,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 const price = getMockPrice(token);
                 executeDeFiOrder({
                   client_id: "internal-trader",
-                  strategy_id: asDeFiStrategyId(activeStrategyId) ?? "CROSS_CHAIN_SOR",
+                  strategy_id: activeStrategyId ?? "ARBITRAGE_PRICE_DISPERSION@multi-dex-eth-usdc-ethereum-prod",
                   instruction_type: "TRANSFER",
                   algo_type: "SOR_CROSS_CHAIN",
                   instrument_id: `BRIDGE:${token}@${fromChain}-${toChain}`,

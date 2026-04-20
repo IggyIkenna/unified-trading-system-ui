@@ -12,7 +12,6 @@ import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
-import { asDeFiStrategyId } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
@@ -160,7 +159,8 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           handleSubmit(() => {
             executeDeFiOrder({
               client_id: "internal-trader",
-              strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AMM_LP",
+              strategy_id:
+                activeStrategyId ?? "MARKET_MAKING_CONTINUOUS@uniswap-v3-weth-usdc-ethereum-active-usdc-prod",
               instruction_type: operation,
               algo_type: "AMM_CONCENTRATED",
               instrument_id: `${pool.venue_id}:LP:${pool.name}`,

@@ -15,7 +15,6 @@ import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
-import { asDeFiStrategyId } from "@/lib/types/defi";
 import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -349,8 +348,12 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             executeDeFiOrder({
               client_id: "internal-trader",
               strategy_id:
-                asDeFiStrategyId(activeStrategyId) ??
-                (isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING"),
+                activeStrategyId ??
+                (isBasisTrade
+                  ? "CARRY_BASIS_PERP@binance-btc-usdt-prod"
+                  : isStakedBasis
+                    ? "CARRY_STAKED_BASIS@lido-aave-hyperliquid-eth-prod"
+                    : "YIELD_ROTATION_LENDING@aave-multichain-usdc-prod"),
               instruction_type: "SWAP",
               algo_type: algoType,
               instrument_id: `SWAP:${tokenIn}-${tokenOut}`,

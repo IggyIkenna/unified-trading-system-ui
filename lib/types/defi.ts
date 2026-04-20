@@ -56,6 +56,67 @@ export function asDeFiStrategyId(id: string | undefined): DeFiStrategyId | undef
   return id && (DEFI_STRATEGY_IDS as readonly string[]).includes(id) ? (id as DeFiStrategyId) : undefined;
 }
 
+// ---------------------------------------------------------------------------
+// Strategy slot-label — canonical strategy_id shape
+// ---------------------------------------------------------------------------
+
+/**
+ * Launch-stage enum for strategy instances.
+ * SSOT: unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
+ * (§ Slot label grammar — order is shadow → uat → paper → prod).
+ */
+export const STRATEGY_ENVS = ["shadow", "uat", "paper", "prod"] as const;
+export type StrategyEnv = (typeof STRATEGY_ENVS)[number];
+
+/**
+ * Parsed form of a strategy slot-label.
+ * Grammar: `{ARCHETYPE}@{slot}-{env}` (e.g. `YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod`).
+ */
+export interface ParsedSlotLabel {
+  readonly archetype: string;
+  readonly slot: string;
+  readonly env: StrategyEnv;
+  readonly raw: string;
+}
+
+/**
+ * Parse a slot-label. Returns undefined if the input does not match the
+ * `{ARCHETYPE}@{slot}-{env}` grammar (e.g. legacy venue-id literals).
+ */
+export function parseSlotLabel(input: string | undefined): ParsedSlotLabel | undefined {
+  if (!input) return undefined;
+  const atIdx = input.indexOf("@");
+  if (atIdx <= 0 || atIdx === input.length - 1) return undefined;
+  const archetype = input.slice(0, atIdx);
+  const rest = input.slice(atIdx + 1);
+  const lastDash = rest.lastIndexOf("-");
+  if (lastDash <= 0) return undefined;
+  const envCandidate = rest.slice(lastDash + 1);
+  if (!(STRATEGY_ENVS as readonly string[]).includes(envCandidate)) return undefined;
+  const slot = rest.slice(0, lastDash);
+  if (!slot) return undefined;
+  return { archetype, slot, env: envCandidate as StrategyEnv, raw: input };
+}
+
+/** Round-trip inverse of `parseSlotLabel`. */
+export function formatSlotLabel(parts: { archetype: string; slot: string; env: StrategyEnv }): string {
+  return `${parts.archetype}@${parts.slot}-${parts.env}`;
+}
+
+/** Type guard — whether the input matches the slot-label grammar. */
+export function isSlotLabel(input: string | undefined): boolean {
+  return parseSlotLabel(input) !== undefined;
+}
+
+/**
+ * Reference to a strategy instance carried by widget order emissions.
+ *
+ * Accepts both the canonical slot-label (`{ARCHETYPE}@{slot}-{env}`) and the
+ * legacy venue-id literals in `DeFiStrategyId` during the transition — the
+ * backend strategy-service factory resolves either form.
+ */
+export type StrategyInstanceRef = string;
+
 /** Human-readable display names for strategies. */
 export const STRATEGY_DISPLAY_NAMES: Record<DeFiStrategyId, string> = {
   AAVE_LENDING: "AAVE Lending",
@@ -193,7 +254,7 @@ export type DeFiVenue = (typeof DEFI_VENUES)[number];
 
 export interface StrategyInstruction {
   instruction_id: string;
-  strategy_id: DeFiStrategyId;
+  strategy_id: StrategyInstanceRef;
   timestamp: string;
   operation: InstructionType;
   algo_type: AlgoType;
@@ -479,7 +540,7 @@ export interface DeFiFlashPnl {
 /** Params passed to execution (maps to backend StrategyInstruction). */
 export interface DeFiOrderParams {
   client_id: string;
-  strategy_id: DeFiStrategyId;
+  strategy_id: StrategyInstanceRef;
   instruction_type: InstructionType;
   algo_type: AlgoType;
   instrument_id: string;

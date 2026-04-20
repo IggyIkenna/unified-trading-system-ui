@@ -19,7 +19,6 @@ import {
   DEFI_ALGO_TYPES,
   SLIPPAGE_OPTIONS,
 } from "@/lib/config/services/defi.config";
-import { asDeFiStrategyId } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
@@ -232,7 +231,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
             handleSubmit(() => {
               executeDeFiOrder({
                 client_id: "internal-trader",
-                strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AAVE_LENDING",
+                strategy_id: activeStrategyId ?? "ARBITRAGE_PRICE_DISPERSION@uniswap-flashloan-eth-usdc-ethereum-prod",
                 instruction_type: "FLASH_BORROW",
                 algo_type: "FLASH_LOAN_AAVE",
                 instrument_id: `FLASH_LOAN:${flashSteps.map((s) => s.operationType).join(">")}`,
