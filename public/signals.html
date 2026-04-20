@@ -206,10 +206,16 @@
   <!-- HERO -->
   <section class="hero">
     <div class="container">
-      <p class="eyebrow">Institutional signal feed</p>
-      <h1>Odum strategy signals, delivered to your execution layer.</h1>
-      <p class="lead">A direct broadcast of Odum-generated strategy signals to authenticated counterparty endpoints.
-        Your infrastructure executes. We do not see your positions, your fills, or your P&amp;L.</p>
+      <p class="eyebrow">Institutional signal feed &mdash; our signals, your execution</p>
+      <h1>Odum strategy signals, delivered to institutional execution infrastructure.</h1>
+      <p class="lead">Backend-first integration for institutional quant shops running their own execution stack.
+        We generate and broadcast signals; you execute them. A light observability UI ships alongside
+        (signal history, backtest comparison, delivery health) but the primary integration is API + webhook.</p>
+      <p style="margin-top:20px; font-size:14px; color:var(--text-dim); max-width:720px;">
+        This is distinct from <a href="platform.html#who" class="inline">signals-only DART</a> where your
+        signals flow INTO our execution. Signals Service is the inverse: our signals flow OUT to your
+        execution.
+      </p>
     </div>
   </section>
 
