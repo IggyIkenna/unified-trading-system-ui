@@ -1,8 +1,16 @@
 ---
 title: Post-sync corrections — BP-3 DeFi widget work vs codex SSOT (2026-04-21)
 status: active
-scope: Corrections to commits 1e456a0 / de14cf2 (UI) and 4cc6b1d (PM) after the codex SSOT rewrite in unified-trading-pm@83a2f95
-reads: [widget-certification-codex-sync-2026-04-20.md, widget-certification-tracker.md]
+scope: Corrections to the BP-3 DeFi widget-certification work after the codex SSOT rewrite in unified-trading-pm@83a2f95
+context_commits:
+  ui:
+    - 1e456a0 # §3.1 strategy_id fix — 7 widgets + useActiveStrategyId hook + asDeFiStrategyId narrower
+    - de14cf2 # §3.3/§3.4/§3.6 bundle — reward-PNL reshape, HF generalization, LIQ registry
+    - 71fdfbf # §1.1 of this doc — LIQ target_protocols aligned with coverage matrix §12
+  pm:
+    - 4cc6b1d # DROPPED (reset before pull) — was pre-sync edits to now-deleted archetype tables
+    - 8d8e66e # §1.2 of this doc — Chainlink tiers + depeg default re-landed post-sync
+reads: [widget-certification-codex-sync-2026-04-20.md, widget-certification-tracker.md, category-instrument-coverage.md]
 writes: [this doc, 1 UI correction commit, 1 PM re-landed commit]
 created: 2026-04-21
 ---
@@ -66,6 +74,21 @@ belongs on either the coverage matrix table or the archetype prose, and adding c
 unilaterally is out of scope. Deferred to §2.4 below.
 
 ## 2. Deferred — follow-up tickets with acceptance criteria
+
+### Dependency order
+
+These tickets interact — pick them up in this order, or redo work:
+
+1. **§2.1 slot-label shape** — redesigns the `strategy_id` fallback contract. Do this FIRST.
+2. **§2.2 ETHENA_BENCHMARK** + **§2.3 AMM_LP → MMC** — both rewrite widget fallbacks. Do after §2.1 so you write the
+   new shape once, not twice.
+3. **§2.4 fixture over-reach** — gated on a product decision (keep LRT rows or drop). Starts with a Patrick-persona
+   question, not a code change.
+4. **§2.5 Solana chain support** — independent; can run in parallel with §2.2 / §2.3.
+5. **§2.6 `coverage.gaps` sweep** — independent; mechanical pull from codex `notes/gap` column. Can run anytime.
+
+Each ticket's files and line numbers are discoverable with `rg <literal>` in `unified-trading-system-ui/`. The
+acceptance criteria below are the contract — don't treat them as an exhaustive file list.
 
 ### 2.1 `strategy_id` slot-label shape rewrite
 
@@ -137,6 +160,11 @@ over-reach.
 may be pure over-reach — needs a product call before deleting rows. The `reward_model` concept itself could land on
 the coverage-matrix table as a new column, but that's a codex edit I should not do unilaterally.
 
+**Unblock path:** this ticket starts with a question, not code. Ask the product owner of the Patrick persona
+(check `plans/ai/patrick_persona_entitlement_lockdown_2026_04_14.plan.md` in PM repo for scope) whether Kelp / Renzo /
+Lombard are in-scope for the persona. If yes → annotate-and-keep branch below. If no → trim branch. Only then start
+editing fixtures.
+
 **Acceptance criteria:**
 
 - Decision captured: keep LRT rows (with `capability_declaration_pending` flag) or remove them
@@ -173,6 +201,16 @@ Sync doc §6: widget-certification JSON coverage metadata should pull `notes/gap
 - `coverage.gaps` field on every DeFi widget JSON under `docs/widget-certification/`
 - Values quote coverage-matrix notes verbatim (not paraphrased) so a codex change propagates by grep
 - Structure: `{ status: "SUPPORTED" | "PARTIAL" | "BLOCKED" | "N/A", notes: string }[]`
+
+### Verification (applies to every deferred ticket)
+
+- `npx tsc --noEmit` passes with no new errors in session-touched files (ignore pre-existing unrelated failures in
+  `app/(platform)/services/strategy-catalogue/*` and `tests/unit/lib/architecture-v2/*`)
+- `npx eslint` clean on session-touched files
+- Run in browser: `npm run dev`, wait 8-10s, load the affected widget, verify the golden path and at least one edge
+  case (per UI rules in `.claude/rules/ui.md`)
+- Playwright smoke if the change crosses widget boundaries: `npm run smoketest`
+- Commit per conventional-commits (HEREDOC format); no `git push`; let the user run quickmerge
 
 ## 3. Cross-alignment checks performed
 
