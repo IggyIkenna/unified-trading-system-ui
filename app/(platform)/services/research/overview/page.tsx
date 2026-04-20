@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * G1.1 intentional split — /services/research/overview is the Build/Research
+ * landing page. Its trading-phase counterpart at /services/trading/overview is
+ * a deliberately different surface (live trading desk landing), NOT a phase
+ * fork of the same conceptual page. Per Stage 3E §1.1, these remain separate
+ * component trees because they serve distinct audiences with distinct data
+ * bindings. The `phase` prop pattern applies only to surfaces that SHARE a
+ * conceptual role across research / paper / live — these do not.
+ */
 import { AlertRow } from "@/components/shared/alert-row";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";

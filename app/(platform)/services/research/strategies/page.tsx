@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * G1.1 intentional split — research/strategies renders the strategy
+ * catalogue (templates, backtests, candidate enumeration). Its trading-phase
+ * counterpart at /services/trading/strategies renders a live book of running
+ * strategies (per-strategy positions, P&L, kill switches). These are distinct
+ * conceptual surfaces — not phase forks of the same page. Per Stage 3E §1.1,
+ * the phase prop pattern applies only to surfaces that SHARE a conceptual
+ * role across research / paper / live.
+ */
 import { ApiError } from "@/components/shared/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

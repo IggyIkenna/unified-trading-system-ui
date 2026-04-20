@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * G1.1 intentional split — /services/trading/overview is the live-phase
+ * trading desk landing (data-freshness strip, widget grid bound to live
+ * positions / orders). Its research-phase counterpart at
+ * /services/research/overview is a distinct surface (research activity feed,
+ * build jobs, catalogue roll-up), NOT a phase fork. Per Stage 3E §1.1, the
+ * phase prop pattern applies only to surfaces that SHARE a conceptual role
+ * across research / paper / live — these do not.
+ */
 import * as React from "react";
 import { ApiError } from "@/components/shared/api-error";
 import { DataFreshnessStrip, type DataSource } from "@/components/shared/data-freshness-strip";

@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * G1.1 intentional split — research/execution is the execution-policy
+ * configuration surface (research into venue routing, TCA targets, order-
+ * type policies). Its trading-phase counterparts at /services/trading/terminal,
+ * /services/trading/book, /services/trading/orders, /services/trading/positions
+ * are distinct live-venue terminal surfaces, NOT phase forks. Per Stage 3E
+ * §1.1, the phase prop pattern applies only to surfaces that SHARE a
+ * conceptual role across research / paper / live.
+ */
 import { PageHeader } from "@/components/shared/page-header";
 import * as React from "react";
 import Link from "next/link";
