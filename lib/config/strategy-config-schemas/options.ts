@@ -10,7 +10,13 @@
 // Chains
 // ---------------------------------------------------------------------------
 
-export const CHAIN_OPTIONS = ["ETHEREUM", "ARBITRUM", "BASE", "OPTIMISM", "POLYGON"];
+// SOLANA is an L1, not an EVM L2 — it appears in CHAIN_OPTIONS (Kamino lending / LIQ,
+// Jito / Marinade staking, Orca / Jupiter DEX) but NOT in L2_CHAIN_OPTIONS.
+// Per codex category-instrument-coverage.md §10 / §12 — Kamino (Solana) is SUPPORTED
+// for LIQUIDATION_CAPTURE; Jito / Marinade (Solana) are SUPPORTED for YIELD_STAKING_SIMPLE.
+// It is opt-in per strategy: single-chain DeFi strategies keep ETHEREUM defaults;
+// multichain / cross-chain strategies may include it explicitly where Solana venues apply.
+export const CHAIN_OPTIONS = ["ETHEREUM", "ARBITRUM", "BASE", "OPTIMISM", "POLYGON", "SOLANA"];
 export const L2_CHAIN_OPTIONS = ["ARBITRUM", "OPTIMISM", "BASE"];
 
 // ---------------------------------------------------------------------------

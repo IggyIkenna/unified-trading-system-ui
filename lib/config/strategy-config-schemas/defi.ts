@@ -409,11 +409,14 @@ export const DEFI_STRATEGY_SCHEMAS: Record<DeFiStrategyId, StrategyConfigSchema>
         default: "AAVE",
       },
       {
+        // Solana included by default because KAMINO is in the default target_protocols
+        // (codex category-instrument-coverage.md §12 SUPPORTED). Users who drop KAMINO
+        // from target_protocols can drop SOLANA here too.
         key: "chains",
         label: "Chains",
         type: "multi-select",
         options: CHAIN_OPTIONS,
-        default: ["ETHEREUM", "ARBITRUM", "BASE"],
+        default: ["ETHEREUM", "ARBITRUM", "BASE", "SOLANA"],
       },
     ],
   },
