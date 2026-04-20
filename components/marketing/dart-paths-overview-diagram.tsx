@@ -104,7 +104,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             textAnchor="middle"
             className="fill-zinc-600 text-[11px] font-semibold uppercase tracking-wide dark:fill-zinc-400"
           >
-            Your venues — scoped Odum keys
+            Venues — sub-account or your own
           </text>
 
           {/* Column dividers (subtle guide lines) */}
@@ -216,7 +216,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-amber-900 text-[13px] font-semibold dark:fill-amber-200"
             >
-              Your venue accounts
+              Venue account
             </text>
             <text
               x="830"
@@ -224,7 +224,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-amber-800 text-[11px] dark:fill-amber-300"
             >
-              scoped execute + read keys
+              sub-account (default) · or your own
             </text>
             <text
               x="830"
@@ -232,7 +232,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-amber-800 text-[11px] italic dark:fill-amber-300"
             >
-              custody stays with you
+              scoped execute + read keys
             </text>
           </g>
 

@@ -216,9 +216,9 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             </text>
           </g>
 
-          {/* Connectors from Sub-Fund 1 to its end-investors */}
+          {/* Connectors from Sub-Fund 1 to its end-investors (centres: 112, 200, 288) */}
           <path
-            d="M 200 198 L 200 226 L 100 226 L 100 256"
+            d="M 200 198 L 200 226 L 112 226 L 112 256"
             className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1.25}
           />
@@ -228,14 +228,14 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             strokeWidth={1.25}
           />
           <path
-            d="M 200 198 L 200 226 L 300 226 L 300 256"
+            d="M 200 198 L 200 226 L 288 226 L 288 256"
             className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1.25}
           />
 
-          {/* Connectors from Sub-Fund 2 to its end-investors */}
+          {/* Connectors from Sub-Fund 2 to its end-investors (centres: 392, 480, 568) */}
           <path
-            d="M 480 198 L 480 226 L 410 226 L 410 256"
+            d="M 480 198 L 480 226 L 392 226 L 392 256"
             className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1.25}
           />
@@ -245,7 +245,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             strokeWidth={1.25}
           />
           <path
-            d="M 480 198 L 480 226 L 550 226 L 550 256"
+            d="M 480 198 L 480 226 L 568 226 L 568 256"
             className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1.25}
           />
@@ -257,31 +257,31 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             strokeWidth={1.25}
           />
 
-          {/* ===== Row 3: End investors ===== */}
-          {/* Sub-Fund 1 end-investors */}
+          {/* ===== Row 3: End investors (84-wide boxes, 4-px gaps, fit within parent sub-fund's 280-wide span) ===== */}
+          {/* Sub-Fund 1 end-investors — centres at 112 / 200 / 288 */}
           <g>
             <rect
-              x="44"
+              x="70"
               y="256"
-              width="112"
+              width="84"
               height="46"
               rx="6"
               className="fill-white stroke-sky-300 dark:fill-zinc-900 dark:stroke-sky-600"
               strokeWidth={1}
             />
             <text
-              x="100"
+              x="112"
               y="276"
               textAnchor="middle"
-              className="fill-zinc-900 text-[11px] font-medium dark:fill-zinc-100"
+              className="fill-zinc-900 text-[10px] font-medium dark:fill-zinc-100"
             >
               End-investor 1
             </text>
             <text
-              x="100"
+              x="112"
               y="291"
               textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
+              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
             >
               slice-scoped
             </text>
@@ -289,9 +289,9 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
 
           <g>
             <rect
-              x="144"
+              x="158"
               y="256"
-              width="112"
+              width="84"
               height="46"
               rx="6"
               className="fill-white stroke-sky-300 dark:fill-zinc-900 dark:stroke-sky-600"
@@ -301,7 +301,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               x="200"
               y="276"
               textAnchor="middle"
-              className="fill-zinc-900 text-[11px] font-medium dark:fill-zinc-100"
+              className="fill-zinc-900 text-[10px] font-medium dark:fill-zinc-100"
             >
               End-investor 2
             </text>
@@ -309,7 +309,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               x="200"
               y="291"
               textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
+              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
             >
               slice-scoped
             </text>
@@ -317,56 +317,56 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
 
           <g>
             <rect
-              x="244"
+              x="246"
               y="256"
-              width="112"
+              width="84"
               height="46"
               rx="6"
               className="fill-white stroke-sky-300 dark:fill-zinc-900 dark:stroke-sky-600"
               strokeWidth={1}
             />
             <text
-              x="300"
+              x="288"
               y="276"
               textAnchor="middle"
-              className="fill-zinc-900 text-[11px] font-medium dark:fill-zinc-100"
+              className="fill-zinc-900 text-[10px] font-medium dark:fill-zinc-100"
             >
               End-investor N
             </text>
             <text
-              x="300"
+              x="288"
               y="291"
               textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
+              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
             >
               slice-scoped
             </text>
           </g>
 
-          {/* Sub-Fund 2 end-investors */}
+          {/* Sub-Fund 2 end-investors — centres at 392 / 480 / 568 */}
           <g>
             <rect
-              x="354"
+              x="350"
               y="256"
-              width="112"
+              width="84"
               height="46"
               rx="6"
               className="fill-white stroke-sky-300 dark:fill-zinc-900 dark:stroke-sky-600"
               strokeWidth={1}
             />
             <text
-              x="410"
+              x="392"
               y="276"
               textAnchor="middle"
-              className="fill-zinc-900 text-[11px] font-medium dark:fill-zinc-100"
+              className="fill-zinc-900 text-[10px] font-medium dark:fill-zinc-100"
             >
               End-investor 1
             </text>
             <text
-              x="410"
+              x="392"
               y="291"
               textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
+              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
             >
               slice-scoped
             </text>
@@ -374,9 +374,9 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
 
           <g>
             <rect
-              x="424"
+              x="438"
               y="256"
-              width="112"
+              width="84"
               height="46"
               rx="6"
               className="fill-white stroke-sky-300 dark:fill-zinc-900 dark:stroke-sky-600"
@@ -386,7 +386,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               x="480"
               y="276"
               textAnchor="middle"
-              className="fill-zinc-900 text-[11px] font-medium dark:fill-zinc-100"
+              className="fill-zinc-900 text-[10px] font-medium dark:fill-zinc-100"
             >
               End-investor 2
             </text>
@@ -394,7 +394,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               x="480"
               y="291"
               textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
+              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
             >
               slice-scoped
             </text>
@@ -402,27 +402,27 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
 
           <g>
             <rect
-              x="494"
+              x="526"
               y="256"
-              width="112"
+              width="84"
               height="46"
               rx="6"
               className="fill-white stroke-sky-300 dark:fill-zinc-900 dark:stroke-sky-600"
               strokeWidth={1}
             />
             <text
-              x="550"
+              x="568"
               y="276"
               textAnchor="middle"
-              className="fill-zinc-900 text-[11px] font-medium dark:fill-zinc-100"
+              className="fill-zinc-900 text-[10px] font-medium dark:fill-zinc-100"
             >
               End-investor M
             </text>
             <text
-              x="550"
+              x="568"
               y="291"
               textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
+              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
             >
               slice-scoped
             </text>

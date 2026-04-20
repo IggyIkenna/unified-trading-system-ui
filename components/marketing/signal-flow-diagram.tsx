@@ -210,8 +210,8 @@ function SignalsInDiagram() {
         y={110}
         width={180}
         height={90}
-        title="Your venue"
-        subtitle="scoped execute + read keys"
+        title="Venue account"
+        subtitle="segregated sub-account or your own"
         accent="venue"
       />
 
@@ -261,7 +261,7 @@ function SignalsInDiagram() {
         textAnchor="middle"
         className="fill-muted-foreground text-[11px]"
       >
-        Capital stays with the client. Scoped execute + read API key in Odum Secret Manager — no withdrawal authority, ever.
+        Default: segregated sub-account at Odum&apos;s venue accounts, held in your name via the exchange sub-account primitive — skips multi-week exchange onboarding. Opt-out: your own venue or prime-broker account.
       </text>
       <text
         x={WIDTH / 2}
@@ -269,7 +269,7 @@ function SignalsInDiagram() {
         textAnchor="middle"
         className="fill-muted-foreground text-[11px]"
       >
-        Your strategic edge — regime logic, model internals, portfolio construction — never crosses into Odum&apos;s systems.
+        Either way, scoped execute + read API keys only, no withdrawal authority, Odum Research Ltd never holds principal. Your strategic edge never crosses into Odum&apos;s systems.
       </text>
     </svg>
   );
