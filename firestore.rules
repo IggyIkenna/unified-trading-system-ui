@@ -1,0 +1,72 @@
+// Firestore security rules — G1.10 + G2.x.
+// Deployed via:
+//   firebase --project odum-staging deploy --only firestore:rules
+//   firebase --project central-element-323112 deploy --only firestore:rules
+//
+// SSOT: codex/14-playbooks/infra-spec/stage-3e-g2-env-split.md § "Firestore rules (new)".
+//
+// Custom-claim vocabulary (Firebase Authentication):
+//   admin          bool — unlocks read/write on every collection
+//   im_desk        bool — IM desk operator; reads all contracts + questionnaires
+//   org_id         string — gates /contracts/{org_id} reads for own-org
+//   audience       string — rule 12 service-family key
+//   pricing.read_internal  bool — unlocks tier=internal column in cost()
+//
+// Rule 03 (same-system): identical file deployed to staging + prod.
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------
+    // G1.10 — Public questionnaire submissions.
+    // Anonymous writes allowed (prospect may not be authenticated yet).
+    // Reads gated to admin / IM desk operators.
+    // ------------------------------------------------------------------
+    match /questionnaires/{doc} {
+      allow create: if true;
+      allow read: if request.auth != null && (
+        request.auth.token.admin == true ||
+        request.auth.token.im_desk == true
+      );
+      allow update, delete: if request.auth != null
+                            && request.auth.token.admin == true;
+    }
+
+    // ------------------------------------------------------------------
+    // G2.x — Client contracts (ClientContract schema).
+    // Paying clients read their own org; IM desk reads all; admin full.
+    // Writes admin-only — contract lifecycle goes through user-management-ui.
+    // ------------------------------------------------------------------
+    match /contracts/{orgId} {
+      allow read: if request.auth != null && (
+        request.auth.token.admin == true ||
+        request.auth.token.im_desk == true ||
+        request.auth.token.org_id == orgId
+      );
+      allow write: if request.auth != null
+                   && request.auth.token.admin == true;
+    }
+
+    // ------------------------------------------------------------------
+    // Per-user profile shards (existing pattern).
+    // Self-read, admin read/write.
+    // ------------------------------------------------------------------
+    match /users/{uid}/{document=**} {
+      allow read: if request.auth != null && (
+        request.auth.uid == uid ||
+        request.auth.token.admin == true
+      );
+      allow write: if request.auth != null
+                   && request.auth.token.admin == true;
+    }
+
+    // ------------------------------------------------------------------
+    // Deny everything else by default — add explicit rules above when
+    // new collections are introduced.
+    // ------------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

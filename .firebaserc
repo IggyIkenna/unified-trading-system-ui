@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "central-element-323112",
+    "prod": "central-element-323112",
+    "staging": "odum-staging"
+  }
+}
