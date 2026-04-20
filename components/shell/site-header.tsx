@@ -1,18 +1,27 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
+import { SpacesNavSections } from "@/components/shell/spaces-nav-sections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
+import { ChevronDown, Compass } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import * as React from "react";
 
-const NAV_ITEMS = [
-  { href: "/", label: "Platform" },
-  { href: "/#services", label: "Services" },
-  { href: "/docs", label: "Developer Docs" },
-  { href: "/investor-relations", label: "Investor Relations" },
+const NAV_HOME = { href: "/", label: "Home" } as const;
+
+const NAV_IM_PLATFORM_REGULATORY = [
+  { href: "/investment-management", label: "Investment Management" },
+  { href: "/platform", label: PLATFORM_MARKETING_NAV_LABEL },
+  { href: "/regulatory", label: "Regulatory" },
+] as const;
+
+const NAV_WHO_CONTACT = [
+  { href: "/firm", label: "Who We Are" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -40,6 +49,14 @@ function isNavItemActive(pathname: string, hash: string, itemHref: string): bool
   }
 
   return pathname === itemHref || pathname === pathPart;
+}
+
+function NavSeparator() {
+  return (
+    <span className="shrink-0 select-none px-0.5 text-xs font-light text-muted-foreground/40" aria-hidden="true">
+      |
+    </span>
+  );
 }
 
 export function SiteHeader() {
@@ -77,32 +94,57 @@ export function SiteHeader() {
     [pathname, syncHashFromWindow],
   );
 
+  const navLinkClass = (href: string) =>
+    cn(
+      "shrink-0 whitespace-nowrap text-sm transition-colors hover:text-foreground",
+      isNavItemActive(pathname, hash, href) ? "font-medium text-foreground" : "text-muted-foreground",
+    );
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-3">
+    <header
+      data-shell="site-header"
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
+      <div className="container flex min-h-14 items-center justify-between gap-3 px-4 py-2 md:px-6">
+        <Link href="/" className="flex shrink-0 items-center gap-3">
           <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
-          <div>
+          <div className="flex flex-col items-start gap-0.5 leading-tight">
             <span className="text-lg font-semibold">Odum Research</span>
-            <Badge variant="outline" className="ml-2 text-xs">
+            <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal leading-none">
               FCA 975797
             </Badge>
           </div>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={handleNavLinkClick(item.href)}
-              className={cn(
-                "text-sm transition-colors hover:text-foreground",
-                isNavItemActive(pathname, hash, item.href) ? "font-medium text-foreground" : "text-muted-foreground",
-              )}
-            >
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 px-2 md:flex lg:gap-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="inline-flex shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <Compass className="size-3.5" aria-hidden />
+              Spaces
+              <ChevronDown className="size-3.5 opacity-70" aria-hidden />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <SpacesNavSections />
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <NavSeparator />
+          <Link href={NAV_HOME.href} onClick={handleNavLinkClick(NAV_HOME.href)} className={navLinkClass(NAV_HOME.href)}>
+            {NAV_HOME.label}
+          </Link>
+          <NavSeparator />
+          {NAV_IM_PLATFORM_REGULATORY.map((item) => (
+            <Link key={item.href} href={item.href} onClick={handleNavLinkClick(item.href)} className={navLinkClass(item.href)}>
               {item.label}
             </Link>
+          ))}
+          <NavSeparator />
+          {NAV_WHO_CONTACT.map((item, index) => (
+            <React.Fragment key={item.href}>
+              {index > 0 ? <NavSeparator /> : null}
+              <Link href={item.href} onClick={handleNavLinkClick(item.href)} className={navLinkClass(item.href)}>
+                {item.label}
+              </Link>
+            </React.Fragment>
           ))}
         </nav>
 

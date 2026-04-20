@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
 import { TestWrapper } from "@/tests/helpers/test-wrapper";
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
@@ -27,9 +27,18 @@ describe("SiteHeader", () => {
 
   it("renders navigation items", async () => {
     const { SiteHeader } = await import("@/components/shell/site-header");
+    const { PLATFORM_MARKETING_NAV_LABEL } = await import("@/components/shell/nav-copy");
     render(<SiteHeader />, { wrapper: TestWrapper });
-    expect(screen.getByText("Platform")).toBeTruthy();
+    // Nav label SSOT: components/shell/nav-copy.ts (DART post-2026-04-19 rebrand).
+    expect(screen.getByText(PLATFORM_MARKETING_NAV_LABEL)).toBeTruthy();
     expect(screen.getByText("Contact")).toBeTruthy();
+  }, 15000);
+
+  it("exposes [data-shell='site-header'] for Playwright shell selectors", async () => {
+    const { SiteHeader } = await import("@/components/shell/site-header");
+    const { container } = render(<SiteHeader />, { wrapper: TestWrapper });
+    const shell = container.querySelector('[data-shell="site-header"]');
+    expect(shell).toBeTruthy();
   }, 15000);
 
   it("renders Sign In and Get Started when not authenticated", async () => {
@@ -45,7 +54,7 @@ describe("SiteHeader", () => {
       loading: false,
       loginError: null,
       loginByEmail: async () => true,
-      logout: async () => {},
+      logout: async () => { },
       hasEntitlement: () => false,
       isAdmin: () => false,
       isInternal: () => false,
