@@ -340,7 +340,12 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     [filteredOrders],
   );
 
-  const handleCancel = React.useCallback((orderId: string) => cancelMutation.mutate(orderId), [cancelMutation]);
+  // NOTE: Depend on `.mutate` only, not the whole `cancelMutation` object. TanStack Query
+  // rebuilds the result object on every render, so `[cancelMutation]` would make this callback
+  // unstable — which in turn makes the `columns` memo in consumers unstable, breaking
+  // React.memo on <DataTable> and causing the whole table to re-render on every resize tick.
+  const cancelMutationMutate = cancelMutation.mutate;
+  const handleCancel = React.useCallback((orderId: string) => cancelMutationMutate(orderId), [cancelMutationMutate]);
 
   const openAmendDialog = React.useCallback((order: OrderRecord) => {
     setAmendTarget(order);
@@ -348,11 +353,13 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     setAmendPrice(String(order.price));
   }, []);
 
+  // Same stability concern as `handleCancel` — depend on `.mutate` only, not the whole mutation object.
+  const amendMutationMutate = amendMutation.mutate;
   const handleSubmitAmend = React.useCallback(
     (orderId: string, qty: number, price: number) => {
-      amendMutation.mutate({ orderId, quantity: qty, price }, { onSuccess: () => setAmendTarget(null) });
+      amendMutationMutate({ orderId, quantity: qty, price }, { onSuccess: () => setAmendTarget(null) });
     },
-    [amendMutation],
+    [amendMutationMutate],
   );
 
   const resetFilters = React.useCallback(() => {

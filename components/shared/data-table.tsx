@@ -63,6 +63,23 @@ const NUMERIC_TYPES = new Set<ColumnDataType>(["number", "currency", "percent"])
 const MONO_TYPES = new Set<ColumnDataType>(["number", "currency", "percent", "datetime"]);
 
 // ---------------------------------------------------------------------------
+// SortIcon — module-scoped so its component identity is stable across renders.
+//
+// IMPORTANT: do NOT move this inside DataTable. When declared inside a component
+// body, React sees a new function identity on every render and unmounts +
+// remounts every <SortIcon> in the table header, churning ~1 SVG per column per
+// render. For a 16-column table that re-renders on every resize tick (e.g. via
+// react-grid-layout width changes), this produced hundreds of DOM mutations
+// per second and caused visible resize lag.
+// ---------------------------------------------------------------------------
+function SortIcon<TData>({ column }: { column: Column<TData, unknown> }) {
+  const sorted = column.getIsSorted();
+  if (sorted === "asc") return <ArrowUp className="size-3.5 shrink-0" />;
+  if (sorted === "desc") return <ArrowDown className="size-3.5 shrink-0" />;
+  return <ArrowUpDown className="size-3.5 shrink-0 opacity-40" />;
+}
+
+// ---------------------------------------------------------------------------
 // DataTable
 // ---------------------------------------------------------------------------
 
@@ -92,7 +109,7 @@ interface DataTableProps<TData> {
   tableFooter?: React.ReactNode;
 }
 
-function DataTable<TData>({
+function DataTableInner<TData>({
   columns,
   data,
   enableSorting = true,
@@ -176,27 +193,23 @@ function DataTable<TData>({
     }
     if (!root) return;
 
+    // measure() can fire on *width* changes (ResizeObserver observes both axes) via
+    // react-grid-layout. The functional setState form with equality-guard prevents
+    // a cascade of no-op re-renders of the entire DataTable subtree when only the
+    // width changed and `available` is unchanged.
     const measure = () => {
       const rootRect = root!.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
       const available = rootRect.bottom - elRect.top;
-      if (available > 0) setComputedHeight(Math.max(Math.floor(available), 80));
+      if (available <= 0) return;
+      const next = Math.max(Math.floor(available), 80);
+      setComputedHeight((prev) => (prev === next ? prev : next));
     };
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(root);
     return () => ro.disconnect();
   }, [fillHeight]);
-
-  // ---------------------------------------------------------------------------
-  // Sort icon (shared between header cells)
-  // ---------------------------------------------------------------------------
-  function SortIcon({ column }: { column: Column<TData, unknown> }) {
-    const sorted = column.getIsSorted();
-    if (sorted === "asc") return <ArrowUp className="size-3.5 shrink-0" />;
-    if (sorted === "desc") return <ArrowDown className="size-3.5 shrink-0" />;
-    return <ArrowUpDown className="size-3.5 shrink-0 opacity-40" />;
-  }
 
   // ---------------------------------------------------------------------------
   // Render
@@ -276,9 +289,7 @@ function DataTable<TData>({
                               className={cn("flex-1 min-w-0 flex items-center gap-1", numeric && "flex-row-reverse")}
                             >
                               {flexRender(header.column.columnDef.header, header.getContext())}
-                              {header.column.getCanSort() && (
-                                <SortIcon column={header.column as Parameters<typeof SortIcon>[0]["column"]} />
-                              )}
+                              {header.column.getCanSort() && <SortIcon column={header.column} />}
                             </div>
                           </div>
                         )}
@@ -376,5 +387,20 @@ function DataTable<TData>({
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// React.memo wrapper.
+//
+// DataTable is re-rendered by every ancestor update — most notably react-grid-layout
+// passes a fresh `width` prop to every grid item on every resize tick, which
+// cascades through WidgetWrapper → TableWidget → DataTable. Without memoization,
+// the full table subtree (hundreds of cells) runs reconciliation on every tick.
+//
+// We memoize on shallow equality of the public props. `columns`, `data`, and
+// `columnVisibility` must be referentially stable in consumers for this to bite
+// (all existing consumers already wrap `buildColumns` in useMemo and receive
+// `data` / `columnVisibility` from context or state).
+// ---------------------------------------------------------------------------
+const DataTable = React.memo(DataTableInner) as typeof DataTableInner;
 
 export { DataTable, type DataTableProps };
