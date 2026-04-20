@@ -285,6 +285,32 @@
   margin-inline: auto;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * WidgetScroll viewport: override Radix's default `display: table` inner wrapper.
+ *
+ * Radix ScrollArea.Viewport wraps its children in `<div style="display: table;
+ * min-width: 100%">` so that inline content consolidates for scroll measurement.
+ * For our widget shells this causes a nasty bug: the toolbar row (flex-wrap,
+ * meant to stay within the widget card width) gets stretched to the widest
+ * descendant (typically a DataTable), pushing right-side action buttons
+ * outside the visible card area where only horizontal scroll can reveal them.
+ *
+ * Why `!important` + the duplicate `display` override in the consolidated rule
+ * at the bottom of this file: Radix writes `display: table` as an *inline*
+ * style on the viewport child, so any plain CSS rule loses. `!important` is
+ * required to beat the inline style. We also need a flex column layout so the
+ * single widget-body child can fill height (flex > table for our sticky-footer
+ * / flex-1 layouts).
+ *
+ * Scoped to `data-slot="widget-scroll-viewport"` so it does NOT affect the
+ * generic `components/ui/scroll-area.tsx` ScrollArea.
+ *
+ * NOTE: The authoritative rule lives next to the `min-height: 100%` rule near
+ * the bottom of this file so all three selectors are co-located and cannot be
+ * silently dropped by CSS bundlers that dedupe adjacent selectors. See
+ * the `[data-slot="widget-scroll-viewport"] > div` block further down.
+ * ──────────────────────────────────────────────────────────────────────────── */
+
 /* P&L formatting utilities */
 .pnl-positive {
   color: var(--pnl-positive);
@@ -627,15 +653,37 @@
   opacity: 0.9;
 }
 
-/* Radix ScrollArea: viewport wraps children in a div with display:table + min-width:100% only.
-   Without min-height, fill-height children (h-full charts) collapse and leave empty space below. */
-[data-slot="widget-scroll-viewport"] > div,
-[data-slot="scroll-area-viewport"] > div {
+/* ─────────────────────────────────────────────────────────────────────────────
+ * WidgetScroll viewport inner-wrapper overrides (authoritative block)
+ *
+ * Radix ScrollArea.Viewport injects its children inside a div with the inline
+ * style `display: table; min-width: 100%`. That `display: table` lets the
+ * content "shrink-wrap" to the widest descendant — for our widget shells this
+ * blows the toolbar out past the widget card's right edge (Orders / Positions
+ * tables: a wide <table> pushes the inner wrapper to ~2000px while the widget
+ * card is ~1000px, clipping the Refresh / Columns / Export buttons off-screen).
+ *
+ * Fix: force `display: flex; flex-direction: column` so the inner wrapper
+ * obeys its parent's width and lets the body contribute its own horizontal
+ * overflow (DataTable has its own overflow-x-auto container). `!important` is
+ * required because the `display` property is set inline by Radix, and inline
+ * styles otherwise win.
+ *
+ * Keep `min-width: 100%` so the inner wrapper still fills the viewport when
+ * content is narrower than the card (otherwise borders/backgrounds shrink).
+ * `min-height: 100%` preserves vertical fill for widgets with `h-full` bodies.
+ *
+ * Scoped to `data-slot="widget-scroll-viewport"` so the generic
+ * `components/ui/scroll-area.tsx` ScrollArea is not affected. `scroll-area-
+ * viewport` only receives `min-height` (its layout is not toolbar-based).
+ * ──────────────────────────────────────────────────────────────────────────── */
+[data-slot="widget-scroll-viewport"] > div {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 100% !important;
   min-height: 100%;
 }
 
-/* Single root inside scroll (typical widget): stretch to full viewport height */
-[data-slot="widget-scroll-viewport"] > div:only-child {
-  display: flex;
-  flex-direction: column;
+[data-slot="scroll-area-viewport"] > div {
+  min-height: 100%;
 }

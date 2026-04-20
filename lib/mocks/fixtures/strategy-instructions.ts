@@ -69,6 +69,58 @@ export const MOCK_STRATEGY_INSTRUCTIONS: StrategyInstruction[] = [
       slippageBps: 3.0,
       status: "FILLED",
     },
+    // Sample of the richer backend shape — used by the instructions-detail-pane
+    // redesign spike (see findings doc #6 + plan
+    // `unified-trading-pm/plans/ai/instructions-detail-pane-redesign.md`).
+    audit: {
+      instructionId: "7f3a0c1e-8e2c-4a19-9b4f-11b90d3c4a77",
+      submittedBy: "ops.alice@cosmictrader.io",
+      submittedAt: "2026-03-23T10:33:42Z",
+      reason: "rebalance_usdc_reserves",
+      executionMode: "EXECUTE",
+      sourceReference: "0xa13f…c9b2",
+    },
+    org: {
+      clientId: "CLIENT_ALPHA",
+      strategyId: "DEFI_AAVE_LEND_USDC_V1",
+      portfolioId: "PORTFOLIO_DEFI_CORE",
+      accountId: "SAFE_0x8f…2bdf",
+      category: "defi",
+    },
+    routing: {
+      fromVenue: "AAVEV3-ETHEREUM",
+      toVenue: "UNISWAPV3-ETHEREUM",
+      tokenIn: "aUSDC",
+      tokenOut: "USDT",
+      amount: 5000,
+    },
+    guardrails: {
+      orderType: "LIMIT",
+      limitPrice: 1.001,
+      maxSlippageBps: 10,
+      benchmarkPrice: 1.0001,
+      benchmarkType: "TWAP",
+    },
+    onChain: {
+      gasLimit: 350000,
+      priorityFeeGwei: 2.5,
+      deadlineTimestamp: "2026-03-23T10:38:45Z",
+      transactionHash: "0xdeadbeefcafef00d0000000000000000abcdef0123456789fedcba9876543210",
+      blockNumber: 19234567,
+      gasUsed: 287433,
+      gasPriceGwei: 18.2,
+    },
+    timeline: [
+      { at: "2026-03-23T10:33:42Z", kind: "SUBMITTED" },
+      { at: "2026-03-23T10:33:43Z", kind: "ACK" },
+      { at: "2026-03-23T10:33:45Z", kind: "FILLED", detail: { fillQty: 4998.5, fillPrice: 1.0005 } },
+      { at: "2026-03-23T10:33:59Z", kind: "SETTLED", detail: { blockNumber: 19234567 } },
+    ],
+    metadata: {
+      pool: "USDC/USDT 0.05%",
+      router: "uniswap_v3_universal",
+      priceImpactBps: 1.2,
+    },
   },
   {
     id: "inst-004",

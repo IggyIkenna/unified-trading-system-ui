@@ -90,6 +90,11 @@ interface TableWidgetProps<TData> {
   data: TData[];
   filterConfig?: TableFilterConfig;
   actions?: TableActionsConfig;
+  /**
+   * Optional KPI summary strip (or any content) rendered on the left of the toolbar row,
+   * before filters. Keeps summary + filters + action buttons on a single row when they fit.
+   */
+  summary?: React.ReactNode;
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
@@ -106,6 +111,7 @@ function TableWidget<TData>({
   data,
   filterConfig,
   actions,
+  summary,
   isLoading,
   error,
   onRetry,
@@ -181,128 +187,142 @@ function TableWidget<TData>({
         ? assetClass.active[0]
         : `${assetClass.active.length} classes`;
 
-  const hasFilters = !!search || (selectFilters && selectFilters.length > 0) || !!assetClass;
-
-  // Columns, Refresh, Export are always rendered — right side always has content.
-  const hasRightActions = true;
+  // Label visibility for right-side action buttons — shown only when the toolbar
+  // container is wide enough; otherwise the buttons collapse to icon-only.
+  const actionLabel = "hidden @[44rem]/tbt:inline";
 
   const toolbar = (
-    <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/40 bg-muted/10 overflow-x-auto min-w-0">
-      {/* ── Left: filter controls ── */}
+    <div className="@container/tbt flex flex-wrap items-center gap-x-2 gap-y-1 px-3 py-1.5 border-b border-border/40 bg-muted/10 min-w-0">
+      {/* ── Left group: summary + filters (wraps within its own flow) ── */}
+      <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
+        {summary && <div className="min-w-0">{summary}</div>}
 
-      {search && (
-        <div className="relative shrink-0">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
-          <Input
-            value={search.query}
-            onChange={(e) => search.onChange(e.target.value)}
-            placeholder={search.placeholder ?? "Search…"}
-            className="h-8 pl-7 pr-2 text-xs w-40"
-          />
-        </div>
-      )}
+        {search && (
+          <div className="relative shrink-0">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+            <Input
+              value={search.query}
+              onChange={(e) => search.onChange(e.target.value)}
+              placeholder={search.placeholder ?? "Search…"}
+              className="h-8 pl-7 pr-2 text-xs w-40"
+            />
+          </div>
+        )}
 
-      {selectFilters?.map((f, idx) => (
-        <Select key={idx} value={f.value} onValueChange={f.onChange}>
-          <SelectTrigger size="sm" className={cn("text-xs shrink-0", f.width ?? "w-32")}>
-            <SelectValue placeholder={f.placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{f.allLabel}</SelectItem>
-            {f.options
-              .filter((o) => o.value)
-              .map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-      ))}
+        {selectFilters?.map((f, idx) => (
+          <Select key={idx} value={f.value} onValueChange={f.onChange}>
+            <SelectTrigger size="sm" className={cn("text-xs shrink-0", f.width ?? "w-32")}>
+              <SelectValue placeholder={f.placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{f.allLabel}</SelectItem>
+              {f.options
+                .filter((o) => o.value)
+                .map((o) => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        ))}
 
-      {assetClass && (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className={cn("gap-1 text-xs shrink-0", assetClass.active.length > 0 && "border-primary/50 text-primary")}
-            >
-              {assetClassLabel}
-              <ChevronDown className="size-3 opacity-60" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-48 p-3" align="start">
-            <p className="text-[10px] text-muted-foreground mb-2 font-medium">Asset class</p>
-            <div className="space-y-1.5">
-              {assetClass.options.map((opt) => (
-                <div key={opt} className="flex items-center gap-2">
-                  <Checkbox
-                    id={`tw-asset-${opt}`}
-                    checked={assetClass.active.includes(opt)}
-                    onCheckedChange={() => assetClass.onToggle(opt)}
-                  />
-                  <Label htmlFor={`tw-asset-${opt}`} className="text-xs font-normal cursor-pointer">
-                    {opt}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
-      )}
-
-      {onReset && activeFilterCount > 0 && (
-        <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground shrink-0" onClick={onReset}>
-          <RotateCcw className="size-3" />
-          Reset ({activeFilterCount})
-        </Button>
-      )}
-
-      {/* ── Spacer — only needed when both sides have content ── */}
-      {(hasFilters || hasRightActions) && <div className="flex-1 min-w-2" />}
-
-      {/* ── Right: action controls ── */}
-
-      {actions?.extraActions}
-
-      {actions?.dataFreshness && (
-        <DataFreshness
-          lastUpdated={actions.dataFreshness.lastUpdated}
-          isWebSocket={actions.dataFreshness.isWebSocket}
-          isBatch={actions.dataFreshness.isBatch}
-        />
-      )}
-
-      <Button variant="ghost" size="sm" className="gap-1 text-xs shrink-0" onClick={() => actions?.onRefresh?.()}>
-        <RefreshCw className="size-3" />
-        Refresh
-      </Button>
-
-      {hideableColumns.length > 0 && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1 text-xs shrink-0">
-              <Columns className="size-3.5" />
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {hideableColumns.map(({ id, label }) => (
-              <DropdownMenuCheckboxItem
-                key={id}
-                className="capitalize text-xs"
-                checked={columnVisibility[id] !== false}
-                onCheckedChange={(v) => setColumnVisibility((prev) => ({ ...prev, [id]: !!v }))}
+        {assetClass && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "gap-1 text-xs shrink-0",
+                  assetClass.active.length > 0 && "border-primary/50 text-primary",
+                )}
               >
-                {label}
-              </DropdownMenuCheckboxItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+                {assetClassLabel}
+                <ChevronDown className="size-3 opacity-60" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-3" align="start">
+              <p className="text-[10px] text-muted-foreground mb-2 font-medium">Asset class</p>
+              <div className="space-y-1.5">
+                {assetClass.options.map((opt) => (
+                  <div key={opt} className="flex items-center gap-2">
+                    <Checkbox
+                      id={`tw-asset-${opt}`}
+                      checked={assetClass.active.includes(opt)}
+                      onCheckedChange={() => assetClass.onToggle(opt)}
+                    />
+                    <Label htmlFor={`tw-asset-${opt}`} className="text-xs font-normal cursor-pointer">
+                      {opt}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
 
-      <ExportDropdown data={exportConfig.data} columns={exportConfig.columns} filename={exportConfig.filename} />
+        {onReset && activeFilterCount > 0 && (
+          <Button variant="ghost" size="sm" className="text-xs gap-1 text-muted-foreground shrink-0" onClick={onReset}>
+            <RotateCcw className="size-3" />
+            Reset ({activeFilterCount})
+          </Button>
+        )}
+      </div>
+
+      {/* ── Right group: action controls — ml-auto pushes right on same row; internal flex-wrap lets buttons wrap when the group itself is cramped. ── */}
+      <div className="flex flex-wrap items-center gap-2 ml-auto min-w-0">
+        {actions?.extraActions}
+
+        {actions?.dataFreshness && (
+          <DataFreshness
+            lastUpdated={actions.dataFreshness.lastUpdated}
+            isWebSocket={actions.dataFreshness.isWebSocket}
+            isBatch={actions.dataFreshness.isBatch}
+          />
+        )}
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1 text-xs shrink-0"
+          onClick={() => actions?.onRefresh?.()}
+          aria-label="Refresh"
+        >
+          <RefreshCw className="size-3" />
+          <span className={actionLabel}>Refresh</span>
+        </Button>
+
+        {hideableColumns.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1 text-xs shrink-0" aria-label="Columns">
+                <Columns className="size-3.5" />
+                <span className={actionLabel}>Columns</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {hideableColumns.map(({ id, label }) => (
+                <DropdownMenuCheckboxItem
+                  key={id}
+                  className="capitalize text-xs"
+                  checked={columnVisibility[id] !== false}
+                  onCheckedChange={(v) => setColumnVisibility((prev) => ({ ...prev, [id]: !!v }))}
+                >
+                  {label}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        <ExportDropdown
+          data={exportConfig.data}
+          columns={exportConfig.columns}
+          filename={exportConfig.filename}
+          labelClassName={actionLabel}
+        />
+      </div>
     </div>
   );
 

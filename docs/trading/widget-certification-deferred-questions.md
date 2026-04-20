@@ -368,6 +368,7 @@ These surfaced during the per-archetype widget audits. Mostly minor edits to `ar
   - **Park** — label the widgets as speculative/prototype (similar to the reserved-for-future CBD outcome), but don't wire them to real execution paths.
 - **Why this needs teammate input:** main agent has no visibility into whether AMM LP is a real desk strategy. User reports they have not been running concentrated-LP positions in-session, but desks may have others or plans for it. If yes → codex + full archetype audit. If no → widget cleanup ticket.
 - **Widget-cert impact if codified:** the §2 matrix ALP column needs real per-widget verdicts (currently mostly ➖). `defi-liquidity-widget` inherits the §3.1 `strategy_id: "AMM_LP"` fix regardless of the codification outcome (attribution shouldn't depend on catalog presence).
+- **Cross-reference:** tracked in the live review findings doc as issue #11 ([docs/audits/live-review-findings.md](../audits/live-review-findings.md)). The findings-doc row stays `[>]` (deferred) pending teammate call; flip to `[x]` once the archetype is either codified or the widgets are removed.
 
 ### Ask for teammate (codex section)
 
