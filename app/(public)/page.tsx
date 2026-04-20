@@ -4,7 +4,7 @@ import { MarketingStaticFromFile } from "@/components/marketing/marketing-static
 export const metadata: Metadata = {
   title: "Odum Research — FCA-Regulated Investment Manager & Trading Platform",
   description:
-    "Five commercial paths on one regulated operating system: Investment Management, DART Signals-In, DART Full, Signals Service (Signals-Out), and Regulatory Umbrella.",
+    "Five commercial paths on one regulated operating system: Investment Management, DART Signals-In, DART Full, Odum Signals, and Regulatory Umbrella.",
 };
 
 export default function PublicHomePage() {

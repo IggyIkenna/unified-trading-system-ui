@@ -116,7 +116,7 @@ export default function DartSignalsInPage() {
                   href="/signals"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Signals Service (Signals-Out)
+                  Odum Signals
                 </Link>
                 , where Odum-generated signals flow out to a counterparty who
                 executes on their own infrastructure.
@@ -227,7 +227,7 @@ export default function DartSignalsInPage() {
                   href="/signals"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Signals Service (Signals-Out)
+                  Odum Signals
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}

@@ -88,6 +88,18 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     definition:
       "An FCA-recognised legal status where a firm operates regulated activity under another firm's authorisation. Reg Umbrella clients become an AR (or equivalent) of Odum.",
   },
+  aif: {
+    id: "aif",
+    label: "AIF",
+    definition:
+      "Alternative Investment Fund — a collective-investment vehicle raising capital from professional investors against a defined policy. Covers hedge funds, private-equity funds, and most non-retail crypto and DeFi funds under EU law.",
+  },
+  aifm: {
+    id: "aifm",
+    label: "AIFM",
+    definition:
+      "Alternative Investment Fund Manager — the EU-regulated role responsible for managing an AIF. Odum uses an EU-regulated affiliate with AIFM permissions to cover activity outside UK FCA scope.",
+  },
   hwm: {
     id: "hwm",
     label: "high-water mark",
@@ -219,6 +231,36 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     label: "VWAP",
     definition:
       "Volume-Weighted Average Price — an execution algorithm that paces participation with observed venue volume, and the corresponding price benchmark.",
+  },
+  "odum-signals": {
+    id: "odum-signals",
+    label: "Odum Signals",
+    definition:
+      "Odum's outbound signal-leasing service. Odum-generated trading signals delivered to counterparty webhook or REST-pull endpoints under HMAC-signed envelopes.",
+  },
+  "dart-full": {
+    id: "dart-full",
+    label: "DART Full",
+    definition:
+      "DART Full: unrestricted platform access — research, ML, strategy promotion, execution, analytics, reporting.",
+  },
+  "dart-signals-in": {
+    id: "dart-signals-in",
+    label: "DART Signals-In",
+    definition:
+      "DART Signals-In: restricted DART tier. Client provides trading instructions via signal webhooks; Odum executes. No research, ML, or strategy-promote access.",
+  },
+  "regulatory-umbrella": {
+    id: "regulatory-umbrella",
+    label: "Regulatory Umbrella",
+    definition:
+      "Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage).",
+  },
+  "investment-management": {
+    id: "im",
+    label: "Investment Management",
+    definition:
+      "Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
   },
 };
 

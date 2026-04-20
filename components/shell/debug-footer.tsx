@@ -6,15 +6,48 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { PERSONAS } from "@/lib/auth/personas";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { resetDemo } from "@/lib/reset-demo";
 import { cn } from "@/lib/utils";
 import { Bug, ChevronUp, RotateCcw, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+
+/**
+ * Persona tier grouping for the mock-mode switcher. The debug footer lists
+ * every persona from `lib/auth/personas.ts` so operators can exercise any
+ * access slice without retyping emails.
+ */
+interface PersonaGroup {
+  readonly label: string;
+  readonly ids: readonly string[];
+}
+
+const PERSONA_GROUPS: readonly PersonaGroup[] = [
+  { label: "Admin", ids: ["admin"] },
+  { label: "Internal", ids: ["internal-trader", "im-desk-operator"] },
+  {
+    label: "DART Full",
+    ids: ["client-full", "client-premium", "client-data-only", "prospect-dart"],
+  },
+  { label: "DART Signals-In", ids: ["prospect-signals-only"] },
+  {
+    label: "Investment Management",
+    ids: ["client-im-pooled", "client-im-sma", "prospect-im"],
+  },
+  {
+    label: "Regulatory Umbrella",
+    ids: ["client-regulatory", "prospect-regulatory"],
+  },
+  { label: "Investor Relations", ids: ["investor", "advisor"] },
+  { label: "Platform / DeFi Demo", ids: ["prospect-platform", "elysium-defi"] },
+];
 
 /**
  * Debug Footer — ONLY visible in mock mode.
@@ -63,40 +96,15 @@ export function DebugFooter() {
     localStorage.removeItem("portal_user");
     localStorage.removeItem("portal_token");
     localStorage.removeItem("odum_user");
-    // Find persona email and log in with demo password
-    const persona = personas.find((p) => p.id === personaId);
+    // Resolve persona email from the PERSONAS SSOT — keeps the switcher in
+    // sync with lib/auth/personas.ts without hand-maintained email maps.
+    const persona = PERSONAS.find((p) => p.id === personaId);
     if (!persona) return;
-    const emails: Record<string, string> = {
-      admin: "admin@odum.internal",
-      "internal-trader": "trader@odum.internal",
-      "client-full": "pm@alphacapital.com",
-      "client-premium": "cio@vertex.com",
-      "client-data-only": "analyst@betafund.com",
-      "elysium-defi": "patrick@bankelysium.com",
-    };
-    const email = emails[personaId];
-    if (email) {
-      await loginByEmail(email, "demo");
-      router.refresh();
-    }
+    await loginByEmail(persona.email, persona.password);
+    router.refresh();
   };
 
-  const personas = [
-    { id: "admin", label: "Admin", desc: "Full system access" },
-    {
-      id: "internal-trader",
-      label: "Internal Trader",
-      desc: "Platform + wildcard",
-    },
-    { id: "client-full", label: "Client (Full)", desc: "Alpha Capital" },
-    {
-      id: "client-premium",
-      label: "Client (Premium)",
-      desc: "Vertex Partners",
-    },
-    { id: "client-data-only", label: "Client (Basic)", desc: "Beta Fund" },
-    { id: "elysium-defi", label: "DeFi Client", desc: "Elysium (Patrick)" },
-  ];
+  const activePersona = user ? PERSONAS.find((p) => p.id === user.id) : undefined;
 
   return (
     <footer
@@ -110,11 +118,23 @@ export function DebugFooter() {
         </Badge>
 
         {user && (
-          <span className="text-amber-300/70 hidden sm:flex items-center gap-1">
+          <span
+            className="text-amber-300/70 hidden sm:flex items-center gap-1"
+            data-testid="debug-footer-active-persona"
+          >
             <User className="inline size-3" />
             <span className="truncate max-w-[8rem]">{user.displayName}</span>
             <span className="hidden md:inline">({user.role})</span>
           </span>
+        )}
+        {activePersona && (
+          <Badge
+            variant="outline"
+            className="border-amber-400/40 text-amber-200 hidden md:inline-flex"
+            data-testid="debug-footer-active-persona-badge"
+          >
+            {activePersona.id}
+          </Badge>
         )}
       </div>
 
@@ -131,19 +151,45 @@ export function DebugFooter() {
               <ChevronUp className="size-3" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="top" className="w-56">
-            {personas.map((p) => (
-              <DropdownMenuItem
-                key={p.id}
-                onClick={() => handleSwitchPersona(p.id)}
-                className={cn(user?.id === p.id && "bg-primary/10")}
-              >
-                <div className="flex flex-col">
-                  <span className="text-sm">{p.label}</span>
-                  <span className="text-[10px] text-muted-foreground">{p.desc}</span>
-                </div>
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuContent
+            align="end"
+            side="top"
+            className="w-72 max-h-[60vh] overflow-y-auto"
+          >
+            {PERSONA_GROUPS.map((group, groupIdx) => {
+              const members = group.ids
+                .map((id) => PERSONAS.find((p) => p.id === id))
+                .filter((p): p is (typeof PERSONAS)[number] => p !== undefined);
+              if (members.length === 0) return null;
+              return (
+                <React.Fragment key={group.label}>
+                  {groupIdx > 0 && <DropdownMenuSeparator />}
+                  <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    {group.label}
+                  </DropdownMenuLabel>
+                  {members.map((p) => (
+                    <DropdownMenuItem
+                      key={p.id}
+                      onClick={() => handleSwitchPersona(p.id)}
+                      data-testid={`persona-option-${p.id}`}
+                      className={cn(user?.id === p.id && "bg-primary/10")}
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm">
+                          {p.displayName}
+                          {user?.id === p.id && (
+                            <span className="ml-1 text-[10px] text-amber-400">(active)</span>
+                          )}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {p.org.name} — {p.role}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
 

@@ -4,9 +4,9 @@ import { MarketingStaticFromFile } from "@/components/marketing/marketing-static
 import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 
 export const metadata: Metadata = {
-  title: "Signals Service (Signals-Out) — Odum Research",
+  title: "Odum Signals — Odum Research",
   description:
-    "Signals Service (Signals-Out): Odum-generated signals delivered to authenticated counterparty endpoints. The counterparty executes on its own infrastructure; Odum does not see fills, positions, or P&L.",
+    "Odum Signals: Odum-generated signals delivered to authenticated counterparty endpoints. The counterparty executes on its own infrastructure; Odum does not see fills, positions, or P&L.",
 };
 
 export default function MarketingSignalsPage() {

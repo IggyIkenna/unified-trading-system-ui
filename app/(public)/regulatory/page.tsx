@@ -204,7 +204,7 @@ export default function RegulatoryPage() {
                   href="/who-we-are"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Firm
+                  Who We Are
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}

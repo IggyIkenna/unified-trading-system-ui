@@ -139,7 +139,7 @@ export default function MarketingPlatformPage() {
                   href="/signals"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Signals Service (Signals-Out)
+                  Odum Signals
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
