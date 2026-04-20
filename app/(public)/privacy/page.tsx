@@ -71,10 +71,10 @@ export default function PrivacyPage() {
               Under GDPR, you have rights to access, correct, delete, and port
               your data. Contact{" "}
               <a
-                href="mailto:privacy@odum-research.com"
+                href="mailto:info@odum-research.com"
                 className="text-primary hover:underline"
               >
-                privacy@odum-research.com
+                info@odum-research.com
               </a>{" "}
               to exercise these rights.
             </p>
@@ -87,10 +87,10 @@ export default function PrivacyPage() {
             <p>
               For privacy inquiries:{" "}
               <a
-                href="mailto:privacy@odum-research.com"
+                href="mailto:info@odum-research.com"
                 className="text-primary hover:underline"
               >
-                privacy@odum-research.com
+                info@odum-research.com
               </a>
             </p>
             <p>Data Protection Officer: Odum Research Ltd, London, UK</p>

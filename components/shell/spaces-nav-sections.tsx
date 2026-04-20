@@ -113,6 +113,9 @@ export function SpacesNavSections() {
         <Link href="/platform">{PLATFORM_MARKETING_NAV_LABEL}</Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
+        <Link href="/signals">Odum Signals</Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
         <Link href="/regulatory">Regulatory</Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
@@ -173,6 +176,14 @@ export function SpacesNavSections() {
         accessType="signin"
       >
         DART — Research, Trading, Execution
+      </GatedMenuItem>
+      <GatedMenuItem
+        href="/services/signals/dashboard"
+        label="Odum Signals — Counterparty Dashboard"
+        sectionTitle={CLIENT_ACCESS_SECTION}
+        accessType="signin"
+      >
+        Odum Signals — Counterparty Dashboard
       </GatedMenuItem>
       {/*
        * G1.1 intentional static link — the IM Strategy Catalogue is

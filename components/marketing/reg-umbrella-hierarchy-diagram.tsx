@@ -2,11 +2,16 @@
 //
 // Regulatory umbrella hierarchy diagram — /regulatory page.
 // Static inline SVG + Tailwind. No animation, no third-party libs.
-// Shows: Regulatory Umbrella Client (Designated Representative) ->
-//   Sub-Fund 1 (pooled, N share classes) -> N end-investors
-//   Sub-Fund 2 (pooled) -> M end-investors
-//   SMA A (per end-investor) -> single book
-//   -> Venue API keys (same read-only-plus-execute model, N:1 supervisory rollup).
+// Shows the multi-vehicle hierarchy under one umbrella client:
+//   Umbrella Client (multi-vehicle mandate) ->
+//     Sub-Fund 1 (pooled, N share classes) -> N end-investors
+//     Sub-Fund 2 (pooled) -> M end-investors
+//     SMA A (per end-investor) -> single book
+//   -> Venue API keys (same scoped-key model across sub-entities; N:1 supervisory rollup).
+// The diagram is shape-agnostic — the umbrella client may operate under Odum as IM
+// of record (Shapes 1 or 2, the default) or as appointed representative of Odum
+// (Shape 3). Commercial / operational structure is identical; only the regulatory
+// posture between the umbrella client and Odum changes.
 //
 // Responsive: renders clean >= 1280px, reflows at mobile widths via the
 // surrounding flex container. The SVG uses viewBox + preserveAspectRatio
@@ -40,14 +45,14 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             Regulatory umbrella hierarchy
           </title>
           <desc id="reg-umbrella-svg-desc">
-            A regulatory umbrella client acts as designated representative,
+            A regulatory umbrella client operates a multi-vehicle mandate,
             orchestrating two sub-funds and one SMA underneath. Sub-Fund 1 is
             pooled with N share classes for N end-investors, Sub-Fund 2 is
             pooled with M share classes for M end-investors, and SMA A is a
             legally separate managed account for a single end-investor. All
-            sub-entities use the same read-only-plus-execute venue API key
-            custody model, and all supervisory artefacts flow upward to the
-            regulatory client in an N-to-one rollup.
+            sub-entities use the same scoped-venue-key model, and all
+            supervisory artefacts flow upward to the umbrella client in an
+            N-to-one rollup.
           </desc>
 
           {/* ===== Row 1: Regulatory Umbrella Client ===== */}
@@ -67,7 +72,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-emerald-900 text-[14px] font-semibold dark:fill-emerald-200"
             >
-              Regulatory Umbrella Client
+              Umbrella Client
             </text>
             <text
               x="480"
@@ -75,7 +80,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-emerald-800 text-[11px] dark:fill-emerald-400"
             >
-              Designated Representative &mdash; FCA appointed-representative
+              Multi-vehicle mandate &mdash; N sub-funds + N SMAs
             </text>
             <text
               x="480"
@@ -83,7 +88,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-emerald-700 text-[10px] dark:fill-emerald-400"
             >
-              Operator of sub-funds
+              Regulatory posture per mandate shape (Odum-as-IM default; AR optional)
             </text>
           </g>
 
@@ -689,12 +694,15 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        The regulatory client acts as designated representative for N
+        The umbrella client operates a multi-vehicle mandate spanning N
         sub-funds and N SMAs. Each sub-entity has its own share-class or SMA
-        book and uses the same read-only-plus-execute venue-key custody model
-        as Investment Management. Supervisory artefacts &mdash; NAV,
-        attribution, compliance, audit trail &mdash; roll up N-to-one into
-        the regulatory client&apos;s reporting surface.
+        book and uses the same scoped-venue-key model. Supervisory artefacts
+        &mdash; NAV, attribution, compliance, audit trail &mdash; roll up
+        N-to-one into the umbrella client&apos;s reporting surface (one
+        consolidated pane for MLRO sign-off and regulator response). The
+        hierarchy is identical across the three umbrella mandate shapes
+        (Shape 1, 2, or 3); only the regulatory posture between the umbrella
+        client and Odum differs.
       </p>
     </figure>
   );

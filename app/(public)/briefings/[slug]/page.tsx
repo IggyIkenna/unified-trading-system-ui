@@ -6,7 +6,7 @@ import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarc
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
 import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
-import { composeRenderers } from "@/components/marketing/render-with-terms";
+import { composeRenderers, renderWithTerms } from "@/components/marketing/render-with-terms";
 import {
   BRIEFING_PILLARS,
   type BriefingAppliesTo,
@@ -256,7 +256,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
               >
                 {p.title}
               </Link>
-              <p className="text-foreground/75 leading-relaxed">{p.tldr}</p>
+              <p className="text-foreground/75 leading-relaxed">{renderWithTerms(p.tldr)}</p>
             </li>
           ))}
         </ul>

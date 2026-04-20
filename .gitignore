@@ -18,6 +18,13 @@ config/docker-build.env.staging.firebase.local
 node_modules/
 .next/
 .DS_Store
+
+# Playwright / test runner outputs
+test-results/
+playwright-report/
+
+# Archive/backup zips
+*.zip
 /coverage/
 
 # pnpm is canonical — block npm's lockfile from being re-committed

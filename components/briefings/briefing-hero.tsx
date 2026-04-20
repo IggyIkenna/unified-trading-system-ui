@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { renderWithTerms } from "@/components/marketing/render-with-terms";
 import type { BriefingCta } from "@/lib/briefings/content";
 
 /**
@@ -27,7 +28,7 @@ export function BriefingHero({ title, tldr, cta }: BriefingHeroProps) {
       className="space-y-4 border-b border-border/40 pb-8"
     >
       <h1 className="text-page-title font-semibold tracking-tight">{title}</h1>
-      <p className="text-body text-foreground/90 max-w-2xl">{tldr}</p>
+      <p className="text-body text-foreground/90 max-w-2xl">{renderWithTerms(tldr)}</p>
       <div className="pt-1" data-testid="briefing-primary-cta">
         <Button asChild size="sm">
           <Link href={cta.href}>{cta.label}</Link>
