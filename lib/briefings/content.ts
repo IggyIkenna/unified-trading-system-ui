@@ -510,7 +510,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       "Per-counterparty-per-strategy rate limits and per-counterparty circuit breaker. Counterparty endpoint downtime never blocks Odum's internal strategy operation.",
       "Default commercial shape is hybrid — floor monthly licence plus per-signal component plus optional counterparty-P&L share with audit rights. Flat and pure-per-signal alternatives available.",
       "Only signals from strategies not reserved for Odum's own IM mandates are licensable. Per-counterparty allowlist of slot labels. Scope starts narrow and expands with explicit commercial approval.",
-      "Backend-first today — webhook plus signed-JSON delivery log. Light observability UI (SignalHistoryTable, BacktestComparisonPanel, DeliveryHealthPanel, optional PnlAttributionPanel) is on the roadmap.",
+      "Initial delivery is the webhook plus signed-JSON delivery log. The light observability UI (SignalHistoryTable, BacktestComparisonPanel, DeliveryHealthPanel, optional PnlAttributionPanel) is scoped and shaped with you during the three-month onboarding window.",
     ],
     nextCall:
       "The 45-minute second call walks the signal families licensable against your intended flow, the payload schema depth that fits your execution infrastructure, the delivery cadence and latency expectation per strategy, authentication handshake and HMAC provisioning, and the hybrid commercial structure against your preferred balance of floor and usage-linked revenue.",

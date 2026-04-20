@@ -12,6 +12,7 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
+import { SpacesNavSections } from "@/components/shell/spaces-nav-sections";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AuthContext, type AuthState } from "@/hooks/use-auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -45,7 +46,8 @@ function UnauthWrapper({ children }: { children: React.ReactNode }) {
 
 describe("SpacesNavSections — cached briefing session", () => {
   beforeEach(() => {
-    vi.resetModules();
+    // Intentionally NOT calling vi.resetModules() — top-level imports (AuthContext,
+    // SpacesNavSections, DropdownMenu) share module identity with the provider.
     if (typeof window !== "undefined") {
       window.localStorage.clear();
     }
@@ -55,8 +57,7 @@ describe("SpacesNavSections — cached briefing session", () => {
     vi.unstubAllEnvs();
   });
 
-  it("locks code-gated items when signed-out and session empty", async () => {
-    const { SpacesNavSections } = await import("@/components/shell/spaces-nav-sections");
+  it("locks code-gated items when signed-out and session empty", () => {
     render(<SpacesNavSections />, { wrapper: UnauthWrapper });
 
     // Briefings Hub renders via LockedItemDialog → has the lock-trigger testid.
@@ -67,9 +68,8 @@ describe("SpacesNavSections — cached briefing session", () => {
     expect(devDocs).toBeTruthy();
   });
 
-  it("treats code-gated items as unlocked when briefing session is active — no dialog, plain link", async () => {
+  it("treats code-gated items as unlocked when briefing session is active — no dialog, plain link", () => {
     window.localStorage.setItem("odum-briefing-session", "1");
-    const { SpacesNavSections } = await import("@/components/shell/spaces-nav-sections");
     render(<SpacesNavSections />, { wrapper: UnauthWrapper });
 
     // Briefings Hub and Developer Documentation should now be plain links.
@@ -84,9 +84,8 @@ describe("SpacesNavSections — cached briefing session", () => {
     expect(ir).toBeTruthy();
   });
 
-  it("Research & Documentation section drops the lock hint when session is active", async () => {
+  it("Research & Documentation section drops the lock hint when session is active", () => {
     window.localStorage.setItem("odum-briefing-session", "1");
-    const { SpacesNavSections } = await import("@/components/shell/spaces-nav-sections");
     render(<SpacesNavSections />, { wrapper: UnauthWrapper });
 
     // With session active, the section renders the compact label (no hint line).
