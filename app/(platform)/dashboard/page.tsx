@@ -4,10 +4,12 @@ import { ActivityFeed } from "@/components/platform/activity-feed";
 import { HealthBar } from "@/components/platform/health-bar";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { StatusDot } from "@/components/shared/status-badge";
-import { Badge } from "@/components/ui/badge";
+import {
+  ServiceTile,
+  mockServiceDegraded,
+} from "@/components/services/ServiceTile";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
 import type { Entitlement } from "@/lib/config/auth";
 import type { ServiceDefinition } from "@/lib/config/services";
@@ -15,22 +17,20 @@ import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { PLATFORM_LIFECYCLE_CONFIG, PLATFORM_LIFECYCLE_STAGES, type PlatformLifecycleStage } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+import { useTileLockState } from "@/lib/visibility/use-tile-lock-state";
+import type { TileLockState } from "@/lib/visibility/tile-lock-state";
 import {
   Activity,
   AlertTriangle,
-  ArrowUpCircle,
   BarChart3,
   Brain,
   ChevronRight,
   Clock,
   Database,
   DollarSign,
-  Eye,
   FileText,
   FlaskConical,
-  Lock,
   Radio,
-  Settings2,
   Shield,
   TrendingUp,
 } from "lucide-react";
@@ -38,19 +38,6 @@ import Link from "next/link";
 import * as React from "react";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-
-// ─── Icon map for services ────────────────────────────────────────────────────
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  Database,
-  FlaskConical,
-  ArrowUpCircle,
-  TrendingUp,
-  Eye,
-  Settings2,
-  FileText,
-  Settings: Settings2,
-};
 
 // ─── Role-aware KPI definitions ───────────────────────────────────────────────
 // Each entitlement tier sees KPIs relevant to their subscription.
@@ -321,8 +308,15 @@ export default function DashboardPage() {
               {allServices
                 .filter((svc) => PLATFORM_LIFECYCLE_STAGES.includes(svc.lifecycleStage as PlatformLifecycleStage))
                 .map((svc) => {
-                  const isLocked = !visibleKeys.has(svc.key);
-                  return <ServiceCard key={svc.key} service={svc} locked={isLocked} isLive={isLive} />;
+                  const entitlementLocked = !visibleKeys.has(svc.key);
+                  return (
+                    <ServiceCardWrapper
+                      key={svc.key}
+                      service={svc}
+                      entitlementLocked={entitlementLocked}
+                      isLive={isLive}
+                    />
+                  );
                 })}
             </div>
           </div>
@@ -475,96 +469,53 @@ function useServiceQuickStat(key: string, isLive: boolean): string | undefined {
   }, [key, isLive]);
 }
 
-function ServiceCard({ service, locked, isLive }: { service: ServiceDefinition; locked: boolean; isLive: boolean }) {
-  const Icon = ICON_MAP[service.icon] ?? Database;
-  const stageConfig =
-    PLATFORM_LIFECYCLE_CONFIG[service.lifecycleStage as PlatformLifecycleStage] ?? PLATFORM_LIFECYCLE_CONFIG.acquire;
+/**
+ * Wrapper that resolves the three-state `lockState` for a service tile and
+ * delegates rendering to the shared `<ServiceTile>` primitive (G1.3).
+ *
+ * Two lock-signals feed in today:
+ *   1. `entitlementLocked` — derived from `getVisibleServices()` (true when
+ *      the user lacks any required entitlement). Renders as `padlocked-visible`
+ *      — shows the tile with a lock affordance and CTA copy.
+ *   2. `useTileLockState(key)` — stub hook reserved for the restriction-profile
+ *      engine (Refactor G1.7). Once wired, the engine's output overrides the
+ *      entitlement-derived default (e.g. a demo profile may force
+ *      `padlocked-visible` even for entitlements the admin backend grants).
+ *
+ * The merge rule today: if the profile hook returns anything other than
+ * `"unlocked"`, it wins; otherwise fall back to the entitlement-locked default.
+ * This is deliberately a stub: G1.7 owns the real fan-in.
+ */
+function ServiceCardWrapper({
+  service,
+  entitlementLocked,
+  isLive,
+}: {
+  service: ServiceDefinition;
+  entitlementLocked: boolean;
+  isLive: boolean;
+}) {
+  const profileLockState = useTileLockState(service.key);
+  const resolvedLockState: TileLockState =
+    profileLockState !== "unlocked"
+      ? profileLockState
+      : entitlementLocked
+        ? "padlocked-visible"
+        : "unlocked";
+
   const quickStat = useServiceQuickStat(service.key, isLive);
-
-  // Mock health — in production this comes from the API
-  const health = React.useMemo(() => {
-    if (locked) return "locked";
-    return mock01(serviceKeySalt(service.key), 701) > 0.9 ? "degraded" : "healthy";
-  }, [locked, service.key]);
-
-  if (locked) {
-    return (
-      <Card className="border-border/40 bg-gradient-to-br from-background to-muted/20">
-        <CardContent className="p-4 flex gap-3">
-          <div className="flex-shrink-0 mt-0.5">
-            <div className="size-8 rounded-lg bg-muted/50 flex items-center justify-center">
-              <Lock className="size-3.5 text-muted-foreground/60" />
-            </div>
-          </div>
-          <div className="space-y-1.5 min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">{service.label}</span>
-              <Badge className="text-[8px] px-1.5 py-0 bg-gradient-to-r from-amber-500/10 to-amber-500/5 text-amber-400 border-amber-500/20">
-                Available on upgrade
-              </Badge>
-            </div>
-            <p className="text-[11px] text-muted-foreground/50 leading-relaxed line-clamp-2">{service.description}</p>
-            <Link
-              href={`/services/${service.key}`}
-              className="text-[10px] text-primary/70 hover:text-primary transition-colors"
-            >
-              Learn what&apos;s included &rarr;
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const degraded = React.useMemo(
+    () => (resolvedLockState === "unlocked" ? mockServiceDegraded(service.key) : false),
+    [resolvedLockState, service.key],
+  );
 
   return (
-    <Link href={service.href}>
-      <Card
-        className={cn(
-          "group hover:border-white/20 transition-colors cursor-pointer h-full",
-          health === "degraded" && "border-amber-500/20",
-        )}
-      >
-        <CardContent className="p-4 flex gap-3">
-          <div className={cn("flex-shrink-0 mt-0.5", stageConfig.color)}>
-            <Icon className="size-4" />
-          </div>
-          <div className="space-y-1 min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium group-hover:text-white transition-colors">{service.label}</span>
-              <span className={cn("text-[8px] uppercase tracking-wider", stageConfig.color)}>{stageConfig.label}</span>
-              {/* Health dot */}
-              <TooltipProvider delayDuration={0}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="ml-auto inline-flex flex-shrink-0">
-                      <StatusDot
-                        status={health === "healthy" ? "live" : health === "degraded" ? "in_progress" : "idle"}
-                        className={cn("size-1.5", health === "degraded" && "animate-pulse")}
-                      />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">
-                    {health === "healthy" ? "All systems operational" : "Degraded performance"}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-            {health === "degraded" ? (
-              <p className="text-[11px] text-amber-400/80 leading-relaxed flex items-center gap-1">
-                <AlertTriangle className="size-3 shrink-0" />
-                Degraded — elevated latency
-              </p>
-            ) : (
-              <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">{service.description}</p>
-            )}
-            {quickStat && (
-              <p className="text-[10px] font-mono text-muted-foreground/80 mt-0.5">{quickStat}</p>
-            )}
-          </div>
-          <ChevronRight className="size-3.5 text-muted-foreground/20 group-hover:text-muted-foreground flex-shrink-0 mt-1 transition-colors" />
-        </CardContent>
-      </Card>
-    </Link>
+    <ServiceTile
+      service={service}
+      lockState={resolvedLockState}
+      quickStat={quickStat}
+      degraded={degraded}
+    />
   );
 }
 
