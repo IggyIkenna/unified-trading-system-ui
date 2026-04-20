@@ -29,6 +29,30 @@ export default function MarketingSignalsPage() {
           </div>
         </div>
       </section>
+      {/* Existing counterparty CTA — gated by login, routes to tenant-scoped dashboard. */}
+      <section className="border-t border-border/40 bg-background">
+        <div className="container px-4 py-10 md:px-6">
+          <div className="mx-auto max-w-4xl rounded-lg border border-border bg-card/30 p-6">
+            <h2 className="text-sm font-semibold text-foreground">
+              Already a counterparty?
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              View your tenant-scoped signal history, delivery health, and
+              backtest comparison. Login required; counterparty-type users are
+              routed directly to the dashboard after auth.
+            </p>
+            <div className="mt-4">
+              <Link
+                href="/services/signals/dashboard"
+                data-testid="signals-public-counterparty-cta"
+                className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+              >
+                View your dashboard &rarr;
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Related — React-level sibling-links (shadow DOM above is untouched). */}
       <section className="border-t border-border/40 bg-background">
         <div className="container px-4 py-10 md:px-6">
