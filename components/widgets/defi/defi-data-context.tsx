@@ -302,7 +302,7 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
         } else if (row.instruction_type === "STAKE") {
           row.strategy_id = "STAKED_BASIS";
         } else if (row.instruction_type === "ADD_LIQUIDITY" || row.instruction_type === "REMOVE_LIQUIDITY") {
-          row.strategy_id = "AMM_LP";
+          row.strategy_id = "ACTIVE_LP";
         }
       }
 

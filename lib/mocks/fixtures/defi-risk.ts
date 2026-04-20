@@ -65,7 +65,7 @@ export const STRATEGY_RISK_PROFILES: StrategyRiskProfile[] = [
     risk_notes: "Directional ETH exposure at 2.5x. No perp hedge. Full downside risk amplified by leverage.",
   },
   {
-    strategy_id: "AMM_LP",
+    strategy_id: "ACTIVE_LP",
     health_factor: 1.45,
     protocol_risk: "low",
     coin_isolated_risk: "medium",
@@ -73,6 +73,16 @@ export const STRATEGY_RISK_PROFILES: StrategyRiskProfile[] = [
     funding_rate_risk: "low",
     liquidity_risk_pct: 0.6,
     risk_notes: "Concentrated IL amplified by range width. Out-of-range = no fees. Rebalance cost.",
+  },
+  {
+    strategy_id: "PASSIVE_LP",
+    health_factor: 1.6,
+    protocol_risk: "low",
+    coin_isolated_risk: "low",
+    basis_risk: "low",
+    funding_rate_risk: "low",
+    liquidity_risk_pct: 0.3,
+    risk_notes: "Passive pool — no active range management. IL follows pool composition; fee yield only.",
   },
 ];
 
@@ -184,7 +194,8 @@ export const MOCK_TREASURY: TreasurySnapshot = {
     MULTICHAIN_LENDING: 40000,
     CROSS_CHAIN_YIELD_ARB: 0,
     CROSS_CHAIN_SOR: 0,
-    AMM_LP: 0,
+    ACTIVE_LP: 0,
+    PASSIVE_LP: 0,
     LIQUIDATION_CAPTURE: 0,
   },
   per_token_balance: {

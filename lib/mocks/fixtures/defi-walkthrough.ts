@@ -184,19 +184,13 @@ export const DEFAULT_REWARD_FACTORS_BY_ARCHETYPE: Partial<Record<StrategyArchety
     { key: "borrow_cost", label: "Borrow cost (WETH)", amount: -880 },
     { key: "leverage_factor", label: "Leverage uplift (2.5x)", amount: 540 },
   ],
-  // Note: AMM LP (ALP) archetype has no v2 enum mapping yet; retained in the
-  // getter below for preset lookups keyed on legacy strategy_id "AMM_LP".
+  // Market making — DeFi LP sub-modes roll up under MARKET_MAKING_CONTINUOUS (codex §13).
+  MARKET_MAKING_CONTINUOUS: [
+    { key: "fees_earned", label: "LP fees earned (30d)", amount: 1240 },
+    { key: "il_realised", label: "Impermanent loss realised", amount: -380 },
+    { key: "incentive_rewards", label: "Incentive rewards (UNI / OP)", amount: 220 },
+  ],
 };
-
-/**
- * AMM LP default factor list. Keyed by legacy strategy_id because v2 enums
- * do not yet carry an AMM_LP archetype.
- */
-export const AMM_LP_REWARD_FACTORS: RewardPnLBreakdown = [
-  { key: "fees_earned", label: "LP fees earned (30d)", amount: 1240 },
-  { key: "il_realised", label: "Impermanent loss realised", amount: -380 },
-  { key: "incentive_rewards", label: "Incentive rewards (UNI / OP)", amount: 220 },
-];
 
 /**
  * Default fallback when the strategy archetype is unknown — staking list,
@@ -207,11 +201,9 @@ export const MOCK_REWARD_PNL: RewardPnLBreakdown =
 
 /**
  * Look up the default factor list for a strategy identified by v2 archetype.
- * Falls back to AMM LP when the legacy `AMM_LP` strategy_id is passed; falls
- * back to the staking default otherwise.
+ * Falls back to the staking default when the archetype is unrecognised.
  */
-export function getDefaultRewardFactors(archetype: StrategyArchetypeV2 | "AMM_LP" | undefined): RewardPnLBreakdown {
-  if (archetype === "AMM_LP") return AMM_LP_REWARD_FACTORS;
+export function getDefaultRewardFactors(archetype: StrategyArchetypeV2 | undefined): RewardPnLBreakdown {
   if (archetype && DEFAULT_REWARD_FACTORS_BY_ARCHETYPE[archetype]) {
     return DEFAULT_REWARD_FACTORS_BY_ARCHETYPE[archetype] as RewardPnLBreakdown;
   }
@@ -224,7 +216,7 @@ export function getDefaultRewardFactors(archetype: StrategyArchetypeV2 | "AMM_LP
  * replaced by `instance.archetype` once the backend instance contract
  * plumbs archetype through to the UI.
  */
-export const STRATEGY_ID_TO_ARCHETYPE: Partial<Record<DeFiStrategyId, StrategyArchetypeV2 | "AMM_LP">> = {
+export const STRATEGY_ID_TO_ARCHETYPE: Partial<Record<DeFiStrategyId, StrategyArchetypeV2>> = {
   AAVE_LENDING: "YIELD_ROTATION_LENDING",
   ETH_LENDING: "YIELD_ROTATION_LENDING",
   MULTICHAIN_LENDING: "YIELD_ROTATION_LENDING",
@@ -237,7 +229,8 @@ export const STRATEGY_ID_TO_ARCHETYPE: Partial<Record<DeFiStrategyId, StrategyAr
   RECURSIVE_STAKED_BASIS: "CARRY_RECURSIVE_STAKED",
   UNHEDGED_RECURSIVE: "CARRY_RECURSIVE_STAKED",
   USDT_HEDGED_RECURSIVE: "CARRY_RECURSIVE_STAKED",
-  AMM_LP: "AMM_LP",
+  ACTIVE_LP: "MARKET_MAKING_CONTINUOUS",
+  PASSIVE_LP: "MARKET_MAKING_CONTINUOUS",
   LIQUIDATION_CAPTURE: "LIQUIDATION_CAPTURE",
   CROSS_CHAIN_SOR: "ARBITRAGE_PRICE_DISPERSION",
 };

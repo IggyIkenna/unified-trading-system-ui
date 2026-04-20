@@ -346,7 +346,9 @@ export const DEFI_STRATEGY_SCHEMAS: Record<DeFiStrategyId, StrategyConfigSchema>
     ],
   },
 
-  AMM_LP: {
+  // MARKET_MAKING_CONTINUOUS Sub-mode B — Uniswap V3 concentrated-liquidity (actively
+  // managed range, fee + IL exposure). Codex `category-instrument-coverage.md` §13.
+  ACTIVE_LP: {
     fields: [
       { key: "pool_pair", label: "Pool Pair", type: "dropdown", options: LP_POOL_OPTIONS, default: "ETH-USDC" },
       { key: "range_width_pct", label: "Range Width", type: "number", suffix: "%", step: 1, default: 10 },
@@ -358,6 +360,15 @@ export const DEFI_STRATEGY_SCHEMAS: Record<DeFiStrategyId, StrategyConfigSchema>
         step: 1,
         default: 5,
       },
+      { key: "chain", label: "Chain", type: "dropdown", options: CHAIN_OPTIONS, default: "ETHEREUM" },
+    ],
+  },
+
+  // MARKET_MAKING_CONTINUOUS Sub-mode C — Curve / Balancer / Uniswap V2 passive pools
+  // (no active range management; fee yield only). Codex §13.
+  PASSIVE_LP: {
+    fields: [
+      { key: "pool_pair", label: "Pool Pair", type: "dropdown", options: LP_POOL_OPTIONS, default: "ETH-USDC" },
       { key: "chain", label: "Chain", type: "dropdown", options: CHAIN_OPTIONS, default: "ETHEREUM" },
     ],
   },
@@ -449,7 +460,13 @@ export const DEFI_STRATEGY_FAMILIES: StrategyFamilyGroup<DeFiStrategyId>[] = [
       { id: "CROSS_CHAIN_SOR", name: "Cross-Chain SOR" },
     ],
   },
-  { label: "LP / Market Making", strategies: [{ id: "AMM_LP", name: "AMM LP (Uniswap V3/V4)" }] },
+  {
+    label: "Market Making (DeFi LP)",
+    strategies: [
+      { id: "ACTIVE_LP", name: "Active LP (Uniswap V3)" },
+      { id: "PASSIVE_LP", name: "Passive LP (Curve / Balancer / Uniswap V2)" },
+    ],
+  },
   {
     label: "Liquidation",
     strategies: [{ id: "LIQUIDATION_CAPTURE", name: "Liquidation Capture" }],

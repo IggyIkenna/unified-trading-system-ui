@@ -45,7 +45,8 @@ export const DEFI_STRATEGY_IDS = [
   "MULTICHAIN_LENDING",
   "CROSS_CHAIN_YIELD_ARB",
   "CROSS_CHAIN_SOR",
-  "AMM_LP",
+  "ACTIVE_LP",
+  "PASSIVE_LP",
   "LIQUIDATION_CAPTURE",
 ] as const;
 
@@ -143,7 +144,8 @@ export const STRATEGY_DISPLAY_NAMES: Record<DeFiStrategyId, string> = {
   MULTICHAIN_LENDING: "Multi-Chain Lending",
   CROSS_CHAIN_YIELD_ARB: "Cross-Chain Yield Arb",
   CROSS_CHAIN_SOR: "Cross-Chain SOR",
-  AMM_LP: "AMM LP (Uniswap V3/V4)",
+  ACTIVE_LP: "Active LP (Uniswap V3)",
+  PASSIVE_LP: "Passive LP (Curve / Balancer / Uniswap V2)",
   LIQUIDATION_CAPTURE: "Liquidation Capture",
 };
 

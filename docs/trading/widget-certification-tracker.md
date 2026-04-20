@@ -11,25 +11,27 @@ Consolidated view of the 8-archetype DeFi widget audit. **Per-archetype evidence
 
 See [widget-certification-audit-plan.md](./widget-certification-audit-plan.md) for workflow.
 
+> **2026-04-20 codex sync** — PM-repo commit `83a2f95` rewrote every strategy archetype doc against a new SSOT (`category-instrument-coverage.md`). Several open items here are resolved or reshaped. See [widget-certification-codex-sync-2026-04-20.md](./widget-certification-codex-sync-2026-04-20.md) for the widget-cert-scoped diff (AMM_LP taxonomy, `strategy_id` slot-label shape, MIGRATION.md §14 routing defaults, fixture cross-check).
+
 ## 1. Audit progress
 
 All 8 codex archetypes drafted + 1 registry-gap archetype surfaced. Each doc status: `draft-awaiting-review`. User owns review; tracker will flip to ✅ reviewed once signed off.
 
-| #   | Archetype                  | Status          | Doc                                                                                               |
-| --- | -------------------------- | --------------- | ------------------------------------------------------------------------------------------------- |
-| 1   | YIELD_STAKING_SIMPLE       | ✅ drafted      | [yield-staking-simple.md](../audits/strategy-widget-findings/yield-staking-simple.md)             |
-| 2   | YIELD_ROTATION_LENDING     | ✅ drafted      | [yield-rotation-lending.md](../audits/strategy-widget-findings/yield-rotation-lending.md)         |
-| 3   | CARRY_BASIS_PERP           | ✅ drafted      | [carry-basis-perp.md](../audits/strategy-widget-findings/carry-basis-perp.md)                     |
-| 4   | CARRY_STAKED_BASIS         | ✅ drafted      | [carry-staked-basis.md](../audits/strategy-widget-findings/carry-staked-basis.md)                 |
-| 5   | CARRY_RECURSIVE_STAKED     | ✅ drafted      | [carry-recursive-staked.md](../audits/strategy-widget-findings/carry-recursive-staked.md)         |
-| 6   | ARBITRAGE_PRICE_DISPERSION | ✅ drafted      | [arbitrage-price-dispersion.md](../audits/strategy-widget-findings/arbitrage-price-dispersion.md) |
-| 7   | LIQUIDATION_CAPTURE        | ✅ drafted      | [liquidation-capture.md](../audits/strategy-widget-findings/liquidation-capture.md)               |
-| 8   | CARRY_BASIS_DATED          | ⏸️ parked       | [carry-basis-dated.md](../audits/strategy-widget-findings/carry-basis-dated.md)                   |
-| 9   | AMM_LP_PROVISION           | 🆕 gap-surfaced | (no doc yet — discovered via widget-gap audit)                                                    |
+| #   | Archetype                  | Status      | Doc                                                                                                                                                                      |
+| --- | -------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | YIELD_STAKING_SIMPLE       | ✅ drafted  | [yield-staking-simple.md](../audits/strategy-widget-findings/yield-staking-simple.md)                                                                                    |
+| 2   | YIELD_ROTATION_LENDING     | ✅ drafted  | [yield-rotation-lending.md](../audits/strategy-widget-findings/yield-rotation-lending.md)                                                                                |
+| 3   | CARRY_BASIS_PERP           | ✅ drafted  | [carry-basis-perp.md](../audits/strategy-widget-findings/carry-basis-perp.md)                                                                                            |
+| 4   | CARRY_STAKED_BASIS         | ✅ drafted  | [carry-staked-basis.md](../audits/strategy-widget-findings/carry-staked-basis.md)                                                                                        |
+| 5   | CARRY_RECURSIVE_STAKED     | ✅ drafted  | [carry-recursive-staked.md](../audits/strategy-widget-findings/carry-recursive-staked.md)                                                                                |
+| 6   | ARBITRAGE_PRICE_DISPERSION | ✅ drafted  | [arbitrage-price-dispersion.md](../audits/strategy-widget-findings/arbitrage-price-dispersion.md)                                                                        |
+| 7   | LIQUIDATION_CAPTURE        | ✅ drafted  | [liquidation-capture.md](../audits/strategy-widget-findings/liquidation-capture.md)                                                                                      |
+| 8   | CARRY_BASIS_DATED          | ⏸️ parked   | [carry-basis-dated.md](../audits/strategy-widget-findings/carry-basis-dated.md)                                                                                          |
+| 9   | AMM_LP_PROVISION           | ✅ resolved | Covered by `MARKET_MAKING_CONTINUOUS` Sub-mode B — see [market-making-continuous-active-lp.md](../audits/strategy-widget-findings/market-making-continuous-active-lp.md) |
 
-Legend: ✅ drafted (ready for user review) · ⏸️ parked (placeholder, deferred) · 🆕 gap-surfaced (archetype exists in UI widgets but not yet in codex `DEFI_STRATEGY_FAMILIES` — needs registry check)
+Legend: ✅ drafted / resolved · ⏸️ parked (placeholder, deferred) · 🆕 gap-surfaced (archetype exists in UI widgets but not yet in codex `DEFI_STRATEGY_FAMILIES` — needs registry check)
 
-**AMM_LP_PROVISION gap note:** `defi-liquidity-widget` emits `strategy_id: "AMM_LP"` with `algo_type: "AMM_CONCENTRATED"` (concentrated liquidity / Uniswap-V3-style). Monitoring surface is `active-lp-dashboard-widget` (in-range %, IL%, fees24h, TVL). Neither appears in the audited archetypes because AMM_LP is missing from the codex archetype set we audited against. Requires decision: (a) add to codex `DEFI_STRATEGY_FAMILIES` and draft a full archetype doc, or (b) declare the widgets orphan and remove from DeFi page.
+**AMM_LP_PROVISION resolution:** codex [category-instrument-coverage.md §13 `MARKET_MAKING_CONTINUOUS`](../../../unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md) splits the archetype into three sub-modes: CLOB (A), ACTIVE_LP (B — Uniswap V3), PASSIVE_LP (C — Curve / Balancer / Uniswap V2). The AMM_LP widgets map cleanly to Sub-mode B. `DEFI_STRATEGY_IDS` was split `AMM_LP` → `ACTIVE_LP` + `PASSIVE_LP`, both mapped to `MARKET_MAKING_CONTINUOUS` in `STRATEGY_ID_TO_ARCHETYPE`. Sub-mode C (PASSIVE_LP) has the config schema in place but no dedicated widget coverage yet — tracked as a follow-up in the Sub-mode B audit §3c.
 
 ## 2. Widget matrix
 

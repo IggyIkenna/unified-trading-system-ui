@@ -192,7 +192,7 @@ function defaultConfigs(): DefiStrategyStoreState {
         },
       },
       {
-        strategy_id: "AMM_LP",
+        strategy_id: "ACTIVE_LP",
         share_class: "ETH",
         status: "deployed",
         deployed_at: "2026-04-03T10:00:00Z",
