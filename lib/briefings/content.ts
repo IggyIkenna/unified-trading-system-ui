@@ -129,13 +129,15 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     sections: [
       {
         title: "Two paths — which one fits your operation",
+        appliesTo: "both",
         body:
-          "Signals-only clients plug their own strategy outputs into Odum's execution and reporting stack. Full-pipeline clients additionally use Odum's research, backtest, and promote layer to author strategies on Odum data. The upgrade from signals-only to full pipeline is a formal commercial event, not a bolt-on — if you expect to need research during the engagement, resolve to full pipeline now. The instruction-schema fit-check in the next section resolves which path fits.",
+          "Signals-only clients plug their own strategy outputs into Odum's execution and reporting stack — continue at /briefings/dart-signals-in for the full mechanic. Full-pipeline clients additionally use Odum's research, backtest, and promote layer to author strategies on Odum data — continue at /briefings/dart-full for that deeper path. The upgrade from signals-only to full pipeline is a formal commercial event, not a bolt-on — if you expect to need research during the engagement, resolve to full pipeline now. The instruction-schema fit-check in the next section resolves which path fits.",
       },
       {
         title: "Instruction schema — the signals-only fit-check",
+        appliesTo: "signals-in",
         body:
-          "Signals-only runs on a published instruction schema. Odum needs eight fields on every instruction for execution, risk, and allocation to operate cleanly. Your upstream either produces them already or can be adapted to — that decision is yours to make before the second call.",
+          "Signals-only runs on a published instruction schema. Odum needs eight fields on every instruction for execution, risk, and allocation to operate cleanly. Your upstream either produces them already or can be adapted to — that decision is yours to make before the second call. The full field-by-field spec lives at /briefings/dart-signals-in.",
         bullets: [
           "Instrument and venue context — instrument, venue or chain, instrument-type category.",
           "Intended action — buy, sell, hedge, close, roll, or a combination that maps to a known execution primitive.",
@@ -151,16 +153,19 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       },
       {
         title: "The strategy catalogue",
+        appliesTo: "both",
         body:
-          "The catalogue shows one row per strategy slot with a maturity tag (code-audited → backtested → paper → live-tiny → live-allocated) and a phase tag (research, paper, live). Research, paper, and live are phase views of the same catalogue — a live-allocated slot can be pulled into research phase for a re-run over a new regime window. Pre-backtested slots are not visible externally.",
+          "The catalogue shows one row per strategy slot with a maturity tag (code-audited → backtested → paper → live-tiny → live-allocated) and a phase tag (research, paper, live). Research, paper, and live are phase views of the same catalogue — a live-allocated slot can be pulled into research phase for a re-run over a new regime window. Pre-backtested slots are not visible externally. Signals-In clients see the catalogue for context and allocation capacity; Full Pipeline clients additionally interact with the catalogue through the research and promote surfaces (see /briefings/dart-full).",
       },
       {
         title: "Research, promote, execute",
+        appliesTo: "full-pipeline",
         body:
-          "Full-pipeline clients interrogate historical data in research, promote candidates through paper to live, and trade on the execution layer. Signals-only clients skip research and promote — they send instructions in and use execution, reporting, and reconciliation. The research-and-promote pipeline is a block boundary between the two paths, not a feature flag.",
+          "Full-pipeline clients interrogate historical data in research, promote candidates through paper to live, and trade on the execution layer. Signals-only clients skip research and promote — they send instructions in and use execution, reporting, and reconciliation. The research-and-promote pipeline is a block boundary between the two paths, not a feature flag. The deeper walkthrough lives at /briefings/dart-full.",
       },
       {
         title: "Commitment and packs",
+        appliesTo: "both",
         body:
           "Twelve-month minimum engagement. Your scope is defined by venue packs, chain packs, and instrument-type packs. A typical signals-only shape is three venues, two chains, two instrument types; full-pipeline shapes add research breadth. Pricing is per block, mixable across tiers. Numbers live in the second call.",
       },

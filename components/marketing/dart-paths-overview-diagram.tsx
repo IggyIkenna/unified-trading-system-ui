@@ -32,7 +32,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
 
       <div className="w-full overflow-x-auto">
         <svg
-          viewBox="0 0 960 520"
+          viewBox="0 0 960 320"
           preserveAspectRatio="xMidYMid meet"
           role="img"
           aria-labelledby="dart-paths-svg-title dart-paths-svg-desc"
@@ -499,159 +499,58 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             DART Full Pipeline
           </text>
 
-          {/* ===== Sibling paths band ===== */}
-          <rect
-            x="30"
-            y="340"
-            width="900"
-            height="150"
-            rx="8"
-            className="fill-zinc-50 stroke-zinc-300 dark:fill-zinc-900/60 dark:stroke-zinc-700"
-            strokeWidth={1}
-          />
-          <text
-            x="50"
-            y="362"
-            className="fill-zinc-700 text-[11px] font-semibold uppercase tracking-wide dark:fill-zinc-300"
-          >
-            Sibling commercial paths — same underlying stack, different boundary
-          </text>
-
-          {/* IM */}
-          <g>
-            <rect
-              x="50"
-              y="378"
-              width="275"
-              height="95"
-              rx="6"
-              className="fill-white stroke-zinc-300 dark:fill-zinc-950/60 dark:stroke-zinc-600"
-              strokeWidth={1}
-            />
-            <text
-              x="187"
-              y="400"
-              textAnchor="middle"
-              className="fill-zinc-900 text-[12px] font-semibold dark:fill-zinc-100"
-            >
-              Investment Management
-            </text>
-            <text
-              x="187"
-              y="418"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
-              Odum allocates capital to Odum strategies
-            </text>
-            <text
-              x="187"
-              y="434"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
-              under Odum&apos;s FCA permissions.
-            </text>
-            <text
-              x="187"
-              y="456"
-              textAnchor="middle"
-              className="fill-zinc-500 text-[10px] italic dark:fill-zinc-500"
-            >
-              see /briefings/investment-management
-            </text>
-          </g>
-
-          {/* Regulatory Umbrella */}
-          <g>
-            <rect
-              x="342"
-              y="378"
-              width="275"
-              height="95"
-              rx="6"
-              className="fill-white stroke-zinc-300 dark:fill-zinc-950/60 dark:stroke-zinc-600"
-              strokeWidth={1}
-            />
-            <text
-              x="480"
-              y="400"
-              textAnchor="middle"
-              className="fill-zinc-900 text-[12px] font-semibold dark:fill-zinc-100"
-            >
-              Regulatory Umbrella
-            </text>
-            <text
-              x="480"
-              y="418"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
-              Your regulated activity runs under
-            </text>
-            <text
-              x="480"
-              y="434"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
-              Odum&apos;s FCA permissions.
-            </text>
-            <text
-              x="480"
-              y="456"
-              textAnchor="middle"
-              className="fill-zinc-500 text-[10px] italic dark:fill-zinc-500"
-            >
-              see /briefings/regulatory
-            </text>
-          </g>
-
-          {/* Signals-Out */}
-          <g>
-            <rect
-              x="635"
-              y="378"
-              width="275"
-              height="95"
-              rx="6"
-              className="fill-white stroke-zinc-300 dark:fill-zinc-950/60 dark:stroke-zinc-600"
-              strokeWidth={1}
-            />
-            <text
-              x="772"
-              y="400"
-              textAnchor="middle"
-              className="fill-zinc-900 text-[12px] font-semibold dark:fill-zinc-100"
-            >
-              Odum Signals-Out
-            </text>
-            <text
-              x="772"
-              y="418"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
-              Odum signals to a counterparty who
-            </text>
-            <text
-              x="772"
-              y="434"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
-              executes on their own stack.
-            </text>
-            <text
-              x="772"
-              y="456"
-              textAnchor="middle"
-              className="fill-zinc-500 text-[10px] italic dark:fill-zinc-500"
-            >
-              see /briefings/signals-out
-            </text>
-          </g>
         </svg>
+      </div>
+
+      <div className="mt-6 border-t border-border pt-4">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Sibling commercial paths — same underlying stack, different boundary
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Link
+            href="/briefings/investment-management"
+            className="group rounded-md border border-border bg-card/40 p-3 transition-colors hover:border-primary hover:bg-card"
+          >
+            <p className="text-sm font-semibold text-foreground group-hover:text-primary">
+              Investment Management
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Odum allocates capital to Odum strategies under Odum&apos;s FCA
+              permissions.
+            </p>
+            <p className="mt-2 text-[10px] font-medium text-primary/80 group-hover:text-primary">
+              /briefings/investment-management →
+            </p>
+          </Link>
+          <Link
+            href="/briefings/regulatory"
+            className="group rounded-md border border-border bg-card/40 p-3 transition-colors hover:border-primary hover:bg-card"
+          >
+            <p className="text-sm font-semibold text-foreground group-hover:text-primary">
+              Regulatory Umbrella
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Your regulated activity runs under Odum&apos;s FCA permissions.
+            </p>
+            <p className="mt-2 text-[10px] font-medium text-primary/80 group-hover:text-primary">
+              /briefings/regulatory →
+            </p>
+          </Link>
+          <Link
+            href="/briefings/signals-out"
+            className="group rounded-md border border-border bg-card/40 p-3 transition-colors hover:border-primary hover:bg-card"
+          >
+            <p className="text-sm font-semibold text-foreground group-hover:text-primary">
+              Odum Signals-Out
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Odum signals to a counterparty who executes on their own stack.
+            </p>
+            <p className="mt-2 text-[10px] font-medium text-primary/80 group-hover:text-primary">
+              /briefings/signals-out →
+            </p>
+          </Link>
+        </div>
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">

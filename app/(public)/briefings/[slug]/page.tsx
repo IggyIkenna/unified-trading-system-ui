@@ -6,9 +6,78 @@ import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarc
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
 import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
-import { BRIEFING_PILLARS, type BriefingPillar, type BriefingSection } from "@/lib/briefings/content";
+import {
+  BRIEFING_PILLARS,
+  type BriefingAppliesTo,
+  type BriefingPillar,
+  type BriefingSection,
+} from "@/lib/briefings/content";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import * as React from "react";
+
+/**
+ * Set of slugs that are valid internal briefing links. Used to linkify
+ * `/briefings/<slug>` references in body text so readers navigate directly
+ * to sibling briefings without hunting for the URL.
+ */
+const BRIEFING_SLUG_SET: ReadonlySet<string> = new Set(BRIEFING_PILLARS.map((p) => p.slug));
+
+/**
+ * Pattern to match `/briefings/<slug>` inline references. The captured
+ * slug is validated against BRIEFING_SLUG_SET before rendering a link.
+ */
+const BRIEFING_LINK_PATTERN = /\/briefings\/([a-z][a-z0-9-]*)/g;
+
+function linkify(text: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let keyCounter = 0;
+  for (const match of text.matchAll(BRIEFING_LINK_PATTERN)) {
+    const slug = match[1];
+    const matchIndex = match.index ?? 0;
+    if (!slug || !BRIEFING_SLUG_SET.has(slug)) continue;
+    if (matchIndex > lastIndex) {
+      nodes.push(text.slice(lastIndex, matchIndex));
+    }
+    nodes.push(
+      <Link
+        key={`briefing-link-${keyCounter++}`}
+        href={`/briefings/${slug}`}
+        className="font-medium text-primary hover:underline"
+      >
+        /briefings/{slug}
+      </Link>,
+    );
+    lastIndex = matchIndex + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+  return nodes.length > 0 ? nodes : [text];
+}
+
+const APPLIES_TO_LABEL: Readonly<Record<BriefingAppliesTo, string>> = {
+  "signals-in": "Signals-In",
+  "full-pipeline": "Full Pipeline",
+  both: "Both paths",
+};
+
+const APPLIES_TO_CLASS: Readonly<Record<BriefingAppliesTo, string>> = {
+  "signals-in": "bg-sky-500/10 text-sky-600 ring-sky-500/30 dark:text-sky-400",
+  "full-pipeline": "bg-emerald-500/10 text-emerald-600 ring-emerald-500/30 dark:text-emerald-400",
+  both: "bg-violet-500/10 text-violet-600 ring-violet-500/30 dark:text-violet-400",
+};
+
+function AppliesToBadge({ value }: { value: BriefingAppliesTo }) {
+  return (
+    <span
+      className={`inline-flex items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ring-inset ${APPLIES_TO_CLASS[value]}`}
+    >
+      {APPLIES_TO_LABEL[value]}
+    </span>
+  );
+}
 
 /**
  * Slugs that render the full strategy-family × category coverage matrix
@@ -53,22 +122,25 @@ function DiagramForSlug({ slug }: { slug: BriefingPillar["slug"] }) {
 function Section({ section }: { section: BriefingSection }) {
   return (
     <section className="space-y-3">
-      <h2 className="text-lg font-semibold tracking-tight text-foreground">
-        {section.title}
-      </h2>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          {section.title}
+        </h2>
+        {section.appliesTo && <AppliesToBadge value={section.appliesTo} />}
+      </div>
       <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-        {section.body}
+        {linkify(section.body)}
       </p>
       {section.bullets && (
         <ul className="list-disc pl-5 text-sm text-foreground/80 space-y-1.5 max-w-2xl leading-relaxed">
           {section.bullets.map((b) => (
-            <li key={b}>{b}</li>
+            <li key={b}>{linkify(b)}</li>
           ))}
         </ul>
       )}
       {section.bodyAfter && (
         <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {section.bodyAfter}
+          {linkify(section.bodyAfter)}
         </p>
       )}
     </section>
@@ -93,7 +165,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
 
       <section className="space-y-3">
         <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">
-          {pillar.frame}
+          {linkify(pillar.frame)}
         </p>
       </section>
 
@@ -146,7 +218,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
         </h2>
         <ol className="list-decimal pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl leading-relaxed">
           {pillar.keyMessages.map((m) => (
-            <li key={m}>{m}</li>
+            <li key={m}>{linkify(m)}</li>
           ))}
         </ol>
       </section>
@@ -156,7 +228,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           The second call
         </h2>
         <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {pillar.nextCall}
+          {linkify(pillar.nextCall)}
         </p>
       </section>
 

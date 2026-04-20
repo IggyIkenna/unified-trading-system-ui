@@ -59,8 +59,8 @@ const STAGES: readonly Stage[] = [
     tone: "live",
   },
   {
-    label: "LIVE_ALLOCATED",
-    description: "full allocation",
+    label: "LIVE_FULL",
+    description: "fully allocated · live-allocated",
     tone: "live",
   },
 ];
