@@ -88,10 +88,10 @@
       "notes": "1.1 PASS — widget reads exclusively via useDeFiData(). 1.2 PASS — defi-data-context.tsx calls useGlobalScope() and uses globalScope for org/strategy filtering. 1.3 PASS — yieldSeries memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 PARTIAL — clientIds destructured and acknowledged; StrategyYieldSeries has no clientId field — client narrowing deferred to BP-5. 1.5 PASS — yieldSeries memo filters by scopeStrategyIds.includes(s.strategy_id) when strategyIds are set; empty strategyIds returns all 8 series (satisfies 1.6). yieldSummary filtered by same logic. 1.6 PASS — empty scope returns all data. 1.7 KNOWN-GAP — strategy definitions (APYs, colors, names, capitals) are hardcoded in lib/mocks/generators/defi-yield-generators.ts; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,42 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "PARTIAL",
+        "notes": "YIELD_STAKING_SIMPLE §10 DeFi/staking (multi-LST rotation): Rotation mode exists in code but no instance declared"
+      },
+      {
+        "status": "PARTIAL",
+        "notes": "YIELD_ROTATION_LENDING §9 DeFi/LST yield: Cross-LST rotation not a \"lending\" operation per se — consider a separate archetype or fold into YIELD_STAKING_SIMPLE rotation mode"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": [
     "Mock import: yield generators (lib/mocks/generators/defi-yield-generators.ts used in defi-data-context.tsx, not widget file)",

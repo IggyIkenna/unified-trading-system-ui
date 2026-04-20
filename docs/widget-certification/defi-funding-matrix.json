@@ -88,10 +88,10 @@
       "notes": "1.1 PASS — widget reads exclusively via useDeFiData() hook; no inline fetch or direct imports of data. 1.2 PASS — defi-data-context.tsx calls useGlobalScope() (line 188) and derives hasDefiDesk from globalScope.organizationIds. 1.3 PASS — org filter changes data: hasDefiDesk zeroes token balances, empties lending protocols and bridge routes when a non-DeFi org is selected. 1.4 PARTIAL — clientIds are in globalScope but client-level cascade is not explicitly wired in context; org filter acts as a coarse proxy. Funding matrix data (MOCK_FUNDING_RATES) is not filtered by clientIds. This is a context-level gap, not a widget-level issue; widget itself is read-only consumer. 1.5 PASS — strategyIds filter applied to tradeHistory in context (line 203-211). 1.6 PASS — empty organizationIds → hasDefiDesk=true → full dataset returned (line 191-193). 1.7 PASS — FUNDING_RATE_VENUES and FUNDING_RATE_FLOOR are in lib/config/services/defi.config.ts; MOCK_FUNDING_RATES lives in lib/mocks/fixtures/defi-walkthrough.ts (context layer, not widget). Widget file imports only from config — correct location."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,42 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "PARTIAL",
+        "notes": "CARRY_BASIS_PERP §6 DeFi/spot + perp (cross chain): Bridge latency breaks LEADER_HEDGE deadline — needs longer max_hedge_delay_ms config + bridge state machine integration"
+      },
+      {
+        "status": "PARTIAL",
+        "notes": "ARBITRAGE_PRICE_DISPERSION §11 CeFi/perp: UAC lacks funding_arb flag distinct from price-arb"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": ["Mock import fixed — moved to defi.config.ts"],
   "findings": [

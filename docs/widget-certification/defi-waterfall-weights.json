@@ -88,10 +88,10 @@
       "notes": "1.1 PASS — widget reads waterfallWeights exclusively via useDeFiData() hook, no inline fetch or direct import. 1.2 PASS — defi-data-context.tsx calls useGlobalScope() (line 44 import, line 188 destructure) and filters tradeHistory by scopeStrategyIds. 1.3 PASS — hasDefiDesk memo checks globalScope.organizationIds; adjustedTokenBalances, adjustedLendingProtocols, and getBridgeRoutes all gate on org filter. 1.4 PASS — client filter cascades through hasDefiDesk which reads organizationIds (client IDs checked via CLIENTS.some). 1.5 PASS — strategy filter applied to tradeHistory via scopeStrategyIds filter on ledger orders. 1.6 PASS — empty organizationIds returns true for hasDefiDesk (all data shown); empty strategyIds skips filter (all ledger orders included). 1.7 NOTE — MOCK_WATERFALL_WEIGHTS_PATRICK is sourced from lib/mocks/fixtures/defi-walkthrough (in the context, not the widget). This is acceptable per spec: the widget itself has no mock imports; the context is the appropriate location for mock data in a mock-API environment. Reference constants (DEFI_CHAINS) are correctly in lib/config/."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,38 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "PARTIAL",
+        "notes": "CARRY_BASIS_PERP §6 DeFi/spot + perp (cross chain): Bridge latency breaks LEADER_HEDGE deadline — needs longer max_hedge_delay_ms config + bridge state machine integration"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": [
     "defi-data-context.tsx does not yet expose isLoading or error fields — loading/error stubs in widget are placeholder until context is updated (tracked as a context-level concern, not widget-level)"

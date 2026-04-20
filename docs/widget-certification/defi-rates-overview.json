@@ -88,10 +88,10 @@
       "notes": "1.1 data sourced via useDeFiData() — pass. 1.2 context calls useGlobalScope() — pass. 1.3 pass — adjustedLiquidityPools and adjustedStakingProtocols memos return [] when !hasDefiDesk (fixed in defi-data-context.tsx); lendingProtocols was already filtered. 1.4 partial — clientIds destructured and acknowledged; protocol types (LendingProtocol, StakingProtocol, LiquidityPool) have no clientId field — full narrowing requires BP-5 schema change. 1.5 partial — strategyIds filter applied to tradeHistory; rates data (lending/staking/LP) are reference lists with no strategyId field so strategy filter is N/A for rates. 1.6 pass — empty organizationIds returns all data (hasDefiDesk=true when length=0). 1.7 known-gap — reference data in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,42 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "PARTIAL",
+        "notes": "YIELD_ROTATION_LENDING §9 DeFi/LST yield: Cross-LST rotation not a \"lending\" operation per se — consider a separate archetype or fold into YIELD_STAKING_SIMPLE rotation mode"
+      },
+      {
+        "status": "PARTIAL",
+        "notes": "YIELD_STAKING_SIMPLE §10 DeFi/staking (multi-LST rotation): Rotation mode exists in code but no instance declared"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": [],
   "findings": [

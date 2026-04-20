@@ -88,10 +88,10 @@
       "notes": "1.1: Widget reads all data via useDeFiData() hook exclusively. 1.2: defi-data-context.tsx calls useGlobalScope() and derives hasDefiDesk from globalScope.organizationIds. 1.3: Org filter gates hasDefiDesk — when org without DeFi access selected, token balances zero out and lending protocols return empty. 1.4: clientIds field exists in GlobalScopeState but defi-data-context does not currently filter by clientIds — partial gap, swap widget itself is not client-filtered (strategy-level widget). 1.5: Strategy filter wired via scopeStrategyIds — ledger orders in tradeHistory filtered by strategyIds. 1.6: Empty scope arrays return all data (hasDefiDesk defaults to true when organizationIds.length === 0). 1.7: Token lists (SWAP_TOKENS) live in lib/mocks/fixtures/defi-swap.ts — not yet in lib/constants/ or lib/config/; reference data location is an open finding (context owns this, not the widget)."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,50 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "PARTIAL",
+        "notes": "ARBITRAGE_PRICE_DISPERSION §11 DeFi/lp: Flash-loan receiver contract per-chain registry missing from UAC; deployed on testnet only on some chains"
+      },
+      {
+        "status": "BLOCKED",
+        "notes": "ARBITRAGE_PRICE_DISPERSION §11 DeFi/option: No supported DeFi options venue"
+      },
+      {
+        "status": "PARTIAL",
+        "notes": "CARRY_BASIS_PERP §6 DeFi/spot + perp (cross chain): Bridge latency breaks LEADER_HEDGE deadline — needs longer max_hedge_delay_ms config + bridge state machine integration"
+      },
+      {
+        "status": "PARTIAL",
+        "notes": "LIQUIDATION_CAPTURE §12 DeFi/perp: Perp liquidations on DeFi perps have different economics than lending liquidations; code path exists but economics need separate UAC capability"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": ["Mock import: generateSwapRoute, getMockPrice"],
   "findings": [

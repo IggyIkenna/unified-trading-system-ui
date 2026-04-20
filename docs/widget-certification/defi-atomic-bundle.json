@@ -88,10 +88,10 @@
       "notes": "1.1 PARTIAL — widget manages its own DefiOp[] local state rather than reading from a domain data context hook. This is intentional: DefiOp is a different data model from BundleStep (used by the other 4 bundles widgets). No defi-atomic-specific data context exists. readOnly flag now sourced from useBundlesData(). Recommend creating a DefiAtomicBundlesDataContext in a follow-up task to fully satisfy 1.1. 1.2-1.6 N/A at widget level — the widget's operations are user-authored local state. Scope filtering applies to readOnly (batch mode) which is now wired. 1.7 All reference data (DEFI_OPERATIONS, DEFI_TOKENS, DEFI_TEMPLATES, GAS_ESTIMATES, gasToUsd) in lib/config/services/defi-bundles.config — correct location."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,50 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "SUPPORTED",
+        "notes": "CARRY_STAKED_BASIS §7 DeFi (Ethereum)/staking + lending + perp: ATOMIC 3-leg instruction; bridge path for cross-chain perp"
+      },
+      {
+        "status": "SUPPORTED",
+        "notes": "CARRY_RECURSIVE_STAKED §8 DeFi (Ethereum)/staking + lending (recursive): Liquidation-cascade risk declared; per-protocol bonus schedule gap in UAC"
+      },
+      {
+        "status": "PARTIAL",
+        "notes": "ARBITRAGE_PRICE_DISPERSION §11 DeFi/lp: Flash-loan receiver contract per-chain registry missing from UAC; deployed on testnet only on some chains"
+      },
+      {
+        "status": "SUPPORTED",
+        "notes": "LIQUIDATION_CAPTURE §12 DeFi (Ethereum)/lending: Flash-loan receiver contract deployed on Ethereum; per-protocol bonus schedule gap in UAC"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": [
     "Widget uses local DefiOp[] state instead of a domain data context hook — recommend DefiAtomicBundlesDataContext (L1.1 partial)",

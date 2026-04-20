@@ -88,10 +88,10 @@
       "notes": "1.1 PASS: data via useDeFiData() hook. 1.2 PASS: context calls useGlobalScope(). 1.3 PASS: adjustedLiquidityPools memo returns [] when !hasDefiDesk (fixed in defi-data-context.tsx). 1.4 PARTIAL: clientIds destructured and acknowledged; LiquidityPool has no clientId field — full narrowing requires schema change (BP-5). 1.5 PARTIAL: strategyIds filter applied to tradeHistory; LiquidityPool has no strategyId field so pool-level strategy filter is N/A. 1.6 PASS: empty scope arrays return all data. 1.7 KNOWN-GAP: LIQUIDITY_POOLS constant in lib/mocks/fixtures/; moving to lib/constants/ is BP-5 scope."
     },
     "l2": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": null
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-20",
+      "notes": "Covered globally by commits 32ba8ab (structured {domain, tier} entitlements across all 17 register.ts files + 5 PageEntitlementGate wrappers) and f9f29ea (65 automated tests in __tests__/integration/entitlement-wiring.test.ts, __tests__/components/platform/*entitlement-gate.test.tsx, __tests__/lib/config/trading-entitlements.test.ts). Re-audit per-widget only if the wiring test fails or entitlements are added."
     },
     "l3": {
       "status": null,
@@ -117,6 +117,46 @@
       "date": null,
       "notes": null
     }
+  },
+  "relationships": {
+    "mode": null,
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": null
+  },
+  "dataContract": {
+    "channels": [],
+    "primary": null,
+    "cadence": null,
+    "staleness": null,
+    "mockSource": null,
+    "backendOwner": "unknown",
+    "notes": null
+  },
+  "coverage": {
+    "assetClasses": [],
+    "strategies": [],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [
+      {
+        "status": "SUPPORTED",
+        "notes": "MARKET_MAKING_CONTINUOUS §13 DeFi (per chain)/lp (PASSIVE_LP — Curve / Balancer / Uniswap V2): IL dynamics need archetype sub-section"
+      },
+      {
+        "status": "BLOCKED",
+        "notes": "MARKET_MAKING_CONTINUOUS §13 DeFi/perp: DeFi perp MM not exposed as third-party role (protocol-level MM on Hyperliquid / GMX)"
+      },
+      {
+        "status": "BLOCKED",
+        "notes": "MARKET_MAKING_CONTINUOUS §13 DeFi/option: No supported DeFi options venue"
+      }
+    ],
+    "notes": null
   },
   "knownIssues": [],
   "findings": [
