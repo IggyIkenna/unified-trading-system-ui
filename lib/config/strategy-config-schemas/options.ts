@@ -49,6 +49,13 @@ export const BRIDGE_PROVIDER_OPTIONS = ["ACROSS", "SOCKET", "LAYERZERO", "STARGA
 export const REWARD_MODE_OPTIONS = ["all", "eigen_only", "ethfi_only"];
 
 // ---------------------------------------------------------------------------
+// Liquidation capture
+// ---------------------------------------------------------------------------
+
+export const LIQUIDATION_TARGET_PROTOCOLS = ["AAVE_V3", "COMPOUND_V3", "MORPHO", "SPARK", "EULER_V2"];
+export const MEV_POLICY_OPTIONS = ["FLASHBOTS", "PUBLIC", "MEV_BLOCKER"];
+
+// ---------------------------------------------------------------------------
 // CeFi execution
 // ---------------------------------------------------------------------------
 

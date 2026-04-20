@@ -163,20 +163,29 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
       {/* Reward P&L summary */}
       <div className="rounded-lg border bg-muted/30 p-3 space-y-1.5">
         <p className="text-xs font-medium text-muted-foreground">Reward P&L Attribution</p>
-        {Object.entries(rewardPnl).map(([key, factor]) => (
-          <div key={key} className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">{factor.label}</span>
-            <span className={`font-mono ${factor.amount > 0 ? "text-emerald-400" : "text-muted-foreground"}`}>
-              {factor.amount > 0 ? `+$${formatNumber(factor.amount, 0)}` : "$0"}
-            </span>
-          </div>
-        ))}
+        {rewardPnl.map((factor) => {
+          const isNegative = factor.amount < 0;
+          const amountClass =
+            factor.amount > 0 ? "text-emerald-400" : isNegative ? "text-rose-400" : "text-muted-foreground";
+          const formatted =
+            factor.amount > 0
+              ? `+$${formatNumber(factor.amount, 0)}`
+              : isNegative
+                ? `-$${formatNumber(Math.abs(factor.amount), 0)}`
+                : "$0";
+          return (
+            <div key={factor.key} className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">{factor.label}</span>
+              <span className={`font-mono ${amountClass}`}>{formatted}</span>
+            </div>
+          );
+        })}
         <div className="border-t border-border/40 pt-1 flex items-center justify-between text-xs font-medium">
           <span>Total Reward P&L</span>
           <span className="font-mono text-emerald-400">
             +$
             {formatNumber(
-              Object.values(rewardPnl).reduce((s, f) => s + f.amount, 0),
+              rewardPnl.reduce((s, f) => s + f.amount, 0),
               0,
             )}
           </span>

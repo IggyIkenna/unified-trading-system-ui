@@ -39,6 +39,7 @@ import {
   MOCK_REWARD_PNL,
   MOCK_STAKING_REWARDS,
   MOCK_WATERFALL_WEIGHTS_PATRICK,
+  getRewardFactorsForStrategyId,
 } from "@/lib/mocks/fixtures/defi-walkthrough";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
@@ -379,7 +380,16 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
   const [treasury, setTreasury] = React.useState<TreasurySnapshot>(MOCK_TREASURY);
   const [stakingRewards, setStakingRewards] = React.useState<StakingReward[]>(MOCK_STAKING_REWARDS);
+  // Reward P&L factors are archetype-specific. When a strategy filter is active
+  // we resolve the first scoped strategy_id to its archetype-default factor
+  // list; otherwise we fall back to the staking default (MOCK_REWARD_PNL).
+  // This mirrors what `instance.pnl_factors[]` will deliver from the backend.
   const [rewardPnl, setRewardPnl] = React.useState<RewardPnLBreakdown>(MOCK_REWARD_PNL);
+
+  React.useEffect(() => {
+    const scopedId = scopeStrategyIds[0];
+    setRewardPnl(getRewardFactorsForStrategyId(scopedId));
+  }, [scopeStrategyIds]);
 
   // Simulate real-time reward accrual — every 10s, accrue a small amount to tokens
   // with weekly frequency, reflecting continuous yield generation
@@ -428,21 +438,26 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
           };
         }),
       );
-      // Update reward P&L
+      // Update reward P&L: move claimed-and-sold value from the unrealised
+      // factor row into the realised-rewards row. We key on `restaking_reward`
+      // and `reward_unrealised` when present (staking-archetype default); for
+      // non-staking factor lists this claim action is a no-op at the P&L
+      // level (reward goes directly to fiat via the staking-rewards widget).
       setRewardPnl((prev) => {
         const reward = stakingRewards.find((r) => r.token === token);
         if (!reward) return prev;
-        return {
-          ...prev,
-          restaking_reward: {
-            ...prev.restaking_reward,
-            amount: prev.restaking_reward.amount + reward.accrued_value_usd,
-          },
-          reward_unrealised: {
-            ...prev.reward_unrealised,
-            amount: Math.max(0, prev.reward_unrealised.amount - reward.accrued_value_usd),
-          },
-        };
+        const hasRestaking = prev.some((f) => f.key === "restaking_reward");
+        const hasUnrealised = prev.some((f) => f.key === "reward_unrealised");
+        if (!hasRestaking && !hasUnrealised) return prev;
+        return prev.map((f) => {
+          if (f.key === "restaking_reward") {
+            return { ...f, amount: f.amount + reward.accrued_value_usd };
+          }
+          if (f.key === "reward_unrealised") {
+            return { ...f, amount: Math.max(0, f.amount - reward.accrued_value_usd) };
+          }
+          return f;
+        });
       });
     },
     [stakingRewards],

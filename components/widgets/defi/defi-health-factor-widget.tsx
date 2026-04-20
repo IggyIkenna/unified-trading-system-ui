@@ -87,12 +87,12 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
           <span className="font-mono font-medium">{formatPercent(hf.buffer_pct, 1)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">weETH oracle rate</span>
-          <span className="font-mono">{formatNumber(hf.weeth_oracle_rate, 4)}</span>
+          <span className="text-muted-foreground">{hf.collateral_token} oracle rate</span>
+          <span className="font-mono">{formatNumber(hf.collateral_oracle_rate, 4)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">weETH market rate</span>
-          <span className="font-mono">{formatNumber(hf.weeth_market_rate, 4)}</span>
+          <span className="text-muted-foreground">{hf.collateral_token} market rate</span>
+          <span className="font-mono">{formatNumber(hf.collateral_market_rate, 4)}</span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Oracle/market gap</span>
@@ -148,7 +148,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
               Emergency Exit Estimate
             </DialogTitle>
             <DialogDescription>
-              This will unwind the recursive staking position. Review costs before confirming.
+              This will {hf.emergency_exit_description}. Review costs before confirming.
             </DialogDescription>
           </DialogHeader>
 

@@ -47,6 +47,7 @@ export const DEFI_STRATEGY_IDS = [
   "CROSS_CHAIN_YIELD_ARB",
   "CROSS_CHAIN_SOR",
   "AMM_LP",
+  "LIQUIDATION_CAPTURE",
 ] as const;
 
 export type DeFiStrategyId = (typeof DEFI_STRATEGY_IDS)[number];
@@ -72,6 +73,7 @@ export const STRATEGY_DISPLAY_NAMES: Record<DeFiStrategyId, string> = {
   CROSS_CHAIN_YIELD_ARB: "Cross-Chain Yield Arb",
   CROSS_CHAIN_SOR: "Cross-Chain SOR",
   AMM_LP: "AMM LP (Uniswap V3/V4)",
+  LIQUIDATION_CAPTURE: "Liquidation Capture",
 };
 
 // ---------------------------------------------------------------------------
@@ -564,8 +566,14 @@ export interface HealthFactorDashboard {
   liquidation_at: number;
   warning_at: number;
   buffer_pct: number;
-  weeth_oracle_rate: number;
-  weeth_market_rate: number;
+  /**
+   * LST ticker or asset symbol rendered alongside the oracle/market rows.
+   * Examples: "weETH", "wstETH", "JitoSOL", "WBTC". Widgets render labels
+   * as `${collateral_token} oracle rate` etc. — do not hardcode per-asset.
+   */
+  collateral_token: string;
+  collateral_oracle_rate: number;
+  collateral_market_rate: number;
   oracle_market_gap_pct: number;
   borrow_rate_pct: number;
   staking_rate_pct: number;
@@ -573,6 +581,12 @@ export interface HealthFactorDashboard {
   leverage: number;
   leveraged_spread_pct: number;
   monitoring_interval: string;
+  /**
+   * Prose for the Emergency Exit dialog description. Archetype-specific so
+   * the widget can render across recursive-staked / lending / staked-basis
+   * without fork. Example: "unwind the recursive staking position".
+   */
+  emergency_exit_description: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -593,17 +607,30 @@ export interface EmergencyExitEstimate {
 // Reward P&L Breakdown
 // ---------------------------------------------------------------------------
 
+/**
+ * One row of a strategy-instance P&L decomposition.
+ *
+ * `key` is the canonical factor identifier (e.g. `staking_yield`, `funding`,
+ * `basis_spread`) and drives the colour palette lookup in the widget. `label`
+ * is the human-readable string rendered verbatim. `amount` is USD.
+ *
+ * Factor sets are archetype-specific and supplied as instance metadata —
+ * widgets do not hardcode factor keys. Staking archetypes decompose into
+ * `staking_yield / restaking_reward / seasonal_reward / reward_unrealised`;
+ * basis archetypes into `funding / basis_spread / trading / fees / exec_alpha`;
+ * lending into `supply_apy / incentive_rewards / fee_earnings`; etc.
+ */
 export interface RewardPnLFactor {
-  amount: number;
+  key: string;
   label: string;
+  amount: number;
 }
 
-export interface RewardPnLBreakdown {
-  staking_yield: RewardPnLFactor;
-  restaking_reward: RewardPnLFactor;
-  seasonal_reward: RewardPnLFactor;
-  reward_unrealised: RewardPnLFactor;
-}
+/**
+ * Ordered list of reward / P&L factors for a single strategy instance.
+ * The ordering is meaningful — widgets render waterfall bars in list order.
+ */
+export type RewardPnLBreakdown = RewardPnLFactor[];
 
 // ---------------------------------------------------------------------------
 // Basis Trade

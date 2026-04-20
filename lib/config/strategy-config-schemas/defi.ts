@@ -19,8 +19,10 @@ import {
   FLASH_LOAN_PROVIDER_OPTIONS,
   L2_CHAIN_OPTIONS,
   LENDING_BASKET_OPTIONS,
+  LIQUIDATION_TARGET_PROTOCOLS,
   LP_POOL_OPTIONS,
   LST_TOKEN_OPTIONS,
+  MEV_POLICY_OPTIONS,
   PERP_VENUE_OPTIONS,
   PERP_VENUE_SINGLE_OPTIONS,
   REWARD_MODE_OPTIONS,
@@ -367,6 +369,49 @@ export const DEFI_STRATEGY_SCHEMAS: Record<DeFiStrategyId, StrategyConfigSchema>
       { key: "chain", label: "Chain", type: "dropdown", options: CHAIN_OPTIONS, default: "ETHEREUM" },
     ],
   },
+
+  LIQUIDATION_CAPTURE: {
+    fields: [
+      {
+        key: "target_protocols",
+        label: "Target Protocols",
+        type: "multi-select",
+        options: LIQUIDATION_TARGET_PROTOCOLS,
+        default: ["AAVE_V3", "COMPOUND_V3", "MORPHO"],
+      },
+      { key: "min_bonus_bps", label: "Min Liquidation Bonus", type: "number", suffix: "bps", step: 25, default: 500 },
+      {
+        key: "min_expected_profit_usd",
+        label: "Min Expected Profit",
+        type: "number",
+        suffix: "USD",
+        step: 50,
+        default: 500,
+      },
+      {
+        key: "mev_policy",
+        label: "MEV Policy",
+        type: "dropdown",
+        options: MEV_POLICY_OPTIONS,
+        default: "FLASHBOTS",
+      },
+      { key: "max_gas_gwei", label: "Max Gas", type: "number", suffix: "gwei", step: 5, default: 200 },
+      {
+        key: "flash_loan_provider",
+        label: "Flash Loan Provider",
+        type: "dropdown",
+        options: FLASH_LOAN_PROVIDER_OPTIONS,
+        default: "AAVE",
+      },
+      {
+        key: "chains",
+        label: "Chains",
+        type: "multi-select",
+        options: CHAIN_OPTIONS,
+        default: ["ETHEREUM", "ARBITRUM", "BASE"],
+      },
+    ],
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -414,4 +459,8 @@ export const DEFI_STRATEGY_FAMILIES: StrategyFamilyGroup<DeFiStrategyId>[] = [
     ],
   },
   { label: "LP / Market Making", strategies: [{ id: "AMM_LP", name: "AMM LP (Uniswap V3/V4)" }] },
+  {
+    label: "Liquidation",
+    strategies: [{ id: "LIQUIDATION_CAPTURE", name: "Liquidation Capture" }],
+  },
 ];

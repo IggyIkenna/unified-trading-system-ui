@@ -206,6 +206,7 @@ export const MOCK_TREASURY: TreasurySnapshot = {
     CROSS_CHAIN_YIELD_ARB: 0,
     CROSS_CHAIN_SOR: 0,
     AMM_LP: 0,
+    LIQUIDATION_CAPTURE: 0,
   },
   per_token_balance: {
     USDC: 200000,

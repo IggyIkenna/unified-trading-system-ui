@@ -1,4 +1,6 @@
+import type { StrategyArchetypeV2 } from "@/lib/architecture-v2/enums";
 import type {
+  DeFiStrategyId,
   EmergencyExitEstimate,
   FundingRateMatrix,
   HealthFactorDashboard,
@@ -99,8 +101,9 @@ export const MOCK_HEALTH_FACTOR: HealthFactorDashboard = {
   liquidation_at: 1.0,
   warning_at: 1.3,
   buffer_pct: 27.5,
-  weeth_oracle_rate: 1.0352,
-  weeth_market_rate: 1.0348,
+  collateral_token: "weETH",
+  collateral_oracle_rate: 1.0352,
+  collateral_market_rate: 1.0348,
   oracle_market_gap_pct: 0.04,
   borrow_rate_pct: 2.1,
   staking_rate_pct: 3.2,
@@ -108,6 +111,7 @@ export const MOCK_HEALTH_FACTOR: HealthFactorDashboard = {
   leverage: 2.5,
   leveraged_spread_pct: 2.75,
   monitoring_interval: "5 minutes",
+  emergency_exit_description: "unwind the recursive staking position",
 };
 
 // ---------------------------------------------------------------------------
@@ -131,18 +135,121 @@ export const MOCK_EMERGENCY_EXIT: EmergencyExitEstimate = {
 };
 
 // ---------------------------------------------------------------------------
-// 6. Reward P&L Breakdown
+// 6. Reward / P&L Breakdown (per-archetype)
 // ---------------------------------------------------------------------------
 
 /**
- * Reward P&L breakdown — realistic for ~$750K NAV over ~30 days.
- * Staking yield: $750K × 3.4% APY / 365 × 30 = ~$2,100/month (not per day)
- * EIGEN rewards: ~$420/month at current distribution rate
- * Seasonal: ETHFI airdrop pending (quarterly)
+ * Default reward / P&L factor lists per strategy archetype.
+ *
+ * SSOT for the shape (archetype → ordered factor list) lives on the strategy
+ * instance as `instance.pnl_factors[]`. Until the backend instance contract
+ * lands, we seed realistic defaults here keyed by `StrategyArchetypeV2`.
+ *
+ * The widget is archetype-agnostic — adding a new archetype is a fixture-only
+ * change. Factor `amount` values here are illustrative mock data; the widget
+ * reads them verbatim.
  */
-export const MOCK_REWARD_PNL: RewardPnLBreakdown = {
-  staking_yield: { amount: 2100, label: "Staking Yield — 30d (weETH appreciation, 3.4% APY)" },
-  restaking_reward: { amount: 420, label: "Restaking Rewards — 30d (EIGEN)" },
-  seasonal_reward: { amount: 0, label: "Seasonal Rewards (ETHFI airdrop pending Q2)" },
-  reward_unrealised: { amount: 42, label: "Unclaimed Rewards (M2M)" },
+export const DEFAULT_REWARD_FACTORS_BY_ARCHETYPE: Partial<Record<StrategyArchetypeV2, RewardPnLBreakdown>> = {
+  // Staking (simple native staking — rebase / exchange-rate yield).
+  YIELD_STAKING_SIMPLE: [
+    { key: "staking_yield", label: "Staking yield (30d, 3.4% APY)", amount: 2100 },
+    { key: "restaking_reward", label: "Restaking rewards (EIGEN)", amount: 420 },
+    { key: "seasonal_reward", label: "Seasonal rewards (ETHFI Q2)", amount: 0 },
+    { key: "reward_unrealised", label: "Unclaimed rewards (M2M)", amount: 42 },
+  ],
+  // Lending rotation (supply APY + protocol incentives + fee kickbacks).
+  YIELD_ROTATION_LENDING: [
+    { key: "supply_apy", label: "Supply APY (30d, weighted)", amount: 1820 },
+    { key: "incentive_rewards", label: "Incentive rewards (COMP / MORPHO)", amount: 260 },
+    { key: "fee_earnings", label: "Fee earnings / rebates", amount: 85 },
+  ],
+  // Carry basis perp (cash-and-carry: funding + basis + exec alpha net of fees).
+  CARRY_BASIS_PERP: [
+    { key: "funding", label: "Funding (perp short, 30d)", amount: 1540 },
+    { key: "basis_spread", label: "Basis spread capture", amount: 310 },
+    { key: "trading", label: "Trading P&L", amount: 85 },
+    { key: "fees", label: "Exchange / gas fees", amount: -140 },
+    { key: "exec_alpha", label: "Execution alpha (vs benchmark)", amount: 62 },
+  ],
+  // Carry staked basis (LST yield + perp funding − borrow cost).
+  CARRY_STAKED_BASIS: [
+    { key: "staking", label: "Staking yield (weETH)", amount: 1680 },
+    { key: "funding", label: "Funding (perp short)", amount: 1120 },
+    { key: "borrow_cost", label: "Borrow cost (USDC)", amount: -540 },
+  ],
+  // Recursive staked basis (leveraged loop on LST collateral).
+  CARRY_RECURSIVE_STAKED: [
+    { key: "staking", label: "Staking yield (weETH)", amount: 2460 },
+    { key: "funding", label: "Funding (perp short)", amount: 1220 },
+    { key: "borrow_cost", label: "Borrow cost (WETH)", amount: -880 },
+    { key: "leverage_factor", label: "Leverage uplift (2.5x)", amount: 540 },
+  ],
+  // Note: AMM LP (ALP) archetype has no v2 enum mapping yet; retained in the
+  // getter below for preset lookups keyed on legacy strategy_id "AMM_LP".
 };
+
+/**
+ * AMM LP default factor list. Keyed by legacy strategy_id because v2 enums
+ * do not yet carry an AMM_LP archetype.
+ */
+export const AMM_LP_REWARD_FACTORS: RewardPnLBreakdown = [
+  { key: "fees_earned", label: "LP fees earned (30d)", amount: 1240 },
+  { key: "il_realised", label: "Impermanent loss realised", amount: -380 },
+  { key: "incentive_rewards", label: "Incentive rewards (UNI / OP)", amount: 220 },
+];
+
+/**
+ * Default fallback when the strategy archetype is unknown — staking list,
+ * since staking is the historical default for the walkthrough preset.
+ */
+export const MOCK_REWARD_PNL: RewardPnLBreakdown =
+  DEFAULT_REWARD_FACTORS_BY_ARCHETYPE.YIELD_STAKING_SIMPLE as RewardPnLBreakdown;
+
+/**
+ * Look up the default factor list for a strategy identified by v2 archetype.
+ * Falls back to AMM LP when the legacy `AMM_LP` strategy_id is passed; falls
+ * back to the staking default otherwise.
+ */
+export function getDefaultRewardFactors(archetype: StrategyArchetypeV2 | "AMM_LP" | undefined): RewardPnLBreakdown {
+  if (archetype === "AMM_LP") return AMM_LP_REWARD_FACTORS;
+  if (archetype && DEFAULT_REWARD_FACTORS_BY_ARCHETYPE[archetype]) {
+    return DEFAULT_REWARD_FACTORS_BY_ARCHETYPE[archetype] as RewardPnLBreakdown;
+  }
+  return MOCK_REWARD_PNL;
+}
+
+/**
+ * Mapping from legacy DeFi `strategy_id` to v2 archetype — used to resolve
+ * which factor list applies when a strategy filter is active. Will be
+ * replaced by `instance.archetype` once the backend instance contract
+ * plumbs archetype through to the UI.
+ */
+export const STRATEGY_ID_TO_ARCHETYPE: Partial<Record<DeFiStrategyId, StrategyArchetypeV2 | "AMM_LP">> = {
+  AAVE_LENDING: "YIELD_ROTATION_LENDING",
+  ETH_LENDING: "YIELD_ROTATION_LENDING",
+  MULTICHAIN_LENDING: "YIELD_ROTATION_LENDING",
+  CROSS_CHAIN_YIELD_ARB: "YIELD_ROTATION_LENDING",
+  BASIS_TRADE: "CARRY_BASIS_PERP",
+  BTC_BASIS: "CARRY_BASIS_PERP",
+  SOL_BASIS: "CARRY_BASIS_PERP",
+  L2_BASIS: "CARRY_BASIS_PERP",
+  STAKED_BASIS: "CARRY_STAKED_BASIS",
+  ETHENA_BENCHMARK: "YIELD_STAKING_SIMPLE",
+  RECURSIVE_STAKED_BASIS: "CARRY_RECURSIVE_STAKED",
+  UNHEDGED_RECURSIVE: "CARRY_RECURSIVE_STAKED",
+  USDT_HEDGED_RECURSIVE: "CARRY_RECURSIVE_STAKED",
+  AMM_LP: "AMM_LP",
+  LIQUIDATION_CAPTURE: "LIQUIDATION_CAPTURE",
+  CROSS_CHAIN_SOR: "ARBITRAGE_PRICE_DISPERSION",
+};
+
+/**
+ * Resolve the default factor list for a DeFi strategy instance by its
+ * legacy `strategy_id`. Returns the staking default when the id is
+ * unrecognised or undefined.
+ */
+export function getRewardFactorsForStrategyId(strategyId: DeFiStrategyId | string | undefined): RewardPnLBreakdown {
+  if (!strategyId) return MOCK_REWARD_PNL;
+  const archetype = STRATEGY_ID_TO_ARCHETYPE[strategyId as DeFiStrategyId];
+  return getDefaultRewardFactors(archetype);
+}
