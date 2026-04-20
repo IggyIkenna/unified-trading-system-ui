@@ -1,34 +1,56 @@
 /**
- * Stub hook for resolving a ServiceTile's lock state from the user's restriction
- * profile. This is a STUB — every tile currently returns `"unlocked"`.
+ * Resolve a ServiceTile's lock state from the active persona's restriction
+ * profile (G1.7 — restriction-profile engine).
  *
- * **Refactor G1.7 (restriction-profile engine)** replaces the body of this hook
- * with a real lookup that consults:
- *   1. The user's role (admin → always "unlocked").
- *   2. The derivation engine's `access_control(user, route, item, phase)`
- *      resolution per `codex/14-playbooks/infra-spec/stage-3c-derivation-engine.md`.
- *   3. Any per-tile admin override persisted by the admin toggle UI
- *      (Phase 10.5 → extended with tile-level override by G1.7).
+ * SSOT flow:
+ *   codex/14-playbooks/demo-ops/profiles/<persona>.yaml
+ *   → UAC `unified_api_contracts.internal.architecture_v2.restriction_profiles.resolve_profile`
+ *   → PM sync-script generates `lib/architecture-v2/restriction-profiles.ts`
+ *   → this hook reads the TS mirror + current persona context.
  *
- * Until G1.7 lands, keep this a pure identity stub so the tile component's
- * padlock branch can be unit-tested and hand-inspected via the admin persona
- * seed without a real restriction-profile registry wired in.
+ * Drift detection: `scripts/quality-gates.sh` runs
+ * `bash unified-trading-pm/scripts/propagation/sync-restriction-profiles-to-ui.sh --check`
+ * pre-QG so any hand edit to the TS mirror OR a missing regen after a YAML
+ * change blocks the push.
+ *
+ * Follow-ups that will layer on this hook:
+ *   - G1.10 questionnaire-response wiring (tile-level widenings on vague
+ *     answers — currently a no-op in the UAC engine).
+ *   - G1.13 tempt-logic overlays (sales-operator layering).
  *
  * SSOTs:
+ *   - unified-trading-pm/codex/14-playbooks/demo-ops/profiles/*.yaml
+ *   - unified-api-contracts/.../internal/architecture_v2/restriction_profiles.py
  *   - codex/14-playbooks/cross-cutting/visibility-slicing.md
- *   - codex/14-playbooks/demo-ops/demo-restriction-profiles.md
- *   - codex/14-playbooks/infra-spec/stage-3c-derivation-engine.md
  */
+
+import { useAuth } from "@/hooks/use-auth";
+
+import type { DemoFlavour, PersonaId, TileId } from "../architecture-v2/restriction-profiles";
+import { resolveTileLockState } from "../architecture-v2/restriction-profiles";
 
 import type { TileLockState } from "./tile-lock-state";
 
 /**
- * @param tileId Service-key identifier (matches `ServiceDefinition.key`).
- *               Reserved for G1.7 to resolve per-tile profile lookups; ignored
- *               here to keep the stub deterministic.
+ * Resolve the tile's lock-state for the currently seeded persona.
+ *
+ * Reads `useAuth().user.id` (the persona id — mock-provider seeds it from the
+ * persona registry, Firebase staging/prod seeds it from the authenticated
+ * user id mapped through `getPersonaById`). Falls back to `"anon"` when no
+ * user is loaded so public-site visitors see the deterministic anon profile.
+ *
+ * @param tileId ServiceDefinition.key — must be a known TileId; unknown ids
+ *               resolve to `"hidden"` to fail closed (we'd rather hide a
+ *               mis-named tile than accidentally reveal it).
+ * @param flavour Optional demo flavour override. When omitted the persona's
+ *                base profile applies.
+ * @returns TileLockState from the restriction profile.
  */
-export function useTileLockState(_tileId: string): TileLockState {
-  // TODO(G1.7): replace with `deriveTileLockState(user, tile)` per
-  // codex/14-playbooks/infra-spec/stage-3c-derivation-engine.md §access_control.
-  return "unlocked";
+export function useTileLockState(tileId: string, flavour?: DemoFlavour): TileLockState {
+  const { user } = useAuth();
+  const personaId = (user?.id ?? "anon") as PersonaId | string;
+  // TileId enum is closed; cast lets the consumer pass a ServiceDefinition.key
+  // (string). If the key is not a known TileId the resolver falls back to
+  // "hidden" via the unknown-persona branch (matches anon semantics).
+  return resolveTileLockState(personaId, tileId as TileId, flavour);
 }
