@@ -232,5 +232,14 @@ origin/live-defi-rollout`) confirmed exactly 1 conflict (`yield-staking-simple.m
 
 - [x] UI correction commit landed (§1.1)
 - [x] PM correction commit landed (§1.2)
-- [ ] Follow-up tickets §2.1 – §2.6 opened in tracker or picked up by a sibling session
-- [ ] Widget-cert JSON `coverage.gaps` sweep scheduled (§2.6 is the umbrella)
+- [x] Follow-up tickets §2.1 – §2.6 picked up in this session (§2.4 skipped — Patrick-persona product call)
+- [x] Widget-cert JSON `coverage.gaps` sweep landed (§2.6 — commit `b96c834`, 17 DeFi JSONs populated)
+
+### Per-ticket landing commits
+
+- **§2.1** slot-label shape + placeholder fallbacks — commit `d744ef8`
+- **§2.2** ETHENA_BENCHMARK separated from deployable strategies — commit `2449725`
+- **§2.3** AMM_LP → MARKET_MAKING_CONTINUOUS sub-mode regrouping — commit `e0ea8f2`
+- **§2.4** LRT rows keep/drop decision — **DEFERRED** (Patrick-persona product call)
+- **§2.5** SOLANA added to CHAIN_OPTIONS + LIQ default target_protocols — commit `07e67f5`
+- **§2.6** `coverage.gaps` populated from codex §5-§13 verbatim — commit `b96c834`
