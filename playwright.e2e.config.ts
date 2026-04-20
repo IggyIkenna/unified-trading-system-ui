@@ -12,7 +12,7 @@ export default defineConfig({
   timeout: 30000,
   outputDir: "./build-artifacts/test-results",
   use: {
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3100",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
     trace: "off",
     screenshot: "only-on-failure",
   },
