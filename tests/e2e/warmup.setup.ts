@@ -45,7 +45,6 @@ async function globalSetup() {
     "/services/data/markets/pnl",
     "/services/research/overview",
     "/services/research/ml",
-    "/services/research/ml/overview",
     "/services/research/strategy/backtests",
     "/services/research/quant",
     "/services/trading/overview",

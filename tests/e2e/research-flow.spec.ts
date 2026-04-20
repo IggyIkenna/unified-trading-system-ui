@@ -4,14 +4,14 @@ import { test, expect } from "@playwright/test";
  * RESEARCH SERVICE FLOW E2E TESTS
  *
  * Tier 1: Routes exist, tabs render, no 404s
- * Tier 2: Data tables have rows (ML models, experiments, strategies)
- * Tier 3: Full research journey — hub, models, experiments, strategies, promote
+ * Tier 2: Data tables have rows (ML models, strategies)
+ * Tier 3: Full research journey — hub, models, strategies, promote
  *
  * Routes from UI_STRUCTURE_MANIFEST:
  *   /services/research/overview           — Research Hub
  *   /services/research/ml                 — ML Models
- *   /services/research/ml/features        — Features
- *   /services/research/ml/validation      — Signals
+ *   /services/research/ml/training        — Training queue
+ *   /services/research/ml/registry        — Model Registry
  *   /services/research/strategy/backtests — Strategies
  *   /services/research/strategy/compare   — Compare
  *   /services/research/strategy/candidates — Review Queue (Promote)
@@ -30,8 +30,8 @@ test.describe("Tier 1: Research Navigation", () => {
   const RESEARCH_ROUTES = [
     { path: "/services/research/overview", label: "Research Hub" },
     { path: "/services/research/ml", label: "ML Models" },
-    { path: "/services/research/ml/features", label: "Features" },
-    { path: "/services/research/ml/validation", label: "Signals" },
+    { path: "/services/research/ml/training", label: "ML Training" },
+    { path: "/services/research/ml/registry", label: "ML Registry" },
     { path: "/services/research/strategy/backtests", label: "Strategies" },
     { path: "/services/research/strategy/compare", label: "Compare" },
   ];
@@ -105,8 +105,8 @@ test.describe("Tier 2: Research Data", () => {
     }).toPass({ timeout: 10000 });
   });
 
-  test("features page shows feature data", async ({ page }) => {
-    await page.goto("/services/research/ml/features");
+  test("ml training queue page shows training data", async ({ page }) => {
+    await page.goto("/services/research/ml/training");
     await page.waitForLoadState("networkidle");
 
     const body = await page.textContent("body");
@@ -192,8 +192,8 @@ test.describe("Tier 3: Research Journey", () => {
     }
   });
 
-  test("signals validation page renders", async ({ page }) => {
-    await page.goto("/services/research/ml/validation");
+  test("ml registry page renders", async ({ page }) => {
+    await page.goto("/services/research/ml/registry");
     await page.waitForLoadState("networkidle");
 
     const body = await page.textContent("body");

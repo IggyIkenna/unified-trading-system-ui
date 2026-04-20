@@ -380,7 +380,7 @@ export const BUILD_ALERTS: BuildAlert[] = [
     detail: "Challenger Sharpe 1.82 vs Champion 2.31 — insufficient improvement",
     timestamp: new Date(Date.now() - 14400000).toISOString(),
     source: "models",
-    action_href: "/services/research/ml/validation",
+    action_href: "/services/research/ml/registry",
   },
   {
     id: "alert-004",
@@ -450,7 +450,7 @@ export const BUILD_RECENT_ACTIVITY: BuildActivity[] = [
     action: "Experiment created: ETH Vol Surface — 3 hyperparameter configurations",
     actor: "ml_engineer",
     timestamp: new Date(Date.now() - 36000000).toISOString(),
-    href: "/services/research/ml/experiments",
+    href: "/services/research/ml/training",
   },
 ];
 

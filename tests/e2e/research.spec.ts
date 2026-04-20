@@ -21,21 +21,21 @@ test.describe("Research Hub", () => {
 });
 
 test.describe("ML Models", () => {
-  test("ML overview renders model families and experiments", async ({ page }) => {
-    await page.goto("/services/research/ml/overview");
+  test("ML dashboard renders model families and training", async ({ page }) => {
+    await page.goto("/services/research/ml");
     await page.waitForLoadState("networkidle");
 
     // Page title or heading should be visible
     await expect(page.locator("text=ML")).toBeVisible();
   });
 
-  test("Experiments table renders with data or empty state", async ({ page }) => {
-    await page.goto("/services/research/ml/experiments");
+  test("ML training queue renders with data or empty state", async ({ page }) => {
+    await page.goto("/services/research/ml/training");
     await page.waitForLoadState("networkidle");
 
-    // Should show either experiments table or empty state
+    // Should show either training queue table or empty state
     const hasTable = await page.locator("table").count();
-    const hasEmpty = await page.locator("text=No experiments").count();
+    const hasEmpty = await page.locator("text=No training").count();
     expect(hasTable > 0 || hasEmpty > 0).toBeTruthy();
   });
 });

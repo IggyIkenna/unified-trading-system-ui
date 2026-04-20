@@ -126,14 +126,6 @@
           "api_hooks": ["useStrategyBacktests", "useStrategyTemplates"]
         },
         {
-          "label": "Signals",
-          "route": "/services/research/ml/validation",
-          "file": "app/(platform)/services/research/ml/validation/page.tsx",
-          "state": "REAL",
-          "lines": 733,
-          "api_hooks": ["useValidationResults"]
-        },
-        {
           "label": "Execution Research",
           "route": "/services/execution/algos",
           "file": "app/(platform)/services/execution/algos/page.tsx",
@@ -152,34 +144,10 @@
       ],
       "ml_sub_tabs": [
         {
-          "route": "/services/research/ml/overview",
-          "file": "app/(platform)/services/research/ml/overview/page.tsx",
-          "state": "REAL",
-          "lines": 642
-        },
-        {
-          "route": "/services/research/ml/experiments",
-          "file": "app/(platform)/services/research/ml/experiments/page.tsx",
-          "state": "REAL",
-          "lines": 736
-        },
-        {
-          "route": "/services/research/ml/experiments/[id]",
-          "file": "app/(platform)/services/research/ml/experiments/[id]/page.tsx",
-          "state": "REAL",
-          "lines": 672
-        },
-        {
           "route": "/services/research/ml/training",
           "file": "app/(platform)/services/research/ml/training/page.tsx",
           "state": "REAL",
           "lines": 625
-        },
-        {
-          "route": "/services/research/ml/features",
-          "file": "app/(platform)/services/research/ml/features/page.tsx",
-          "state": "REAL",
-          "lines": 678
         },
         {
           "route": "/services/research/ml/registry",
@@ -192,12 +160,6 @@
           "file": "app/(platform)/services/research/ml/monitoring/page.tsx",
           "state": "REAL",
           "lines": 537
-        },
-        {
-          "route": "/services/research/ml/deploy",
-          "file": "app/(platform)/services/research/ml/deploy/page.tsx",
-          "state": "REAL",
-          "lines": 474
         },
         {
           "route": "/services/research/ml/governance",

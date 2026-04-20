@@ -58,14 +58,9 @@ export const RESEARCH_PAGES: Tier0Route[] = [
   { path: "/services/research/overview", name: "Research Overview" },
   { path: "/services/research/quant", name: "Quant Workspace" },
   { path: "/services/research/ml", name: "ML Dashboard" },
-  { path: "/services/research/ml/overview", name: "ML Overview" },
-  { path: "/services/research/ml/experiments", name: "ML Experiments" },
   { path: "/services/research/ml/training", name: "ML Training" },
-  { path: "/services/research/ml/features", name: "ML Features" },
-  { path: "/services/research/ml/validation", name: "ML Validation" },
   { path: "/services/research/ml/registry", name: "ML Registry" },
   { path: "/services/research/ml/monitoring", name: "ML Monitoring" },
-  { path: "/services/research/ml/deploy", name: "ML Deploy" },
   { path: "/services/research/ml/governance", name: "ML Governance" },
   { path: "/services/research/ml/config", name: "ML Config" },
   { path: "/services/research/strategy/overview", name: "Strategy Overview" },
@@ -83,13 +78,6 @@ export const RESEARCH_PAGES: Tier0Route[] = [
 export const RESEARCH_PAGES_EXTRA: Tier0Route[] = [
   { path: "/services/research/features", name: "Research Features" },
   { path: "/services/research/signals", name: "Research Signals" },
-];
-
-export const ML_EXPERIMENT_DETAIL_PAGES: Tier0Route[] = [
-  {
-    path: "/services/research/ml/experiments/exp-456",
-    name: "ML Experiment Detail",
-  },
 ];
 
 export const TRADING_PAGES: Tier0Route[] = [
@@ -201,7 +189,6 @@ export const ALL_TIER0_ROUTES: Tier0Route[] = [
   ...DATA_PAGES,
   ...RESEARCH_PAGES,
   ...RESEARCH_PAGES_EXTRA,
-  ...ML_EXPERIMENT_DETAIL_PAGES,
   ...TRADING_PAGES,
   ...TRADING_PAGES_EXTRA,
   ...STRATEGY_DETAIL_PAGES,
@@ -224,6 +211,5 @@ export const TIER0_DYNAMIC_SAMPLE_PATHS: ReadonlySet<string> = new Set([
   "/admin/users/admin",
   "/admin/users/admin/modify",
   "/admin/users/admin/offboard",
-  "/services/research/ml/experiments/exp-456",
   "/services/trading/strategies/DEFI_ETH_BASIS_SCE_1H",
 ]);
