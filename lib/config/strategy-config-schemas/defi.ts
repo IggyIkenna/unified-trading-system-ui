@@ -377,7 +377,9 @@ export const DEFI_STRATEGY_SCHEMAS: Record<DeFiStrategyId, StrategyConfigSchema>
         label: "Target Protocols",
         type: "multi-select",
         options: LIQUIDATION_TARGET_PROTOCOLS,
-        default: ["AAVE_V3", "COMPOUND_V3", "MORPHO"],
+        // Default to SUPPORTED venues only (AAVE_V3 for EVM, KAMINO for Solana).
+        // PARTIAL venues (COMPOUND_V3, EULER, MORPHO, GMX_V2) are opt-in per codex §12.
+        default: ["AAVE_V3", "KAMINO"],
       },
       { key: "min_bonus_bps", label: "Min Liquidation Bonus", type: "number", suffix: "bps", step: 25, default: 500 },
       {

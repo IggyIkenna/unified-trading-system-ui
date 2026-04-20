@@ -52,7 +52,13 @@ export const REWARD_MODE_OPTIONS = ["all", "eigen_only", "ethfi_only"];
 // Liquidation capture
 // ---------------------------------------------------------------------------
 
-export const LIQUIDATION_TARGET_PROTOCOLS = ["AAVE_V3", "COMPOUND_V3", "MORPHO", "SPARK", "EULER_V2"];
+// Aligned with codex category-instrument-coverage.md §12 LIQUIDATION_CAPTURE:
+// - AAVE_V3 (SUPPORTED — Ethereum + Arbitrum / Optimism / Polygon / Base)
+// - KAMINO (SUPPORTED — Solana program-level mechanic, not EVM flash-loan)
+// - COMPOUND_V3 / EULER / MORPHO (PARTIAL — per-protocol deployments in flight)
+// - GMX_V2 (PARTIAL — perp liquidator role; separate economics from lending)
+// SPARK is not listed in codex coverage and was dropped.
+export const LIQUIDATION_TARGET_PROTOCOLS = ["AAVE_V3", "COMPOUND_V3", "EULER", "MORPHO", "KAMINO", "GMX_V2"];
 export const MEV_POLICY_OPTIONS = ["FLASHBOTS", "PUBLIC", "MEV_BLOCKER"];
 
 // ---------------------------------------------------------------------------
