@@ -3,60 +3,20 @@ import Link from "next/link";
 import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
 
 export const metadata: Metadata = {
-  title: "Signals Service (Signals-Out) — Odum Research",
-  description:
-    "Signals Service (Signals-Out): Odum-generated signals delivered to authenticated counterparty endpoints. The counterparty executes on its own infrastructure; Odum does not see fills, positions, or P&L.",
+  title: "Who We Are — Odum Research",
+  description: "Odum Research: team, mission, and how we work with clients and allocators.",
 };
 
-export default function MarketingSignalsPage() {
+export default function MarketingFirmPage() {
   return (
     <>
-      <MarketingStaticFromFile file="signals.html" />
+      <MarketingStaticFromFile file="firm.html" />
       {/* Related — React-level sibling-links (shadow DOM above is untouched). */}
       <section className="border-t border-border/40 bg-background">
         <div className="container px-4 py-10 md:px-6">
           <div className="mx-auto max-w-4xl rounded-lg border border-border bg-card/30 p-6">
             <h2 className="text-sm font-semibold text-foreground">Related</h2>
             <ul className="mt-3 space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/platform/signals-in"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  DART Signals-In
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; the inverse direction: your signals into Odum&apos;s
-                  execution stack.
-                </span>
-              </li>
-              <li>
-                <Link
-                  href="/briefings/signals-out"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  Signals-Out briefing
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; signal payload schema, delivery mechanics, and light
-                  observability UI behind the light-auth gate.
-                </span>
-              </li>
-              <li>
-                <Link
-                  href="/platform"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
-                  DART umbrella
-                </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; where Signals-In and Full DART sit alongside
-                  Signals-Out.
-                </span>
-              </li>
               <li>
                 <Link
                   href="/contact"
@@ -66,7 +26,58 @@ export default function MarketingSignalsPage() {
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
-                  &mdash; book a first call to discuss signal leasing shape.
+                  &mdash; book a first call.
+                </span>
+              </li>
+              <li>
+                <Link
+                  href="/briefings"
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  Briefings hub
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; per-path deep-dive briefings behind the light-auth
+                  gate.
+                </span>
+              </li>
+              <li>
+                <Link
+                  href="/investment-management"
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  Investment Management
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; allocate capital to Odum-run systematic strategies.
+                </span>
+              </li>
+              <li>
+                <Link
+                  href="/regulatory"
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  Regulatory Umbrella
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; operate regulated activity under Odum&apos;s FCA
+                  permissions.
+                </span>
+              </li>
+              <li>
+                <Link
+                  href="/platform"
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  DART
+                </Link>
+                <span className="text-muted-foreground">
+                  {" "}
+                  &mdash; Data Analytics, Research &amp; Trading: our operating
+                  system, available to clients.
                 </span>
               </li>
             </ul>

@@ -1,12 +1,19 @@
 /**
- * Lighter-gate (pre-commitment) narrative — v1 structured content, no PDFs.
- * Source: five-space IA plan; keep wording aligned with public marketing (real positioning).
+ * Post-first-call briefing content — six commercial paths.
  *
- * Each pillar now carries a `tldr` (one-sentence cut-through for BriefingHero) and a
- * `cta` (single primary CTA surfaced above the fold). The existing `summary` + `bullets`
- * remain as-is so the longer body is unchanged — G1.12 is a layout-only polish.
+ * Codex SSOT:
+ * - unified-trading-pm/codex/14-playbooks/experience/im-decision-journey.md
+ * - unified-trading-pm/codex/14-playbooks/experience/dart-briefing.md
+ * - unified-trading-pm/codex/14-playbooks/experience/regulatory-umbrella-briefing.md
+ * - unified-trading-pm/codex/14-playbooks/commercial-model/signal-leasing.md
+ * - unified-trading-pm/codex/14-playbooks/_ssot-rules/10-strategy-instruction-schema-principles.md
+ * - unified-trading-pm/codex/14-playbooks/shared-core/instruction-schema-fit-and-package-boundaries.md
+ * - unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
+ * - unified-trading-pm/plans/active/signal_leasing_broadcast_architecture_2026_04_20.plan.md (Phase 2 D1-D10)
  *
- * Codex SSOT: unified-trading-pm/codex/14-playbooks/experience/briefings-hub.md
+ * Voice: rule 02 (tone & posture) — present tense, specific, UK English.
+ * Pricing numbers are codex-private per rule 08 — none appear here.
+ * No raw-data resale claims per rule 07.
  */
 
 export interface BriefingCta {
@@ -14,16 +21,30 @@ export interface BriefingCta {
   readonly href: string;
 }
 
+export interface BriefingSection {
+  readonly title: string;
+  readonly body: string;
+  readonly bullets?: readonly string[];
+  readonly bodyAfter?: string;
+}
+
 export interface BriefingPillar {
-  slug: "investment-management" | "regulatory" | "platform";
+  slug:
+    | "investment-management"
+    | "regulatory"
+    | "platform"
+    | "dart-signals-in"
+    | "dart-full"
+    | "signals-out";
   title: string;
   tldr: string;
-  summary: string;
-  bullets: readonly string[];
+  frame: string;
+  sections: readonly BriefingSection[];
+  keyMessages: readonly string[];
+  nextCall: string;
   cta: BriefingCta;
 }
 
-/** Shared primary CTA across all briefings — "Book 45-minute call" per briefings-hub.md. */
 const BOOK_SECOND_CALL: BriefingCta = {
   label: "Book 45-minute call",
   href: "/contact",
@@ -32,41 +53,447 @@ const BOOK_SECOND_CALL: BriefingCta = {
 export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
   {
     slug: "investment-management",
-    title: "Investment management",
+    title: "Investment Management",
     tldr:
-      "Odum allocates client capital to strategies run on Odum's own infrastructure, with reporting on the same surface Odum uses internally.",
-    summary:
-      "How we run discretionary and systematic sleeves, what allocators see in the strategy catalogue, and how performance is communicated.",
-    bullets: [
-      "Signed-in Investment management is catalogue-first: strategies, returns profiles, and drill-down detail.",
-      "Public pages describe the service; the catalogue is the investable surface after onboarding.",
+      "Odum allocates client capital to its own systematic strategies under Odum's FCA permissions. Allocator reporting runs on the same surface Odum uses to operate the book.",
+    frame:
+      "Investment Management allocates client capital to Odum-run systematic strategies under Odum's FCA permissions. Reporting comes from the same surface Odum's own traders and risk desk use — same components, same data, entitlement-filtered for allocator views. Strategies are operated on Odum infrastructure, not wrapped on top of a third party. Venue custody stays with the client: you retain the venue account, you issue scoped read-only-plus-execute API keys to Odum, and Odum never custodies client capital.",
+    sections: [
+      {
+        title: "The strategy surface",
+        body:
+          "The second call opens with the catalogue screen — one row per strategy Odum offers you, with maturity (code-audited, backtested, paper, live-tiny, live-allocated) and capacity visible per slot. No research-phase placeholders, no authoring surfaces. What you see is live, allocable, and filtered to the public slice your mandate warrants plus any slots Odum has set aside for discretionary allocation on your side.",
+      },
+      {
+        title: "Structure — SMA or Pooled with share classes",
+        body:
+          "Two structural options resolve at onboarding. An SMA carries its own fund entity, its own venue accounts, its own scoped API keys, and fully isolated positions — one client, one book. A Pooled vehicle holds multiple allocators as distinct share classes across one set of positions; allocators share strategy exposure but are tracked, reported, and settled against their own share-class identifier. Pooled is operationally simpler and often better for smaller tickets or where share-class mechanics are a feature rather than a cost; SMA is the default for allocators who want isolation, bespoke venue selection, or mandate-specific risk parameters.",
+        bodyAfter:
+          "Under the Pooled structure, visibility is strictly sliced by share-class identifier — you see only your own slice of positions, exposures, and P&L. There is no cross-client visibility within the Pooled vehicle. The choice between SMA and Pooled has real downstream consequences on onboarding, venue provisioning, reporting, and liquidity terms, walked through against your specifics at the second call.",
+      },
+      {
+        title: "Read-only venue key model — you keep custody",
+        body:
+          "Odum never takes custody of client capital. You retain the venue account in your name, fund it directly with the venue, and issue Odum a scoped API key with execute and read permissions — no withdrawal authority, ever. Keys sit in Odum's Secret Manager and are hot-reloaded into execution-service at runtime. You can revoke a key at any time and the execution loop closes down on that venue within the scope of that key; capital stays with you throughout.",
+      },
+      {
+        title: "Reporting surface — the operating system, filtered",
+        body:
+          "Positions, exposures, P&L attribution by factor, reconciliation breaks, audit trail, compliance artefacts. The same surface Odum's own traders and risk desk use, filtered through your entitlement — share class if Pooled, SMA partition if standalone. Your allocator reporting is a partition of an operational system, not a purpose-built investor view assembled after the fact. The batch-and-live parity principle applies: the backtest view you see at onboarding uses the same components, the same risk checks, the same position tracking as live. The only thing that changes between batch and live is the execution-fill source.",
+      },
+      {
+        title: "Regulatory posture and commitment floor",
+        body:
+          "Odum operates under FCA permissions. MLRO, compliance monitoring, and supervisory reporting run internally — not outsourced. Twelve-month minimum engagement; the floor reflects real provisioning costs — legal review, venue onboarding, per-client API-key issuance, reconciliation setup, share-class or SMA mechanics.",
+      },
+      {
+        title: "Performance-fee band and platform-fee choice",
+        body:
+          "Standard mandate posture is no management fee. Performance share sits in a 30-35% band on profits above a negotiated high-water mark; specific rate per mandate is covered in the second call under codex-private pricing. At mandate signing you pick one of two platform-fee options: Option A carries a small uplift on the performance share in exchange for zero fixed monthly charge, and Option B carries a small flat monthly platform-access fee in exchange for the lower performance share. Either captures allocation to the same strategies; the choice is about whether you prefer full alignment or a modest fixed component.",
+      },
+      {
+        title: "Related paths",
+        body:
+          "If you run an FCA-regulated operation and want Odum's permissions over your own activity, see the Regulatory Umbrella briefing at /briefings/regulatory — the reporting surface is shared between IM clients and Umbrella clients because the underlying stack is one. If you generate your own strategy signals and want to use Odum's execution and reporting rather than allocate capital to Odum-run strategies, see the DART Signals-In briefing at /briefings/dart-signals-in.",
+      },
     ],
-    cta: BOOK_SECOND_CALL,
-  },
-  {
-    slug: "regulatory",
-    title: "Regulatory",
-    tldr:
-      "Odum operates regulated activity for clients under its own FCA permissions — the umbrella is a specific scope, not a blanket cover.",
-    summary:
-      "FCA authorisation scope, how client assets and reporting fit the regulatory perimeter, and what stays outside the umbrella.",
-    bullets: [
-      "Engagement paths are explicit: marketing, briefings, investor relations, platform operations.",
-      "Material for boards lives under Investor Relations with entitlement controls.",
+    keyMessages: [
+      "Allocation to Odum-run strategies on Odum infrastructure under Odum's FCA permissions — not a third-party wrapper.",
+      "Two structural options — SMA (isolated entity + venue accounts + keys) or Pooled (share classes over one book). Visibility is sliced per share class; no cross-client exposure.",
+      "Venue custody stays with the client. You fund the venue; Odum holds a scoped execute-plus-read API key in Secret Manager; no withdrawal authority, ever.",
+      "Reporting is the same surface Odum uses internally, filtered by entitlement — share class or SMA partition. Same data, same components, different views.",
+      "Performance share sits in a 30-35% band; no management fee. Platform-fee choice at signing: uplift on performance share (Option A) or small flat monthly access fee (Option B).",
+      "Regulatory cover, compliance, and MLRO are operated inside Odum — not outsourced, not optional. Twelve-month minimum engagement.",
     ],
+    nextCall:
+      "The 45-minute second call walks the specific strategies your mandate shape fits, the SMA-versus-Pooled choice against your isolation preference and share-class mechanics, the read-only-key venue setup against your existing venue relationships, and the platform-fee option against your preferred alignment posture.",
     cta: BOOK_SECOND_CALL,
   },
   {
     slug: "platform",
-    title: "Platform",
+    title: "DART — Data Analytics, Research & Trading",
     tldr:
-      "DART is the data, analytics, research and trading stack Odum operates internally, packaged for clients to run their own systematic activity on.",
-    summary:
-      "Operational stack for builders: data, research, promotion, trading, reporting, and observation — distinct from picking a strategy to invest in.",
-    bullets: [
-      "Signed-in Platform reuses the same identity as Investment management; navigation separates job-to-be-done.",
-      "Mock or labelling for fixtures is environment-scoped — not a global “sample site” banner.",
+      "DART is the set of services Odum uses to build, research, promote, execute, and monitor its own systematic strategies — packaged for client use.",
+    frame:
+      "DART is the set of services Odum uses internally to build, research, promote, execute, and monitor systematic strategies. The underlying system is one; the commercial path picks which surfaces you touch. Two paths within DART: signals-only (you generate signals; Odum operates execution, risk, allocation, reporting) or full pipeline (you additionally use Odum's research and promote layer on the same components). DART is the signals-in direction — your signals land on Odum's execution. The inverse — our signals delivered to your execution on your own infrastructure — is Odum Signals, briefed separately.",
+    sections: [
+      {
+        title: "Two paths — which one fits your operation",
+        body:
+          "Signals-only clients plug their own strategy outputs into Odum's execution and reporting stack. Full-pipeline clients additionally use Odum's research, backtest, and promote layer to author strategies on Odum data. The upgrade from signals-only to full pipeline is a formal commercial event, not a bolt-on — if you expect to need research during the engagement, resolve to full pipeline now. The instruction-schema fit-check in the next section resolves which path fits.",
+      },
+      {
+        title: "Instruction schema — the signals-only fit-check",
+        body:
+          "Signals-only runs on a published instruction schema. Odum needs eight fields on every instruction for execution, risk, and allocation to operate cleanly. Your upstream either produces them already or can be adapted to — that decision is yours to make before the second call.",
+        bullets: [
+          "Instrument and venue context — instrument, venue or chain, instrument-type category.",
+          "Intended action — buy, sell, hedge, close, roll, or a combination that maps to a known execution primitive.",
+          "Size or target exposure — quantity, notional, or target exposure in a unit Odum's risk and allocation services understand.",
+          "Timeframe or urgency — market, scheduled, over-window, passive limit.",
+          "Order constraints — price limits, participation limits, slippage budget, venue restrictions, time-in-force.",
+          "Strategy or instruction identifier — a stable identifier linking the instruction back to your upstream for reconciliation.",
+          "Lifecycle behaviour — how you modify, replace, or cancel an open instruction.",
+          "Essential risk and allocation constraints — per-instruction limits, per-client allocation caps, correlation limits.",
+        ],
+        bodyAfter:
+          "What stays on your side: regime classification logic, raw model code, signal-generation methodology, portfolio construction math, optimisation objective. Your strategic edge does not cross the fence.",
+      },
+      {
+        title: "The strategy catalogue",
+        body:
+          "The catalogue shows one row per strategy slot with a maturity tag (code-audited → backtested → paper → live-tiny → live-allocated) and a phase tag (research, paper, live). Research, paper, and live are phase views of the same catalogue — a live-allocated slot can be pulled into research phase for a re-run over a new regime window. Pre-backtested slots are not visible externally.",
+      },
+      {
+        title: "Research, promote, execute",
+        body:
+          "Full-pipeline clients interrogate historical data in research, promote candidates through paper to live, and trade on the execution layer. Signals-only clients skip research and promote — they send instructions in and use execution, reporting, and reconciliation. The research-and-promote pipeline is a block boundary between the two paths, not a feature flag.",
+      },
+      {
+        title: "Commitment and packs",
+        body:
+          "Twelve-month minimum engagement. Your scope is defined by venue packs, chain packs, and instrument-type packs. A typical signals-only shape is three venues, two chains, two instrument types; full-pipeline shapes add research breadth. Pricing is per block, mixable across tiers. Numbers live in the second call.",
+      },
     ],
+    keyMessages: [
+      "DART is the set of services Odum uses internally, packaged for client use. Not a wrapper on top.",
+      "Two paths — signals-only or full pipeline. The instruction-schema fit-check resolves which one fits.",
+      "Research, paper, and live are phase views of one catalogue, not three separate systems.",
+      "Signals-only stops at the block boundary — execution, reporting, reconciliation. Research and promote are full-pipeline only.",
+      "Twelve-month minimum engagement. Venue, chain, and instrument-type packs scope per client.",
+    ],
+    nextCall:
+      "If the fit-check lands on signals-only, the 45-minute second call walks the instruction schema against your upstream and covers execution, reconciliation, and reporting scope. If it lands on full pipeline, the call walks the research surface against one of your strategy candidates and the promotion path through to live.",
+    cta: BOOK_SECOND_CALL,
+  },
+  {
+    slug: "regulatory",
+    title: "Regulatory Umbrella",
+    tldr:
+      "Firms running regulated activity that want operational cover without seeking direct FCA authorisation operate under Odum's permissions. Odum is the regulated counterparty.",
+    frame:
+      "Firms running regulated activity that want operational cover without seeking direct FCA authorisation operate under Odum's permissions. Odum holds live FCA authorisation, operates compliance and MLRO functions internally, and is the regulated counterparty. The firm retains strategic and commercial control; regulatory operations run through Odum. Onboarding uses scoped read-only-plus-read-transaction venue API keys — no capital moves to Odum, no execution runs through Odum's venues. You keep operational and custodial control; Odum operates the regulatory and reporting overlay.",
+    sections: [
+      {
+        title: "Regulatory scope",
+        body:
+          "The briefing enumerates the FCA permissions Odum holds and the regulated activities they cover — arranging deals in investments, advising on investments, operating a fund or SMA, and the related ancillary activities — specific enough for you to check whether your planned activity fits. Activities outside Odum's scope are named as outside scope, not hedged. A prospect whose activity does not fit learns that from the briefing, not from a third meeting. The umbrella operates the firm as an appointed representative (or the equivalent structural vehicle for fund-style clients) under Odum's principal permissions.",
+      },
+      {
+        title: "Onboarding — five workstreams in parallel",
+        body:
+          "Five workstreams run in parallel, each with a stated Odum owner and a stated dependency on you:",
+        bullets: [
+          "Legal scoping and agreements — compliance team owns; you provide planned activity detail and corporate structure. Output: appointed-representative agreement or sub-fund documentation, scoped to the regulated activities you run.",
+          "KYC/AML and suitability — MLRO owns; you provide key-person KYC, source-of-funds evidence, and onboarding diligence on your own clients. Output: MLRO sign-off on firm and key personnel.",
+          "Compliance and risk-tolerance profiling — compliance lead owns; you provide policy and procedure documentation, plus a risk-tolerance profile per sub-client or mandate. Output: compliance monitoring plan and risk register.",
+          "Mandate drafting and venue setup with read-only keys — operations plus engineering own; you provide venue preferences and issue scoped read-only-plus-read-transaction API keys. Output: venue onboarding manifest and reporting-scope sign-off.",
+          "Reporting setup — engineering owns; you sign off on the reporting entitlement surface and the set of share-class or sub-mandate identifiers. Output: operating reporting surface live for your firm.",
+        ],
+        bodyAfter:
+          "Parallel execution, not sequential. The reader leaves with a mental model of what onboarding feels like and what they are responsible for.",
+      },
+      {
+        title: "Operating model once live",
+        body:
+          "The Umbrella firm operates as the appointed representative (or the equivalent fund-style vehicle) under Odum's FCA permissions. Odum runs compliance monitoring, supervisory checks, transaction reporting, and best-execution evidence on the firm's activity. You retain strategic and commercial control of the business; regulatory operations run through Odum. Multi-fund and multi-SMA structures are supported natively: a Regulatory Umbrella client can operate as the designated representative with N funds, N SMAs, or a mix under their umbrella entity — each sub-vehicle with its own share class (if pooled) or its own standalone SMA partition, reported and supervised inside the same surface.",
+      },
+      {
+        title: "Supervisory artifacts — what you get monthly and quarterly",
+        body:
+          "Umbrella clients receive a defined set of supervisory artefacts on a published cadence, produced directly from the operating stack:",
+        bullets: [
+          "Monthly NAV and position reports per sub-fund or SMA, reconciled against venue balances.",
+          "Quarterly performance attribution, breaking P&L out by strategy, factor, and execution quality where relevant.",
+          "Monthly compliance monitoring reports — breach log, near-miss log, remediation status.",
+          "Transaction reporting artefacts under MIFID or equivalent regimes, generated from fills on your scoped venue keys.",
+          "Best-execution evidence packs per venue per period.",
+          "Annual compliance certifications and audit-trail access for your own auditors and regulators-in-scope.",
+        ],
+      },
+      {
+        title: "Reporting surface — inherited from the operating stack",
+        body:
+          "Regulatory Umbrella clients get the full Odum reporting and analytics tool-set the same way IM clients do — positions, exposures, P&L attribution, performance breakdowns, reconciliation, audit trail, MIFID and transaction reporting, supervisory artefacts. Not a separate regulatory-reporting product; a partition of the operating system, entitlement-filtered to your regulated-activity view.",
+        bodyAfter:
+          "Read-only venue API keys stay in Odum's Secret Manager for the duration of the engagement and can be revoked by you at any time. Odum pulls position, order, and fill data from your venues into the shared reporting surface — no capital moves to Odum, no execution runs through Odum's venues. The same keys let you build up funds, sub-clients, and sub-mandates under your firm and track their performance and breakdowns in the platform with full sub-partition isolation.",
+      },
+      {
+        title: "Commitment",
+        body:
+          "Twelve-month minimum engagement. Onboarding costs are real — legal review, compliance setup, MLRO onboarding, venue provisioning, reporting setup — and the floor recovers them. Pricing is per block: regulatory umbrella reporting, reporting core, execution layer, venue packs, instrument-type packs. Numbers are walked through at the second call.",
+      },
+      {
+        title: "Related paths",
+        body:
+          "If you are looking to allocate capital to Odum-run strategies rather than cover your own regulated activity, see the Investment Management briefing at /briefings/investment-management — the reporting surface is shared because the underlying operating stack is one. If you additionally want access to Odum's research and promote layer on your own strategies under the umbrella, see the DART Full Pipeline briefing at /briefings/dart-full.",
+      },
+    ],
+    keyMessages: [
+      "Odum holds FCA permissions and operates compliance, MLRO, and supervisory reporting internally. Not outsourced oversight repackaged.",
+      "Umbrella clients operate under Odum's permissions as appointed representatives (or the equivalent fund-style vehicle). Odum carries the regulatory obligations.",
+      "Onboarding has five parallel workstreams — legal, KYC/AML, compliance and risk-tolerance, mandate drafting plus venue setup, reporting — each with a stated Odum owner.",
+      "Multi-fund and multi-SMA structures are native: one umbrella client can run N funds or SMAs, each with its own share class or partition, supervised inside one surface.",
+      "Supervisory artefacts run on a defined cadence — monthly NAV and compliance, quarterly attribution, transaction reporting, best-execution packs, annual certifications, audit-trail access.",
+      "Reg Umbrella clients inherit the full IM/DART reporting and analytics tool-set via read-only venue API keys. No capital movement; you keep operational control.",
+      "Twelve-month minimum engagement. The floor recovers real onboarding costs.",
+    ],
+    nextCall:
+      "The 45-minute second call walks your specific activity against Odum's permissions, confirms scope fit, maps the five onboarding workstreams against your situation, and resolves the sub-structure — how many funds, SMAs, or mandates under the umbrella and the share-class or partition mechanics for each.",
+    cta: BOOK_SECOND_CALL,
+  },
+  {
+    slug: "dart-signals-in",
+    title: "DART Signals-In — your signals, our execution",
+    tldr:
+      "Your strategy generates signals upstream. Odum's execution, risk, allocation, and reporting stack runs the rest. The integration surface is a fixed, published instruction schema.",
+    frame:
+      "DART — Data Analytics, Research & Trading — Signals-In is the downstream path for firms that already run their own strategy research and want to plug signal output into a full execution and reporting stack. Your upstream keeps its edge; Odum's downstream stack operates on structured instructions. Direction is one-way: your signals come in, Odum executes them on venues where you have granted Odum scoped read-only-plus-execute API keys held in Secret Manager. Your capital stays in your venue accounts; Odum never custodies it. The fit-check is whether your upstream already produces the eight required fields — or can be adapted to.",
+    sections: [
+      {
+        title: "What crosses the fence and what does not",
+        body:
+          "Signals-In is a boundary product. Your side of the fence holds regime classification logic, raw model internals, features, weights, training process, signal-generation methodology, portfolio construction maths, and optimisation objective. Odum's side holds execution routing, risk checks, allocation, reconciliation, and reporting. The boundary is the instruction schema — eight fields, nothing more. Your strategic edge never enters Odum's systems.",
+      },
+      {
+        title: "The eight-field instruction schema — full spec",
+        body:
+          "Every instruction your upstream emits carries eight fields. Each field has a defined shape, validation semantics, and downstream consumer inside Odum's stack. This is the fit-check — the contract Odum's execution, risk, allocation, and reconciliation services operate on. Your current signal surface either produces these already or can be adapted to produce them. If neither, Signals-In is not the right path — you are either a Full Pipeline client (Odum runs the upstream) or a bespoke engagement with a custom-premium block.",
+        bullets: [
+          "Field 1 — instrument and venue context. Values: a resolved instrument_id from Odum's instruments catalogue, a venue or chain identifier from the compatibility matrix (any CeFi venue in the venue registry; any DeFi chain in UAC CHAIN_RPC_TEMPLATES; Polymarket or Kalshi for prediction; sports venues for sports fixtures), and an instrument-type category (spot, perp, dated future, option, prediction market, sports fixture, on-chain spot, flash-loan swap). Consumer: instruments-service resolution plus execution-service venue routing.",
+          "Field 2 — intended action. Values: buy, sell, hedge, close, roll, or a combination that maps to a single execution primitive in Odum's algo library. Multi-leg structures are supported on venues that support them (see the compatibility matrix — Options multi-leg depends on the venue pack). Consumer: execution-service algo selector.",
+          "Field 3 — size or target exposure. Values: quantity (contracts, shares, tokens), notional (in a specified currency), or target portfolio exposure expressed as a fraction or a notional cap. Unit must be one Odum's risk and allocation services understand — declared at onboarding per strategy identifier. Consumer: risk-and-exposure-service plus portfolio-allocator.",
+          "Field 4 — timeframe or urgency. Values: market (fill-now), scheduled (fill at a timestamp), over-window (participate across a duration with a declared participation rate), passive-limit (rest at a price, optionally with a timeout). Maps one-to-one onto Odum's execution-algo library entries. Consumer: execution-service algo parameterisation.",
+          "Field 5 — order constraints. Values: price limits (absolute or relative), participation limits (max percentage of venue volume), slippage budget (in basis points; DeFi flash-loan orders typically carry bps), venue restrictions (if a sub-strategy excludes certain venues), time-in-force (GTC, IOC, FOK, GTD with an expiry). Consumer: execution-service algo parameterisation.",
+          "Field 6 — strategy or instruction identifier. Values: a client-stable identifier, unique per strategy per instruction, that survives restarts on your side. Used for reconciliation, P&L attribution, and lifecycle. Consumer: reconciliation service plus reporting-attribution pipeline.",
+          "Field 7 — lifecycle behaviour. Values: supersede (new instruction replaces prior, prior's open quantity cancelled, new parameters apply from acknowledgement), add (new instruction sits alongside prior, both active and tracked independently under the same strategy_id), cancel (instruction-level cancel — cancel open quantity on all fills belonging to this instruction id; already-filled quantity is not unwound, that is a new counter-instruction). Amend within an active instruction (e.g. changing a price limit on unfilled working portion) is a lifecycle update event on the same instruction id, not a new instruction. Consumer: instructions-service lifecycle handler; execution-service translates to venue-side protocol per venue's amend capability.",
+          "Field 8 — essential risk and allocation constraints. Values: per-instruction risk limits (max loss, max notional), per-client allocation caps (position cap per strategy), correlation limits (max gross exposure across a correlated basket). These are hard gates; breaches cause the instruction to be rejected at the allocation layer before it reaches execution. Consumer: risk-and-exposure-service plus portfolio-allocator.",
+        ],
+        bodyAfter:
+          "Schema depth is a dimension inside the integration. Minimal depth carries the eight fields and little else — onboarding cost is lowest. Standard depth adds common extensions: strategy-family tags, parent-child instruction grouping for multi-leg orders, scheduling hints, reconciliation annotations. Rich depth covers bespoke fields negotiated per client — proprietary risk dimensions, custom execution directives, custom lifecycle states; onboarding cost is higher, typically bundled with a custom-premium block. Deeper schema, higher onboarding effort; pricing sits inside the instructions-integration block, not as a separate block.",
+      },
+      {
+        title: "Venue and instrument compatibility matrix",
+        body:
+          "The schema is compatible with most venue and instrument-type combinations, but not all. Known incompatibilities are spelled out upfront so the fit-check resolves cleanly:",
+        bullets: [
+          "Any CeFi venue in the venue registry, instrument-type spot / perp / dated future, execution mode market / limit / schedule — compatible, minimal schema sufficient.",
+          "Any CeFi venue, instrument-type options, execution mode multi-leg structure — depends on venue. Multi-leg order capability is a venue-pack sub-dimension; some venues support, some do not. Confirmed at second call.",
+          "Any DeFi chain in UAC CHAIN_RPC_TEMPLATES, instrument-type spot (DEX), execution mode flash-loan or swap — compatible, standard schema plus DeFi-specific order constraints (slippage in bps).",
+          "DeFi chain, instrument-type perps (on-chain) — depends on protocol; documented in the instrument-type pack per protocol.",
+          "DeFi chain, instrument-type options — BLOCKED. No DeFi options protocol integrated today; this combination routes to a custom-premium block or is declined.",
+          "DeFi chain, instrument-type dated futures — BLOCKED. No DeFi dated-future protocol integrated today.",
+          "Polymarket or Kalshi, instrument-type prediction markets, execution mode limit / taker — compatible, standard schema with sports-style event-settled lifecycle field.",
+          "Sports venues, instrument-type sports fixtures, execution mode pre-match or in-play — compatible, rich schema with event-lifecycle fields.",
+        ],
+        bodyAfter:
+          "The full compatibility matrix, including blocker predicates, is the runtime contract Odum's instruction gateway enforces. A prospect whose planned flow hits a BLOCKED combination learns that at the fit-check, not three meetings in.",
+      },
+      {
+        title: "Lifecycle semantics and idempotency",
+        body:
+          "Lifecycle behaviour at the client boundary (supersede / add / cancel, plus amend as a lifecycle-update event on the same instruction id) is distinct from venue-side behaviour. The client sends one semantic; Odum's execution layer translates to the venue protocol that produces the equivalent outcome — some venues support native amend, some require cancel-and-replace. Idempotency is enforced on the instruction identifier: re-sending the same instruction id with the same lifecycle semantic is a no-op from Odum's side; re-sending with supersede is a replace. This gives your upstream a safe retry model on network failures without duplicate execution risk.",
+      },
+      {
+        title: "Signals-In versus Full Pipeline — side by side",
+        body:
+          "Signals-In and Full Pipeline are the two paths inside DART. The boundary is the research and promote layer. Signals-In clients send instructions in and use execution, reporting, and reconciliation. Full Pipeline clients additionally author strategies on Odum data through the research surface. Moving from Signals-In to Full Pipeline later is a formal commercial event, not a bolt-on — if research access is on your horizon, resolve to Full Pipeline now.",
+        bullets: [
+          "Signals-In — your upstream generates signals; Odum runs execution, reporting, reconciliation, risk, allocation. Research and promote surfaces are not included.",
+          "Full Pipeline — Odum additionally runs the research surface on the same catalogue and promotes candidates through paper to live. Cross-strategy analytics included.",
+          "Both paths operate on the same underlying components. The commercial path picks which surfaces you touch — the system itself is one.",
+        ],
+      },
+      {
+        title: "What Signals-In enables and what it does not",
+        body:
+          "Well-formed instructions against the schema enable: execution (algo selection, venue routing, fills), reconciliation (instruction to fills), position tracking, P&L attribution to your declared strategy_id, exposure analytics on your own flow, execution-quality and TCA on your own flow, and the reporting surface (positions, P&L, reconciliation, audit). Signals-In does NOT enable: backtest or research surface over historical data, the promotion pipeline (shadow to paper to live-tiny to allocated), live-vs-backtest P&L comparison that requires Odum-side backtest lineage, full P&L attribution back to your upstream signal-generation features, cross-strategy research analytics drawing on data beyond your own flow, or regime classification analytics. Those capabilities sit in block 6 (research / promote) which is excluded from Signals-In by design. The boundary is load-bearing: research bolted on at Signals-In pricing would be underpriced.",
+      },
+      {
+        title: "Scope, commitment, commercial posture",
+        body:
+          "Twelve-month minimum engagement. Scope is defined by venue packs, chain packs, and instrument-type packs — a typical Signals-In shape is three venues, two chains, two instrument types. Pricing is per block, mixable. Numbers live in the second call. The fit-check — whether your upstream produces the eight fields and what schema depth your flow warrants — happens before the demo, not during it.",
+      },
+      {
+        title: "Related paths",
+        body:
+          "If you want access to Odum's research surface and promote pipeline on top of execution and reporting, see DART Full Pipeline at /briefings/dart-full. For the full DART framing across both paths, see /briefings/platform. The inverse direction — Odum-generated signals delivered to your execution infrastructure — is Odum Signals at /briefings/signals-out.",
+      },
+    ],
+    keyMessages: [
+      "Signals-In runs on a fixed, published instruction schema — eight fields, three depths (minimal / standard / rich). Your upstream either produces the fields or is adapted to. The fit-check happens before the demo.",
+      "Direction is one-way — your signals, our execution. Odum executes on venues where you have granted scoped read-only-plus-execute API keys in Secret Manager. Your capital stays in your venue accounts.",
+      "Your strategic edge stays upstream. Regime logic, model internals, signal generation, portfolio construction, features, weights — none of it crosses into Odum's systems.",
+      "Venue and instrument-type compatibility is spelled out — CeFi spot / perp / dated fully supported, Options depends on venue, DeFi spot supported, DeFi options and dated futures are BLOCKED today.",
+      "Lifecycle semantics: supersede replaces, add sits alongside, cancel cancels open quantity. Amend is an update on the same instruction id. Idempotency on instruction id gives a safe retry model.",
+      "Research and promote are not included. That is the block boundary to Full Pipeline. Upgrading is a formal commercial event.",
+      "Scope is venue, chain, and instrument-type packs on the flow your instructions actually touch. Twelve-month minimum engagement.",
+    ],
+    nextCall:
+      "The 45-minute second call walks the eight-field instruction schema against your upstream field by field, resolves any gaps, confirms the venue and instrument-type compatibility against your planned flow, picks the schema depth tier, and scopes the venue, chain, and instrument-type packs your engagement requires. If your upstream needs adaptation, the call surfaces exactly what — so you can scope the upstream work before committing.",
+    cta: BOOK_SECOND_CALL,
+  },
+  {
+    slug: "dart-full",
+    title: "DART Full Pipeline",
+    tldr:
+      "Odum's research, promote, paper, and live pipeline on the same components Odum uses internally. You author strategies on Odum data, promote candidates through paper to live, and execute on the production stack.",
+    frame:
+      "DART — Data Analytics, Research & Trading — Full Pipeline is the deeper path within DART for firms that want access to Odum's research surface, promotion pipeline, and execution layer as a single continuous operation. Research, paper, and live are phase views of one catalogue — not three separate systems. A live-allocated slot can be pulled back into research phase for a re-run over a new regime window; a research candidate promotes through paper to live on the same components.",
+    sections: [
+      {
+        title: "The research surface — what a client sees when they sit down",
+        body:
+          "Research runs on Odum's historical data — tick data, on-chain events, reference instruments, corporate actions, venue metadata, features, and derived factors. You author strategies in the same runtime Odum's own researchers use, with the same data access, the same feature library, and the same backtest engine. The research surface is not a sandbox wrapper on top — it is the surface Odum uses internally, entitlement-filtered to your work. When you open the research tool, the left pane shows the strategy catalogue (your slots plus any shared reference slots), the centre pane shows the authoring environment for the currently-selected strategy slot, and the right pane shows the backtest results: P&L curve, drawdown profile, factor attribution, fill-quality proxies from the matching engine, and live-vs-backtest diff once the slot has been promoted beyond backtested. Same components, batch and live — the batch-equals-live principle means the backtest exercises the same position tracking, risk checks, and allocation services as live; the only seam that differs is the execution-fill source (matching engine vs real venue).",
+      },
+      {
+        title: "The 8-stage maturity ladder",
+        body:
+          "A strategy slot moves through an explicit maturity ladder. The ladder is the canonical artefact clients see alongside the catalogue — each slot carries its current stage, visible to you as a filter and a sort axis. Stages advance via automated watchdog policies (no hidden discretionary override), and ops intervention is limited to incident-response demotion.",
+        bullets: [
+          "CODE_NOT_WRITTEN — archetype placeholder, visible internally only.",
+          "CODE_WRITTEN — code lives in strategy-service but not yet audited.",
+          "CODE_AUDITED — code reviewed against archetype contract; the earliest stage external clients see.",
+          "BACKTESTED — strategy has cleared a backtest run against a declared historical window; the earliest stage visible on DART-externally-viewable surfaces.",
+          "PAPER_TRADING — promoted to paper mode on live data, no real fills.",
+          "PAPER_TRADING_VALIDATED — cleared the 14-day paper validation window via the shadow-deployment policy; eligible for live-tiny.",
+          "LIVE_TINY — allocated real capital at small scale to confirm live parity with paper.",
+          "LIVE_ALLOCATED — promoted to full allocation; the strategy is now part of the live book.",
+        ],
+        bodyAfter:
+          "The research surface lets you filter the catalogue by maturity stage, re-run a live-allocated slot over a new regime window in research phase, and submit promotion candidates through paper. Each stage transition emits a lifecycle event that appears in your audit trail.",
+      },
+      {
+        title: "Promote — the pipeline into live",
+        body:
+          "Promotion is a defined pipeline, not a discretionary judgement call. Candidates move: backtested → paper candidate → paper-validated (after 14 days clean) → live-tiny (first non-zero allocation) → live-allocated (scaled to full allocation). The ladder is explicit — there is no hidden promotion step. Your promoted slots appear in the catalogue alongside Odum's own, entitlement-filtered to your view. The shadow-deployment policy governs the paper-validated gate; the first non-zero allocation directive from the portfolio-allocator triggers live-tiny → live-allocated on its own.",
+      },
+      {
+        title: "Metered research — consumption, rate limits, cost model",
+        body:
+          "Research access is metered. A backtest run consumes quantum that reflects the data window, the feature set, and the compute footprint — longer windows, deeper feature sets, and higher sample cadence consume more quantum per run. Bundled-credit packaging is the common shape: a monthly quantum budget that resets, with overflow priced per unit above the budget. Per-counterparty rate limits apply on top — a hard cap on concurrent backtests and a soft cap on data-window breadth to prevent any one client from saturating the backtest engine. Specific quantum mechanics and budget tiers live in the second call under codex-private pricing. The intent is alignment: research usage scales with the commercial engagement rather than drifting outside scope.",
+      },
+      {
+        title: "The strategy catalogue — one row per slot",
+        body:
+          "The catalogue shows one row per strategy slot, with the maturity tag (the 8-stage ladder above) orthogonal to a phase tag (research, paper, live) that selects which view of the slot you are looking at. Pre-backtested slots are not visible externally. Your promoted slots and Odum's own live slots share the catalogue — entitlement filters which rows you see and which rows you can re-run in research.",
+      },
+      {
+        title: "Strategy family catalogue — teaser of the combinatoric universe",
+        body:
+          "Odum's strategy catalogue is organised as 18 archetypes across 4-5 categories (CeFi, DeFi, TradFi, Sports, Prediction) applied to 8 instrument-type cells (spot, perp, dated future, option, prediction market, sports fixture, on-chain spot, flash-loan swap). Not every combination is supported — some are BLOCKED by structural constraints in the venue-and-instrument coverage matrix, some are INVESTMENT_MANAGEMENT_RESERVED (operated for Odum's own IM mandates and not offered to SaaS clients), some are CLIENT_EXCLUSIVE (negotiated exclusivity on a specific archetype-by-category-by-instrument cell). Full pipeline clients see the subset that is PUBLIC plus any CLIENT_EXCLUSIVE cells carved out for their mandate. The full catalogue with cell-level coverage and lock state lives behind light-auth at /briefings/dart-full.",
+      },
+      {
+        title: "Exclusivity and IP-power",
+        body:
+          "Full Pipeline engagements can include strategy-level exclusivity on specific archetype or instrument-type combinations — a commercial tier uplift rather than a default. The exclusivity grades from commodity access (shared PUBLIC cells) to uniquely-differentiated engagements (CLIENT_EXCLUSIVE cells reserved for one mandate); the cell-by-cell availability is governed by Odum's strategy-availability lock matrix. Exclusivity is walked through in the second call against your intended research focus.",
+      },
+      {
+        title: "Commitment and block scope",
+        body:
+          "Twelve-month minimum engagement. Scope is defined by venue packs, chain packs, and instrument-type packs, plus research breadth (the set of archetype and category cells you can interrogate in research). Cross-strategy research analytics are included. Pricing composes per block and per exclusivity tier. Numbers live in the second call.",
+      },
+      {
+        title: "Related paths",
+        body:
+          "If your upstream already produces signals and you only want Odum's execution and reporting layer, the lighter path is DART Signals-In at /briefings/dart-signals-in — no research, no promote, just execution on a fixed instruction schema. If you want Odum to run capital for you under Odum's FCA permissions rather than operate strategies under your own firm, see Investment Management at /briefings/investment-management.",
+      },
+    ],
+    keyMessages: [
+      "Full Pipeline is research, promote, paper, and live on the same components Odum uses internally. Not a wrapper, not a sandbox — the operational surface, entitlement-filtered.",
+      "Research, paper, and live are phase views of one catalogue. A live slot can return to research; a research candidate promotes through a defined 8-stage ladder.",
+      "The 8-stage maturity ladder (code-not-written → code-written → code-audited → backtested → paper → paper-validated → live-tiny → live-allocated) is automated by watchdog policies. No hidden discretionary override.",
+      "Research access is metered — monthly quantum budget with overflow pricing, per-counterparty rate limits, aligned to the commercial engagement.",
+      "The strategy catalogue spans 18 archetypes x 4-5 categories x 8 instrument-types. Cell-level lock state (PUBLIC / INVESTMENT_MANAGEMENT_RESERVED / CLIENT_EXCLUSIVE / RETIRED) governs what you see.",
+      "Exclusivity is a commercial tier uplift on specific archetype or instrument combinations, not the default posture.",
+      "Twelve-month minimum engagement. Scope composes venue, chain, instrument-type, and research breadth per block.",
+    ],
+    nextCall:
+      "The 45-minute second call walks the research surface against one of your strategy candidates, traces a promotion path through the 8-stage maturity ladder to live on that candidate, walks the cell-level lock state against your intended research focus, and scopes the research breadth and exclusivity tier your mandate warrants.",
+    cta: BOOK_SECOND_CALL,
+  },
+  {
+    slug: "signals-out",
+    title: "Odum Signals — our signals, your execution",
+    tldr:
+      "Odum runs strategies internally and leases the signals to counterparties who execute on their own infrastructure. Odum does not see counterparty fills, positions, or venues — the delivery boundary is the signal itself.",
+    frame:
+      "Odum Signals is the output path. Odum runs strategies internally; counterparties lease the signals and execute on their own infrastructure. Direction is one-way: Odum emits, the counterparty executes on venues the counterparty controls entirely. Odum does not see counterparty fills, positions, or execution venues — no capital flows, no venue API keys leave the counterparty's side. The delivery boundary is the signal itself. This sits outside the DART 2x3 commercial matrix as a distinct fourth path, shaped like a research subscription but priced for direct position-taking.",
+    sections: [
+      {
+        title: "Delivery mechanics",
+        body:
+          "Signals emit from Odum's strategy-service through the signal_broadcast sub-package (under build in unified-api-contracts/unified_api_contracts/signal_broadcast/ — LOCKED D1-D10 design per the Phase 2 plan). Primary transport is webhook HTTP POST to a counterparty endpoint, authenticated per counterparty with an API key held in Odum's Secret Manager plus an HMAC signature over the payload (D2/D3 locked). A REST pull endpoint sits alongside the webhook for counterparty-initiated reconciliation and backfill (D2 hybrid). Delivery is at-least-once with an idempotency key on every emission; the counterparty's handler must be idempotent on the key, and Odum retries on transport failure until acknowledgement or the retry budget is exhausted (D5 locked). Per-counterparty-per-strategy rate limits apply on top (D7) so a noisy strategy never starves quiet ones on the same counterparty contract.",
+      },
+      {
+        title: "Signal payload — full D8 schema",
+        body:
+          "The payload schema is the D8 locked shape from the signal-broadcast plan — negotiated depth (minimal / standard / rich), mirroring rule 10's block 5 schema-depth dimension. Every emission carries the following fields regardless of depth, then extends into the chosen depth tier:",
+        bullets: [
+          "strategy_id — the Odum strategy slot label the signal originated from. Stable across emissions, ties the payload back to your licensed slot set.",
+          "slot_label — the canonical slot identifier (e.g. bitcoin-spot-stat-arb-pairs-fixed-v1) per the architecture-v2 catalogue.",
+          "emission_timestamp — ISO-8601 UTC timestamp of the emission at Odum's strategy-service.",
+          "signal_payload — the directional content. Minimal depth: target direction (long / short / flat / rebalance-to-target) and size expressed in a negotiated unit. Standard depth: plus target exposure, expected holding period, confidence or conviction metadata, timeframe and decay (when actionable, how long live). Rich depth: plus bespoke fields negotiated per licence (custom metadata, scoped factor tags, event triggers).",
+          "idempotency_key — stable per emission, used for at-least-once retry de-duplication on the counterparty side.",
+          "delivery_attempt — integer counter, 1 on first delivery and incremented on each retry.",
+          "HMAC signature — HMAC-SHA256 over the serialised payload using the per-counterparty HMAC secret. The counterparty verifies the signature before acting.",
+        ],
+        bodyAfter:
+          "What the payload does NOT carry: Odum's underlying features, model internals, training data references, raw data feeds, or any data the counterparty could use to reverse the signal into its source. The counterparty receives the enriched output and an audit receipt, not the reasoning behind it. This is the data-licensing boundary — no raw-data resale, no feature export.",
+      },
+      {
+        title: "Delivery guarantees and failure isolation",
+        body:
+          "At-least-once delivery with idempotency key (D5): Odum guarantees the signal lands at the counterparty endpoint or the delivery attempt is logged as failed and retried under the retry budget. Exactly-once is not offered — it is over-engineered for signal delivery and the idempotency key model is equivalent from the counterparty's perspective. Per-counterparty circuit breaker (D10): a failing counterparty endpoint never blocks strategy-service's internal emission — the emission completes, the delivery layer absorbs the failure, retries under budget, and logs the final state per the shard-level-failure-isolation rule. Counterparty endpoint downtime does not degrade Odum's internal strategy operation in any way.",
+      },
+      {
+        title: "Light observability UI — backend-first today, UI on the roadmap",
+        body:
+          "Initial delivery is backend-first — webhook plus signed-JSON delivery log. A light counterparty-side observability UI is planned as the product matures, with a tight component set scoped to what a counterparty actually needs. No catalogue, no execution surface, no research, no reporting beyond signal-delivery audit — this is the data-licensing boundary applied to the UI surface.",
+        bullets: [
+          "SignalHistoryTable — last N emissions scoped to your entitled slots; filter by slot, date, status.",
+          "BacktestComparisonPanel — Odum-held backtest performance numbers against the live signal aggregate; read-only context for the strategies you licence.",
+          "DeliveryHealthPanel — webhook success rate, retry counts, average latency, last-delivery timestamp per slot.",
+          "PnlAttributionPanel — OPTIONAL, only renders if the counterparty reports P&L back through the reconciliation endpoint. Lets you see alignment between Odum's signal intent and your realised fills without Odum seeing your venues.",
+        ],
+      },
+      {
+        title: "Metering and audit",
+        body:
+          "Every emission is logged with strategy_id, slot_label, emission_timestamp, idempotency_key, counterparty_id, delivery_attempt, and final delivery state (D6 emit and ack events, both logged). Billing reads from whichever the commercial contract specifies — per-emission, per-acknowledged-emission, per-month-usage-summary, or a hybrid with floor licence plus per-signal component plus optional counterparty-P&L share. Audit rights are symmetric: the counterparty sees their delivery log, Odum sees the same log, both sides have non-repudiation on every emission via the HMAC signature.",
+      },
+      {
+        title: "Commercial shape — hybrid by default",
+        body:
+          "The standard commercial structure is a hybrid — a floor monthly licence, a per-signal component on top, and an optional share on the counterparty's signal-attributable P&L with audit rights. The floor covers the operational cost of the delivery channel and metering. The per-signal component scales revenue with counterparty usage. The optional P&L share aligns upside when the counterparty wants it. Flat monthly licence and pure per-signal metering are available as alternatives. Numbers live in the second call under codex-private pricing.",
+      },
+      {
+        title: "Which signals are licensable",
+        body:
+          "Only signals from strategies not reserved for Odum's own investment-management mandates are licensable — licensing a strategy Odum runs for its IM book would effectively compete against ourselves. Licensability is cell-level: a given archetype-by-category-by-instrument cell carries a lock state (PUBLIC, INVESTMENT_MANAGEMENT_RESERVED, CLIENT_EXCLUSIVE, RETIRED). Counterparty entitlements are governed by a per-counterparty allowlist of slot labels held in UAC's signal_broadcast registry (D4 locked). Default posture is narrow — one or two signal families per counterparty at launch, expanding only where explicit commercial approval is granted. Bundled multi-family and full-catalogue scopes are available where the lock matrix allows.",
+      },
+      {
+        title: "Commitment and onboarding",
+        body:
+          "Twelve-month minimum engagement. Onboarding is a one-time webhook endpoint setup, authentication handshake (API key issuance plus HMAC secret provisioning into your Secret Manager on your side and Odum's), and test-signal flow against your endpoint. Custom delivery channels (Pub/Sub subscription, mTLS REST) are available as bespoke uplifts. Standard webhook and signed-JSON delivery come included in the licence.",
+      },
+      {
+        title: "Related paths",
+        body:
+          "For the inverse direction — your signals delivered to Odum's execution infrastructure — see DART Signals-In at /briefings/dart-signals-in. For the full DART framing (both directions plus the full pipeline), see /briefings/platform.",
+      },
+    ],
+    keyMessages: [
+      "Odum Signals leases Odum-generated strategy signals to counterparties who execute on their own infrastructure. Odum does not see counterparty fills, venues, or positions — no capital flows, no venue API keys leave your side.",
+      "Delivery is hybrid webhook HTTP POST (primary) plus REST pull (reconciliation fallback), authenticated per counterparty with API key plus HMAC signature on every payload. At-least-once delivery with idempotency key.",
+      "Payload carries strategy_id, slot_label, emission_timestamp, signal_payload (minimal / standard / rich depth), idempotency_key, delivery_attempt, HMAC signature. No raw data, no model internals, no features — the output, not the reasoning.",
+      "Per-counterparty-per-strategy rate limits and per-counterparty circuit breaker. Counterparty endpoint downtime never blocks Odum's internal strategy operation.",
+      "Default commercial shape is hybrid — floor monthly licence plus per-signal component plus optional counterparty-P&L share with audit rights. Flat and pure-per-signal alternatives available.",
+      "Only signals from strategies not reserved for Odum's own IM mandates are licensable. Per-counterparty allowlist of slot labels. Scope starts narrow and expands with explicit commercial approval.",
+      "Backend-first today — webhook plus signed-JSON delivery log. Light observability UI (SignalHistoryTable, BacktestComparisonPanel, DeliveryHealthPanel, optional PnlAttributionPanel) is on the roadmap.",
+    ],
+    nextCall:
+      "The 45-minute second call walks the signal families licensable against your intended flow, the payload schema depth that fits your execution infrastructure, the delivery cadence and latency expectation per strategy, authentication handshake and HMAC provisioning, and the hybrid commercial structure against your preferred balance of floor and usage-linked revenue.",
     cta: BOOK_SECOND_CALL,
   },
 ] as const;
