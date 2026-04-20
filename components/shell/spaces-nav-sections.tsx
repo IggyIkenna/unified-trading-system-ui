@@ -181,6 +181,14 @@ export function SpacesNavSections() {
        * `usePhaseBinding`; catalogue pages are independent of trading phase.
        */}
       <GatedMenuItem
+        href="/services/im/funds"
+        label="Funds (IM)"
+        sectionTitle={CLIENT_ACCESS_SECTION}
+        accessType="signin"
+      >
+        Funds (IM)
+      </GatedMenuItem>
+      <GatedMenuItem
         href="/services/research/strategy/catalog"
         label="Strategy Catalogue (IM)"
         sectionTitle={CLIENT_ACCESS_SECTION}
