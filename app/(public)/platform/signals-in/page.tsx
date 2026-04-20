@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 
 /**
  * DART Signals-In — public page.
@@ -106,6 +107,9 @@ export default function DartSignalsInPage() {
                 re-score, or overlay your signal; the instruction set is honoured
                 as specified.
               </p>
+              <div className="my-4 rounded-md border border-border/60 bg-background/60 p-4">
+                <SignalFlowDiagram direction="in" />
+              </div>
               <p>
                 This is the inverse of the{" "}
                 <Link

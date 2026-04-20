@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
+import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 
 export const metadata: Metadata = {
   title: "Signals Service (Signals-Out) — Odum Research",
@@ -12,6 +13,22 @@ export default function MarketingSignalsPage() {
   return (
     <>
       <MarketingStaticFromFile file="signals.html" />
+      {/* Direction-arrow diagram — React-level, rendered below the shadow DOM marketing surface. */}
+      <section className="border-t border-border/40 bg-background">
+        <div className="container px-4 py-10 md:px-6">
+          <div className="mx-auto max-w-4xl rounded-lg border border-border bg-card/30 p-6">
+            <h2 className="text-sm font-semibold text-foreground">Direction of the signal arrow</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Signal leasing is one-way: Odum emits; the counterparty
+              executes on its own infrastructure. No capital flows; Odum does
+              not see counterparty fills.
+            </p>
+            <div className="mt-4 rounded-md border border-border/60 bg-background/60 p-4">
+              <SignalFlowDiagram direction="out" />
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Related — React-level sibling-links (shadow DOM above is untouched). */}
       <section className="border-t border-border/40 bg-background">
         <div className="container px-4 py-10 md:px-6">
