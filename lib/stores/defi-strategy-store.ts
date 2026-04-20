@@ -150,13 +150,6 @@ function defaultConfigs(): DefiStrategyStoreState {
         },
       },
       {
-        strategy_id: "ETHENA_BENCHMARK",
-        share_class: "USDT",
-        status: "deployed",
-        deployed_at: "2026-03-25T10:00:00Z",
-        config: { token: "sUSDe", chain: "ETHEREUM", auto_compound: true, capital_usd: 1500000 },
-      },
-      {
         strategy_id: "UNHEDGED_RECURSIVE",
         share_class: "ETH",
         status: "draft",

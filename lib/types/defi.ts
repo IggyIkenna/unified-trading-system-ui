@@ -38,7 +38,6 @@ export const DEFI_STRATEGY_IDS = [
   "RECURSIVE_STAKED_BASIS",
   "UNHEDGED_RECURSIVE",
   "USDT_HEDGED_RECURSIVE",
-  "ETHENA_BENCHMARK",
   "ETH_LENDING",
   "BTC_BASIS",
   "SOL_BASIS",
@@ -49,6 +48,18 @@ export const DEFI_STRATEGY_IDS = [
   "AMM_LP",
   "LIQUIDATION_CAPTURE",
 ] as const;
+
+/**
+ * Benchmark references — NOT deployable strategies. Used as comparison anchors
+ * in yield / P&L widgets. Codex (`ethena-benchmark.md`) classifies Ethena sUSDe
+ * as a benchmark reference, not a runtime strategy instance.
+ */
+export const BENCHMARK_IDS = ["ETHENA_BENCHMARK"] as const;
+export type Benchmark = (typeof BENCHMARK_IDS)[number];
+
+export const BENCHMARK_DISPLAY_NAMES: Record<Benchmark, string> = {
+  ETHENA_BENCHMARK: "Ethena sUSDe Benchmark",
+};
 
 export type DeFiStrategyId = (typeof DEFI_STRATEGY_IDS)[number];
 
@@ -125,7 +136,6 @@ export const STRATEGY_DISPLAY_NAMES: Record<DeFiStrategyId, string> = {
   RECURSIVE_STAKED_BASIS: "Recursive Staked Basis (Hedged)",
   UNHEDGED_RECURSIVE: "Recursive Staked Basis (Unhedged)",
   USDT_HEDGED_RECURSIVE: "USDT Hedged Recursive",
-  ETHENA_BENCHMARK: "Ethena sUSDe Benchmark",
   ETH_LENDING: "ETH Lending",
   BTC_BASIS: "BTC Basis Trade",
   SOL_BASIS: "SOL Basis Trade",

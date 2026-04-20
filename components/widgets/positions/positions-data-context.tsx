@@ -122,7 +122,6 @@ const STRATEGY_ID_NAMES: Record<string, string> = {
   STAKED_BASIS: "Staked Basis (weETH)",
   RECURSIVE_STAKED_BASIS: "Recursive Staked Basis",
   USDT_HEDGED_RECURSIVE: "USDT Hedged Recursive",
-  ETHENA_BENCHMARK: "Ethena Benchmark",
 };
 
 // ---------------------------------------------------------------------------
@@ -189,10 +188,18 @@ function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
       if (!existingIds.has(debtId)) {
         const debtVenue = order.venue || "AAVEV3-ETHEREUM";
         derived.push(
-          makePosition(debtId, order, `${debtVenue}:DEBT_TOKEN:DEBTWETH@ETHEREUM`, "SHORT", order.quantity * 0.8, 3400, {
-            leverage: 2.5,
-            health_factor: 1.38,
-          }),
+          makePosition(
+            debtId,
+            order,
+            `${debtVenue}:DEBT_TOKEN:DEBTWETH@ETHEREUM`,
+            "SHORT",
+            order.quantity * 0.8,
+            3400,
+            {
+              leverage: 2.5,
+              health_factor: 1.38,
+            },
+          ),
         );
       }
     } else {

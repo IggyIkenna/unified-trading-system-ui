@@ -65,16 +65,6 @@ export const STRATEGY_RISK_PROFILES: StrategyRiskProfile[] = [
     risk_notes: "Directional ETH exposure at 2.5x. No perp hedge. Full downside risk amplified by leverage.",
   },
   {
-    strategy_id: "ETHENA_BENCHMARK",
-    health_factor: 1.65,
-    protocol_risk: "medium",
-    coin_isolated_risk: "medium",
-    basis_risk: "low",
-    funding_rate_risk: "low",
-    liquidity_risk_pct: 0.15,
-    risk_notes: "USDe depeg risk (tail). Ethena protocol custody risk. Otherwise passive.",
-  },
-  {
     strategy_id: "AMM_LP",
     health_factor: 1.45,
     protocol_risk: "low",
@@ -156,16 +146,6 @@ export const MOCK_DELTA_EXPOSURES: DeltaExposure[] = [
     delta_deviation_pct: 0, // 0 = on target (it's supposed to be long)
     max_deviation_pct: 100,
   },
-  {
-    strategy_id: "ETHENA_BENCHMARK",
-    neutral_to: "USD",
-    net_delta_usd: 0,
-    net_delta_eth: 0,
-    net_delta_sol: 0,
-    net_delta_btc: 0,
-    delta_deviation_pct: 0,
-    max_deviation_pct: 1.0,
-  },
 ];
 
 export const MOCK_PORTFOLIO_DELTA: PortfolioDeltaComposite = {
@@ -197,7 +177,6 @@ export const MOCK_TREASURY: TreasurySnapshot = {
     RECURSIVE_STAKED_BASIS: 360000,
     UNHEDGED_RECURSIVE: 0,
     USDT_HEDGED_RECURSIVE: 500000,
-    ETHENA_BENCHMARK: 100000,
     ETH_LENDING: 0,
     BTC_BASIS: 0,
     SOL_BASIS: 0,

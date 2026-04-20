@@ -211,14 +211,6 @@ export const DEFI_STRATEGY_SCHEMAS: Record<DeFiStrategyId, StrategyConfigSchema>
     ],
   },
 
-  ETHENA_BENCHMARK: {
-    fields: [
-      { key: "token", label: "Token", type: "dropdown", options: BENCHMARK_TOKEN_OPTIONS, default: "sUSDe" },
-      { key: "chain", label: "Chain", type: "dropdown", options: CHAIN_OPTIONS, default: "ETHEREUM" },
-      { key: "auto_compound", label: "Auto-Compound", type: "boolean", default: true },
-    ],
-  },
-
   RECURSIVE_STAKED_BASIS: {
     fields: [
       { key: "target_leverage", label: "Target Leverage", type: "number", suffix: "x", step: 0.5, default: 3.0 },
@@ -440,10 +432,7 @@ export const DEFI_STRATEGY_FAMILIES: StrategyFamilyGroup<DeFiStrategyId>[] = [
   },
   {
     label: "Staking",
-    strategies: [
-      { id: "STAKED_BASIS", name: "Staked Basis (weETH)" },
-      { id: "ETHENA_BENCHMARK", name: "Ethena sUSDe Benchmark" },
-    ],
+    strategies: [{ id: "STAKED_BASIS", name: "Staked Basis (weETH)" }],
   },
   {
     label: "Recursive",
