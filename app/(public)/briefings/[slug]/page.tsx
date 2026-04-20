@@ -1,8 +1,17 @@
 import { BriefingHero } from "@/components/briefings/briefing-hero";
-import { Badge } from "@/components/ui/badge";
-import { BRIEFING_PILLARS } from "@/lib/briefings/content";
+import { StrategyCoverageMatrix } from "@/components/briefings/strategy-coverage-matrix";
+import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
+import { BRIEFING_PILLARS, type BriefingSection } from "@/lib/briefings/content";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+/**
+ * Slugs that render the full strategy-family × category coverage matrix
+ * after the final content section. IM allocators and DART builders need
+ * the breadth map; narrower paths (dart-signals-in, signals-out, regulatory)
+ * render a pointer instead of the full matrix.
+ */
+const MATRIX_SLUGS = new Set<string>(["investment-management", "platform", "dart-full"]);
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -19,6 +28,31 @@ export async function generateMetadata({ params }: PageProps) {
   return { title: `${pillar.title} — Briefings | Odum Research` };
 }
 
+function Section({ section }: { section: BriefingSection }) {
+  return (
+    <section className="space-y-3">
+      <h2 className="text-lg font-semibold tracking-tight text-foreground">
+        {section.title}
+      </h2>
+      <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
+        {section.body}
+      </p>
+      {section.bullets && (
+        <ul className="list-disc pl-5 text-sm text-foreground/80 space-y-1.5 max-w-2xl leading-relaxed">
+          {section.bullets.map((b) => (
+            <li key={b}>{b}</li>
+          ))}
+        </ul>
+      )}
+      {section.bodyAfter && (
+        <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
+          {section.bodyAfter}
+        </p>
+      )}
+    </section>
+  );
+}
+
 export default async function BriefingPillarPage({ params }: PageProps) {
   const { slug } = await params;
   const pillar = BRIEFING_PILLARS.find((p) => p.slug === slug);
@@ -26,66 +60,99 @@ export default async function BriefingPillarPage({ params }: PageProps) {
 
   return (
     <div className="container max-w-3xl px-4 py-12 md:px-6 space-y-10">
-      <div className="space-y-2 text-xs">
-        <Link
-          href="/briefings"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          ← All briefings
-        </Link>
-        <div>
-          <Badge variant="outline" className="text-xs">
-            Lighter gate
-          </Badge>
-        </div>
-      </div>
+      <Link
+        href="/briefings"
+        className="text-xs text-muted-foreground hover:text-foreground"
+      >
+        ← All briefings
+      </Link>
 
       <BriefingHero title={pillar.title} tldr={pillar.tldr} cta={pillar.cta} />
 
       <section className="space-y-3">
+        <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">
+          {pillar.frame}
+        </p>
+      </section>
+
+      {pillar.sections.map((s) => (
+        <Section key={s.title} section={s} />
+      ))}
+
+      {MATRIX_SLUGS.has(pillar.slug) && (
+        <section className="space-y-4 border-t border-border/40 pt-8">
+          <div className="space-y-2 max-w-2xl">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Strategy families × categories — what Odum runs
+            </h2>
+            <p className="text-sm text-foreground/80 leading-relaxed">
+              The matrix below is the operational coverage map — strategy families down the side,
+              asset-class categories across the top. A filled dot means Odum operates live strategies
+              in that cell; a half-filled dot means adapter or configuration work is in progress for
+              some instruments in the cell. Venue detail, specific slot configurations, and maturity
+              tags are covered at the second call.
+            </p>
+          </div>
+          <StrategyCoverageMatrix />
+        </section>
+      )}
+
+      {pillar.slug === "dart-full" && (
+        <section className="space-y-4 border-t border-border/40 pt-8">
+          <div className="space-y-2 max-w-3xl">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Full archetype × category × instrument-type catalogue
+            </h2>
+            <p className="text-sm text-foreground/80 leading-relaxed">
+              The full combinatoric universe Odum operates on. Eighteen archetypes grouped into
+              three family bands (directional, relative-value, event-driven) mapped across five
+              categories and eight instrument-type cells. Lock-state posture is shown per cell —
+              public slots are a narrow default, the rest of the supported surface is reserved for
+              Odum&apos;s investment-management book unless a client-exclusive carve-out is
+              negotiated.
+            </p>
+          </div>
+          <StrategyFamilyCatalogue />
+        </section>
+      )}
+
+      <section className="space-y-3 border-t border-border/40 pt-8">
         <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Situation
+          Key messages
+        </h2>
+        <ol className="list-decimal pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl leading-relaxed">
+          {pillar.keyMessages.map((m) => (
+            <li key={m}>{m}</li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+          The second call
         </h2>
         <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {pillar.summary}
+          {pillar.nextCall}
         </p>
       </section>
 
-      <section className="space-y-3">
+      <section className="space-y-3 border-t border-border/40 pt-8">
         <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Position
+          Other briefings
         </h2>
-        <ul className="list-disc pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl">
-          {pillar.bullets.map((b) => (
-            <li key={b}>{b}</li>
+        <ul className="space-y-3 max-w-2xl">
+          {BRIEFING_PILLARS.filter((p) => p.slug !== pillar.slug).map((p) => (
+            <li key={p.slug} className="text-sm">
+              <Link
+                href={`/briefings/${p.slug}`}
+                className="font-medium text-primary hover:underline"
+              >
+                {p.title}
+              </Link>
+              <p className="text-foreground/75 leading-relaxed">{p.tldr}</p>
+            </li>
           ))}
         </ul>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Call
-        </h2>
-        <p className="text-sm text-foreground/85 max-w-2xl leading-relaxed">
-          The 45-minute call picks up from here — strategies, structure, and the
-          specific shape of your engagement. Book directly from the hero above or
-          open the{" "}
-          <Link className="text-primary hover:underline" href="/briefings">
-            other briefings
-          </Link>
-          {" "}if two paths apply.
-        </p>
-        <p className="text-xs text-muted-foreground">
-          For the public marketing surface see{" "}
-          <Link className="text-primary hover:underline" href="/">
-            odumresearch.com
-          </Link>
-          . For signed-in strategy catalogue and terminal access, use{" "}
-          <Link className="text-primary hover:underline" href="/login">
-            Sign in
-          </Link>
-          .
-        </p>
       </section>
     </div>
   );
