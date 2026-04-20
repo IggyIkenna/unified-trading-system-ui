@@ -25,4 +25,12 @@ if [[ ! -f "$BASE_UI" ]]; then
   exit 1
 fi
 
+# G1.8 — archetype-capability UAC <-> UI coverage.ts parity.
+# Reads the UAC manifest, re-renders coverage.ts in-memory, fails on drift.
+# Regenerate with: bash unified-trading-pm/scripts/propagation/sync-archetype-capability-to-ui.sh --write
+SYNC_ARCHETYPE_CAPABILITY="${WORKSPACE_ROOT}/unified-trading-pm/scripts/propagation/sync-archetype-capability-to-ui.sh"
+if [[ -f "$SYNC_ARCHETYPE_CAPABILITY" ]]; then
+  bash "$SYNC_ARCHETYPE_CAPABILITY" --check || exit 1
+fi
+
 source "$BASE_UI" "$@"
