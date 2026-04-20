@@ -98,6 +98,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       "investor-platform",
       "investor-im",
       "investor-regulatory",
+      "investor-archive",
     ],
     description: "Investor / board member. Sees all investor relations presentations and demos.",
   },

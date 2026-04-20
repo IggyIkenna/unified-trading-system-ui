@@ -321,34 +321,15 @@ export default function InvestmentServicePage() {
             </CardContent>
           </Card>
 
-          {/* Fee Structure */}
+          {/* Fee Structure — pricing disclosed at second call (rule 08, no public pricing leakage). */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Fee Structure</CardTitle>
+              <CardDescription>
+                FCA-regulated investment management. Fees are disclosed at the
+                second call alongside the mandate structure.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-between items-center pb-2 border-b border-border">
-                <span>Management Fee</span>
-                <span className="font-mono font-medium">0%</span>
-              </div>
-              <div className="flex justify-between items-center pb-2 border-b border-border">
-                <div>
-                  <span>Performance Fee</span>
-                  <span className="text-xs text-muted-foreground ml-2">
-                    (varies by strategy)
-                  </span>
-                </div>
-                <span className="font-mono font-medium">20-40% (HWM)</span>
-              </div>
-              <div className="flex justify-between items-center pb-2 border-b border-border">
-                <span>Minimum Investment</span>
-                <span className="font-mono font-medium">$100,000</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Redemption Notice</span>
-                <span className="font-mono font-medium">30 days</span>
-              </div>
-            </CardContent>
           </Card>
 
           {/* Requirements */}
@@ -641,7 +622,7 @@ export default function InvestmentServicePage() {
                 <Link href="/contact?service=investment">Contact Us</Link>
               </Button>
               <Button size="lg" variant="ghost" asChild>
-                <Link href="/signup?service=investment">Apply Now</Link>
+                <Link href="/contact">Request an intro call</Link>
               </Button>
             </div>
           </div>

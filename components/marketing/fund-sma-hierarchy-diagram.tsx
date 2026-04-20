@@ -1,6 +1,6 @@
 // Source: codex/14-playbooks/shared-core/org-fund-client-entity-model.md
 //
-// Fund / SMA hierarchy diagram — Investment Management page (pb3b).
+// Fund / SMA hierarchy diagram — Investment Management page.
 // Static inline SVG + Tailwind. No animation, no third-party libs.
 // Shows: Odum (IM) -> Pooled Fund (share classes A/B/C, slice-scoped per client)
 //   AND Odum (IM) -> SMA structure (per client, legally separate)
@@ -113,7 +113,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
               textAnchor="middle"
               className="fill-sky-700 text-[11px] dark:fill-sky-400"
             >
-              Odum Alpha Fund Ltd
+              e.g. Odum Alpha Fund Ltd
             </text>
           </g>
 
@@ -370,82 +370,123 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             </text>
           </g>
 
-          {/* Connectors from all sub-entities down to venue keys band */}
+          {/* Connectors from pooled sub-entities (share classes) down to Pooled custodian band */}
           <path
-            d="M 120 302 L 120 340 L 480 340 L 480 380"
-            className="fill-none stroke-neutral-400 dark:stroke-neutral-600"
+            d="M 120 302 L 120 340 L 240 340 L 240 380"
+            className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1}
             strokeDasharray="4 3"
           />
           <path
-            d="M 220 302 L 220 340 L 480 340"
-            className="fill-none stroke-neutral-400 dark:stroke-neutral-600"
+            d="M 220 302 L 220 340 L 240 340"
+            className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1}
             strokeDasharray="4 3"
           />
           <path
-            d="M 320 302 L 320 340 L 480 340"
-            className="fill-none stroke-neutral-400 dark:stroke-neutral-600"
-            strokeWidth={1}
-            strokeDasharray="4 3"
-          />
-          <path
-            d="M 660 302 L 660 340 L 480 340"
-            className="fill-none stroke-neutral-400 dark:stroke-neutral-600"
-            strokeWidth={1}
-            strokeDasharray="4 3"
-          />
-          <path
-            d="M 820 302 L 820 340 L 480 340"
-            className="fill-none stroke-neutral-400 dark:stroke-neutral-600"
+            d="M 320 302 L 320 340 L 240 340"
+            className="fill-none stroke-sky-400/60 dark:stroke-sky-500/60"
             strokeWidth={1}
             strokeDasharray="4 3"
           />
 
-          {/* ===== Row 4: Venue API keys band (read-only-plus-execute) ===== */}
+          {/* Connectors from SMA sub-entities down to SMA band */}
+          <path
+            d="M 660 302 L 660 340 L 720 340 L 720 380"
+            className="fill-none stroke-violet-400/60 dark:stroke-violet-500/60"
+            strokeWidth={1}
+            strokeDasharray="4 3"
+          />
+          <path
+            d="M 820 302 L 820 340 L 720 340"
+            className="fill-none stroke-violet-400/60 dark:stroke-violet-500/60"
+            strokeWidth={1}
+            strokeDasharray="4 3"
+          />
+
+          {/* ===== Row 4: Custody band — SMA (client-owned) vs Fund (qualified custodian) ===== */}
           <g>
             <rect
-              x="140"
+              x="50"
               y="380"
-              width="680"
+              width="380"
               height="52"
               rx="8"
-              className="fill-amber-50 stroke-amber-400/70 dark:fill-amber-950/30 dark:stroke-amber-500/70"
+              className="fill-sky-50 stroke-sky-400/70 dark:fill-sky-950/30 dark:stroke-sky-500/70"
               strokeWidth={1.5}
             />
             <text
-              x="480"
+              x="240"
               y="404"
               textAnchor="middle"
-              className="fill-amber-900 text-[13px] font-semibold dark:fill-amber-200"
+              className="fill-sky-900 text-[13px] font-semibold dark:fill-sky-200"
             >
-              Venue API keys &mdash; read-only-plus-execute
+              Pooled: qualified custodian (e.g. Copper)
             </text>
             <text
-              x="480"
+              x="240"
               y="422"
               textAnchor="middle"
-              className="fill-amber-800 text-[11px] dark:fill-amber-300"
+              className="fill-sky-800 text-[11px] dark:fill-sky-300"
             >
-              Custody remains with client. Withdrawal permission never requested.
+              fund assets under the custodian&apos;s own permissions
+            </text>
+          </g>
+          <g>
+            <rect
+              x="530"
+              y="380"
+              width="380"
+              height="52"
+              rx="8"
+              className="fill-violet-50 stroke-violet-400/70 dark:fill-violet-950/30 dark:stroke-violet-500/70"
+              strokeWidth={1.5}
+            />
+            <text
+              x="720"
+              y="404"
+              textAnchor="middle"
+              className="fill-violet-900 text-[13px] font-semibold dark:fill-violet-200"
+            >
+              SMA: client-owned venue accounts
+            </text>
+            <text
+              x="720"
+              y="422"
+              textAnchor="middle"
+              className="fill-violet-800 text-[11px] dark:fill-violet-300"
+            >
+              in client&apos;s own entity name · scoped Odum execute+read keys
             </text>
           </g>
 
-          {/* Connectors to venue groups */}
+          {/* Connectors from each custody band down to venue categories (all three apply to both paths) */}
           <path
-            d="M 280 432 L 280 460"
-            className="fill-none stroke-amber-400/70 dark:stroke-amber-500/60"
-            strokeWidth={1.25}
+            d="M 240 432 L 240 446 L 480 446"
+            className="fill-none stroke-sky-400/50 dark:stroke-sky-500/50"
+            strokeWidth={1}
+            strokeDasharray="4 3"
           />
           <path
-            d="M 480 432 L 480 460"
-            className="fill-none stroke-amber-400/70 dark:stroke-amber-500/60"
-            strokeWidth={1.25}
+            d="M 720 432 L 720 446 L 480 446"
+            className="fill-none stroke-violet-400/50 dark:stroke-violet-500/50"
+            strokeWidth={1}
+            strokeDasharray="4 3"
           />
           <path
-            d="M 680 432 L 680 460"
-            className="fill-none stroke-amber-400/70 dark:stroke-amber-500/60"
-            strokeWidth={1.25}
+            d="M 280 460 L 280 446"
+            className="fill-none stroke-amber-400/50 dark:stroke-amber-500/50"
+            strokeWidth={1}
+          />
+          <path
+            d="M 480 460 L 480 446"
+            className="fill-none stroke-amber-400/50 dark:stroke-amber-500/50"
+            strokeWidth={1}
+          />
+          <path
+            d="M 680 460 L 680 446"
+            className="fill-none stroke-amber-400/50 dark:stroke-amber-500/50"
+            strokeWidth={1}
           />
 
           {/* ===== Row 5: Venue categories ===== */}
@@ -560,11 +601,17 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Pooled fund and SMA are the two structural options. Each client sees
-        only their slice &mdash; share-class clients their own NAV and
-        attribution, SMA clients their own book. Venue custody always remains
-        with the client; Odum operates under scoped read-only-plus-execute keys
-        across all venues.
+        Pooled fund and SMA are the two structural options with different
+        custody mechanics. Pooled: fund assets sit with a qualified
+        third-party custodian (Copper or equivalent) under the custodian&apos;s
+        own regulatory permissions; clients hold share classes in the fund,
+        see balances and P&amp;L via the Odum portal, and submit subscriptions
+        and redemptions through the portal API or UI. SMA: client holds their
+        own venue accounts in their own entity name, funds them directly with
+        the venue, and issues Odum scoped execute+read API keys &mdash; no
+        withdrawal authority, ever. Both paths use the same reporting
+        surface; Odum Research Ltd &mdash; the investment manager &mdash;
+        never holds principal.
       </p>
     </figure>
   );

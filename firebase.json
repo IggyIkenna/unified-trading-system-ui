@@ -2,7 +2,11 @@
   "hosting": {
     "site": "central-element-323112",
     "public": ".next/static",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
     "rewrites": [
       {
         "source": "**",

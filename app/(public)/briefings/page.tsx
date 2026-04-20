@@ -18,22 +18,22 @@ export default function BriefingsHubPage() {
             Research & Documentation
           </Badge>
           <span className="text-[11px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
-            Sign-in required
+            Access code required
           </span>
         </div>
       </div>
 
       <BriefingHero
         title="Briefings"
-        tldr="Three briefings, three paths, one operating system underneath. Read the one that matches the intro call."
+        tldr="How we invest, how we're regulated, and every path through our platform — from signals in, to signals out."
         cta={{ label: "Book 45-minute call", href: "/contact" }}
       />
 
       <section className="space-y-4">
         <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          The three paths
+          The commercial paths
         </h2>
-        <div className="grid gap-6 md:grid-cols-1">
+        <div className="grid gap-6 md:grid-cols-2">
           {BRIEFING_PILLARS.map((p) => (
             <Card key={p.slug} className="border-border/60">
               <CardHeader>

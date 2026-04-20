@@ -1,17 +1,17 @@
-import {
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged as firebaseOnAuthStateChanged,
-} from "firebase/auth";
-import type { User as FirebaseUser } from "firebase/auth";
-import { getFirebaseAuth } from "./firebase-config";
-import type { AuthProvider, AuthUser, UserStatus } from "./types";
 import type { Entitlement, UserRole } from "@/lib/config/auth";
 import { ALL_ENTITLEMENTS } from "@/lib/config/auth";
+import type { User as FirebaseUser } from "firebase/auth";
+import {
+  onAuthStateChanged as firebaseOnAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
 import {
   fetchAuthorization,
   type AuthorizeResult,
 } from "./authorize-client";
+import { getFirebaseAuth } from "./firebase-config";
+import type { AuthProvider, AuthUser, UserStatus } from "./types";
 
 function mapBackendRole(role: AuthorizeResult["role"]): UserRole {
   if (role === "admin" || role === "owner") return "admin";
@@ -41,6 +41,7 @@ const CAPABILITY_TO_ENTITLEMENT: Record<string, Entitlement[]> = {
   "investor.platform": ["investor-platform"],
   "investor.im": ["investor-im"],
   "investor.regulatory": ["investor-regulatory"],
+  "investor.archive": ["investor-archive"],
 };
 
 function mapCapabilitiesToEntitlements(
@@ -155,7 +156,7 @@ export class FirebaseAuthProvider implements AuthProvider {
 
   onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void {
     const auth = getFirebaseAuth();
-    if (!auth) return () => {};
+    if (!auth) return () => { };
     return firebaseOnAuthStateChanged(auth, (fbUser) => {
       if (fbUser) {
         fbUser.getIdToken().then((t: string) => {

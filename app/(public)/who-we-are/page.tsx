@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   description: "Odum Research: team, mission, and how we work with clients and allocators.",
 };
 
-export default function MarketingFirmPage() {
+export default function MarketingWhoWeArePage() {
   return (
     <>
-      <MarketingStaticFromFile file="firm.html" />
+      <MarketingStaticFromFile file="who-we-are.html" />
       {/* Related — React-level sibling-links (shadow DOM above is untouched). */}
       <section className="border-t border-border/40 bg-background">
         <div className="container px-4 py-10 md:px-6">

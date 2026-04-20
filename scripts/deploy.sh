@@ -4,6 +4,10 @@ set -euo pipefail
 # ─────────────────────────────────────────────────────────────────────────────
 # deploy.sh — Build and deploy unified-trading-system-ui to odum-research.co.uk
 #
+# Uses a different Artifact Registry image (asia-northeast1/…/unified-trading-system-ui) than
+# deploy-cloud-run.sh (europe-west4/…/odum-portal). Prefer deploy-cloud-run.sh for staging
+# parity with marketing static HTML and the standard image path.
+#
 # Usage:
 #   bash scripts/deploy.sh              # Full deploy (build + push + deploy + hosting)
 #   bash scripts/deploy.sh --skip-build # Redeploy existing image (just Cloud Run + hosting)
@@ -12,7 +16,8 @@ set -euo pipefail
 
 PROJECT_ID="central-element-323112"
 REGION="europe-west4"
-SERVICE_NAME="odum-portal"
+# Staging Cloud Run (Firebase / odum-research.co.uk). Production remains odum-portal — use deploy-cloud-run.sh --production.
+SERVICE_NAME="odum-portal-staging"
 REGISTRY="asia-northeast1-docker.pkg.dev/${PROJECT_ID}/unified-trading-system"
 IMAGE_NAME="unified-trading-system-ui"
 TAG="$(git rev-parse --short HEAD 2>/dev/null || echo 'latest')"

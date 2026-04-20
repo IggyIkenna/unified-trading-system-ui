@@ -100,8 +100,8 @@ describe("Service pages export default functions", () => {
     expect(typeof mod.default).toBe("function");
   });
 
-  it("firm page exports", async () => {
-    const mod = await import("@/app/(public)/firm/page");
+  it("who-we-are page exports", async () => {
+    const mod = await import("@/app/(public)/who-we-are/page");
     expect(typeof mod.default).toBe("function");
   });
 });

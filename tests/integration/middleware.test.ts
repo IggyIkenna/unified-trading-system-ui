@@ -14,41 +14,42 @@ vi.mock("next/server", () => {
 });
 
 describe("Staging proxy", () => {
-  it("rewrites root to homepage.html on staging domain", async () => {
+  it("passes through on staging domain (marketing is served by App Router)", async () => {
     const { proxy } = await import("@/proxy");
     const request = makeRequest("https://odum-research.co.uk/", "odum-research.co.uk");
     const result = proxy(request as never);
-    expect(result).toMatchObject({ type: "rewrite" });
-    expect((result as { url: string }).url).toContain("/homepage.html");
+    expect(result).toMatchObject({ type: "next" });
   });
 
-  it("rewrites /investment-management to strategies.html on staging", async () => {
+  it("passes through /investment-management on staging", async () => {
     const { proxy } = await import("@/proxy");
-    const request = makeRequest("https://odum-research.co.uk/investment-management", "odum-research.co.uk");
+    const request = makeRequest(
+      "https://odum-research.co.uk/investment-management",
+      "odum-research.co.uk",
+    );
     const result = proxy(request as never);
-    expect(result).toMatchObject({ type: "rewrite" });
-    expect((result as { url: string }).url).toContain("/strategies.html");
+    expect(result).toMatchObject({ type: "next" });
   });
 
-  it("rewrites /regulatory to regulatory.html on staging", async () => {
+  it("passes through /regulatory on staging", async () => {
     const { proxy } = await import("@/proxy");
     const request = makeRequest("https://odum-research.co.uk/regulatory", "odum-research.co.uk");
     const result = proxy(request as never);
-    expect((result as { url: string }).url).toContain("/regulatory.html");
+    expect(result).toMatchObject({ type: "next" });
   });
 
-  it("rewrites /firm to firm.html on staging", async () => {
+  it("passes through /firm on staging", async () => {
     const { proxy } = await import("@/proxy");
     const request = makeRequest("https://odum-research.co.uk/firm", "odum-research.co.uk");
     const result = proxy(request as never);
-    expect((result as { url: string }).url).toContain("/firm.html");
+    expect(result).toMatchObject({ type: "next" });
   });
 
-  it("rewrites /contact to contact.html on staging", async () => {
+  it("passes through /contact on staging", async () => {
     const { proxy } = await import("@/proxy");
     const request = makeRequest("https://odum-research.co.uk/contact", "odum-research.co.uk");
     const result = proxy(request as never);
-    expect((result as { url: string }).url).toContain("/contact.html");
+    expect(result).toMatchObject({ type: "next" });
   });
 
   it("passes through on non-staging domain", async () => {
@@ -58,12 +59,11 @@ describe("Staging proxy", () => {
     expect(result).toMatchObject({ type: "next" });
   });
 
-  it("rewrites root to homepage.html on odumresearch.co.uk (no hyphen)", async () => {
+  it("passes through on odumresearch.co.uk (no hyphen)", async () => {
     const { proxy } = await import("@/proxy");
     const request = makeRequest("https://odumresearch.co.uk/", "odumresearch.co.uk");
     const result = proxy(request as never);
-    expect(result).toMatchObject({ type: "rewrite" });
-    expect((result as { url: string }).url).toContain("/homepage.html");
+    expect(result).toMatchObject({ type: "next" });
   });
 
   it("passes through on localhost", async () => {

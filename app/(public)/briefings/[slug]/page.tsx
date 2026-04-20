@@ -1,7 +1,12 @@
 import { BriefingHero } from "@/components/briefings/briefing-hero";
 import { StrategyCoverageMatrix } from "@/components/briefings/strategy-coverage-matrix";
+import { DartMaturityLadderDiagram } from "@/components/marketing/dart-maturity-ladder-diagram";
+import { DartPathsOverviewDiagram } from "@/components/marketing/dart-paths-overview-diagram";
+import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
+import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
+import { SignalFlowDiagram } from "@/components/marketing/signal-flow-diagram";
 import { StrategyFamilyCatalogue } from "@/components/marketing/strategy-family-catalogue";
-import { BRIEFING_PILLARS, type BriefingSection } from "@/lib/briefings/content";
+import { BRIEFING_PILLARS, type BriefingPillar, type BriefingSection } from "@/lib/briefings/content";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -26,6 +31,23 @@ export async function generateMetadata({ params }: PageProps) {
   const pillar = BRIEFING_PILLARS.find((p) => p.slug === slug);
   if (!pillar) return { title: "Briefing | Odum Research" };
   return { title: `${pillar.title} — Briefings | Odum Research` };
+}
+
+function DiagramForSlug({ slug }: { slug: BriefingPillar["slug"] }) {
+  switch (slug) {
+    case "investment-management":
+      return <FundSmaHierarchyDiagram />;
+    case "regulatory":
+      return <RegUmbrellaHierarchyDiagram />;
+    case "dart-signals-in":
+      return <SignalFlowDiagram direction="in" />;
+    case "signals-out":
+      return <SignalFlowDiagram direction="out" />;
+    case "platform":
+      return <DartPathsOverviewDiagram />;
+    case "dart-full":
+      return <DartMaturityLadderDiagram />;
+  }
 }
 
 function Section({ section }: { section: BriefingSection }) {
@@ -74,6 +96,8 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           {pillar.frame}
         </p>
       </section>
+
+      <DiagramForSlug slug={pillar.slug} />
 
       {pillar.sections.map((s) => (
         <Section key={s.title} section={s} />

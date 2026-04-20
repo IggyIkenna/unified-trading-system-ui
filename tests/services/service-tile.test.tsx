@@ -128,12 +128,10 @@ describe("tile-lock-state helpers", () => {
     ]);
   });
 
-  it("useTileLockState stub returns 'unlocked' for every tileId (G1.7 replaces this)", async () => {
-    const { useTileLockState } = await import(
-      "@/lib/visibility/use-tile-lock-state"
-    );
-    expect(useTileLockState("data")).toBe("unlocked");
-    expect(useTileLockState("research")).toBe("unlocked");
-    expect(useTileLockState("trading")).toBe("unlocked");
+  it("useTileLockState module exports the hook", async () => {
+    // Superseded by G1.7 restriction-profile engine. Hook is now a real React
+    // hook calling useAuth(); covered by restriction-profile tests, not here.
+    const mod = await import("@/lib/visibility/use-tile-lock-state");
+    expect(typeof mod.useTileLockState).toBe("function");
   });
 });

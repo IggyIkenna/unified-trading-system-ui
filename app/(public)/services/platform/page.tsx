@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,19 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
-  Layers,
+  Activity,
   ArrowRight,
   CheckCircle2,
-  TrendingUp,
-  Shield,
-  Activity,
-  BarChart3,
   Eye,
-  Zap,
   GitCompareArrows,
+  Layers,
+  Shield,
+  TrendingUp,
+  Zap
 } from "lucide-react";
+import Link from "next/link";
 
 const HERO_METRICS = [
   { label: "P&L Factors", value: "10" },
@@ -221,18 +219,19 @@ export default function PlatformServicePage() {
         </div>
       </section>
 
-      {/* Block 2: Demo Preview */}
+      {/* Block 2: Product walkthrough (illustrative UI) */}
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="mx-auto max-w-4xl">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Preview the trading dashboard, P&L waterfall, and position grid.
+                Illustrative trading dashboard, P&amp;L waterfall, and position grid — representative of the live
+                terminal layout.
               </p>
             </div>
 
-            {/* P&L Waterfall Preview */}
+            {/* P&L Waterfall (illustrative) */}
             <Card className="mb-6 border-amber-500/20">
               <CardHeader>
                 <CardTitle className="text-base">

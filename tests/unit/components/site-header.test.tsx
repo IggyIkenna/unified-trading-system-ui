@@ -41,7 +41,7 @@ describe("SiteHeader", () => {
     expect(shell).toBeTruthy();
   }, 15000);
 
-  it("renders Sign In and Get Started when not authenticated", async () => {
+  it("renders Sign In and Book a call when not authenticated", async () => {
     const { SiteHeader } = await import("@/components/shell/site-header");
     const { AuthContext } = await import("@/hooks/use-auth");
     const React = await import("react");
@@ -69,6 +69,6 @@ describe("SiteHeader", () => {
 
     render(<SiteHeader />, { wrapper: UnauthWrapper });
     expect(screen.getByText("Sign In")).toBeTruthy();
-    expect(screen.getByText("Get Started")).toBeTruthy();
+    expect(screen.getByText("Book a call")).toBeTruthy();
   }, 15000);
 });

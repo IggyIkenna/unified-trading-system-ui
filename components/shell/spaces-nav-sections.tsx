@@ -1,5 +1,6 @@
 "use client";
 
+import { LockedItemDialog, type LockedAccessType } from "@/components/shell/locked-item-dialog";
 import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
 import {
   DropdownMenuItem,
@@ -7,22 +8,30 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
-import { cn } from "@/lib/utils";
+import { useBriefingSession } from "@/lib/briefings/session";
 import { Lock } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-function GatedSectionLabel({ title }: { title: string }) {
-  const { user, loading } = useAuth();
-  const showSignInHint = !loading && !user;
+const RESEARCH_DOCS_SECTION = "Research & Documentation";
+const CLIENT_ACCESS_SECTION = "Client Access";
 
-  if (!showSignInHint) {
+function GatedSectionLabel({
+  title,
+  hint,
+  locked,
+}: {
+  title: string;
+  hint: string;
+  locked: boolean;
+}) {
+  if (!locked) {
     return <DropdownMenuLabel className="text-xs text-muted-foreground">{title}</DropdownMenuLabel>;
   }
 
   return (
     <DropdownMenuLabel
-      aria-label={`${title}, sign-in required`}
+      aria-label={`${title}, ${hint}`}
       className="flex cursor-default flex-col gap-1 px-2 py-2 font-normal"
     >
       <span className="flex items-start gap-1.5 text-xs font-medium leading-snug text-muted-foreground">
@@ -33,33 +42,52 @@ function GatedSectionLabel({ title }: { title: string }) {
         <span className="min-w-0 text-foreground/85">{title}</span>
       </span>
       <span className="pl-[calc(0.5rem+0.875rem)] text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
-        Sign-in required
+        {hint}
       </span>
     </DropdownMenuLabel>
   );
 }
 
-function GatedMenuItem({ href, children }: { href: string; children: ReactNode }) {
+function GatedMenuItem({
+  href,
+  label,
+  sectionTitle,
+  accessType,
+  children,
+}: {
+  href: string;
+  label: string;
+  sectionTitle: string;
+  accessType: LockedAccessType;
+  children: ReactNode;
+}) {
   const { user, loading } = useAuth();
-  const locked = !loading && !user;
+  const briefingSessionActive = useBriefingSession();
+  // Code-gated items honour the cached light-auth session — one unlock
+  // persists across briefings + docs for the same browser.
+  const sessionSatisfied = accessType === "code" && briefingSessionActive;
+  const locked = !loading && !user && !sessionSatisfied;
+
+  if (locked) {
+    return (
+      <LockedItemDialog
+        href={href}
+        label={label}
+        sectionTitle={sectionTitle}
+        accessType={accessType}
+      >
+        {children}
+      </LockedItemDialog>
+    );
+  }
 
   return (
-    <DropdownMenuItem asChild className={cn(locked && "pr-2")}>
+    <DropdownMenuItem asChild>
       <Link
         href={href}
-        title={locked ? "Sign-in required" : undefined}
-        className={cn(
-          "relative flex w-full cursor-default items-center gap-2",
-          locked && "pr-7 text-muted-foreground",
-        )}
+        className="relative flex w-full cursor-default items-center gap-2"
       >
         <span className="min-w-0 flex-1">{children}</span>
-        {locked ? (
-          <Lock
-            className="pointer-events-none absolute right-0 top-1/2 size-3.5 -translate-y-1/2 shrink-0 text-amber-600 dark:text-amber-500"
-            aria-hidden
-          />
-        ) : null}
       </Link>
     </DropdownMenuItem>
   );
@@ -67,6 +95,11 @@ function GatedMenuItem({ href, children }: { href: string; children: ReactNode }
 
 /** Shared Spaces menu destinations for public marketing, briefings/docs, and signed-in tools. */
 export function SpacesNavSections() {
+  const { user, loading } = useAuth();
+  const briefingSessionActive = useBriefingSession();
+  const signedOut = !loading && !user;
+  const researchDocsLocked = signedOut && !briefingSessionActive;
+  const clientAccessLocked = signedOut;
   return (
     <>
       <DropdownMenuLabel className="text-xs text-muted-foreground">Overview</DropdownMenuLabel>
@@ -83,20 +116,86 @@ export function SpacesNavSections() {
         <Link href="/regulatory">Regulatory</Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <GatedSectionLabel title="Research & Documentation" />
-      <GatedMenuItem href="/briefings">Briefings Hub</GatedMenuItem>
-      <GatedMenuItem href="/docs">Developer Documentation</GatedMenuItem>
+      <GatedSectionLabel
+        title={RESEARCH_DOCS_SECTION}
+        hint="Access code required"
+        locked={researchDocsLocked}
+      />
+      <GatedMenuItem
+        href="/briefings"
+        label="Briefings Hub"
+        sectionTitle={RESEARCH_DOCS_SECTION}
+        accessType="code"
+      >
+        Briefings Hub
+      </GatedMenuItem>
+      <GatedMenuItem
+        href="/docs"
+        label="Developer Documentation"
+        sectionTitle={RESEARCH_DOCS_SECTION}
+        accessType="code"
+      >
+        Developer Documentation
+      </GatedMenuItem>
       <DropdownMenuSeparator />
-      <GatedSectionLabel title="Client Access" />
-      <GatedMenuItem href="/investor-relations">Investor Relations</GatedMenuItem>
+      {/*
+       * Client Access — signed-in surfaces. Per
+       * `codex/14-playbooks/cross-cutting/visibility-slicing.md`, which items a
+       * user actually *sees content in* after clicking through is driven by the
+       * `visible(user, item)` filter (role × entitlements × lock-state × maturity).
+       * In demo mode the sign-in email picks the persona (see
+       * `lib/auth/personas.ts`); an IM client lands in Client Reporting, a DART
+       * client lands in the DART surface, an Odum investor lands in IR.
+       * The dropdown shows the full set of destinations; per-page entitlement
+       * enforcement hides content the persona cannot see.
+       *
+       * Client Reporting is the pb3a (Reg Umbrella) + pb3b (IM) shared surface —
+       * same code, same screens, narrative-framing differs — see
+       * `codex/14-playbooks/cross-cutting/client-reporting.md`.
+       */}
+      <GatedSectionLabel
+        title={CLIENT_ACCESS_SECTION}
+        hint="Sign-in required"
+        locked={clientAccessLocked}
+      />
+      <GatedMenuItem
+        href="/services/reports/overview"
+        label="Client Reporting"
+        sectionTitle={CLIENT_ACCESS_SECTION}
+        accessType="signin"
+      >
+        Client Reporting
+      </GatedMenuItem>
+      <GatedMenuItem
+        href="/dashboard"
+        label="DART — Research, Trading, Execution"
+        sectionTitle={CLIENT_ACCESS_SECTION}
+        accessType="signin"
+      >
+        DART — Research, Trading, Execution
+      </GatedMenuItem>
       {/*
        * G1.1 intentional static link — the IM Strategy Catalogue is
        * phase-agnostic (it is a catalogue of strategies across research /
        * paper / live), not a phase-forked surface. DO NOT rewrite this via
        * `usePhaseBinding`; catalogue pages are independent of trading phase.
        */}
-      <GatedMenuItem href="/services/research/strategy/catalog">Strategy Catalogue (IM)</GatedMenuItem>
-      <GatedMenuItem href="/dashboard">Trading & Analytics</GatedMenuItem>
+      <GatedMenuItem
+        href="/services/research/strategy/catalog"
+        label="Strategy Catalogue (IM)"
+        sectionTitle={CLIENT_ACCESS_SECTION}
+        accessType="signin"
+      >
+        Strategy Catalogue (IM)
+      </GatedMenuItem>
+      <GatedMenuItem
+        href="/investor-relations"
+        label="Investor Relations"
+        sectionTitle={CLIENT_ACCESS_SECTION}
+        accessType="signin"
+      >
+        Investor Relations
+      </GatedMenuItem>
     </>
   );
 }

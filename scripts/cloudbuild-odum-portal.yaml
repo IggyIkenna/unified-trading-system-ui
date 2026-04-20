@@ -1,0 +1,15 @@
+# Minimal Cloud Build for odum-portal images: passes BUILD_ENV_FILE into Docker so
+# NEXT_PUBLIC_* matches the target (staging demo vs production Firebase).
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "--build-arg"
+      - "BUILD_ENV_FILE=${_BUILD_ENV_FILE}"
+      - "-t"
+      - "${_IMAGE}"
+      - "."
+images:
+  - "${_IMAGE}"
+options:
+  logging: CLOUD_LOGGING_ONLY

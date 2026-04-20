@@ -13,16 +13,15 @@ import {
 import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
 
 /**
- * Regulatory Umbrella — public marketing page (pb3a narrative).
+ * Regulatory Umbrella — public marketing page.
  *
- * Phase 2A content-depth polish: read-only-key custody mechanic (same shape as
- * IM), multi-fund / SMA designated-representative setup, supervisory artifacts
- * list, and rule-03 same-system claim. Multi-fund / SMA visual is a Phase 4
- * deliverable — the slot is reserved below.
+ * Content axes: read-only-key custody mechanic (same shape as IM), multi-fund /
+ * SMA designated-representative setup, supervisory artifacts list, same-system
+ * claim. Multi-fund / SMA visual is tracked separately.
  *
  * Codex SSOT:
  *   codex/14-playbooks/_ssot-rules/03-same-system-principle.md
- *   codex/14-playbooks/playbooks/pb3a-regulatory-umbrella.md
+ *   codex/14-playbooks/playbooks/03-regulatory-umbrella.md
  */
 export const metadata: Metadata = {
   title: "Regulatory Umbrella — Odum Research",
@@ -202,7 +201,7 @@ export default function RegulatoryPage() {
               </li>
               <li>
                 <Link
-                  href="/firm"
+                  href="/who-we-are"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
                   Firm

@@ -19,14 +19,15 @@ const STORAGE_KEY = "staging-authenticated";
 
 const IS_STAGING = process.env.NEXT_PUBLIC_STAGING_AUTH === "true";
 
-/** Canonical marketing paths (see `proxy.ts` MARKETING_ROUTES on staging hosts). */
+/** Canonical marketing paths (App Router under `(public)`; see `proxy.ts` for legacy host hook). */
 const PUBLIC_MARKETING_PATHS = [
   "/",
   "/investment-management",
   "/platform",
   "/regulatory",
-  "/firm",
+  "/who-we-are",
   "/contact",
+  "/briefings",
 ];
 
 /** Direct `public/*.html` hits (links in static marketing still use these). */
@@ -41,6 +42,7 @@ const PUBLIC_MARKETING_HTML = [
 
 function isStagingPublicPath(pathname: string): boolean {
   if (PUBLIC_MARKETING_PATHS.includes(pathname)) return true;
+  if (pathname.startsWith("/briefings/")) return true;
   if (PUBLIC_MARKETING_HTML.includes(pathname)) return true;
   if (pathname.startsWith("/_next")) return true;
   if (pathname.startsWith("/favicon")) return true;

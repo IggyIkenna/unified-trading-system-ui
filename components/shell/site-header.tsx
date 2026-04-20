@@ -14,14 +14,17 @@ import * as React from "react";
 
 const NAV_HOME = { href: "/", label: "Home" } as const;
 
-const NAV_IM_PLATFORM_REGULATORY = [
+// 5-path nav per marketing_site_restructure_2026_04_20 plan M1:
+// Investment Management / DART / Signals / Regulatory / Firm + Contact secondary.
+const NAV_FIVE_PATHS = [
   { href: "/investment-management", label: "Investment Management" },
   { href: "/platform", label: PLATFORM_MARKETING_NAV_LABEL },
+  { href: "/signals", label: "Odum Signals" },
   { href: "/regulatory", label: "Regulatory" },
+  { href: "/who-we-are", label: "Who We Are" },
 ] as const;
 
-const NAV_WHO_CONTACT = [
-  { href: "/firm", label: "Who We Are" },
+const NAV_SECONDARY = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -132,13 +135,13 @@ export function SiteHeader() {
             {NAV_HOME.label}
           </Link>
           <NavSeparator />
-          {NAV_IM_PLATFORM_REGULATORY.map((item) => (
+          {NAV_FIVE_PATHS.map((item) => (
             <Link key={item.href} href={item.href} onClick={handleNavLinkClick(item.href)} className={navLinkClass(item.href)}>
               {item.label}
             </Link>
           ))}
           <NavSeparator />
-          {NAV_WHO_CONTACT.map((item, index) => (
+          {NAV_SECONDARY.map((item, index) => (
             <React.Fragment key={item.href}>
               {index > 0 ? <NavSeparator /> : null}
               <Link href={item.href} onClick={handleNavLinkClick(item.href)} className={navLinkClass(item.href)}>
@@ -173,7 +176,7 @@ export function SiteHeader() {
                 Sign In
               </Link>
               <Button size="sm" asChild>
-                <Link href="/signup">Get Started</Link>
+                <Link href="/contact">Book a call</Link>
               </Button>
             </>
           )}

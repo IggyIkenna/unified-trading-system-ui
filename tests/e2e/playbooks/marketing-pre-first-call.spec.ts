@@ -28,7 +28,7 @@ test.describe("pb1 — Marketing pre-first-call", () => {
   });
 
   test("top-nav service landings all resolve 200", async ({ page }) => {
-    const routes = ["/investment-management", "/platform", "/regulatory", "/firm", "/contact"];
+    const routes = ["/investment-management", "/platform", "/regulatory", "/who-we-are", "/contact"];
     for (const route of routes) {
       const response = await page.goto(route);
       expect(response?.status(), `${route} should return 200`).toBeLessThan(400);

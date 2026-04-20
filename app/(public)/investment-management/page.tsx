@@ -13,17 +13,18 @@ import {
 import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
 
 /**
- * Investment Management — public marketing page (pb3b narrative).
+ * Investment Management — public marketing page.
  *
- * Phase 2A content-depth polish: read-only-key custody mechanic, client-slice
- * visibility framing, performance-fee framing (mechanic only, no numbers), and
- * the rule-03 same-system claim. Fund/SMA hierarchy diagram is a Phase 4
- * deliverable — the slot is reserved below.
+ * Content axes: custody mechanic (Odum never custodies; execute+read API key
+ * for SMA; fund admin via regulated affiliate for Pooled), client-slice
+ * visibility framing, performance-fee mechanic (no numbers), same-system
+ * claim. Fund/SMA hierarchy diagram is tracked separately.
  *
  * Codex SSOT:
  *   codex/14-playbooks/_ssot-rules/03-same-system-principle.md
  *   codex/14-playbooks/_ssot-rules/im-profit-share-structures.md
- *   codex/14-playbooks/playbooks/pb3b-investment-management.md
+ *   codex/14-playbooks/shared-core/fund-administration-and-custody.md
+ *   codex/14-playbooks/playbooks/04-investment-management.md
  */
 export const metadata: Metadata = {
   title: "Investment Management — Odum Research",
@@ -78,13 +79,13 @@ export default function InvestmentManagementPage() {
             </CardContent>
           </Card>
 
-          {/* Client-slice visibility (pb3b narrative) */}
+          {/* Client-slice visibility */}
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Client-slice visibility only</CardTitle>
               <CardDescription>
-                Pb3b isolation: the reporting surface partitions on the client
-                record. There is no cross-client view at any UI layer.
+                The reporting surface partitions on the client record. There is
+                no cross-client view at any UI layer.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
@@ -108,41 +109,47 @@ export default function InvestmentManagementPage() {
           {/* Performance fee framing (mechanic only, no numbers) */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Fee framing</CardTitle>
+              <CardTitle>How fees work</CardTitle>
               <CardDescription>
-                Mechanic shape is published; the specific numbers are disclosed
-                at mandate-signing stage.
+                No management fee. A performance share plus a platform fee you
+                pick the shape of at signing.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Investment-management mandates run on a performance-share plus a
-                platform-fee choice selected at mandate signing. No management
-                fee is charged on invested capital.
+                We don&apos;t charge a management fee. You&apos;re not paying us
+                for capital to sit &mdash; you&apos;re paying us for the
+                returns we generate.
               </p>
               <p>
-                Mechanic: a performance share on realised P&amp;L, plus a
-                platform fee that the client elects between a variable uplift
-                on the performance share or a fixed monthly amount. The choice
-                is made once per mandate and locks for the commitment term.
+                What you pay is a share of the profit, plus a small platform
+                fee. When you sign the mandate you pick how the platform fee
+                works: a slight uplift on the performance share (variable &mdash;
+                you pay more when we perform), or a fixed monthly amount (flat
+                &mdash; predictable, useful if you prefer the accounting
+                clarity). Once chosen, it locks for the term of the mandate.
               </p>
               <p>
-                Hurdle structure, high-water mark treatment, and crystallisation
-                cadence are documented in the mandate pack and walked through
-                at second call.
+                The specific percentages, how the hurdle is defined, and how
+                often fees crystallise all sit in the mandate pack. We walk you
+                through them at the second call &mdash; no surprises.
               </p>
             </CardContent>
           </Card>
 
-          {/* Rule-03 same-system callout */}
+          {/* Same-system callout */}
           <div className="mb-8 rounded-lg border border-border bg-card/50 p-6">
-            <h2 className="text-lg font-semibold">One system, partitioned views</h2>
+            <h2 className="text-lg font-semibold">
+              You see the same system we use ourselves
+            </h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              The same dashboards, risk controls, and audit trails serve IM
-              clients that serve the Regulatory Umbrella &mdash; one system,
-              slice-scoped per audience. Odum operates, audits, and reports
-              against the same component tree regardless of which commercial
-              path a client sits on.
+              The dashboard you log into as an IM client is the same one our
+              own traders look at every morning &mdash; just filtered to your
+              slice. Positions, P&amp;L, risk, reconciliation, audit trail:
+              same components, same data, same code path. Regulatory Umbrella
+              clients see the same dashboard too, filtered to their activity.
+              One operating system; different views per audience &mdash; not
+              three separate products stitched together.
             </p>
           </div>
 
@@ -213,7 +220,7 @@ export default function InvestmentManagementPage() {
               </li>
               <li>
                 <Link
-                  href="/firm"
+                  href="/who-we-are"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
                   Firm

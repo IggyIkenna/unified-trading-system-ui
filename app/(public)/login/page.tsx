@@ -184,6 +184,13 @@ export default function LoginPage() {
                   Sign up
                 </Link>
               </p>
+              <p className="text-center text-xs text-muted-foreground mt-2">
+                Reading the briefings and need an access code?{" "}
+                <Link href="/contact" className="text-primary hover:underline">
+                  Contact us
+                </Link>{" "}
+                to request one.
+              </p>
             </CardContent>
           </Card>
         </div>

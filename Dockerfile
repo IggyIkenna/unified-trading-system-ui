@@ -12,8 +12,13 @@ RUN pnpm install --frozen-lockfile
 # Build the app
 FROM base AS builder
 WORKDIR /app
+ARG BUILD_ENV_FILE=config/docker-build.env.production
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# `.env.production` is gitignored; Next inlines NEXT_PUBLIC_* at build time. Pick SSOT file per image:
+#   --build-arg BUILD_ENV_FILE=config/docker-build.env.production   (default)
+#   --build-arg BUILD_ENV_FILE=config/docker-build.env.staging      (staging / demo)
+COPY ${BUILD_ENV_FILE} ./.env.production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 RUN pnpm build

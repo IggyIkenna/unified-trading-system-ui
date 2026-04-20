@@ -93,12 +93,30 @@ const nextConfig = {
       // Old engagement models page
       {
         source: "/services/engagement",
-        destination: "/#services",
+        destination: "/",
         permanent: true,
       },
     ];
     return [
       ...executionRedirects,
+      // Legacy flat marketing HTML → App Router (public shell + auth)
+      { source: "/index.html", destination: "/", permanent: false },
+      { source: "/homepage.html", destination: "/", permanent: true },
+      {
+        source: "/strategies.html",
+        destination: "/investment-management",
+        permanent: true,
+      },
+      { source: "/platform.html", destination: "/platform", permanent: true },
+      {
+        source: "/regulatory.html",
+        destination: "/regulatory",
+        permanent: true,
+      },
+      { source: "/firm.html", destination: "/who-we-are", permanent: true },
+      { source: "/firm", destination: "/who-we-are", permanent: true },
+      { source: "/who-we-are.html", destination: "/who-we-are", permanent: true },
+      { source: "/contact.html", destination: "/contact", permanent: true },
       // Admin — redirects to user management (the only admin function)
       { source: "/admin", destination: "/admin/users", permanent: false },
       // Dashboard (formerly Service Hub)

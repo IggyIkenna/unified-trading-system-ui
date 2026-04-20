@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   outputDir: "./build-artifacts/test-results",
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL ?? process.env.BASE_URL ?? "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },

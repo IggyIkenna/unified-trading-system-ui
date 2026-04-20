@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,26 +20,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useStrategyCatalog } from "@/hooks/api/use-strategy-catalog";
 import {
-  STRATEGY_CATALOG,
   CATEGORY_COLORS,
   RISK_COLORS,
   STATUS_COLORS,
+  STRATEGY_CATALOG,
   type StrategyCatalogEntry,
   type StrategyCategory,
 } from "@/lib/mocks/fixtures/strategy-catalog-data";
+import { getStrategyCatalogSource } from "@/lib/strategy-catalog/source";
 import { cn } from "@/lib/utils";
-import { formatNumber, formatCurrency } from "@/lib/utils/formatters";
+import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
 import {
   ArrowUpDown,
+  BarChart3,
   Grid3X3,
   LayoutList,
   Search,
-  TrendingUp,
   Shield,
-  Zap,
+  TrendingUp,
   Trophy,
-  BarChart3,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -283,6 +286,10 @@ function StrategyListRow({ strategy }: { strategy: StrategyCatalogEntry }) {
 // ---------------------------------------------------------------------------
 
 export default function StrategyCatalogPage() {
+  const catalogQuery = useStrategyCatalog();
+  const catalogSource = getStrategyCatalogSource();
+  const catalog = catalogQuery.data?.entries;
+
   const [search, setSearch] = React.useState("");
   // Multi-select: empty set === "All". Categories are DERIVED from venue mix
   // per the v2 architecture, so the filter must allow the union of categories.
@@ -313,7 +320,8 @@ export default function StrategyCatalogPage() {
 
   // Filter
   const filtered = React.useMemo(() => {
-    let items: StrategyCatalogEntry[] = STRATEGY_CATALOG;
+    const base = catalog ?? STRATEGY_CATALOG;
+    let items: StrategyCatalogEntry[] = base;
     if (!allSelected) {
       items = items.filter((s) => selectedCategories.has(s.category));
     }
@@ -327,7 +335,7 @@ export default function StrategyCatalogPage() {
       );
     }
     return sortStrategies(items, sortKey, sortDir);
-  }, [allSelected, selectedCategories, search, sortKey, sortDir]);
+  }, [allSelected, selectedCategories, search, sortKey, sortDir, catalog]);
 
   // Group by category (for "All" grid view)
   const grouped = React.useMemo(() => {
@@ -340,6 +348,17 @@ export default function StrategyCatalogPage() {
     return map;
   }, [filtered]);
 
+  const categoryCounts = React.useMemo(() => {
+    const base = catalog ?? STRATEGY_CATALOG;
+    return {
+      DEFI: base.filter((s) => s.category === "DEFI").length,
+      CEFI: base.filter((s) => s.category === "CEFI").length,
+      TRADFI: base.filter((s) => s.category === "TRADFI").length,
+      SPORTS: base.filter((s) => s.category === "SPORTS").length,
+      PREDICTION: base.filter((s) => s.category === "PREDICTION").length,
+    } satisfies Record<StrategyCategory, number>;
+  }, [catalog]);
+
   function toggleSort(key: SortKey) {
     if (sortKey === key) {
       setSortDir((d) => (d === "desc" ? "asc" : "desc"));
@@ -349,18 +368,54 @@ export default function StrategyCatalogPage() {
     }
   }
 
+  if (catalogQuery.isError && !catalogQuery.data) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-6">
+        <Alert variant="destructive" className="max-w-xl">
+          <AlertTitle>Catalog unavailable</AlertTitle>
+          <AlertDescription>
+            {(catalogQuery.error as Error)?.message ?? "Could not load the strategy registry."}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  if (!catalog) {
+    return (
+      <div className="min-h-screen bg-background text-foreground p-6 space-y-4">
+        <div className="h-8 w-48 animate-pulse rounded-md bg-muted" />
+        <div className="h-4 w-full max-w-xl animate-pulse rounded-md bg-muted" />
+        <div className="h-40 w-full animate-pulse rounded-lg bg-muted/60" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="platform-page-width space-y-6 p-6">
         {/* Page Header */}
         <div className="space-y-2">
-          <h1 className="text-page-title font-semibold tracking-tight text-foreground">
-            Strategy Catalog
-          </h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-page-title font-semibold tracking-tight text-foreground">
+              Strategy Catalog
+            </h1>
+            <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+              Source: {catalogQuery.data?.source ?? catalogSource}
+            </Badge>
+          </div>
           <p className="text-body text-muted-foreground max-w-2xl">
             Browse our full range of systematic trading strategies across DeFi, CeFi, traditional
             markets, sports, and prediction markets.
           </p>
+          {catalogQuery.data?.degraded ? (
+            <Alert className="max-w-2xl border-amber-500/40 bg-amber-500/5">
+              <AlertTitle>Showing fixture catalogue</AlertTitle>
+              <AlertDescription>
+                The live registry request failed; you are seeing merged/static rows until connectivity is restored.
+              </AlertDescription>
+            </Alert>
+          ) : null}
         </div>
 
         {/* Toolbar */}
@@ -391,7 +446,7 @@ export default function StrategyCatalogPage() {
                   <span className="hidden sm:inline">{cat.label}</span>
                   {cat.id !== "All" && (
                     <span className="text-[10px] text-muted-foreground">
-                      ({STRATEGY_CATALOG.filter((s) => s.category === cat.id).length})
+                      ({categoryCounts[cat.id]})
                     </span>
                   )}
                 </button>

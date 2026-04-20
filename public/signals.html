@@ -197,7 +197,7 @@
         <a href="platform.html">Platform</a>
         <a href="signals.html" class="active">Signals</a>
         <a href="regulatory.html">Regulatory</a>
-        <a href="firm.html">Who We Are</a>
+        <a href="who-we-are.html">Who We Are</a>
         <a href="contact.html" class="btn btn-outline" style="padding:6px 14px;">Contact</a>
       </nav>
     </div>
@@ -206,15 +206,17 @@
   <!-- HERO -->
   <section class="hero">
     <div class="container">
-      <p class="eyebrow">Institutional signal feed &mdash; our signals, your execution</p>
-      <h1>Odum strategy signals, delivered to institutional execution infrastructure.</h1>
-      <p class="lead">Backend-first integration for institutional quant shops running their own execution stack.
-        We generate and broadcast signals; you execute them. A light observability UI ships alongside
-        (signal history, backtest comparison, delivery health) but the primary integration is API + webhook.</p>
+      <p class="eyebrow">Odum Signals &mdash; Odum &rarr; counterparty</p>
+      <h1>Odum Signals &mdash; our signals, your execution: Odum-generated signals, delivered to your execution stack.</h1>
+      <p class="lead">Backend-first integration for institutional quant shops running their own execution.
+        Odum generates and broadcasts signals; the counterparty executes on its own infrastructure. A light
+        observability UI ships alongside (signal history, backtest comparison, delivery health); the primary
+        integration is API + webhook.</p>
       <p style="margin-top:20px; font-size:14px; color:var(--text-dim); max-width:720px;">
-        This is distinct from <a href="platform.html#who" class="inline">signals-only DART</a> where your
-        signals flow INTO our execution. Signals Service is the inverse: our signals flow OUT to your
-        execution.
+        Direction matters. Odum Signals runs Odum &rarr; counterparty: our signals flow OUT to your
+        execution, and Odum does not see your fills, positions, or P&amp;L. The inverse path is
+        <a href="/platform/signals-in" class="inline">DART Signals-In</a>, where your instructions flow INTO
+        our execution, reconciliation, and reporting layer.
       </p>
     </div>
   </section>
@@ -290,7 +292,7 @@
   <section class="section-pad">
     <div class="container">
       <h2>What we explicitly do not do</h2>
-      <p style="margin-bottom:24px; max-width:720px;">Signals Service is not raw market-data resale and not
+      <p style="margin-bottom:24px; max-width:720px;">Odum Signals is not raw market-data resale and not
         execution outsourcing. We keep these boundaries tight.</p>
       <ul class="principles">
         <li>

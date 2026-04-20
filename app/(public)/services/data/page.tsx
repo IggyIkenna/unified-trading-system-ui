@@ -151,7 +151,7 @@ export default function DataServicePublicPage() {
             <div className="mb-6">
               <h2 className="text-xl font-semibold">Instrument Registry</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Browse all available instruments by asset class, venue, and data type. Subscribe to unlock date-range
+                Browse all available instruments by asset class, venue, and data type. Subscribe to run date-range
                 queries.
               </p>
             </div>
@@ -166,8 +166,8 @@ export default function DataServicePublicPage() {
                 </span>
               </div>
               <Button size="sm" asChild>
-                <Link href="/signup">
-                  Get Access <ArrowRight className="ml-1.5 size-3" />
+                <Link href="/contact">
+                  Book a call <ArrowRight className="ml-1.5 size-3" />
                 </Link>
               </Button>
             </div>

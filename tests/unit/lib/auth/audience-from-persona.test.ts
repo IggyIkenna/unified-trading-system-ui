@@ -84,4 +84,14 @@ describe("audienceForPersonaId", () => {
   it("role hint overrides unknown persona id", () => {
     expect(audienceForPersonaId("unknown-new-persona", "admin")).toBe("admin");
   });
+
+  it("internal role hint returns admin audience", () => {
+    expect(audienceForPersonaId("unknown-persona", "internal")).toBe("admin");
+  });
+
+  it("client role hint with unknown persona defaults to trading_platform_subscriber", () => {
+    expect(audienceForPersonaId("unknown-persona", "client")).toBe(
+      "trading_platform_subscriber",
+    );
+  });
 });

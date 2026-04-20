@@ -83,6 +83,7 @@ export interface GatewayPathMap {
   "/api/risk/exposure": "/unified-trading-api/risk/exposure";
   // --- analytics / strategies ---
   "/api/analytics/strategies": "/unified-trading-api/analytics/strategies";
+  "/api/analytics/strategies/catalog": "/unified-trading-api/analytics/strategies/catalog";
   "/api/analytics/strategy-configs": "/unified-trading-api/analytics/strategy-configs";
   "/api/trading/performance": "/unified-trading-api/analytics/performance";
   // --- alerts ---

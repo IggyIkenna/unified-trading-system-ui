@@ -33,48 +33,78 @@ import {
 } from "lucide-react";
 
 /**
- * Service labels and pre-fill message templates
- * Maps URL param values to form inquiry values and contextual messages
+ * Commercial-path labels and pre-fill message templates for the five paths
+ * locked 2026-04-20. URL query param `?service=<key>` prefills the inquiry
+ * dropdown and seeds a contextual message.
+ *
+ * Legacy keys (`data`, `backtesting`, `execution`, `platform`) are mapped
+ * forward to the nearest current path so inbound links from older surfaces
+ * do not break.
  */
 const SERVICE_CONFIG: Record<
   string,
   { inquiryValue: string; label: string; demoMessage: string }
 > = {
-  data: {
-    inquiryValue: "data",
-    label: "Data API Access",
+  "investment-management": {
+    inquiryValue: "investment-management",
+    label: "Investment Management",
     demoMessage:
-      "I'd like to schedule a demo of the Data Provision service to explore instrument coverage, data freshness monitoring, and query/download pricing.",
-  },
-  backtesting: {
-    inquiryValue: "backtesting",
-    label: "Research Services",
-    demoMessage:
-      "I'd like to schedule a demo of the Research platform to explore strategy backtesting, ML signal evaluation, and promotion pipelines.",
-  },
-  execution: {
-    inquiryValue: "execution",
-    label: "Execution Services",
-    demoMessage:
-      "I'd like to schedule a demo of the Execution Services to explore order management, venue connectivity, and execution analytics.",
-  },
-  platform: {
-    inquiryValue: "platform",
-    label: "Platform Licensing",
-    demoMessage:
-      "I'm interested in licensing the full platform for my organisation. I'd like to discuss deployment options and pricing.",
-  },
-  investment: {
-    inquiryValue: "investment",
-    label: "Manage Services",
-    demoMessage:
-      "I'd like to discuss management services and explore how Odum Research can help with portfolio management.",
+      "I'd like to book the 45-minute Investment Management call to walk the strategy surface, SMA-versus-Pooled structure, and platform-fee choice against my mandate.",
   },
   regulatory: {
     inquiryValue: "regulatory",
-    label: "Regulatory Services (AR)",
+    label: "Regulatory Umbrella",
     demoMessage:
-      "I'd like to learn more about becoming an Appointed Representative and the regulatory services offered.",
+      "I'd like to book the 45-minute Regulatory Umbrella call to walk my activity against Odum's FCA permissions, confirm scope fit, and map the five onboarding workstreams.",
+  },
+  "dart-signals-in": {
+    inquiryValue: "dart-signals-in",
+    label: "DART Signals-In — your signals, our execution",
+    demoMessage:
+      "I'd like to book the 45-minute DART Signals-In call to walk the instruction schema against my upstream and cover execution, reconciliation, and reporting scope.",
+  },
+  "dart-full": {
+    inquiryValue: "dart-full",
+    label: "DART — Full Pipeline",
+    demoMessage:
+      "I'd like to book the 45-minute DART Full-Pipeline call to walk the research surface against one of my strategy candidates and the promotion path through to live.",
+  },
+  "signals-out": {
+    inquiryValue: "signals-out",
+    label: "Odum Signals — our signals, your execution",
+    demoMessage:
+      "I'd like to discuss Odum Signals — Odum-generated signals delivered to my execution infrastructure. Interested in delivery mechanics, payload schema, and counterparty onboarding.",
+  },
+  // Legacy aliases — forward to the nearest current path.
+  investment: {
+    inquiryValue: "investment-management",
+    label: "Investment Management",
+    demoMessage:
+      "I'd like to book the 45-minute Investment Management call to walk the strategy surface, SMA-versus-Pooled structure, and platform-fee choice against my mandate.",
+  },
+  platform: {
+    inquiryValue: "dart-full",
+    label: "DART — Full Pipeline",
+    demoMessage:
+      "I'd like to book the 45-minute DART call to walk the platform scope against my operation.",
+  },
+  data: {
+    inquiryValue: "dart-full",
+    label: "DART — Full Pipeline",
+    demoMessage:
+      "I'd like to book the 45-minute DART call to walk data coverage and research scope against my operation.",
+  },
+  backtesting: {
+    inquiryValue: "dart-full",
+    label: "DART — Full Pipeline",
+    demoMessage:
+      "I'd like to book the 45-minute DART Full-Pipeline call to walk the research and promote surface against one of my strategy candidates.",
+  },
+  execution: {
+    inquiryValue: "dart-signals-in",
+    label: "DART — Signals-In",
+    demoMessage:
+      "I'd like to book the 45-minute DART Signals-In call to cover execution, reconciliation, and reporting scope against my upstream.",
   },
 };
 
@@ -218,27 +248,27 @@ function ContactPageContent() {
                 <CardContent className="space-y-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-500" />
-                    Data API access
+                    Investment Management
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-500" />
-                    Backtesting services
+                    Regulatory Umbrella
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-500" />
-                    Platform licensing
+                    DART Signals-In (your signals, our execution)
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-500" />
-                    Investment management
+                    DART — Full Pipeline
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-500" />
-                    Regulatory services
+                    Odum Signals (our signals, your execution)
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-500" />
-                    Partnership opportunities
+                    Partnership
                   </div>
                 </CardContent>
               </Card>
@@ -338,23 +368,20 @@ function ContactPageContent() {
                             <SelectValue placeholder="Select inquiry type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="data">
-                              Data API Access
-                            </SelectItem>
-                            <SelectItem value="backtesting">
-                              Backtesting Services
-                            </SelectItem>
-                            <SelectItem value="execution">
-                              Execution Services
-                            </SelectItem>
-                            <SelectItem value="platform">
-                              Platform Licensing
-                            </SelectItem>
-                            <SelectItem value="investment">
+                            <SelectItem value="investment-management">
                               Investment Management
                             </SelectItem>
                             <SelectItem value="regulatory">
-                              Regulatory Services (AR)
+                              Regulatory Umbrella
+                            </SelectItem>
+                            <SelectItem value="dart-signals-in">
+                              DART Signals-In — your signals, our execution
+                            </SelectItem>
+                            <SelectItem value="dart-full">
+                              DART — Full Pipeline
+                            </SelectItem>
+                            <SelectItem value="signals-out">
+                              Odum Signals — our signals, your execution
                             </SelectItem>
                             <SelectItem value="partnership">
                               Partnership

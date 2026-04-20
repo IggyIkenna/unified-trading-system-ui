@@ -2,27 +2,32 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ACCESS_CODE_REQUIRED, accessCodeMatches } from "@/lib/briefings/access-code";
 import { isBriefingSessionActive, setBriefingSessionActive } from "@/lib/briefings/session";
 import { Lock } from "lucide-react";
+import Link from "next/link";
 import * as React from "react";
 
-const REQUIRED_CODE = process.env.NEXT_PUBLIC_BRIEFING_ACCESS_CODE ?? "";
-
 /**
- * Optional invite gate for `/briefings/*`.
- * When `NEXT_PUBLIC_BRIEFING_ACCESS_CODE` is empty, the hub is open (still uses its own session key if you later add progressive unlock).
+ * Optional invite gate for `/briefings/*` and `/docs`.
+ * When no codes are configured, the space is open (still uses its own session
+ * key if progressive unlock is added later).
+ *
+ * Accepts either the global `NEXT_PUBLIC_BRIEFING_ACCESS_CODE` or any configured
+ * per-path code. A single session unlocks all light-auth routes — per-path
+ * scoping is a rotation convenience, not an isolation boundary.
  */
 export function BriefingAccessGate({ children }: { children: React.ReactNode }) {
-  const [unlocked, setUnlocked] = React.useState(!REQUIRED_CODE);
+  const [unlocked, setUnlocked] = React.useState(!ACCESS_CODE_REQUIRED);
   const [code, setCode] = React.useState("");
   const [error, setError] = React.useState("");
 
   React.useEffect(() => {
-    if (!REQUIRED_CODE) return;
+    if (!ACCESS_CODE_REQUIRED) return;
     if (isBriefingSessionActive()) setUnlocked(true);
   }, []);
 
-  if (!REQUIRED_CODE || unlocked) {
+  if (!ACCESS_CODE_REQUIRED || unlocked) {
     return <>{children}</>;
   }
 
@@ -37,7 +42,7 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
         className="flex w-full max-w-sm flex-col gap-3"
         onSubmit={(e) => {
           e.preventDefault();
-          if (code.trim() === REQUIRED_CODE) {
+          if (accessCodeMatches(code)) {
             setBriefingSessionActive();
             setUnlocked(true);
             setError("");
@@ -56,6 +61,13 @@ export function BriefingAccessGate({ children }: { children: React.ReactNode }) 
         {error ? <p className="text-xs text-destructive">{error}</p> : null}
         <Button type="submit">Continue</Button>
       </form>
+      <p className="text-xs text-muted-foreground text-center max-w-md mt-6">
+        Don&apos;t have a code?{" "}
+        <Link href="/contact" className="text-primary hover:underline">
+          Contact us
+        </Link>{" "}
+        to request one.
+      </p>
     </div>
   );
 }

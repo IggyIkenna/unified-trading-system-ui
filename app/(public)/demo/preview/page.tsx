@@ -1,13 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { BarChart3, Grid3X3, Activity, Database, Play, Lock, ArrowRight, Eye, AlertCircle } from "lucide-react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { Activity, AlertCircle, ArrowRight, BarChart3, Database, Eye, Grid3X3, Lock, Play } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 // Demo banner component
 function DemoBanner() {
@@ -16,7 +16,7 @@ function DemoBanner() {
       <div className="container mx-auto flex items-center justify-center gap-3 text-sm font-medium">
         <AlertCircle className="size-4 flex-shrink-0" />
         <span className="text-center">
-          Platform Preview — Static demonstration only. Full interactive demo available during scheduled presentation.
+          Static walkthrough — illustrative UI only. Full interactive session is available after onboarding and sign-in.
         </span>
       </div>
     </div>
@@ -146,13 +146,13 @@ export default function DemoPreview() {
           <div className="flex items-center gap-4">
             <Link href="/" className="text-xl font-bold tracking-tight">
               <span className="text-primary">Olympus</span>
-              <span className="text-muted-foreground ml-1 text-sm font-normal">Platform Preview</span>
+              <span className="text-muted-foreground ml-1 text-sm font-normal">Walkthrough</span>
             </Link>
           </div>
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="gap-1">
               <Lock className="size-3" />
-              Demo Mode
+              Illustrative
             </Badge>
             <Button variant="outline" size="sm" asChild>
               <Link href="/investor-relations/board-presentation">Back to Presentation</Link>
@@ -515,9 +515,9 @@ export default function DemoPreview() {
           <CardContent className="p-4 flex items-center gap-4">
             <Eye className="size-5 text-amber-500 flex-shrink-0" />
             <div className="text-sm">
-              <span className="font-medium">Preview Mode</span>
+              <span className="font-medium">Illustrative mode</span>
               <span className="text-muted-foreground ml-2">
-                Interactive features disabled. Schedule a presentation for full access.
+                Interactive features disabled here; sign in for the live terminal or schedule a walkthrough.
               </span>
             </div>
             <Button size="sm" variant="outline" asChild>

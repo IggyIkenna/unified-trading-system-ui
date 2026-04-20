@@ -5702,6 +5702,30 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/market-data/health")
     if (route.endsWith("/health")) return json({ status: "healthy", mock: true });
 
+  if (route === "/api/reporting/investor-relations/archive-metadata") {
+    return json({
+      version: 1,
+      updated_at: "2026-04-18T00:00:00Z",
+      presentations: [
+        {
+          id: "archive-readiness-snapshot",
+          title: "Archived readiness snapshot (mock API)",
+          subtitle: "Earlier plan narrative",
+          description:
+            "Mock client-reporting-api payload — live mode reads the same path from the reporting service JSON file.",
+          href: "/investor-relations/plan-presentation",
+          tags: ["Archive", "Roadmap"],
+          entitlement: "investor-plan",
+          pillar: 2,
+          status: "archive",
+          year: 2024,
+          audienceTags: ["Board"],
+          iconKey: "calendar-clock",
+        },
+      ],
+    });
+  }
+
   // --- Catch-all for reporting/execution/analytics/deployment with data ---
   if (route.startsWith("/api/reporting/")) return json({ data: [], total: 0 });
   if (

@@ -1,6 +1,6 @@
 // Source: codex/14-playbooks/shared-core/org-fund-client-entity-model.md
 //
-// Regulatory umbrella hierarchy diagram — /regulatory page (pb3a).
+// Regulatory umbrella hierarchy diagram — /regulatory page.
 // Static inline SVG + Tailwind. No animation, no third-party libs.
 // Shows: Regulatory Umbrella Client (Designated Representative) ->
 //   Sub-Fund 1 (pooled, N share classes) -> N end-investors

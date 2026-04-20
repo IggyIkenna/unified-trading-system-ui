@@ -9,7 +9,7 @@ const MARKETING_PAGES = [
   "strategies.html",
   "platform.html",
   "regulatory.html",
-  "firm.html",
+  "who-we-are.html",
   "contact.html",
 ] as const;
 
@@ -92,8 +92,8 @@ describe("Marketing page content consistency", () => {
     expect(rp).toContain("authorisation");
   });
 
-  it("firm page contains company description", () => {
-    const fp = pages["firm.html"];
+  it("who-we-are page contains company description", () => {
+    const fp = pages["who-we-are.html"];
     expect(fp).toContain("investment manager");
     expect(fp).toContain("platform infrastructure");
     expect(fp).toContain("regulatory");

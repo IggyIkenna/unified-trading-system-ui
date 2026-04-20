@@ -6,7 +6,7 @@ export const SERVICES = [
     name: "Data Access",
     icon: Database,
     color: "text-sky-400",
-    price: "From £250/mo",
+    price: "Contact us",
     desc: "Market data across 128 venues, 5 asset classes",
   },
   {
@@ -110,7 +110,7 @@ export const REG_FUND_OPTS = [
     id: "fund_crypto_spot",
     label: "Crypto Spot Fund (FCA + EU ESMA)",
     tooltip:
-      "Regulated crypto spot fund vehicle managed by Odum under combined FCA and EU ESMA regulatory coverage. Includes fund operations, NAV calculation, and investor reporting.",
+      "Regulated crypto spot fund vehicle managed by Odum under combined FCA and EU ESMA authorisation. Includes fund operations, NAV calculation, and investor reporting.",
   },
   {
     id: "fund_derivatives",

@@ -1,4 +1,3 @@
-import { PreviewBanner } from "@/components/preview-banner";
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { StagingGate } from "@/components/staging-gate";
 import { ProtocolIndicator } from "@/components/ui/protocol-indicator";
@@ -77,7 +76,6 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <StagingGate>
-            <PreviewBanner />
             <Providers>
               <ExecutionModeProvider>{children}</ExecutionModeProvider>
             </Providers>

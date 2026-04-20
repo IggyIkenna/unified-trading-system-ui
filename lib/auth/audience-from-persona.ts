@@ -46,7 +46,7 @@ export function audienceForUser(user: AuthUser | null | undefined): Audience {
   // IM allocator personas — they evaluate / receive allocation into Odum-run
   // strategies. They should see PUBLIC + their own CLIENT_EXCLUSIVE via
   // im_client (IM_RESERVED visibility handled by a separate entitlement-level
-  // filter on the pb3b demo, not this audience filter).
+  // filter on the Investment Management demo, not this audience filter).
   if (user.id === "prospect-im" || user.id === "investor" || user.id === "advisor") {
     return "im_client";
   }

@@ -1,8 +1,12 @@
 # Deploying the Odum Research Website
 
-Canonical steps for deploying to **odumresearch.co.uk** (primary staging marketing host), **odum-research.co.uk** (legacy CNAME), or **odumresearch.com** (production app — static marketing is **not** served there until `proxy.ts` is intentionally updated).
+Canonical steps for deploying the UI. **Public DNS today:** **`odum-research.com`** resolves to **Firebase Hosting**, which rewrites `**` to Cloud Run **`odum-portal`** (see `firebase.json`). **`odum-research.co.uk`** resolves to **Cloud Run domain mapping** (A/AAAA `216.239.*`) on the same **`odum-portal`** service. Use **`odum-portal-staging`** for canary work via `deploy-cloud-run.sh` (default target); roll production with **`--production`**.
 
-Both domains point to the same Cloud Run service (`odum-portal`) in `europe-west4`.
+Static marketing HTML is still host-gated in `proxy.ts` (`.co.uk` hosts only).
+
+**Note:** A Cloud Run domain mapping for `odum-research.com` also exists but stays **certificate-pending** while DNS points at Firebase (`199.36.158.*` / `*.web.app`); traffic uses Hosting → Run until you move DNS to the Run records if you want Run-native TLS only.
+
+**Local smoke (marketing → IR → terminal):** `unified-trading-pm/plans/active/portal_local_smoke_checklist_2026_04_19.md` — run Next from `unified-trading-system-ui` so `public/*.html` resolves. **Firebase (separate dev / staging / prod projects):** `docs/FIREBASE_ENVIRONMENTS.md`.
 
 ---
 
@@ -28,28 +32,16 @@ gcloud config set project central-element-323112
 ## Infrastructure Overview
 
 ```
-                      ┌─────────────────────┐
-                      │  Firebase Hosting    │
-  odum-research.co.uk │  (rewrites ** →      │
-                      │   Cloud Run)         │
-                      └────────┬────────────┘
-                               │
-                      ┌────────▼────────────┐
-  odum-research.com   │  Cloud Run           │
-  (direct mapping)    │  odum-portal         │
-                      │  europe-west4        │
-                      └────────┬────────────┘
-                               │
-                      ┌────────▼────────────┐
-                      │  Artifact Registry   │
-                      │  cloud-run-source-   │
-                      │  deploy/odum-portal  │
-                      └─────────────────────┘
+  odum-research.com   ──► Firebase Hosting (site central-element-323112) ──► Cloud Run  odum-portal
+
+  odum-research.co.uk ──► Cloud Run domain mapping (216.239.*) ─────────────► odum-portal
+
+  Artifact Registry: …/cloud-run-source-deploy/odum-portal:latest  (image shared by prod + staging services)
 ```
 
-- **odum-research.com** — Cloud Run domain mapping (direct).
-- **odum-research.co.uk** — Firebase Hosting → rewrites all traffic to Cloud Run.
-- Both serve the same container image and the same Next.js app.
+- **`odum-research.com`** — **Firebase Hosting** custom domain; `firebase.json` rewrites `**` → **`odum-portal`**. After changing `firebase.json`, run **`firebase deploy --only hosting`**.
+- **`odum-research.co.uk`** — **Cloud Run mapped domain** → **`odum-portal`** (same Next service; marketing routes still come from `proxy.ts` staging hosts).
+- **Default deploy** — `bash scripts/deploy-cloud-run.sh --cloud` updates **`odum-portal-staging`** only. **`--cloud --production`** rolls the image onto **`odum-portal`**. Firebase Hosting for `.com` serves whatever revision **`odum-portal`** is on after you deploy Cloud Run **and** redeploy Hosting if static assets changed.
 
 ---
 
@@ -58,18 +50,36 @@ gcloud config set project central-element-323112
 From the repo root (`unified-trading-system-ui/`):
 
 ```bash
-bash scripts/deploy-cloud-run.sh
+bash scripts/deploy-cloud-run.sh --cloud
 ```
 
-This runs: local Docker build → push to Artifact Registry → deploy to Cloud Run → route 100% traffic → clean up old revisions.
+This runs: Cloud Build → push `…/odum-portal:latest` → deploy to **`odum-portal-staging`** → route traffic → prune old **staging** revisions.
 
-Both `.com` and `.co.uk` are served from the same Cloud Run service, but `proxy.ts` uses host-based routing to serve different content (see Staging Hosts below).
+Production (**`odum-portal`**) is updated only when you run the same script with **`--production`** (after **`--cloud`** if you are building). `proxy.ts` still gates static marketing HTML by `Host` (see Staging Hosts below).
 
-If you also need to update Firebase Hosting config (rare — only when `firebase.json` changes):
+If you also need to update Firebase Hosting config (required after `firebase.json` rewrite target changes, and whenever you want Hosting cache/CDN refreshed):
 
 ```bash
 firebase deploy --only hosting --project=central-element-323112
 ```
+
+**New Cloud Run service:** the first deploy of `odum-portal-staging` must use **`--port=3000`** (Next.js listens on 3000; the default 8080 causes a startup timeout). `deploy-cloud-run.sh` sets this for you.
+
+---
+
+## Custom domains: `www.odum-research.co.uk` (Firebase Hosting)
+
+The app already treats **`www.odum-research.co.uk`** as a staging host in `proxy.ts` (same marketing rewrites as the apex). If only **`https://odum-research.co.uk`** works, the missing piece is almost always **Firebase + DNS**, not a code deploy.
+
+1. Open **Firebase Console → Hosting → custom domains** for this project:
+   `https://console.firebase.google.com/project/central-element-323112/hosting/sites`
+2. Select the site **`central-element-323112`** (matches `firebase.json` → `hosting.site`).
+3. **Add custom domain** → enter **`www.odum-research.co.uk`** (not only the apex).
+4. Complete **domain verification** (TXT) and add the **DNS records** Firebase shows (often a **CNAME** for `www` to a `ghs.googlehosted.com`-style target, or A/AAAA — use exactly what the wizard lists).
+5. Wait until the console shows **Connected** and SSL is **Provisioning / Active** (can take up to a few hours for DNS/SSL).
+6. Optionally set a **redirect** in the same wizard so visitors always land on either apex or `www` (your choice).
+
+`firebase deploy --only hosting` does **not** attach new hostnames; it only publishes config for hostnames already connected in the console.
 
 ---
 
@@ -113,14 +123,15 @@ docker push "${IMAGE}:latest"
 
 Takes 1-3 minutes depending on layer changes.
 
-### 4. Deploy to Cloud Run
+### 4. Deploy to Cloud Run (staging)
 
 ```bash
-gcloud run deploy odum-portal \
+gcloud run deploy odum-portal-staging \
   --image "${IMAGE}:latest" \
   --region europe-west4 \
   --platform managed \
   --allow-unauthenticated \
+  --port=3000 \
   --set-env-vars="NEXT_PUBLIC_MOCK_API=true,NEXT_PUBLIC_AUTH_PROVIDER=demo"
 ```
 
@@ -129,9 +140,21 @@ Wait for "Routing traffic...done". Typically ~60 seconds.
 ### 5. Route traffic
 
 ```bash
-gcloud run services update-traffic odum-portal \
+gcloud run services update-traffic odum-portal-staging \
   --region europe-west4 \
   --to-latest
+```
+
+To roll **production** (`odum-portal`) to the same image without changing env vars:
+
+```bash
+gcloud run deploy odum-portal \
+  --image "${IMAGE}:latest" \
+  --region europe-west4 \
+  --platform managed \
+  --allow-unauthenticated \
+  --port=3000
+gcloud run services update-traffic odum-portal --region europe-west4 --to-latest
 ```
 
 ### 6. Verify
@@ -182,7 +205,7 @@ Cloud Build always produces `linux/amd64` images. Slower (~5-8 min) but avoids a
 ```bash
 docker buildx build --platform linux/amd64 -t "${IMAGE}:latest" --load .
 docker push "${IMAGE}:latest"
-gcloud run deploy odum-portal --image "${IMAGE}:latest" --region europe-west4 --platform managed --allow-unauthenticated --set-env-vars="NEXT_PUBLIC_MOCK_API=true,NEXT_PUBLIC_AUTH_PROVIDER=demo"
+gcloud run deploy odum-portal-staging --image "${IMAGE}:latest" --region europe-west4 --platform managed --allow-unauthenticated --port=3000 --set-env-vars="NEXT_PUBLIC_MOCK_API=true,NEXT_PUBLIC_AUTH_PROVIDER=demo"
 ```
 
 Or use `--cloud` to build on Google's servers.
@@ -230,81 +253,129 @@ firebase deploy --only hosting --project=central-element-323112
 
 ### Two Deploy Scripts
 
-| Script                   | Registry                              | Use case                  |
-| ------------------------ | ------------------------------------- | ------------------------- |
-| `deploy-cloud-run.sh`    | `cloud-run-source-deploy/odum-portal` | Standard deploy (use this)|
-| `deploy.sh`              | `unified-trading-system/...`          | Full deploy + Firebase    |
+| Script                   | Registry / target                     | Use case                         |
+| ------------------------ | ------------------------------------- | -------------------------------- |
+| `deploy-cloud-run.sh`    | `…/odum-portal:staging` / `…/odum-portal:production` (build-time env SSOT) | Standard deploy (use this)       |
+| `deploy.sh`              | `asia-northeast1/…/unified-trading-system-ui` → `odum-portal-staging` | Legacy path; prefer `deploy-cloud-run.sh` |
 
-Use `deploy-cloud-run.sh` for day-to-day deploys. Use `deploy.sh --local` only if you also need to update Firebase Hosting configuration.
+Use `deploy-cloud-run.sh` for day-to-day deploys. Use `deploy.sh` only if you intentionally need the alternate image path and understand the drift risk.
 
-### Staging Hosts — How `.com` and `.co.uk` Serve Different Content
+### Staging vs production — hosts and client bundles
 
-Both domains point to the same Cloud Run service, but `proxy.ts` checks the `Host` header to decide what to serve:
+**Infrastructure:** `.co.uk` traffic is typically routed to **`odum-portal-staging`** (Firebase Hosting → Cloud Run). `.com` maps to **`odum-portal`**. Both run the same Next.js App Router; marketing lives on real routes under `app/(public)/` (not host-based rewrites to flat HTML).
 
 | Domain                     | What it serves |
 | -------------------------- | -------------- |
-| `odumresearch.com`         | **Production React app** (auth, sign-in, full platform). Static marketing from `public/*.html` is **not** rewritten here unless you deliberately add this host to `STAGING_HOSTS` in `proxy.ts`. |
-| `odumresearch.co.uk`       | **Staging marketing** — same Next container, but `proxy.ts` rewrites selected paths to static HTML. |
-| `odum-research.co.uk`      | Same as above (hyphenated hostname; kept for DNS/CNAME compatibility). |
-| `localhost:*`              | **Production React app** (default) — no marketing rewrites. |
+| `odumresearch.com`         | **Production** image (`odum-portal:production`): `config/docker-build.env.production` bakes Firebase + live API defaults. |
+| `odumresearch.co.uk`       | **Staging** image (`odum-portal:staging`): `config/docker-build.env.staging` bakes demo auth + mock API for internal churn. |
+| `odum-research.co.uk`      | Same staging path as above when used for DNS/CNAME compatibility. |
+| `localhost:*`            | Local dev — use `.env.local`; `NEXT_PUBLIC_*` follows your local file. |
 
-The staging host list is defined in `proxy.ts`:
+`proxy.ts` is a **no-op** pass-through (kept for tests / future host hooks). Do not rely on Cloud Run runtime env vars to flip `NEXT_PUBLIC_AUTH_PROVIDER` or Firebase web config: those values are inlined at **`pnpm build`** from the `BUILD_ENV_FILE` Docker build-arg (see `Dockerfile` and `scripts/deploy-cloud-run.sh`).
 
-```typescript
-const STAGING_HOSTS = [
-  "odumresearch.co.uk",
-  "www.odumresearch.co.uk",
-  "odum-research.co.uk",
-  "www.odum-research.co.uk",
-];
+### Staging Firebase cutover (dedicated non-prod project)
+
+Use this when you want **staging (.co.uk) to authenticate like production** (real Firebase) while still
+keeping `NEXT_PUBLIC_MOCK_API=true` for API churn, or flip mock off when gateways are stable.
+
+1. **Create** a separate Firebase/GCP project (do **not** reuse production web keys).
+2. **Authorized domains:** add staging hostnames (e.g. `odumresearch.co.uk`, `odum-research.co.uk`, and any
+   direct Cloud Run URL you use for smoke tests).
+3. **Copy** `config/docker-build.env.staging.firebase.example` → a **gitignored** file (for example
+   `config/docker-build.env.staging.firebase.local`), replace `REPLACE_ME` and optional gateway URLs.
+4. **Deploy** with an explicit build-time file (same image tag `:staging`; only the client bundle changes):
+
+```bash
+bash scripts/deploy-cloud-run.sh --build-env-file=config/docker-build.env.staging.firebase.local
+# or Cloud Build:
+bash scripts/deploy-cloud-run.sh --cloud --build-env-file=config/docker-build.env.staging.firebase.local
 ```
 
-Only requests with a `Host` header matching a staging host get rewritten to the static HTML marketing pages. All other hosts (including `odumresearch.com`, `localhost`, and the raw Cloud Run URL) serve the normal Next.js React app.
+5. **Optional:** when `NEXT_PUBLIC_MOCK_API=false`, set `NEXT_PUBLIC_API_BASE_URL`, `NEXT_PUBLIC_AUTH_URL`,
+   `NEXT_PUBLIC_DEPLOYMENT_API_URL`, and `NEXT_PUBLIC_REPORTING_API_URL` in that file so `next.config.mjs`
+   rewrites target non-production APIs (see `next.config.mjs` defaults).
 
-**To add a new staging host** (e.g. a preview domain): add it to `STAGING_HOSTS` in `proxy.ts`, rebuild and deploy.
+See `docs/SECURITY_AUTH.md` (staging Firebase + data plane) and `deployment-api/config/example-provisioning.env`
+for org-owner / acting-user headers on role mutations.
 
-**To promote marketing pages to production** (`odumresearch.com`): add `"odumresearch.com"` (and `www.` if needed) to `STAGING_HOSTS`. This replaces the React landing page with the static marketing pages on that host for the mapped paths only. Platform routes (`/dashboard`, `/services/*`, `/admin`) are unaffected — they always serve the React app regardless of host.
+### Five-space engagement map (IA)
 
-**WARNING:** Never remove the host check entirely. Doing so serves marketing pages on **every** host, including production.
+| Space | Who | Primary routes | Notes |
+| --- | --- | --- | --- |
+| **Public** | Everyone | `/`, `/investment-management`, `/platform`, `/regulatory`, `/firm`, `/contact` | Zero-auth marketing; no global preview banner. |
+| **Lighter gate** | Prospects / invited | `/briefings`, `/briefings/*` | Optional `NEXT_PUBLIC_BRIEFING_ACCESS_CODE`; session key `odum-briefing-session` (separate from staging gate + Firebase). |
+| **Investor relations** | Entitled viewers | `/investor-relations/*` | `investor-*` entitlements; archive decks may require `investor-archive`. Optional deck catalogue merge from **client-reporting-api** `GET /api/reporting/investor-relations/archive-metadata` (rewritten when `NEXT_PUBLIC_MOCK_API=false`). |
+| **Investment management** | Signed-in allocators | `/services/research/strategy/catalog` (+ detail routes) | Catalogue source controlled by `NEXT_PUBLIC_STRATEGY_CATALOG_SOURCE` (see below). |
+| **Platform** | Signed-in builders / desk | `/dashboard`, `/services/*` | Same identity as IM; different nav grouping (lifecycle). |
 
-### Marketing Page Routes (`.co.uk` only)
+`components/staging-gate.tsx` allowlists public marketing paths including `/briefings` so **co.uk staging** does not wall lighter-gate content.
 
-| URL path               | Serves              |
-| ---------------------- | -------------------- |
-| `/`                    | `public/homepage.html` |
+### Strategy catalogue sourcing
+
+| Variable | Typical staging | Typical production |
+| --- | --- | --- |
+| `NEXT_PUBLIC_STRATEGY_CATALOG_SOURCE` | `mock` (explicit in `docker-build.env.staging`) | `api` |
+| `NEXT_PUBLIC_MOCK_API` | `true` | `false` |
+| `NEXT_PUBLIC_STRATEGY_CATALOG_API_ERROR_FALLBACK` | unset / `true` — fall back to fixtures if the registry call fails | set `false` when you want a hard failure instead of degraded fixture mode |
+
+When `STRATEGY_CATALOG_SOURCE` is unset, the UI chooses **mock** if `NEXT_PUBLIC_MOCK_API=true`, otherwise **api** (`lib/strategy-catalog/source.ts`).
+
+### Mock / reporting delta (maintenance pass)
+
+Re-run periodically:
+
+```bash
+rg -l "isMockDataMode|NEXT_PUBLIC_MOCK_API|getMock|orgMode=\\\"demo\\\"" app components hooks lib"
+```
+
+Representative touchpoints (2026-04-17): `components/runtime-mode-badge.tsx`, `lib/api/mock-handler.ts`, `hooks/api/use-performance.ts`, `hooks/api/use-strategies.ts`, `components/widgets/terminal/use-terminal-page-data.ts`, `app/(public)/services/data/page.tsx` (`orgMode="demo"` for marketing catalogue), and multiple hooks under `hooks/api/*` that branch on mock mode.
+
+### Marketing routes (App Router)
+
+| URL path                 | Source (build-time content) |
+| ------------------------ | --------------------------- |
+| `/`                      | `public/homepage.html` (shadow-mounted) |
 | `/investment-management` | `public/strategies.html` |
-| `/platform`            | `public/platform.html`  |
-| `/regulatory`          | `public/regulatory.html` |
-| `/firm`                | `public/firm.html`       |
-| `/contact`             | `public/contact.html`    |
+| `/platform`              | `public/platform.html` |
+| `/regulatory`            | `public/regulatory.html` |
+| `/firm`                  | `public/firm.html` |
+| `/contact`               | React page `app/(public)/contact` |
+| `/briefings`             | Lighter-gate hub `app/(public)/briefings` |
 
-To add or rename a marketing page: edit the `MARKETING_ROUTES` map in `proxy.ts`, add the HTML file to `public/`, rebuild and deploy.
+Legacy `*.html` URLs redirect to the routes above (`next.config.mjs`).
 
 ### Environment Variables
 
-| Variable                    | Value    | Purpose                         |
-| --------------------------- | -------- | -------------------------------- |
-| `NEXT_PUBLIC_MOCK_API`      | `true`   | Use mock data (no live backend)  |
-| `NEXT_PUBLIC_AUTH_PROVIDER`  | `demo`   | Demo auth mode                   |
-| `NODE_ENV`                  | `production` | Set by Dockerfile            |
+| Variable                    | Where set | Purpose |
+| --------------------------- | --------- | ------- |
+| `NEXT_PUBLIC_*`             | **Docker build** (`config/docker-build.env.staging` vs `docker-build.env.production`) | Client bundle; not overridden meaningfully at Cloud Run runtime. |
+| `NODE_ENV`                  | Dockerfile | `production` for optimized Next server. |
+| `ORG_OWNER_EMAILS` / `X-Acting-User-Email` | **deployment-api** service env & gateway headers | Role mutation guards — see `docs/SECURITY_AUTH.md` and `deployment-api/config/example-provisioning.env`. |
 
 ---
 
 ## Quick Reference
 
 ```bash
-# Standard deploy (most common)
+# Standard deploy → staging (local Docker)
 bash scripts/deploy-cloud-run.sh
 
-# Cloud Build (avoids Docker architecture issues)
+# Cloud Build → staging
 bash scripts/deploy-cloud-run.sh --cloud
 
+# Cloud Build → production (separate `:production` image + prod build-time env)
+bash scripts/deploy-cloud-run.sh --cloud --production
+
+# Staging with a custom build-time env file (e.g. Firebase web keys — gitignored copy of the example template)
+bash scripts/deploy-cloud-run.sh --build-env-file=config/docker-build.env.staging.firebase.local
+
 # Check what's running
+gcloud run revisions list --service=odum-portal-staging --region=europe-west4
 gcloud run revisions list --service=odum-portal --region=europe-west4
 
 # View logs
-gcloud run services logs read odum-portal --region=europe-west4 --limit=50
+gcloud run services logs read odum-portal-staging --region=europe-west4 --limit=50
 
-# Rollback to previous revision
-gcloud run services update-traffic odum-portal --region=europe-west4 --to-revisions=REVISION_NAME=100
+# Rollback staging to previous revision
+gcloud run services update-traffic odum-portal-staging --region=europe-west4 --to-revisions=REVISION_NAME=100
 ```

@@ -1,7 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
 import { expect, test } from "@playwright/test";
 import { clearPersona, seedPersona } from "../seed-persona";
@@ -39,12 +38,10 @@ import { clearPersona, seedPersona } from "../seed-persona";
  * Infra spec reference: unified-trading-pm/codex/14-playbooks/infra-spec/stage-3e-refactor-plan.md §1.9
  */
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Resolve unified-trading-pm relative to this spec.
-// <repo>/tests/e2e/playbooks/refactor/*.spec.ts → ../../../../../unified-trading-pm
-const UI_REPO_ROOT = resolve(__dirname, "..", "..", "..", "..");
+// Resolve unified-trading-pm relative to process.cwd() — Playwright always
+// invokes tests from the UI repo root, so cwd is stable. Avoids
+// import.meta.url which requires module: esnext in tsconfig.
+const UI_REPO_ROOT = process.cwd();
 const WORKSPACE_ROOT = resolve(UI_REPO_ROOT, "..");
 const PM_ROOT = resolve(WORKSPACE_ROOT, "unified-trading-pm");
 const COVERAGE_CHECKER = resolve(

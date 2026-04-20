@@ -172,7 +172,7 @@ function ArrowMarkers() {
 function SignalsInDiagram() {
   // Layout: Client (left) → Odum Execution (centre) → Venue (right)
   // Return arrow: Venue/Odum → Client (reconciliation + reporting)
-  const WIDTH = 760;
+  const WIDTH = 1000;
   const HEIGHT = 320;
   return (
     <svg
@@ -190,45 +190,45 @@ function SignalsInDiagram() {
       <Box
         x={20}
         y={110}
-        width={160}
+        width={180}
         height={90}
         title="Client strategy"
         subtitle="your upstream signal generator"
         accent="client"
       />
       <Box
-        x={300}
+        x={410}
         y={110}
-        width={180}
+        width={200}
         height={90}
         title="Odum execution"
         subtitle="algo, risk, positions, reporting"
         accent="odum"
       />
       <Box
-        x={580}
+        x={800}
         y={110}
-        width={160}
+        width={180}
         height={90}
-        title="Venue"
-        subtitle="client's scoped API keys"
+        title="Your venue"
+        subtitle="scoped execute + read keys"
         accent="venue"
       />
 
       {/* Forward arrow: Client → Odum */}
       <Arrow
-        x1={180}
+        x1={200}
         y1={140}
-        x2={300}
+        x2={410}
         y2={140}
         label="instruction"
         sublabel="eight-field schema"
       />
       {/* Forward arrow: Odum → Venue */}
       <Arrow
-        x1={480}
+        x1={610}
         y1={140}
-        x2={580}
+        x2={800}
         y2={140}
         label="order"
         sublabel="routed, not reshaped"
@@ -236,18 +236,18 @@ function SignalsInDiagram() {
 
       {/* Return arrow: Venue → Odum */}
       <Arrow
-        x1={580}
+        x1={800}
         y1={180}
-        x2={480}
+        x2={610}
         y2={180}
         label="fills"
         className="stroke-muted-foreground/60"
       />
       {/* Return arrow: Odum → Client */}
       <Arrow
-        x1={300}
+        x1={410}
         y1={180}
-        x2={180}
+        x2={200}
         y2={180}
         label="reconciliation + reporting"
         sublabel="positions, P&L, audit"
@@ -278,7 +278,7 @@ function SignalsInDiagram() {
 function SignalsOutDiagram() {
   // Layout: Odum Strategy (left) → Counterparty Webhook (centre) → Counterparty Execution (right)
   // Return arrow: ack only
-  const WIDTH = 780;
+  const WIDTH = 1040;
   const HEIGHT = 320;
   return (
     <svg
@@ -295,25 +295,25 @@ function SignalsOutDiagram() {
       <Box
         x={20}
         y={110}
-        width={170}
+        width={180}
         height={90}
         title="Odum strategy"
         subtitle="strategy-service emission"
         accent="odum"
       />
       <Box
-        x={300}
+        x={420}
         y={110}
-        width={180}
+        width={200}
         height={90}
         title="Counterparty webhook"
         subtitle="HMAC-signed, at-least-once"
         accent="counterparty"
       />
       <Box
-        x={580}
+        x={830}
         y={110}
-        width={180}
+        width={190}
         height={90}
         title="Counterparty execution"
         subtitle="their infrastructure + venues"
@@ -322,18 +322,18 @@ function SignalsOutDiagram() {
 
       {/* Forward: Odum → Counterparty Webhook */}
       <Arrow
-        x1={190}
+        x1={200}
         y1={140}
-        x2={300}
+        x2={420}
         y2={140}
-        label="STRATEGY_SIGNAL_EMITTED_EXTERNAL"
+        label="SIGNAL_EMITTED_EXTERNAL"
         sublabel="D8 payload, signed"
       />
       {/* Forward: Webhook → Counterparty Execution */}
       <Arrow
-        x1={480}
+        x1={620}
         y1={140}
-        x2={580}
+        x2={830}
         y2={140}
         label="payload delivered"
         sublabel="counterparty acts"
@@ -341,11 +341,11 @@ function SignalsOutDiagram() {
 
       {/* Return: ack only */}
       <Arrow
-        x1={300}
+        x1={420}
         y1={180}
-        x2={190}
+        x2={200}
         y2={180}
-        label="STRATEGY_SIGNAL_ACKNOWLEDGED"
+        label="SIGNAL_ACKNOWLEDGED"
         sublabel="idempotency ack, no fills"
         className="stroke-muted-foreground/60"
       />

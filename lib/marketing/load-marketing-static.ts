@@ -9,7 +9,7 @@ export const MARKETING_STATIC_FILES = [
   "platform.html",
   "signals.html",
   "regulatory.html",
-  "firm.html",
+  "who-we-are.html",
 ] as const;
 
 export type MarketingStaticFilename = (typeof MARKETING_STATIC_FILES)[number];
@@ -157,7 +157,8 @@ export function rewriteMarketingAnchors(html: string): string {
     ["strategies.html", "/investment-management"],
     ["platform.html", "/platform"],
     ["regulatory.html", "/regulatory"],
-    ["firm.html", "/firm"],
+    ["who-we-are.html", "/who-we-are"],
+    ["firm.html", "/who-we-are"],
     ["contact.html", "/contact"],
   ];
 

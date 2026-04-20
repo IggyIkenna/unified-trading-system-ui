@@ -38,7 +38,9 @@ export default function RegulatoryServicePage() {
             <p className="mt-2 text-lg text-muted-foreground">
               FCA Appointed Representative services for Professional clients.
               Operational in weeks, not the 12-24 months of direct
-              authorisation.
+              authorisation. Reg Umbrella firms typically operate multiple
+              funds or SMAs under their own client base; each runs under named
+              scope with supervisory reporting through Odum&apos;s permissions.
             </p>
           </div>
 
@@ -79,6 +81,59 @@ export default function RegulatoryServicePage() {
                   <p className="text-xs text-muted-foreground">
                     Real-time settlement status, fee breakdowns, monthly invoicing.
                     Your clients see their costs transparently.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Reporting tools you inherit */}
+          <Card className="mb-8 border-sky-500/20 bg-card/50">
+            <CardHeader>
+              <CardTitle className="text-lg">Reporting tools you inherit</CardTitle>
+              <CardDescription>
+                Regulatory Umbrella clients get the full Odum reporting and
+                analytics tool-set the same way Investment Management and DART
+                clients do. Not a separate regulatory-reporting product; a
+                partition of the operating system, entitlement-filtered to your
+                regulated-activity view.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">
+                    Positions, P&amp;L, performance
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Positions, exposures, P&amp;L attribution, performance
+                    breakdowns, reconciliation, audit trail, MIFID and
+                    transaction reporting, supervisory artifacts. Same
+                    components IM allocators and DART operators use.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">
+                    Read-only venue API keys
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Onboarding wires your venues in via read-only API keys you
+                    provide. Odum pulls position, order, and fill data from your
+                    venues into the shared reporting surface. No capital moves
+                    to Odum; no execution runs through Odum&apos;s venues. You
+                    keep full operational control.
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-sm font-medium">
+                    Funds, sub-clients, sub-mandates
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    The same keys let you build up funds, sub-clients, and
+                    sub-mandates under your firm and track their performance
+                    and breakdowns in the platform. Pooled or SMA structure,
+                    your downstream client hierarchy, Odum&apos;s reporting
+                    surface.
                   </p>
                 </div>
               </div>
@@ -247,7 +302,7 @@ export default function RegulatoryServicePage() {
                   <div className="text-sm text-muted-foreground">
                     Crypto derivatives, options, futures, and traditional
                     markets (equities, FX, fixed income, commodities). Managed
-                    by us under combined FCA + EU ESMA regulatory coverage.
+                    by us under combined FCA + EU ESMA authorisation.
                   </div>
                 </div>
               </div>
@@ -263,10 +318,10 @@ export default function RegulatoryServicePage() {
                   Appointed Representative
                 </Badge>
                 <CardTitle>AR Setup</CardTitle>
-                <div className="text-xl font-bold">From £4,000/mo</div>
+                <div className="text-sm text-muted-foreground">Pricing disclosed at second call</div>
                 <CardDescription>
-                  Plus one-time setup fee. Operate under our FCA authorisation
-                  as an Appointed Representative.
+                  Operate under our FCA authorisation as an Appointed
+                  Representative.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -298,10 +353,9 @@ export default function RegulatoryServicePage() {
                   Advisory
                 </Badge>
                 <CardTitle>Advisory Engagement</CardTitle>
-                <div className="text-xl font-bold">From £3,000/mo</div>
+                <div className="text-sm text-muted-foreground">Pricing disclosed at second call</div>
                 <CardDescription>
-                  Plus one-time setup fee. Contracted advisory role under our
-                  regulatory supervision.
+                  Contracted advisory role under our regulatory supervision.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -339,7 +393,7 @@ export default function RegulatoryServicePage() {
                 <div className="text-2xl font-bold">Contact Us</div>
                 <CardDescription>
                   Two paths depending on asset class — we manage both under full
-                  regulatory coverage
+                  FCA + EU authorisation
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -369,7 +423,7 @@ export default function RegulatoryServicePage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <CheckCircle2 className="size-4 text-emerald-400" />
-                  Combined FCA + EU regulatory coverage
+                  Combined FCA + EU authorisation
                 </div>
               </CardContent>
             </Card>
@@ -523,7 +577,7 @@ export default function RegulatoryServicePage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">BYO Processes</CardTitle>
                   <CardDescription className="text-xs">
-                    Your compliance processes, our regulatory umbrella
+                    Your compliance processes, our Regulatory Umbrella
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
@@ -567,7 +621,7 @@ export default function RegulatoryServicePage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Combined with our regulatory umbrella for full coverage
+                    Combined with our Regulatory Umbrella for full coverage
                   </div>
                 </CardContent>
               </Card>
@@ -581,14 +635,10 @@ export default function RegulatoryServicePage() {
         <div className="container px-4 py-12 md:px-6">
           <div className="mx-auto max-w-2xl text-center">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              If you&apos;re managing capital, executing trades, or advising on
-              investments — however you describe it internally — those are
-              regulated activities. The line between software and advice is
-              thinner than most people think, and the consequences of getting it
-              wrong are real. Getting properly authorised doesn&apos;t have to
-              be complicated or expensive. We&apos;ve built the infrastructure
-              to make it straightforward. Better to do it right from day one
-              than to find out the hard way.
+              Managing capital, executing trades, and advising on investments
+              are regulated activities under the FCA. The Regulatory Umbrella
+              provides named scope, compliance setup, MLRO coverage, and
+              supervisory reporting under Odum&apos;s permissions.
             </p>
           </div>
         </div>
