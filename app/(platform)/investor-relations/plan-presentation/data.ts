@@ -74,19 +74,19 @@ export const slides = [
         date: "End 2026",
         value: "$10M+",
         detail:
-          "2 platform clients, 3 regulatory coverage clients, signal leasing to 2 institutional counterparties (in active conversations)",
+          "Elysium DeFi + upsells live (signals-only DART). BTC ML directional IM with 10 clients \u00d7 $500k. CME S&P co-invest Sept (asymmetric 70/10). India Options Oct ($100k onboarding, $5-10M allocation IM). Desmond Reg Umbrella + DART signals-only. 2 sports ML clients. Signal leasing to 2 institutional counterparties active. ~\u00a3692k annual revenue, ~\u00a3464k December cash.",
       },
       {
         date: "End 2027",
         value: "$25M+",
         detail:
-          "4 platform clients, 6 regulatory coverage clients, signal leasing expanded, institutional allocators engaged",
+          "CME S&P co-invest scaled to $5M. India Options $5-10M allocation live. 4 platform clients, 6 regulatory coverage clients, signal leasing to 4 institutional counterparties, institutional allocator conversations maturing on 18-month track records.",
       },
       {
         date: "End 2028",
         value: "$100M",
         detail:
-          "9 platform clients, 11 regulatory coverage clients, signal leasing revenue stream established",
+          "9 platform clients, 11 regulatory coverage clients, signal leasing revenue stream established across 6+ institutional counterparties, BTC ML + sports ML + CME + India + DeFi strategies at full scale across IM and DART.",
       },
     ],
     callout:
@@ -121,8 +121,16 @@ export const slides = [
         statuses: ["", "testing", "available", "available", "available", "available"],
       },
       {
-        name: "Options / volatility",
+        name: "India Options (NSE delta trading)",
         statuses: ["", "", "", "testing", "live", "live"],
+      },
+      {
+        name: "CME S&P ML directional",
+        statuses: ["", "", "testing", "live", "live", "live"],
+      },
+      {
+        name: "Perp-funding arb (client-signal DART)",
+        statuses: ["", "testing", "live", "live", "live", "live"],
       },
       {
         name: "High frequency / market making",
@@ -305,34 +313,45 @@ export const slides = [
     achieved: [
       { text: "End of Q2 2026", detail: "(2 months)" },
       {
-        text: "Decentralised finance platform client live",
-        detail: "$125K contract revenue (75% received), growing to $250K+ annual revenue",
+        text: "Elysium DeFi go-live (signals-only DART)",
+        detail: "$125K onboarding, $75K upsell path (MEV + Solana + recursive staking)",
       },
       {
-        text: "Machine learning strategies on own capital",
-        detail: "Traditional finance + sports",
+        text: "BTC ML directional live on own capital",
+        detail: "First IM clients onboarding June ($500k each, 10-client target)",
       },
       {
-        text: "Regulatory coverage pipeline converting",
-        detail: "3 prospects",
+        text: "Sports ML live",
+        detail: "2 IM clients at $50-100k (capacity-bound)",
+      },
+      {
+        text: "1-2 regulatory umbrella clients live",
+        detail: "Seed Reg Umbrella + Desmond (Reg Umbrella + DART signals-only, perp-funding arb)",
       },
       { text: "Capital under management: $8\u201310M", detail: "" },
     ],
     inProgress: [
       { text: "End of 2026", detail: "(8 months)" },
       {
-        text: "Capital north of $10M",
-        detail: "Multiple strategy families live",
+        text: "CME S&P co-invest live (Sept)",
+        detail: "$500k client + $50k Odum skin-in-the-game, asymmetric 70% profits / 10% losses, ramp to $5M year-1",
       },
       {
-        text: "Options and execution available",
-        detail: "Full algo suite refined",
+        text: "India Options live (Oct)",
+        detail: "$100k onboarding, $5-10M IM allocation via Odum-managed NSE delta trading",
+      },
+      {
+        text: "Signal leasing to 2 institutional counterparties",
+        detail: "Q3-Q4 go-live at ~\u00a312k/mo each",
       },
       {
         text: "6+ months track record on new strategy families",
-        detail: "On 4 strategy families",
+        detail: "BTC ML + sports ML + DeFi basis",
       },
-      { text: "2 platform clients live, 3 regulatory coverage clients", detail: "" },
+      {
+        text: "Annual revenue ~\u00a3692k, December cash ~\u00a3464k",
+        detail: "Self-funded \u2014 no bridge capital required",
+      },
     ],
     launchReady: [
       { text: "End of 2027 \u2192 2028", detail: "(20\u201330 months)" },

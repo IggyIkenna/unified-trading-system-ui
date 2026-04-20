@@ -1,4 +1,4 @@
-// Board Presentation — data for 10-slide core deck + 2 appendix slides (FAQ, Demo)
+// Board Presentation — data for 11-slide core deck + 2 appendix slides (FAQ, Demo)
 // Last updated: April 2026
 
 // Venue list for scrolling display - color-coded by asset class
@@ -375,20 +375,26 @@ export const slides = [
           "Execution",
           "Governance",
         ],
-        model: "Subscription \u2014 scoped to client need",
+        model: "Subscription \u2014 scoped to client need. Signals-only DART: fixed Tier B block pricing. Full DART: fixed-access + per-backtest metered research + IP-power exclusivity tiers.",
         desc: "Access the trading stack without building it. Enter at data, research, or execution \u2014 expand over time. Live in weeks, not years.",
       },
       {
         name: "Investment Management",
         stages: ["Decision", "Execution", "Governance"],
-        model: "20-40% performance (strategy-dependent)",
-        desc: "Allocate to strategies we already run with our own capital. Co-invest at identical terms. 0% management fee \u2014 performance only.",
+        model: "30-35% performance-fee + platform-fee client-choice (+5% perf OR $500/mo flat). No management fee.",
+        desc: "Allocate to strategies we already run with our own capital. Co-invest at identical terms. Client picks their platform-fee preference; performance fee aligns us with outcomes.",
       },
       {
         name: "Regulatory Umbrella",
         stages: ["Governance"],
         model: "Onboarding fee + monthly retainer",
-        desc: "Operate under FCA coverage without waiting for direct authorisation. Full permissions scope. Operational in weeks. 1 live, 3 in pipeline.",
+        desc: "Operate under FCA coverage without waiting for direct authorisation. Full permissions scope. Operational in weeks. 2 live, pipeline of 2-3 additional prospects.",
+      },
+      {
+        name: "Signal Leasing",
+        stages: ["Research"],
+        model: "Monthly licence + per-signal + optional P&L share (hybrid)",
+        desc: "Lease Odum strategy signals to institutional counterparties. They execute on their own infrastructure. 2 counterparties in active conversations.",
       },
     ],
     note: "Three distinct buyer outcomes \u2014 capability, exposure, or regulatory coverage \u2014 all on one shared system. A platform client buys infrastructure. An IM client buys returns. A regulatory client buys speed to market. Each deepens naturally into the others.",
@@ -452,9 +458,31 @@ export const slides = [
     contact: "ikenna@odum-research.com",
   },
 
-  // ── Slide 11: FAQ ──────────────────────────────────────────
+  // ── Slide 11: 2026 Cashflow Shape ─────────────────────────
   {
     id: 11,
+    type: "trajectory",
+    title: "2026 Cashflow Shape \u2014 Self-Funded",
+    subtitle:
+      "Starts April at \u00a3240k. Minimum \u00a3198k (April). October flip to \u00a3348k. December \u00a3464k. No bridge capital required.",
+    milestones: [
+      { date: "Apr", value: "\u00a3240k", detail: "Opening position. ~\u00a334k steady-state burn.", active: true },
+      { date: "May", value: "\u00a3219k", detail: "Elysium onboarding + Desmond Reg Umbrella closes. First DART revenue lands." },
+      { date: "Jun", value: "\u00a3238k", detail: "BTC ML IM go-live (10 clients \u00d7 $500k). Sports ML IM live (2 clients)." },
+      { date: "Jul", value: "\u00a3260k", detail: "IM performance fees accrue. Elysium upsell path opens (MEV + Solana + recursive staking)." },
+      { date: "Aug", value: "\u00a3289k", detail: "Signal leasing to 1st institutional counterparty at ~\u00a312k/mo." },
+      { date: "Sep", value: "\u00a3327k", detail: "CME S&P co-invest goes live. $500k client + $50k Odum skin-in-game. Asymmetric 70% profits / 10% losses." },
+      { date: "Oct", value: "\u00a3426k", detail: "India Options $100k onboarding lands. Cash steps up \u00a399k in one month. $5-10M IM allocation follows." },
+      { date: "Nov", value: "\u00a3445k", detail: "2nd signal leasing counterparty live. CME ramp accelerating." },
+      { date: "Dec", value: "\u00a3464k", detail: "~\u00a3692k annual revenue, ~\u00a3143k net profit. Self-funded entry into 2027.", active: true },
+    ],
+    callout:
+      "October 2026 is the key inflection: India Options onboarding delivers a \u00a399k single-month step-up. No bridge capital required \u2014 the business self-funds through the $7.5M to $25M AUM transition.",
+  },
+
+  // ── Slide 12: FAQ ──────────────────────────────────────────
+  {
+    id: 12,
     type: "faq",
     title: "Questions We Get Asked",
     subtitle: "Standardised answers to the most common questions from advisors and prospects.",
@@ -482,9 +510,9 @@ export const slides = [
     ],
   },
 
-  // ── Slide 12: Live Demo ───────────────────────────────────
+  // ── Slide 13: Live Demo ───────────────────────────────────
   {
-    id: 12,
+    id: 13,
     type: "demo",
     title: "Platform Demo",
     subtitle:
