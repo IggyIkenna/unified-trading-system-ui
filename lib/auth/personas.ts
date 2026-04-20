@@ -153,6 +153,81 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "DeFi client demo. DeFi trading tab + general terminal (overview, positions, orders, P&L, risk, alerts, book, accounts, instructions). Strategy families LOCKED. Sports/Predictions/Options LOCKED. Build/Data LOCKED. Strategies: AAVE_LENDING, BASIS_TRADE, STAKED_BASIS, RECURSIVE_STAKED_BASIS (demo only).",
   },
+  // -------------------------------------------------------------------
+  // G1.4 Wave F expansion — 6 new personas covering axis combinations
+  // (service_family × maturity × strategy_style × fund_structure) that
+  // weren't previously represented. Every persona's id matches a YAML
+  // profile in `unified-trading-pm/codex/14-playbooks/demo-ops/profiles/`
+  // (existing file reused when the audience fits, new file added
+  // otherwise). Entitlements validated against rule 12 service-family
+  // scope (rule_id 12 in `codex/14-playbooks/_ssot-rules/`).
+  // -------------------------------------------------------------------
+  {
+    id: "prospect-dart",
+    email: "sarah.quant@examplehedge.com",
+    password: "demo",
+    displayName: "Sarah Quant",
+    role: "client",
+    org: { id: "example-hedge", name: "Example Hedge" },
+    entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
+    description:
+      "Warm DART prospect. CeFi-focused ML-directional strategy, pooled-fund evaluation. Sees data/research/trading/observe/reports unlocked; promote padlocked as an upsell tease. Maps to G1.7 prospect-dart.yaml.",
+  },
+  {
+    id: "client-regulatory",
+    email: "fm@emergingmgr.com",
+    password: "demo",
+    displayName: "Fund Manager",
+    role: "client",
+    org: { id: "emerging-mgr", name: "Emerging Manager Ltd" },
+    entitlements: ["reporting", "data-pro"],
+    description:
+      "Active Regulatory Umbrella client operating under Odum's FCA permissions. Reporting + compliance overlay unlocked; research/promote hidden (client runs own strategy stack). Maps to G1.7 prospect-regulatory.yaml (reused — same scope).",
+  },
+  {
+    id: "client-im-pooled",
+    email: "pm@lpfund.com",
+    password: "demo",
+    displayName: "Pooled-Fund LP",
+    role: "client",
+    org: { id: "lp-fund", name: "LP Fund" },
+    entitlements: ["reporting", "investor-relations"],
+    description:
+      "IM client on the Pooled-Fund share class. Sees reports + investor-relations; all DART operational tiles hidden (Odum runs strategies, client sees reporting only). Maps to G1.7 prospect-im.yaml (reused — same scope).",
+  },
+  {
+    id: "client-im-sma",
+    email: "cio@smaclient.com",
+    password: "demo",
+    displayName: "SMA CIO",
+    role: "client",
+    org: { id: "sma-client", name: "SMA Client Inc" },
+    entitlements: ["reporting", "investor-relations", "data-pro"],
+    description:
+      "IM client on an SMA (Separately Managed Account). Same tile surface as Pooled-Fund LP — differs only in fund_structure + legal wrapper. Maps to G1.7 prospect-im.yaml.",
+  },
+  {
+    id: "prospect-signals-only",
+    email: "ops@defihf.com",
+    password: "demo",
+    displayName: "Signals-Only Ops Lead",
+    role: "client",
+    org: { id: "defi-hf", name: "DeFi Hedge Fund" },
+    entitlements: ["execution-full", "data-pro", "reporting"],
+    description:
+      "Signals-only DART prospect. Client keeps strategy IP upstream; Odum runs execution + reporting. Sees trading/observe/reports; research/promote hidden (client doesn't buy into block 6). Maps to G1.7 prospect-dart.yaml with tighter entitlements.",
+  },
+  {
+    id: "im-desk-operator",
+    email: "desk@odum.internal",
+    password: "demo",
+    displayName: "IM Desk Operator",
+    role: "internal",
+    org: { id: "odum-internal", name: "Odum Internal" },
+    entitlements: ["*"],
+    description:
+      "IM desk operator — locks/unlocks strategies via the catalogue admin toggle + sees reporting for cross-client observation. Matches rule 12 IM_desk service family. Maps to G1.7 admin.yaml (nearest profile; IM_desk profile YAML is a G2.x follow-up).",
+  },
 ] as const;
 
 export function getPersonaById(id: string): AuthPersona | undefined {
