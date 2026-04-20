@@ -57,7 +57,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     tldr:
       "Odum allocates client capital to its own systematic strategies under Odum's FCA permissions. Allocator reporting runs on the same surface Odum uses to operate the book.",
     frame:
-      "Investment Management allocates client capital to Odum-run systematic strategies under Odum's FCA permissions. Reporting comes from the same surface Odum's own traders and risk desk use — same components, same data, entitlement-filtered for allocator views. Strategies are operated on Odum infrastructure, not wrapped on top of a third party. Venue custody stays with the client: you retain the venue account, you issue scoped read-only-plus-execute API keys to Odum, and Odum never custodies client capital.",
+      "Investment Management allocates client capital to Odum-run systematic strategies under Odum's FCA permissions. Reporting comes from the same surface Odum's own traders and risk desk use — same components, same data, entitlement-filtered for allocator views. Strategies are operated on Odum infrastructure, not wrapped on top of a third party. Custody model: Odum's regulated fund administrator holds the venue master accounts; your capital sits in a ring-fenced sub-account identified by your client identifier. Odum Research Ltd — the investment manager — never holds principal. Capital moves in and out via the administrator's treasury wallet, and the entire deposit / withdrawal flow is automated via API and via your client dashboard.",
     sections: [
       {
         title: "The strategy surface",
@@ -67,14 +67,16 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       {
         title: "Structure — SMA or Pooled with share classes",
         body:
-          "Two structural options resolve at onboarding. An SMA carries its own fund entity, its own venue accounts, its own scoped API keys, and fully isolated positions — one client, one book. A Pooled vehicle holds multiple allocators as distinct share classes across one set of positions; allocators share strategy exposure but are tracked, reported, and settled against their own share-class identifier. Pooled is operationally simpler and often better for smaller tickets or where share-class mechanics are a feature rather than a cost; SMA is the default for allocators who want isolation, bespoke venue selection, or mandate-specific risk parameters.",
+          "Two structural options resolve at onboarding. An SMA carries a dedicated sub-account per venue, its own mandate, its own isolated book, and mandate-specific risk parameters — one client, one book, visible and settled only to you. A Pooled vehicle holds multiple allocators as distinct share classes across one shared set of positions at the administrator's master account; allocators share strategy exposure but are tracked, reported, and settled against their own share-class identifier inside the administrator's books. Pooled is operationally simpler and often better for smaller tickets or where share-class mechanics are a feature rather than a cost; SMA is the default for allocators who want full isolation, bespoke venue selection, or mandate-specific risk parameters. In both cases the administrator holds the venue master accounts and operates the treasury wallet; your capital never commingles with Odum Research Ltd's operating funds.",
         bodyAfter:
           "Under the Pooled structure, visibility is strictly sliced by share-class identifier — you see only your own slice of positions, exposures, and P&L. There is no cross-client visibility within the Pooled vehicle. The choice between SMA and Pooled has real downstream consequences on onboarding, venue provisioning, reporting, and liquidity terms, walked through against your specifics at the second call.",
       },
       {
-        title: "Read-only venue key model — you keep custody",
+        title: "Treasury wallet and client sub-account — how capital moves",
         body:
-          "Odum never takes custody of client capital. You retain the venue account in your name, fund it directly with the venue, and issue Odum a scoped API key with execute and read permissions — no withdrawal authority, ever. Keys sit in Odum's Secret Manager and are hot-reloaded into execution-service at runtime. You can revoke a key at any time and the execution loop closes down on that venue within the scope of that key; capital stays with you throughout.",
+          "Odum's regulated fund administrator holds the venue master accounts — one master account per venue, across CeFi exchanges, TradFi brokerages, and on-chain wallets. Inside every master account you hold a dedicated sub-account identified by your client identifier. Positions, fills, balances, and P&L are tracked per sub-account; isolation from other clients is enforced both at the venue (via the venue's native sub-account primitive) and in Odum's position-balance-monitor-service bookkeeping.",
+        bodyAfter:
+          "Capital movement flows through the administrator's treasury wallet. To fund, you deposit into the treasury wallet and the administrator credits your sub-account; to withdraw, you submit a request from the client dashboard or the REST API, the administrator runs compliance and balance gates, and funds return from your sub-account through the treasury wallet to the destination you declare. Every state transition (deposit requested, deposit confirmed, withdrawal requested, withdrawal approved, withdrawal executed) emits an event to your audit trail. Odum Research Ltd operates the trading loop via credentials the administrator holds for the master accounts; Odum Research Ltd never holds principal.",
       },
       {
         title: "Reporting surface — the operating system, filtered",
@@ -99,8 +101,8 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     ],
     keyMessages: [
       "Allocation to Odum-run strategies on Odum infrastructure under Odum's FCA permissions — not a third-party wrapper.",
-      "Two structural options — SMA (isolated entity + venue accounts + keys) or Pooled (share classes over one book). Visibility is sliced per share class; no cross-client exposure.",
-      "Venue custody stays with the client. You fund the venue; Odum holds a scoped execute-plus-read API key in Secret Manager; no withdrawal authority, ever.",
+      "Two structural options — SMA (dedicated sub-account per client, separate mandate and reporting) or Pooled (share classes over one book, share-class-scoped visibility). In both cases the administrator holds the master account; your capital sits in a ring-fenced sub-account.",
+      "Custody sits with Odum's regulated fund administrator, not with Odum Research Ltd. You hold a ring-fenced sub-account inside the administrator's venue master accounts; deposits and withdrawals flow through the administrator's treasury wallet, automated via API and via the client dashboard. Odum Research Ltd — the investment manager — never holds principal.",
       "Reporting is the same surface Odum uses internally, filtered by entitlement — share class or SMA partition. Same data, same components, different views.",
       "Performance share sits in a 30-35% band; no management fee. Platform-fee choice at signing: uplift on performance share (Option A) or small flat monthly access fee (Option B).",
       "Regulatory cover, compliance, and MLRO are operated inside Odum — not outsourced, not optional. Twelve-month minimum engagement.",
@@ -111,11 +113,11 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
   },
   {
     slug: "platform",
-    title: "DART — Data Analytics, Research & Trading",
+    title: "DART — Start here",
     tldr:
-      "DART is the set of services Odum uses to build, research, promote, execute, and monitor its own systematic strategies — packaged for client use.",
+      "DART (Data Analytics, Research & Trading) is the set of services Odum uses internally, packaged for client use. This briefing orients you across the two DART paths — signals-in and full pipeline — and points at the deeper briefing that fits.",
     frame:
-      "DART is the set of services Odum uses internally to build, research, promote, execute, and monitor systematic strategies. The underlying system is one; the commercial path picks which surfaces you touch. Two paths within DART: signals-only (you generate signals; Odum operates execution, risk, allocation, reporting) or full pipeline (you additionally use Odum's research and promote layer on the same components). DART is the signals-in direction — your signals land on Odum's execution. The inverse — our signals delivered to your execution on your own infrastructure — is Odum Signals, briefed separately.",
+      "DART — Data Analytics, Research & Trading — is the set of services Odum uses internally to build, research, promote, execute, and monitor systematic strategies. The underlying system is one; the commercial path picks which surfaces you touch. This briefing is the orientation layer. It frames the two paths within DART and hands you to the deeper briefing that matches. Signals-in (you generate signals; Odum operates execution, risk, allocation, reporting) lives at /briefings/dart-signals-in. Full pipeline (you additionally use Odum's research and promote layer on the same components) lives at /briefings/dart-full. The inverse direction — our signals delivered to your execution on your own infrastructure — is Odum Signals at /briefings/signals-out, a distinct fourth path outside DART.",
     sections: [
       {
         title: "Two paths — which one fits your operation",
@@ -248,7 +250,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     tldr:
       "Your strategy generates signals upstream. Odum's execution, risk, allocation, and reporting stack runs the rest. The integration surface is a fixed, published instruction schema.",
     frame:
-      "DART — Data Analytics, Research & Trading — Signals-In is the downstream path for firms that already run their own strategy research and want to plug signal output into a full execution and reporting stack. Your upstream keeps its edge; Odum's downstream stack operates on structured instructions. Direction is one-way: your signals come in, Odum executes them on venues where you have granted Odum scoped read-only-plus-execute API keys held in Secret Manager. Your capital stays in your venue accounts; Odum never custodies it. The fit-check is whether your upstream already produces the eight required fields — or can be adapted to.",
+      "DART — Data Analytics, Research & Trading — Signals-In is the downstream path for firms that already run their own strategy research and want to plug signal output into a full execution and reporting stack. Your upstream keeps its edge; Odum's downstream stack operates on structured instructions. Direction is one-way: your signals come in, Odum executes on Odum's regulated administrator's venue master accounts — one ring-fenced sub-account per client, identified by your client identifier. Capital moves in and out via the administrator's treasury wallet, automated via the REST API and via the client dashboard. Odum Research Ltd never holds principal. The fit-check is whether your upstream already produces the eight required fields — or can be adapted to.",
     sections: [
       {
         title: "What crosses the fence and what does not",
@@ -256,9 +258,21 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
           "Signals-In is a boundary product. Your side of the fence holds regime classification logic, raw model internals, features, weights, training process, signal-generation methodology, portfolio construction maths, and optimisation objective. Odum's side holds execution routing, risk checks, allocation, reconciliation, and reporting. The boundary is the instruction schema — eight fields, nothing more. Your strategic edge never enters Odum's systems.",
       },
       {
+        title: "Treasury wallet and client sub-account — how capital moves",
+        body:
+          "DART Signals-In runs on Odum's regulated administrator's venue master accounts — one master account per venue, across CeFi exchanges, TradFi brokerages, and on-chain wallets. Inside every master account you hold a dedicated sub-account identified by your client identifier. Positions, fills, balances, and P&L are tracked per sub-account; isolation from other clients is enforced both at the venue (via the venue's native sub-account primitive — Binance sub-account, Hyperliquid sub-wallet, per-client on-chain wallet, TradFi brokerage sub-account) and in position-balance-monitor-service bookkeeping.",
+        bodyAfter:
+          "Capital movement flows through the administrator's treasury wallet. To fund a strategy you deposit into the treasury wallet and the administrator credits your sub-account; to withdraw, you submit a request from the client dashboard or the REST API, the administrator runs compliance and balance gates, and funds return from your sub-account through the treasury wallet to the destination you declare. Every state transition (deposit requested, deposit confirmed, withdrawal requested, withdrawal approved, withdrawal executed) emits a lifecycle event into your audit trail. Odum Research Ltd — the investment manager — never holds principal.",
+      },
+      {
+        title: "Multi-mandate and sub-client structure",
+        body:
+          "A single Signals-In engagement can represent N of your own internal sub-clients or sub-mandates — one client identifier per sub-mandate, each with its own sub-account inside the administrator's master accounts. Positions, P&L, reporting, and capital movement partition cleanly per sub-client. This is the Signals-In equivalent of the Reg Umbrella N-funds-or-SMAs pattern: one commercial engagement, one instruction-schema integration, multiple downstream partitions. The instruction schema carries the sub-client identifier so execution-service routes to the correct sub-account without upstream re-keying. If your upstream represents only a single trading book, the same mechanic applies with N=1.",
+      },
+      {
         title: "The eight-field instruction schema — full spec",
         body:
-          "Every instruction your upstream emits carries eight fields. Each field has a defined shape, validation semantics, and downstream consumer inside Odum's stack. This is the fit-check — the contract Odum's execution, risk, allocation, and reconciliation services operate on. Your current signal surface either produces these already or can be adapted to produce them. If neither, Signals-In is not the right path — you are either a Full Pipeline client (Odum runs the upstream) or a bespoke engagement with a custom-premium block.",
+          "Every instruction your upstream emits carries eight fields. Each field has a defined shape, validation semantics, and downstream consumer inside Odum's stack. This is the fit-check — the contract Odum's execution, risk, allocation, and reconciliation services operate on. The eight-field shape and the three-depth pricing dimension (minimal / standard / rich) are the SSOT defined in codex/14-playbooks/shared-core/instruction-schema-fit-and-package-boundaries.md and rule 10 (strategy instruction schema principles). Your current signal surface either produces these already or can be adapted to produce them. If neither, Signals-In is not the right path — you are either a Full Pipeline client (Odum runs the upstream) or a bespoke engagement with a custom-premium block.",
         bullets: [
           "Field 1 — instrument and venue context. Values: a resolved instrument_id from Odum's instruments catalogue, a venue or chain identifier from the compatibility matrix (any CeFi venue in the venue registry; any DeFi chain in UAC CHAIN_RPC_TEMPLATES; Polymarket or Kalshi for prediction; sports venues for sports fixtures), and an instrument-type category (spot, perp, dated future, option, prediction market, sports fixture, on-chain spot, flash-loan swap). Consumer: instruments-service resolution plus execution-service venue routing.",
           "Field 2 — intended action. Values: buy, sell, hedge, close, roll, or a combination that maps to a single execution primitive in Odum's algo library. Multi-leg structures are supported on venues that support them (see the compatibility matrix — Options multi-leg depends on the venue pack). Consumer: execution-service algo selector.",
@@ -275,7 +289,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       {
         title: "Venue and instrument compatibility matrix",
         body:
-          "The schema is compatible with most venue and instrument-type combinations, but not all. Known incompatibilities are spelled out upfront so the fit-check resolves cleanly:",
+          "The schema is compatible with most venue and instrument-type combinations, but not all. Known incompatibilities — from the codex compatibility matrix in instruction-schema-fit-and-package-boundaries.md section (b) — are spelled out upfront so the fit-check resolves cleanly. Each row names the venue category, instrument type, execution mode, and whether the combination is compatible today:",
         bullets: [
           "Any CeFi venue in the venue registry, instrument-type spot / perp / dated future, execution mode market / limit / schedule — compatible, minimal schema sufficient.",
           "Any CeFi venue, instrument-type options, execution mode multi-leg structure — depends on venue. Multi-leg order capability is a venue-pack sub-dimension; some venues support, some do not. Confirmed at second call.",
@@ -307,7 +321,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
       {
         title: "What Signals-In enables and what it does not",
         body:
-          "Well-formed instructions against the schema enable: execution (algo selection, venue routing, fills), reconciliation (instruction to fills), position tracking, P&L attribution to your declared strategy_id, exposure analytics on your own flow, execution-quality and TCA on your own flow, and the reporting surface (positions, P&L, reconciliation, audit). Signals-In does NOT enable: backtest or research surface over historical data, the promotion pipeline (shadow to paper to live-tiny to allocated), live-vs-backtest P&L comparison that requires Odum-side backtest lineage, full P&L attribution back to your upstream signal-generation features, cross-strategy research analytics drawing on data beyond your own flow, or regime classification analytics. Those capabilities sit in block 6 (research / promote) which is excluded from Signals-In by design. The boundary is load-bearing: research bolted on at Signals-In pricing would be underpriced.",
+          "Per the codex enablement map (sections (d) and (e) of instruction-schema-fit-and-package-boundaries.md), well-formed instructions against the schema enable: execution (algo selection, venue routing, fills), reconciliation (instruction to fills), position tracking, P&L attribution to your declared strategy_id, exposure analytics on your own flow, execution-quality and TCA on your own flow, and the reporting surface (positions, P&L, reconciliation, audit). Signals-In does NOT enable: backtest or research surface over historical data, the promotion pipeline (shadow to paper to live-tiny to allocated), live-vs-backtest P&L comparison that requires Odum-side backtest lineage, full P&L attribution back to your upstream signal-generation features, cross-strategy research analytics drawing on data beyond your own flow, or regime classification analytics. Those capabilities sit in block 6 (research / promote) which is excluded from Signals-In by design. The boundary is load-bearing: research bolted on at Signals-In pricing would be underpriced. Upgrading to Full Pipeline is a formal commercial event — a new quote, new blocks, new scope — not an incremental bolt-on.",
       },
       {
         title: "Scope, commitment, commercial posture",
@@ -322,7 +336,7 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
     ],
     keyMessages: [
       "Signals-In runs on a fixed, published instruction schema — eight fields, three depths (minimal / standard / rich). Your upstream either produces the fields or is adapted to. The fit-check happens before the demo.",
-      "Direction is one-way — your signals, our execution. Odum executes on venues where you have granted scoped read-only-plus-execute API keys in Secret Manager. Your capital stays in your venue accounts.",
+      "Direction is one-way — your signals, our execution. Odum's regulated administrator holds the venue master accounts; your capital sits in a ring-fenced sub-account identified by your client identifier. Capital moves in and out via the administrator's treasury wallet — deposit / withdrawal flow automated via REST API and via the client dashboard. Odum Research Ltd never holds principal.",
       "Your strategic edge stays upstream. Regime logic, model internals, signal generation, portfolio construction, features, weights — none of it crosses into Odum's systems.",
       "Venue and instrument-type compatibility is spelled out — CeFi spot / perp / dated fully supported, Options depends on venue, DeFi spot supported, DeFi options and dated futures are BLOCKED today.",
       "Lifecycle semantics: supersede replaces, add sits alongside, cancel cancels open quantity. Amend is an update on the same instruction id. Idempotency on instruction id gives a safe retry model.",
@@ -345,6 +359,11 @@ export const BRIEFING_PILLARS: readonly BriefingPillar[] = [
         title: "The research surface — what a client sees when they sit down",
         body:
           "Research runs on Odum's historical data — tick data, on-chain events, reference instruments, corporate actions, venue metadata, features, and derived factors. You author strategies in the same runtime Odum's own researchers use, with the same data access, the same feature library, and the same backtest engine. The research surface is not a sandbox wrapper on top — it is the surface Odum uses internally, entitlement-filtered to your work. When you open the research tool, the left pane shows the strategy catalogue (your slots plus any shared reference slots), the centre pane shows the authoring environment for the currently-selected strategy slot, and the right pane shows the backtest results: P&L curve, drawdown profile, factor attribution, fill-quality proxies from the matching engine, and live-vs-backtest diff once the slot has been promoted beyond backtested. Same components, batch and live — the batch-equals-live principle means the backtest exercises the same position tracking, risk checks, and allocation services as live; the only seam that differs is the execution-fill source (matching engine vs real venue).",
+      },
+      {
+        title: "Treasury wallet and client sub-account — how capital moves",
+        body:
+          "Full Pipeline runs on the same custody mechanic as Signals-In. Odum's regulated administrator holds the venue master accounts; your capital sits in a ring-fenced sub-account identified by your client identifier. Deposits and withdrawals flow through the administrator's treasury wallet, automated via REST API and via the platform UI. Odum Research Ltd never holds principal. Sub-client partitioning works the same way — one engagement can carry N sub-mandates, each with its own sub-account, each with its own research scope, paper allocation, and live capital.",
       },
       {
         title: "The 8-stage maturity ladder",
