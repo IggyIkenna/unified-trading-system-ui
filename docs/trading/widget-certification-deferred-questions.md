@@ -355,10 +355,24 @@ These surfaced during the per-archetype widget audits. Mostly minor edits to `ar
   - **Reactivate** — if a teammate actually does plan CBD work, declare "IBKR ↔ CME cross-venue routing policy" and put on BP-4 roadmap.
 - Widget-cert impact: no fixture, no widget, no codex edits until the above is resolved. Tracker status stays `⏸️ parked`.
 
+### `architecture-v2/archetypes/amm-lp-provision.md` (NEW — archetype missing from codex)
+
+- **Decision required — add AMM_LP_PROVISION to `DEFI_STRATEGY_FAMILIES` and draft an archetype doc, or remove the widgets?** The mirror-image of the CBD problem: CBD has a codex entry with no UI, ALP has UI with no codex entry.
+- **Evidence the archetype is shipped in the UI:**
+  - [`components/widgets/defi/defi-liquidity-widget.tsx`](../../components/widgets/defi/defi-liquidity-widget.tsx): execution surface for concentrated liquidity (Uniswap V3-style). Operations: `ADD_LIQUIDITY` / `REMOVE_LIQUIDITY`. Emits `strategy_id: "AMM_LP"`, `algo_type: "AMM_CONCENTRATED"` at L160. Per-pool price range + fee tier selector (DEFI_FEE_TIERS: 0.01 / 0.05 / 0.30 / 1.00).
+  - [`components/widgets/strategies/active-lp-dashboard-widget.tsx`](../../components/widgets/strategies/active-lp-dashboard-widget.tsx): monitoring surface. Columns: pool, range, in-range Y/N, TVL, 24h fees, IL%, last rebalance. KPI strip: total TVL, position count, 24h fees, avg IL.
+  - Pool fixture already exists in `useDeFiData` context (`liquidityPools`) and fee-tier config exists at `lib/config/services/defi.config.ts:DEFI_FEE_TIERS`.
+- **Possible outcomes:**
+  - **Codify as archetype** — draft `architecture-v2/archetypes/amm-lp-provision.md` with the usual schema (venues, chain support, IL tolerance, rebalance triggers, fee-tier strategy, range-selection policy). Add `AMM_LP_PROVISION` to `DEFI_STRATEGY_FAMILIES`. This is the option if the desk actually runs LP strategies.
+  - **Remove widgets** — if no desk runs AMM LP, delete `defi-liquidity-widget` and `active-lp-dashboard-widget`. Clean up `liquidityPools` from `useDeFiData` and `DEFI_FEE_TIERS` from config.
+  - **Park** — label the widgets as speculative/prototype (similar to the reserved-for-future CBD outcome), but don't wire them to real execution paths.
+- **Why this needs teammate input:** main agent has no visibility into whether AMM LP is a real desk strategy. User reports they have not been running concentrated-LP positions in-session, but desks may have others or plans for it. If yes → codex + full archetype audit. If no → widget cleanup ticket.
+- **Widget-cert impact if codified:** the §2 matrix ALP column needs real per-widget verdicts (currently mostly ➖). `defi-liquidity-widget` inherits the §3.1 `strategy_id: "AMM_LP"` fix regardless of the codification outcome (attribution shouldn't depend on catalog presence).
+
 ### Ask for teammate (codex section)
 
 - **Straightforward edits** (YS, YRL, LIQ, CBD status-flip): action these directly in the relevant archetype docs unless you see a reason not to.
-- **Decisions required:** §CBP.b, §CSB.b, and the CBD routing-policy statement. If you have an opinion, land it; if not, flag and we can loop in the wider team. These are archetype-taxonomy / config-schema decisions — no widget code hinges on them.
+- **Decisions required:** §CBP.b, §CSB.b, the CBD routing-policy statement, and **the ALP codification call above**. If you have an opinion, land it; if not, flag and we can loop in the wider team. These are archetype-taxonomy / config-schema decisions — no widget code hinges on them (except the §3.1 `strategy_id` fix, which is independent).
 
 ---
 

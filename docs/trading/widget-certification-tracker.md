@@ -13,56 +13,63 @@ See [widget-certification-audit-plan.md](./widget-certification-audit-plan.md) f
 
 ## 1. Audit progress
 
-All 8 archetypes drafted. Each doc status: `draft-awaiting-review`. User owns review; tracker will flip to ✅ reviewed once signed off.
+All 8 codex archetypes drafted + 1 registry-gap archetype surfaced. Each doc status: `draft-awaiting-review`. User owns review; tracker will flip to ✅ reviewed once signed off.
 
-| #   | Archetype                  | Status     | Doc                                                                                               |
-| --- | -------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| 1   | YIELD_STAKING_SIMPLE       | ✅ drafted | [yield-staking-simple.md](../audits/strategy-widget-findings/yield-staking-simple.md)             |
-| 2   | YIELD_ROTATION_LENDING     | ✅ drafted | [yield-rotation-lending.md](../audits/strategy-widget-findings/yield-rotation-lending.md)         |
-| 3   | CARRY_BASIS_PERP           | ✅ drafted | [carry-basis-perp.md](../audits/strategy-widget-findings/carry-basis-perp.md)                     |
-| 4   | CARRY_STAKED_BASIS         | ✅ drafted | [carry-staked-basis.md](../audits/strategy-widget-findings/carry-staked-basis.md)                 |
-| 5   | CARRY_RECURSIVE_STAKED     | ✅ drafted | [carry-recursive-staked.md](../audits/strategy-widget-findings/carry-recursive-staked.md)         |
-| 6   | ARBITRAGE_PRICE_DISPERSION | ✅ drafted | [arbitrage-price-dispersion.md](../audits/strategy-widget-findings/arbitrage-price-dispersion.md) |
-| 7   | LIQUIDATION_CAPTURE        | ✅ drafted | [liquidation-capture.md](../audits/strategy-widget-findings/liquidation-capture.md)               |
-| 8   | CARRY_BASIS_DATED          | ⏸️ parked  | [carry-basis-dated.md](../audits/strategy-widget-findings/carry-basis-dated.md)                   |
+| #   | Archetype                  | Status          | Doc                                                                                               |
+| --- | -------------------------- | --------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | YIELD_STAKING_SIMPLE       | ✅ drafted      | [yield-staking-simple.md](../audits/strategy-widget-findings/yield-staking-simple.md)             |
+| 2   | YIELD_ROTATION_LENDING     | ✅ drafted      | [yield-rotation-lending.md](../audits/strategy-widget-findings/yield-rotation-lending.md)         |
+| 3   | CARRY_BASIS_PERP           | ✅ drafted      | [carry-basis-perp.md](../audits/strategy-widget-findings/carry-basis-perp.md)                     |
+| 4   | CARRY_STAKED_BASIS         | ✅ drafted      | [carry-staked-basis.md](../audits/strategy-widget-findings/carry-staked-basis.md)                 |
+| 5   | CARRY_RECURSIVE_STAKED     | ✅ drafted      | [carry-recursive-staked.md](../audits/strategy-widget-findings/carry-recursive-staked.md)         |
+| 6   | ARBITRAGE_PRICE_DISPERSION | ✅ drafted      | [arbitrage-price-dispersion.md](../audits/strategy-widget-findings/arbitrage-price-dispersion.md) |
+| 7   | LIQUIDATION_CAPTURE        | ✅ drafted      | [liquidation-capture.md](../audits/strategy-widget-findings/liquidation-capture.md)               |
+| 8   | CARRY_BASIS_DATED          | ⏸️ parked       | [carry-basis-dated.md](../audits/strategy-widget-findings/carry-basis-dated.md)                   |
+| 9   | AMM_LP_PROVISION           | 🆕 gap-surfaced | (no doc yet — discovered via widget-gap audit)                                                    |
 
-Legend: ✅ drafted (ready for user review) · ⏸️ parked (placeholder, deferred)
+Legend: ✅ drafted (ready for user review) · ⏸️ parked (placeholder, deferred) · 🆕 gap-surfaced (archetype exists in UI widgets but not yet in codex `DEFI_STRATEGY_FAMILIES` — needs registry check)
+
+**AMM_LP_PROVISION gap note:** `defi-liquidity-widget` emits `strategy_id: "AMM_LP"` with `algo_type: "AMM_CONCENTRATED"` (concentrated liquidity / Uniswap-V3-style). Monitoring surface is `active-lp-dashboard-widget` (in-range %, IL%, fees24h, TVL). Neither appears in the audited archetypes because AMM_LP is missing from the codex archetype set we audited against. Requires decision: (a) add to codex `DEFI_STRATEGY_FAMILIES` and draft a full archetype doc, or (b) declare the widgets orphan and remove from DeFi page.
 
 ## 2. Widget matrix
 
 Per-cell legend: ✅ fits · 🟡 partial/enhance · ❌ does not serve · ➖ not applicable (out of archetype scope) · blank = not evaluated
 
-Column keys: **YS** YIELD_STAKING_SIMPLE · **YRL** YIELD_ROTATION_LENDING · **CBP** CARRY_BASIS_PERP · **CSB** CARRY_STAKED_BASIS · **CRS** CARRY_RECURSIVE_STAKED · **APD** ARBITRAGE_PRICE_DISPERSION · **LIQ** LIQUIDATION_CAPTURE · **CBD** CARRY_BASIS_DATED
+Column keys: **YS** YIELD_STAKING_SIMPLE · **YRL** YIELD_ROTATION_LENDING · **CBP** CARRY_BASIS_PERP · **CSB** CARRY_STAKED_BASIS · **CRS** CARRY_RECURSIVE_STAKED · **APD** ARBITRAGE_PRICE_DISPERSION · **LIQ** LIQUIDATION_CAPTURE · **CBD** CARRY_BASIS_DATED · **ALP** AMM_LP_PROVISION (gap-surfaced)
 
-| Widget                                             | YS  | YRL | CBP | CSB | CRS | APD | LIQ | CBD |
-| -------------------------------------------------- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `defi-staking-widget`                              | 🟡  | ➖  | ➖  | 🟡  | 🟡  | ➖  | ➖  | ➖  |
-| `defi-lending-widget`                              | ➖  | 🟡  | ➖  | 🟡  | 🟡  | ➖  | ➖  | ➖  |
-| `defi-swap-widget`                                 | ➖  | ✅  | 🟡  | 🟡  | 🟡  | 🟡  | ✅  | ➖  |
-| `defi-transfer-widget`                             | 🟡  | 🟡  | 🟡  | 🟡  | 🟡  | 🟡  | ➖  | ➖  |
-| `defi-yield-chart-widget`                          | ✅  | ✅  | ➖  | ✅  | ➖  | ➖  | ➖  | ➖  |
-| `defi-rates-overview-widget`                       | ✅  | 🟡  | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  |
-| `defi-wallet-summary-widget`                       | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
-| `defi-health-factor-widget`                        | ❌  | ➖  | ➖  | 🟡  | 🟡  | ➖  | ❌  | ➖  |
-| `defi-waterfall-weights-widget`                    | ➖  | ➖  | ✅  | ➖  | ➖  | ➖  | ➖  | ➖  |
-| `defi-reward-pnl-widget`                           | ➖  | 🟡  | ❌  | 🟡  | ➖  | ➖  | ➖  | ➖  |
-| `defi-basis-trade-widget`                          | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  | ➖  | ❌  |
-| `defi-funding-matrix-widget`                       | ➖  | ➖  | ✅  | ✅  | ➖  | 🟡  | ➖  | ➖  |
-| `enhanced-basis-widget`                            | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  | ➖  | ❌  |
-| `defi-flash-loans-widget`                          | ➖  | ➖  | ➖  | ➖  | 🟡  | 🟡  | 🟡  | ➖  |
-| `defi-position-table`                              | ➖  | ➖  | ➖  | ➖  | ✅  | ➖  | ➖  | ➖  |
-| `defi-strategy-config-widget`                      | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  | ❌  | ➖  |
-| `defi-trade-history-widget`                        | ➖  | ➖  | ✅  | ✅  | ✅  | ✅  | ✅  | ➖  |
-| `liquidation-monitor-widget` (strategies/)         | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | 🟡  | ➖  |
-| `options-futures-table-widget`                     | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | 🟡  |
-| `sports-arb-widget`                                | ➖  | ➖  | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  |
-| `DeFiBasisTradeWidget` (file exists, unregistered) | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ❌  |
+| Widget                                             | YS  | YRL | CBP | CSB | CRS | APD | LIQ | CBD | ALP |
+| -------------------------------------------------- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `defi-staking-widget`                              | 🟡  | ➖  | ➖  | 🟡  | 🟡  | ➖  | ➖  | ➖  | ➖  |
+| `defi-lending-widget`                              | ➖  | 🟡  | ➖  | 🟡  | 🟡  | ➖  | ➖  | ➖  | ➖  |
+| `defi-swap-widget`                                 | ➖  | ✅  | 🟡  | 🟡  | 🟡  | 🟡  | ✅  | ➖  | ➖  |
+| `defi-transfer-widget`                             | 🟡  | 🟡  | 🟡  | 🟡  | 🟡  | 🟡  | ➖  | ➖  | ➖  |
+| `defi-yield-chart-widget`                          | ✅  | ✅  | ➖  | ✅  | ➖  | ➖  | ➖  | ➖  | ➖  |
+| `defi-rates-overview-widget`                       | ✅  | 🟡  | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  |
+| `defi-wallet-summary-widget`                       | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  | ✅  |
+| `defi-health-factor-widget`                        | ❌  | ➖  | ➖  | 🟡  | 🟡  | ➖  | ❌  | ➖  | ➖  |
+| `defi-waterfall-weights-widget`                    | ➖  | ➖  | ✅  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  |
+| `defi-reward-pnl-widget`                           | ➖  | 🟡  | ❌  | 🟡  | ➖  | ➖  | ➖  | ➖  | ➖  |
+| `defi-staking-rewards-widget`                      | ✅  | ➖  | ➖  | 🟡  | 🟡  | ➖  | ➖  | ➖  | ➖  |
+| `defi-basis-trade-widget`                          | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  | ➖  | ❌  | ➖  |
+| `defi-funding-matrix-widget`                       | ➖  | ➖  | ✅  | ✅  | ➖  | 🟡  | ➖  | ➖  | ➖  |
+| `enhanced-basis-widget`                            | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  | ➖  | ❌  | ➖  |
+| `defi-flash-loans-widget`                          | ➖  | ➖  | ➖  | ➖  | 🟡  | 🟡  | 🟡  | ➖  | ➖  |
+| `defi-liquidity-widget`                            | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ✅  |
+| `defi-position-table`                              | ➖  | ➖  | ➖  | ➖  | ✅  | ➖  | ➖  | ➖  | ➖  |
+| `defi-strategy-config-widget`                      | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  | ❌  | ➖  | ➖  |
+| `defi-trade-history-widget`                        | ➖  | ➖  | ✅  | ✅  | ✅  | ✅  | ✅  | ➖  | ✅  |
+| `liquidation-monitor-widget` (strategies/)         | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  |
+| `active-lp-dashboard-widget` (strategies/)         | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ✅  |
+| `lending-arb-dashboard-widget` (strategies/)       | ➖  | ✅  | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  |
+| `options-futures-table-widget`                     | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | 🟡  | ➖  |
+| `sports-arb-widget`                                | ➖  | ➖  | ➖  | ➖  | ➖  | 🟡  | ➖  | ➖  | ➖  |
+| `DeFiBasisTradeWidget` (file exists, unregistered) | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ➖  | ❌  | ➖  |
 
 ## 3. Cross-cutting blockers
 
 Patterns that land in multiple per-archetype audits — fixed once, they propagate across every archetype. Ordered by blast radius.
 
-### 3.1 Hardcoded `strategy_id` across 6 widgets — **P0, affects every DeFi archetype**
+### 3.1 Hardcoded `strategy_id` across 7 widgets — **P0, affects every DeFi archetype**
 
 Widgets emit venue-shaped literals instead of the active strategy-instance id. Breaks per-instance attribution, event audit, and tracker rollups. Single fix pattern: accept `strategyId` via props / host context; fall back to current literal only when no host context.
 
@@ -74,8 +81,11 @@ Widgets emit venue-shaped literals instead of the active strategy-instance id. B
 | `defi-transfer-widget`    | L220, L387 | `"AAVE_LENDING"`, `"CROSS_CHAIN_SOR"`                             | YS, YRL, CBP, CSB, CRS, APD   |
 | `defi-flash-loans-widget` | L232-234   | `"AAVE_LENDING"`                                                  | CRS, APD, LIQ                 |
 | `defi-basis-trade-widget` | L90        | `"BASIS_TRADE"`                                                   | CBP                           |
+| `defi-liquidity-widget`   | L160       | `"AMM_LP"`                                                        | ALP                           |
 
 Additional tagging gap (non-DeFi): **`arb-stream` sports path** posts untagged orders at L66-82 — noted for APD.
+
+**Parallel `client_id` hardcoding (out of scope for §3.1 ticket, but flagged):** Every widget above also hardcodes `client_id: "internal-trader"` at the same call site. Full attribution tuple fix (org+client+strategy+account+wallet+user) is Q8 teammate review — the §3.1 ticket only lifts `strategy_id` from literal to context.
 
 ### 3.2 Fixture coverage — **P0, blocks verification in §7 of 4 archetypes**
 
