@@ -549,6 +549,7 @@ export const ADMIN_TABS: ServiceTab[] = [
   // ── Operations ──────────────────────────────────────────────────────────
   { label: "Services", href: "/ops/services", group: "Operations" },
   { label: "Jobs", href: "/ops/jobs" },
+  { label: "Signal Counterparties", href: "/services/signals/counterparties", requiredEntitlement: "admin" },
   { label: "Deployment & Readiness", href: "/devops" },
   { label: "Approvals", href: "/approvals" },
   // ── Configuration ───────────────────────────────────────────────────────
