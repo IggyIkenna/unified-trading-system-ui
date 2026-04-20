@@ -7,6 +7,8 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import { Coins, TrendingUp } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -14,6 +16,7 @@ import { useDeFiData } from "./defi-data-context";
 
 export function DeFiStakingWidget(_props: WidgetComponentProps) {
   const { stakingProtocols, tokenBalances, executeDeFiOrder } = useDeFiData();
+  const activeStrategyId = useActiveStrategyId();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   const [protocol, setProtocol] = React.useState(stakingProtocols[0]?.name ?? "Lido");
@@ -126,7 +129,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
           handleSubmit(() => {
             executeDeFiOrder({
               client_id: "internal-trader",
-              strategy_id: "ETHENA_BENCHMARK",
+              strategy_id: asDeFiStrategyId(activeStrategyId) ?? "ETHENA_BENCHMARK",
               instruction_type: operation,
               algo_type: "BENCHMARK_FILL",
               instrument_id: `${selected.venue_id}:${operation}:${selected.asset}`,

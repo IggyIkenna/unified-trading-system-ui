@@ -13,7 +13,9 @@ import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import type { AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -31,6 +33,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
     calculateBasisTradeCostOfCarry,
   } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
+  const activeStrategyId = useActiveStrategyId();
   const tokens = swapTokens;
 
   // Check if this widget is in basis-trade mode
@@ -345,7 +348,9 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
           handleSubmit(() => {
             executeDeFiOrder({
               client_id: "internal-trader",
-              strategy_id: isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING",
+              strategy_id:
+                asDeFiStrategyId(activeStrategyId) ??
+                (isBasisTrade ? "BASIS_TRADE" : isStakedBasis ? "STAKED_BASIS" : "AAVE_LENDING"),
               instruction_type: "SWAP",
               algo_type: algoType,
               instrument_id: `SWAP:${tokenIn}-${tokenOut}`,

@@ -8,6 +8,8 @@ import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import { AlertTriangle, ArrowDown, Shield } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -23,6 +25,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
     getAssetParams,
     calculateHealthFactorDelta,
   } = useDeFiData();
+  const activeStrategyId = useActiveStrategyId();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
 
   // Context is synchronous (mock) so isLoading is always false;
@@ -256,7 +259,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
           handleSubmit(() => {
             executeDeFiOrder({
               client_id: "internal-trader",
-              strategy_id: "AAVE_LENDING",
+              strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AAVE_LENDING",
               instruction_type: operation,
               algo_type: "DIRECT",
               instrument_id: `${selectedProtocol.venue_id}:${operation}:${asset}`,

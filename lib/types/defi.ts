@@ -51,6 +51,10 @@ export const DEFI_STRATEGY_IDS = [
 
 export type DeFiStrategyId = (typeof DEFI_STRATEGY_IDS)[number];
 
+export function asDeFiStrategyId(id: string | undefined): DeFiStrategyId | undefined {
+  return id && (DEFI_STRATEGY_IDS as readonly string[]).includes(id) ? (id as DeFiStrategyId) : undefined;
+}
+
 /** Human-readable display names for strategies. */
 export const STRATEGY_DISPLAY_NAMES: Record<DeFiStrategyId, string> = {
   AAVE_LENDING: "AAVE Lending",

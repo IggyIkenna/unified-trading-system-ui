@@ -12,12 +12,14 @@ import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import {
   FLASH_VENUES,
   DEFI_INSTRUCTION_TYPES,
   DEFI_ALGO_TYPES,
   SLIPPAGE_OPTIONS,
 } from "@/lib/config/services/defi.config";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import type { InstructionType, AlgoType } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
@@ -27,6 +29,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
   const { flashSteps, addFlashStep, removeFlashStep, updateFlashStep, flashPnl, executeDeFiOrder, swapTokens } =
     useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
+  const activeStrategyId = useActiveStrategyId();
 
   // Context is synchronous (mock) so isLoading is always false;
   // retained for when a real data source is wired in.
@@ -229,7 +232,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
             handleSubmit(() => {
               executeDeFiOrder({
                 client_id: "internal-trader",
-                strategy_id: "AAVE_LENDING",
+                strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AAVE_LENDING",
                 instruction_type: "FLASH_BORROW",
                 algo_type: "FLASH_LOAN_AAVE",
                 instrument_id: `FLASH_LOAN:${flashSteps.map((s) => s.operationType).join(">")}`,

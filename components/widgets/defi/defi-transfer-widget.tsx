@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -28,6 +30,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
     getMockPrice,
   } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
+  const activeStrategyId = useActiveStrategyId();
 
   // Context is synchronous (mock) so isLoading is always false;
   // retained for when a real data source is wired in.
@@ -217,7 +220,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 const price = getMockPrice(token);
                 executeDeFiOrder({
                   client_id: "internal-trader",
-                  strategy_id: "AAVE_LENDING",
+                  strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AAVE_LENDING",
                   instruction_type: "TRANSFER",
                   algo_type: "DIRECT",
                   instrument_id: `TRANSFER:${token}@${selectedChain}`,
@@ -384,7 +387,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 const price = getMockPrice(token);
                 executeDeFiOrder({
                   client_id: "internal-trader",
-                  strategy_id: "CROSS_CHAIN_SOR",
+                  strategy_id: asDeFiStrategyId(activeStrategyId) ?? "CROSS_CHAIN_SOR",
                   instruction_type: "TRANSFER",
                   algo_type: "SOR_CROSS_CHAIN",
                   instrument_id: `BRIDGE:${token}@${fromChain}-${toChain}`,

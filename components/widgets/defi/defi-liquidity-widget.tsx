@@ -10,13 +10,16 @@ import { Droplets, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   const { liquidityPools, executeDeFiOrder } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
+  const activeStrategyId = useActiveStrategyId();
 
   const [selectedPool, setSelectedPool] = React.useState(liquidityPools[0]?.name ?? "");
   const [feeTier, setFeeTier] = React.useState("0.05");
@@ -157,7 +160,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           handleSubmit(() => {
             executeDeFiOrder({
               client_id: "internal-trader",
-              strategy_id: "AMM_LP",
+              strategy_id: asDeFiStrategyId(activeStrategyId) ?? "AMM_LP",
               instruction_type: operation,
               algo_type: "AMM_CONCENTRATED",
               instrument_id: `${pool.venue_id}:LP:${pool.name}`,

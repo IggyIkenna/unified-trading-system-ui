@@ -12,6 +12,8 @@ import { toast } from "sonner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
+import { asDeFiStrategyId } from "@/lib/types/defi";
 import type { BasisTradeHistoryEntry } from "@/lib/types/defi";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -28,6 +30,7 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
     calculateBreakevenFundingRate,
   } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
+  const activeStrategyId = useActiveStrategyId();
 
   // Form state
   const [capital, setCapital] = React.useState("100000");
@@ -87,7 +90,7 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
 
     executeDeFiOrder({
       client_id: "internal-trader",
-      strategy_id: "BASIS_TRADE",
+      strategy_id: asDeFiStrategyId(activeStrategyId) ?? "BASIS_TRADE",
       instruction_type: operation === "BOTH" ? "TRADE" : operation,
       algo_type: "BENCHMARK_FILL",
       instrument_id: `BASIS:${asset}:${operation}`,
