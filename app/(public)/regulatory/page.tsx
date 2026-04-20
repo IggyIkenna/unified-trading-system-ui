@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { RegUmbrellaHierarchyDiagram } from "@/components/marketing/reg-umbrella-hierarchy-diagram";
 
 /**
  * Regulatory Umbrella — public marketing page (pb3a narrative).
@@ -103,20 +104,8 @@ export default function RegulatoryPage() {
             </CardContent>
           </Card>
 
-          {/* Multi-fund / SMA hierarchy visual slot (Phase 4) */}
-          <div
-            className="mb-8 rounded-lg border border-dashed border-border/60 bg-card/30 p-6 text-center text-sm text-muted-foreground"
-            data-testid="fund-sma-hierarchy-diagram-slot"
-          >
-            {/* fund-sma-hierarchy-diagram slot — Phase 4 */}
-            <p className="font-medium text-foreground/80">
-              Regulatory umbrella hierarchy diagram
-            </p>
-            <p className="mt-2">
-              Static visual (regulatory client as designated representative
-              &rarr; N funds or SMAs &rarr; venue API keys) lands in Phase 4.
-            </p>
-          </div>
+          {/* Regulatory umbrella hierarchy diagram — Phase 4 visual */}
+          <RegUmbrellaHierarchyDiagram />
 
           {/* Supervisory artifacts */}
           <Card className="mb-8">
