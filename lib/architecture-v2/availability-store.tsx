@@ -17,6 +17,7 @@ import type {
   StrategyMaturity,
 } from "./availability";
 import { defaultEntry } from "./availability";
+import { buildInitialRegistry } from "./initial-lock-state";
 
 /**
  * Client-side availability store + React Context. Mirrors the Python
@@ -83,13 +84,26 @@ function buildEntry(
 
 const AvailabilityStoreContext = createContext<StoreValue | null>(null);
 
+/**
+ * Lazy-build the initial registry once per Provider instance. Cached outside
+ * the component to avoid recomputing on every render / StrictMode double-mount.
+ */
+function computeInitialEntries(): Readonly<Record<string, StrategyAvailabilityEntry>> {
+  const byLabel: Record<string, StrategyAvailabilityEntry> = {};
+  for (const entry of buildInitialRegistry()) {
+    byLabel[entry.slotLabel] = entry;
+  }
+  return byLabel;
+}
+
 export function AvailabilityStoreProvider({
   children,
   persist = true,
-}: PropsWithChildren<{ persist?: boolean }>) {
+  seedInitialRegistry = true,
+}: PropsWithChildren<{ persist?: boolean; seedInitialRegistry?: boolean }>) {
   const [entries, setEntries] = useState<
     Readonly<Record<string, StrategyAvailabilityEntry>>
-  >({});
+  >(() => (seedInitialRegistry ? computeInitialEntries() : {}));
   const [events, setEvents] = useState<readonly EmittedEvent[]>([]);
   // Mirror of the latest entries snapshot so writer callbacks can read the
   // up-to-date map synchronously in the same batched event loop. React 18
@@ -99,7 +113,10 @@ export function AvailabilityStoreProvider({
   const entriesRef = useRef(entries);
   entriesRef.current = entries;
 
-  // Lazy-load persisted state on mount (client-only).
+  // Lazy-load persisted state on mount (client-only). If nothing was persisted,
+  // the initial seed from computeInitialEntries() stands — that gives demo
+  // prospects the IM_RESERVED visibility behaviour without requiring an admin
+  // pre-population step.
   useEffect(() => {
     if (!persist || typeof window === "undefined") return;
     try {
