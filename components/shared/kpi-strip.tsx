@@ -103,8 +103,8 @@ function KpiCard({ m, compact }: { m: KpiMetric; compact?: boolean }) {
         compact ? "px-1 py-1" : "px-3 py-2",
       )}
     >
-      <div className="text-[10px] text-muted-foreground truncate">{m.label}</div>
-      <div className="flex items-baseline gap-1.5 min-w-0">
+      <div className="text-[10px] text-muted-foreground truncate text-center">{m.label}</div>
+      <div className="flex items-baseline justify-center gap-1.5 min-w-0">
         {m.prefix && <span className="text-[10px] text-muted-foreground shrink-0">{m.prefix}</span>}
         <span className={cn("text-sm font-mono font-semibold truncate", SENTIMENT_COLOR[s])}>{m.value}</span>
         {m.changePercent !== undefined && (

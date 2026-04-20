@@ -114,20 +114,16 @@ export function ActiveLPDashboardWidget(_props: WidgetComponentProps) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="px-3 py-2 border-b border-border/40 shrink-0">
-        <KpiStrip metrics={headerMetrics} columns={4} />
-      </div>
-      <TableWidget
-        columns={columns}
-        data={lpPositions}
-        actions={actionsConfig}
-        isLoading={isLoading}
-        enableSorting
-        enableColumnVisibility={false}
-        emptyMessage="No LP positions"
-        className="flex-1 min-h-0"
-      />
-    </div>
+    <TableWidget
+      columns={columns}
+      data={lpPositions}
+      actions={actionsConfig}
+      summary={<KpiStrip metrics={headerMetrics} layoutMode="single-row" compact />}
+      isLoading={isLoading}
+      enableSorting
+      enableColumnVisibility={false}
+      emptyMessage="No LP positions"
+      className="h-full min-h-0"
+    />
   );
 }

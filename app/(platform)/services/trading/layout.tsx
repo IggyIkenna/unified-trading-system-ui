@@ -34,8 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
-import type { ImperativePanelHandle } from "react-resizable-panels";
+import { useState } from "react";
 
 const SEVERITY_DOT: Record<NewsSeverity, string> = {
   breaking: "bg-rose-500",
@@ -278,79 +277,69 @@ function useWidgetTab(): string | null {
 export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { scope, setMode } = useGlobalScope();
-  const quickViewRef = useRef<ImperativePanelHandle>(null);
   const [quickViewCollapsed, setQuickViewCollapsed] = useState(false);
   const widgetTab = useWidgetTab();
 
   // Sync workspace layouts with Firestore (no-op if Firebase not configured)
   useWorkspaceSync();
 
+  const mainContent = (
+    <div id="widget-fullscreen-boundary" className="h-full flex flex-col overflow-hidden relative">
+      {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
+      <div className="flex-1 overflow-auto">
+        <EntitlementGate entitlement={{ domain: "trading-common", tier: "basic" }} serviceName="Trading">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </EntitlementGate>
+      </div>
+      {quickViewCollapsed && (
+        <button
+          onClick={() => setQuickViewCollapsed(false)}
+          className="absolute top-1.5 right-2 z-20 p-1.5 rounded-md border border-border bg-card/80 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors shadow-sm"
+          title="Expand Quick View"
+          aria-label="Expand Quick View"
+        >
+          <PanelRightOpen className="size-4" />
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="flex flex-col h-full">
-      {/* Stage dots removed per UX review — traders don't need novice navigation */}
       {/* Main area: vertical nav + resizable content/quick-view */}
       <div className="flex flex-1 min-h-0 overflow-hidden">
         <TradingVerticalNav tabs={TRADING_TABS} entitlements={user?.entitlements} bottomSlot={<LiveAsOfToggle />} />
 
-        <ResizablePanelGroup direction="horizontal" autoSaveId="trading-layout-v2" className="flex-1 min-w-0">
-          {/* Page content */}
-          <ResizablePanel defaultSize={82} minSize={50}>
-            <div id="widget-fullscreen-boundary" className="h-full flex flex-col overflow-hidden relative">
-              {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
-              <div className="flex-1 overflow-auto">
-                <EntitlementGate entitlement={{ domain: "trading-common", tier: "basic" }} serviceName="Trading">
-                  <ErrorBoundary>{children}</ErrorBoundary>
-                </EntitlementGate>
-              </div>
-            </div>
-          </ResizablePanel>
+        {quickViewCollapsed ? (
+          <div className="flex-1 min-w-0">{mainContent}</div>
+        ) : (
+          <ResizablePanelGroup direction="horizontal" autoSaveId="trading-layout-v2" className="flex-1 min-w-0">
+            <ResizablePanel defaultSize={90} minSize={50}>
+              {mainContent}
+            </ResizablePanel>
 
-          <ResizableHandle withHandle />
+            <ResizableHandle withHandle />
 
-          {/* Quick-view sidebar */}
-          <ResizablePanel
-            ref={quickViewRef}
-            defaultSize={18}
-            collapsedSize={2}
-            minSize={2}
-            maxSize={35}
-            collapsible
-            onCollapse={() => setQuickViewCollapsed(true)}
-            onExpand={() => setQuickViewCollapsed(false)}
-          >
-            <div className="flex flex-col h-full border-l border-border bg-card/30">
-              {/* Header — always visible, mirrors the left nav header */}
-              <div
-                className={cn(
-                  "flex items-center border-b border-border px-2 py-1.5",
-                  quickViewCollapsed ? "justify-center" : "justify-between",
-                )}
-              >
-                {!quickViewCollapsed && (
+            <ResizablePanel defaultSize={10} minSize={5} maxSize={35}>
+              <div className="flex flex-col h-full border-l border-border bg-card/30">
+                <div className="flex items-center justify-between border-b border-border px-2 py-1.5">
                   <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 pl-1 select-none">
                     Quick View
                   </span>
-                )}
-                <button
-                  onClick={() => {
-                    if (quickViewCollapsed) {
-                      quickViewRef.current?.expand();
-                    } else {
-                      quickViewRef.current?.collapse();
-                    }
-                  }}
-                  className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-                  title={quickViewCollapsed ? "Expand Quick View" : "Collapse Quick View"}
-                  aria-label={quickViewCollapsed ? "Expand Quick View" : "Collapse Quick View"}
-                >
-                  {quickViewCollapsed ? <PanelRightOpen className="size-4" /> : <PanelRightClose className="size-4" />}
-                </button>
+                  <button
+                    onClick={() => setQuickViewCollapsed(true)}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                    title="Collapse Quick View"
+                    aria-label="Collapse Quick View"
+                  >
+                    <PanelRightClose className="size-4" />
+                  </button>
+                </div>
+                <TradingSidebar />
               </div>
-              {/* Content — hidden when collapsed */}
-              {!quickViewCollapsed && <TradingSidebar />}
-            </div>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        )}
       </div>
     </div>
   );

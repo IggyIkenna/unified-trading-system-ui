@@ -222,45 +222,54 @@ function CorporateActionRow({ item }: { item: CorporateActionItem }) {
 export function CalendarEventFeed({ className, hideTitle = false }: { className?: string; hideTitle?: boolean }) {
   const [open, setOpen] = React.useState(true);
 
+  const content = (
+    <Tabs defaultValue="macro">
+      <TabsList className="h-7 mb-3">
+        <TabsTrigger value="macro" className="text-xs h-6">
+          <TrendingUp className="h-3 w-3 mr-1" />
+          Macro
+        </TabsTrigger>
+        <TabsTrigger value="corporate" className="text-xs h-6">
+          <Calendar className="h-3 w-3 mr-1" />
+          Corporate
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="macro" className="mt-0">
+        <MacroEventsTab />
+      </TabsContent>
+      <TabsContent value="corporate" className="mt-0">
+        <CorporateActionsTab />
+      </TabsContent>
+    </Tabs>
+  );
+
+  // Inside a widget frame: the chrome provides the box, so render without the Card wrapper.
+  if (hideTitle) {
+    return (
+      <Collapsible open={open} onOpenChange={setOpen} className={cn("w-full", className)}>
+        <CollapsibleContent className="px-4 pb-4 pt-2">{content}</CollapsibleContent>
+      </Collapsible>
+    );
+  }
+
   return (
     <Collapsible open={open} onOpenChange={setOpen} className={cn("w-full", className)}>
       <Card className="rounded-lg border">
-        {!hideTitle && (
-          <CardHeader className="py-3 px-4">
-            <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
-              <CardTitle className="text-sm font-medium flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-                Calendar Events
-              </CardTitle>
-              {open ? (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              )}
-            </CollapsibleTrigger>
-          </CardHeader>
-        )}
+        <CardHeader className="py-3 px-4">
+          <CollapsibleTrigger className="flex items-center justify-between w-full hover:opacity-80">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              Calendar Events
+            </CardTitle>
+            {open ? (
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            )}
+          </CollapsibleTrigger>
+        </CardHeader>
         <CollapsibleContent>
-          <CardContent className="px-4 pb-4 pt-0">
-            <Tabs defaultValue="macro">
-              <TabsList className="h-7 mb-3">
-                <TabsTrigger value="macro" className="text-xs h-6">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  Macro
-                </TabsTrigger>
-                <TabsTrigger value="corporate" className="text-xs h-6">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  Corporate
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="macro" className="mt-0">
-                <MacroEventsTab />
-              </TabsContent>
-              <TabsContent value="corporate" className="mt-0">
-                <CorporateActionsTab />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
+          <CardContent className="px-4 pb-4 pt-0">{content}</CardContent>
         </CollapsibleContent>
       </Card>
     </Collapsible>

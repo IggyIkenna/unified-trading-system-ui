@@ -169,8 +169,8 @@ export const PRESETS = {
   R: {
     name: "R — Bold border + Tinted header + Gap",
     description: "muted-fg/20 border + muted/40 header + 4px gap. No shadow.",
-    container: "rounded-lg border border-muted-foreground/20 bg-card",
-    header: "border-b border-muted-foreground/15 bg-muted/40",
+    container: "rounded-lg border border-muted-foreground/30 bg-card",
+    header: "border-b border-muted-foreground/65 bg-muted/100",
     margin: [4, 4],
   },
   S: {
@@ -194,7 +194,7 @@ export type PresetKey = keyof typeof PRESETS;
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Change this letter to switch presets (A–T). Refresh to see changes.
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-export const ACTIVE_PRESET: PresetKey = "S";
+export const ACTIVE_PRESET: PresetKey = "R";
 
 export function getActivePreset(): WidgetChromePreset {
   return PRESETS[ACTIVE_PRESET];

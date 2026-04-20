@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Download, FileSpreadsheet, FileText } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/utils/export";
 
 interface ExportDropdownProps {
@@ -15,15 +16,17 @@ interface ExportDropdownProps {
   columns: ExportColumn[];
   filename: string;
   className?: string;
+  /** Classes applied to the "Export" label span — e.g. `hidden @[44rem]/tbt:inline` to collapse to icon-only in narrow containers. */
+  labelClassName?: string;
 }
 
-export function ExportDropdown({ data, columns, filename, className }: ExportDropdownProps) {
+export function ExportDropdown({ data, columns, filename, className, labelClassName }: ExportDropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className={className}>
-          <Download className="mr-2 size-4" />
-          Export
+        <Button variant="outline" size="sm" className={className} aria-label="Export">
+          <Download className="size-4" />
+          <span className={cn("ml-2", labelClassName)}>Export</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

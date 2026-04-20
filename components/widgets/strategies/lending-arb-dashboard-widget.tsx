@@ -82,22 +82,16 @@ export function LendingArbDashboardWidget(_props: WidgetComponentProps) {
   const actionsConfig: TableActionsConfig = {};
 
   return (
-    <div className="flex flex-col h-full">
-      {bestArb && (
-        <div className="px-3 py-2 border-b border-border/40 shrink-0">
-          <KpiStrip metrics={headerMetrics} columns={3} />
-        </div>
-      )}
-      <TableWidget
-        columns={columns}
-        data={lendingArbData}
-        actions={actionsConfig}
-        isLoading={isLoading}
-        enableSorting
-        enableColumnVisibility={false}
-        emptyMessage="No lending arb data available"
-        className="flex-1 min-h-0"
-      />
-    </div>
+    <TableWidget
+      columns={columns}
+      data={lendingArbData}
+      actions={actionsConfig}
+      summary={bestArb ? <KpiStrip metrics={headerMetrics} layoutMode="single-row" compact /> : undefined}
+      isLoading={isLoading}
+      enableSorting
+      enableColumnVisibility={false}
+      emptyMessage="No lending arb data available"
+      className="h-full min-h-0"
+    />
   );
 }

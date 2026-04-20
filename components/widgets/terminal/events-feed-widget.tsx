@@ -1,7 +1,6 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 
 type EventSeverity = "INFO" | "WARNING" | "CRITICAL";
@@ -151,39 +150,32 @@ export function EventsFeedWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm">Events Feed</CardTitle>
-          <Badge variant="secondary" className="text-[10px]">
-            {events.length} events
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-1 overflow-auto max-h-[500px]">
-          {events.map((evt) => (
-            <div
-              key={evt.id}
-              className="flex items-start gap-2 rounded-sm border border-border/40 bg-muted/10 px-2 py-1.5"
-            >
-              <div className="text-[10px] font-mono text-muted-foreground whitespace-nowrap pt-0.5">
-                {evt.timestamp}
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-end px-3 pt-2 pb-1">
+        <Badge variant="secondary" className="text-[10px]">
+          {events.length} events
+        </Badge>
+      </div>
+      <div className="flex-1 space-y-1 overflow-auto px-3 pb-3">
+        {events.map((evt) => (
+          <div
+            key={evt.id}
+            className="flex items-start gap-2 rounded-sm border border-border/40 bg-muted/10 px-2 py-1.5"
+          >
+            <div className="text-[10px] font-mono text-muted-foreground whitespace-nowrap pt-0.5">{evt.timestamp}</div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[10px] font-medium uppercase ${domainColor(evt.domain)}`}>{evt.domain}</span>
+                <Badge variant={severityBadgeVariant(evt.severity)} className="text-[9px] px-1 py-0">
+                  {evt.severity}
+                </Badge>
+                <span className="text-xs font-medium truncate">{evt.title}</span>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-[10px] font-medium uppercase ${domainColor(evt.domain)}`}>{evt.domain}</span>
-                  <Badge variant={severityBadgeVariant(evt.severity)} className="text-[9px] px-1 py-0">
-                    {evt.severity}
-                  </Badge>
-                  <span className="text-xs font-medium truncate">{evt.title}</span>
-                </div>
-                <div className="text-[10px] text-muted-foreground truncate">{evt.detail}</div>
-              </div>
+              <div className="text-[10px] text-muted-foreground truncate">{evt.detail}</div>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
