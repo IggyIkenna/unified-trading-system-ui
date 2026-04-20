@@ -1,0 +1,27 @@
+{
+  "name": "odum-portal-functions",
+  "version": "0.1.0",
+  "description": "Firebase Cloud Functions for odum-portal (capability-claims admin + compliance-event BigQuery sink).",
+  "private": true,
+  "main": "lib/index.js",
+  "engines": {
+    "node": "20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "deploy:staging": "firebase deploy --only functions --project staging",
+    "deploy:prod": "firebase deploy --only functions --project prod",
+    "logs:staging": "firebase functions:log --project staging",
+    "logs:prod": "firebase functions:log --project prod"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^6.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
