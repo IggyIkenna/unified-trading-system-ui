@@ -1,19 +1,8 @@
-import {
-  ArrowRightLeft,
-  BarChart3,
-  BookOpen,
-  Calendar,
-  ChartArea,
-  Layers2,
-  LineChart,
-  Radio,
-  ShoppingCart,
-} from "lucide-react";
+import { ArrowRightLeft, BarChart3, BookOpen, Calendar, Layers2, LineChart, Radio, ShoppingCart } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { CalendarEventsWidget } from "./calendar-events-widget";
 import { EventsFeedWidget } from "./events-feed-widget";
-import { DepthChartWidget } from "./depth-chart-widget";
 import { InstrumentBarWidget } from "./instrument-bar-widget";
 import { MarketTradesWidget } from "./market-trades-widget";
 import { OrderBookWidget } from "./order-book-widget";
@@ -50,7 +39,6 @@ registerPresets("terminal", [
       { widgetId: "order-entry", instanceId: "order-entry-full", x: 9, y: 1, w: 3, h: 8 },
       { widgetId: "market-trades", instanceId: "market-trades-full", x: 0, y: 9, w: 6, h: 3 },
       { widgetId: "calendar-events", instanceId: "calendar-events-full", x: 6, y: 9, w: 6, h: 3 },
-      { widgetId: "depth-chart", instanceId: "depth-chart-full", x: 0, y: 12, w: 6, h: 6 },
       { widgetId: "terminal-options", instanceId: "terminal-options-full", x: 0, y: 18, w: 8, h: 8 },
       { widgetId: "events-feed", instanceId: "events-feed-full", x: 0, y: 26, w: 6, h: 6 },
     ],
@@ -105,22 +93,6 @@ registerWidget({
   availableOn: ["terminal"],
   singleton: false,
   component: PriceChartWidget,
-});
-
-registerWidget({
-  id: "depth-chart",
-  label: "Depth Chart",
-  description: "Market depth visualization showing cumulative bid/ask volume.",
-  icon: ChartArea,
-  minW: 3,
-  minH: 3,
-  defaultW: 6,
-  defaultH: 6,
-  requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
-  category: "Terminal",
-  availableOn: ["terminal"],
-  singleton: false,
-  component: DepthChartWidget,
 });
 
 registerWidget({
