@@ -12,3 +12,8 @@ export { CategoryChip } from "./category-chip";
 export { InstrumentTypeChip } from "./instrument-type-chip";
 export { SignalVariantBadge } from "./signal-variant-badge";
 export { RollModeBadge } from "./roll-mode-badge";
+export { FamilyArchetypePicker } from "./family-archetype-picker";
+export type {
+  FamilyArchetypePickerProps,
+  FamilyArchetypeSelection,
+} from "./family-archetype-picker";

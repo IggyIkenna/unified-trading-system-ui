@@ -43,6 +43,8 @@ import {
 import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
 import { ComparePanel, DetailPanel } from "@/components/research/strategies/strategy-detail-panel";
 import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
+import { FamilyArchetypePicker } from "@/components/architecture-v2";
+import type { StrategyArchetypeV2, StrategyFamilyV2 } from "@/lib/architecture-v2";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -52,6 +54,12 @@ export default function StrategiesPage() {
   const mockDataMode = isMockDataMode();
   const [search, setSearch] = React.useState("");
   const [archetypeFilter, setArchetypeFilter] = React.useState("all");
+  const [v2Family, setV2Family] = React.useState<StrategyFamilyV2 | undefined>(
+    undefined,
+  );
+  const [v2Archetype, setV2Archetype] = React.useState<
+    StrategyArchetypeV2 | undefined
+  >(undefined);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [shardFilter, setShardFilter] = React.useState("all");
   const [strategyKindFilter, setStrategyKindFilter] = React.useState("all");
@@ -108,6 +116,10 @@ export default function StrategiesPage() {
       );
     }
     if (archetypeFilter !== "all") items = items.filter((b) => b.archetype === archetypeFilter);
+    if (v2Archetype)
+      items = items.filter(
+        (b) => ((b.archetype as string | undefined) ?? "") === (v2Archetype as string),
+      );
     if (statusFilter !== "all") items = items.filter((b) => b.status === statusFilter);
     if (shardFilter !== "all") items = items.filter((b) => b.shard === shardFilter);
     if (strategyKindFilter !== "all") {
@@ -136,7 +148,7 @@ export default function StrategiesPage() {
         });
     }
     return sorted;
-  }, [backtests, search, archetypeFilter, statusFilter, shardFilter, strategyKindFilter, sortKey]);
+  }, [backtests, search, archetypeFilter, v2Archetype, statusFilter, shardFilter, strategyKindFilter, sortKey]);
 
   // toggleCompare and compareSelected from useCompareMode hook
 
@@ -196,6 +208,23 @@ export default function StrategiesPage() {
               New Backtest
             </Button>
           </div>
+        </div>
+        <div
+          className="flex flex-wrap items-center gap-3"
+          data-testid="research-strategies-family-picker"
+        >
+          <span className="text-xs uppercase tracking-wide text-muted-foreground">
+            v2 scope
+          </span>
+          <FamilyArchetypePicker
+            idPrefix="research-strategies"
+            availabilityFilter="allowed"
+            value={{ family: v2Family, archetype: v2Archetype }}
+            onChange={(next) => {
+              setV2Family(next.family);
+              setV2Archetype(next.archetype);
+            }}
+          />
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>

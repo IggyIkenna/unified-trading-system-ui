@@ -5,10 +5,13 @@ import { useMemo, useState } from "react";
 
 import {
   CategoryChip,
+  FamilyArchetypePicker,
   InstrumentTypeChip,
   RollModeBadge,
   StatusBadge,
 } from "@/components/architecture-v2";
+import { ARCHETYPE_TO_FAMILY } from "@/lib/architecture-v2";
+import type { StrategyFamilyV2 } from "@/lib/architecture-v2";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -86,19 +89,27 @@ const STATUS_CELL_STYLES: Record<CoverageStatus, string> = {
 export default function StrategyCatalogueCoveragePage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [selectedCell, setSelectedCell] = useState<CoverageCell | null>(null);
+  const [familyFilter, setFamilyFilter] = useState<StrategyFamilyV2 | undefined>(
+    undefined,
+  );
+  const [archetypeFilter, setArchetypeFilter] = useState<
+    StrategyArchetypeV2 | undefined
+  >(undefined);
 
   const archetypesByFamily = useMemo(() => {
     const grouped = new Map<string, StrategyArchetypeV2[]>();
     (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetypeV2[]).forEach(
       (archetype) => {
         const family = getFamilyForArchetype(archetype);
+        if (familyFilter && family !== familyFilter) return;
+        if (archetypeFilter && archetype !== archetypeFilter) return;
         const bucket = grouped.get(family) ?? [];
         bucket.push(archetype);
         grouped.set(family, bucket);
       },
     );
     return Array.from(grouped.entries());
-  }, []);
+  }, [familyFilter, archetypeFilter]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -112,6 +123,28 @@ export default function StrategyCatalogueCoveragePage() {
             codex/09-strategy/architecture-v2/category-instrument-coverage.md
           </Badge>
         </PageHeader>
+
+        <div
+          className="flex flex-wrap items-center gap-3"
+          data-testid="strategy-catalogue-coverage-picker"
+        >
+          <span className="text-sm text-muted-foreground">Scope:</span>
+          <FamilyArchetypePicker
+            idPrefix="strategy-catalogue-coverage"
+            availabilityFilter="all"
+            value={{ family: familyFilter, archetype: archetypeFilter }}
+            onChange={(next) => {
+              setFamilyFilter(next.family);
+              setArchetypeFilter(
+                next.archetype !== undefined &&
+                  next.family !== undefined &&
+                  ARCHETYPE_TO_FAMILY[next.archetype] === next.family
+                  ? next.archetype
+                  : undefined,
+              );
+            }}
+          />
+        </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm text-muted-foreground">Filter:</span>

@@ -49,6 +49,32 @@ describe("global-scope-store", () => {
     expect(useGlobalScope.getState().scope.underlyingIds).toEqual(["BTC"]);
   });
 
+  it("setStrategyFamily stores the single v2 family pick", () => {
+    act(() => useGlobalScope.getState().setStrategyFamily("CARRY_AND_YIELD"));
+    expect(useGlobalScope.getState().scope.strategyFamily).toBe("CARRY_AND_YIELD");
+  });
+
+  it("setStrategyFamily(undefined) clears downstream archetype", () => {
+    act(() => {
+      useGlobalScope.getState().setStrategyFamily("CARRY_AND_YIELD");
+      useGlobalScope.getState().setStrategyArchetype("CARRY_BASIS_PERP");
+      useGlobalScope.getState().setStrategyFamily(undefined);
+    });
+    const s = useGlobalScope.getState().scope;
+    expect(s.strategyFamily).toBeUndefined();
+    expect(s.strategyArchetype).toBeUndefined();
+  });
+
+  it("setStrategyArchetype stores the archetype without mutating family", () => {
+    act(() => {
+      useGlobalScope.getState().setStrategyFamily("ML_DIRECTIONAL");
+      useGlobalScope.getState().setStrategyArchetype("ML_DIRECTIONAL_CONTINUOUS");
+    });
+    const s = useGlobalScope.getState().scope;
+    expect(s.strategyFamily).toBe("ML_DIRECTIONAL");
+    expect(s.strategyArchetype).toBe("ML_DIRECTIONAL_CONTINUOUS");
+  });
+
   it("setMode to batch seeds an as-of when none present", () => {
     act(() => useGlobalScope.getState().setMode("batch"));
     const s = useGlobalScope.getState().scope;

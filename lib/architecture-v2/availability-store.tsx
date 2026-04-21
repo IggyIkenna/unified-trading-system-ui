@@ -82,7 +82,7 @@ function buildEntry(
   };
 }
 
-const AvailabilityStoreContext = createContext<StoreValue | null>(null);
+export const AvailabilityStoreContext = createContext<StoreValue | null>(null);
 
 /**
  * Lazy-build the initial registry once per Provider instance. Cached outside
@@ -117,19 +117,38 @@ export function AvailabilityStoreProvider({
   // the initial seed from computeInitialEntries() stands — that gives demo
   // prospects the IM_RESERVED visibility behaviour without requiring an admin
   // pre-population step.
+  //
+  // Persona seed (Phase 4) — if the user completed `/questionnaire` and a
+  // resolved persona is in localStorage under `odum-persona/v1`, record a
+  // synthetic `PERSONA_SEEDED` event. Visibility itself is computed
+  // downstream via `audienceForPersonaId()` + `slotsVisibleTo()` — the store
+  // stays a pure entries map, no persona-dependent mutation. This keeps the
+  // SSOT: entries = catalogue state; audience = per-user filter.
   useEffect(() => {
     if (!persist || typeof window === "undefined") return;
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as {
-        entries: Record<string, StrategyAvailabilityEntry>;
-        events: EmittedEvent[];
-      };
-      const loadedEntries = parsed.entries ?? {};
-      entriesRef.current = loadedEntries;
-      setEntries(loadedEntries);
-      setEvents(parsed.events ?? []);
+      if (raw) {
+        const parsed = JSON.parse(raw) as {
+          entries: Record<string, StrategyAvailabilityEntry>;
+          events: EmittedEvent[];
+        };
+        const loadedEntries = parsed.entries ?? {};
+        entriesRef.current = loadedEntries;
+        setEntries(loadedEntries);
+        setEvents(parsed.events ?? []);
+      }
+      const personaRaw = window.localStorage.getItem("odum-persona/v1");
+      if (personaRaw !== null) {
+        setEvents((prior) => [
+          ...prior,
+          {
+            eventName: "PERSONA_SEEDED",
+            details: { personaId: personaRaw },
+            timestampUtc: nowIso(),
+          },
+        ]);
+      }
     } catch {
       // ignore bad localstorage; reset on next write
     }

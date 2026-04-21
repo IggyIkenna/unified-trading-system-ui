@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -14,6 +16,7 @@ import {
   PnlAttributionPanel,
   SignalHistoryTable,
 } from "@/components/signal-broadcast";
+import { FamilyArchetypePicker } from "@/components/architecture-v2";
 import {
   MOCK_COUNTERPARTY,
   useBacktestPaperLive,
@@ -21,6 +24,11 @@ import {
   usePnlAttribution,
   useSignalEmissions,
 } from "@/lib/signal-broadcast";
+import { ARCHETYPE_TO_FAMILY } from "@/lib/architecture-v2";
+import type {
+  StrategyArchetypeV2,
+  StrategyFamilyV2,
+} from "@/lib/architecture-v2";
 
 /**
  * Counterparty observability dashboard.
@@ -42,9 +50,37 @@ export default function CounterpartyDashboardPage() {
   const backtest = useBacktestPaperLive(cp.id);
   const health = useDeliveryHealth(cp.id);
   const pnl = usePnlAttribution(cp.id);
+  const [familyFilter, setFamilyFilter] = useState<StrategyFamilyV2 | undefined>(
+    undefined,
+  );
+  const [archetypeFilter, setArchetypeFilter] = useState<
+    StrategyArchetypeV2 | undefined
+  >(undefined);
 
   const anyMock =
     emissions.isMock || backtest.isMock || health.isMock || pnl.isMock;
+
+  // Apply (family × archetype) filter to emissions so operators can narrow the
+  // signal-history table to, e.g., only Basis signals or only ML Directional
+  // signals. Emissions carry a `strategy_slot_label` whose leading token is
+  // the archetype; we derive the family via ARCHETYPE_TO_FAMILY.
+  const filteredEmissions = useMemo(() => {
+    const raw = emissions.data ?? [];
+    if (!familyFilter && !archetypeFilter) return raw;
+    return raw.filter((em) => {
+      const slot = em.slot_label ?? "";
+      const archetypeToken = slot.split("@")[0] ?? "";
+      if (archetypeFilter && archetypeToken !== archetypeFilter) return false;
+      if (familyFilter) {
+        const family =
+          archetypeToken in ARCHETYPE_TO_FAMILY
+            ? ARCHETYPE_TO_FAMILY[archetypeToken as StrategyArchetypeV2]
+            : undefined;
+        if (family !== familyFilter) return false;
+      }
+      return true;
+    });
+  }, [emissions.data, familyFilter, archetypeFilter]);
 
   return (
     <div
@@ -135,9 +171,35 @@ export default function CounterpartyDashboardPage() {
           <FetchErrorBanner label="delivery health" detail={health.error} />
         )}
 
+        <div
+          className="flex flex-wrap items-center gap-3 rounded-md border border-border/60 bg-muted/10 px-3 py-2 text-xs text-muted-foreground"
+          data-testid="signals-dashboard-family-picker"
+        >
+          <span className="font-medium uppercase tracking-wide">
+            Emission filter
+          </span>
+          <FamilyArchetypePicker
+            idPrefix="signals-dashboard"
+            availabilityFilter="all"
+            value={{ family: familyFilter, archetype: archetypeFilter }}
+            onChange={(next) => {
+              setFamilyFilter(next.family);
+              setArchetypeFilter(next.archetype);
+            }}
+          />
+          {(familyFilter || archetypeFilter) && (
+            <span
+              className="font-mono text-[10px] text-amber-500"
+              data-testid="signals-dashboard-filter-count"
+            >
+              {filteredEmissions.length} of {(emissions.data ?? []).length} emissions
+            </span>
+          )}
+        </div>
+
         {emissions.data !== null && (
           <SignalHistoryTable
-            emissions={emissions.data}
+            emissions={filteredEmissions}
             entitledSlots={cp.allowed_slots}
           />
         )}

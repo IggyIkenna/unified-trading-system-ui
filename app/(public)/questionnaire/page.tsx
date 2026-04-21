@@ -33,6 +33,10 @@ import {
   QUESTIONNAIRE_STRATEGY_STYLES,
 } from "@/lib/questionnaire/types";
 import { submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
+import {
+  persistResolvedPersona,
+  resolvePersonaFromQuestionnaire,
+} from "@/lib/questionnaire/resolve-persona";
 
 interface FormState {
   categories: Set<QuestionnaireCategory>;
@@ -91,11 +95,17 @@ export default function QuestionnairePage() {
     setSubmitting(true);
     const response = buildResponse(state);
     const outcome = await submitQuestionnaire(response);
+    if (outcome.success) {
+      // Stamp the resolved persona to localStorage so the downstream
+      // AvailabilityStoreProvider + audience helpers seed visibility on next
+      // navigation. See `lib/questionnaire/resolve-persona.ts` + codex
+      // `09-strategy/architecture-v2/restriction-policy.md` § 4.
+      const personaId = resolvePersonaFromQuestionnaire(response);
+      persistResolvedPersona(personaId);
+    }
     setResult(outcome);
     setSubmitting(false);
     if (outcome.success) {
-      // Redirect to a thank-you state; downstream demo-provider will pick up
-      // the profile on next navigation.
       setTimeout(() => router.push("/services"), 1200);
     }
   };

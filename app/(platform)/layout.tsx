@@ -2,6 +2,7 @@
 
 import { RequireAuth } from "@/components/shell/require-auth";
 import { UnifiedShell } from "@/components/shell/unified-shell";
+import { PersonaGate } from "@/components/platform/persona-gate";
 import { useAuth } from "@/hooks/use-auth";
 import { useRiskAlertNotifications } from "@/hooks/api/use-risk-alert-notifications";
 
@@ -33,7 +34,7 @@ function PlatformShellInner({ children }: { children: React.ReactNode }) {
       userName={user?.email?.split("@")[0] ?? "Trader"}
       userRole={user?.role ?? "internal"}
     >
-      {children}
+      <PersonaGate>{children}</PersonaGate>
     </UnifiedShell>
   );
 }

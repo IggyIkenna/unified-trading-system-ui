@@ -43,7 +43,10 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
+import { FamilyArchetypePicker } from "@/components/architecture-v2";
+import type { StrategyArchetypeV2, StrategyFamilyV2 } from "@/lib/architecture-v2";
 
 // ─── Pipeline Stage Cards ─────────────────────────────────────────────────────
 
@@ -218,6 +221,12 @@ export default function BuildOverviewPage() {
 
   const runningJobs = activeJobs.filter((j) => j.status === "running");
   const queuedJobs = activeJobs.filter((j) => j.status === "queued");
+  const [scopeFamily, setScopeFamily] = React.useState<
+    StrategyFamilyV2 | undefined
+  >(undefined);
+  const [scopeArchetype, setScopeArchetype] = React.useState<
+    StrategyArchetypeV2 | undefined
+  >(undefined);
 
   return (
     <div className="space-y-6 p-6">
@@ -247,6 +256,32 @@ export default function BuildOverviewPage() {
           </Link>
         </Button>
       </PageHeader>
+
+      {/* v2 Family / Archetype scope — narrows downstream drill-downs. */}
+      <div
+        className="flex flex-wrap items-center gap-3 rounded-md border border-border/60 bg-muted/10 px-3 py-2 text-xs text-muted-foreground"
+        data-testid="research-overview-family-picker"
+      >
+        <span className="font-medium uppercase tracking-wide">Scope</span>
+        <FamilyArchetypePicker
+          idPrefix="research-overview"
+          availabilityFilter="allowed"
+          value={{ family: scopeFamily, archetype: scopeArchetype }}
+          onChange={(next) => {
+            setScopeFamily(next.family);
+            setScopeArchetype(next.archetype);
+          }}
+        />
+        {scopeArchetype && (
+          <Link
+            href={`/services/research/strategies?archetype=${scopeArchetype}`}
+            className="ml-auto text-primary underline-offset-4 hover:underline"
+            data-testid="research-overview-drilldown-link"
+          >
+            Open strategies scoped to {scopeArchetype} &rarr;
+          </Link>
+        )}
+      </div>
 
       {/* Pipeline Stage Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

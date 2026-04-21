@@ -13,6 +13,10 @@ export interface GlobalScopeState {
   clientIds: string[];
   strategyIds: string[];
   strategyFamilyIds: string[];
+  /** v2 single-family picker selection (distinct from legacy `strategyFamilyIds` tag list). */
+  strategyFamily?: string;
+  /** v2 single-archetype picker selection. */
+  strategyArchetype?: string;
   underlyingIds: string[];
   mode: "live" | "batch";
   asOfDatetime?: string;
@@ -24,6 +28,8 @@ interface GlobalScopeActions {
   setClientIds: (ids: string[]) => void;
   setStrategyIds: (ids: string[]) => void;
   setStrategyFamilyIds: (ids: string[]) => void;
+  setStrategyFamily: (family: string | undefined) => void;
+  setStrategyArchetype: (archetype: string | undefined) => void;
   setUnderlyingIds: (ids: string[]) => void;
   setMode: (mode: "live" | "batch") => void;
   setAsOfDatetime: (dt: string | undefined) => void;
@@ -38,6 +44,8 @@ const INITIAL_SCOPE: GlobalScopeState = {
   clientIds: [],
   strategyIds: [],
   strategyFamilyIds: [],
+  strategyFamily: undefined,
+  strategyArchetype: undefined,
   underlyingIds: [],
   mode: "live",
   asOfDatetime: undefined,
@@ -51,6 +59,18 @@ export const useGlobalScope = create<GlobalScopeActions>()(
       setClientIds: (ids) => set((s) => ({ scope: { ...s.scope, clientIds: ids } })),
       setStrategyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyIds: ids } })),
       setStrategyFamilyIds: (ids) => set((s) => ({ scope: { ...s.scope, strategyFamilyIds: ids } })),
+      setStrategyFamily: (family) =>
+        set((s) => ({
+          scope: {
+            ...s.scope,
+            strategyFamily: family,
+            // Changing family invalidates archetype selection (v2 cascading picker invariant).
+            strategyArchetype:
+              family === undefined ? undefined : s.scope.strategyArchetype,
+          },
+        })),
+      setStrategyArchetype: (archetype) =>
+        set((s) => ({ scope: { ...s.scope, strategyArchetype: archetype } })),
       setUnderlyingIds: (ids) => set((s) => ({ scope: { ...s.scope, underlyingIds: ids } })),
       setMode: (mode) =>
         set((s) => ({
@@ -85,6 +105,9 @@ export const useGlobalScope = create<GlobalScopeActions>()(
               clientIds: Array.isArray(saved.clientIds) ? saved.clientIds : [],
               strategyIds: Array.isArray(saved.strategyIds) ? saved.strategyIds : [],
               strategyFamilyIds: Array.isArray(saved.strategyFamilyIds) ? saved.strategyFamilyIds : [],
+              strategyFamily: typeof saved.strategyFamily === "string" ? saved.strategyFamily : undefined,
+              strategyArchetype:
+                typeof saved.strategyArchetype === "string" ? saved.strategyArchetype : undefined,
               underlyingIds: Array.isArray(saved.underlyingIds) ? saved.underlyingIds : [],
             },
           };
