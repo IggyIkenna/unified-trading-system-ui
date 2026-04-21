@@ -17,10 +17,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   MATURITY_PHASE_LABEL,
   SHARE_CLASS_LABEL,
-  type ShareClass,
   type StrategyMaturityPhase,
-} from "@/lib/architecture-v2/lifecycle-placeholder";
+} from "@/lib/architecture-v2/lifecycle";
 import type {
+  ShareClass,
   StrategyArchetype,
   StrategyFamily,
 } from "@/lib/architecture-v2";

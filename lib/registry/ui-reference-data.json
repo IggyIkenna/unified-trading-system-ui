@@ -10393,5 +10393,1540 @@
         "is_active": true
       }
     ]
+  },
+  "strategy_instance_catalogue": {
+    "instances": [
+      {
+        "instance_id": "carry_basis_perp__ely_base_3cex__btc__1bb19edc",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_base_3cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_base_3cex__eth__7d057bd3",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_base_3cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_base_3cex__usd__2970243b",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_base_3cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_base_3cex__usdt__cce0150e",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_base_3cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_premium_6cex__btc__aa0a53e0",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_premium_6cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_premium_6cex__eth__aa2ece16",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_premium_6cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_premium_6cex__usd__e0b348f8",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_premium_6cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_premium_6cex__usdt__c5793805",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_premium_6cex",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm__btc__5d530e3c",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm__eth__3fbf266d",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm__usd__a0f88141",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm__usdt__0616667a",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm_plus_sol__btc__9649fbee",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm_plus_sol",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm_plus_sol__eth__f938e023",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm_plus_sol",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm_plus_sol__usd__74cceaaf",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm_plus_sol",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_perp__ely_multi_evm_plus_sol__usdt__18c44f91",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_PERP",
+        "venue_set_variant_id": "ely_multi_evm_plus_sol",
+        "instrument_type_set": [
+          "spot",
+          "perp",
+          "dated_future"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_continuous__ml_directional_continuous_default__btc__8e835083",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "ml_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_continuous__ml_directional_continuous_default__eth__10744b6d",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "ml_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_continuous__ml_directional_continuous_default__usd__bede9d31",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "ml_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_continuous__ml_directional_continuous_default__usdt__cfb13e32",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "ml_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_event_settled__ml_directional_event_settled_default__btc__d0e418c3",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "ml_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_event_settled__ml_directional_event_settled_default__eth__c19b41df",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "ml_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_event_settled__ml_directional_event_settled_default__usd__ca0e3201",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "ml_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "ml_directional_event_settled__ml_directional_event_settled_default__usdt__9eabc98b",
+        "family": "ML_DIRECTIONAL",
+        "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "ml_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "rules_directional_continuous__rules_directional_continuous_default__btc__7c0c3956",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "rules_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "rules_directional_continuous__rules_directional_continuous_default__eth__a73ef343",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "rules_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "rules_directional_continuous__rules_directional_continuous_default__usd__85fd4069",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "rules_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "rules_directional_continuous__rules_directional_continuous_default__usdt__6e7b8ce2",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
+        "venue_set_variant_id": "rules_directional_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "rules_directional_event_settled__rules_directional_event_settled_default__btc__90ed1f14",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "rules_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "rules_directional_event_settled__rules_directional_event_settled_default__eth__7c893456",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "rules_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "rules_directional_event_settled__rules_directional_event_settled_default__usd__01843fd6",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "rules_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "USD",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "rules_directional_event_settled__rules_directional_event_settled_default__usdt__2e77555c",
+        "family": "RULES_DIRECTIONAL",
+        "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
+        "venue_set_variant_id": "rules_directional_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "carry_basis_dated__carry_basis_dated_default__btc__f91bc580",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_DATED",
+        "venue_set_variant_id": "carry_basis_dated_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_dated__carry_basis_dated_default__eth__8aaa1eb7",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_DATED",
+        "venue_set_variant_id": "carry_basis_dated_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_dated__carry_basis_dated_default__usd__911e522c",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_DATED",
+        "venue_set_variant_id": "carry_basis_dated_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_basis_dated__carry_basis_dated_default__usdt__b1f31056",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_BASIS_DATED",
+        "venue_set_variant_id": "carry_basis_dated_default",
+        "instrument_type_set": [
+          "dated_future",
+          "option"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_staked_basis__carry_staked_basis_default__btc__b2dde936",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_STAKED_BASIS",
+        "venue_set_variant_id": "carry_staked_basis_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_staked_basis__carry_staked_basis_default__eth__c228dfa6",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_STAKED_BASIS",
+        "venue_set_variant_id": "carry_staked_basis_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_staked_basis__carry_staked_basis_default__usd__50ce2c45",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_STAKED_BASIS",
+        "venue_set_variant_id": "carry_staked_basis_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_staked_basis__carry_staked_basis_default__usdt__8b48eab0",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_STAKED_BASIS",
+        "venue_set_variant_id": "carry_staked_basis_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_recursive_staked__carry_recursive_staked_default__btc__f7b61fa6",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_RECURSIVE_STAKED",
+        "venue_set_variant_id": "carry_recursive_staked_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_recursive_staked__carry_recursive_staked_default__eth__17101ff2",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_RECURSIVE_STAKED",
+        "venue_set_variant_id": "carry_recursive_staked_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_recursive_staked__carry_recursive_staked_default__usd__7cc0bd54",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_RECURSIVE_STAKED",
+        "venue_set_variant_id": "carry_recursive_staked_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "carry_recursive_staked__carry_recursive_staked_default__usdt__0d891339",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "CARRY_RECURSIVE_STAKED",
+        "venue_set_variant_id": "carry_recursive_staked_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_rotation_lending__yield_rotation_lending_default__btc__c97f809e",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_ROTATION_LENDING",
+        "venue_set_variant_id": "yield_rotation_lending_default",
+        "instrument_type_set": [
+          "lending"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_rotation_lending__yield_rotation_lending_default__eth__3220964e",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_ROTATION_LENDING",
+        "venue_set_variant_id": "yield_rotation_lending_default",
+        "instrument_type_set": [
+          "lending"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_rotation_lending__yield_rotation_lending_default__usd__2d6ac6ad",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_ROTATION_LENDING",
+        "venue_set_variant_id": "yield_rotation_lending_default",
+        "instrument_type_set": [
+          "lending"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_rotation_lending__yield_rotation_lending_default__usdt__2eb76cd2",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_ROTATION_LENDING",
+        "venue_set_variant_id": "yield_rotation_lending_default",
+        "instrument_type_set": [
+          "lending"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_staking_simple__yield_staking_simple_default__btc__2dbba58c",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_STAKING_SIMPLE",
+        "venue_set_variant_id": "yield_staking_simple_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_staking_simple__yield_staking_simple_default__eth__c73b210f",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_STAKING_SIMPLE",
+        "venue_set_variant_id": "yield_staking_simple_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_staking_simple__yield_staking_simple_default__usd__017ed9b5",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_STAKING_SIMPLE",
+        "venue_set_variant_id": "yield_staking_simple_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "yield_staking_simple__yield_staking_simple_default__usdt__481b1b6c",
+        "family": "CARRY_AND_YIELD",
+        "archetype": "YIELD_STAKING_SIMPLE",
+        "venue_set_variant_id": "yield_staking_simple_default",
+        "instrument_type_set": [
+          "staking"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "arbitrage_price_dispersion__arbitrage_price_dispersion_default__btc__3be90f9e",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "ARBITRAGE_PRICE_DISPERSION",
+        "venue_set_variant_id": "arbitrage_price_dispersion_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "arbitrage_price_dispersion__arbitrage_price_dispersion_default__eth__c0097d81",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "ARBITRAGE_PRICE_DISPERSION",
+        "venue_set_variant_id": "arbitrage_price_dispersion_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "arbitrage_price_dispersion__arbitrage_price_dispersion_default__usd__339eace0",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "ARBITRAGE_PRICE_DISPERSION",
+        "venue_set_variant_id": "arbitrage_price_dispersion_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "arbitrage_price_dispersion__arbitrage_price_dispersion_default__usdt__bc4a8610",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "ARBITRAGE_PRICE_DISPERSION",
+        "venue_set_variant_id": "arbitrage_price_dispersion_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "liquidation_capture__liquidation_capture_default__btc__60257bb0",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "LIQUIDATION_CAPTURE",
+        "venue_set_variant_id": "liquidation_capture_default",
+        "instrument_type_set": [
+          "lending",
+          "perp"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "liquidation_capture__liquidation_capture_default__eth__93fd27cf",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "LIQUIDATION_CAPTURE",
+        "venue_set_variant_id": "liquidation_capture_default",
+        "instrument_type_set": [
+          "lending",
+          "perp"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "liquidation_capture__liquidation_capture_default__usd__5a988d9c",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "LIQUIDATION_CAPTURE",
+        "venue_set_variant_id": "liquidation_capture_default",
+        "instrument_type_set": [
+          "lending",
+          "perp"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "liquidation_capture__liquidation_capture_default__usdt__00f336ce",
+        "family": "ARBITRAGE_STRUCTURAL",
+        "archetype": "LIQUIDATION_CAPTURE",
+        "venue_set_variant_id": "liquidation_capture_default",
+        "instrument_type_set": [
+          "lending",
+          "perp"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_continuous__market_making_continuous_default__btc__f93db26e",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_CONTINUOUS",
+        "venue_set_variant_id": "market_making_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_continuous__market_making_continuous_default__eth__5a8c0faf",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_CONTINUOUS",
+        "venue_set_variant_id": "market_making_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_continuous__market_making_continuous_default__usd__091b1dee",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_CONTINUOUS",
+        "venue_set_variant_id": "market_making_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_continuous__market_making_continuous_default__usdt__9c77ce10",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_CONTINUOUS",
+        "venue_set_variant_id": "market_making_continuous_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lp",
+          "option",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_event_settled__market_making_event_settled_default__btc__189fbb8d",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_EVENT_SETTLED",
+        "venue_set_variant_id": "market_making_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_event_settled__market_making_event_settled_default__eth__46c4b399",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_EVENT_SETTLED",
+        "venue_set_variant_id": "market_making_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_event_settled__market_making_event_settled_default__usd__2d517315",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_EVENT_SETTLED",
+        "venue_set_variant_id": "market_making_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "market_making_event_settled__market_making_event_settled_default__usdt__f9688220",
+        "family": "MARKET_MAKING",
+        "archetype": "MARKET_MAKING_EVENT_SETTLED",
+        "venue_set_variant_id": "market_making_event_settled_default",
+        "instrument_type_set": [
+          "event_settled"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "event_driven__event_driven_default__btc__4bc5eb20",
+        "family": "EVENT_DRIVEN",
+        "archetype": "EVENT_DRIVEN",
+        "venue_set_variant_id": "event_driven_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lending",
+          "option",
+          "perp",
+          "spot",
+          "staking"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "event_driven__event_driven_default__eth__59596241",
+        "family": "EVENT_DRIVEN",
+        "archetype": "EVENT_DRIVEN",
+        "venue_set_variant_id": "event_driven_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lending",
+          "option",
+          "perp",
+          "spot",
+          "staking"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "event_driven__event_driven_default__usd__5974adc5",
+        "family": "EVENT_DRIVEN",
+        "archetype": "EVENT_DRIVEN",
+        "venue_set_variant_id": "event_driven_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lending",
+          "option",
+          "perp",
+          "spot",
+          "staking"
+        ],
+        "share_class": "USD",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "event_driven__event_driven_default__usdt__b9401df6",
+        "family": "EVENT_DRIVEN",
+        "archetype": "EVENT_DRIVEN",
+        "venue_set_variant_id": "event_driven_default",
+        "instrument_type_set": [
+          "dated_future",
+          "event_settled",
+          "lending",
+          "option",
+          "perp",
+          "spot",
+          "staking"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "vol_trading_options__vol_trading_options_default__btc__e8a91a1f",
+        "family": "VOL_TRADING",
+        "archetype": "VOL_TRADING_OPTIONS",
+        "venue_set_variant_id": "vol_trading_options_default",
+        "instrument_type_set": [
+          "option"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "vol_trading_options__vol_trading_options_default__eth__a06c130f",
+        "family": "VOL_TRADING",
+        "archetype": "VOL_TRADING_OPTIONS",
+        "venue_set_variant_id": "vol_trading_options_default",
+        "instrument_type_set": [
+          "option"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "vol_trading_options__vol_trading_options_default__usd__bf76543b",
+        "family": "VOL_TRADING",
+        "archetype": "VOL_TRADING_OPTIONS",
+        "venue_set_variant_id": "vol_trading_options_default",
+        "instrument_type_set": [
+          "option"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "vol_trading_options__vol_trading_options_default__usdt__bd923981",
+        "family": "VOL_TRADING",
+        "archetype": "VOL_TRADING_OPTIONS",
+        "venue_set_variant_id": "vol_trading_options_default",
+        "instrument_type_set": [
+          "option"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "stat_arb_pairs_fixed__stat_arb_pairs_fixed_default__btc__b649a50e",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_PAIRS_FIXED",
+        "venue_set_variant_id": "stat_arb_pairs_fixed_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "stat_arb_pairs_fixed__stat_arb_pairs_fixed_default__eth__88821202",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_PAIRS_FIXED",
+        "venue_set_variant_id": "stat_arb_pairs_fixed_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "stat_arb_pairs_fixed__stat_arb_pairs_fixed_default__usd__dc8af5ee",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_PAIRS_FIXED",
+        "venue_set_variant_id": "stat_arb_pairs_fixed_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USD",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "stat_arb_pairs_fixed__stat_arb_pairs_fixed_default__usdt__90d8446c",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_PAIRS_FIXED",
+        "venue_set_variant_id": "stat_arb_pairs_fixed_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "SUPPORTED"
+      },
+      {
+        "instance_id": "stat_arb_cross_sectional__stat_arb_cross_sectional_default__btc__441dee07",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_CROSS_SECTIONAL",
+        "venue_set_variant_id": "stat_arb_cross_sectional_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "BTC",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "stat_arb_cross_sectional__stat_arb_cross_sectional_default__eth__9bf4b741",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_CROSS_SECTIONAL",
+        "venue_set_variant_id": "stat_arb_cross_sectional_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "ETH",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "stat_arb_cross_sectional__stat_arb_cross_sectional_default__usd__9295f6f1",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_CROSS_SECTIONAL",
+        "venue_set_variant_id": "stat_arb_cross_sectional_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USD",
+        "coverage_status": "PARTIAL"
+      },
+      {
+        "instance_id": "stat_arb_cross_sectional__stat_arb_cross_sectional_default__usdt__77a1fe8f",
+        "family": "STAT_ARB_PAIRS",
+        "archetype": "STAT_ARB_CROSS_SECTIONAL",
+        "venue_set_variant_id": "stat_arb_cross_sectional_default",
+        "instrument_type_set": [
+          "dated_future",
+          "perp",
+          "spot"
+        ],
+        "share_class": "USDT",
+        "coverage_status": "PARTIAL"
+      }
+    ]
+  },
+  "venue_set_variants": [
+    {
+      "id": "ely_base_3cex",
+      "archetype": "CARRY_BASIS_PERP",
+      "venues": [
+        "okx",
+        "binance",
+        "bybit"
+      ],
+      "instrument_types": [
+        "spot",
+        "perp",
+        "dated_future"
+      ],
+      "label": "Elysium \u2014 Base (3 CEX)",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "ely_premium_6cex",
+      "archetype": "CARRY_BASIS_PERP",
+      "venues": [
+        "okx",
+        "binance",
+        "bybit",
+        "deribit",
+        "hyperliquid",
+        "aster"
+      ],
+      "instrument_types": [
+        "spot",
+        "perp",
+        "dated_future"
+      ],
+      "label": "Elysium \u2014 Premium (6 CEX)",
+      "pricing_tier": "premium"
+    },
+    {
+      "id": "ely_multi_evm",
+      "archetype": "CARRY_BASIS_PERP",
+      "venues": [
+        "okx",
+        "binance",
+        "bybit",
+        "ethereum",
+        "arbitrum",
+        "optimism",
+        "base",
+        "polygon"
+      ],
+      "instrument_types": [
+        "spot",
+        "perp",
+        "dated_future"
+      ],
+      "label": "Elysium \u2014 Multi-EVM",
+      "pricing_tier": "top_tier"
+    },
+    {
+      "id": "ely_multi_evm_plus_sol",
+      "archetype": "CARRY_BASIS_PERP",
+      "venues": [
+        "okx",
+        "binance",
+        "bybit",
+        "ethereum",
+        "arbitrum",
+        "optimism",
+        "base",
+        "polygon",
+        "solana"
+      ],
+      "instrument_types": [
+        "spot",
+        "perp",
+        "dated_future"
+      ],
+      "label": "Elysium \u2014 Multi-EVM + Solana",
+      "pricing_tier": "apex"
+    },
+    {
+      "id": "ml_directional_continuous_default",
+      "archetype": "ML_DIRECTIONAL_CONTINUOUS",
+      "venues": [
+        "balancer",
+        "binance",
+        "bybit",
+        "cboe",
+        "cme",
+        "deribit",
+        "drift",
+        "gmx_v2",
+        "hyperliquid",
+        "ibkr",
+        "ice",
+        "okx",
+        "uniswap_v3"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "option",
+        "perp",
+        "spot"
+      ],
+      "label": "ML_DIRECTIONAL_CONTINUOUS \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "ml_directional_event_settled_default",
+      "archetype": "ML_DIRECTIONAL_EVENT_SETTLED",
+      "venues": [
+        "betfair_direct",
+        "kalshi",
+        "matchbook_direct",
+        "polymarket",
+        "smarkets_direct",
+        "unity"
+      ],
+      "instrument_types": [
+        "event_settled"
+      ],
+      "label": "ML_DIRECTIONAL_EVENT_SETTLED \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "rules_directional_continuous_default",
+      "archetype": "RULES_DIRECTIONAL_CONTINUOUS",
+      "venues": [
+        "binance",
+        "bybit",
+        "cme",
+        "deribit",
+        "drift",
+        "gmx_v2",
+        "hyperliquid",
+        "ibkr",
+        "ice",
+        "okx",
+        "uniswap_v3"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "option",
+        "perp",
+        "spot"
+      ],
+      "label": "RULES_DIRECTIONAL_CONTINUOUS \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "rules_directional_event_settled_default",
+      "archetype": "RULES_DIRECTIONAL_EVENT_SETTLED",
+      "venues": [
+        "betfair_direct",
+        "polymarket",
+        "smarkets_direct",
+        "unity"
+      ],
+      "instrument_types": [
+        "event_settled"
+      ],
+      "label": "RULES_DIRECTIONAL_EVENT_SETTLED \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "carry_basis_dated_default",
+      "archetype": "CARRY_BASIS_DATED",
+      "venues": [
+        "binance",
+        "cme",
+        "coinbase",
+        "deribit",
+        "ibkr",
+        "ice"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "option"
+      ],
+      "label": "CARRY_BASIS_DATED \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "carry_staked_basis_default",
+      "archetype": "CARRY_STAKED_BASIS",
+      "venues": [
+        "aave_v3",
+        "drift",
+        "gmx_v2",
+        "hyperliquid",
+        "jito",
+        "kamino",
+        "lido",
+        "marinade",
+        "rocketpool"
+      ],
+      "instrument_types": [
+        "staking"
+      ],
+      "label": "CARRY_STAKED_BASIS \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "carry_recursive_staked_default",
+      "archetype": "CARRY_RECURSIVE_STAKED",
+      "venues": [
+        "aave_v3",
+        "jito",
+        "kamino",
+        "lido",
+        "marinade",
+        "rocketpool"
+      ],
+      "instrument_types": [
+        "staking"
+      ],
+      "label": "CARRY_RECURSIVE_STAKED \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "yield_rotation_lending_default",
+      "archetype": "YIELD_ROTATION_LENDING",
+      "venues": [
+        "aave_v3",
+        "compound_v3",
+        "euler",
+        "kamino",
+        "morpho"
+      ],
+      "instrument_types": [
+        "lending"
+      ],
+      "label": "YIELD_ROTATION_LENDING \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "yield_staking_simple_default",
+      "archetype": "YIELD_STAKING_SIMPLE",
+      "venues": [
+        "etherfi",
+        "jito",
+        "lido",
+        "marinade",
+        "rocketpool"
+      ],
+      "instrument_types": [
+        "staking"
+      ],
+      "label": "YIELD_STAKING_SIMPLE \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "arbitrage_price_dispersion_default",
+      "archetype": "ARBITRAGE_PRICE_DISPERSION",
+      "venues": [
+        "balancer",
+        "betfair_direct",
+        "binance",
+        "bybit",
+        "cboe",
+        "cme",
+        "curve",
+        "deribit",
+        "drift",
+        "gmx_v2",
+        "hyperliquid",
+        "ibkr",
+        "ice",
+        "okx",
+        "polymarket",
+        "smarkets_direct",
+        "sushiswap",
+        "uniswap_v3",
+        "unity"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "event_settled",
+        "lp",
+        "option",
+        "perp",
+        "spot"
+      ],
+      "label": "ARBITRAGE_PRICE_DISPERSION \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "liquidation_capture_default",
+      "archetype": "LIQUIDATION_CAPTURE",
+      "venues": [
+        "aave_v3",
+        "gmx_v2",
+        "hyperliquid",
+        "kamino"
+      ],
+      "instrument_types": [
+        "lending",
+        "perp"
+      ],
+      "label": "LIQUIDATION_CAPTURE \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "market_making_continuous_default",
+      "archetype": "MARKET_MAKING_CONTINUOUS",
+      "venues": [
+        "balancer",
+        "betfair_direct",
+        "binance",
+        "bybit",
+        "cme",
+        "curve",
+        "deribit",
+        "hyperliquid",
+        "ibkr",
+        "okx",
+        "orca",
+        "raydium",
+        "uniswap_v2",
+        "uniswap_v3",
+        "uniswap_v4",
+        "unity"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "event_settled",
+        "lp",
+        "option",
+        "perp",
+        "spot"
+      ],
+      "label": "MARKET_MAKING_CONTINUOUS \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "market_making_event_settled_default",
+      "archetype": "MARKET_MAKING_EVENT_SETTLED",
+      "venues": [
+        "betdaq_direct",
+        "betfair_direct",
+        "kalshi",
+        "matchbook_direct",
+        "polymarket",
+        "smarkets_direct",
+        "unity"
+      ],
+      "instrument_types": [
+        "event_settled"
+      ],
+      "label": "MARKET_MAKING_EVENT_SETTLED \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "event_driven_default",
+      "archetype": "EVENT_DRIVEN",
+      "venues": [
+        "aave_v3",
+        "binance",
+        "bybit",
+        "cboe",
+        "cme",
+        "deribit",
+        "gmx_v2",
+        "hyperliquid",
+        "ibkr",
+        "lido",
+        "okx",
+        "polymarket",
+        "uniswap_v3",
+        "unity"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "event_settled",
+        "lending",
+        "option",
+        "perp",
+        "spot",
+        "staking"
+      ],
+      "label": "EVENT_DRIVEN \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "vol_trading_options_default",
+      "archetype": "VOL_TRADING_OPTIONS",
+      "venues": [
+        "cboe",
+        "deribit",
+        "okx"
+      ],
+      "instrument_types": [
+        "option"
+      ],
+      "label": "VOL_TRADING_OPTIONS \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "stat_arb_pairs_fixed_default",
+      "archetype": "STAT_ARB_PAIRS_FIXED",
+      "venues": [
+        "binance",
+        "bybit",
+        "cme",
+        "drift",
+        "gmx_v2",
+        "hyperliquid",
+        "ibkr",
+        "ice",
+        "okx",
+        "uniswap_v3"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "perp",
+        "spot"
+      ],
+      "label": "STAT_ARB_PAIRS_FIXED \u2014 Default",
+      "pricing_tier": "base"
+    },
+    {
+      "id": "stat_arb_cross_sectional_default",
+      "archetype": "STAT_ARB_CROSS_SECTIONAL",
+      "venues": [
+        "binance",
+        "bybit",
+        "drift",
+        "gmx_v2",
+        "hyperliquid",
+        "ibkr"
+      ],
+      "instrument_types": [
+        "dated_future",
+        "perp",
+        "spot"
+      ],
+      "label": "STAT_ARB_CROSS_SECTIONAL \u2014 Default",
+      "pricing_tier": "base"
+    }
+  ],
+  "lifecycle_enums": {
+    "strategy_maturity_phases": [
+      "smoke",
+      "backtest_minimal",
+      "backtest_1yr",
+      "backtest_multi_year",
+      "paper_1d",
+      "paper_14d",
+      "paper_stable",
+      "live_early",
+      "live_stable",
+      "retired"
+    ],
+    "product_routings": [
+      "dart_only",
+      "im_only",
+      "both",
+      "internal_only"
+    ],
+    "account_types": [
+      "live",
+      "paper"
+    ]
   }
 }

@@ -12,11 +12,14 @@
 
 import type {
   ProductRouting,
-  ShareClass,
   StrategyMaturityPhase,
   VenueSetVariantId,
-} from "./lifecycle-placeholder";
-import type { StrategyArchetype, StrategyFamily } from "./enums";
+} from "./lifecycle";
+import type {
+  ShareClass,
+  StrategyArchetype,
+  StrategyFamily,
+} from "./enums";
 
 export type AllocationStatus =
   | "subscribed"
@@ -89,7 +92,12 @@ export function parseCatalogueFilter(
   if (venueSet) out.venueSetVariant = venueSet;
 
   const shareClass = get("share_class");
-  if (shareClass && ["btc", "eth", "usd", "usdt"].includes(shareClass)) {
+  if (
+    shareClass &&
+    ["USDT", "USDC", "FDUSD", "USD", "GBP", "EUR", "ETH", "BTC", "SOL"].includes(
+      shareClass,
+    )
+  ) {
     out.shareClass = shareClass as ShareClass;
   }
 

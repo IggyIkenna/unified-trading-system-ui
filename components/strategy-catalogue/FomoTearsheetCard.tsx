@@ -22,10 +22,10 @@ import {
   PRODUCT_ROUTING_LABEL,
   SHARE_CLASS_LABEL,
   type ProductRouting,
-  type ShareClass,
   type StrategyMaturityPhase,
-} from "@/lib/architecture-v2/lifecycle-placeholder";
+} from "@/lib/architecture-v2/lifecycle";
 import type {
+  ShareClass,
   StrategyArchetype,
   StrategyFamily,
 } from "@/lib/architecture-v2";

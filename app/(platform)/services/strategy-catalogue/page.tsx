@@ -13,8 +13,7 @@
  * existing ServiceTabs in layout.tsx.
  *
  * Admin tiers (Tier 1 / Tier 2) land at /services/admin/strategy-universe +
- * /services/admin/strategy-lifecycle-editor once Plan A Phase 3 PATCH ships.
- * Scaffolded separately in a future commit.
+ * /services/admin/strategy-lifecycle-editor — scaffolded Plan B Phase 2.
  */
 
 import { useMemo, useState } from "react";
@@ -29,33 +28,33 @@ import {
   EMPTY_CATALOGUE_FILTER,
   type StrategyCatalogueFilter,
 } from "@/lib/architecture-v2/catalogue-filter";
-import { STRATEGY_INSTANCES } from "@/lib/mocks/fixtures/strategy-instances";
+import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
 import { useAuth } from "@/hooks/use-auth";
 
 type CatalogueTab = "reality" | "explore";
 
-// Placeholder mapping from the logged-in user / persona to a set of clientIds
-// this org is subscribed to. Until Plan A Phase 2 propagates the real
-// org-subscription state, we mock it by mapping admin → everything and
-// non-admin → a deterministic subset so both tabs render something.
-function subscribedClientIdsFor(role: string | undefined): readonly string[] {
+/**
+ * Placeholder subscription mapping. Admin sees every instance as "subscribed"
+ * so Reality tab demonstrates the layout; non-admin sees a deterministic
+ * stable-maturity subset (first 4) so both tabs render content until the
+ * real client-subscriptions service wires in.
+ */
+function subscribedInstanceIdsFor(role: string | undefined): readonly string[] {
+  const catalogue = loadStrategyCatalogue();
   if (role === "admin") {
-    return Array.from(new Set(STRATEGY_INSTANCES.map((i) => i.clientId)));
+    return catalogue.map((i) => i.instanceId);
   }
-  return ["quant-fund"];
+  return catalogue.slice(0, 4).map((i) => i.instanceId);
 }
 
 export default function StrategyCataloguePage() {
   const { user } = useAuth();
-  const subscribedClientIds = useMemo(
-    () => subscribedClientIdsFor(user?.role),
+  const subscribedInstanceIds = useMemo(
+    () => subscribedInstanceIdsFor(user?.role),
     [user?.role],
   );
 
-  const hasSubscriptions = useMemo(() => {
-    const subs = new Set(subscribedClientIds);
-    return STRATEGY_INSTANCES.some((i) => subs.has(i.clientId));
-  }, [subscribedClientIds]);
+  const hasSubscriptions = subscribedInstanceIds.length > 0;
 
   const [tab, setTab] = useState<CatalogueTab>(
     hasSubscriptions ? "reality" : "explore",
@@ -107,7 +106,7 @@ export default function StrategyCataloguePage() {
               viewMode={viewModeFor("reality")}
               filter={filter}
               onFilterChange={setFilter}
-              subscribedClientIds={subscribedClientIds}
+              subscribedInstanceIds={subscribedInstanceIds}
             />
           </TabsContent>
           <TabsContent value="explore" className="pt-4">
@@ -115,7 +114,7 @@ export default function StrategyCataloguePage() {
               viewMode={viewModeFor("explore")}
               filter={filter}
               onFilterChange={setFilter}
-              subscribedClientIds={subscribedClientIds}
+              subscribedInstanceIds={subscribedInstanceIds}
             />
           </TabsContent>
         </Tabs>

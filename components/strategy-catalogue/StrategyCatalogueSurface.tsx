@@ -12,10 +12,11 @@
  *   - client-fomo      tearsheets for instances available via product-routing
  *                      but NOT yet subscribed
  *
- * Until Plan A Phase 2 materialises the 5-dim StrategyInstance + lifecycle
- * JSON, this surface reads from the existing 99-entry
- * lib/mocks/fixtures/strategy-instances.ts fixture and renders unknown
- * maturity / routing / venue-set-variant columns as "—" with a tooltip.
+ * Reads the real 5-dim catalogue from
+ * `lib/registry/ui-reference-data.json` via
+ * `loadStrategyCatalogue()`. Lifecycle columns (maturity / routing) remain
+ * synthesised per-instanceId until Plan A Phase 3 ships the Firestore
+ * lifecycle doc; performance overlay is Plan C's problem.
  */
 
 import { useMemo, useState } from "react";
@@ -24,25 +25,25 @@ import { FamilyArchetypePicker } from "@/components/architecture-v2/family-arche
 import type { FamilyArchetypeSelection } from "@/components/architecture-v2/family-archetype-picker";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type {
-  StrategyArchetype,
-  StrategyFamily,
-} from "@/lib/architecture-v2";
 import {
   EMPTY_CATALOGUE_FILTER,
   matchesFilter,
   type StrategyCatalogueFilter,
 } from "@/lib/architecture-v2/catalogue-filter";
 import {
+  allowsAllocationCta,
+  loadStrategyCatalogue,
+  lookupVenueSetVariant,
   LIFECYCLE_UNKNOWN,
   MATURITY_PHASE_LABEL,
   PRODUCT_ROUTING_LABEL,
+  PRODUCT_ROUTINGS,
   SHARE_CLASS_LABEL,
+  STRATEGY_MATURITY_PHASES,
   type ProductRouting,
-  type ShareClass,
+  type StrategyInstance,
   type StrategyMaturityPhase,
-} from "@/lib/architecture-v2/lifecycle-placeholder";
-import { STRATEGY_INSTANCES } from "@/lib/mocks/fixtures/strategy-instances";
+} from "@/lib/architecture-v2/lifecycle";
 
 import {
   FomoTearsheetCard,
@@ -63,56 +64,73 @@ export interface StrategyCatalogueSurfaceProps {
   readonly viewMode: StrategyCatalogueViewMode;
   readonly filter?: StrategyCatalogueFilter;
   readonly onFilterChange?: (next: StrategyCatalogueFilter) => void;
-  readonly subscribedClientIds?: readonly string[];
+  readonly subscribedInstanceIds?: readonly string[];
   readonly onInstanceSelect?: (instanceId: string) => void;
   readonly onRequestAllocation?: (instanceId: string) => void;
   /** Inline heading — callers can hide it when they render their own tabbed header. */
   readonly showHeading?: boolean;
 }
 
-// ─── Placeholder data wiring ──────────────────────────────────────────────────
+// ─── Deterministic synthesisers (Plan A Phase 3 replaces these) ───────────────
 //
-// Until Plan A Phase 2 ships the regenerated ui-reference-data.json, every
-// lifecycle / product-routing / venue-set column falls back to a fixed mock
-// value rendered as "—" in admin-universe (with tooltip) and as the same
-// placeholder in client-reality / client-fomo.
+// Real lifecycle state lives in Firestore keyed on instance_id. Until the
+// PATCH endpoint ships, maturity + routing are deterministic hashes of the
+// instance_id so the grid is populated and the FOMO CTA gate is testable.
+
+function hashInstanceId(id: string): number {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) {
+    h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
 
 function synthesiseMaturity(id: string): StrategyMaturityPhase {
-  // Deterministic-but-arbitrary assignment based on id hash so the grid is
-  // not entirely uniform during scaffold. Replaced by real lifecycle once
-  // Plan A Phase 3 PATCH endpoint writes to Firestore.
-  const hash = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const phases: readonly StrategyMaturityPhase[] = [
     "paper_stable",
     "live_early",
     "live_stable",
     "backtest_multi_year",
+    "paper_14d",
+    "backtest_1yr",
   ];
-  return phases[hash % phases.length] ?? "paper_stable";
+  return phases[hashInstanceId(id) % phases.length] ?? "paper_stable";
 }
 
-function synthesiseRouting(assetClass: string): ProductRouting {
-  if (assetClass === "Sports") return "im_only";
-  if (assetClass === "DeFi") return "both";
-  return "dart_only";
+function synthesiseRouting(id: string): ProductRouting {
+  return (
+    PRODUCT_ROUTINGS[hashInstanceId(id) % PRODUCT_ROUTINGS.length] ?? "both"
+  );
 }
 
-function synthesiseShareClass(id: string): ShareClass | null {
-  const lower = id.toLowerCase();
-  if (lower.includes("btc")) return "btc";
-  if (lower.includes("eth")) return "eth";
-  if (lower.includes("usdt")) return "usdt";
-  if (lower.includes("usd")) return "usd";
-  return null;
+interface SyntheticPerformance {
+  readonly sharpe: number;
+  readonly maxDrawdownPct: number;
+  readonly cagrPct: number;
+  readonly liveAllocation: number;
+  readonly livePnl: number;
 }
 
-function toFilterFromPicker(
-  selection: FamilyArchetypeSelection,
-): StrategyCatalogueFilter {
+function synthesisePerformance(id: string): SyntheticPerformance {
+  // Deterministic-but-varied numbers so the scaffold renders non-uniform tiles.
+  // Replaced by Plan C PerformanceOverlay + odum-paper series once those land.
+  const h = hashInstanceId(id);
   return {
-    family: selection.family,
-    archetype: selection.archetype,
+    sharpe: 0.8 + (h % 180) / 100, // 0.80 .. 2.60
+    maxDrawdownPct: -((h % 22) + 3), // -3 .. -25
+    cagrPct: 6 + (h % 24), // 6 .. 30
+    liveAllocation: 250_000 + (h % 40) * 25_000, // 250k .. 1.225M
+    livePnl: (h % 2 === 0 ? 1 : -1) * ((h % 32) + 2) * 1500, // ±3k .. ±51k
   };
+}
+
+function venueSetLabel(variantId: string): string {
+  const variant = lookupVenueSetVariant(variantId);
+  return variant?.label ?? variantId;
+}
+
+function venueList(variantId: string): readonly string[] {
+  return lookupVenueSetVariant(variantId)?.venues ?? [];
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -121,7 +139,7 @@ export function StrategyCatalogueSurface({
   viewMode,
   filter,
   onFilterChange,
-  subscribedClientIds,
+  subscribedInstanceIds,
   onInstanceSelect,
   onRequestAllocation,
   showHeading = false,
@@ -149,39 +167,38 @@ export function StrategyCatalogueSurface({
     });
   };
 
+  const catalogue = useMemo(() => loadStrategyCatalogue(), []);
+
   const filtered = useMemo(() => {
-    return STRATEGY_INSTANCES.filter((instance) => {
-      const maturity = synthesiseMaturity(instance.id);
-      const routing = synthesiseRouting(instance.assetClass);
-      const shareClass = synthesiseShareClass(instance.id);
+    return catalogue.filter((instance) => {
+      const maturity = synthesiseMaturity(instance.instanceId);
+      const routing = synthesiseRouting(instance.instanceId);
       return matchesFilter(activeFilter, {
-        family: instance.family as StrategyFamily,
-        archetype: instance.archetype as StrategyArchetype,
-        shareClass,
+        family: instance.family,
+        archetype: instance.archetype,
+        shareClass: instance.shareClass,
         maturityPhase: maturity,
         productRouting: routing,
       });
     });
-  }, [activeFilter]);
+  }, [catalogue, activeFilter]);
 
   const visible = useMemo(() => {
-    const subs = new Set(subscribedClientIds ?? []);
+    const subs = new Set(subscribedInstanceIds ?? []);
     if (viewMode === "client-reality") {
-      return filtered.filter((i) => subs.has(i.clientId));
+      return filtered.filter((i) => subs.has(i.instanceId));
     }
     if (viewMode === "client-fomo") {
-      return filtered.filter((i) => !subs.has(i.clientId));
+      return filtered.filter((i) => !subs.has(i.instanceId));
     }
     return filtered;
-  }, [filtered, subscribedClientIds, viewMode]);
+  }, [filtered, subscribedInstanceIds, viewMode]);
 
   return (
     <div className="space-y-4" data-testid={`strategy-catalogue-surface-${viewMode}`}>
       {showHeading ? (
         <header className="flex items-center gap-2">
-          <h2 className="text-heading font-semibold">
-            Strategy Catalogue
-          </h2>
+          <h2 className="text-heading font-semibold">Strategy Catalogue</h2>
           <Badge variant="outline" className="font-mono text-[10px]">
             {viewMode}
           </Badge>
@@ -233,7 +250,7 @@ export function StrategyCatalogueSurface({
 // ─── Admin universe / editor (read-only for now) ──────────────────────────────
 
 interface AdminUniverseGridProps {
-  readonly instances: ReadonlyArray<(typeof STRATEGY_INSTANCES)[number]>;
+  readonly instances: readonly StrategyInstance[];
   readonly editorMode: boolean;
   readonly onInstanceSelect?: (instanceId: string) => void;
 }
@@ -254,16 +271,18 @@ function AdminUniverseGrid({
             <th className="px-3 py-2">Instance</th>
             <th className="px-3 py-2">Family</th>
             <th className="px-3 py-2">Archetype</th>
-            <th className="px-3 py-2" title="Populated by Plan A / Phase 2">
-              Venue set
-            </th>
-            <th className="px-3 py-2" title="Populated by Plan A / Phase 2">
-              Share class
-            </th>
-            <th className="px-3 py-2" title="Populated by Plan A / Phase 2">
+            <th className="px-3 py-2">Venue set</th>
+            <th className="px-3 py-2">Share class</th>
+            <th
+              className="px-3 py-2"
+              title="Synthesised until Plan A Phase 3 PATCH ships"
+            >
               Maturity
             </th>
-            <th className="px-3 py-2" title="Populated by Plan A / Phase 2">
+            <th
+              className="px-3 py-2"
+              title="Synthesised until Plan A Phase 3 PATCH ships"
+            >
               Routing
             </th>
             <th className="px-3 py-2">Actions</th>
@@ -278,29 +297,27 @@ function AdminUniverseGrid({
             </tr>
           ) : null}
           {instances.map((instance) => {
-            const maturity = synthesiseMaturity(instance.id);
-            const routing = synthesiseRouting(instance.assetClass);
-            const shareClass = synthesiseShareClass(instance.id);
+            const maturity = synthesiseMaturity(instance.instanceId);
+            const routing = synthesiseRouting(instance.instanceId);
             return (
               <tr
-                key={instance.id}
+                key={instance.instanceId}
                 className="border-t border-border/60 hover:bg-accent/20"
                 data-testid="admin-universe-row"
-                data-instance-id={instance.id}
+                data-instance-id={instance.instanceId}
               >
                 <td className="px-3 py-2 font-mono text-[11px]">
-                  {instance.id}
+                  {instance.instanceId}
                 </td>
                 <td className="px-3 py-2">{instance.family}</td>
                 <td className="px-3 py-2">{instance.archetype}</td>
-                <td
-                  className="px-3 py-2 text-muted-foreground"
-                  title="Populated by Plan A / Phase 2"
-                >
-                  —
+                <td className="px-3 py-2">
+                  {venueSetLabel(instance.venueSetVariantId)}
                 </td>
                 <td className="px-3 py-2">
-                  {shareClass ? SHARE_CLASS_LABEL[shareClass] : "—"}
+                  {instance.shareClass
+                    ? SHARE_CLASS_LABEL[instance.shareClass]
+                    : "—"}
                 </td>
                 <td className="px-3 py-2">
                   <Badge variant="outline" className="font-mono text-[10px]">
@@ -322,7 +339,7 @@ function AdminUniverseGrid({
                         ? "Enabled when Plan A Phase 3 PATCH endpoint ships"
                         : "Open instance detail"
                     }
-                    onClick={() => onInstanceSelect?.(instance.id)}
+                    onClick={() => onInstanceSelect?.(instance.instanceId)}
                   >
                     {editorMode ? "Edit (locked)" : "Details"}
                   </button>
@@ -333,8 +350,8 @@ function AdminUniverseGrid({
         </tbody>
       </table>
       <p className="border-t border-border/60 bg-muted/20 px-3 py-2 text-[10px] text-muted-foreground">
-        {instances.length} instances · lifecycle columns populated by Plan A
-        Phase 2; maturity + routing are placeholder values until then.
+        {instances.length} instances · maturity + routing are synthesised until
+        Plan A Phase 3 PATCH ships.
       </p>
     </div>
   );
@@ -343,7 +360,7 @@ function AdminUniverseGrid({
 // ─── Reality grid ─────────────────────────────────────────────────────────────
 
 interface RealityGridProps {
-  readonly instances: ReadonlyArray<(typeof STRATEGY_INSTANCES)[number]>;
+  readonly instances: readonly StrategyInstance[];
   readonly onInstanceSelect?: (instanceId: string) => void;
 }
 
@@ -366,23 +383,24 @@ function RealityGrid({ instances, onInstanceSelect }: RealityGridProps) {
       data-testid="reality-grid"
     >
       {instances.map((instance) => {
+        const perf = synthesisePerformance(instance.instanceId);
         const summary: RealityInstanceSummary = {
-          instanceId: instance.id,
-          family: instance.family as StrategyFamily,
-          archetype: instance.archetype as StrategyArchetype,
-          venueSetLabel: instance.venues.join(" · ") || "—",
-          shareClass: synthesiseShareClass(instance.id),
-          maturityPhase: synthesiseMaturity(instance.id),
-          liveAllocation: instance.performance.netExposure,
-          livePnl: instance.performance.pnlTotal,
-          venuesActive: instance.venues,
-          terminalHref: `/services/trading/terminal?instance=${encodeURIComponent(instance.id)}`,
-          reportsHref: `/services/reports?instance=${encodeURIComponent(instance.id)}`,
+          instanceId: instance.instanceId,
+          family: instance.family,
+          archetype: instance.archetype,
+          venueSetLabel: venueSetLabel(instance.venueSetVariantId),
+          shareClass: instance.shareClass,
+          maturityPhase: synthesiseMaturity(instance.instanceId),
+          liveAllocation: perf.liveAllocation,
+          livePnl: perf.livePnl,
+          venuesActive: venueList(instance.venueSetVariantId),
+          terminalHref: `/services/trading/terminal?instance=${encodeURIComponent(instance.instanceId)}`,
+          reportsHref: `/services/reports?instance=${encodeURIComponent(instance.instanceId)}`,
         };
         return (
           <div
-            key={instance.id}
-            onClick={() => onInstanceSelect?.(instance.id)}
+            key={instance.instanceId}
+            onClick={() => onInstanceSelect?.(instance.instanceId)}
             role={onInstanceSelect ? "button" : undefined}
             tabIndex={onInstanceSelect ? 0 : undefined}
           >
@@ -397,7 +415,7 @@ function RealityGrid({ instances, onInstanceSelect }: RealityGridProps) {
 // ─── FOMO grid ────────────────────────────────────────────────────────────────
 
 interface FomoGridProps {
-  readonly instances: ReadonlyArray<(typeof STRATEGY_INSTANCES)[number]>;
+  readonly instances: readonly StrategyInstance[];
   readonly onInstanceSelect?: (instanceId: string) => void;
   readonly onRequestAllocation?: (instanceId: string) => void;
 }
@@ -424,24 +442,25 @@ function FomoGrid({
       data-testid="fomo-grid"
     >
       {instances.map((instance) => {
-        const maturity = synthesiseMaturity(instance.id);
-        const routing = synthesiseRouting(instance.assetClass);
+        const maturity = synthesiseMaturity(instance.instanceId);
+        const routing = synthesiseRouting(instance.instanceId);
+        const perf = synthesisePerformance(instance.instanceId);
         const summary: FomoInstanceSummary = {
-          instanceId: instance.id,
-          family: instance.family as StrategyFamily,
-          archetype: instance.archetype as StrategyArchetype,
-          venueSetLabel: instance.venues.join(" · ") || "—",
-          shareClass: synthesiseShareClass(instance.id),
+          instanceId: instance.instanceId,
+          family: instance.family,
+          archetype: instance.archetype,
+          venueSetLabel: venueSetLabel(instance.venueSetVariantId),
+          shareClass: instance.shareClass,
           maturityPhase: maturity,
           productRouting: routing,
-          sharpe: instance.performance.sharpe,
-          maxDrawdownPct: instance.performance.maxDrawdown,
-          cagrPct: instance.performance.returnPct,
+          sharpe: perf.sharpe,
+          maxDrawdownPct: perf.maxDrawdownPct,
+          cagrPct: perf.cagrPct,
         };
         return (
           <div
-            key={instance.id}
-            onClick={() => onInstanceSelect?.(instance.id)}
+            key={instance.instanceId}
+            onClick={() => onInstanceSelect?.(instance.instanceId)}
             role={onInstanceSelect ? "button" : undefined}
             tabIndex={onInstanceSelect ? 0 : undefined}
           >
@@ -456,4 +475,12 @@ function FomoGrid({
   );
 }
 
-export { LIFECYCLE_UNKNOWN };
+// Re-exports for consumers that want the synth helpers without re-importing
+// from internals. `allowsAllocationCta` is re-exposed for the Phase-5 tests.
+export {
+  LIFECYCLE_UNKNOWN,
+  STRATEGY_MATURITY_PHASES,
+  allowsAllocationCta,
+  synthesiseMaturity,
+  synthesiseRouting,
+};
