@@ -13,6 +13,7 @@ import {
 import { ARCHETYPE_TO_FAMILY } from "@/lib/architecture-v2";
 import type { StrategyFamily } from "@/lib/architecture-v2";
 import { PageHeader } from "@/components/shared/page-header";
+import { SsotLink } from "@/components/shared/ssot-link";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -130,10 +131,7 @@ export default function StrategyCatalogueCoveragePage() {
           title="Coverage matrix"
           description="Archetypes × (category × instrument type). Every cell is a capability statement. Click a cell to inspect venues, signal variants, roll mode, and representative slot labels."
         >
-          <Badge variant="outline">SSOT</Badge>
-          <Badge variant="outline" className="font-mono text-xs">
-            codex/09-strategy/architecture-v2/category-instrument-coverage.md
-          </Badge>
+          <SsotLink codexPath="09-strategy/architecture-v2/category-instrument-coverage.md" />
         </PageHeader>
 
         <div
