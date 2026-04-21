@@ -106,52 +106,48 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         ))}
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground">Asset</label>
-        <Select value={asset} onValueChange={setAsset}>
-          <SelectTrigger data-testid="asset-select">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {selectedProtocol.assets.map((a) => (
-              <SelectItem key={a} value={a}>
-                <span className="font-mono">{a}</span>
-                <span className="text-micro text-muted-foreground ml-2">
-                  Supply {formatPercent(selectedProtocol.supplyApy[a] ?? 0, 1)} / Borrow{" "}
-                  {formatPercent(selectedProtocol.borrowApy[a] ?? 0, 1)}
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground">Amount</label>
-        <Input
-          type="number"
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="font-mono"
-          data-testid="amount-input"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground">Max slippage</label>
-        <Select value={String(maxSlippageBps)} onValueChange={(v) => setMaxSlippageBps(Number(v))}>
-          <SelectTrigger className="h-8 text-xs" data-testid="slippage-select">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {SLIPPAGE_OPTIONS.map((s) => (
-              <SelectItem key={s.value} value={String(s.value)} className="text-xs">
-                {s.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="space-y-1.5 min-w-0">
+          <label className="text-xs text-muted-foreground">Asset</label>
+          <Select value={asset} onValueChange={setAsset}>
+            <SelectTrigger size="sm" className="text-xs w-full" data-testid="asset-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {selectedProtocol.assets.map((a) => (
+                <SelectItem key={a} value={a}>
+                  <span className="font-mono">{a}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5 min-w-0">
+          <label className="text-xs text-muted-foreground">Amount</label>
+          <Input
+            type="number"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="font-mono h-8 text-xs w-full"
+            data-testid="amount-input"
+          />
+        </div>
+        <div className="space-y-1.5 min-w-0">
+          <label className="text-xs text-muted-foreground">Max slippage</label>
+          <Select value={String(maxSlippageBps)} onValueChange={(v) => setMaxSlippageBps(Number(v))}>
+            <SelectTrigger size="sm" className="text-xs w-full" data-testid="slippage-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SLIPPAGE_OPTIONS.map((s) => (
+                <SelectItem key={s.value} value={String(s.value)} className="text-xs">
+                  {s.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {amountNum > 0 && (
@@ -192,62 +188,64 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
         </div>
       )}
 
-      <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Supply APY</span>
-          <span className="font-mono text-emerald-400" data-testid="supply-apy">
-            {formatPercent(supplyApy, 2)}
-          </span>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Supply APY</span>
+            <span className="font-mono text-emerald-400" data-testid="supply-apy">
+              {formatPercent(supplyApy, 2)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Borrow APY</span>
+            <span className="font-mono text-rose-400" data-testid="borrow-apy">
+              {formatPercent(borrowApy, 2)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Collateral ratio</span>
+            <span className="font-mono">{formatPercent(currentHf * 75, 0)}</span>
+          </div>
         </div>
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Borrow APY</span>
-          <span className="font-mono text-rose-400" data-testid="borrow-apy">
-            {formatPercent(borrowApy, 2)}
-          </span>
-        </div>
-      </div>
 
-      <div className="p-3 rounded-lg border space-y-2">
-        <p className="text-xs font-medium flex items-center gap-1.5">
-          <Shield className="size-3.5" />
-          Health factor preview
-        </p>
-        <div className="flex items-center gap-3">
-          <div className="text-center">
-            <p className="text-micro text-muted-foreground">Current</p>
-            <p
-              className={cn(
-                "text-lg font-mono font-bold",
-                currentHf >= 1.5 ? "text-emerald-400" : currentHf >= 1.1 ? "text-amber-400" : "text-rose-400",
-              )}
-              data-testid="current-hf"
-            >
-              {formatNumber(currentHf, 2)}
-            </p>
+        <div className="p-3 rounded-lg border space-y-2">
+          <p className="text-xs font-medium flex items-center gap-1.5">
+            <Shield className="size-3.5" />
+            Health factor
+          </p>
+          <div className="flex items-center gap-2">
+            <div className="text-center">
+              <p className="text-micro text-muted-foreground">Current</p>
+              <p
+                className={cn(
+                  "text-lg font-mono font-bold",
+                  currentHf >= 1.5 ? "text-emerald-400" : currentHf >= 1.1 ? "text-amber-400" : "text-rose-400",
+                )}
+                data-testid="current-hf"
+              >
+                {formatNumber(currentHf, 2)}
+              </p>
+            </div>
+            <ArrowDown className="size-4 text-muted-foreground rotate-[-90deg]" />
+            <div className="text-center">
+              <p className="text-micro text-muted-foreground">After</p>
+              <p
+                className={cn(
+                  "text-lg font-mono font-bold",
+                  newHf >= 1.5 ? "text-emerald-400" : newHf >= 1.1 ? "text-amber-400" : "text-rose-400",
+                )}
+                data-testid="after-hf"
+              >
+                {amountNum > 0 ? formatNumber(newHf, 2) : "—"}
+              </p>
+            </div>
           </div>
-          <ArrowDown className="size-4 text-muted-foreground rotate-[-90deg]" />
-          <div className="text-center">
-            <p className="text-micro text-muted-foreground">After</p>
-            <p
-              className={cn(
-                "text-lg font-mono font-bold",
-                newHf >= 1.5 ? "text-emerald-400" : newHf >= 1.1 ? "text-amber-400" : "text-rose-400",
-              )}
-              data-testid="after-hf"
-            >
-              {amountNum > 0 ? formatNumber(newHf, 2) : "—"}
-            </p>
-          </div>
-        </div>
-        {newHf > 0 && newHf < 1.1 && amountNum > 0 && (
-          <div className="flex items-center gap-1.5 text-xs text-rose-400">
-            <AlertTriangle className="size-3.5" />
-            Liquidation risk below 1.1
-          </div>
-        )}
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Collateral ratio</span>
-          <span className="font-mono">{formatPercent(currentHf * 75, 0)}</span>
+          {newHf > 0 && newHf < 1.1 && amountNum > 0 && (
+            <div className="flex items-center gap-1.5 text-xs text-rose-400">
+              <AlertTriangle className="size-3.5" />
+              Liquidation risk below 1.1
+            </div>
+          )}
         </div>
       </div>
 
