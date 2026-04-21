@@ -1,26 +1,37 @@
 /**
- * G1.10 — Prospect questionnaire public page.
+ * Prospect questionnaire — 6 base axes + 7 optional Reg-Umbrella axes.
  *
- * Unauthenticated. Walks the prospect through the 6 axes that drive the
- * G1.7 restriction-profile overlay. Submission sinks to localStorage
- * (dev) or Firestore `/questionnaires` (staging/prod). The admin
- * playback in user-management-ui reads from the same collection.
+ * Access-gate: wrapped in <BriefingAccessGate> so the page is only reachable
+ * with an invite code (or when no access code is configured for this env).
+ * The code fingerprint is attached to each submission so admins can pivot
+ * from access-code → cohort.
  *
- * Operator directive 2026-04-20: "user-management-api isn't needed — we
- * use Firebase auth; that's the API."
+ * Reg-Umbrella branch: the 7 extra axes (licence region, 3mo/1yr/2yr targets,
+ * own-MLRO, entity jurisdiction, supported currencies) render ONLY when
+ * `service_family ∈ {RegUmbrella, combo}`. This keeps the form short for
+ * DART / IM prospects.
+ *
+ * Submission sinks: localStorage in dev (VITE_MOCK_API=true or localhost);
+ * Firestore `/questionnaires` collection in staging/prod. The envelope
+ * (email + firm + access-code fingerprint) is persisted alongside the
+ * response so `/admin/organizations/[id]` can join on email / firm name.
  *
  * SSOT: lib/questionnaire/types.ts + UAC QuestionnaireResponse.
+ * Plan: unified-trading-pm/plans/active/reg_umbrella_questionnaire_and_onboarding_docs_2026_04_21.plan.md
  */
 
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { BriefingAccessGate } from "@/components/briefings/briefing-access-gate";
 import type {
   QuestionnaireCategory,
+  QuestionnaireEnvelope,
   QuestionnaireFundStructure,
   QuestionnaireInstrumentType,
+  QuestionnaireLicenceRegion,
   QuestionnaireResponse,
   QuestionnaireServiceFamily,
   QuestionnaireStrategyStyle,
@@ -29,16 +40,36 @@ import {
   QUESTIONNAIRE_CATEGORIES,
   QUESTIONNAIRE_FUND_STRUCTURES,
   QUESTIONNAIRE_INSTRUMENT_TYPES,
+  QUESTIONNAIRE_LICENCE_REGIONS,
   QUESTIONNAIRE_SERVICE_FAMILIES,
   QUESTIONNAIRE_STRATEGY_STYLES,
 } from "@/lib/questionnaire/types";
-import { submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
+import {
+  fingerprintAccessCode,
+  submitQuestionnaire,
+  type SubmitResult,
+} from "@/lib/questionnaire/submit";
 import {
   persistResolvedPersona,
   resolvePersonaFromQuestionnaire,
 } from "@/lib/questionnaire/resolve-persona";
 
+/** Canonical 4217 short-list offered as checkboxes before "Other" fallback. */
+const COMMON_CURRENCIES: readonly string[] = [
+  "USD",
+  "EUR",
+  "GBP",
+  "CHF",
+  "AUD",
+  "CAD",
+  "SGD",
+  "JPY",
+  "HKD",
+  "AED",
+] as const;
+
 interface FormState {
+  // Base axes
   categories: Set<QuestionnaireCategory>;
   instrument_types: Set<QuestionnaireInstrumentType>;
   venue_scope_mode: "all" | "explicit";
@@ -46,6 +77,20 @@ interface FormState {
   strategy_style: Set<QuestionnaireStrategyStyle>;
   service_family: QuestionnaireServiceFamily;
   fund_structure: QuestionnaireFundStructure;
+
+  // Reg-Umbrella axes
+  licence_region: QuestionnaireLicenceRegion | null;
+  targets_3mo: string;
+  targets_1yr: string;
+  targets_2yr: string;
+  own_mlro: "yes" | "no" | "unsure";
+  entity_jurisdiction: string;
+  supported_currencies: Set<string>;
+  supported_currencies_other: string;
+
+  // Envelope (captured when access-gate is live)
+  email: string;
+  firm_name: string;
 }
 
 function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
@@ -58,6 +103,10 @@ function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
   return next;
 }
 
+function isRegUmbrellaPath(service_family: QuestionnaireServiceFamily): boolean {
+  return service_family === "RegUmbrella" || service_family === "combo";
+}
+
 function buildResponse(state: FormState): QuestionnaireResponse {
   const venue_scope =
     state.venue_scope_mode === "all"
@@ -66,7 +115,8 @@ function buildResponse(state: FormState): QuestionnaireResponse {
           .split(",")
           .map((v) => v.trim())
           .filter((v) => v.length > 0);
-  return {
+
+  const base: QuestionnaireResponse = {
     categories: [...state.categories],
     instrument_types: [...state.instrument_types],
     venue_scope,
@@ -74,9 +124,47 @@ function buildResponse(state: FormState): QuestionnaireResponse {
     service_family: state.service_family,
     fund_structure: state.fund_structure,
   };
+
+  if (!isRegUmbrellaPath(state.service_family)) {
+    return base;
+  }
+
+  // Reg-Umbrella branch — only attach the extra axes when the prospect
+  // picked RegUmbrella or combo. Empty values fall through as null /
+  // empty tuple so Firestore doesn't get lots of "" noise.
+  const currencies: readonly string[] = Array.from(
+    new Set(
+      [
+        ...state.supported_currencies,
+        ...state.supported_currencies_other
+          .split(",")
+          .map((v) => v.trim().toUpperCase())
+          .filter((v) => v.length > 0),
+      ].slice().sort(),
+    ),
+  );
+
+  return {
+    ...base,
+    licence_region: state.licence_region,
+    targets_3mo: state.targets_3mo.trim() || null,
+    targets_1yr: state.targets_1yr.trim() || null,
+    targets_2yr: state.targets_2yr.trim() || null,
+    own_mlro: state.own_mlro === "yes" ? true : state.own_mlro === "no" ? false : null,
+    entity_jurisdiction: state.entity_jurisdiction.trim() || null,
+    supported_currencies: currencies,
+  };
 }
 
 export default function QuestionnairePage() {
+  return (
+    <BriefingAccessGate>
+      <QuestionnaireForm />
+    </BriefingAccessGate>
+  );
+}
+
+export function QuestionnaireForm() {
   const router = useRouter();
   const [state, setState] = useState<FormState>({
     categories: new Set<QuestionnaireCategory>(),
@@ -86,20 +174,44 @@ export default function QuestionnairePage() {
     strategy_style: new Set<QuestionnaireStrategyStyle>(),
     service_family: "DART",
     fund_structure: "NA",
+    licence_region: null,
+    targets_3mo: "",
+    targets_1yr: "",
+    targets_2yr: "",
+    own_mlro: "unsure",
+    entity_jurisdiction: "",
+    supported_currencies: new Set<string>(),
+    supported_currencies_other: "",
+    email: "",
+    firm_name: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
+
+  const regUmbrellaVisible = useMemo(
+    () => isRegUmbrellaPath(state.service_family),
+    [state.service_family],
+  );
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     const response = buildResponse(state);
-    const outcome = await submitQuestionnaire(response);
+
+    // Build the envelope only when either identifier is provided.
+    const envelope: QuestionnaireEnvelope | null =
+      state.email.trim() || state.firm_name.trim()
+        ? {
+            email: state.email.trim(),
+            firm_name: state.firm_name.trim(),
+            access_code_fingerprint: await fingerprintAccessCode(
+              readStoredAccessCode() ?? "",
+            ),
+          }
+        : null;
+
+    const outcome = await submitQuestionnaire(response, envelope);
     if (outcome.success) {
-      // Stamp the resolved persona to localStorage so the downstream
-      // AvailabilityStoreProvider + audience helpers seed visibility on next
-      // navigation. See `lib/questionnaire/resolve-persona.ts` + codex
-      // `09-strategy/architecture-v2/restriction-policy.md` § 4.
       const personaId = resolvePersonaFromQuestionnaire(response);
       persistResolvedPersona(personaId);
     }
@@ -114,7 +226,8 @@ export default function QuestionnairePage() {
     <main className="mx-auto max-w-2xl px-6 py-12" data-testid="questionnaire-page">
       <h1 className="text-3xl font-semibold">Tell us about your strategy</h1>
       <p className="mt-2 text-slate-500">
-        Six quick questions so we can pre-configure your demo. No login required.
+        Invite-only questionnaire. Six quick questions (plus a Regulatory Umbrella
+        branch if you need FCA cover) so we can pre-configure your path.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8" data-testid="questionnaire-form">
@@ -270,6 +383,207 @@ export default function QuestionnairePage() {
           </div>
         </fieldset>
 
+        {/* ─── Regulatory Umbrella branch ─────────────────────────────── */}
+        {regUmbrellaVisible && (
+          <section
+            data-testid="reg-umbrella-section"
+            className="rounded-lg border border-dashed border-slate-300 bg-slate-50/50 p-5 space-y-6"
+          >
+            <header>
+              <h2 className="text-lg font-semibold">Regulatory Umbrella details</h2>
+              <p className="text-sm text-slate-500">
+                These help us tailor the umbrella structure to your firm. Skip any
+                you&apos;re unsure of — we&apos;ll follow up.
+              </p>
+            </header>
+
+            {/* 7. Licence region */}
+            <fieldset data-testid="axis-licence-region">
+              <legend className="font-medium">7. Licence region preference</legend>
+              <div className="mt-2 space-y-1">
+                {QUESTIONNAIRE_LICENCE_REGIONS.map((lr) => (
+                  <label key={lr} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="licence_region"
+                      value={lr}
+                      data-testid={`licence-region-${lr}`}
+                      checked={state.licence_region === lr}
+                      onChange={() => setState((s) => ({ ...s, licence_region: lr }))}
+                    />
+                    <span>{lr.replace(/_/g, " ")}</span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* 8. Entity jurisdiction */}
+            <fieldset data-testid="axis-entity-jurisdiction">
+              <legend className="font-medium">8. Operating entity jurisdiction</legend>
+              <input
+                type="text"
+                name="entity_jurisdiction"
+                data-testid="entity-jurisdiction"
+                className="mt-2 w-full rounded border px-3 py-2"
+                placeholder="GB, IE, LU, JE, GG, Gibraltar …"
+                value={state.entity_jurisdiction}
+                onChange={(e) =>
+                  setState((s) => ({ ...s, entity_jurisdiction: e.target.value }))
+                }
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                ISO-2 country code preferred; free text accepted for dependent
+                territories or EEA sub-regions.
+              </p>
+            </fieldset>
+
+            {/* 9. Supported currencies */}
+            <fieldset data-testid="axis-supported-currencies">
+              <legend className="font-medium">9. Operating currencies</legend>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {COMMON_CURRENCIES.map((ccy) => (
+                  <label
+                    key={ccy}
+                    className="inline-flex items-center gap-2 rounded border px-3 py-1"
+                  >
+                    <input
+                      type="checkbox"
+                      name="supported_currencies"
+                      value={ccy}
+                      data-testid={`currency-${ccy}`}
+                      checked={state.supported_currencies.has(ccy)}
+                      onChange={() =>
+                        setState((s) => ({
+                          ...s,
+                          supported_currencies: toggleInSet(s.supported_currencies, ccy),
+                        }))
+                      }
+                    />
+                    <span>{ccy}</span>
+                  </label>
+                ))}
+              </div>
+              <input
+                type="text"
+                name="supported_currencies_other"
+                data-testid="supported-currencies-other"
+                className="mt-2 w-full rounded border px-3 py-2"
+                placeholder="Other (comma-separated ISO-4217 codes): MXN, ZAR …"
+                value={state.supported_currencies_other}
+                onChange={(e) =>
+                  setState((s) => ({
+                    ...s,
+                    supported_currencies_other: e.target.value,
+                  }))
+                }
+              />
+            </fieldset>
+
+            {/* 10. Own MLRO */}
+            <fieldset data-testid="axis-own-mlro">
+              <legend className="font-medium">10. Will you supply your own MLRO?</legend>
+              <div className="mt-2 space-y-1">
+                {(
+                  [
+                    { value: "yes", label: "Yes — we have / will appoint our own MLRO" },
+                    { value: "no", label: "No — we&apos;d like Odum&apos;s MLRO to cover us" },
+                    { value: "unsure", label: "Not sure yet — discuss" },
+                  ] as const
+                ).map(({ value, label }) => (
+                  <label key={value} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="own_mlro"
+                      value={value}
+                      data-testid={`own-mlro-${value}`}
+                      checked={state.own_mlro === value}
+                      onChange={() => setState((s) => ({ ...s, own_mlro: value }))}
+                    />
+                    <span dangerouslySetInnerHTML={{ __html: label }} />
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* 11-13. Targets */}
+            <fieldset data-testid="axis-targets">
+              <legend className="font-medium">
+                11. Business targets (free text)
+              </legend>
+              <p className="mt-1 text-xs text-slate-500">
+                AUM / revenue / headcount / licence-milestone — whatever best
+                captures the plan. Blank entries are fine.
+              </p>
+              <label className="mt-3 block text-sm">
+                First 3 months
+                <textarea
+                  name="targets_3mo"
+                  data-testid="targets-3mo"
+                  rows={2}
+                  className="mt-1 w-full rounded border px-3 py-2"
+                  value={state.targets_3mo}
+                  onChange={(e) => setState((s) => ({ ...s, targets_3mo: e.target.value }))}
+                />
+              </label>
+              <label className="mt-3 block text-sm">
+                End of year 1
+                <textarea
+                  name="targets_1yr"
+                  data-testid="targets-1yr"
+                  rows={2}
+                  className="mt-1 w-full rounded border px-3 py-2"
+                  value={state.targets_1yr}
+                  onChange={(e) => setState((s) => ({ ...s, targets_1yr: e.target.value }))}
+                />
+              </label>
+              <label className="mt-3 block text-sm">
+                End of year 2
+                <textarea
+                  name="targets_2yr"
+                  data-testid="targets-2yr"
+                  rows={2}
+                  className="mt-1 w-full rounded border px-3 py-2"
+                  value={state.targets_2yr}
+                  onChange={(e) => setState((s) => ({ ...s, targets_2yr: e.target.value }))}
+                />
+              </label>
+            </fieldset>
+          </section>
+        )}
+
+        {/* Envelope: we always ask; admin playback pivots off these. */}
+        <fieldset data-testid="axis-envelope">
+          <legend className="font-medium">Who&apos;s this for?</legend>
+          <p className="mt-1 text-xs text-slate-500">
+            So we can tie your answers back to your organisation when we follow
+            up.
+          </p>
+          <label className="mt-3 block text-sm">
+            Work email
+            <input
+              type="email"
+              name="email"
+              data-testid="envelope-email"
+              className="mt-1 w-full rounded border px-3 py-2"
+              placeholder="you@firm.com"
+              value={state.email}
+              onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
+            />
+          </label>
+          <label className="mt-3 block text-sm">
+            Firm name
+            <input
+              type="text"
+              name="firm_name"
+              data-testid="envelope-firm-name"
+              className="mt-1 w-full rounded border px-3 py-2"
+              placeholder="Acme Capital LLP"
+              value={state.firm_name}
+              onChange={(e) => setState((s) => ({ ...s, firm_name: e.target.value }))}
+            />
+          </label>
+        </fieldset>
+
         <div className="flex items-center gap-4">
           <button
             type="submit"
@@ -293,4 +607,17 @@ export default function QuestionnairePage() {
       </form>
     </main>
   );
+}
+
+/**
+ * Read the access code the prospect used to unlock the page. The
+ * briefing-access-gate does NOT currently persist the plain code (only
+ * an "unlocked" flag) — so this is a best-effort: any consumer that
+ * stored the unsalted code under `odum-briefing-access-code` is
+ * captured for the fingerprint. If absent, the fingerprint is empty and
+ * the envelope still identifies the prospect by email + firm.
+ */
+function readStoredAccessCode(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem("odum-briefing-access-code");
 }

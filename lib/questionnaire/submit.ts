@@ -15,7 +15,12 @@
  * use Firebase auth; that's the API."
  */
 
-import { QUESTIONNAIRE_LOCAL_STORAGE_KEY, type QuestionnaireResponse } from "./types";
+import {
+  QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY,
+  QUESTIONNAIRE_LOCAL_STORAGE_KEY,
+  type QuestionnaireEnvelope,
+  type QuestionnaireResponse,
+} from "./types";
 
 export interface SubmitResult {
   readonly success: boolean;
@@ -39,7 +44,10 @@ function isDevSink(): boolean {
   return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 }
 
-async function submitToFirestore(response: QuestionnaireResponse): Promise<SubmitResult> {
+async function submitToFirestore(
+  response: QuestionnaireResponse,
+  envelope: QuestionnaireEnvelope | null,
+): Promise<SubmitResult> {
   try {
     // Lazy-load the firebase SDK so dev-only paths don't balloon the bundle.
     const [{ addDoc, collection, serverTimestamp }, { getFirebaseDb }] = await Promise.all([
@@ -56,6 +64,7 @@ async function submitToFirestore(response: QuestionnaireResponse): Promise<Submi
     }
     const docRef = await addDoc(collection(db, "questionnaires"), {
       ...response,
+      ...(envelope !== null ? { submitted_by: envelope } : {}),
       submittedAt: serverTimestamp(),
     });
     return {
@@ -72,7 +81,10 @@ async function submitToFirestore(response: QuestionnaireResponse): Promise<Submi
   }
 }
 
-function submitToLocalStorage(response: QuestionnaireResponse): SubmitResult {
+function submitToLocalStorage(
+  response: QuestionnaireResponse,
+  envelope: QuestionnaireEnvelope | null,
+): SubmitResult {
   try {
     const submissionId = `q-local-${Date.now()}`;
     const payload = {
@@ -81,6 +93,12 @@ function submitToLocalStorage(response: QuestionnaireResponse): SubmitResult {
       submittedAt: new Date().toISOString(),
     };
     localStorage.setItem(QUESTIONNAIRE_LOCAL_STORAGE_KEY, JSON.stringify(payload));
+    if (envelope !== null) {
+      localStorage.setItem(
+        QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY,
+        JSON.stringify({ ...envelope, submissionId, submittedAt: payload.submittedAt }),
+      );
+    }
     return { success: true, sink: "localStorage", submissionId };
   } catch (error) {
     return {
@@ -93,11 +111,26 @@ function submitToLocalStorage(response: QuestionnaireResponse): SubmitResult {
 
 export async function submitQuestionnaire(
   response: QuestionnaireResponse,
+  envelope: QuestionnaireEnvelope | null = null,
 ): Promise<SubmitResult> {
   if (isDevSink()) {
-    return submitToLocalStorage(response);
+    return submitToLocalStorage(response, envelope);
   }
-  return submitToFirestore(response);
+  return submitToFirestore(response, envelope);
+}
+
+/**
+ * Hash an access code to a hex SHA-256 digest so the Firestore envelope
+ * carries proof-of-access without the plain code. Falls back to an empty
+ * string outside the browser / when SubtleCrypto is unavailable (SSR).
+ */
+export async function fingerprintAccessCode(code: string): Promise<string> {
+  if (typeof window === "undefined" || !window.crypto?.subtle) return "";
+  const bytes = new TextEncoder().encode(code);
+  const digest = await window.crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 export function readLocalSubmission(): QuestionnaireResponse | null {
