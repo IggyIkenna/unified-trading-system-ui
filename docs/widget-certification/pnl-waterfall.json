@@ -198,7 +198,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "File is 915 lines but contains 5 discrete components (PnlWaterfallWidget ~366 lines, FactorHistogram ~128 lines, FactorPie ~158 lines, PieLegend ~82 lines, helpers). Each component within 200-line limit after PieLegend extraction. File-level 500-line limit exceeded \u2014 deferred finding logged."
+          "note": "Decomposed to 4 sibling files (commit a4f7a76): pnl-waterfall-widget.tsx (385), pnl-waterfall-helpers.tsx (72), pnl-waterfall-factor-histogram.tsx (150), pnl-waterfall-factor-pie.tsx (281). All under the 500-line file limit; each component under the 200-line component limit."
         },
         "7.4": {
           "result": "pass",
@@ -217,7 +217,7 @@
           "note": "useMemo deps are stable arrays/primitives. No inline object/array literals in deps. maxFactorAbs/defiPnlMax computed once at render top. Recharts event handlers cast to unknown then narrowed (no closure captures causing re-creates)."
         }
       },
-      "notes": "7.1-7.4, 7.6-7.7 pass. 7.5 deferred globally. File-level size deferred with rationale."
+      "notes": "7.1-7.4, 7.6-7.7 pass. 7.5 retired (English-only UI). File-level size fixed via 4-file decomposition (commit a4f7a76)."
     },
     "l8": {
       "status": "partial",
@@ -287,7 +287,6 @@
     "notes": "Widget is strategy-agnostic \u2014 renders whatever pnlComponents the context provides. Coverage is scope-gated by the global scope filter. DeFi Attribution section explicitly present for defi asset class."
   },
   "knownIssues": [
-    "File size 915 lines exceeds 500-line spec limit \u2014 contains 5 private subcomponents. Refactor to separate files deferred to post-cert cleanup.",
     "text-[Xpx] micro-typography classes (text-[11px], text-[10px] etc.) need --text-2xs/--text-3xs tokens in globals.css before they can be replaced with scale classes.",
     "bg-[var(--accent-blue)] on line 262 uses a CSS variable (--accent-blue) that does not exist in globals.css \u2014 rendered as transparent. Token request: --accent-blue for unrealized P&L bar fill."
   ],
@@ -303,8 +302,8 @@
       "level": "l7",
       "check": "7.3",
       "description": "pnl-waterfall-widget.tsx \u2014 file 915 lines exceeds 500-line spec limit after extraction.",
-      "status": "deferred",
-      "deferReason": "File contains 5 private subcomponents (PnlWaterfallWidget, FactorHistogram, FactorPie, PieLegend, helpers). Splitting to separate files is a larger refactor deferred to post-certification cleanup pass."
+      "status": "fixed",
+      "fix": "Decomposed into 4 sibling files (commit a4f7a76): pnl-waterfall-widget.tsx (385 lines, root widget), pnl-waterfall-helpers.tsx (72 lines, shared types + formatSignedCompact/formatAxisCompact/FactorTooltipCard), pnl-waterfall-factor-histogram.tsx (150 lines, FactorHistogram Recharts BarChart), pnl-waterfall-factor-pie.tsx (281 lines, FactorPie donut + PieLegend). All four files now under the 500-line limit."
     },
     {
       "level": "l7",
