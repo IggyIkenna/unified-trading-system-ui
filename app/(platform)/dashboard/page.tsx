@@ -1,18 +1,29 @@
 "use client";
 
-import { ActivityFeed } from "@/components/platform/activity-feed";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { StatusDot } from "@/components/shared/status-badge";
 import {
   ServiceTile,
   mockServiceDegraded,
+  type ServiceTileSubRouteChip,
 } from "@/components/services/ServiceTile";
 import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import type { Entitlement } from "@/lib/config/auth";
-import type { ServiceDefinition } from "@/lib/config/services";
-import { SERVICE_REGISTRY, getVisibleServices } from "@/lib/config/services";
+import type {
+  DashboardTileId,
+  ServiceDefinition,
+} from "@/lib/config/services";
+import {
+  SERVICE_REGISTRY,
+  getAccessibleSubRoutes,
+  getVisibleServices,
+} from "@/lib/config/services";
+import {
+  personaDashboardShape,
+  personaDashboardSubRoutes,
+} from "@/lib/auth/persona-dashboard-shape";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { PLATFORM_LIFECYCLE_CONFIG, PLATFORM_LIFECYCLE_STAGES, type PlatformLifecycleStage } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -153,8 +164,15 @@ export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
   const { isLive } = useExecutionMode();
 
+  // Resolve per-persona tile visibility from the dashboard shape. Tiles marked
+  // "hidden" drop out entirely; "locked" / "visible" tiles both render (locked
+  // tiles use the padlocked-visible ServiceTile variant via entitlementLocked).
+  const tileShape = personaDashboardShape(user);
+  const subRouteShape = personaDashboardSubRoutes(user);
   const allServices = SERVICE_REGISTRY.filter((svc) => {
     if (svc.internalOnly && user?.role !== "admin") return false;
+    const vis = tileShape[svc.key as DashboardTileId];
+    if (vis === "hidden") return false;
     return true;
   });
 
@@ -233,21 +251,44 @@ export default function DashboardPage() {
               noise on the services hub, and duplicates what the top-nav
               already exposes. */}
           <div className="space-y-4">
-            {/* Service cards */}
+            {/* Service cards — 5 top-level tiles (post 2026-04-21 collapse).
+                Tile visibility resolved against persona-dashboard-shape; sub-
+                route chips pre-filtered by entitlement + persona sub-route
+                shape. Folded-away keys (data / research / promote / observe /
+                strategy-catalogue) now live as DART sub-routes, not tiles. */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {allServices
-                .filter((svc) => PLATFORM_LIFECYCLE_STAGES.includes(svc.lifecycleStage as PlatformLifecycleStage))
-                .map((svc) => {
-                  const entitlementLocked = !visibleKeys.has(svc.key);
-                  return (
-                    <ServiceCardWrapper
-                      key={svc.key}
-                      service={svc}
-                      entitlementLocked={entitlementLocked}
-                      isLive={isLive}
-                    />
-                  );
-                })}
+              {allServices.map((svc) => {
+                const entitlementLocked = !visibleKeys.has(svc.key);
+                const tileId = svc.key as DashboardTileId;
+                const chipVis = subRouteShape[tileId] ?? {};
+                // Sub-routes: start from entitlement-filtered set, then apply
+                // persona visibility (hidden → drop, locked → keep with
+                // locked=true chip).
+                const accessible = getAccessibleSubRoutes(
+                  svc,
+                  user.entitlements as readonly string[],
+                  user.role,
+                );
+                const chips: ServiceTileSubRouteChip[] = accessible
+                  .filter((sub) => chipVis[sub.key] !== "hidden")
+                  .map((sub) => ({
+                    key: sub.key,
+                    label: sub.label,
+                    href: sub.href,
+                    icon: sub.icon,
+                    locked: sub.locked || chipVis[sub.key] === "locked",
+                  }));
+                return (
+                  <ServiceCardWrapper
+                    key={svc.key}
+                    service={svc}
+                    entitlementLocked={entitlementLocked}
+                    isLive={isLive}
+                    subRoutes={chips}
+                    personaId={user.id}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -346,20 +387,27 @@ function serviceKeySalt(key: string): number {
 
 // ─── Quick stat generators (mock — production uses API) ──────────────────────
 
-function useServiceQuickStat(key: string, isLive: boolean): string | undefined {
+function useServiceQuickStat(key: string, isLive: boolean, personaId?: string): string | undefined {
   return React.useMemo(() => {
+    // Signals-In personas see a signal-centric stat on the DART tile, not the
+    // generic P&L. Post 2026-04-21 collapse — DART tile swallows Research /
+    // Promote / Observe / Strategy Catalogue surfaces, so the quick-stat
+    // headline depends on the persona's primary DART sub-route.
+    if (key === "dart" && personaId === "prospect-signals-only") {
+      return isLive ? "2 active signals · 14 today" : "Signals replay ready";
+    }
+    if (key === "dart" && personaId === "client-data-only") {
+      return "2,400+ instruments · Strategy catalogue";
+    }
     const stats: Record<string, string> = {
-      data: "2,400+ instruments",
-      research: "38 backtests, 6 models",
-      promote: "3 candidates pending",
-      trading: isLive ? "$142K P&L today" : "$139K batch P&L",
-      observe: isLive ? "3 active alerts" : "No alerts",
+      dart: isLive ? "$142K P&L · 47 positions · 3 alerts" : "$139K batch P&L · 38 backtests",
+      "odum-signals": "12 counterparties · 284 emissions today",
       reports: "12 reports this month",
       "investor-relations": "Next board: May 15",
-      admin: "42 users, 8 orgs",
+      admin: "42 users · 8 orgs",
     };
     return stats[key];
-  }, [key, isLive]);
+  }, [key, isLive, personaId]);
 }
 
 /**
@@ -383,10 +431,14 @@ function ServiceCardWrapper({
   service,
   entitlementLocked,
   isLive,
+  subRoutes,
+  personaId,
 }: {
   service: ServiceDefinition;
   entitlementLocked: boolean;
   isLive: boolean;
+  subRoutes?: readonly ServiceTileSubRouteChip[];
+  personaId?: string;
 }) {
   const profileLockState = useTileLockState(service.key);
   const resolvedLockState: TileLockState =
@@ -396,7 +448,7 @@ function ServiceCardWrapper({
         ? "padlocked-visible"
         : "unlocked";
 
-  const quickStat = useServiceQuickStat(service.key, isLive);
+  const quickStat = useServiceQuickStat(service.key, isLive, personaId);
   const degraded = React.useMemo(
     () => (resolvedLockState === "unlocked" ? mockServiceDegraded(service.key) : false),
     [resolvedLockState, service.key],
@@ -408,6 +460,7 @@ function ServiceCardWrapper({
       lockState={resolvedLockState}
       quickStat={quickStat}
       degraded={degraded}
+      subRoutes={subRoutes}
     />
   );
 }

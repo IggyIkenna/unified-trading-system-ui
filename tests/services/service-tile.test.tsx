@@ -39,6 +39,7 @@ const SERVICE_FIXTURE: ServiceDefinition = {
   requiredEntitlements: ["strategy-full"],
   icon: "FlaskConical",
   internalOnly: false,
+  subRoutes: [],
 };
 
 describe("ServiceTile — G1.3 three-state lockState enum", () => {
@@ -49,7 +50,11 @@ describe("ServiceTile — G1.3 three-state lockState enum", () => {
     });
     const tile = screen.getByTestId("service-tile-research");
     expect(tile.getAttribute("data-lock-state")).toBe("unlocked");
-    expect(tile.getAttribute("href")).toBe("/services/research/overview");
+    // Post 2026-04-21 — ServiceTile wraps a <Link> around the primary
+    // CardContent so the outer Card can host the chip row without nesting
+    // <a> inside <a>. Href lives on the inner primary link.
+    const primaryLink = screen.getByTestId("service-tile-research-primary");
+    expect(primaryLink.getAttribute("href")).toBe("/services/research/overview");
     // Padlock must not appear on the unlocked tile.
     expect(screen.queryByTestId("service-tile-research-padlock")).toBeNull();
   });

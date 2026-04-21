@@ -40,8 +40,11 @@ describe("getVisibleServices branch coverage", () => {
 
   it("empty-entitlement client sees zero services (no entitlement overlap)", () => {
     const visible = getVisibleServices([], "client");
-    // All public services require some entitlement from ["data-basic","data-pro",...].
-    // With empty entitlements, no overlap → empty visible list.
+    // All public tiles require some entitlement from ["data-basic", "data-pro",
+    // "execution-basic", "execution-full", "ml-full", "strategy-full",
+    // "reporting", "investor-relations"]. With empty entitlements, no
+    // overlap → empty visible list. Admin tile is wildcard-gated and filtered
+    // for non-admin roles.
     expect(visible).toEqual([]);
   });
 
@@ -49,5 +52,9 @@ describe("getVisibleServices branch coverage", () => {
     const reporter = getVisibleServices(["reporting"], "client");
     const reporterKeys = reporter.map((s: ServiceDefinition) => s.key);
     expect(reporterKeys).toContain("reports");
+    // reports is the ONLY non-wildcard-only tile gated solely by "reporting".
+    // DART requires execution-* / strategy-* / ml-* / data-* and won't show
+    // for a reporting-only user.
+    expect(reporterKeys).not.toContain("dart");
   });
 });

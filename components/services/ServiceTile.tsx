@@ -43,10 +43,34 @@ import {
   type TileLockState,
 } from "@/lib/visibility/tile-lock-state";
 import {
+  Activity,
   AlertTriangle,
+  ArrowUpCircle,
+  BarChart3,
+  Building2,
   ChevronRight,
   Database,
+  Eye,
+  FileCode,
+  FileText,
+  FlaskConical,
+  Gauge,
+  History,
+  Layers,
+  LifeBuoy,
   Lock,
+  Network,
+  Newspaper,
+  Presentation,
+  Radio,
+  Receipt,
+  Rocket,
+  Scale,
+  ScrollText,
+  Settings2,
+  ShieldCheck,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -54,34 +78,50 @@ import * as React from "react";
 // Icon map is kept in sync with the dashboard page's map; future consolidation
 // into a shared registry belongs to the platform icons module, out of scope
 // for G1.3.
-import {
-  ArrowUpCircle,
-  Eye,
-  FileText,
-  FlaskConical,
-  Layers,
-  Presentation,
-  Radio,
-  Settings2,
-  TrendingUp,
-} from "lucide-react";
-
 const ICON_MAP: Record<string, React.ElementType> = {
-  Database,
-  FlaskConical,
+  Activity,
   ArrowUpCircle,
-  TrendingUp,
+  BarChart3,
+  Building2,
+  Database,
   Eye,
-  Settings2,
+  FileCode,
   FileText,
-  Radio,
+  FlaskConical,
+  Gauge,
+  History,
   Layers,
+  LifeBuoy,
+  Network,
+  Newspaper,
   Presentation,
+  Radio,
+  Receipt,
+  Rocket,
+  Scale,
+  ScrollText,
+  Settings2,
+  ShieldCheck,
+  TrendingUp,
+  Users,
   Settings: Settings2,
 };
 
 function serviceKeySalt(key: string): number {
   return [...key].reduce((acc, c) => acc + c.charCodeAt(0), 0);
+}
+
+/**
+ * Chip rendered in the sub-route row under an unlocked tile. The caller
+ * pre-filters `service.subRoutes` (entitlement + persona-dashboard-shape) and
+ * passes through the resolved `locked` state for each chip.
+ */
+export interface ServiceTileSubRouteChip {
+  key: string;
+  label: string;
+  href: string;
+  icon: string;
+  locked: boolean;
 }
 
 export interface ServiceTileProps {
@@ -95,6 +135,15 @@ export interface ServiceTileProps {
   quickStat?: string;
   /** Optional derived health badge shown in the corner of the unlocked tile. */
   degraded?: boolean;
+  /**
+   * Optional sub-route chip row (2026-04-21, dashboard 5-tile collapse). Caller
+   * pre-filters by entitlement + persona shape; locked chips render padlocked.
+   * Only rendered when `lockState === "unlocked"` — padlocked tiles stay
+   * description-only per rule 06.
+   */
+  subRoutes?: readonly ServiceTileSubRouteChip[];
+  /** Max chips to show inline; overflow becomes `+N more` link. Default 4. */
+  maxChips?: number;
 }
 
 export function ServiceTile({
@@ -102,6 +151,8 @@ export function ServiceTile({
   lockState = "unlocked",
   quickStat,
   degraded,
+  subRoutes,
+  maxChips = 4,
 }: ServiceTileProps): React.ReactElement | null {
   if (lockState === "hidden") {
     // Intentionally render nothing — HIDDEN-ENTIRELY per rule 06.
@@ -187,14 +238,20 @@ export function ServiceTile({
 
   // lockState === "unlocked"
   const testId = `service-tile-${service.key}`;
+  const visibleChips = subRoutes ?? [];
+  const shownChips = visibleChips.slice(0, maxChips);
+  const overflowCount = Math.max(0, visibleChips.length - shownChips.length);
+  const hasChips = shownChips.length > 0;
   return (
-    <Link href={service.href} data-testid={testId} data-lock-state={lockState}>
-      <Card
-        className={cn(
-          "group hover:border-white/20 transition-colors cursor-pointer h-full",
-          degraded && "border-amber-500/20",
-        )}
-      >
+    <Card
+      data-testid={testId}
+      data-lock-state={lockState}
+      className={cn(
+        "group hover:border-white/20 transition-colors h-full",
+        degraded && "border-amber-500/20",
+      )}
+    >
+      <Link href={service.href} className="block" data-testid={`${testId}-primary`}>
         <CardContent className="p-4 flex gap-3">
           <div className={cn("flex-shrink-0 mt-0.5", stageConfig.color)}>
             <Icon className="size-4" />
@@ -248,7 +305,73 @@ export function ServiceTile({
           </div>
           <ChevronRight className="size-3.5 text-muted-foreground/20 group-hover:text-muted-foreground flex-shrink-0 mt-1 transition-colors" />
         </CardContent>
-      </Card>
+      </Link>
+      {hasChips && (
+        <div
+          className="px-4 pb-3 pt-0 flex flex-wrap gap-1.5"
+          data-testid={`${testId}-subroutes`}
+        >
+          {shownChips.map((chip) => (
+            <SubRouteChip key={chip.key} chip={chip} stageColor={stageConfig.color} />
+          ))}
+          {overflowCount > 0 && (
+            <Link
+              href={service.href}
+              className="inline-flex items-center px-1.5 h-5 rounded text-[10px] text-muted-foreground/70 hover:text-foreground border border-border/40 hover:border-border"
+              data-testid={`${testId}-subroute-overflow`}
+            >
+              +{overflowCount} more
+            </Link>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function SubRouteChip({
+  chip,
+  stageColor,
+}: {
+  chip: ServiceTileSubRouteChip;
+  stageColor: string;
+}) {
+  const ChipIcon = ICON_MAP[chip.icon] ?? ChevronRight;
+  if (chip.locked) {
+    return (
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span
+              className="inline-flex items-center gap-1 px-1.5 h-5 rounded text-[10px] text-muted-foreground/50 border border-border/40 cursor-not-allowed"
+              data-testid={`subroute-chip-${chip.key}`}
+              data-locked="true"
+              aria-disabled="true"
+            >
+              <Lock className="size-2.5 opacity-60" />
+              {chip.label}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="text-xs">
+            Upgrade to access
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+  return (
+    <Link
+      href={chip.href}
+      className={cn(
+        "inline-flex items-center gap-1 px-1.5 h-5 rounded text-[10px] border border-border/50 hover:border-white/20 hover:bg-muted/30 transition-colors",
+        stageColor,
+      )}
+      data-testid={`subroute-chip-${chip.key}`}
+      data-locked="false"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <ChipIcon className="size-2.5" />
+      {chip.label}
     </Link>
   );
 }

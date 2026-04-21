@@ -68,16 +68,47 @@ describe("lib/config/auth", () => {
 });
 
 describe("lib/config/services", () => {
-  it("exports SERVICE_REGISTRY with the expected services", () => {
+  it("exports SERVICE_REGISTRY with the 5 product tiles", () => {
     expect(Array.isArray(SERVICE_REGISTRY)).toBe(true);
-    // Phase 11 (2026-04-20) — added `signals` + `strategy-catalogue` as
-    // top-level services under the DART umbrella (un-orphaning the
-    // previously-unreachable /services/signals/dashboard + strategy
-    // catalogue). Count is now 10.
-    expect(SERVICE_REGISTRY.length).toBe(10);
+    // 2026-04-21 collapse — top-level grid now renders 5 product tiles.
+    // Folded-away (now DART sub-routes): data · research · promote · observe
+    // · strategy-catalogue. Signals disambiguated: `odum-signals` is the
+    // counterparty-outbound tile; inbound Signal Intake lives as a DART
+    // sub-route for Signals-In clients.
+    expect(SERVICE_REGISTRY.length).toBe(5);
     const keys = SERVICE_REGISTRY.map((s) => s.key);
-    expect(keys).toContain("signals");
-    expect(keys).toContain("strategy-catalogue");
+    expect(keys).toEqual(
+      expect.arrayContaining([
+        "dart",
+        "odum-signals",
+        "reports",
+        "investor-relations",
+        "admin",
+      ]),
+    );
+    // Folded-away keys MUST NOT appear as top-level tiles.
+    expect(keys).not.toContain("data");
+    expect(keys).not.toContain("research");
+    expect(keys).not.toContain("promote");
+    expect(keys).not.toContain("observe");
+    expect(keys).not.toContain("strategy-catalogue");
+  });
+
+  it("DART tile carries sub-routes for the folded-away surfaces", () => {
+    const dart = SERVICE_REGISTRY.find((s) => s.key === "dart");
+    expect(dart).toBeDefined();
+    const subKeys = dart!.subRoutes.map((r) => r.key);
+    for (const k of [
+      "terminal",
+      "research",
+      "promote",
+      "observe",
+      "strategy-catalogue",
+      "signal-intake",
+      "data",
+    ]) {
+      expect(subKeys).toContain(k);
+    }
   });
 
   it("each service has required fields", () => {
