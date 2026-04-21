@@ -52,6 +52,9 @@ const CATEGORIES: readonly VenueCategoryV2[] = [
   "PREDICTION",
 ] as const;
 
+const CATEGORY_FILTER_VALUES = ["ALL", ...CATEGORIES] as const;
+type CategoryFilter = (typeof CATEGORY_FILTER_VALUES)[number];
+
 const STATUS_FILTER_VALUES = [
   "ALL",
   "SUPPORTED",
@@ -88,6 +91,7 @@ const STATUS_CELL_STYLES: Record<CoverageStatus, string> = {
 
 export default function StrategyCatalogueCoveragePage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("ALL");
   const [selectedCell, setSelectedCell] = useState<CoverageCell | null>(null);
   const [familyFilter, setFamilyFilter] = useState<StrategyFamily | undefined>(
     undefined,
@@ -95,6 +99,14 @@ export default function StrategyCatalogueCoveragePage() {
   const [archetypeFilter, setArchetypeFilter] = useState<
     StrategyArchetype | undefined
   >(undefined);
+
+  const visibleCategories = useMemo<readonly VenueCategoryV2[]>(
+    () =>
+      categoryFilter === "ALL"
+        ? CATEGORIES
+        : [categoryFilter as VenueCategoryV2],
+    [categoryFilter],
+  );
 
   const archetypesByFamily = useMemo(() => {
     const grouped = new Map<string, StrategyArchetype[]>();
@@ -149,6 +161,24 @@ export default function StrategyCatalogueCoveragePage() {
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm text-muted-foreground">Filter:</span>
           <Select
+            value={categoryFilter}
+            onValueChange={(value) => setCategoryFilter(value as CategoryFilter)}
+          >
+            <SelectTrigger
+              className="w-40"
+              data-testid="coverage-category-filter"
+            >
+              <SelectValue placeholder="All categories" />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORY_FILTER_VALUES.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {value === "ALL" ? "All categories" : value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
             value={statusFilter}
             onValueChange={(value) => setStatusFilter(value as StatusFilter)}
           >
@@ -187,7 +217,7 @@ export default function StrategyCatalogueCoveragePage() {
                   <th className="sticky left-0 z-10 bg-muted/40 p-2 text-left font-medium">
                     Archetype
                   </th>
-                  {CATEGORIES.flatMap((category) =>
+                  {visibleCategories.flatMap((category) =>
                     INSTRUMENT_TYPES_V2.map((instrumentType) => (
                       <th
                         key={`${category}-${instrumentType}`}
@@ -208,6 +238,7 @@ export default function StrategyCatalogueCoveragePage() {
                     key={family}
                     family={family}
                     archetypes={archetypes}
+                    categories={visibleCategories}
                     statusFilter={statusFilter}
                     onCellClick={setSelectedCell}
                     activeCell={selectedCell}
@@ -312,12 +343,14 @@ export default function StrategyCatalogueCoveragePage() {
   function ArchetypeFamilyRows({
     family,
     archetypes,
+    categories,
     statusFilter,
     onCellClick,
     activeCell,
   }: {
     family: string;
     archetypes: StrategyArchetype[];
+    categories: readonly VenueCategoryV2[];
     statusFilter: StatusFilter;
     onCellClick: (cell: CoverageCell) => void;
     activeCell: CoverageCell | null;
@@ -327,7 +360,7 @@ export default function StrategyCatalogueCoveragePage() {
       <>
         <tr className="bg-muted/10">
           <th
-            colSpan={CATEGORIES.length * INSTRUMENT_TYPES_V2.length + 1}
+            colSpan={categories.length * INSTRUMENT_TYPES_V2.length + 1}
             className="px-2 py-1 text-left text-[0.65rem] font-medium uppercase tracking-wide text-muted-foreground"
           >
             {familyMeta?.label ?? family}
@@ -340,7 +373,7 @@ export default function StrategyCatalogueCoveragePage() {
               <th className="sticky left-0 z-10 whitespace-nowrap bg-background px-2 py-1 text-left font-normal">
                 {archetype}
               </th>
-              {CATEGORIES.flatMap((category) =>
+              {categories.flatMap((category) =>
                 INSTRUMENT_TYPES_V2.map((instrumentType) => {
                   const cell = findCell(coverage, category, instrumentType);
                   const status = cellStatus(cell);

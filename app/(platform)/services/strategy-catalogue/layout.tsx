@@ -22,6 +22,7 @@ export default function StrategyCatalogueLayout({
     <AvailabilityStoreProvider adminBypass={adminBypass}>
       <ResearchFamilyShell
         platform="strategy"
+        showBatchLiveRail={false}
         tabs={
           <ServiceTabs
             tabs={STRATEGY_CATALOGUE_SUB_TABS}
