@@ -235,10 +235,16 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
         description: "Legacy candidate review pipeline",
       },
     ],
-    // DART — absorbs Research + Promote + Run + Execute + Observe + Deployment
-    // per 2026-04-20 Phase 11 lifecycle collapse. Destination ordering
-    // mirrors dart-tab-structure.md § 2.
+    // DART — absorbs Data + Research + Promote + Run + Execute + Observe +
+    // Deployment per 2026-04-20 Phase 11 lifecycle collapse + 2026-04-21 Data
+    // fold-in directive. Destination ordering mirrors dart-tab-structure.md § 2.
     run: [
+      {
+        path: "/services/data/overview",
+        label: "DART · Data",
+        lanes: ["data"],
+        description: "Pipeline status, venue coverage, freshness (folded into DART)",
+      },
       {
         path: "/services/trading/overview",
         label: "DART · Terminal",

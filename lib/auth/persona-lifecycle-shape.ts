@@ -51,24 +51,22 @@ function withOverrides(overrides: Partial<PersonaLifecycleShape>): PersonaLifecy
 const PERSONA_SHAPES: Record<string, PersonaLifecycleShape> = {
   // ── Admin + Internal ─────────────────────────────────────────────────────
   // Admin/internal roles get full access to every route, but lifecycle nav
-  // still collapses to the 4-stage shape (Data + DART + Manage + Reports) —
-  // build/promote/execute/observe routes are reachable via the DART dropdown
-  // + service-tab sub-nav. Rendering them as peer lifecycle stages contradicts
-  // the Phase 11 collapse and the "no peer research/promote/observe" directive.
+  // collapses to 3 peer stages (DART + Manage + Reports). Data / Research /
+  // Promote / Execute / Observe all fold INTO DART via the dropdown + service-
+  // tab sub-nav. Per user 2026-04-21: "Data as a service should be folded into
+  // DART" — so Data is no longer a peer stage, even for admin. Routes remain
+  // reachable via DART's Data sub-tab + direct URL.
   admin: withOverrides({
-    acquire: "visible",
     run: "visible",
     manage: "visible",
     report: "visible",
   }),
   "internal-trader": withOverrides({
-    acquire: "visible",
     run: "visible",
     manage: "visible",
     report: "visible",
   }),
   "im-desk-operator": withOverrides({
-    acquire: "visible",
     run: "visible",
     manage: "visible",
     report: "visible",

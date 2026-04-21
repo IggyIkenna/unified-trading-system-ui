@@ -322,7 +322,11 @@ export function LifecycleNav({
         </div>
       </div>
 
-      {/* Centre: 3-way mode selector — the USP */}
+      {/* Centre: 3-way mode selector — only shown inside DART context.
+          Live/Paper/Batch governs execution mode for DART surfaces; it's
+          irrelevant on /dashboard and non-DART services (Manage / Reports)
+          where no trading is happening. */}
+      {(pathname.startsWith("/services/trading") || pathname.startsWith("/services/dart")) && (
       <div className="hidden sm:flex flex-1 items-center justify-center">
         <div className="flex items-center rounded-full border border-border/60 bg-muted/30 p-0.5">
           <button
@@ -363,6 +367,12 @@ export function LifecycleNav({
           </button>
         </div>
       </div>
+      )}
+      {/* Spacer when the mode selector is hidden, so left + right nav blocks
+          stay balanced on dashboard / non-DART routes. */}
+      {!(pathname.startsWith("/services/trading") || pathname.startsWith("/services/dart")) && (
+        <div className="hidden sm:flex flex-1" />
+      )}
 
       {/* Right: Dashboard, Search, Notifications, Org, User */}
       <div className="flex items-center gap-1.5 shrink-0">
