@@ -35,6 +35,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import type { PnLBreakdownData, Strategy } from "@/lib/mocks/fixtures/strategy-instances";
+import { PerformanceOverlay } from "@/components/strategy-catalogue/PerformanceOverlay";
 
 // Mock 7-day health factor time series for recursive DeFi strategies
 const MOCK_HF_SERIES = [
@@ -129,6 +130,37 @@ export function StrategyDetailTabPanels({
             )}
           </div>
         </div>
+      </TabsContent>
+
+      {/* Performance Tab — Plan C <PerformanceOverlay> */}
+      <TabsContent value="performance" className="space-y-4">
+        <Card>
+          <CardHeader>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <CardTitle className="text-base">Backtest / Paper / Live</CardTitle>
+                <CardDescription>
+                  Continuous P&L timeline from odum-paper + odum-live representative-account runs.
+                  Toggle views to isolate drift across regimes.
+                </CardDescription>
+              </div>
+              <Badge variant="outline" className="text-[10px]">
+                odum-paper · odum-live
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <PerformanceOverlay
+              instanceId={id}
+              mode="overlay"
+              views={["backtest", "paper", "live"]}
+              heightClass="h-80"
+              showPhaseMarkers
+              showStats
+              showViewToggles
+            />
+          </CardContent>
+        </Card>
       </TabsContent>
 
       {/* Instruments Tab */}

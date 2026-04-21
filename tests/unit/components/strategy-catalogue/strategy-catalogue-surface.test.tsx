@@ -1,21 +1,51 @@
 import "@testing-library/jest-dom/vitest";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, within } from "@testing-library/react";
 import type { ReactElement } from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { StrategyCatalogueSurface } from "@/components/strategy-catalogue/StrategyCatalogueSurface";
 import { AvailabilityStoreProvider } from "@/lib/architecture-v2";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
 
 vi.mock("@/hooks/use-auth", () => ({
-  useAuth: () => ({ user: { id: "admin", role: "admin" } }),
+  useAuth: () => ({ user: { id: "admin", role: "admin" }, token: null }),
+}));
+
+// Stub the fetch-backed performance hook so the grid cards don't need to
+// hit the network or wait on React Query — we only care about row rendering
+// and filter semantics here.
+vi.mock("@/hooks/api/use-performance-overlay", () => ({
+  usePerformanceOverlay: () => ({ data: undefined, isLoading: false, isError: false }),
+}));
+
+// The admin-editor grid fetches lifecycle records on mount. Return an
+// empty list so every row surfaces `seeded=false` → dropdowns disabled,
+// matching the unit-test expectations.
+vi.mock("@/lib/admin/api/strategy-lifecycle", () => ({
+  listStrategyInstanceLifecycles: () => Promise.resolve([]),
+  patchStrategyInstanceLifecycle: vi.fn(),
+}));
+
+// Suppress sonner toasts in this unit test.
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 function renderSurface(ui: ReactElement) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+  });
   return render(
-    <AvailabilityStoreProvider persist={false}>{ui}</AvailabilityStoreProvider>,
+    <QueryClientProvider client={client}>
+      <AvailabilityStoreProvider persist={false}>{ui}</AvailabilityStoreProvider>
+    </QueryClientProvider>,
   );
 }
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("<StrategyCatalogueSurface> viewMode rendering", () => {
   it("admin-universe renders the full catalogue read-only", () => {

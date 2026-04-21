@@ -6,11 +6,49 @@ import {
   FomoTearsheetCard,
   type FomoInstanceSummary,
 } from "@/components/strategy-catalogue/FomoTearsheetCard";
+import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
 import {
   allowsAllocationCta,
   STRATEGY_MATURITY_PHASES,
   type StrategyMaturityPhase,
 } from "@/lib/architecture-v2/lifecycle";
+
+/** Minimal override shuts the React Query layer entirely so this unit
+ * test stays free of Provider scaffolding. */
+const STATIC_SERIES: PerformanceSeriesResponse = {
+  instance_id: "test-instance",
+  series: {
+    backtest: {
+      aggregate: [
+        { t: "2025-01-01T00:00:00Z", pnl: 0, equity: 1_000_000 },
+        { t: "2025-06-01T00:00:00Z", pnl: 25_000, equity: 1_025_000 },
+      ],
+      per_venue: null,
+    },
+    paper: {
+      aggregate: [
+        { t: "2025-06-02T00:00:00Z", pnl: 25_000, equity: 1_025_000 },
+        { t: "2025-10-01T00:00:00Z", pnl: 55_000, equity: 1_055_000 },
+      ],
+      per_venue: null,
+    },
+    live: {
+      aggregate: [
+        { t: "2025-10-02T00:00:00Z", pnl: 55_000, equity: 1_055_000 },
+        { t: "2026-04-01T00:00:00Z", pnl: 72_500, equity: 1_072_500 },
+      ],
+      per_venue: null,
+    },
+  },
+  transition_markers: {
+    paper_started_at: "2025-06-01T00:00:00Z",
+    live_started_at: "2025-10-01T00:00:00Z",
+  },
+  phase_annotations: [
+    { phase: "paper_1d", at: "2025-06-01T00:00:00Z" },
+    { phase: "live_early", at: "2025-10-01T00:00:00Z" },
+  ],
+};
 
 function baseSummary(
   overrides: Partial<FomoInstanceSummary> = {},
@@ -60,6 +98,7 @@ describe("<FomoTearsheetCard> CTA gating", () => {
       <FomoTearsheetCard
         instance={baseSummary({ maturityPhase: "backtest_1yr" })}
         onRequestAllocation={() => {}}
+        performanceOverride={STATIC_SERIES}
       />,
     );
     const cta = screen.getByTestId("fomo-request-allocation-cta");
@@ -74,13 +113,19 @@ describe("<FomoTearsheetCard> CTA gating", () => {
       <FomoTearsheetCard
         instance={baseSummary({ maturityPhase: "live_early" })}
         onRequestAllocation={() => {}}
+        performanceOverride={STATIC_SERIES}
       />,
     );
     expect(screen.getByTestId("fomo-request-allocation-cta")).toBeEnabled();
   });
 
   it("disables CTA when no handler is attached even if phase qualifies", () => {
-    render(<FomoTearsheetCard instance={baseSummary()} />);
+    render(
+      <FomoTearsheetCard
+        instance={baseSummary()}
+        performanceOverride={STATIC_SERIES}
+      />,
+    );
     expect(screen.getByTestId("fomo-request-allocation-cta")).toBeDisabled();
   });
 
@@ -89,6 +134,7 @@ describe("<FomoTearsheetCard> CTA gating", () => {
       <FomoTearsheetCard
         instance={baseSummary({ maturityPhase: "retired" })}
         onRequestAllocation={() => {}}
+        performanceOverride={STATIC_SERIES}
       />,
     );
     expect(screen.getByTestId("fomo-request-allocation-cta")).toBeDisabled();

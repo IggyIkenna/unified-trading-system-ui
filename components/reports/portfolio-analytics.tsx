@@ -19,7 +19,9 @@ import {
   PieChart as PieChartIcon,
   Grid3X3,
   ShieldAlert,
+  Layers3,
 } from "lucide-react";
+import { AllocatorStrategyOverlay } from "@/components/reports/allocator-strategy-overlay";
 import {
   Area,
   AreaChart,
@@ -184,6 +186,7 @@ export function PortfolioAnalytics() {
         <Tabs defaultValue="allocation" className="space-y-6">
           <TabsList className="flex-wrap h-auto">
             <TabsTrigger value="allocation" className="gap-2"><PieChartIcon className="size-4" />Allocation</TabsTrigger>
+            <TabsTrigger value="allocator" className="gap-2"><Layers3 className="size-4" />Allocator View</TabsTrigger>
             <TabsTrigger value="correlation" className="gap-2"><Grid3X3 className="size-4" />Correlation</TabsTrigger>
             <TabsTrigger value="risk" className="gap-2"><ShieldAlert className="size-4" />Risk Metrics</TabsTrigger>
           </TabsList>
@@ -273,6 +276,11 @@ export function PortfolioAnalytics() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* ── Allocator View Tab — Plan C per-strategy per-venue 3-way overlay ── */}
+          <TabsContent value="allocator">
+            <AllocatorStrategyOverlay clientId={selectedClientId} />
           </TabsContent>
 
           {/* ── Correlation Tab ───────────────────────────────────────── */}

@@ -33,6 +33,7 @@ import {
   History,
   Rocket,
   Brain,
+  LineChart as LineChartIcon,
 } from "lucide-react";
 import { PromoteFlowModal } from "@/components/promote/promote-flow-modal";
 import Link from "next/link";
@@ -363,6 +364,10 @@ export function StrategyDetailPageClient({ params }: { params: Promise<{ id: str
             <TabsTrigger value="pnl" className="gap-2">
               <TrendingUp className="size-4" />
               P&L Attribution
+            </TabsTrigger>
+            <TabsTrigger value="performance" className="gap-2">
+              <LineChartIcon className="size-4" />
+              Performance
             </TabsTrigger>
             <TabsTrigger value="instruments" className="gap-2">
               <Layers className="size-4" />

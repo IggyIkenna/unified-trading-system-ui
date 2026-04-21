@@ -25,7 +25,8 @@ import type {
   StrategyFamily,
 } from "@/lib/architecture-v2";
 
-import { PerformanceOverlayPlaceholder } from "./PerformanceOverlayPlaceholder";
+import { PerformanceOverlay } from "./PerformanceOverlay";
+import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
 
 export interface RealityInstanceSummary {
   readonly instanceId: string;
@@ -43,6 +44,8 @@ export interface RealityInstanceSummary {
 
 export interface RealityPositionCardProps {
   readonly instance: RealityInstanceSummary;
+  /** Test-only: pre-computed series, bypasses the live fetch. */
+  readonly performanceOverride?: PerformanceSeriesResponse;
 }
 
 function formatCurrency(value: number | null): string {
@@ -54,7 +57,10 @@ function formatCurrency(value: number | null): string {
   return `${sign}$${abs.toFixed(0)}`;
 }
 
-export function RealityPositionCard({ instance }: RealityPositionCardProps) {
+export function RealityPositionCard({
+  instance,
+  performanceOverride,
+}: RealityPositionCardProps) {
   const pnlTone =
     instance.livePnl === null
       ? "text-muted-foreground"
@@ -87,10 +93,14 @@ export function RealityPositionCard({ instance }: RealityPositionCardProps) {
         ) : null}
       </CardHeader>
       <CardContent className="flex flex-col gap-3 px-6">
-        <PerformanceOverlayPlaceholder
+        <PerformanceOverlay
           instanceId={instance.instanceId}
+          mode="stitched"
           views={["backtest", "paper", "live"]}
-          captionVariant="reality"
+          heightClass="h-32"
+          showStats={false}
+          showViewToggles={false}
+          seriesOverride={performanceOverride}
         />
         <dl className="grid grid-cols-2 gap-2 text-xs">
           <div>

@@ -30,7 +30,8 @@ import type {
   StrategyFamily,
 } from "@/lib/architecture-v2";
 
-import { PerformanceOverlayPlaceholder } from "./PerformanceOverlayPlaceholder";
+import { PerformanceOverlay } from "./PerformanceOverlay";
+import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
 
 export interface FomoInstanceSummary {
   readonly instanceId: string;
@@ -48,6 +49,8 @@ export interface FomoInstanceSummary {
 export interface FomoTearsheetCardProps {
   readonly instance: FomoInstanceSummary;
   readonly onRequestAllocation?: (instanceId: string) => void;
+  /** Test-only: pre-computed series, bypasses the live fetch. */
+  readonly performanceOverride?: PerformanceSeriesResponse;
 }
 
 function formatStat(value: number | null, suffix: string, digits = 2): string {
@@ -58,6 +61,7 @@ function formatStat(value: number | null, suffix: string, digits = 2): string {
 export function FomoTearsheetCard({
   instance,
   onRequestAllocation,
+  performanceOverride,
 }: FomoTearsheetCardProps) {
   const ctaEnabled = allowsAllocationCta(instance.maturityPhase);
 
@@ -91,10 +95,14 @@ export function FomoTearsheetCard({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3 px-6">
-        <PerformanceOverlayPlaceholder
+        <PerformanceOverlay
           instanceId={instance.instanceId}
+          mode="stitched"
           views={["backtest", "paper", "live"]}
-          captionVariant="fomo"
+          heightClass="h-32"
+          showStats={false}
+          showViewToggles={false}
+          seriesOverride={performanceOverride}
         />
         <dl className="grid grid-cols-3 gap-2 text-xs">
           <div>

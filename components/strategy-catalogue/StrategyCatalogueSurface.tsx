@@ -371,6 +371,44 @@ function AdminEditorGrid({
   onInstanceSelect,
 }: AdminEditorGridProps) {
   const editor = useLifecycleEditor({ enabled: true });
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkMaturity, setBulkMaturity] =
+    useState<StrategyMaturityPhase | "">("");
+  const [bulkRouting, setBulkRouting] = useState<ProductRouting | "">("");
+  const [bulkBusy, setBulkBusy] = useState(false);
+
+  const toggleSelection = (id: string): void => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = (): void => {
+    setSelected((prev) =>
+      prev.size === instances.length
+        ? new Set()
+        : new Set(instances.map((i) => i.instanceId)),
+    );
+  };
+
+  const applyBulk = async (): Promise<void> => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    const body: { maturity_phase?: StrategyMaturityPhase; product_routing?: ProductRouting } = {};
+    if (bulkMaturity !== "") body.maturity_phase = bulkMaturity;
+    if (bulkRouting !== "") body.product_routing = bulkRouting;
+    if (!body.maturity_phase && !body.product_routing) return;
+    setBulkBusy(true);
+    try {
+      await editor.bulkApply(ids, body);
+    } finally {
+      setBulkBusy(false);
+      setSelected(new Set());
+    }
+  };
 
   return (
     <div className="overflow-x-auto rounded-md border">
@@ -384,12 +422,88 @@ function AdminEditorGrid({
           reload.
         </div>
       ) : null}
+      <div
+        className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-muted/20 px-3 py-2 text-[11px]"
+        data-testid="admin-editor-bulk-bar"
+      >
+        <span className="font-medium uppercase tracking-wide text-muted-foreground">
+          Bulk apply
+        </span>
+        <span className="text-muted-foreground">
+          {selected.size} selected
+        </span>
+        <select
+          className="rounded border border-border bg-background px-2 py-1 font-mono text-[10px] disabled:opacity-50"
+          data-testid="admin-editor-bulk-maturity"
+          value={bulkMaturity}
+          disabled={bulkBusy || selected.size === 0}
+          onChange={(e) =>
+            setBulkMaturity(
+              e.target.value === ""
+                ? ""
+                : (e.target.value as StrategyMaturityPhase),
+            )
+          }
+        >
+          <option value="">— maturity —</option>
+          {STRATEGY_MATURITY_PHASES.map((p) => (
+            <option key={p} value={p}>
+              {MATURITY_PHASE_LABEL[p]}
+            </option>
+          ))}
+        </select>
+        <select
+          className="rounded border border-border bg-background px-2 py-1 font-mono text-[10px] disabled:opacity-50"
+          data-testid="admin-editor-bulk-routing"
+          value={bulkRouting}
+          disabled={bulkBusy || selected.size === 0}
+          onChange={(e) =>
+            setBulkRouting(
+              e.target.value === "" ? "" : (e.target.value as ProductRouting),
+            )
+          }
+        >
+          <option value="">— routing —</option>
+          {PRODUCT_ROUTINGS.map((r) => (
+            <option key={r} value={r}>
+              {PRODUCT_ROUTING_LABEL[r]}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          className="rounded bg-primary px-2 py-1 text-[10px] text-primary-foreground disabled:opacity-50"
+          data-testid="admin-editor-bulk-apply"
+          disabled={
+            bulkBusy ||
+            selected.size === 0 ||
+            (bulkMaturity === "" && bulkRouting === "")
+          }
+          onClick={() => void applyBulk()}
+        >
+          Apply to {selected.size}
+        </button>
+        <span className="ml-auto text-[10px] text-muted-foreground">
+          Max 5 concurrent · 5-second undo per success
+        </span>
+      </div>
       <table
         className="w-full text-left text-sm"
         data-testid="admin-editor-grid"
       >
         <thead className="bg-muted/40 text-[10px] uppercase text-muted-foreground">
           <tr>
+            <th className="px-2 py-2">
+              <input
+                type="checkbox"
+                data-testid="admin-editor-select-all"
+                aria-label="Select all instances"
+                checked={
+                  instances.length > 0 && selected.size === instances.length
+                }
+                onChange={toggleAll}
+              />
+            </th>
             <th className="px-3 py-2">Instance</th>
             <th className="px-3 py-2">Family</th>
             <th className="px-3 py-2">Archetype</th>
@@ -403,7 +517,7 @@ function AdminEditorGrid({
         <tbody>
           {instances.length === 0 ? (
             <tr>
-              <td className="px-3 py-6 text-center text-muted-foreground" colSpan={8}>
+              <td className="px-3 py-6 text-center text-muted-foreground" colSpan={9}>
                 No instances match the current filter.
               </td>
             </tr>
@@ -425,6 +539,15 @@ function AdminEditorGrid({
                 data-testid="admin-editor-row"
                 data-instance-id={instance.instanceId}
               >
+                <td className="px-2 py-2">
+                  <input
+                    type="checkbox"
+                    data-testid="admin-editor-select-row"
+                    aria-label={`Select ${instance.instanceId}`}
+                    checked={selected.has(instance.instanceId)}
+                    onChange={() => toggleSelection(instance.instanceId)}
+                  />
+                </td>
                 <td className="px-3 py-2 font-mono text-[11px]">
                   {instance.instanceId}
                 </td>
