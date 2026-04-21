@@ -217,9 +217,9 @@ const ml_directional_event_settled: ArchetypeCoverage = {
       representativeVenueIds: ["unity", "betfair_direct", "smarkets_direct", "matchbook_direct"],
       signalVariants: ["odds"],
       rollMode: "n/a",
-      notes: "",
+      notes: "Value-betting (edge_method=VALUE_PROB_VS_IMPLIED) is a config axis on this archetype, not a separate archetype. See codex value-betting-archetype-decision.md.",
       blockListRefs: [],
-      representativeSlotLabels: ["ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-nba-moneyline-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@betfair-direct-epl-1x2-gbp-prod"],
+      representativeSlotLabels: ["ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-nba-moneyline-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-nfl-moneyline-value-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@unity-mlb-moneyline-value-usd-prod", "ML_DIRECTIONAL_EVENT_SETTLED@betfair-direct-epl-1x2-gbp-prod"],
     },
     {
       archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
@@ -1198,9 +1198,9 @@ const stat_arb_pairs_fixed: ArchetypeCoverage = {
       representativeVenueIds: ["ibkr"],
       signalVariants: ["zscore_reversion"],
       rollMode: "n/a",
-      notes: "Pair pre-declaration config path fine; no batch-tested instances.",
+      notes: "Pair pre-declaration config path fine; no batch-tested instances. Treasury ETFs (TLT/IEF/SHY) are spot equities on IBKR — bond is not a separate instrument_type (see codex tradfi-bond-instrument-type-decision.md).",
       blockListRefs: [],
-      representativeSlotLabels: ["STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod", "STAT_ARB_PAIRS_FIXED@ibkr-aapl-msft-1h-usd-prod"],
+      representativeSlotLabels: ["STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod", "STAT_ARB_PAIRS_FIXED@ibkr-aapl-msft-1h-usd-prod", "STAT_ARB_PAIRS_FIXED@ibkr-tlt-ief-daily-usd-prod"],
     },
     {
       archetype: "STAT_ARB_PAIRS_FIXED",
