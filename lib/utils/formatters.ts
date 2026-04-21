@@ -89,19 +89,26 @@ export function formatDate(
   }
 
   if (style === "time") {
-    return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    return d.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "UTC",
+      hour12: false,
+    });
   }
 
   if (style === "long") {
     return d.toLocaleString("en-US", {
       dateStyle: "medium",
       timeStyle: "short",
+      timeZone: "UTC",
     });
   }
 
   if (style === "calendar") {
-    return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
   }
 
-  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
 }

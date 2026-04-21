@@ -94,7 +94,7 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm">Margin Utilization by Venue</CardTitle>
-          <Badge variant="outline" className="text-[10px]">
+          <Badge variant="outline" className="text-micro">
             {sortedVenues.length} venues
           </Badge>
         </div>
@@ -127,7 +127,7 @@ export function MarginUtilization({ venues, className }: MarginUtilizationProps)
                       >
                         {formatPercent(venue.utilization, 0)}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">
+                      <span className="text-micro text-muted-foreground">
                         {formatCurrency(venue.used)} / {formatCurrency(venue.total)}
                       </span>
                     </div>
@@ -222,22 +222,22 @@ export function MarginUtilizationCompact({ venues }: { venues: VenueMargin[] }) 
       <span className="text-xs text-muted-foreground">Margin:</span>
       <div className="flex items-center gap-1">
         {criticalCount > 0 && (
-          <Badge variant="outline" className="text-[10px] border-[var(--status-error)] text-[var(--status-error)]">
+          <Badge variant="outline" className="text-micro border-[var(--status-error)] text-[var(--status-error)]">
             {criticalCount} critical
           </Badge>
         )}
         {warningCount > 0 && (
-          <Badge variant="outline" className="text-[10px] border-[var(--status-warning)] text-[var(--status-warning)]">
+          <Badge variant="outline" className="text-micro border-[var(--status-warning)] text-[var(--status-warning)]">
             {warningCount} warning
           </Badge>
         )}
         {criticalCount === 0 && warningCount === 0 && (
-          <Badge variant="outline" className="text-[10px] border-[var(--status-live)] text-[var(--status-live)]">
+          <Badge variant="outline" className="text-micro border-[var(--status-live)] text-[var(--status-live)]">
             All healthy
           </Badge>
         )}
       </div>
-      <span className="text-[10px] font-mono text-muted-foreground">(max {formatPercent(maxUtilization, 0)})</span>
+      <span className="text-micro font-mono text-muted-foreground">(max {formatPercent(maxUtilization, 0)})</span>
     </div>
   );
 }

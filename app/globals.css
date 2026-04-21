@@ -38,6 +38,7 @@
   --status-live: #16a34a;
   --status-warning: #d97706;
   --status-critical: #dc2626;
+  --status-error: #dc2626;
   --status-idle: #94a3b8;
   --status-running: #2563eb;
 
@@ -117,6 +118,7 @@
   --status-live: #4ade80;
   --status-warning: #fbbf24;
   --status-critical: #f87171;
+  --status-error: #f87171;
   --status-idle: #71717a;
   --status-running: #60a5fa;
 
@@ -225,6 +227,7 @@
   --color-status-live: var(--status-live);
   --color-status-warning: var(--status-warning);
   --color-status-critical: var(--status-critical);
+  --color-status-error: var(--status-error);
   --color-status-idle: var(--status-idle);
   --color-status-running: var(--status-running);
 

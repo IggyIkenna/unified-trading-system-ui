@@ -34,7 +34,7 @@ const entityRoutes: Record<string, (id: string) => string> = {
   experiment: (id) => `/ml/experiments/${id}`,
   settlement: (id) => `/reports?settlement=${id}`,
   batch_job: (id) => `/ops/jobs?job=${id}`,
-  run: (id) => `/positions?run=${id}`,
+  run: (id) => `/services/trading/positions?run=${id}`,
   venue: (id) => `/services/trading/strategies?venue=${id}`,
   model: (id) => `/ml/registry?model=${id}`,
 };
@@ -88,10 +88,7 @@ export function EntityLink({ type, id, label, className }: EntityLinkProps) {
   );
 }
 
-export function buildCrossLink(
-  targetPath: string,
-  params?: Record<string, string>,
-): string {
+export function buildCrossLink(targetPath: string, params?: Record<string, string>): string {
   const url = new URL(targetPath, "http://localhost");
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
