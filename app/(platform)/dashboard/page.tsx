@@ -152,7 +152,6 @@ function useRoleKPIs(hasEntitlement: (e: Entitlement) => boolean, isLive: boolea
 export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
   const { isLive } = useExecutionMode();
-  const kpis = useRoleKPIs(hasEntitlement, isLive);
 
   const allServices = SERVICE_REGISTRY.filter((svc) => {
     if (svc.internalOnly && user?.role !== "admin") return false;
@@ -201,56 +200,14 @@ export default function DashboardPage() {
             </>
           }
         />
-        {/* HealthBar + Live/Batch toggle removed 2026-04-21 — DART-only.
-            System health belongs on DART observability surfaces (terminal /
-            observe sub-tabs). Live/Batch mode is a DART execution concern.
-            Neither is relevant on /dashboard (the services hub). */}
+        {/* 2026-04-21 — removed KPI grid, PlatformStateNarrative, SystemHealthStrip,
+            HealthBar, Live/Batch toggle. All are DART-specific signals (backtest
+            counts, net P&L, risk utilisation, alerts, system health, execution
+            mode) and belong on DART observe / terminal surfaces — not on the
+            services hub. /dashboard is the hub for navigating TO services, not
+            for rendering DART summaries. */}
 
-        {/* ── Row 2: Role-aware KPIs ────────────────────────────────── */}
-        {/* Every user sees KPIs relevant to their entitlements. Data-only users
-            see instruments + freshness. Research users see backtests + models.
-            Trading users see P&L + positions + risk. Reports-only users see AUM. */}
-        {kpis.length > 0 && (
-          <div
-            className={cn(
-              "grid gap-3",
-              kpis.length <= 3
-                ? "grid-cols-1 sm:grid-cols-3"
-                : kpis.length <= 4
-                  ? "grid-cols-2 sm:grid-cols-4"
-                  : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
-            )}
-          >
-            {kpis.map((kpi) => (
-              <KPICard
-                key={kpi.label}
-                label={kpi.label}
-                value={kpi.value}
-                change={kpi.change}
-                icon={kpi.icon}
-                href={kpi.href}
-                alert={kpi.alert}
-                subtle={kpi.subtle}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* ── Row 2.5: Platform state narrative — explains everything in 20 seconds ── */}
-        <PlatformStateNarrative
-          kpis={kpis}
-          visibleServices={visibleServices}
-          allServices={allServices}
-          isLive={isLive}
-          showTrading={showTrading}
-          showResearch={showResearch}
-          showReporting={showReporting}
-        />
-
-        {/* ── Row 2.6: System health summary strip ──────────────────── */}
-        <SystemHealthStrip services={allServices} visibleKeys={visibleKeys} />
-
-        {/* ── Row 2.7: Your Access — explains what the user sees and why ── */}
+        {/* ── Your Access — explains what the user sees and why ── */}
         {user.role === "client" && (
           <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg border border-border/50 bg-muted/20 text-xs text-muted-foreground">
             <Shield className="size-4 shrink-0 text-primary/50" />
