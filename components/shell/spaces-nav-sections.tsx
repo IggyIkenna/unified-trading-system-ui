@@ -14,7 +14,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 const RESEARCH_DOCS_SECTION = "Research & Documentation";
-const CLIENT_ACCESS_SECTION = "Client Access";
+const CLIENT_ACCESS_SECTION = "Client access";
 
 function GatedSectionLabel({
   title,

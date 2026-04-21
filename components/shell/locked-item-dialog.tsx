@@ -97,7 +97,7 @@ export function LockedItemDialog({
               {label}
             </DialogTitle>
             <DialogDescription>
-              {sectionTitle} is access-restricted. Here&apos;s how to get in.
+              {sectionTitle} is restricted. Here&apos;s how to get in.
             </DialogDescription>
           </DialogHeader>
 
