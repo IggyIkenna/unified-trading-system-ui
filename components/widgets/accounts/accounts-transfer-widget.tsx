@@ -18,6 +18,7 @@ import type { BalanceRecord } from "@/lib/types/accounts";
 import { CheckCircle2, Clock, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useExecutionMode } from "@/lib/execution-mode-context";
+import { useSubmitTransfer, type SubmitTransferRequest } from "@/hooks/api/use-submit-transfer";
 import { useAccountsData } from "./accounts-data-context";
 
 type TransferType = "venue-to-venue" | "sub-account" | "withdraw" | "deposit";
@@ -37,6 +38,7 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
   const { balances, isLoading, error: contextError, addTransferEntry } = useAccountsData();
   const { isBatch, isPaper } = useExecutionMode();
   const { isSubmitting, error: submitError, clearError, handleSubmit } = useFormSubmit();
+  const submitTransfer = useSubmitTransfer();
   const [transferType, setTransferType] = React.useState<TransferType>("venue-to-venue");
   const [fromVenue, setFromVenue] = React.useState<string>(CEFI_VENUES[0]);
   const [toVenue, setToVenue] = React.useState<string>(CEFI_VENUES[1]);
@@ -70,6 +72,25 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
     return true;
   };
 
+  const idempotencyKey = (): string =>
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `tx-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+  const submitBackend = (req: SubmitTransferRequest, onSettled: () => void) => {
+    submitTransfer.mutate(req, {
+      onSuccess: (result) => {
+        toast.success("Transfer submitted", {
+          description: `${result.transfer_id} (${result.status})`,
+        });
+        onSettled();
+      },
+      onError: (err) => {
+        toast.error("Transfer failed", { description: err.message ?? "Unexpected error." });
+      },
+    });
+  };
+
   const handleVenueTransfer = () => {
     if (!guardBatch()) return;
     addTransferEntry({
@@ -80,7 +101,19 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
       amount: amountNum,
       status: "Pending",
     });
-    setAmount("");
+    submitBackend(
+      {
+        direction: "cross_venue",
+        from_account_id: fromVenue,
+        to_account_id: toVenue,
+        from_venue: fromVenue,
+        to_venue: toVenue,
+        asset,
+        amount: String(amountNum),
+        idempotency_key: idempotencyKey(),
+      },
+      () => setAmount(""),
+    );
   };
 
   const handleSubAccountTransfer = () => {
@@ -95,7 +128,19 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
       amount: amountNum,
       status: "Processing",
     });
-    setAmount("");
+    submitBackend(
+      {
+        direction: "internal",
+        from_account_id: from,
+        to_account_id: to,
+        from_venue: fromVenue,
+        to_venue: fromVenue,
+        asset,
+        amount: String(amountNum),
+        idempotency_key: idempotencyKey(),
+      },
+      () => setAmount(""),
+    );
   };
 
   const handleWithdraw = () => {
@@ -109,8 +154,24 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
       amount: amountNum,
       status: "Pending",
     });
-    setAmount("");
-    setToAddress("");
+    submitBackend(
+      {
+        direction: "withdraw",
+        from_account_id: fromVenue,
+        to_account_id: toAddress,
+        from_venue: fromVenue,
+        to_venue: "external",
+        asset,
+        amount: String(amountNum),
+        network,
+        address: toAddress,
+        idempotency_key: idempotencyKey(),
+      },
+      () => {
+        setAmount("");
+        setToAddress("");
+      },
+    );
   };
 
   const handleDepositConfirm = () => {
@@ -123,6 +184,20 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
       amount: 0,
       status: "Pending",
     });
+    submitBackend(
+      {
+        direction: "deposit",
+        from_account_id: "external",
+        to_account_id: fromVenue,
+        from_venue: "external",
+        to_venue: fromVenue,
+        asset,
+        amount: "0",
+        network,
+        idempotency_key: idempotencyKey(),
+      },
+      () => {},
+    );
   };
 
   const displayError = contextError?.message ?? submitError ?? null;

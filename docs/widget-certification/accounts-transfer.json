@@ -6,6 +6,7 @@
   "file": "components/widgets/accounts/accounts-transfer-widget.tsx",
   "class": "form",
   "description": "Initiate venue-to-venue, sub-account, withdrawal, and deposit transfer flows with fee preview.",
+  "backendFeatureRequest": "BFR-002",
   "levels": {
     "l0": {
       "status": "pass",

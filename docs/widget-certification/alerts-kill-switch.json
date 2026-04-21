@@ -6,6 +6,7 @@
   "file": "components/widgets/alerts/alerts-kill-switch-widget.tsx",
   "class": "action-panel",
   "description": "Emergency intervention panel: scope selector, kill-switch actions, rationale input, and impact preview.",
+  "backendFeatureRequest": "BFR-001",
   "levels": {
     "l0": {
       "status": "pass",

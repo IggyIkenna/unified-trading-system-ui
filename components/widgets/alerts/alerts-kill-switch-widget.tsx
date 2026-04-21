@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useStrategyHealth } from "@/hooks/api/use-strategies";
+import { useKillSwitch, type KillSwitchActionType } from "@/hooks/api/use-kill-switch";
 import { useAlertsData } from "./alerts-data-context";
 import { Pause, Power, Square, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +16,13 @@ import { toast } from "sonner";
 
 type KillSwitchScope = "firm" | "client" | "strategy" | "venue";
 type KillSwitchAction = "pause" | "cancel" | "flatten" | "disable-venue";
+
+const ACTION_TO_API: Record<KillSwitchAction, KillSwitchActionType> = {
+  pause: "pause_strategy",
+  cancel: "cancel_orders",
+  flatten: "flatten_positions",
+  "disable-venue": "disable_venue",
+};
 
 interface ActionMeta {
   id: KillSwitchAction;
@@ -58,6 +66,7 @@ const ACTION_OPTIONS: ActionMeta[] = [
 export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const { filteredAlerts, isLoading: alertsLoading, isBatchMode } = useAlertsData();
   const { data: strategies = [], isLoading: strategiesLoading } = useStrategyHealth();
+  const killSwitch = useKillSwitch();
   const isLoading = alertsLoading || strategiesLoading;
   const [scopeType, setScopeType] = React.useState<KillSwitchScope>("strategy");
   const [entityId, setEntityId] = React.useState<string>("");
@@ -111,10 +120,34 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
       return;
     }
     const actionMeta = ACTION_OPTIONS.find((a) => a.id === selectedAction);
-    toast.info("Execution API not yet wired", {
-      description: `Would ${actionMeta?.label.toLowerCase() ?? selectedAction} on ${scopeType === "strategy" ? entityId || "selected entity" : scopeType} — backend integration pending.`,
-    });
-  }, [isBatchMode, selectedAction, rationale, scopeType, entityId]);
+    const idempotencyKey =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `ks-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    killSwitch.mutate(
+      {
+        action: ACTION_TO_API[selectedAction],
+        scope: scopeType,
+        entity_id: scopeType === "firm" ? "firm" : entityId || "firm",
+        rationale: rationale.trim(),
+        idempotency_key: idempotencyKey,
+      },
+      {
+        onSuccess: (result) => {
+          toast.success(actionMeta?.label ?? "Kill-switch accepted", {
+            description: `Request ${result.request_id} accepted at ${new Date(result.accepted_at).toLocaleTimeString()}.`,
+          });
+          setRationale("");
+          setSelectedAction(null);
+        },
+        onError: (err) => {
+          toast.error("Kill-switch failed", {
+            description: err.message ?? "Unexpected error.",
+          });
+        },
+      },
+    );
+  }, [isBatchMode, selectedAction, rationale, scopeType, entityId, killSwitch]);
 
   if (isLoading) {
     return (
@@ -131,37 +164,44 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   return (
     <div className="flex flex-col gap-2 h-full min-h-0 p-1">
       <div className="px-2 pb-2 space-y-4">
-        <div className="space-y-2">
-          <label id="kill-switch-scope-label" className="text-xs font-medium">
-            Scope
-          </label>
-          <Select value={scopeType} onValueChange={(v) => setScopeType(v as KillSwitchScope)}>
-            <SelectTrigger className="h-8 text-xs" aria-labelledby="kill-switch-scope-label">
-              <SelectValue placeholder="Select scope" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="firm">Firm (All)</SelectItem>
-              <SelectItem value="client">Client</SelectItem>
-              <SelectItem value="strategy">Strategy</SelectItem>
-              <SelectItem value="venue">Venue</SelectItem>
-            </SelectContent>
-          </Select>
-          {strategies.length === 0 ? (
-            <p className="text-caption text-muted-foreground">No strategies available.</p>
-          ) : (
-            <Select value={entityId} onValueChange={setEntityId}>
-              <SelectTrigger className="h-8 text-xs" aria-label="Select entity">
-                <SelectValue placeholder="Select entity" />
+        <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-1.5">
+            <label id="kill-switch-scope-label" className="text-xs font-medium">
+              Scope
+            </label>
+            <Select value={scopeType} onValueChange={(v) => setScopeType(v as KillSwitchScope)}>
+              <SelectTrigger className="h-8 text-xs" aria-labelledby="kill-switch-scope-label">
+                <SelectValue placeholder="Select scope" />
               </SelectTrigger>
               <SelectContent>
-                {strategies.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.name}
-                  </SelectItem>
-                ))}
+                <SelectItem value="firm">Firm (All)</SelectItem>
+                <SelectItem value="client">Client</SelectItem>
+                <SelectItem value="strategy">Strategy</SelectItem>
+                <SelectItem value="venue">Venue</SelectItem>
               </SelectContent>
             </Select>
-          )}
+          </div>
+          <div className="space-y-1.5">
+            <label id="kill-switch-entity-label" className="text-xs font-medium">
+              Strategy
+            </label>
+            {strategies.length === 0 ? (
+              <div className="h-8 flex items-center text-caption text-muted-foreground">No strategies available.</div>
+            ) : (
+              <Select value={entityId} onValueChange={setEntityId}>
+                <SelectTrigger className="h-8 text-xs" aria-labelledby="kill-switch-entity-label">
+                  <SelectValue placeholder="Select entity" />
+                </SelectTrigger>
+                <SelectContent>
+                  {strategies.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -180,14 +220,17 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
                   aria-checked={isSelected}
                   disabled={isBatchMode}
                   className={cn(
-                    "gap-2 justify-start h-auto py-2",
-                    isSelected && "border-status-critical ring-1 ring-status-critical/40",
+                    "gap-2 justify-start h-auto py-2 transition-colors",
+                    isSelected &&
+                      "border-status-critical bg-status-critical/10 ring-2 ring-status-critical/60 shadow-sm",
                   )}
                   onClick={() => handleSelectAction(action.id)}
                 >
                   <Icon className={cn("size-3.5 shrink-0", action.iconClassName)} />
                   <div className="text-left">
-                    <div className="text-xs font-medium">{action.label}</div>
+                    <div className={cn("text-xs font-medium", isSelected && "text-status-critical font-semibold")}>
+                      {action.label}
+                    </div>
                     <div className="text-micro text-muted-foreground">{action.subLabel}</div>
                   </div>
                 </Button>
@@ -225,11 +268,11 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
           variant="destructive"
           size="sm"
           className="w-full gap-2"
-          disabled={isBatchMode}
+          disabled={isBatchMode || killSwitch.isPending}
           onClick={handleConfirm}
         >
           <Power className="size-3.5" />
-          Confirm Action
+          {killSwitch.isPending ? "Submitting..." : "Confirm Action"}
         </Button>
       </div>
     </div>
