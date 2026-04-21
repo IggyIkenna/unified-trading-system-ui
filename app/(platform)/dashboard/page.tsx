@@ -227,20 +227,12 @@ export default function DashboardPage() {
 
         {/* ── Row 3: Main content — services + sidebar ───────────────── */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
-          {/* Left: Service Grid */}
+          {/* Left: Service Grid.  2026-04-21 — removed lifecycle breadcrumb
+              ("Data > Research > Promote > DART > Observe > Manage > Reports")
+              — 8-stage strip contradicts the 4-stage collapse, adds visual
+              noise on the services hub, and duplicates what the top-nav
+              already exposes. */}
           <div className="space-y-4">
-            {/* Lifecycle breadcrumb — only shows stages the user can access */}
-            <div className="flex items-center gap-1 text-[10px]">
-              {visibleStages.map((stage, i) => (
-                <React.Fragment key={stage}>
-                  {i > 0 && <ChevronRight className="size-2.5 text-muted-foreground/30" />}
-                  <span className={cn("px-1.5 py-0.5 rounded", PLATFORM_LIFECYCLE_CONFIG[stage].color, "bg-current/5")}>
-                    {PLATFORM_LIFECYCLE_CONFIG[stage].label}
-                  </span>
-                </React.Fragment>
-              ))}
-            </div>
-
             {/* Service cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {allServices
