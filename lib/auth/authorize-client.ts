@@ -1,5 +1,5 @@
 /**
- * Client for the user-management-ui /api/v1/authorize endpoint.
+ * Client for the user-management-api /api/v1/authorize endpoint.
  *
  * Given an app_id and Firebase UID, returns the user's effective role
  * and capabilities for this application. This is the single source

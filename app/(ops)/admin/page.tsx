@@ -35,6 +35,7 @@ import {
   RefreshCw,
   Key,
   AlertCircle,
+  Layers,
 } from "lucide-react";
 import { exportTableToCsv, exportTableToXlsx, type ExportColumn } from "@/lib/utils/export";
 import { AuditDashboard } from "@/components/dashboards/audit-dashboard";
@@ -377,6 +378,12 @@ export default function AdminDashboardPage() {
                 <Link href="/ops/services">
                   <Server className="mr-2 size-4" />
                   Service Status
+                </Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/admin/strategy-catalogue/overview">
+                  <Layers className="mr-2 size-4" />
+                  Strategy Catalogue
                 </Link>
               </Button>
             </div>

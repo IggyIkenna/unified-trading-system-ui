@@ -1,5 +1,5 @@
 /**
- * Client for the user-management-ui /api/v1/signup endpoint.
+ * Client for the user-management-api /api/v1/signup endpoint.
  *
  * Creates a Firebase Auth user (disabled) + Firestore profile (pending_approval)
  * + onboarding request. Admin must approve before the user can sign in.

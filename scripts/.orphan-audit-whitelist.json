@@ -35,14 +35,6 @@
       "reason": "API route handler — POST target for onboarding form, not a nav link."
     },
     {
-      "path": "/admin/organizations/[id]",
-      "reason": "Admin org detail — reached via admin search + direct URL. Collection page /admin/organizations pending rebuild; see dashboard_services_grid_collapse_2026_04_21 follow-ups."
-    },
-    {
-      "path": "/admin/strategy-catalogue/overview",
-      "reason": "Admin-only strategy catalogue overview — deep-link from admin console; separate from the cross-cutting /services/strategy-catalogue surface Plan B will build."
-    },
-    {
       "path": "/demo/preview",
       "reason": "Investor/IR demo preview — deep-link shared as URL; not on public nav."
     },
@@ -69,10 +61,6 @@
     {
       "path": "/services/manage/users/request",
       "reason": "Client-side access-request form step — reached via POST-then-redirect from users list, not a persistent nav tile."
-    },
-    {
-      "path": "/services/observe/registry",
-      "reason": "Strategy registry observe drilldown — deep-link from observe filter chip + admin tooling; intentional."
     }
   ]
 }

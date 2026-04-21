@@ -316,6 +316,12 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
         description: "Strategy performance and health signals",
       },
       {
+        path: "/services/observe/registry",
+        label: "Registry",
+        lanes: ["strategy", "data"],
+        description: "Browse UAC canonical registries + reference data",
+      },
+      {
         path: "/services/observe/health",
         label: "Health",
         lanes: ["data", "execution"],

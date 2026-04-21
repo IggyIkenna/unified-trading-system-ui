@@ -12,7 +12,10 @@ export default defineConfig({
     globals: true,
     pool: "forks", // Prevent zombie node processes
     setupFiles: [],
-    include: ["tests/**/*.{test,spec}.{ts,tsx}"],
+    include: [
+      "tests/**/*.{test,spec}.{ts,tsx}",
+      "__tests__/**/*.{test,spec}.{ts,tsx}",
+    ],
     exclude: ["**/node_modules/**", "**/.git/**", "**/.next/**", "tests/e2e/**"],
     coverage: {
       reporter: ["text", "json-summary"],

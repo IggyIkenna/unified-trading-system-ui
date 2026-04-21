@@ -88,7 +88,7 @@ async function enrichUserFromBackend(
 /**
  * Firebase Auth provider — authenticates against Firebase Auth
  * using email/password. After identity verification, calls the
- * user-management-ui /authorize endpoint to get the user's real
+ * user-management-api /authorize endpoint to get the user's real
  * role, capabilities, and account status.
  */
 export class FirebaseAuthProvider implements AuthProvider {

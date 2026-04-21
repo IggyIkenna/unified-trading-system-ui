@@ -32,6 +32,8 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { filePathToRoute, resolveTemplate, routeToMatcher } from "./orphan-audit-lib.ts";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const REPO_ROOT = join(__dirname, "..");
@@ -91,37 +93,10 @@ function walk(dir: string, acc: string[]): string[] {
   return acc;
 }
 
-function filePathToRoute(absPath: string): string {
-  const rel = relative(APP_DIR, absPath).replace(/\\/g, "/");
-  // Strip the file segment (page.tsx / route.ts / etc.)
-  const withoutFile = rel.replace(/\/(page|route)\.(tsx?|jsx?)$/, "");
-  // Strip route groups "(name)" — they are org-only, do not appear in the URL
-  const segments = withoutFile.split("/").filter(
-    (seg) => seg && !(seg.startsWith("(") && seg.endsWith(")")),
-  );
-  return "/" + segments.join("/");
-}
-
-function routeToMatcher(route: string): RegExp {
-  // Convert a Next.js route pattern to a regex:
-  //   [[...slug]] → .* (optional catch-all, zero or more segments)
-  //   [...slug]   → .+ (required catch-all, one or more segments)
-  //   [slug]      → [^/]+ (single segment)
-  //   other chars → escaped literally
-  const escaped = route
-    .split("/")
-    .map((seg) => {
-      if (/^\[\[\.\.\.[^\]]+\]\]$/.test(seg)) return ".*";
-      if (/^\[\.\.\.[^\]]+\]$/.test(seg)) return ".+";
-      if (/^\[[^\]]+\]$/.test(seg)) return "[^/]+";
-      return seg.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    })
-    .join("/");
-  return new RegExp("^" + escaped + "/?$");
-}
-
 const routeFiles = existsSync(APP_DIR) ? walk(APP_DIR, []) : [];
-const declaredRoutes = [...new Set(routeFiles.map(filePathToRoute))].sort();
+const declaredRoutes = [
+  ...new Set(routeFiles.map((p) => filePathToRoute(p, APP_DIR))),
+].sort();
 
 // ─── Collect reachable hrefs ─────────────────────────────────────────────────
 // Walk source tree (app/, components/, hooks/, lib/) looking for every:
@@ -215,14 +190,6 @@ for (const file of sourceFiles) {
   }
 }
 
-function resolveTemplate(rawTpl: string): string {
-  return rawTpl.replace(/\$\{([^}]+)\}/g, (_, expr: string) => {
-    const ident = expr.trim();
-    const resolved = constMap.get(ident);
-    return resolved ?? "__PARAM__";
-  });
-}
-
 const rawHrefs = new Set<string>();
 
 // Pass 2 — extract all href / path candidates.
@@ -239,7 +206,7 @@ for (const [, content] of fileContents) {
     re.lastIndex = 0;
     let tm: RegExpExecArray | null;
     while ((tm = re.exec(content)) !== null) {
-      const resolved = resolveTemplate(tm[1]);
+      const resolved = resolveTemplate(tm[1], constMap);
       if (resolved.startsWith("/")) rawHrefs.add(resolved);
       // Also add every `/...` substring from the template (handles
       // concatenations where the base was unresolved).

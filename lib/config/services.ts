@@ -308,7 +308,7 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
       {
         key: "orgs",
         label: "Orgs",
-        href: "/admin/orgs",
+        href: "/admin/organizations",
         icon: "Building2",
         requiredEntitlements: ["*"],
         description: "Client org onboarding + mandates.",
