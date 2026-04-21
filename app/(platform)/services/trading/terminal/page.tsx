@@ -7,8 +7,8 @@ import { AlertTriangle, ShieldAlert } from "lucide-react";
 
 import { FamilyArchetypePicker } from "@/components/architecture-v2";
 import type {
-  StrategyArchetypeV2,
-  StrategyFamilyV2,
+  StrategyArchetype,
+  StrategyFamily,
 } from "@/lib/architecture-v2";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
@@ -58,8 +58,8 @@ export default function TradingPage() {
           idPrefix="trading-terminal"
           availabilityFilter="allowed"
           value={{
-            family: strategyFamily as StrategyFamilyV2 | undefined,
-            archetype: strategyArchetype as StrategyArchetypeV2 | undefined,
+            family: strategyFamily as StrategyFamily | undefined,
+            archetype: strategyArchetype as StrategyArchetype | undefined,
           }}
           onChange={(next) => {
             setStrategyFamily(next.family);

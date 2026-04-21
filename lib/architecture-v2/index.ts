@@ -6,7 +6,7 @@
  * `unified-api-contracts/unified_api_contracts/internal/architecture_v2/__init__.py`).
  *
  * Usage:
- *   import { StrategyFamilyV2, FAMILY_METADATA, UNITY_CHILD_BOOKS } from "@/lib/architecture-v2";
+ *   import { StrategyFamily, FAMILY_METADATA, UNITY_CHILD_BOOKS } from "@/lib/architecture-v2";
  *
  * Do NOT reach into sub-modules directly from app code unless you own the
  * module; keep the facade as the stable contract.

@@ -16,7 +16,7 @@ import { clearPersona, seedPersona } from "../seed-persona";
  *
  * This spec covers:
  * 1. UAC manifest + UI coverage.ts exist at their canonical paths.
- * 2. UAC manifest declares exactly 18 archetypes (matches StrategyArchetypeV2).
+ * 2. UAC manifest declares exactly 18 archetypes (matches StrategyArchetype).
  * 3. The PM sync --check reports the committed coverage.ts in sync with the manifest.
  * 4. coverage.ts carries the AUTO-GENERATED banner — hand-edits will be caught
  *    by the sync-check on the next push.

@@ -40,16 +40,16 @@ import {
   STRATEGY_FAMILIES_V2,
 } from "@/lib/architecture-v2";
 import type {
-  StrategyArchetypeV2,
+  StrategyArchetype,
   StrategyAvailabilityEntry,
-  StrategyFamilyV2,
+  StrategyFamily,
 } from "@/lib/architecture-v2";
 import { audienceForPersonaId } from "@/lib/auth/audience-from-persona";
 import { useAuth } from "@/hooks/use-auth";
 
 export interface FamilyArchetypeSelection {
-  readonly family?: StrategyFamilyV2;
-  readonly archetype?: StrategyArchetypeV2;
+  readonly family?: StrategyFamily;
+  readonly archetype?: StrategyArchetype;
   readonly strategyId?: string;
 }
 
@@ -65,7 +65,7 @@ export interface FamilyArchetypePickerProps {
 
 const ALL_SENTINEL = "__all__" as const;
 
-function collectSlotLabels(archetype: StrategyArchetypeV2): readonly string[] {
+function collectSlotLabels(archetype: StrategyArchetype): readonly string[] {
   const coverage = ARCHETYPE_COVERAGE[archetype];
   if (!coverage) return [];
   const out: string[] = [];
@@ -97,14 +97,14 @@ export function FamilyArchetypePicker({
   // audience is non-admin, hide archetypes whose every representative slot is
   // not visible to the current audience (IM_RESERVED + RETIRED + pre-BACKTESTED
   // are hidden for trading_platform_subscriber + im_client).
-  const allowedArchetypes = useMemo<readonly StrategyArchetypeV2[]>(() => {
+  const allowedArchetypes = useMemo<readonly StrategyArchetype[]>(() => {
     if (availabilityFilter === "all" || audience === "admin") {
-      return Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetypeV2[];
+      return Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[];
     }
-    const keep: StrategyArchetypeV2[] = [];
+    const keep: StrategyArchetype[] = [];
     for (const archetype of Object.keys(
       ARCHETYPE_COVERAGE,
-    ) as StrategyArchetypeV2[]) {
+    ) as StrategyArchetype[]) {
       const slots = collectSlotLabels(archetype);
       if (slots.length === 0) {
         // No representative slots declared yet — treat as visible so research /
@@ -135,15 +135,15 @@ export function FamilyArchetypePicker({
     return keep;
   }, [availabilityFilter, audience, entries]);
 
-  const visibleFamilies = useMemo<readonly StrategyFamilyV2[]>(() => {
-    const families = new Set<StrategyFamilyV2>();
+  const visibleFamilies = useMemo<readonly StrategyFamily[]>(() => {
+    const families = new Set<StrategyFamily>();
     for (const archetype of allowedArchetypes) {
       families.add(ARCHETYPE_TO_FAMILY[archetype]);
     }
     return STRATEGY_FAMILIES_V2.filter((f) => families.has(f));
   }, [allowedArchetypes]);
 
-  const archetypesForFamily = useMemo<readonly StrategyArchetypeV2[]>(() => {
+  const archetypesForFamily = useMemo<readonly StrategyArchetype[]>(() => {
     if (!value.family) return [];
     return allowedArchetypes.filter(
       (a) => ARCHETYPE_TO_FAMILY[a] === value.family,
@@ -166,7 +166,7 @@ export function FamilyArchetypePicker({
       onChange({});
       return;
     }
-    onChange({ family: next as StrategyFamilyV2 });
+    onChange({ family: next as StrategyFamily });
   };
 
   const handleArchetypeChange = (next: string) => {
@@ -174,7 +174,7 @@ export function FamilyArchetypePicker({
       onChange({ family: value.family });
       return;
     }
-    const archetype = next as StrategyArchetypeV2;
+    const archetype = next as StrategyArchetype;
     const family = ARCHETYPE_TO_FAMILY[archetype];
     onChange({ family, archetype });
   };

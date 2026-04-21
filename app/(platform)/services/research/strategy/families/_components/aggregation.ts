@@ -2,13 +2,13 @@ import {
   FAMILY_METADATA,
   STRATEGY_FAMILIES_V2,
   legacyFamilyToV2,
-  type StrategyFamilyV2,
+  type StrategyFamily,
 } from "@/lib/architecture-v2";
 import type { StrategyCatalogEntry } from "@/lib/mocks/fixtures/strategy-catalog-data";
 import { STRATEGY_CATALOG } from "@/lib/mocks/fixtures/strategy-catalog-data";
 
 export interface FamilyAggregate {
-  family: StrategyFamilyV2;
+  family: StrategyFamily;
   label: string;
   slug: string;
   accentClass: string;
@@ -38,7 +38,7 @@ function mean(values: readonly number[]): number {
 export function groupCatalogByFamily(
   catalog: readonly StrategyCatalogEntry[] = STRATEGY_CATALOG,
 ): readonly FamilyAggregate[] {
-  const perFamily = new Map<StrategyFamilyV2, StrategyCatalogEntry[]>();
+  const perFamily = new Map<StrategyFamily, StrategyCatalogEntry[]>();
   for (const family of STRATEGY_FAMILIES_V2) {
     perFamily.set(family, []);
   }

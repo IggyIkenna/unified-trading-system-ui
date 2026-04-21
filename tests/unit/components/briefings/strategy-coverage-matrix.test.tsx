@@ -1,7 +1,7 @@
 import { TestWrapper } from "@/tests/helpers/test-wrapper";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { StrategyArchetypeV2 } from "@/lib/architecture-v2/enums";
+import type { StrategyArchetype } from "@/lib/architecture-v2/enums";
 
 describe("StrategyCoverageMatrix", () => {
   it("renders a table with header and 18 archetype rows by default", async () => {
@@ -24,7 +24,7 @@ describe("StrategyCoverageMatrix", () => {
     const { StrategyCoverageMatrix } = await import(
       "@/components/briefings/strategy-coverage-matrix"
     );
-    const subset: readonly StrategyArchetypeV2[] = [
+    const subset: readonly StrategyArchetype[] = [
       "ML_DIRECTIONAL_CONTINUOUS",
       "CARRY_BASIS_PERP",
     ];
@@ -39,7 +39,7 @@ describe("StrategyCoverageMatrix", () => {
     const { StrategyCoverageMatrix } = await import(
       "@/components/briefings/strategy-coverage-matrix"
     );
-    const subset: readonly StrategyArchetypeV2[] = ["ML_DIRECTIONAL_CONTINUOUS"];
+    const subset: readonly StrategyArchetype[] = ["ML_DIRECTIONAL_CONTINUOUS"];
     const { container } = render(<StrategyCoverageMatrix archetypes={subset} />, {
       wrapper: TestWrapper,
     });
@@ -71,7 +71,7 @@ describe("StrategyCoverageMatrix", () => {
     const { StrategyCoverageMatrix } = await import(
       "@/components/briefings/strategy-coverage-matrix"
     );
-    const subset: readonly StrategyArchetypeV2[] = ["ML_DIRECTIONAL_CONTINUOUS"];
+    const subset: readonly StrategyArchetype[] = ["ML_DIRECTIONAL_CONTINUOUS"];
     const { container } = render(<StrategyCoverageMatrix archetypes={subset} />, {
       wrapper: TestWrapper,
     });

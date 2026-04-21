@@ -11,7 +11,7 @@ import {
   StatusBadge,
 } from "@/components/architecture-v2";
 import { ARCHETYPE_TO_FAMILY } from "@/lib/architecture-v2";
-import type { StrategyFamilyV2 } from "@/lib/architecture-v2";
+import type { StrategyFamily } from "@/lib/architecture-v2";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -34,7 +34,7 @@ import type {
   CoverageStatus,
   InstrumentTypeV2,
   VenueCategoryV2,
-  StrategyArchetypeV2,
+  StrategyArchetype,
 } from "@/lib/architecture-v2";
 import {
   ARCHETYPE_COVERAGE,
@@ -89,16 +89,16 @@ const STATUS_CELL_STYLES: Record<CoverageStatus, string> = {
 export default function StrategyCatalogueCoveragePage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
   const [selectedCell, setSelectedCell] = useState<CoverageCell | null>(null);
-  const [familyFilter, setFamilyFilter] = useState<StrategyFamilyV2 | undefined>(
+  const [familyFilter, setFamilyFilter] = useState<StrategyFamily | undefined>(
     undefined,
   );
   const [archetypeFilter, setArchetypeFilter] = useState<
-    StrategyArchetypeV2 | undefined
+    StrategyArchetype | undefined
   >(undefined);
 
   const archetypesByFamily = useMemo(() => {
-    const grouped = new Map<string, StrategyArchetypeV2[]>();
-    (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetypeV2[]).forEach(
+    const grouped = new Map<string, StrategyArchetype[]>();
+    (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]).forEach(
       (archetype) => {
         const family = getFamilyForArchetype(archetype);
         if (familyFilter && family !== familyFilter) return;
@@ -317,7 +317,7 @@ export default function StrategyCatalogueCoveragePage() {
     activeCell,
   }: {
     family: string;
-    archetypes: StrategyArchetypeV2[];
+    archetypes: StrategyArchetype[];
     statusFilter: StatusFilter;
     onCellClick: (cell: CoverageCell) => void;
     activeCell: CoverageCell | null;

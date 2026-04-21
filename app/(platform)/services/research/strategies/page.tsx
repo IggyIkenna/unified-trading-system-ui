@@ -44,7 +44,7 @@ import { NewBacktestDialog } from "@/components/research/strategies/new-backtest
 import { ComparePanel, DetailPanel } from "@/components/research/strategies/strategy-detail-panel";
 import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
 import { FamilyArchetypePicker } from "@/components/architecture-v2";
-import type { StrategyArchetypeV2, StrategyFamilyV2 } from "@/lib/architecture-v2";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -54,11 +54,11 @@ export default function StrategiesPage() {
   const mockDataMode = isMockDataMode();
   const [search, setSearch] = React.useState("");
   const [archetypeFilter, setArchetypeFilter] = React.useState("all");
-  const [v2Family, setV2Family] = React.useState<StrategyFamilyV2 | undefined>(
+  const [v2Family, setV2Family] = React.useState<StrategyFamily | undefined>(
     undefined,
   );
   const [v2Archetype, setV2Archetype] = React.useState<
-    StrategyArchetypeV2 | undefined
+    StrategyArchetype | undefined
   >(undefined);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [shardFilter, setShardFilter] = React.useState("all");

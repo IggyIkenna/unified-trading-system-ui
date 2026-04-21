@@ -7,7 +7,7 @@
  * reference.
  */
 
-import type { StrategyArchetypeV2 } from "./enums";
+import type { StrategyArchetype } from "./enums";
 
 export interface BlockListEntry {
   /** Short id — matches `CoverageCell.blockListRefs[]` tokens. */
@@ -15,7 +15,7 @@ export interface BlockListEntry {
   /** One-line summary used as section heading. */
   readonly summary: string;
   /** Archetypes affected — by-name list, rendered as chips. */
-  readonly archetypesAffected: readonly StrategyArchetypeV2[];
+  readonly archetypesAffected: readonly StrategyArchetype[];
   /** Explanation paragraphs — each rendered as its own <p>. */
   readonly explanation: readonly string[];
   /** Plain-language remediation steps. */

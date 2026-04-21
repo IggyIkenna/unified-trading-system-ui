@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/card";
 import type {
   CoverageCell,
-  StrategyArchetypeV2,
+  StrategyArchetype,
 } from "@/lib/architecture-v2";
 import {
   ARCHETYPE_COVERAGE,
@@ -126,7 +126,7 @@ function mockLiveDelta(slot: string): LiveVsBacktestDelta {
 }
 
 function findCell(
-  archetype: StrategyArchetypeV2,
+  archetype: StrategyArchetype,
   slotLabel: string,
 ): CoverageCell | null {
   const coverage = coverageForArchetype(archetype);
@@ -139,7 +139,7 @@ function findCell(
 
 export default function StrategyDetailPage() {
   const params = useParams<{ archetype: string; slot: string }>();
-  const archetype = params.archetype as StrategyArchetypeV2;
+  const archetype = params.archetype as StrategyArchetype;
   const slotLabel = decodeURIComponent(params.slot);
   const availability = useAvailabilityEntry(slotLabel);
 

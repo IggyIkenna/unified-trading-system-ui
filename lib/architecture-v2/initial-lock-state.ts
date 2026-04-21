@@ -24,7 +24,7 @@
  * update this file + the matrix doc in the same PR.
  */
 
-import type { StrategyArchetypeV2, VenueCategoryV2 } from "./enums";
+import type { StrategyArchetype, VenueCategoryV2 } from "./enums";
 import type { InstrumentTypeV2 } from "./coverage";
 import type { LockState, StrategyAvailabilityEntry, StrategyMaturity } from "./availability";
 import { ARCHETYPE_COVERAGE } from "./coverage";
@@ -33,7 +33,7 @@ const SNAPSHOT_DATE_ISO = "2026-04-20T00:00:00Z";
 
 /** Human-stable slot label format — keep aligned with strategy-service. */
 export function slotLabelFor(
-  archetype: StrategyArchetypeV2,
+  archetype: StrategyArchetype,
   category: VenueCategoryV2,
   instrumentType: InstrumentTypeV2,
 ): string {
@@ -47,7 +47,7 @@ export function slotLabelFor(
  * Format: (archetype, category, instrumentType).
  */
 const PUBLIC_CELLS: ReadonlyArray<
-  readonly [StrategyArchetypeV2, VenueCategoryV2, InstrumentTypeV2]
+  readonly [StrategyArchetype, VenueCategoryV2, InstrumentTypeV2]
 > = [
   // Crypto mean-reversion — existing live IM, 1yr+ track record, no
   // exclusivity signed with any client. Offerable to DART prospects.
@@ -61,7 +61,7 @@ const PUBLIC_CELLS: ReadonlyArray<
  * would cover them anyway).
  */
 const IM_LIVE_CELLS: ReadonlyArray<{
-  readonly archetype: StrategyArchetypeV2;
+  readonly archetype: StrategyArchetype;
   readonly category: VenueCategoryV2;
   readonly instrumentType: InstrumentTypeV2;
   readonly maturity: StrategyMaturity;
@@ -127,7 +127,7 @@ export function buildInitialRegistry(): readonly StrategyAvailabilityEntry[] {
     );
   }
 
-  for (const archetype of Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetypeV2[]) {
+  for (const archetype of Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]) {
     const coverage = ARCHETYPE_COVERAGE[archetype];
     for (const cell of coverage.cells) {
       // Skip unsupported / blocked cells — no point registering lock state

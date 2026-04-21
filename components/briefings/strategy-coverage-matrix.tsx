@@ -5,7 +5,7 @@ import type {
   CoverageCell,
   CoverageStatus,
 } from "@/lib/architecture-v2/coverage";
-import type { StrategyArchetypeV2, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
+import type { StrategyArchetype, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
 
 /**
  * Strategy-family × category coverage matrix for the briefings surface.
@@ -45,7 +45,7 @@ const CATEGORY_LABELS: Readonly<Record<VenueCategoryV2, string>> = {
   PREDICTION: "Prediction",
 };
 
-const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetypeV2, string>> = {
+const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetype, string>> = {
   ML_DIRECTIONAL_CONTINUOUS: "ML directional (continuous)",
   ML_DIRECTIONAL_EVENT_SETTLED: "ML directional (event-settled)",
   RULES_DIRECTIONAL_CONTINUOUS: "Rules-based directional",
@@ -67,7 +67,7 @@ const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetypeV2, string>> = {
 };
 
 function bestStatusForCell(
-  archetype: StrategyArchetypeV2,
+  archetype: StrategyArchetype,
   category: VenueCategoryV2,
 ): CoverageStatus | null {
   const coverage: ArchetypeCoverage = ARCHETYPE_COVERAGE[archetype];
@@ -118,14 +118,14 @@ export interface StrategyCoverageMatrixProps {
    * Pass an explicit list when tailoring to a briefing (e.g. IM surface may
    * hide low-frequency market-making rows).
    */
-  readonly archetypes?: readonly StrategyArchetypeV2[];
+  readonly archetypes?: readonly StrategyArchetype[];
 }
 
 export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixProps = {}) {
-  const rows: readonly StrategyArchetypeV2[] =
+  const rows: readonly StrategyArchetype[] =
     archetypes && archetypes.length > 0
       ? archetypes
-      : (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetypeV2[]);
+      : (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]);
 
   return (
     <div className="space-y-3">

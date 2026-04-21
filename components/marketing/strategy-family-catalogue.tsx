@@ -9,8 +9,8 @@ import type {
 } from "@/lib/architecture-v2/coverage";
 import type {
   LockState,
-  StrategyArchetypeV2,
-  StrategyFamilyV2,
+  StrategyArchetype,
+  StrategyFamily,
   VenueCategoryV2,
 } from "@/lib/architecture-v2";
 import { listFamiliesOrdered } from "@/lib/architecture-v2/families";
@@ -70,7 +70,7 @@ const INSTRUMENT_TYPE_LABELS: Readonly<Record<InstrumentTypeV2, string>> = {
   event_settled: "Event-settled",
 };
 
-const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetypeV2, string>> = {
+const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetype, string>> = {
   ML_DIRECTIONAL_CONTINUOUS: "ML directional (continuous)",
   ML_DIRECTIONAL_EVENT_SETTLED: "ML directional (event-settled)",
   RULES_DIRECTIONAL_CONTINUOUS: "Rules-based directional",
@@ -110,7 +110,7 @@ function deriveLockState(cell: CoverageCell | null, status: CoverageStatus | "NO
 }
 
 function getCell(
-  archetype: StrategyArchetypeV2,
+  archetype: StrategyArchetype,
   category: VenueCategoryV2,
   instrumentType: InstrumentTypeV2,
 ): CoverageCell | null {
@@ -222,7 +222,7 @@ function CellChip({ cell, status }: CellChipProps) {
 }
 
 interface ArchetypeRowProps {
-  archetype: StrategyArchetypeV2;
+  archetype: StrategyArchetype;
 }
 
 function ArchetypeRow({ archetype }: ArchetypeRowProps) {
@@ -253,9 +253,9 @@ function ArchetypeRow({ archetype }: ArchetypeRowProps) {
 }
 
 interface FamilyGroupProps {
-  family: StrategyFamilyV2;
+  family: StrategyFamily;
   label: string;
-  archetypes: readonly StrategyArchetypeV2[];
+  archetypes: readonly StrategyArchetype[];
   accentClass: string;
 }
 
@@ -295,7 +295,7 @@ export function StrategyFamilyCatalogue() {
 
   const BANDS: readonly {
     label: string;
-    families: readonly StrategyFamilyV2[];
+    families: readonly StrategyFamily[];
   }[] = [
     { label: "Directional", families: ["ML_DIRECTIONAL", "RULES_DIRECTIONAL"] },
     {

@@ -46,7 +46,7 @@ import Link from "next/link";
 import * as React from "react";
 import { formatNumber } from "@/lib/utils/formatters";
 import { FamilyArchetypePicker } from "@/components/architecture-v2";
-import type { StrategyArchetypeV2, StrategyFamilyV2 } from "@/lib/architecture-v2";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 
 // ─── Pipeline Stage Cards ─────────────────────────────────────────────────────
 
@@ -222,10 +222,10 @@ export default function BuildOverviewPage() {
   const runningJobs = activeJobs.filter((j) => j.status === "running");
   const queuedJobs = activeJobs.filter((j) => j.status === "queued");
   const [scopeFamily, setScopeFamily] = React.useState<
-    StrategyFamilyV2 | undefined
+    StrategyFamily | undefined
   >(undefined);
   const [scopeArchetype, setScopeArchetype] = React.useState<
-    StrategyArchetypeV2 | undefined
+    StrategyArchetype | undefined
   >(undefined);
 
   return (

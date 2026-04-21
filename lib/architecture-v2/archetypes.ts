@@ -1,4 +1,4 @@
-import type { StrategyArchetypeV2, StrategyFamilyV2 } from "./enums";
+import type { StrategyArchetype, StrategyFamily } from "./enums";
 import { ARCHETYPE_TO_FAMILY } from "./enums";
 
 /**
@@ -9,14 +9,14 @@ import { ARCHETYPE_TO_FAMILY } from "./enums";
  */
 
 export interface ArchetypeMetadata {
-  archetype: StrategyArchetypeV2;
-  family: StrategyFamilyV2;
+  archetype: StrategyArchetype;
+  family: StrategyFamily;
   label: string;
   settlementShape: "continuous" | "event_settled" | "dated" | "one_shot" | "basket";
   shortDescription: string;
 }
 
-export const ARCHETYPE_METADATA: Readonly<Record<StrategyArchetypeV2, ArchetypeMetadata>> = {
+export const ARCHETYPE_METADATA: Readonly<Record<StrategyArchetype, ArchetypeMetadata>> = {
   ML_DIRECTIONAL_CONTINUOUS: {
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     family: ARCHETYPE_TO_FAMILY.ML_DIRECTIONAL_CONTINUOUS,
@@ -145,9 +145,9 @@ export const ARCHETYPE_METADATA: Readonly<Record<StrategyArchetypeV2, ArchetypeM
   },
 };
 
-export function listArchetypesForFamily(family: StrategyFamilyV2): readonly ArchetypeMetadata[] {
+export function listArchetypesForFamily(family: StrategyFamily): readonly ArchetypeMetadata[] {
   const out: ArchetypeMetadata[] = [];
-  for (const archetype of Object.keys(ARCHETYPE_METADATA) as StrategyArchetypeV2[]) {
+  for (const archetype of Object.keys(ARCHETYPE_METADATA) as StrategyArchetype[]) {
     if (ARCHETYPE_TO_FAMILY[archetype] === family) {
       out.push(ARCHETYPE_METADATA[archetype]);
     }

@@ -14,7 +14,7 @@ import {
 import {
   FAMILY_METADATA,
   listArchetypesForFamily,
-  type StrategyArchetypeV2,
+  type StrategyArchetype,
 } from "@/lib/architecture-v2";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatCurrency } from "@/lib/utils/formatters";
@@ -30,7 +30,7 @@ import type { FamilyAggregate } from "./aggregation";
 
 function entriesByArchetype(
   entries: readonly StrategyCatalogEntry[],
-  archetypeLabelMap: Readonly<Record<StrategyArchetypeV2, string>>,
+  archetypeLabelMap: Readonly<Record<StrategyArchetype, string>>,
 ): Map<string, StrategyCatalogEntry[]> {
   // We don't yet have v2 archetype tags on the legacy fixture, so bucket by
   // subcategory as a best-effort proxy. Dashboard header flags this with an
@@ -50,9 +50,9 @@ function entriesByArchetype(
 export function FamilyDashboard({ aggregate }: { aggregate: FamilyAggregate }) {
   const meta = FAMILY_METADATA[aggregate.family];
   const archetypes = listArchetypesForFamily(aggregate.family);
-  const archetypeLabel: Record<StrategyArchetypeV2, string> = Object.fromEntries(
+  const archetypeLabel: Record<StrategyArchetype, string> = Object.fromEntries(
     archetypes.map((a) => [a.archetype, a.label]),
-  ) as Record<StrategyArchetypeV2, string>;
+  ) as Record<StrategyArchetype, string>;
   const subcatBuckets = entriesByArchetype(aggregate.entries, archetypeLabel);
   return (
     <div className="min-h-screen bg-background text-foreground">

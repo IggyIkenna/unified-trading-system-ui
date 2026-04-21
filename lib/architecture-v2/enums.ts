@@ -12,7 +12,7 @@
  * `tests/unit/lib/architecture-v2/enums.test.ts` will fail loudly if the
  * archetype-to-family map diverges.
  */
-export type StrategyFamilyV2 =
+export type StrategyFamily =
   | "ML_DIRECTIONAL"
   | "RULES_DIRECTIONAL"
   | "CARRY_AND_YIELD"
@@ -22,7 +22,7 @@ export type StrategyFamilyV2 =
   | "VOL_TRADING"
   | "STAT_ARB_PAIRS";
 
-export const STRATEGY_FAMILIES_V2: readonly StrategyFamilyV2[] = [
+export const STRATEGY_FAMILIES_V2: readonly StrategyFamily[] = [
   "ML_DIRECTIONAL",
   "RULES_DIRECTIONAL",
   "CARRY_AND_YIELD",
@@ -33,7 +33,7 @@ export const STRATEGY_FAMILIES_V2: readonly StrategyFamilyV2[] = [
   "STAT_ARB_PAIRS",
 ] as const;
 
-export type StrategyArchetypeV2 =
+export type StrategyArchetype =
   | "ML_DIRECTIONAL_CONTINUOUS"
   | "ML_DIRECTIONAL_EVENT_SETTLED"
   | "RULES_DIRECTIONAL_CONTINUOUS"
@@ -53,7 +53,7 @@ export type StrategyArchetypeV2 =
   | "STAT_ARB_PAIRS_FIXED"
   | "STAT_ARB_CROSS_SECTIONAL";
 
-export const STRATEGY_ARCHETYPES_V2: readonly StrategyArchetypeV2[] = [
+export const STRATEGY_ARCHETYPES_V2: readonly StrategyArchetype[] = [
   "ML_DIRECTIONAL_CONTINUOUS",
   "ML_DIRECTIONAL_EVENT_SETTLED",
   "RULES_DIRECTIONAL_CONTINUOUS",
@@ -74,7 +74,7 @@ export const STRATEGY_ARCHETYPES_V2: readonly StrategyArchetypeV2[] = [
   "STAT_ARB_CROSS_SECTIONAL",
 ] as const;
 
-export const ARCHETYPE_TO_FAMILY: Readonly<Record<StrategyArchetypeV2, StrategyFamilyV2>> = {
+export const ARCHETYPE_TO_FAMILY: Readonly<Record<StrategyArchetype, StrategyFamily>> = {
   ML_DIRECTIONAL_CONTINUOUS: "ML_DIRECTIONAL",
   ML_DIRECTIONAL_EVENT_SETTLED: "ML_DIRECTIONAL",
   RULES_DIRECTIONAL_CONTINUOUS: "RULES_DIRECTIONAL",

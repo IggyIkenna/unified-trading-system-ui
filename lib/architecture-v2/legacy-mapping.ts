@@ -1,7 +1,7 @@
-import type { StrategyFamilyV2 } from "./enums";
+import type { StrategyFamily } from "./enums";
 
 /**
- * Legacy free-text family label → v2 StrategyFamilyV2 mapping.
+ * Legacy free-text family label → v2 StrategyFamily mapping.
  *
  * The existing `strategy-catalog-data.ts` fixture (53 strategies) was written
  * before the v2 taxonomy landed. Rather than regenerate the fixture in this
@@ -13,7 +13,7 @@ import type { StrategyFamilyV2 } from "./enums";
  * and delete this mapping.
  */
 
-export const LEGACY_FAMILY_TO_V2: Readonly<Record<string, StrategyFamilyV2>> = {
+export const LEGACY_FAMILY_TO_V2: Readonly<Record<string, StrategyFamily>> = {
   // Directional
   "ML Directional": "ML_DIRECTIONAL",
   Momentum: "RULES_DIRECTIONAL",
@@ -56,6 +56,6 @@ export const LEGACY_FAMILY_TO_V2: Readonly<Record<string, StrategyFamilyV2>> = {
  * do not silently drop rows (dashboards show an "unmapped" chip when this
  * fallback fires — see family-grid component).
  */
-export function legacyFamilyToV2(legacy: string): StrategyFamilyV2 {
+export function legacyFamilyToV2(legacy: string): StrategyFamily {
   return LEGACY_FAMILY_TO_V2[legacy] ?? "RULES_DIRECTIONAL";
 }

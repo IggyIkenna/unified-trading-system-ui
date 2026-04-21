@@ -1,4 +1,4 @@
-import type { StrategyArchetypeV2, StrategyFamilyV2 } from "./enums";
+import type { StrategyArchetype, StrategyFamily } from "./enums";
 import { ARCHETYPE_TO_FAMILY, STRATEGY_FAMILIES_V2 } from "./enums";
 
 /**
@@ -9,13 +9,13 @@ import { ARCHETYPE_TO_FAMILY, STRATEGY_FAMILIES_V2 } from "./enums";
  */
 
 export interface FamilyMetadata {
-  family: StrategyFamilyV2;
+  family: StrategyFamily;
   label: string;
   slug: string;
   alphaSource: string;
   shortDescription: string;
   docHref: string;
-  archetypes: readonly StrategyArchetypeV2[];
+  archetypes: readonly StrategyArchetype[];
   accentClass: string;
   iconName:
     | "Brain"
@@ -28,8 +28,8 @@ export interface FamilyMetadata {
     | "Shuffle";
 }
 
-const BY_FAMILY: Readonly<Record<StrategyFamilyV2, StrategyArchetypeV2[]>> = (() => {
-  const out: Record<StrategyFamilyV2, StrategyArchetypeV2[]> = {
+const BY_FAMILY: Readonly<Record<StrategyFamily, StrategyArchetype[]>> = (() => {
+  const out: Record<StrategyFamily, StrategyArchetype[]> = {
     ML_DIRECTIONAL: [],
     RULES_DIRECTIONAL: [],
     CARRY_AND_YIELD: [],
@@ -40,12 +40,12 @@ const BY_FAMILY: Readonly<Record<StrategyFamilyV2, StrategyArchetypeV2[]>> = (()
     STAT_ARB_PAIRS: [],
   };
   for (const [archetype, family] of Object.entries(ARCHETYPE_TO_FAMILY)) {
-    out[family].push(archetype as StrategyArchetypeV2);
+    out[family].push(archetype as StrategyArchetype);
   }
   return out;
 })();
 
-export const FAMILY_METADATA: Readonly<Record<StrategyFamilyV2, FamilyMetadata>> = {
+export const FAMILY_METADATA: Readonly<Record<StrategyFamily, FamilyMetadata>> = {
   ML_DIRECTIONAL: {
     family: "ML_DIRECTIONAL",
     label: "ML Directional",
@@ -152,7 +152,7 @@ export const FAMILY_METADATA: Readonly<Record<StrategyFamilyV2, FamilyMetadata>>
   },
 };
 
-export function getFamilyForArchetype(archetype: StrategyArchetypeV2): StrategyFamilyV2 {
+export function getFamilyForArchetype(archetype: StrategyArchetype): StrategyFamily {
   return ARCHETYPE_TO_FAMILY[archetype];
 }
 

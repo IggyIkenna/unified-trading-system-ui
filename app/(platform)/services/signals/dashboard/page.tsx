@@ -26,8 +26,8 @@ import {
 } from "@/lib/signal-broadcast";
 import { ARCHETYPE_TO_FAMILY } from "@/lib/architecture-v2";
 import type {
-  StrategyArchetypeV2,
-  StrategyFamilyV2,
+  StrategyArchetype,
+  StrategyFamily,
 } from "@/lib/architecture-v2";
 
 /**
@@ -50,11 +50,11 @@ export default function CounterpartyDashboardPage() {
   const backtest = useBacktestPaperLive(cp.id);
   const health = useDeliveryHealth(cp.id);
   const pnl = usePnlAttribution(cp.id);
-  const [familyFilter, setFamilyFilter] = useState<StrategyFamilyV2 | undefined>(
+  const [familyFilter, setFamilyFilter] = useState<StrategyFamily | undefined>(
     undefined,
   );
   const [archetypeFilter, setArchetypeFilter] = useState<
-    StrategyArchetypeV2 | undefined
+    StrategyArchetype | undefined
   >(undefined);
 
   const anyMock =
@@ -74,7 +74,7 @@ export default function CounterpartyDashboardPage() {
       if (familyFilter) {
         const family =
           archetypeToken in ARCHETYPE_TO_FAMILY
-            ? ARCHETYPE_TO_FAMILY[archetypeToken as StrategyArchetypeV2]
+            ? ARCHETYPE_TO_FAMILY[archetypeToken as StrategyArchetype]
             : undefined;
         if (family !== familyFilter) return false;
       }
