@@ -7,6 +7,7 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { AvailabilityStoreProvider } from "@/lib/architecture-v2";
 
 /**
  * Admin shell — admin-only. User management + access control.
@@ -44,14 +45,16 @@ function AdminShellInner({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <UnifiedShell
-      orgName={user.org?.name ?? "Odum Internal"}
-      orgId={user.org?.id ?? "odum-internal"}
-      userName={user.email?.split("@")[0] ?? "Admin"}
-      userRole={user.role ?? "admin"}
-    >
-      <ServiceTabs tabs={ADMIN_TABS} entitlements={user?.entitlements} />
-      <ErrorBoundary>{children}</ErrorBoundary>
-    </UnifiedShell>
+    <AvailabilityStoreProvider adminBypass>
+      <UnifiedShell
+        orgName={user.org?.name ?? "Odum Internal"}
+        orgId={user.org?.id ?? "odum-internal"}
+        userName={user.email?.split("@")[0] ?? "Admin"}
+        userRole={user.role ?? "admin"}
+      >
+        <ServiceTabs tabs={ADMIN_TABS} entitlements={user?.entitlements} />
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </UnifiedShell>
+    </AvailabilityStoreProvider>
   );
 }

@@ -38,6 +38,14 @@ interface EmittedEvent {
 interface StoreValue {
   readonly entries: Readonly<Record<string, StrategyAvailabilityEntry>>;
   readonly events: readonly EmittedEvent[];
+  /**
+   * When true, any consumer that reads via the audience-aware `slotsVisibleTo`
+   * helper should bypass the visibility filter and render the full matrix.
+   * Mirrors the Python store's admin behaviour — admin audience sees every
+   * slot regardless of lock_state or maturity. Set by the Provider's
+   * `adminBypass` prop.
+   */
+  readonly adminBypass: boolean;
   getEntry(slotLabel: string): StrategyAvailabilityEntry;
   setLockState(input: {
     slotLabel: string;
@@ -100,7 +108,18 @@ export function AvailabilityStoreProvider({
   children,
   persist = true,
   seedInitialRegistry = true,
-}: PropsWithChildren<{ persist?: boolean; seedInitialRegistry?: boolean }>) {
+  adminBypass = false,
+}: PropsWithChildren<{
+  persist?: boolean;
+  seedInitialRegistry?: boolean;
+  /**
+   * When true, downstream visibility helpers render the full catalogue
+   * regardless of persona or lock_state. Used on admin surfaces
+   * (`/ops/admin/*`) where admins must see every slot. Client pages must
+   * leave this `false` so persona filters apply.
+   */
+  adminBypass?: boolean;
+}>) {
   const [entries, setEntries] = useState<
     Readonly<Record<string, StrategyAvailabilityEntry>>
   >(() => (seedInitialRegistry ? computeInitialEntries() : {}));
@@ -257,8 +276,16 @@ export function AvailabilityStoreProvider({
   }, []);
 
   const value = useMemo<StoreValue>(
-    () => ({ entries, events, getEntry, setLockState, setMaturity, reset }),
-    [entries, events, getEntry, setLockState, setMaturity, reset],
+    () => ({
+      entries,
+      events,
+      adminBypass,
+      getEntry,
+      setLockState,
+      setMaturity,
+      reset,
+    }),
+    [entries, events, adminBypass, getEntry, setLockState, setMaturity, reset],
   );
 
   return (

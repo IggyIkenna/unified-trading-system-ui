@@ -134,4 +134,20 @@ describe("AvailabilityStoreProvider + useAvailabilityStore", () => {
       ),
     ).not.toThrow();
   });
+
+  it("adminBypass defaults to false", () => {
+    const { result } = renderHook(() => useAvailabilityStore(), { wrapper });
+    expect(result.current.adminBypass).toBe(false);
+  });
+
+  it("adminBypass=true propagates to store consumers", () => {
+    const { result } = renderHook(() => useAvailabilityStore(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <AvailabilityStoreProvider persist={false} adminBypass>
+          {children}
+        </AvailabilityStoreProvider>
+      ),
+    });
+    expect(result.current.adminBypass).toBe(true);
+  });
 });
