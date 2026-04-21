@@ -9,26 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertTriangle, BarChart3, BarChartHorizontal, ChartPie, Database, FileText, Radio } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  LabelList,
-  Pie,
-  PieChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Sector,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 import { toast } from "sonner";
 import { usePnLData } from "./pnl-data-context";
 import { formatPercent } from "@/lib/utils/formatters";
-import type { PnLComponent } from "@/lib/types/pnl";
 import { SHARE_CLASSES, SHARE_CLASS_LABELS, type ShareClass } from "@/lib/types/defi";
+import { FactorHistogram } from "./pnl-waterfall-factor-histogram";
+import { FactorPie } from "./pnl-waterfall-factor-pie";
 
 type FactorViewMode = "bars" | "histogram" | "pie";
 
@@ -69,9 +55,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
 
   return (
     <div className="flex flex-col gap-2 h-full min-h-0 p-2">
-      {/* ── Controls bar ─────────────────────────────────────────── */}
       <div className="shrink-0 space-y-1.5 pb-2 border-b border-border/60">
-        {/* Row 1: Live/Batch · Date range · Badge · Report */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-0.5 p-0.5 bg-muted rounded-md">
             <Button
@@ -119,7 +103,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
           </div>
         </div>
 
-        {/* Row 2: Group-by · Factor view · Currency */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-micro text-muted-foreground shrink-0">Group:</span>
           <div className="flex gap-0.5">
@@ -136,7 +119,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
             ))}
           </div>
 
-          {/* Factor Attribution view switch (scoped to the Factor Attribution section only) */}
           <div
             className="ml-auto flex items-center gap-0.5 p-0.5 bg-muted rounded-md"
             title="Factor Attribution view"
@@ -197,7 +179,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
           </div>
         </div>
 
-        {/* Residual alert */}
         {isResidualAlert && (
           <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/30 text-micro text-[var(--status-warning)]">
             <AlertTriangle className="size-3 shrink-0" />
@@ -209,7 +190,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         )}
       </div>
 
-      {/* ── Loading skeleton ──────────────────────────────────────── */}
       {isLoading ? (
         <div className="space-y-3 flex-1 py-2">
           <div className="flex items-center justify-between">
@@ -232,13 +212,11 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         </div>
       ) : (
         <>
-          {/* ── Net P&L header ───────────────────────────────────────── */}
           <div className="flex items-center justify-between shrink-0">
             <span className="text-xs text-muted-foreground">Cross-section net</span>
             <PnLValue value={netPnL} size="lg" showSign />
           </div>
 
-          {/* ── Structural P&L ───────────────────────────────────────── */}
           <CollapsibleSection title="Structural" defaultOpen>
             <div className="space-y-2 pb-2 px-1">
               {structuralPnL.map((component) => {
@@ -274,7 +252,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
             </div>
           </CollapsibleSection>
 
-          {/* ── Factor Attribution ───────────────────────────────────── */}
           <div className="space-y-2 py-1 min-h-0 overflow-auto flex-1 flex flex-col">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-1 shrink-0">
               Factor Attribution
@@ -345,7 +322,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
             )}
           </div>
 
-          {/* ── DeFi P&L Attribution ─────────────────────────────────── */}
           <CollapsibleSection title="DeFi P&L Attribution" defaultOpen={false} count={defiPnlAttribution.length}>
             <div className="space-y-2 pb-2 px-1">
               {defiPnlAttribution.map((cat) => {
@@ -372,7 +348,6 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
             </div>
           </CollapsibleSection>
 
-          {/* ── Residual ─────────────────────────────────────────────── */}
           <div className="pt-2 border-t border-dashed border-[var(--status-warning)]/40 space-y-2 shrink-0">
             <div
               className="p-2 -mx-1 rounded-lg bg-[var(--status-warning)]/5 border border-dashed border-[var(--status-warning)]/30"
@@ -399,517 +374,12 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
         </>
       )}
 
-      {/* ── Net P&L footer ───────────────────────────────────────── */}
       <div className="pt-3 border-t border-border shrink-0">
         <div className="flex items-center justify-between">
           <span className="text-sm font-semibold">NET P&L</span>
           <PnLValue value={netPnL} size="lg" showSign />
         </div>
       </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Factor Attribution — shared helpers
-// ---------------------------------------------------------------------------
-
-interface FactorSubviewProps {
-  components: PnLComponent[];
-  selectedFactor: string | null;
-  onSelect: (name: string) => void;
-}
-
-const POS_FILL = "var(--pnl-positive)";
-const NEG_FILL = "var(--pnl-negative)";
-
-/** Unicode minus (not hyphen), signed $ with compact magnitude suffix. */
-function formatSignedCompact(value: number): string {
-  const sign = value >= 0 ? "+" : "\u2212";
-  const abs = Math.abs(value);
-  if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(abs >= 10_000_000 ? 1 : 2)}M`;
-  if (abs >= 10_000) return `${sign}$${(abs / 1000).toFixed(1)}k`;
-  if (abs >= 1_000) return `${sign}$${(abs / 1000).toFixed(2)}k`;
-  return `${sign}$${Math.round(abs).toLocaleString("en-US")}`;
-}
-
-/** Y-axis ticks use shorter compact forms without the $ prefix fuss. */
-function formatAxisCompact(value: number): string {
-  const sign = value >= 0 ? "" : "\u2212";
-  const abs = Math.abs(value);
-  if (abs === 0) return "0";
-  if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1000) return `${sign}$${Math.round(abs / 1000)}k`;
-  return `${sign}$${Math.round(abs)}`;
-}
-
-/** Shared tooltip card used by both histogram + pie. */
-function FactorTooltipCard({
-  name,
-  signed,
-  pctOfAbs,
-  rank,
-  total,
-}: {
-  name: string;
-  signed: number;
-  pctOfAbs: number;
-  rank: number;
-  total: number;
-}) {
-  const isNeg = signed < 0;
-  return (
-    <div className="rounded-md border border-border/80 bg-popover/95 shadow-lg px-2.5 py-2 backdrop-blur-sm min-w-[160px]">
-      <div className="flex items-center justify-between gap-3 pb-1.5 mb-1.5 border-b border-border/60">
-        <span className="text-[11px] font-semibold tracking-tight text-foreground truncate">{name}</span>
-        <span className="text-nano font-mono tabular-nums text-muted-foreground shrink-0">
-          #{rank} / {total}
-        </span>
-      </div>
-      <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 text-micro">
-        <span className="text-muted-foreground">P&amp;L</span>
-        <span
-          className="font-mono tabular-nums text-right font-semibold"
-          style={{ color: isNeg ? "var(--pnl-negative)" : "var(--pnl-positive)" }}
-        >
-          {formatSignedCompact(signed)}
-        </span>
-        <span className="text-muted-foreground">% of |net|</span>
-        <span className="font-mono tabular-nums text-right text-foreground/90">{pctOfAbs.toFixed(2)}%</span>
-      </div>
-    </div>
-  );
-}
-
-/** Sort factors by magnitude descending, tagging rank. */
-function rankByMagnitude(components: PnLComponent[]): Array<PnLComponent & { rank: number; abs: number }> {
-  return [...components]
-    .map((c) => ({ ...c, abs: Math.abs(c.value) }))
-    .sort((a, b) => b.abs - a.abs)
-    .map((c, i) => ({ ...c, rank: i + 1 }));
-}
-
-// ---------------------------------------------------------------------------
-// Factor Attribution — Histogram (diverging vertical bars) view
-// ---------------------------------------------------------------------------
-
-function FactorHistogram({ components, selectedFactor, onSelect }: FactorSubviewProps) {
-  const ranked = React.useMemo(() => rankByMagnitude(components), [components]);
-  const total = components.length;
-  const totalAbs = React.useMemo(() => ranked.reduce((s, c) => s + c.abs, 0) || 1, [ranked]);
-  const maxAbs = React.useMemo(() => Math.max(...ranked.map((c) => c.abs), 1), [ranked]);
-  const hasSelection = selectedFactor !== null;
-
-  // Rotate labels when the name is long or density is high.
-  const needsRotate = components.length > 6 || components.some((c) => c.name.length > 6);
-
-  // Short axis labels — keep ≤ 7 chars, truncate longer with ellipsis.
-  const formatXTick = React.useCallback((name: string) => (name.length <= 7 ? name : `${name.slice(0, 6)}\u2026`), []);
-
-  return (
-    <div className="w-full h-[280px] shrink-0" data-testid="factor-histogram">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={components}
-          margin={{ top: 18, right: 10, bottom: needsRotate ? 54 : 22, left: 4 }}
-          barCategoryGap="22%"
-        >
-          <CartesianGrid strokeDasharray="2 4" stroke="var(--border)" strokeOpacity={0.35} vertical={false} />
-          <XAxis
-            dataKey="name"
-            tick={{ fontSize: 10, fill: "var(--muted-foreground)", fontFamily: "var(--font-sans)" }}
-            axisLine={{ stroke: "var(--border)", strokeOpacity: 0.6 }}
-            tickLine={false}
-            interval={0}
-            angle={needsRotate ? -32 : 0}
-            textAnchor={needsRotate ? "end" : "middle"}
-            height={needsRotate ? 54 : 22}
-            tickFormatter={formatXTick}
-          />
-          <YAxis
-            tick={{ fontSize: 10, fill: "var(--muted-foreground)", fontFamily: "var(--font-mono)" }}
-            tickFormatter={(v: number) => formatAxisCompact(v)}
-            width={56}
-            axisLine={false}
-            tickLine={false}
-            tickCount={5}
-          />
-          <ReferenceLine y={0} stroke="var(--border)" strokeWidth={1} strokeOpacity={0.9} ifOverflow="extendDomain" />
-          <Tooltip
-            cursor={{ stroke: "var(--muted-foreground)", strokeOpacity: 0.35, strokeDasharray: "2 3", strokeWidth: 1 }}
-            wrapperStyle={{ outline: "none" }}
-            content={({ active, payload }) => {
-              if (!active || !payload || payload.length === 0) return null;
-              const row = payload[0]?.payload as PnLComponent | undefined;
-              if (!row) return null;
-              const rankEntry = ranked.find((r) => r.name === row.name);
-              const rank = rankEntry?.rank ?? 0;
-              const pctOfAbs = (Math.abs(row.value) / totalAbs) * 100;
-              return (
-                <FactorTooltipCard name={row.name} signed={row.value} pctOfAbs={pctOfAbs} rank={rank} total={total} />
-              );
-            }}
-          />
-          <Bar
-            dataKey="value"
-            radius={[2, 2, 0, 0]}
-            isAnimationActive
-            animationDuration={320}
-            animationEasing="ease-out"
-            onClick={(datum: unknown) => {
-              const d = datum as { name?: string } | undefined;
-              if (d?.name) onSelect(d.name);
-            }}
-            cursor="pointer"
-          >
-            {components.map((c) => {
-              const isSelected = selectedFactor === c.name;
-              const baseOpacity = hasSelection ? (isSelected ? 0.95 : 0.28) : 0.72;
-              return (
-                <Cell
-                  key={c.name}
-                  fill={c.isNegative ? NEG_FILL : POS_FILL}
-                  fillOpacity={baseOpacity}
-                  stroke={isSelected ? "var(--primary)" : "transparent"}
-                  strokeWidth={isSelected ? 2 : 0}
-                />
-              );
-            })}
-            <LabelList
-              dataKey="value"
-              content={(props: unknown) => {
-                const p = props as {
-                  x?: number;
-                  y?: number;
-                  width?: number;
-                  height?: number;
-                  value?: number;
-                  index?: number;
-                };
-                const { x = 0, y = 0, width = 0, value = 0, index } = p;
-                if (!width || Math.abs(width) < 8) return null;
-                // Hide labels on bars whose magnitude is less than 10% of the
-                // max bar — prevents overlap/collision near the zero line.
-                const absVal = Math.abs(value);
-                if (absVal < maxAbs * 0.1) return null;
-                // Also hide if the corresponding bar is currently faded (selection dim)
-                if (hasSelection && typeof index === "number") {
-                  const cName = components[index]?.name;
-                  if (cName && cName !== selectedFactor) return null;
-                }
-                const isNeg = value < 0;
-                const h = p.height ?? 0;
-                const labelY = isNeg ? y + h + 11 : y - 5;
-                return (
-                  <text
-                    x={x + width / 2}
-                    y={labelY}
-                    fill="var(--foreground)"
-                    fillOpacity={0.72}
-                    fontSize={9.5}
-                    fontFamily="var(--font-mono)"
-                    textAnchor="middle"
-                    style={{ fontVariantNumeric: "tabular-nums", letterSpacing: "-0.01em" }}
-                  >
-                    {formatSignedCompact(value)}
-                  </text>
-                );
-              }}
-            />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Factor Attribution — Donut / Pie view with hero KPI center
-// ---------------------------------------------------------------------------
-
-interface PieDatum {
-  name: string;
-  value: number; // absolute magnitude (dataKey)
-  signed: number;
-  isNegative: boolean;
-  rank: number;
-  pctOfAbs: number;
-}
-
-/** Active shape: emphasis on hover/selection — outer radius bump + stroke. */
-function renderActiveSector(props: unknown) {
-  const p = props as {
-    cx?: number;
-    cy?: number;
-    innerRadius?: number;
-    outerRadius?: number;
-    startAngle?: number;
-    endAngle?: number;
-    fill?: string;
-  };
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = p;
-  return (
-    <Sector
-      cx={cx}
-      cy={cy}
-      innerRadius={innerRadius}
-      outerRadius={(outerRadius ?? 0) + 4}
-      startAngle={startAngle}
-      endAngle={endAngle}
-      fill={fill}
-      stroke="var(--primary)"
-      strokeWidth={1.5}
-      fillOpacity={0.95}
-    />
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Pie legend table extracted to keep FactorPie under the 200-line limit
-// ---------------------------------------------------------------------------
-
-interface PieLegendProps {
-  visibleLegend: PieDatum[];
-  allCount: number;
-  selectedFactor: string | null;
-  hoverName: string | null;
-  hasEmphasis: boolean;
-  showAll: boolean;
-  onToggleAll: () => void;
-  onSelect: (name: string) => void;
-  onHover: (name: string | null) => void;
-}
-
-function PieLegend({
-  visibleLegend,
-  allCount,
-  selectedFactor,
-  hoverName,
-  hasEmphasis,
-  showAll,
-  onToggleAll,
-  onSelect,
-  onHover,
-}: PieLegendProps) {
-  return (
-    <div className="w-[44%] min-w-[180px] max-w-[260px] shrink-0 overflow-auto pr-0.5">
-      <div className="grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 text-nano uppercase tracking-[0.08em] text-muted-foreground/60 border-b border-border/60 pb-1 mb-1 sticky top-0 bg-background/95 backdrop-blur-sm">
-        <span />
-        <span>Factor</span>
-        <span className="text-right">Value</span>
-        <span className="text-right w-[38px]">%</span>
-      </div>
-      <div className="space-y-[1px]">
-        {visibleLegend.map((d) => {
-          const isSelected = selectedFactor === d.name;
-          const isHovered = hoverName === d.name;
-          const emphasized = isSelected || isHovered;
-          const dim = hasEmphasis && !emphasized;
-          return (
-            <button
-              key={d.name}
-              type="button"
-              onClick={() => onSelect(d.name)}
-              onMouseEnter={() => onHover(d.name)}
-              onMouseLeave={() => onHover(null)}
-              className={`w-full grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 rounded px-1.5 py-0.5 text-left transition-colors duration-150 ${
-                isSelected ? "bg-primary/12 ring-1 ring-primary/25" : isHovered ? "bg-muted/60" : "hover:bg-muted/40"
-              } ${dim ? "opacity-55" : "opacity-100"}`}
-            >
-              <span
-                className="h-3 w-[3px] rounded-[1px]"
-                style={{
-                  backgroundColor: d.isNegative ? NEG_FILL : POS_FILL,
-                  opacity: 0.9,
-                }}
-              />
-              <span
-                className={`truncate text-[11px] ${isSelected ? "text-primary font-medium" : "text-foreground/90"}`}
-                title={`${d.name} · rank #${d.rank}`}
-              >
-                {d.name}
-              </span>
-              <span
-                className="text-[10.5px] font-mono tabular-nums text-right whitespace-nowrap"
-                style={{ color: d.isNegative ? "var(--pnl-negative)" : "var(--pnl-positive)" }}
-              >
-                {formatSignedCompact(d.signed)}
-              </span>
-              <span className="text-[10.5px] font-mono tabular-nums text-right text-muted-foreground w-[38px]">
-                {d.pctOfAbs.toFixed(1)}%
-              </span>
-            </button>
-          );
-        })}
-        {allCount > 8 && (
-          <button
-            type="button"
-            onClick={onToggleAll}
-            className="w-full text-micro text-muted-foreground/80 hover:text-foreground transition-colors pt-1.5 text-left pl-3.5"
-          >
-            {showAll ? "\u2212 Show top 8" : `+ Show all ${allCount}`}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function FactorPie({ components, selectedFactor, onSelect }: FactorSubviewProps) {
-  const totalAbs = React.useMemo(() => components.reduce((s, c) => s + Math.abs(c.value), 0) || 1, [components]);
-  const netSigned = React.useMemo(() => components.reduce((s, c) => s + c.value, 0), [components]);
-  const posCount = components.filter((c) => !c.isNegative).length;
-  const negCount = components.filter((c) => c.isNegative).length;
-
-  // Slice order (starting 12 o'clock, clockwise):
-  //   positives by magnitude desc, then negatives by magnitude desc.
-  // This visually separates contribution (green arc) from drag (red arc).
-  // Legend ranks globally (by |value|) for decision-making — not by slice order.
-  const data: PieDatum[] = React.useMemo(() => {
-    const enriched = components.map((c) => ({
-      name: c.name,
-      value: Math.abs(c.value),
-      signed: c.value,
-      isNegative: !!c.isNegative,
-      pctOfAbs: (Math.abs(c.value) / totalAbs) * 100,
-    }));
-    // Rank globally by absolute magnitude for the data table
-    const rankMap = new Map([...enriched].sort((a, b) => b.value - a.value).map((d, i) => [d.name, i + 1] as const));
-    const positives = enriched.filter((d) => !d.isNegative).sort((a, b) => b.value - a.value);
-    const negatives = enriched.filter((d) => d.isNegative).sort((a, b) => b.value - a.value);
-    return [...positives, ...negatives].map((d) => ({ ...d, rank: rankMap.get(d.name) ?? 0 }));
-  }, [components, totalAbs]);
-
-  // Data ordered by rank for legend table (top factors first regardless of sign).
-  const rankedForLegend = React.useMemo(() => [...data].sort((a, b) => a.rank - b.rank), [data]);
-
-  const [hoverName, setHoverName] = React.useState<string | null>(null);
-  const [showAllLegend, setShowAllLegend] = React.useState(false);
-
-  const emphasisName = hoverName ?? selectedFactor ?? null;
-  const hasEmphasis = emphasisName !== null;
-  const activeIndex = hasEmphasis ? data.findIndex((d) => d.name === emphasisName) : -1;
-
-  const visibleLegend = showAllLegend ? rankedForLegend : rankedForLegend.slice(0, 8);
-
-  return (
-    <div className="w-full h-[280px] shrink-0 flex gap-3" data-testid="factor-pie">
-      {/* ── Chart + hero KPI center ─────────────────────────────────── */}
-      <div className="relative flex-1 min-w-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Tooltip
-              wrapperStyle={{ outline: "none" }}
-              content={({ active, payload }) => {
-                if (!active || !payload || payload.length === 0) return null;
-                const row = payload[0]?.payload as PieDatum | undefined;
-                if (!row) return null;
-                return (
-                  <FactorTooltipCard
-                    name={row.name}
-                    signed={row.signed}
-                    pctOfAbs={row.pctOfAbs}
-                    rank={row.rank}
-                    total={data.length}
-                  />
-                );
-              }}
-            />
-            <Pie
-              data={data}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius="58%"
-              outerRadius="90%"
-              paddingAngle={1.2}
-              startAngle={90}
-              endAngle={-270}
-              stroke="var(--background)"
-              strokeWidth={1}
-              isAnimationActive
-              animationDuration={360}
-              animationEasing="ease-out"
-              activeIndex={activeIndex >= 0 ? activeIndex : undefined}
-              activeShape={renderActiveSector}
-              onMouseEnter={(datum: unknown) => {
-                const d = datum as { name?: string } | undefined;
-                if (d?.name) setHoverName(d.name);
-              }}
-              onMouseLeave={() => setHoverName(null)}
-              onClick={(datum: unknown) => {
-                const d = datum as { name?: string } | undefined;
-                if (d?.name) onSelect(d.name);
-              }}
-              cursor="pointer"
-            >
-              {data.map((d, i) => {
-                const isEmphasized = emphasisName === d.name;
-                const dim = hasEmphasis && !isEmphasized;
-                // Subtle alternation within the same-sign run — just enough
-                // to keep adjacent slices readable at small sizes. Softer than
-                // v2 so the donut reads as a unified arc, not a striped lollipop.
-                const alt = i % 2 === 0;
-                const baseOpacity = alt ? 0.82 : 0.66;
-                return (
-                  <Cell
-                    key={d.name}
-                    fill={d.isNegative ? NEG_FILL : POS_FILL}
-                    fillOpacity={dim ? 0.26 : baseOpacity}
-                    stroke="var(--background)"
-                    strokeWidth={1.25}
-                  />
-                );
-              })}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-
-        {/* Hero KPI — centered over donut */}
-        <div
-          className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center px-4"
-          aria-hidden
-        >
-          <span className="text-[8.5px] uppercase tracking-[0.18em] text-muted-foreground/70 font-medium">
-            Net attribution
-          </span>
-          <span
-            className="font-mono tabular-nums text-[18px] leading-none font-semibold mt-1.5 whitespace-nowrap"
-            style={{
-              color: netSigned < 0 ? "var(--pnl-negative)" : "var(--pnl-positive)",
-              letterSpacing: "-0.015em",
-            }}
-          >
-            {formatSignedCompact(netSigned)}
-          </span>
-          <div className="mt-2 flex items-center gap-1.5 text-nano font-mono tabular-nums text-muted-foreground/80">
-            <span>{data.length} factors</span>
-            <span className="h-2 w-px bg-border/70" />
-            <span className="inline-flex items-center gap-0.5">
-              <span className="h-2 w-[2px] rounded-[1px] bg-[var(--pnl-positive)]/85" />
-              <span className="text-[var(--pnl-positive)]/90">{posCount}</span>
-            </span>
-            <span className="inline-flex items-center gap-0.5">
-              <span className="h-2 w-[2px] rounded-[1px] bg-[var(--pnl-negative)]/85" />
-              <span className="text-[var(--pnl-negative)]/90">{negCount}</span>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Compact legend/data table on right ─────────────────────── */}
-      <PieLegend
-        visibleLegend={visibleLegend}
-        allCount={data.length}
-        selectedFactor={selectedFactor}
-        hoverName={hoverName}
-        hasEmphasis={hasEmphasis}
-        showAll={showAllLegend}
-        onToggleAll={() => setShowAllLegend((v) => !v)}
-        onSelect={onSelect}
-        onHover={setHoverName}
-      />
     </div>
   );
 }
