@@ -33,7 +33,10 @@
     "test:e2e:headed": "playwright test --headed",
     "test:all": "pnpm test:ci && pnpm test:e2e",
     "generate:types": "openapi-typescript lib/registry/openapi.json -o lib/types/api-generated.ts",
-    "generate:ir-html": "tsx scripts/generate-ir-presentation-html.ts"
+    "generate:ir-html": "tsx scripts/generate-ir-presentation-html.ts",
+    "orphan-audit": "tsx scripts/orphan-audit.ts",
+    "orphan-audit:blocking": "tsx scripts/orphan-audit.ts --blocking",
+    "orphan-audit:write-baseline": "tsx scripts/orphan-audit.ts --write-baseline"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

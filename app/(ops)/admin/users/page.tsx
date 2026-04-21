@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Search } from "lucide-react";
+import { UserPlus, Search, Inbox } from "lucide-react";
 import { useProvisionedUsers, useAccessRequests } from "@/hooks/api/use-user-management";
 import { ApiError } from "@/components/shared/api-error";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -74,6 +74,11 @@ export default function AdminUsersPage() {
           </>
         }
       >
+        <Link href="/admin/users/requests">
+          <Button variant="outline" size="sm">
+            <Inbox className="h-4 w-4 mr-1" /> Access Requests
+          </Button>
+        </Link>
         <Link href="/admin/users/onboard">
           <Button size="sm">
             <UserPlus className="h-4 w-4 mr-1" /> Onboard

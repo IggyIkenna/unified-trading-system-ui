@@ -1,0 +1,110 @@
+name: Orphan Route Audit
+
+# Blocks PRs that introduce new orphaned pages — Next.js app/ routes that exist
+# on disk but are unreachable from any declared navigation surface.
+# SSOT: codex/06-coding-standards/orphan-audit.md
+# Policy owner: live-defi-rollout (plan: orphan-audit-policy-2026-04-21).
+
+on:
+  pull_request:
+    branches: [main, staging]
+    paths:
+      - "app/**"
+      - "components/**"
+      - "hooks/**"
+      - "lib/**"
+      - "scripts/orphan-audit.ts"
+      - "scripts/.orphan-audit-baseline.json"
+      - "scripts/.orphan-audit-whitelist.json"
+      - ".github/workflows/orphan-audit.yml"
+
+concurrency:
+  group: orphan-audit-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  orphan-audit:
+    name: Orphan audit (blocking)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run orphan-route audit (blocking)
+        id: audit
+        run: |
+          set -o pipefail
+          pnpm run orphan-audit:blocking 2>&1 | tee /tmp/orphan-audit.log
+
+      - name: Post audit report to PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let report = '{}';
+            try {
+              report = fs.readFileSync('scripts/.orphan-audit-report.json', 'utf8');
+            } catch (err) {
+              core.warning('Could not read orphan-audit report: ' + err.message);
+              return;
+            }
+            const parsed = JSON.parse(report);
+            const orphans = parsed.orphans || [];
+            const total = parsed.total_count || 0;
+            const reachable = parsed.reachable_count || 0;
+            const pct = total > 0 ? ((reachable / total) * 100).toFixed(1) : '0.0';
+            let body = `### Orphan-route audit\n\n`;
+            body += `| Metric | Value |\n|---|---|\n`;
+            body += `| Declared routes | ${total} |\n`;
+            body += `| Reachable | ${reachable} (${pct}%) |\n`;
+            body += `| Whitelisted | ${(parsed.whitelisted || []).length} |\n`;
+            body += `| Orphans (new) | ${orphans.length} |\n\n`;
+            if (orphans.length > 0) {
+              body += `**New orphans introduced by this PR:**\n\n`;
+              for (const o of orphans) body += `- \`${o}\`\n`;
+              body += `\n**Fix options:**\n`;
+              body += `1. **WIRE** — link from SERVICE_REGISTRY, lifecycle-mapping, quick-actions, or any reachable page.\n`;
+              body += `2. **DELETE** — remove the page if obsolete.\n`;
+              body += `3. **WHITELIST** — add to \`scripts/.orphan-audit-whitelist.json\` with a reason string.\n\n`;
+              body += `See \`codex/06-coding-standards/orphan-audit.md\` for policy.\n`;
+            } else {
+              body += `No new orphans. ✓\n`;
+            }
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find((c) => c.user.type === 'Bot' && c.body.startsWith('### Orphan-route audit'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

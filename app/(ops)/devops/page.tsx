@@ -15,11 +15,13 @@ import { PageHeader } from "@/components/shared/page-header";
 
 import { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { DevOpsDashboard } from "@/components/dashboards/devops-dashboard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Cloud, Database, Rocket, Activity, CheckCircle2, History } from "lucide-react";
+import { Cloud, Database, Rocket, Activity, CheckCircle2, History, Network, FileCode2 } from "lucide-react";
 import { deployMissing, type DeployMissingResponse } from "@/hooks/deployment/_api-stub";
 import type { DataStatusTabProps } from "@/components/ops/deployment/data-status/types";
 
@@ -104,9 +106,21 @@ export default function DevOpsPage() {
             description="Service deployments, data pipelines, cloud builds, and
               infrastructure readiness."
           />
-          <Badge variant="outline" className="text-xs">
-            <Activity className="size-3 mr-1" /> All systems operational
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Link href="/devops/topology">
+              <Button variant="outline" size="sm">
+                <Network className="size-3.5 mr-1" /> Topology
+              </Button>
+            </Link>
+            <Link href="/devops/schemas">
+              <Button variant="outline" size="sm">
+                <FileCode2 className="size-3.5 mr-1" /> Schemas
+              </Button>
+            </Link>
+            <Badge variant="outline" className="text-xs">
+              <Activity className="size-3 mr-1" /> All systems operational
+            </Badge>
+          </div>
         </div>
 
         {deployMissingError && (

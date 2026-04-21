@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "_comment": "Intentional direct-URL-only pages. Add entries here with a concrete reason string so future maintainers understand why the page is not wired into any nav surface. SSOT: codex/06-coding-standards/orphan-audit.md.",
+  "entries": [
+    {
+      "path": "/health",
+      "reason": "Liveness probe consumed by k8s/Cloud Run health checks — never user-navigated."
+    },
+    {
+      "path": "/pending",
+      "reason": "Post-signup holding page — reached via OAuth redirect flow, not a nav tile."
+    },
+    {
+      "path": "/login",
+      "reason": "OAuth entry; reached via require-auth redirect, not a declared tile."
+    },
+    {
+      "path": "/signup",
+      "reason": "Public signup funnel; reached from marketing CTAs."
+    },
+    {
+      "path": "/api/accounts/transfer-history",
+      "reason": "API route handler — fetched programmatically, no UI href."
+    },
+    {
+      "path": "/api/onboarding/reset",
+      "reason": "API route handler — fetched programmatically during onboarding."
+    },
+    {
+      "path": "/api/onboarding/download",
+      "reason": "API route handler — triggered by download button via fetch, not a nav link."
+    },
+    {
+      "path": "/api/onboarding/upload",
+      "reason": "API route handler — POST target for onboarding form, not a nav link."
+    },
+    {
+      "path": "/admin/organizations/[id]",
+      "reason": "Admin org detail — reached via admin search + direct URL. Collection page /admin/organizations pending rebuild; see dashboard_services_grid_collapse_2026_04_21 follow-ups."
+    },
+    {
+      "path": "/admin/strategy-catalogue/overview",
+      "reason": "Admin-only strategy catalogue overview — deep-link from admin console; separate from the cross-cutting /services/strategy-catalogue surface Plan B will build."
+    },
+    {
+      "path": "/demo/preview",
+      "reason": "Investor/IR demo preview — deep-link shared as URL; not on public nav."
+    },
+    {
+      "path": "/engagement",
+      "reason": "Internal ops engagement tracker — admin deep-link; no public nav by design."
+    },
+    {
+      "path": "/internal/data-etl",
+      "reason": "Internal data ETL ops console — admin deep-link; gated by internal role."
+    },
+    {
+      "path": "/services/data/logs",
+      "reason": "Data pipeline logs drilldown — deep-link from DataStatusTab drilldown action; entered programmatically with query params."
+    },
+    {
+      "path": "/services/data/markets/pnl",
+      "reason": "Markets PnL sub-route — deep-link from data overview cards with market context; query-param driven."
+    },
+    {
+      "path": "/services/data/missing",
+      "reason": "Missing-data drilldown — deep-link from honest-coverage manifest v5 red-cell click in deployment-ui DataStatusDrilldown."
+    },
+    {
+      "path": "/services/manage/users/request",
+      "reason": "Client-side access-request form step — reached via POST-then-redirect from users list, not a persistent nav tile."
+    },
+    {
+      "path": "/services/observe/registry",
+      "reason": "Strategy registry observe drilldown — deep-link from observe filter chip + admin tooling; intentional."
+    }
+  ]
+}

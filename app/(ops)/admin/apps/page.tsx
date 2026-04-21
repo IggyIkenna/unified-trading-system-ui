@@ -216,7 +216,7 @@ export default function AppsPage() {
                 <TableRow key={app.id} className="group">
                   <TableCell className="font-medium">
                     <Link
-                      href={`/apps/${app.id}`}
+                      href={`/admin/apps/${app.id}`}
                       className="hover:underline underline-offset-4"
                     >
                       {app.name}
@@ -252,7 +252,7 @@ export default function AppsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Link href={`/apps/${app.id}`}>
+                    <Link href={`/admin/apps/${app.id}`}>
                       <Button
                         variant="ghost"
                         size="icon"

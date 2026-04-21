@@ -58,6 +58,9 @@ yarn-error.log*
 # Firebase deploy cache (machine-generated, never commit)
 .firebase/
 
+# Orphan-route audit runtime report (scanner regenerates on every run)
+scripts/.orphan-audit-report.json
+
 # macOS metadata (never commit)
 .DS_Store
 **/.DS_Store

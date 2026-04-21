@@ -23,4 +23,31 @@ if [[ ! -f "$BASE_UI" ]]; then
   exit 1
 fi
 
+# ── Orphan-route audit ────────────────────────────────────────────────────────
+# Runs before the UI base gates so a freshly orphaned page fails QG immediately.
+# Skip only if:
+#   * the user passed --skip-lint / --lint-only (typecheck+tests-only paths),
+#   * SKIP_ORPHAN_AUDIT=1 is set (human-only escape hatch for mid-flight rescues),
+#   * the baseline file is absent (Phase-1 advisory mode — bootstrap case).
+# SSOT: codex/06-coding-standards/orphan-audit.md.
+REPO_DIR_FOR_AUDIT="$(cd "$(dirname "$0")/.." && pwd)"
+BASELINE_FILE="${REPO_DIR_FOR_AUDIT}/scripts/.orphan-audit-baseline.json"
+if [[ "${SKIP_ORPHAN_AUDIT:-0}" != "1" ]] && [[ -f "$BASELINE_FILE" ]]; then
+  # Only run in phases that include lint (lint-only, quick, full) — skip for --test.
+  _RUN_ORPHAN=1
+  for arg in "$@"; do
+    case "$arg" in
+      --test) _RUN_ORPHAN=0 ;;
+    esac
+  done
+  if [[ "$_RUN_ORPHAN" == "1" ]]; then
+    echo "[quality-gates] Running orphan-route audit (blocking)…"
+    if ! (cd "$REPO_DIR_FOR_AUDIT" && npx --yes tsx scripts/orphan-audit.ts --blocking); then
+      echo "[quality-gates] ❌ Orphan-route audit FAILED — see output above." >&2
+      echo "[quality-gates]    Fix, whitelist, or delete the orphan page before merging." >&2
+      exit 1
+    fi
+  fi
+fi
+
 source "$BASE_UI" "$@"

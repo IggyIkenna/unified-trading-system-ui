@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
-import { ArrowLeft, Edit, UserMinus, RefreshCw, CheckCircle2, XCircle, Clock, Mail, Github } from "lucide-react";
+import { ArrowLeft, Edit, UserMinus, RefreshCw, CheckCircle2, XCircle, Clock, Mail, Github, Eye, UserCog } from "lucide-react";
 import {
   useProvisionedUser,
   useUserWorkflows,
@@ -148,6 +148,16 @@ export default function UserDetailPage() {
           <Link href={`/admin/users/${params.id}/modify`}>
             <Button variant="outline" size="sm">
               <Edit className="h-4 w-4 mr-1" /> Modify
+            </Button>
+          </Link>
+          <Link href={`/admin/users/${params.id}/visibility`}>
+            <Button variant="outline" size="sm">
+              <Eye className="h-4 w-4 mr-1" /> Visibility
+            </Button>
+          </Link>
+          <Link href={`/admin/users/${params.id}/persona-override`}>
+            <Button variant="outline" size="sm">
+              <UserCog className="h-4 w-4 mr-1" /> Persona
             </Button>
           </Link>
           <Link href={`/admin/users/${params.id}/offboard`}>
