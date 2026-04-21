@@ -38,6 +38,14 @@ export interface AuthUser {
    * counterparty's entitled slots only.
    */
   counterpartyId?: string;
+  /**
+   * Scoped admin permissions. Present only on `role === "admin"` users
+   * provisioned via the admin UI (`/ops/admin/users/[id]/modify`). Bootstrap
+   * seed users (ikenna / femi) MAY omit this claim entirely — the
+   * `hasAdminPermission` gate falls back to "full admin" when `undefined`.
+   * See SSOT: `codex/14-playbooks/cross-cutting/admin-permissions.md`.
+   */
+  admin_permissions?: readonly string[];
 }
 
 /**
