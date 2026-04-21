@@ -1,0 +1,52 @@
+{
+  "name": "YIELD_STAKING_SIMPLE",
+  "persona": "internal-trader",
+  "route": "/services/trading/defi/staking",
+  "rootSelector": "[data-testid=\"staking-dashboard\"]",
+  "playbook": "docs/trading/defi/playbooks/yield-staking-simple.md",
+  "scenarios": [
+    {
+      "name": "baseline — page renders with 4 KPI cards and 4 tabs",
+      "inputs": {},
+      "expected": {
+        "notes": "Read-only dashboard. Assert KPI strip + tab list render; default tab is Positions with a populated table."
+      }
+    },
+    {
+      "name": "Positions tab — table renders staking-position rows",
+      "inputs": {
+        "tab": "positions"
+      },
+      "expected": {
+        "notes": "Positions tab is default. Assert the positions table shows multiple rows."
+      }
+    },
+    {
+      "name": "Validators tab — switching tab swaps the visible table",
+      "inputs": {
+        "tab": "validators"
+      },
+      "expected": {
+        "notes": "Clicking Validators tab hides positions table and reveals validators table with rows."
+      }
+    },
+    {
+      "name": "Rewards tab — shows monthly chart and reward history",
+      "inputs": {
+        "tab": "rewards"
+      },
+      "expected": {
+        "notes": "Rewards tab renders the monthly-rewards chart card and the reward-history table with rows."
+      }
+    },
+    {
+      "name": "Unstaking tab — Withdraw button disabled for Cooling Down rows",
+      "inputs": {
+        "tab": "unstaking"
+      },
+      "expected": {
+        "notes": "Cooling Down rows have their Withdraw button disabled; Ready to Withdraw rows enable it."
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "AMM_LP_PROVISION",
+  "persona": "internal-trader",
+  "route": "/services/trading/defi",
+  "rootSelector": "[data-testid=\"defi-liquidity-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/amm-lp-provision.md",
+  "scenarios": [
+    {
+      "name": "baseline — widget renders, pool stats queryable",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert widget + ledger render cleanly."
+      }
+    },
+    {
+      "name": "ADD_LIQUIDITY 5 on default pool + fee tier",
+      "inputs": {
+        "operation": "ADD_LIQUIDITY",
+        "amount": "5"
+      },
+      "expected": {
+        "tradeType": "ADD_LIQUIDITY",
+        "venueContains": "UNISWAPV3",
+        "minRowsAdded": 1,
+        "notes": "Default pool is ETH/USDC on UNISWAPV3-ETHEREUM; fixture-robust."
+      }
+    },
+    {
+      "name": "REMOVE_LIQUIDITY 2 on default pool",
+      "inputs": {
+        "operation": "REMOVE_LIQUIDITY",
+        "amount": "2"
+      },
+      "expected": {
+        "tradeType": "REMOVE_LIQUIDITY",
+        "minRowsAdded": 1
+      }
+    },
+    {
+      "name": "pool switch refreshes TVL + APR",
+      "inputs": {
+        "operation": "ADD_LIQUIDITY",
+        "switchPoolToIndex": 1
+      },
+      "expected": {
+        "notes": "Reactive-only scenario — no order is placed."
+      }
+    },
+    {
+      "name": "fee-tier selection toggles active tier",
+      "inputs": {
+        "feeTier": "0.3"
+      },
+      "expected": {
+        "notes": "Reactive-only scenario — no order is placed."
+      }
+    }
+  ]
+}

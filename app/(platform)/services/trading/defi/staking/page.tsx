@@ -470,7 +470,7 @@ export default function StakingDashboardPage() {
   const activeValidators = VALIDATORS.filter((v) => v.uptime >= 99.0).length;
 
   return (
-    <div className="h-full bg-background overflow-auto">
+    <div className="h-full bg-background overflow-auto" data-testid="staking-dashboard">
       <div className="p-6 max-w-[1600px] mx-auto space-y-6">
         <PageHeader
           title={
@@ -492,8 +492,8 @@ export default function StakingDashboardPage() {
         </PageHeader>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="py-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4" data-testid="staking-kpi-strip">
+          <Card className="py-4" data-testid="staking-kpi-total-staked">
             <CardContent className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-500/10">
                 <Coins className="size-5 text-emerald-400" />
@@ -504,7 +504,7 @@ export default function StakingDashboardPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="py-4">
+          <Card className="py-4" data-testid="staking-kpi-annual-yield">
             <CardContent className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-blue-500/10">
                 <TrendingUp className="size-5 text-blue-400" />
@@ -515,7 +515,7 @@ export default function StakingDashboardPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="py-4">
+          <Card className="py-4" data-testid="staking-kpi-rewards-accrued">
             <CardContent className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
                 <Award className="size-5 text-amber-400" />
@@ -526,7 +526,7 @@ export default function StakingDashboardPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="py-4">
+          <Card className="py-4" data-testid="staking-kpi-active-validators">
             <CardContent className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-violet-500/10">
                 <ShieldCheck className="size-5 text-violet-400" />
@@ -541,11 +541,19 @@ export default function StakingDashboardPage() {
 
         {/* Tabs */}
         <Tabs defaultValue="positions">
-          <TabsList>
-            <TabsTrigger value="positions">Positions</TabsTrigger>
-            <TabsTrigger value="validators">Validators</TabsTrigger>
-            <TabsTrigger value="rewards">Rewards</TabsTrigger>
-            <TabsTrigger value="unstaking">Unstaking Queue</TabsTrigger>
+          <TabsList data-testid="staking-tabs-list">
+            <TabsTrigger value="positions" data-testid="staking-tab-positions">
+              Positions
+            </TabsTrigger>
+            <TabsTrigger value="validators" data-testid="staking-tab-validators">
+              Validators
+            </TabsTrigger>
+            <TabsTrigger value="rewards" data-testid="staking-tab-rewards">
+              Rewards
+            </TabsTrigger>
+            <TabsTrigger value="unstaking" data-testid="staking-tab-unstaking">
+              Unstaking Queue
+            </TabsTrigger>
           </TabsList>
 
           {/* Positions Tab */}
@@ -555,7 +563,7 @@ export default function StakingDashboardPage() {
                 <CardTitle className="text-base">Staking Positions ({STAKING_POSITIONS.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
+                <Table data-testid="staking-positions-table">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Protocol</TableHead>
@@ -572,7 +580,7 @@ export default function StakingDashboardPage() {
                   </TableHeader>
                   <TableBody>
                     {STAKING_POSITIONS.map((pos) => (
-                      <TableRow key={pos.id}>
+                      <TableRow key={pos.id} data-testid="staking-positions-row">
                         <TableCell className="text-xs font-medium">{pos.protocol}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-[10px] font-mono">
@@ -625,7 +633,7 @@ export default function StakingDashboardPage() {
                 <CardTitle className="text-base">Validators ({VALIDATORS.length})</CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
+                <Table data-testid="staking-validators-table">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Validator Name</TableHead>
@@ -639,7 +647,7 @@ export default function StakingDashboardPage() {
                   </TableHeader>
                   <TableBody>
                     {VALIDATORS.map((v) => (
-                      <TableRow key={v.id}>
+                      <TableRow key={v.id} data-testid="staking-validators-row">
                         <TableCell className="text-xs font-medium">{v.name}</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="text-[10px]">
@@ -676,7 +684,7 @@ export default function StakingDashboardPage() {
           <TabsContent value="rewards">
             <div className="space-y-6">
               {/* Monthly rewards chart */}
-              <Card>
+              <Card data-testid="staking-monthly-rewards-chart">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base">Monthly Staking Rewards</CardTitle>
                 </CardHeader>
@@ -710,7 +718,7 @@ export default function StakingDashboardPage() {
                   <CardTitle className="text-base">Reward History ({REWARDS_ENTRIES.length} entries)</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Table>
+                  <Table data-testid="staking-rewards-table">
                     <TableHeader>
                       <TableRow>
                         <TableHead className="text-xs">Date</TableHead>
@@ -722,7 +730,7 @@ export default function StakingDashboardPage() {
                     </TableHeader>
                     <TableBody>
                       {REWARDS_ENTRIES.map((r) => (
-                        <TableRow key={r.id}>
+                        <TableRow key={r.id} data-testid="staking-rewards-row">
                           <TableCell className="text-xs text-muted-foreground font-mono">{r.date}</TableCell>
                           <TableCell className="text-xs font-medium">{r.protocol}</TableCell>
                           <TableCell className="text-xs text-right font-mono">{r.rewardAmount}</TableCell>
@@ -753,7 +761,7 @@ export default function StakingDashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
+                <Table data-testid="staking-unstaking-table">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Protocol</TableHead>
@@ -769,7 +777,7 @@ export default function StakingDashboardPage() {
                     {UNSTAKING_QUEUE.map((u) => {
                       const remaining = daysUntil(u.expectedCompletion);
                       return (
-                        <TableRow key={u.id}>
+                        <TableRow key={u.id} data-testid="staking-unstaking-row" data-unstaking-status={u.status}>
                           <TableCell className="text-xs font-medium">{u.protocol}</TableCell>
                           <TableCell className="text-xs font-mono">{u.amount}</TableCell>
                           <TableCell className="text-xs text-muted-foreground font-mono">{u.initiated}</TableCell>
@@ -797,6 +805,7 @@ export default function StakingDashboardPage() {
                                 u.status === "Ready to Withdraw" && "bg-emerald-600 hover:bg-emerald-700",
                               )}
                               disabled={u.status !== "Ready to Withdraw"}
+                              data-testid="staking-unstaking-withdraw-button"
                             >
                               Withdraw
                             </Button>

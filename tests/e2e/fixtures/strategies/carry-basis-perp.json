@@ -1,0 +1,58 @@
+{
+  "name": "CARRY_BASIS_PERP",
+  "persona": "internal-trader",
+  "route": "/services/trading/strategies/carry-basis",
+  "rootSelector": "[data-testid=\"defi-swap-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/carry-basis-perp.md",
+  "scenarios": [
+    {
+      "name": "baseline — swap widget renders in basis-trade mode",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert widget + default USDT→ETH selection + ledger are queryable."
+      }
+    },
+    {
+      "name": "swap 90% capital from USDT to ETH",
+      "inputs": {
+        "amountIn": "90000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Swap leg of the CARRY_BASIS_PERP strategy — spot long hedged by perp short."
+      }
+    },
+    {
+      "name": "slippage tolerance tightens expected output",
+      "inputs": {
+        "amountIn": "10000",
+        "slippageLoose": "1",
+        "slippageTight": "0.1"
+      },
+      "expected": {
+        "notes": "Reactive-only scenario — no order placed. Tightening slippage reduces aggregate price impact."
+      }
+    },
+    {
+      "name": "basis trade metrics surface when amount entered",
+      "inputs": {
+        "amountIn": "50000"
+      },
+      "expected": {
+        "notes": "Reactive-only — Funding APY / Cost of Carry / Net APY panel appears for basis-trade mode."
+      }
+    },
+    {
+      "name": "second swap appends another SWAP row",
+      "inputs": {
+        "amountIn": "25000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Confirm ledger append is idempotent; multiple executes produce distinct rows."
+      }
+    }
+  ]
+}

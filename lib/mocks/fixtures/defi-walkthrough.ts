@@ -1,4 +1,4 @@
-import type { StrategyArchetypeV2 } from "@/lib/architecture-v2/enums";
+import type { StrategyArchetype } from "@/lib/architecture-v2/enums";
 import type {
   DeFiStrategyId,
   EmergencyExitEstimate,
@@ -143,13 +143,13 @@ export const MOCK_EMERGENCY_EXIT: EmergencyExitEstimate = {
  *
  * SSOT for the shape (archetype → ordered factor list) lives on the strategy
  * instance as `instance.pnl_factors[]`. Until the backend instance contract
- * lands, we seed realistic defaults here keyed by `StrategyArchetypeV2`.
+ * lands, we seed realistic defaults here keyed by `StrategyArchetype`.
  *
  * The widget is archetype-agnostic — adding a new archetype is a fixture-only
  * change. Factor `amount` values here are illustrative mock data; the widget
  * reads them verbatim.
  */
-export const DEFAULT_REWARD_FACTORS_BY_ARCHETYPE: Partial<Record<StrategyArchetypeV2, RewardPnLBreakdown>> = {
+export const DEFAULT_REWARD_FACTORS_BY_ARCHETYPE: Partial<Record<StrategyArchetype, RewardPnLBreakdown>> = {
   // Staking (simple native staking — rebase / exchange-rate yield).
   YIELD_STAKING_SIMPLE: [
     { key: "staking_yield", label: "Staking yield (30d, 3.4% APY)", amount: 2100 },
@@ -203,7 +203,7 @@ export const MOCK_REWARD_PNL: RewardPnLBreakdown =
  * Look up the default factor list for a strategy identified by v2 archetype.
  * Falls back to the staking default when the archetype is unrecognised.
  */
-export function getDefaultRewardFactors(archetype: StrategyArchetypeV2 | undefined): RewardPnLBreakdown {
+export function getDefaultRewardFactors(archetype: StrategyArchetype | undefined): RewardPnLBreakdown {
   if (archetype && DEFAULT_REWARD_FACTORS_BY_ARCHETYPE[archetype]) {
     return DEFAULT_REWARD_FACTORS_BY_ARCHETYPE[archetype] as RewardPnLBreakdown;
   }
@@ -216,7 +216,7 @@ export function getDefaultRewardFactors(archetype: StrategyArchetypeV2 | undefin
  * replaced by `instance.archetype` once the backend instance contract
  * plumbs archetype through to the UI.
  */
-export const STRATEGY_ID_TO_ARCHETYPE: Partial<Record<DeFiStrategyId, StrategyArchetypeV2>> = {
+export const STRATEGY_ID_TO_ARCHETYPE: Partial<Record<DeFiStrategyId, StrategyArchetype>> = {
   AAVE_LENDING: "YIELD_ROTATION_LENDING",
   ETH_LENDING: "YIELD_ROTATION_LENDING",
   MULTICHAIN_LENDING: "YIELD_ROTATION_LENDING",

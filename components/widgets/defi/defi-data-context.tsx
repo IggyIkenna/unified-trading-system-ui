@@ -238,10 +238,12 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
         const expectedPrice = o.price;
         const fillPrice = o.average_fill_price ?? o.price;
         const slippage = Math.abs(fillPrice - expectedPrice) * o.quantity;
-        return {
-          seq: seedRows.length + idx + 1,
-          timestamp: o.timestamp,
-          instruction_type: instrUpper.includes("FLASH")
+        // Prefer the instruction_type the submitting widget passed on placement; only
+        // fall back to instrument_id string matching for legacy seed rows that predate
+        // the ledger storing instruction_type.
+        const derivedType =
+          (o.instruction_type as TradeHistoryRow["instruction_type"] | undefined) ??
+          (instrUpper.includes("FLASH")
             ? "FLASH_BORROW"
             : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP")
               ? "SWAP"
@@ -253,7 +255,11 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
                     ? "STAKE"
                     : instrUpper.includes("PERP") || instrUpper.includes("PERPETUAL")
                       ? "TRADE"
-                      : "TRANSFER",
+                      : "TRANSFER");
+        return {
+          seq: seedRows.length + idx + 1,
+          timestamp: o.timestamp,
+          instruction_type: derivedType,
           algo_type: (o.algo_type ?? "DIRECT") as TradeHistoryRow["algo_type"],
           instrument_id: o.instrument_id,
           venue: o.venue,

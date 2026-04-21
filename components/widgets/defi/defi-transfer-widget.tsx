@@ -91,13 +91,14 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError} data-testid="defi-transfer-widget">
       <div className="grid grid-cols-2 gap-1">
         <Button
           variant={transferMode === "send" ? "default" : "outline"}
           size="sm"
           className="text-xs h-8 gap-1"
           onClick={() => setTransferMode("send")}
+          data-testid="transfer-mode-send"
         >
           <Send className="size-3" />
           Send
@@ -107,6 +108,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           size="sm"
           className="text-xs h-8 gap-1"
           onClick={() => setTransferMode("bridge")}
+          data-testid="transfer-mode-bridge"
         >
           <Globe className="size-3" />
           Bridge
@@ -130,6 +132,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
               value={toAddress}
               onChange={(e) => setToAddress(e.target.value)}
               className="font-mono text-xs"
+              data-testid="to-address-input"
             />
           </div>
 
@@ -142,7 +145,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                   setSelectedChain(v);
                 }}
               >
-                <SelectTrigger size="sm" className="text-xs w-full">
+                <SelectTrigger size="sm" className="text-xs w-full" data-testid="chain-from">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -157,7 +160,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             <div className="space-y-1.5 min-w-0">
               <label className="text-xs text-muted-foreground">Token</label>
               <Select value={token} onValueChange={setToken}>
-                <SelectTrigger size="sm" className="text-xs w-full">
+                <SelectTrigger size="sm" className="text-xs w-full" data-testid="asset-select">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,6 +191,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="font-mono h-8 text-xs w-full"
+                data-testid="amount-input"
               />
             </div>
             <div className="space-y-1.5 min-w-0">
@@ -225,6 +229,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           <Button
             className="w-full"
             disabled={amountNum <= 0 || amountNum > balance || !toAddress || isSubmitting}
+            data-testid="execute-button"
             onClick={() =>
               handleSubmit(() => {
                 const price = getMockPrice(token);
@@ -262,7 +267,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">From chain</label>
               <Select value={fromChain} onValueChange={setFromChain}>
-                <SelectTrigger>
+                <SelectTrigger data-testid="chain-from">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -277,7 +282,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             <div className="space-y-1.5">
               <label className="text-xs text-muted-foreground">To chain</label>
               <Select value={toChain} onValueChange={setToChain}>
-                <SelectTrigger>
+                <SelectTrigger data-testid="chain-to">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -294,7 +299,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           <div className="space-y-1.5">
             <label className="text-xs text-muted-foreground">Token</label>
             <Select value={token} onValueChange={setToken}>
-              <SelectTrigger>
+              <SelectTrigger data-testid="asset-select">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -324,6 +329,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="font-mono h-8 text-xs w-full"
+                data-testid="amount-input"
               />
             </div>
             <div className="space-y-1.5 min-w-0">
@@ -406,6 +412,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
           <Button
             className="w-full"
             disabled={amountNum <= 0 || amountNum > balance || fromChain === toChain || !selectedRoute || isSubmitting}
+            data-testid="execute-button"
             onClick={() =>
               handleSubmit(() => {
                 const price = getMockPrice(token);

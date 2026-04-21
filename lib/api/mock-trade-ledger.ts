@@ -16,18 +16,18 @@ export interface MockOrder {
   order_type: "market" | "limit";
   quantity: number;
   price: number;
-  status:
-  | "pending"
-  | "open"
-  | "partially_filled"
-  | "filled"
-  | "cancelled"
-  | "rejected";
+  status: "pending" | "open" | "partially_filled" | "filled" | "cancelled" | "rejected";
   filled_quantity: number;
   average_fill_price: number | null;
   asset_class: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
   lane: "book" | "sports" | "defi" | "options" | "predictions";
   algo_type: string | null;
+  /**
+   * Semantic instruction kind (LEND / WITHDRAW / SWAP / STAKE / …) as emitted by
+   * the submitting widget. Optional so pre-existing ledger rows (seeded before this
+   * field was added) remain readable; derivation falls back to instrument_id parsing.
+   */
+  instruction_type?: string | null;
   correlation_id: string;
   created_at: string;
   updated_at: string;
@@ -264,6 +264,8 @@ export interface PlaceOrderParams {
   asset_class: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
   lane: "book" | "sports" | "defi" | "options" | "predictions";
   algo_type?: string | null;
+  /** Semantic instruction kind (LEND / WITHDRAW / SWAP …). */
+  instruction_type?: string | null;
   /** Max slippage tolerance in bps — used for realistic fill simulation */
   max_slippage_bps?: number;
   /** Strategy reference/benchmark price at signal time */
@@ -290,6 +292,7 @@ export function placeMockOrder(params: PlaceOrderParams): MockOrder {
     asset_class: params.asset_class,
     lane: params.lane,
     algo_type: params.algo_type ?? null,
+    instruction_type: params.instruction_type ?? null,
     correlation_id: `corr-${id}`,
     created_at: now,
     updated_at: now,
@@ -307,7 +310,7 @@ export function placeMockOrder(params: PlaceOrderParams): MockOrder {
       const maxSlipBps = params.max_slippage_bps ?? 5; // default 0.5 bps if not set
       const slipFraction = 0.3 + (Math.sin(Date.now() * 0.001) + 1) * 0.25; // 0.3–0.8
       const actualSlipBps = maxSlipBps * slipFraction;
-      const slipMultiplier = params.side === "buy" ? (1 + actualSlipBps / 10000) : (1 - actualSlipBps / 10000);
+      const slipMultiplier = params.side === "buy" ? 1 + actualSlipBps / 10000 : 1 - actualSlipBps / 10000;
       const fillPrice = params.price * slipMultiplier;
 
       state.orders[idx] = {
@@ -341,10 +344,7 @@ export function cancelMockOrder(id: string): MockOrder | null {
   return state.orders[idx];
 }
 
-export function amendMockOrder(
-  id: string,
-  updates: { quantity?: number; price?: number },
-): MockOrder | null {
+export function amendMockOrder(id: string, updates: { quantity?: number; price?: number }): MockOrder | null {
   const state = getState();
   const idx = state.orders.findIndex((o) => o.id === id);
   if (idx === -1) return null;
@@ -371,10 +371,7 @@ export function resetMockOrders(): void {
  */
 export function getFilledDefiOrders(strategyId?: string): MockOrder[] {
   return getState().orders.filter(
-    (o) =>
-      o.asset_class === "DeFi" &&
-      o.status === "filled" &&
-      (!strategyId || o.strategy_id === strategyId),
+    (o) => o.asset_class === "DeFi" && o.status === "filled" && (!strategyId || o.strategy_id === strategyId),
   );
 }
 
@@ -388,9 +385,7 @@ export function computeDefiLedgerPnL(): {
   totalNetCost: number;
   byStrategy: Record<string, { orderCount: number; totalCost: number; gasEstimate: number }>;
 } {
-  const filled = getState().orders.filter(
-    (o) => o.asset_class === "DeFi" && o.status === "filled",
-  );
+  const filled = getState().orders.filter((o) => o.asset_class === "DeFi" && o.status === "filled");
 
   const byStrategy: Record<string, { orderCount: number; totalCost: number; gasEstimate: number }> = {};
   let totalGasCost = 0;
@@ -405,11 +400,12 @@ export function computeDefiLedgerPnL(): {
     entry.orderCount += 1;
     // Mock gas: ~$5 per simple tx, ~$25 for flash loans, ~$15 for swaps
     const instrUpper = order.instrument_id.toUpperCase();
-    const gas = instrUpper.includes("FLASH") || instrUpper.includes("MORPHO")
-      ? 25
-      : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") || instrUpper.includes("CURVE")
-        ? 15
-        : 5;
+    const gas =
+      instrUpper.includes("FLASH") || instrUpper.includes("MORPHO")
+        ? 25
+        : instrUpper.includes("SWAP") || instrUpper.includes("UNISWAP") || instrUpper.includes("CURVE")
+          ? 15
+          : 5;
     entry.gasEstimate += gas;
     entry.totalCost += order.quantity * order.price;
     totalGasCost += gas;
@@ -426,9 +422,7 @@ export function computeCeFiLedgerPnL(): {
   totalNotional: number;
   orderCount: number;
 } {
-  const filled = getState().orders.filter(
-    (o) => o.asset_class === "CeFi" && o.status === "filled",
-  );
+  const filled = getState().orders.filter((o) => o.asset_class === "CeFi" && o.status === "filled");
 
   let totalCommission = 0;
   let totalSlippage = 0;

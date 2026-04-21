@@ -85,11 +85,11 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget error={error} onClearError={clearError}>
+    <FormWidget error={error} onClearError={clearError} data-testid="defi-swap-widget">
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Chain</label>
         <Select value={selectedChain} onValueChange={setSelectedChain}>
-          <SelectTrigger className="h-8 text-xs">
+          <SelectTrigger className="h-8 text-xs" data-testid="chain-select">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -116,7 +116,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
         <label className="text-xs text-muted-foreground">You pay</label>
         <div className="flex gap-2">
           <Select value={tokenIn} onValueChange={setTokenIn}>
-            <SelectTrigger className="w-28">
+            <SelectTrigger className="w-28" data-testid="asset-from-select">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -133,6 +133,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
             value={amountIn}
             onChange={(e) => setAmountIn(e.target.value)}
             className="font-mono flex-1"
+            data-testid="capital-input"
           />
         </div>
       </div>
@@ -155,7 +156,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
         <label className="text-xs text-muted-foreground">You receive</label>
         <div className="flex gap-2">
           <Select value={tokenOut} onValueChange={setTokenOut}>
-            <SelectTrigger className="w-28">
+            <SelectTrigger className="w-28" data-testid="asset-to-select">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -166,13 +167,16 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex-1 flex items-center px-3 border rounded-md bg-muted/30 font-mono text-sm">
+          <div
+            className="flex-1 flex items-center px-3 border rounded-md bg-muted/30 font-mono text-sm"
+            data-testid="expected-output"
+          >
             {route ? route.expectedOutput.toLocaleString(undefined, { minimumFractionDigits: 2 }) : "0.00"}
           </div>
         </div>
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1.5" data-testid="slippage-select">
         <label className="text-xs text-muted-foreground">Slippage tolerance</label>
         <div className="flex gap-1.5">
           {["0.1", "0.5", "1"].map((s) => (
@@ -182,6 +186,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
               size="sm"
               className="flex-1 text-xs h-7"
               onClick={() => setSlippage(s)}
+              data-testid={`slippage-option-${s}`}
             >
               {s}%
             </Button>
@@ -343,6 +348,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
       <Button
         className="w-full"
         disabled={amountNum <= 0 || isSubmitting}
+        data-testid="execute-button"
         onClick={() =>
           handleSubmit(() => {
             executeDeFiOrder({

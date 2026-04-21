@@ -1,0 +1,60 @@
+{
+  "name": "YIELD_ROTATION_LENDING",
+  "persona": "internal-trader",
+  "route": "/services/trading/defi",
+  "rootSelector": "[data-testid=\"defi-lending-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/yield-rotation-lending.md",
+  "scenarios": [
+    {
+      "name": "baseline — widgets render, trade history queryable",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert widget + ledger render cleanly."
+      }
+    },
+    {
+      "name": "LEND 1000 on default protocol + asset",
+      "inputs": {
+        "operation": "LEND",
+        "amount": "1000"
+      },
+      "expected": {
+        "tradeType": "LEND",
+        "minRowsAdded": 1,
+        "notes": "Default protocol is Aave V3 / ETH; fixture-robust."
+      }
+    },
+    {
+      "name": "WITHDRAW 500 on default protocol + asset",
+      "inputs": {
+        "operation": "WITHDRAW",
+        "amount": "500"
+      },
+      "expected": {
+        "tradeType": "WITHDRAW",
+        "minRowsAdded": 1
+      }
+    },
+    {
+      "name": "protocol switch refreshes supply APY",
+      "inputs": {
+        "operation": "LEND",
+        "switchProtocolToIndex": 1
+      },
+      "expected": {
+        "notes": "Reactive-only scenario — no order is placed."
+      }
+    },
+    {
+      "name": "asset switch refreshes expected-output label",
+      "inputs": {
+        "operation": "LEND",
+        "amount": "10",
+        "switchAssetToIndex": 1
+      },
+      "expected": {
+        "notes": "Reactive-only scenario — no order is placed."
+      }
+    }
+  ]
+}

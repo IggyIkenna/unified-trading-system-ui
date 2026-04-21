@@ -66,7 +66,7 @@ export function DeFiLendingWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError} data-testid="defi-lending-widget">
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Protocol</label>
         <Select value={selectedLendingProtocol} onValueChange={setSelectedLendingProtocol}>

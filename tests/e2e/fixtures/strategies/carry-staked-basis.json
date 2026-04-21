@@ -1,0 +1,66 @@
+{
+  "name": "CARRY_STAKED_BASIS",
+  "persona": "internal-trader",
+  "route": "/services/trading/strategies/staked-basis",
+  "rootSelector": "[data-testid=\"defi-swap-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/carry-staked-basis.md",
+  "scenarios": [
+    {
+      "name": "baseline — swap widget (staked-basis mode) + transfer widget render",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert swap widget defaults to stable→weETH and the transfer widget mounts alongside it."
+      }
+    },
+    {
+      "name": "swap 50000 USDC → weETH for the LST leg",
+      "inputs": {
+        "amountIn": "50000",
+        "tokenIn": "USDC",
+        "tokenOut": "weETH"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "LST leg of the CARRY_STAKED_BASIS strategy — stable swapped into weETH for the staked-long side."
+      }
+    },
+    {
+      "name": "transfer 25000 USDC to Hyperliquid (margin leg)",
+      "inputs": {
+        "transferAmount": "25000",
+        "transferToken": "USDC",
+        "transferToAddress": "0xHyperliquidMargin0000000000000000000001"
+      },
+      "expected": {
+        "tradeType": "TRANSFER",
+        "minRowsAdded": 1,
+        "notes": "Margin leg — send mode uses a placeholder destination address; widget emits a TRANSFER row on the shared mock ledger."
+      }
+    },
+    {
+      "name": "second swap 15000 USDC → weETH appends another SWAP row",
+      "inputs": {
+        "amountIn": "15000",
+        "tokenIn": "USDC",
+        "tokenOut": "weETH"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Confirm ledger append is idempotent across multiple executes on the same surface."
+      }
+    },
+    {
+      "name": "slippage tolerance change re-renders expected-output (no order)",
+      "inputs": {
+        "amountIn": "20000",
+        "slippageLoose": "1",
+        "slippageTight": "0.1"
+      },
+      "expected": {
+        "notes": "Reactive-only scenario — no order placed. Tightening slippage recomputes the route memo."
+      }
+    }
+  ]
+}

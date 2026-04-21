@@ -134,6 +134,11 @@ export function DeFiTradeHistoryWidget() {
               <React.Fragment key={`${row.seq}-${isChild ? "child" : "parent"}-wrap`}>
                 <tr
                   className={`border-b hover:bg-muted/50 ${isChild ? "bg-muted/20" : ""} cursor-pointer`}
+                  data-testid={isChild ? "trade-history-child" : "trade-history-row"}
+                  data-trade-seq={row.seq}
+                  data-trade-type={row.instruction_type}
+                  data-trade-venue={row.venue}
+                  data-trade-strategy={row.strategy_id ?? ""}
                   onClick={() => !isChild && row.execution_chain && toggleExpand(row.seq)}
                 >
                   <td className="px-1 py-1 text-muted-foreground text-center">

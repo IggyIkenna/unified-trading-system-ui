@@ -37,11 +37,11 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError} data-testid="defi-liquidity-widget">
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Pool</label>
         <Select value={selectedPool} onValueChange={setSelectedPool}>
-          <SelectTrigger>
+          <SelectTrigger data-testid="pool-select">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -63,6 +63,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           size="sm"
           className={cn("text-xs", operation === "ADD_LIQUIDITY" && "bg-emerald-600 hover:bg-emerald-700")}
           onClick={() => setOperation("ADD_LIQUIDITY")}
+          data-testid="operation-button-ADD_LIQUIDITY"
         >
           <Plus className="size-3 mr-1.5" />
           Add liquidity
@@ -72,6 +73,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
           size="sm"
           className={cn("text-xs", operation === "REMOVE_LIQUIDITY" && "bg-rose-600 hover:bg-rose-700")}
           onClick={() => setOperation("REMOVE_LIQUIDITY")}
+          data-testid="operation-button-REMOVE_LIQUIDITY"
         >
           <Trash2 className="size-3 mr-1.5" />
           Remove liquidity
@@ -80,7 +82,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
 
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Fee tier</label>
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-4 gap-1" data-testid="fee-tier-group">
           {DEFI_FEE_TIERS.map((ft) => (
             <Button
               key={ft.value}
@@ -88,6 +90,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
               size="sm"
               className="text-micro h-10 flex flex-col gap-0 px-1"
               onClick={() => setFeeTier(ft.value)}
+              data-testid={`fee-tier-${ft.value}`}
             >
               <span className="font-mono font-bold">{ft.label}</span>
               <span className="text-muted-foreground">{ft.description}</span>
@@ -110,6 +113,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             value={priceMin}
             onChange={(e) => setPriceMin(e.target.value)}
             className="font-mono h-8 text-xs w-full"
+            data-testid="price-min-input"
           />
         </div>
         <div className="space-y-1.5 min-w-0">
@@ -125,6 +129,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             value={priceMax}
             onChange={(e) => setPriceMax(e.target.value)}
             className="font-mono h-8 text-xs w-full"
+            data-testid="price-max-input"
           />
         </div>
         <div className="space-y-1.5 min-w-0">
@@ -137,22 +142,29 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="font-mono h-8 text-xs w-full"
+            data-testid="amount-input"
           />
         </div>
       </div>
 
-      <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
+      <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5" data-testid="pool-stats">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">TVL</span>
-          <span className="font-mono">${formatNumber(pool.tvl / 1_000_000, 0)}M</span>
+          <span className="font-mono" data-testid="pool-tvl">
+            ${formatNumber(pool.tvl / 1_000_000, 0)}M
+          </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">24h APR</span>
-          <span className="font-mono text-emerald-400">{formatPercent(pool.apr24h, 1)}</span>
+          <span className="font-mono text-emerald-400" data-testid="pool-apr">
+            {formatPercent(pool.apr24h, 1)}
+          </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Pool fee tier</span>
-          <span className="font-mono">{pool.feeTier}%</span>
+          <span className="font-mono" data-testid="pool-fee-tier">
+            {pool.feeTier}%
+          </span>
         </div>
       </div>
 
@@ -186,6 +198,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
             });
           });
         }}
+        data-testid="execute-button"
       >
         <Droplets className="size-4 mr-2" />
         {operation === "ADD_LIQUIDITY" ? "Add" : "Remove"} liquidity

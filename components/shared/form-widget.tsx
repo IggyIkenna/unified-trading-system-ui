@@ -50,6 +50,7 @@ export function FormWidget({
   onClearError,
   className,
   onSubmit,
+  "data-testid": dataTestId,
 }: {
   children: React.ReactNode;
   isLoading?: boolean;
@@ -57,10 +58,11 @@ export function FormWidget({
   onClearError?: () => void;
   className?: string;
   onSubmit?: () => void;
+  "data-testid"?: string;
 }) {
   if (isLoading) {
     return (
-      <div className={cn("space-y-3 p-1", className)}>
+      <div className={cn("space-y-3 p-1", className)} data-testid={dataTestId}>
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-full" />
         <Skeleton className="h-8 w-3/4" />
@@ -90,6 +92,7 @@ export function FormWidget({
     return (
       <form
         className={cn("space-y-3 p-1", className)}
+        data-testid={dataTestId}
         onSubmit={(e) => {
           e.preventDefault();
           onSubmit();
@@ -100,5 +103,9 @@ export function FormWidget({
     );
   }
 
-  return <div className={cn("space-y-3 p-1", className)}>{content}</div>;
+  return (
+    <div className={cn("space-y-3 p-1", className)} data-testid={dataTestId}>
+      {content}
+    </div>
+  );
 }
