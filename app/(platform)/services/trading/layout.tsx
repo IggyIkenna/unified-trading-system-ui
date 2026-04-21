@@ -277,7 +277,7 @@ function useWidgetTab(): string | null {
 export default function TradingServiceLayout({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { scope, setMode } = useGlobalScope();
-  const [quickViewCollapsed, setQuickViewCollapsed] = useState(false);
+  const [quickViewCollapsed, setQuickViewCollapsed] = useState(true);
   const widgetTab = useWidgetTab();
 
   // Sync workspace layouts with Firestore (no-op if Firebase not configured)

@@ -63,7 +63,7 @@ interface TradingVerticalNavProps {
 }
 
 export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVerticalNavProps) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [showNewPanel, setShowNewPanel] = useState(false);
   const [newPanelName, setNewPanelName] = useState("");
   const [collapsedFamilies, setCollapsedFamilies] = useState<Record<string, boolean>>({});
