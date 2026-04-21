@@ -190,7 +190,7 @@ export const SUBSCRIPTION_TIERS = [
  * Rule:
  *  - Client Full     = data-pro + execution-full + ml-full + strategy-full + reporting (all 5)
  *  - Client Premium  = data-pro + execution-full + strategy-full (no ml, no reporting)
- *  - DeFi Client     = defi-trading (main entitlement)
+ *  - DeFi Client     = trading-defi domain on TradingEntitlement (see isTradingEntitlement)
  *  - Data Pro        = data-pro only
  *  - Data Basic      = data-basic only
  *  - Custom          = anything else

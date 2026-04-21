@@ -27,14 +27,21 @@ describe("<StrategyCatalogueSurface> viewMode rendering", () => {
     expect(within(grid).queryByRole("button", { name: /Edit \(locked\)/ })).toBeNull();
   });
 
-  it("admin-editor renders the editor badge + disables action buttons", () => {
+  it("admin-editor renders inline dropdowns + live-editor badge", () => {
     renderSurface(<StrategyCatalogueSurface viewMode="admin-editor" />);
-    expect(screen.getByText(/Editor enabled when Plan A Phase 3 ships/)).toBeInTheDocument();
-    const lockedButtons = screen.getAllByRole("button", { name: /Edit \(locked\)/ });
-    expect(lockedButtons.length).toBeGreaterThan(0);
-    for (const btn of lockedButtons) {
-      expect(btn).toBeDisabled();
-    }
+    expect(
+      screen.getByText(/Editor live · server validates forward-only/),
+    ).toBeInTheDocument();
+    const grid = screen.getByTestId("admin-editor-grid");
+    // Every row has a maturity + routing dropdown.
+    const maturitySelects = within(grid).getAllByTestId("admin-editor-maturity-select");
+    const routingSelects = within(grid).getAllByTestId("admin-editor-routing-select");
+    expect(maturitySelects.length).toBe(loadStrategyCatalogue().length);
+    expect(routingSelects.length).toBe(loadStrategyCatalogue().length);
+    // Dropdowns are disabled until server-side lifecycle records load — in tests
+    // the GET mock returns an empty list so `record` stays null on every row.
+    for (const sel of maturitySelects) expect(sel).toBeDisabled();
+    for (const sel of routingSelects) expect(sel).toBeDisabled();
   });
 
   it("client-reality hides rows the viewer has not subscribed to", () => {

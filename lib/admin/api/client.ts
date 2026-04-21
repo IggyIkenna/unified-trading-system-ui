@@ -39,7 +39,7 @@ function actingUserEmailFromSession(): string | null {
 }
 
 async function request<T>(
-  method: "GET" | "POST" | "PUT" | "DELETE",
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   path: string,
   body?: unknown,
   options?: RequestOptions,
@@ -100,6 +100,15 @@ export const apiClient = {
     options?: RequestOptions,
   ): Promise<{ data: T }> {
     const data = await request<T>("PUT", path, body, options);
+    return { data };
+  },
+
+  async patch<T>(
+    path: string,
+    body?: unknown,
+    options?: RequestOptions,
+  ): Promise<{ data: T }> {
+    const data = await request<T>("PATCH", path, body, options);
     return { data };
   },
 

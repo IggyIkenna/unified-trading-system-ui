@@ -39,15 +39,15 @@ export default function StrategyLifecycleEditorPage() {
             <Badge variant="outline" className="font-mono text-xs">
               Tier 2 · admin mutate
             </Badge>
-            <Badge variant="outline" className="font-mono text-[10px] text-amber-500">
-              Editors enabled when Plan A Phase 3 PATCH ships
-            </Badge>
           </div>
           <p className="text-body text-muted-foreground max-w-3xl">
             Mutate <code className="font-mono text-xs">maturity_phase</code> and{" "}
             <code className="font-mono text-xs">product_routing</code> on each
-            instance. Forward-only transitions (plus retire). Bulk-edit via
-            filter + apply. Every change audit-logged with a 5-second undo.
+            instance. Forward-only transitions (plus retire). Every change is
+            re-validated server-side and audit-logged into{" "}
+            <code className="font-mono text-xs">phase_history</code>. Rows without
+            a server-side lifecycle record render with the hashed placeholder
+            and stay disabled until seeded.
           </p>
         </header>
 

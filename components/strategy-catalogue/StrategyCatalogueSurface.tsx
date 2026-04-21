@@ -32,6 +32,7 @@ import {
 } from "@/lib/architecture-v2/catalogue-filter";
 import {
   allowsAllocationCta,
+  legalMaturityTargets,
   loadStrategyCatalogue,
   lookupVenueSetVariant,
   LIFECYCLE_UNKNOWN,
@@ -44,6 +45,8 @@ import {
   type StrategyInstance,
   type StrategyMaturityPhase,
 } from "@/lib/architecture-v2/lifecycle";
+
+import { useLifecycleEditor } from "./use-lifecycle-editor";
 
 import {
   FomoTearsheetCard,
@@ -215,16 +218,22 @@ export function StrategyCatalogueSurface({
           idPrefix={`catalogue-${viewMode}`}
         />
         {viewMode === "admin-editor" ? (
-          <Badge variant="outline" className="text-[10px] text-amber-500">
-            Editor enabled when Plan A Phase 3 ships
+          <Badge variant="outline" className="text-[10px]">
+            Editor live · server validates forward-only + retire
           </Badge>
         ) : null}
       </div>
 
-      {viewMode === "admin-universe" || viewMode === "admin-editor" ? (
+      {viewMode === "admin-universe" ? (
         <AdminUniverseGrid
           instances={visible}
-          editorMode={viewMode === "admin-editor"}
+          onInstanceSelect={onInstanceSelect}
+        />
+      ) : null}
+
+      {viewMode === "admin-editor" ? (
+        <AdminEditorGrid
+          instances={visible}
           onInstanceSelect={onInstanceSelect}
         />
       ) : null}
@@ -247,17 +256,15 @@ export function StrategyCatalogueSurface({
   );
 }
 
-// ─── Admin universe / editor (read-only for now) ──────────────────────────────
+// ─── Admin universe (read-only) ───────────────────────────────────────────────
 
 interface AdminUniverseGridProps {
   readonly instances: readonly StrategyInstance[];
-  readonly editorMode: boolean;
   readonly onInstanceSelect?: (instanceId: string) => void;
 }
 
 function AdminUniverseGrid({
   instances,
-  editorMode,
   onInstanceSelect,
 }: AdminUniverseGridProps) {
   return (
@@ -275,13 +282,13 @@ function AdminUniverseGrid({
             <th className="px-3 py-2">Share class</th>
             <th
               className="px-3 py-2"
-              title="Synthesised until Plan A Phase 3 PATCH ships"
+              title="Synthesised until an admin seeds this instance via the lifecycle editor"
             >
               Maturity
             </th>
             <th
               className="px-3 py-2"
-              title="Synthesised until Plan A Phase 3 PATCH ships"
+              title="Synthesised until an admin seeds this instance via the lifecycle editor"
             >
               Routing
             </th>
@@ -332,16 +339,11 @@ function AdminUniverseGrid({
                 <td className="px-3 py-2">
                   <button
                     type="button"
-                    className="text-xs text-primary underline-offset-2 hover:underline disabled:text-muted-foreground disabled:no-underline"
-                    disabled={editorMode}
-                    title={
-                      editorMode
-                        ? "Enabled when Plan A Phase 3 PATCH endpoint ships"
-                        : "Open instance detail"
-                    }
+                    className="text-xs text-primary underline-offset-2 hover:underline"
+                    title="Open instance detail"
                     onClick={() => onInstanceSelect?.(instance.instanceId)}
                   >
-                    {editorMode ? "Edit (locked)" : "Details"}
+                    Details
                   </button>
                 </td>
               </tr>
@@ -350,8 +352,156 @@ function AdminUniverseGrid({
         </tbody>
       </table>
       <p className="border-t border-border/60 bg-muted/20 px-3 py-2 text-[10px] text-muted-foreground">
-        {instances.length} instances · maturity + routing are synthesised until
-        Plan A Phase 3 PATCH ships.
+        {instances.length} instances · maturity + routing are synthesised per
+        instance-id until an admin seeds them via the lifecycle editor.
+      </p>
+    </div>
+  );
+}
+
+// ─── Admin editor — inline maturity + routing dropdowns ───────────────────────
+
+interface AdminEditorGridProps {
+  readonly instances: readonly StrategyInstance[];
+  readonly onInstanceSelect?: (instanceId: string) => void;
+}
+
+function AdminEditorGrid({
+  instances,
+  onInstanceSelect,
+}: AdminEditorGridProps) {
+  const editor = useLifecycleEditor({ enabled: true });
+
+  return (
+    <div className="overflow-x-auto rounded-md border">
+      {editor.loadError ? (
+        <div
+          className="border-b border-rose-500/40 bg-rose-500/10 px-3 py-2 text-xs text-rose-600"
+          data-testid="admin-editor-load-error"
+        >
+          Failed to load server-side lifecycle state: {editor.loadError}. Edits
+          will still attempt a PATCH — server records may not reflect here until
+          reload.
+        </div>
+      ) : null}
+      <table
+        className="w-full text-left text-sm"
+        data-testid="admin-editor-grid"
+      >
+        <thead className="bg-muted/40 text-[10px] uppercase text-muted-foreground">
+          <tr>
+            <th className="px-3 py-2">Instance</th>
+            <th className="px-3 py-2">Family</th>
+            <th className="px-3 py-2">Archetype</th>
+            <th className="px-3 py-2">Venue set</th>
+            <th className="px-3 py-2">Share class</th>
+            <th className="px-3 py-2">Maturity</th>
+            <th className="px-3 py-2">Routing</th>
+            <th className="px-3 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {instances.length === 0 ? (
+            <tr>
+              <td className="px-3 py-6 text-center text-muted-foreground" colSpan={8}>
+                No instances match the current filter.
+              </td>
+            </tr>
+          ) : null}
+          {instances.map((instance) => {
+            const record = editor.getRecord(instance.instanceId);
+            const currentMaturity: StrategyMaturityPhase =
+              (record?.maturity_phase as StrategyMaturityPhase | undefined) ??
+              synthesiseMaturity(instance.instanceId);
+            const currentRouting: ProductRouting =
+              (record?.product_routing as ProductRouting | undefined) ??
+              synthesiseRouting(instance.instanceId);
+            const seeded = record !== null;
+            const targets = legalMaturityTargets(currentMaturity);
+            return (
+              <tr
+                key={instance.instanceId}
+                className="border-t border-border/60 hover:bg-accent/20"
+                data-testid="admin-editor-row"
+                data-instance-id={instance.instanceId}
+              >
+                <td className="px-3 py-2 font-mono text-[11px]">
+                  {instance.instanceId}
+                </td>
+                <td className="px-3 py-2">{instance.family}</td>
+                <td className="px-3 py-2">{instance.archetype}</td>
+                <td className="px-3 py-2">
+                  {venueSetLabel(instance.venueSetVariantId)}
+                </td>
+                <td className="px-3 py-2">
+                  {instance.shareClass
+                    ? SHARE_CLASS_LABEL[instance.shareClass]
+                    : "—"}
+                </td>
+                <td className="px-3 py-2">
+                  <select
+                    className="rounded border border-border bg-background px-2 py-1 font-mono text-[10px] disabled:opacity-50"
+                    data-testid="admin-editor-maturity-select"
+                    value={currentMaturity}
+                    disabled={!seeded || editor.loading}
+                    title={
+                      seeded
+                        ? "Pick a forward transition or retire"
+                        : "Server-side record absent — seed this instance before editing"
+                    }
+                    onChange={(e) => {
+                      const next = e.target.value as StrategyMaturityPhase;
+                      void editor.setMaturity(instance.instanceId, next);
+                    }}
+                  >
+                    <option value={currentMaturity}>
+                      {MATURITY_PHASE_LABEL[currentMaturity]} (current)
+                    </option>
+                    {targets.map((t) => (
+                      <option key={t} value={t}>
+                        {MATURITY_PHASE_LABEL[t]}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-3 py-2">
+                  <select
+                    className="rounded border border-border bg-background px-2 py-1 font-mono text-[10px] disabled:opacity-50"
+                    data-testid="admin-editor-routing-select"
+                    value={currentRouting}
+                    disabled={!seeded || editor.loading}
+                    onChange={(e) => {
+                      const next = e.target.value as ProductRouting;
+                      if (next === currentRouting) return;
+                      void editor.setRouting(instance.instanceId, next);
+                    }}
+                  >
+                    {PRODUCT_ROUTINGS.map((r) => (
+                      <option key={r} value={r}>
+                        {PRODUCT_ROUTING_LABEL[r]}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-3 py-2">
+                  <button
+                    type="button"
+                    className="text-xs text-primary underline-offset-2 hover:underline"
+                    title="Open instance detail"
+                    onClick={() => onInstanceSelect?.(instance.instanceId)}
+                  >
+                    Details
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <p className="border-t border-border/60 bg-muted/20 px-3 py-2 text-[10px] text-muted-foreground">
+        {instances.length} instances · editable when the row has a server-side
+        lifecycle record. Transitions are forward-only + retire; the server
+        re-validates and rolls back on reject.
       </p>
     </div>
   );

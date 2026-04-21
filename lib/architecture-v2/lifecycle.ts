@@ -301,6 +301,56 @@ export function allowsAllocationCta(phase: StrategyMaturityPhase): boolean {
   );
 }
 
+/**
+ * Ladder order of non-retired maturity phases. Mirror of UAC
+ * ``_PHASE_LADDER`` in ``internal/domain/strategy_service/lifecycle.py``.
+ */
+const MATURITY_PHASE_LADDER: readonly StrategyMaturityPhase[] = [
+  "smoke",
+  "backtest_minimal",
+  "backtest_1yr",
+  "backtest_multi_year",
+  "paper_1d",
+  "paper_14d",
+  "paper_stable",
+  "live_early",
+  "live_stable",
+] as const;
+
+/** Return ladder index, or -1 for `retired` (orthogonal terminal state). */
+export function maturityPhaseRank(phase: StrategyMaturityPhase): number {
+  if (phase === "retired") return -1;
+  return MATURITY_PHASE_LADDER.indexOf(phase);
+}
+
+/**
+ * Validate a maturity phase transition.
+ * - `retired` is terminal — no transitions out of it.
+ * - Any phase may transition to `retired`.
+ * - Forward-only moves up the ladder; skipping phases is allowed
+ *   (e.g. `backtest_1yr` → `paper_1d` because multi-year is optional).
+ * - Backward moves are rejected.
+ *
+ * Mirror of UAC `is_valid_maturity_transition`.
+ */
+export function isValidMaturityTransition(
+  from: StrategyMaturityPhase,
+  to: StrategyMaturityPhase,
+): boolean {
+  if (from === "retired") return false;
+  if (to === "retired") return true;
+  return maturityPhaseRank(to) > maturityPhaseRank(from);
+}
+
+/** Return the list of legal forward transitions from a given phase. */
+export function legalMaturityTargets(
+  from: StrategyMaturityPhase,
+): readonly StrategyMaturityPhase[] {
+  return STRATEGY_MATURITY_PHASES.filter((to) =>
+    to !== from && isValidMaturityTransition(from, to),
+  );
+}
+
 /** Is the instance visible to a non-admin viewer under this routing? */
 export function isClientVisible(
   routing: ProductRouting,
