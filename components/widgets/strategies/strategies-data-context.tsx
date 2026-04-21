@@ -54,6 +54,7 @@ export interface StrategiesData {
   filteredStrategies: Strategy[];
   groupedStrategies: Record<string, Strategy[]>;
   isLoading: boolean;
+  error: string | null;
 
   searchQuery: string;
   setSearchQuery: (q: string) => void;
@@ -496,6 +497,7 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
       commodityRegime: MOCK_COMMODITY_REGIME,
       isLive,
       mode,
+      error: null,
     }),
     [
       strategies,

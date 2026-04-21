@@ -180,6 +180,9 @@ export interface DeFiDataContextValue {
   healthFactorDashboard: HealthFactorDashboard;
   emergencyExit: EmergencyExitEstimate;
   rewardPnl: RewardPnLBreakdown;
+
+  isLoading: boolean;
+  error: string | null;
 }
 
 const DeFiDataContext = React.createContext<DeFiDataContextValue | null>(null);
@@ -669,6 +672,9 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
       healthFactorDashboard: MOCK_HEALTH_FACTOR,
       emergencyExit: MOCK_EMERGENCY_EXIT,
       rewardPnl,
+
+      isLoading: false,
+      error: null,
     }),
     [
       selectedChain,

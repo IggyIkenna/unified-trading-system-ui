@@ -113,6 +113,9 @@ export interface OptionsDataContextValue {
   handleWatchlistSelect: (sym: WatchlistSymbol) => void;
   isCrypto: boolean;
   mode?: string;
+
+  isLoading: boolean;
+  error: string | null;
 }
 
 const OptionsDataContext = React.createContext<OptionsDataContextValue | null>(null);
@@ -356,6 +359,9 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
       handleWatchlistSelect,
       isCrypto,
       mode,
+
+      isLoading: false,
+      error: null,
     }),
     [
       assetClass,
