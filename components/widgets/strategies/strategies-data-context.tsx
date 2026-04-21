@@ -11,7 +11,7 @@ import {
   getTotalMTDPnL,
   getTotalPnL,
   type Strategy,
-} from "@/lib/strategy-registry";
+} from "@/lib/mocks/fixtures/strategy-instances";
 import * as React from "react";
 
 // ---------------------------------------------------------------------------

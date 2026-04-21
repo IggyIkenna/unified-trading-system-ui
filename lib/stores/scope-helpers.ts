@@ -3,14 +3,14 @@
  *
  * The hierarchy is: Organization -> Client -> Strategy.
  *   - ORGANIZATIONS[].id === CLIENTS[].orgId
- *   - CLIENTS[].id === Strategy.clientId (from strategy-registry)
+ *   - CLIENTS[].id === Strategy.clientId (from lib/mocks/fixtures/strategy-instances)
  *
  * These helpers let any data context resolve "which strategies belong to the
  * selected organisations" without duplicating the lookup logic.
  */
 
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
-import { STRATEGIES } from "@/lib/strategy-registry";
+import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import type { GlobalScopeState } from "./global-scope-store";
 
 /** Return client IDs that belong to the given organisation IDs. */

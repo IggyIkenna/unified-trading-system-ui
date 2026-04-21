@@ -20,7 +20,7 @@ import { Spinner } from "@/components/shared/spinner";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { ARCHETYPES, ASSET_CLASS_COLORS, STATUSES } from "@/lib/config/services/strategies.config";
-import type { Strategy } from "@/lib/strategy-registry";
+import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 import { cn } from "@/lib/utils";
 import { BarChart2, ChevronDown, Filter, Play, Search, Settings, X } from "lucide-react";
 import Link from "next/link";

@@ -45,7 +45,7 @@ import {
   generatePositionsForStrategy,
   type Strategy,
   type PnLBreakdownData,
-} from "@/lib/strategy-registry";
+} from "@/lib/mocks/fixtures/strategy-instances";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
 import { ApiError } from "@/components/shared/api-error";
 import { Spinner } from "@/components/shared/spinner";

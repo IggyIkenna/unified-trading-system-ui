@@ -8,7 +8,7 @@ import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
 import { getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/strategy-registry";
+import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import type { AlgoType, InstructionType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import { useSearchParams } from "next/navigation";

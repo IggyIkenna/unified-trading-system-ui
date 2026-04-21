@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { type ExecutionMode, EXECUTION_MODES } from "./strategy-registry";
+import { type ExecutionMode, EXECUTION_MODES } from "./mocks/fixtures/strategy-instances";
 
 interface ExecutionModeContextValue {
   mode: ExecutionMode;

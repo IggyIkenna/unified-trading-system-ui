@@ -5,24 +5,24 @@ export const STAGE_COLORS: Record<string, string> = {
   blocked: "var(--status-error)",
 };
 
-// Model-Strategy linkage map
+// Model-Strategy linkage map (keyed on v2 slot labels)
 export const MODEL_STRATEGY_MAP: Record<string, { modelId: string; modelName: string; version: string }> = {
-  CEFI_BTC_ML_DIR_HUF_4H: {
+  "ML_DIRECTIONAL_CONTINUOUS@binance-btc-usdt-5m-usdt-prod": {
     modelId: "momentum-btc-xgb",
     modelName: "BTC Momentum XGBoost",
     version: "v3.2",
   },
-  CEFI_ETH_ML_DIR_HUF_4H: {
+  "ML_DIRECTIONAL_CONTINUOUS@hyperliquid-eth-perp-5m-usdt-v2-prod": {
     modelId: "momentum-eth-xgb",
     modelName: "ETH Momentum XGBoost",
     version: "v2.1",
   },
-  DEFI_ETH_ML_DIR_SCE_1H: {
+  "ML_DIRECTIONAL_CONTINUOUS@uniswap-ethereum-weth-usdc-5m-usdc-prod": {
     modelId: "defi-signal-lstm",
     modelName: "DeFi Signal LSTM",
     version: "v1.8",
   },
-  SPORTS_FOOTBALL_ML_ARB: {
+  "ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod": {
     modelId: "sports-edge-gb",
     modelName: "Sports Edge GradientBoost",
     version: "v4.0",

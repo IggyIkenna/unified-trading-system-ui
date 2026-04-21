@@ -549,12 +549,6 @@ export const STRATEGY_TYPES = [
     domain: "tradfi",
   },
   {
-    id: "SPORTS_VALUE",
-    label: "Sports Value Betting",
-    archetype: "DIRECTIONAL",
-    domain: "sports",
-  },
-  {
     id: "SPORTS_ARB",
     label: "Sports Arbitrage",
     archetype: "ARBITRAGE",

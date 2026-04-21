@@ -1,11 +1,20 @@
 import {
   FAMILY_METADATA,
   STRATEGY_FAMILIES_V2,
-  legacyFamilyToV2,
   type StrategyFamily,
 } from "@/lib/architecture-v2";
 import type { StrategyCatalogEntry } from "@/lib/mocks/fixtures/strategy-catalog-data";
 import { STRATEGY_CATALOG } from "@/lib/mocks/fixtures/strategy-catalog-data";
+
+// Post-Wave-7: the regenerated STRATEGY_CATALOG emits v2 family enum values directly.
+// The legacyFamilyToV2 helper has been retired.
+function toV2Family(raw: string): StrategyFamily {
+  if ((STRATEGY_FAMILIES_V2 as readonly string[]).includes(raw)) {
+    return raw as StrategyFamily;
+  }
+  // Defensive fallback for rows that slip through without a v2 family.
+  return "RULES_DIRECTIONAL";
+}
 
 export interface FamilyAggregate {
   family: StrategyFamily;
@@ -43,7 +52,7 @@ export function groupCatalogByFamily(
     perFamily.set(family, []);
   }
   for (const entry of catalog) {
-    const family = legacyFamilyToV2(entry.family);
+    const family = toV2Family(entry.family);
     const bucket = perFamily.get(family);
     if (bucket) {
       bucket.push(entry);

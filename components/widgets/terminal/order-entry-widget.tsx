@@ -10,7 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronRight, Shield, TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { STRATEGIES } from "@/lib/strategy-registry";
+import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { useTerminalData } from "./terminal-data-context";
 import * as React from "react";

@@ -2791,67 +2791,6 @@
       "testnet_capable": false
     },
     {
-      "strategy_id": "SPORTS_VALUE_BETTING",
-      "display_name": "Sports Value Betting",
-      "category": "SPORTS",
-      "subcategory": "VALUE",
-      "domain": "sports",
-      "asset_classes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "PINNACLE",
-        "BET365"
-      ],
-      "instruments": [],
-      "data_sources": {
-        "features": [
-          "features-sports-service"
-        ],
-        "market_data_processed": false,
-        "market_data_tick": false,
-        "ml_model_id": null,
-        "ml_required": false
-      },
-      "config_file": "strategy-service/strategy_service/configs/defaults/default_value_betting.yaml",
-      "class_path": "strategy_service.engine.strategies.sports.value_betting.ValueBettingStrategy",
-      "factory_function": "create_value_betting_strategy",
-      "maturity": {
-        "code": {
-          "status": "C4",
-          "class_exists": true,
-          "unit_tests": true,
-          "qg_pass": true,
-          "merged": false
-        },
-        "deployment": {
-          "status": "D0",
-          "batch_analytics": false,
-          "mock_smoke": false,
-          "batch_live_recon": false
-        },
-        "business": {
-          "status": "B0",
-          "backtest_profitable": false,
-          "live_1d_match": false,
-          "live_1w_match": false,
-          "strategy_deck": false
-        }
-      },
-      "restrictions": {
-        "allowed_features": [
-          "sports"
-        ],
-        "allowed_ml_targets": [],
-        "min_timeframe": null,
-        "max_timeframe": null
-      },
-      "batch_capable": false,
-      "live_capable": true,
-      "testnet_capable": false
-    },
-    {
       "strategy_id": "SPORTS_KELLY_CRITERION",
       "display_name": "Sports Kelly Criterion",
       "category": "SPORTS",

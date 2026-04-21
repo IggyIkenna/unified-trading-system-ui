@@ -2328,7 +2328,6 @@
       "FLASH_LOAN_ARB",
       "LIQUIDITY_PROVISION",
       "MARKET_MAKING",
-      "SPORTS_VALUE_BET",
       "SPORTS_ML",
       "SPORTS_ARB",
       "SPORTS_HALFTIME_ML",
@@ -3216,25 +3215,6 @@
       "display_name": "Sports Arbitrage (Cross-Bookmaker)",
       "category": "SPORTS",
       "subcategory": "ARBITRAGE",
-      "domain": "sports",
-      "asset_classes": [
-        "FIXED_ODDS"
-      ],
-      "venues": [
-        "BETFAIR",
-        "PINNACLE",
-        "BET365"
-      ],
-      "instruments": [],
-      "batch_capable": false,
-      "live_capable": true,
-      "testnet_capable": false
-    },
-    {
-      "strategy_id": "SPORTS_VALUE_BETTING",
-      "display_name": "Sports Value Betting",
-      "category": "SPORTS",
-      "subcategory": "VALUE",
       "domain": "sports",
       "asset_classes": [
         "FIXED_ODDS"
@@ -9812,45 +9792,6 @@
         "client_id": ""
       },
       {
-        "strategy_id": "ELYSIUM_AAVE_LENDING",
-        "name": "AAVE Lending",
-        "family": "LENDING",
-        "category": "DEFI",
-        "archetype": "YIELD",
-        "execution_mode": "HUF",
-        "strategy_type": "Yield Lending",
-        "default_timeframe": "",
-        "version": 1,
-        "description": "",
-        "client_id": "patrick-elysium"
-      },
-      {
-        "strategy_id": "ELYSIUM_BASIS_TRADE",
-        "name": "Multi-Venue Basis Trade",
-        "family": "BASIS_TRADE",
-        "category": "DEFI",
-        "archetype": "BASIS_TRADE",
-        "execution_mode": "HUF",
-        "strategy_type": "Basis Trade",
-        "default_timeframe": "",
-        "version": 1,
-        "description": "",
-        "client_id": "patrick-elysium"
-      },
-      {
-        "strategy_id": "ELYSIUM_RECURSIVE_STAKED_BASIS",
-        "name": "Recursive Staked Basis (Hedged)",
-        "family": "RECURSIVE_STAKED_BASIS",
-        "category": "DEFI",
-        "archetype": "RECURSIVE_STAKED_BASIS",
-        "execution_mode": "HUF",
-        "strategy_type": "Recursive Yield",
-        "default_timeframe": "",
-        "version": 1,
-        "description": "",
-        "client_id": "patrick-elysium"
-      },
-      {
         "strategy_id": "CEFI_BTC_MM_EVT_TICK",
         "name": "BTC Market Making (Binance)",
         "family": "MARKET_MAKING",
@@ -10059,19 +10000,6 @@
         "client_id": ""
       },
       {
-        "strategy_id": "TRADFI_BOND_MEAN_REV_HUF_1D",
-        "name": "Bond Mean Reversion",
-        "family": "MEAN_REVERSION",
-        "category": "TRADFI",
-        "archetype": "MEAN_REVERSION",
-        "execution_mode": "HUF",
-        "strategy_type": "Mean Reversion",
-        "default_timeframe": "1D",
-        "version": 1,
-        "description": "",
-        "client_id": ""
-      },
-      {
         "strategy_id": "TRADFI_ES_ML_DIR_SCE_30M",
         "name": "ES ML Directional",
         "family": "ML_DIRECTIONAL",
@@ -10228,19 +10156,6 @@
         "client_id": ""
       },
       {
-        "strategy_id": "SPORTS_NFL_VALUE_BET_EVT_GAME",
-        "name": "NFL Value Betting",
-        "family": "SPORTS_VALUE",
-        "category": "SPORTS",
-        "archetype": "SPORTS_ARB",
-        "execution_mode": "EVT",
-        "strategy_type": "Value Betting",
-        "default_timeframe": "GAME",
-        "version": 1,
-        "description": "",
-        "client_id": ""
-      },
-      {
         "strategy_id": "SPORTS_LALIGA_ML_EVT_MATCH",
         "name": "La Liga ML Sports",
         "family": "SPORTS_ML",
@@ -10262,19 +10177,6 @@
         "execution_mode": "EVT",
         "strategy_type": "Sports MM",
         "default_timeframe": "QUARTER",
-        "version": 1,
-        "description": "",
-        "client_id": ""
-      },
-      {
-        "strategy_id": "SPORTS_MLB_VALUE_BET_EVT_GAME",
-        "name": "MLB Value Betting",
-        "family": "SPORTS_VALUE",
-        "category": "SPORTS",
-        "archetype": "SPORTS_ARB",
-        "execution_mode": "EVT",
-        "strategy_type": "Value Betting",
-        "default_timeframe": "GAME",
         "version": 1,
         "description": "",
         "client_id": ""
@@ -10364,13 +10266,11 @@
         "DEFI_WBTC_BASIS_HUF_4H",
         "DEFI_STETH_STAKED_BASIS_HUF_1D",
         "DEFI_ETH_STAKED_BASIS_HUF_1H",
-        "ELYSIUM_BASIS_TRADE",
         "CEFI_BTC_BASIS_SCE_1H"
       ],
       "RECURSIVE_STAKED_BASIS": [
         "DEFI_ETH_REC_STAKE_HUF_1H",
-        "DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK",
-        "ELYSIUM_RECURSIVE_STAKED_BASIS"
+        "DEFI_ETH_RECURSIVE_STAKED_HUF_BLOCK"
       ],
       "LP_PROVISION": [
         "DEFI_UNI_LP_HUF_1H",
@@ -10382,8 +10282,7 @@
         "DEFI_MORPHO_LEND_HUF_1D",
         "DEFI_USDC_AAVE_LEND_HUF_1H",
         "DEFI_DAI_AAVE_LEND_HUF_8H",
-        "DEFI_AAVE_SUPPLY_USDC_HUF_1H",
-        "ELYSIUM_AAVE_LENDING"
+        "DEFI_AAVE_SUPPLY_USDC_HUF_1H"
       ],
       "MARKET_MAKING": [
         "CEFI_BTC_MM_EVT_TICK",
@@ -10419,8 +10318,7 @@
       ],
       "MEAN_REVERSION": [
         "CEFI_ETH_MEAN_REV_SCE_4H",
-        "CEFI_ARB_MEAN_REV_HUF_15M",
-        "TRADFI_BOND_MEAN_REV_HUF_1D"
+        "CEFI_ARB_MEAN_REV_HUF_15M"
       ],
       "SPORTS_ARB": [
         "SPORTS_NFL_ARB_SCE_GAME",
@@ -10430,10 +10328,6 @@
       "SPORTS_ML": [
         "SPORTS_NBA_ML_HUF_GAME",
         "SPORTS_LALIGA_ML_EVT_MATCH"
-      ],
-      "SPORTS_VALUE": [
-        "SPORTS_NFL_VALUE_BET_EVT_GAME",
-        "SPORTS_MLB_VALUE_BET_EVT_GAME"
       ],
       "SPORTS_MM": [
         "SPORTS_NBA_MM_EVT_QUARTER",
@@ -10478,16 +10372,6 @@
   },
   "client_registry": {
     "clients": [
-      {
-        "client_id": "patrick-elysium",
-        "name": "Patrick",
-        "entity": "Elysium Capital",
-        "share_classes": [
-          "USDC",
-          "ETH"
-        ],
-        "is_active": true
-      },
       {
         "client_id": "acme-fund",
         "name": "Acme Fund",

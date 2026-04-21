@@ -1,16 +1,19 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Strategy } from "@/lib/strategy-registry";
+import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 
 export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Strategy; arch: string }) {
+  const isMarketMaking = arch.startsWith("MARKET_MAKING");
+  const isBasisTrade = arch.startsWith("CARRY_BASIS") || arch === "CARRY_STAKED_BASIS" || arch === "CARRY_RECURSIVE_STAKED";
+  const isOptionsVol = arch === "VOL_TRADING_OPTIONS";
   return (
     <>
       {/* Strategy-Type Specific Panel */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">
-            {arch === "market-making" || arch === "MARKET_MAKING"
+            {isMarketMaking
               ? "Market Making Analytics"
               : strategy.assetClass === "DeFi"
                 ? "DeFi Protocol Analytics"
@@ -18,16 +21,15 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                   ? "Sports & Betting Analytics"
                   : strategy.assetClass === "Prediction"
                     ? "Prediction Market Analytics"
-                    : arch === "basis-trade" || arch === "BASIS_TRADE"
+                    : isBasisTrade
                       ? "Basis/Spread Analytics"
-                      : arch === "OPTIONS" || arch === "market-making-options"
+                      : isOptionsVol
                         ? "Derivatives Analytics"
                         : "Strategy Analytics"}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {(() => {
-            const arch = strategy.archetype as string;
             return (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                 {/* Common metrics */}
@@ -41,7 +43,7 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                 </div>
 
                 {/* Market Making specific */}
-                {(arch === "market-making" || arch === "MARKET_MAKING") && (
+                {isMarketMaking && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Avg Spread Captured</span>
@@ -129,7 +131,7 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                 )}
 
                 {/* Basis/Spread specific */}
-                {(arch === "basis-trade" || arch === "BASIS_TRADE") && (
+                {isBasisTrade && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Basis Spread</span>
@@ -151,7 +153,7 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                 )}
 
                 {/* Derivatives/Options specific */}
-                {(arch === "OPTIONS" || arch === "market-making-options") && (
+                {isOptionsVol && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Net Delta</span>
@@ -173,11 +175,7 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                 )}
 
                 {/* Momentum/Directional/ML */}
-                {(arch === "momentum" ||
-                  arch === "ml-directional" ||
-                  arch === "ML_DIRECTIONAL" ||
-                  arch === "MOMENTUM" ||
-                  arch === "DIRECTIONAL") && (
+                {(arch.startsWith("ML_DIRECTIONAL") || arch.startsWith("RULES_DIRECTIONAL")) && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Signal Strength</span>
@@ -198,8 +196,8 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                   </>
                 )}
 
-                {/* Mean Reversion */}
-                {(arch === "mean-reversion" || arch === "MEAN_REVERSION") && (
+                {/* Mean Reversion / Stat Arb Pairs */}
+                {arch.startsWith("STAT_ARB") && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Z-Score</span>
@@ -220,11 +218,8 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                   </>
                 )}
 
-                {/* Arbitrage / Statistical Arb */}
-                {(arch === "arbitrage" ||
-                  arch === "ARBITRAGE" ||
-                  arch === "statistical-arb" ||
-                  arch === "STATISTICAL_ARB") && (
+                {/* Arbitrage / Liquidation Capture */}
+                {(arch === "ARBITRAGE_PRICE_DISPERSION" || arch === "LIQUIDATION_CAPTURE") && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Spread (Current)</span>
@@ -246,7 +241,7 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                 )}
 
                 {/* Recursive Staked Basis (DeFi subset) */}
-                {(arch === "recursive-staked-basis" || arch === "RECURSIVE_STAKED_BASIS") && (
+                {arch === "CARRY_RECURSIVE_STAKED" && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Leverage Loop</span>
@@ -267,8 +262,8 @@ export function StrategyDetailArchetypePanel({ strategy, arch }: { strategy: Str
                   </>
                 )}
 
-                {/* AMM LP */}
-                {(arch === "amm-lp" || arch === "AMM_LP") && (
+                {/* AMM LP / Continuous MM */}
+                {arch === "MARKET_MAKING_CONTINUOUS" && (
                   <>
                     <div>
                       <span className="text-muted-foreground text-[10px]">Fee APR</span>

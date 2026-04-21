@@ -34,7 +34,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import type { PnLBreakdownData, Strategy } from "@/lib/strategy-registry";
+import type { PnLBreakdownData, Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 
 // Mock 7-day health factor time series for recursive DeFi strategies
 const MOCK_HF_SERIES = [

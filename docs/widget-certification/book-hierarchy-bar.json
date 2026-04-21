@@ -5,7 +5,7 @@
   "domain": "book",
   "file": "components/widgets/book/book-hierarchy-bar-widget.tsx",
   "class": "control-bar",
-  "description": "Org → Client → Strategy selector strip for scoping the book order entry form.",
+  "description": "Org \u2192 Client \u2192 Strategy selector strip for scoping the book order entry form.",
   "levels": {
     "l0": {
       "status": "pass",
@@ -34,22 +34,22 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— added orgsLoading spinner via useOrganizationsList() isLoading flag."
+          "note": "\u2014 added orgsLoading spinner via useOrganizationsList() isLoading flag."
         },
         "0.7": {
           "result": "pass",
-          "note": "— org empty state shows 'No organizations'; strategy always shows 'Manual (unlinked)'."
+          "note": "\u2014 org empty state shows 'No organizations'; strategy always shows 'Manual (unlinked)'."
         },
         "0.8": {
           "result": "pass",
-          "note": "— added orgsError guard returning rose-500 error message."
+          "note": "\u2014 added orgsError guard returning rose-500 error message."
         },
         "0.9": {
           "result": "pass",
           "note": "No dead code."
         }
       },
-      "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[book]. 0.4 No any types or @ts-ignore. 0.5 No lib/mocks imports. 0.6 FIXED — added orgsLoading spinner via useOrganizationsList() isLoading flag. 0.7 PASS — org empty state shows 'No organizations'; strategy always shows 'Manual (unlinked)'. 0.8 FIXED — added orgsError guard returning rose-500 error message. 0.9 No dead code."
+      "notes": "0.1 WidgetErrorBoundary confirmed in widget-wrapper.tsx. 0.2 requiredEntitlements=[execution-basic,execution-full]. 0.3 availableOn=[book]. 0.4 No any types or @ts-ignore. 0.5 No lib/mocks imports. 0.6 FIXED \u2014 added orgsLoading spinner via useOrganizationsList() isLoading flag. 0.7 PASS \u2014 org empty state shows 'No organizations'; strategy always shows 'Manual (unlinked)'. 0.8 FIXED \u2014 added orgsError guard returning rose-500 error message. 0.9 No dead code."
     },
     "l1": {
       "status": "pass",
@@ -82,10 +82,10 @@
         },
         "1.7": {
           "result": "n/a",
-          "note": "— widget has no reference data of its own; orgs from API, strategies from lib/strategy-registry."
+          "note": "\u2014 widget has no reference data of its own; orgs from API, strategies from lib/mocks/fixtures/strategy-instances."
         }
       },
-      "notes": "1.1 Orgs and strategies via useBookTradeData() which uses useOrganizationsList and STRATEGIES registry. 1.2 book-data-context calls useGlobalScope() and syncs orgId/clientId/strategyId via useEffect on scope changes. 1.3 Org filter changes reflected: globalScope.organizationIds[0] sets orgId in context. 1.4 Client filter cascades: globalScope.clientIds[0] sets clientId. 1.5 Strategy filter cascades: globalScope.strategyIds[0] sets strategyId. 1.6 Empty scope arrays leave form state unchanged (no forced reset). 1.7 N/A — widget has no reference data of its own; orgs from API, strategies from lib/strategy-registry."
+      "notes": "1.1 Orgs and strategies via useBookTradeData() which uses useOrganizationsList and STRATEGIES registry. 1.2 book-data-context calls useGlobalScope() and syncs orgId/clientId/strategyId via useEffect on scope changes. 1.3 Org filter changes reflected: globalScope.organizationIds[0] sets orgId in context. 1.4 Client filter cascades: globalScope.clientIds[0] sets clientId. 1.5 Strategy filter cascades: globalScope.strategyIds[0] sets strategyId. 1.6 Empty scope arrays leave form state unchanged (no forced reset). 1.7 N/A \u2014 widget has no reference data of its own; orgs from API, strategies from lib/mocks/fixtures/strategy-instances."
     },
     "l2": {
       "status": null,
@@ -120,8 +120,8 @@
   },
   "knownIssues": [],
   "findings": [
-    "L0 FIX — added loading state (Spinner) and error state (rose text) for organizations fetch using useOrganizationsList isLoading/isError",
-    "L1 PASS — scope sync works via useEffect in book-data-context; org/client/strategy all wire to globalScope correctly"
+    "L0 FIX \u2014 added loading state (Spinner) and error state (rose text) for organizations fetch using useOrganizationsList isLoading/isError",
+    "L1 PASS \u2014 scope sync works via useEffect in book-data-context; org/client/strategy all wire to globalScope correctly"
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-17"

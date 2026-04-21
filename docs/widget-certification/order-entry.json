@@ -34,7 +34,7 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "— isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true."
+          "note": "\u2014 isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true."
         },
         "0.7": {
           "result": "pass",
@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "— isLoading/error now available from TerminalData context; widget renders error message (contextError) when error is non-null. Submit errors still handled via FormWidget/useFormSubmit (error aliased as contextError to avoid shadowing)."
+          "note": "\u2014 isLoading/error now available from TerminalData context; widget renders error message (contextError) when error is non-null. Submit errors still handled via FormWidget/useFormSubmit (error aliased as contextError to avoid shadowing)."
         },
         "0.9": {
           "result": "pass",
           "note": "removed unused Target and Zap lucide imports."
         }
       },
-      "notes": "0.1–0.5 PASS. 0.6 PASS — isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true. 0.7 PASS: form renders with defaults; isBatchMode message shown. 0.8 PASS — isLoading/error now available from TerminalData context; widget renders error message (contextError) when error is non-null. Submit errors still handled via FormWidget/useFormSubmit (error aliased as contextError to avoid shadowing). 0.9 FIXED: removed unused Target and Zap lucide imports."
+      "notes": "0.1\u20130.5 PASS. 0.6 PASS \u2014 isLoading/error now available from TerminalData context; widget renders loading spinner when isLoading=true. 0.7 PASS: form renders with defaults; isBatchMode message shown. 0.8 PASS \u2014 isLoading/error now available from TerminalData context; widget renders error message (contextError) when error is non-null. Submit errors still handled via FormWidget/useFormSubmit (error aliased as contextError to avoid shadowing). 0.9 FIXED: removed unused Target and Zap lucide imports."
     },
     "l1": {
       "status": "pass",
@@ -82,10 +82,10 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "STRATEGIES from lib/strategy-registry; DEFAULT_INSTRUMENTS fallback in hook (acceptable location)."
+          "note": "STRATEGIES from lib/mocks/fixtures/strategy-instances; DEFAULT_INSTRUMENTS fallback in hook (acceptable location)."
         }
       },
-      "notes": "1.1 PASS: all data from useTerminalData(). 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3 PASS: organizationIds drives isContextComplete. 1.4 PASS: clientIds drives isContextComplete. 1.5 PASS: strategyIds filters strategies and maps instrument selection. 1.6 PASS: empty strategyIds returns all strategies. 1.7 PASS: STRATEGIES from lib/strategy-registry; DEFAULT_INSTRUMENTS fallback in hook (acceptable location)."
+      "notes": "1.1 PASS: all data from useTerminalData(). 1.2 PASS: use-terminal-page-data.ts calls useGlobalScope(). 1.3 PASS: organizationIds drives isContextComplete. 1.4 PASS: clientIds drives isContextComplete. 1.5 PASS: strategyIds filters strategies and maps instrument selection. 1.6 PASS: empty strategyIds returns all strategies. 1.7 PASS: STRATEGIES from lib/mocks/fixtures/strategy-instances; DEFAULT_INSTRUMENTS fallback in hook (acceptable location)."
     },
     "l2": {
       "status": null,
@@ -119,11 +119,11 @@
     }
   },
   "knownIssues": [
-    "DEFAULT_INSTRUMENTS fallback lives in use-terminal-page-data.ts rather than lib/constants/ — low-risk but minor L1.7 placement gap"
+    "DEFAULT_INSTRUMENTS fallback lives in use-terminal-page-data.ts rather than lib/constants/ \u2014 low-risk but minor L1.7 placement gap"
   ],
   "findings": [
     "FIXED: Removed unused Target and Zap lucide-react imports (L0.9)",
-    "FIXED: TerminalData context extended with isLoading and error fields — widget now destructures contextError (aliased from error) to avoid shadowing useFormSubmit's error",
+    "FIXED: TerminalData context extended with isLoading and error fields \u2014 widget now destructures contextError (aliased from error) to avoid shadowing useFormSubmit's error",
     "isLoading and error are stubbed as false/null in use-terminal-page-data.ts pending real API hook wiring"
   ],
   "updatedBy": "agent",

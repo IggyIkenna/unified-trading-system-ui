@@ -23,14 +23,14 @@ Lines: ~669
 
 - `useStrategyPerformance()` — fetches strategy list with performance data
 - `useExecutionMode()` — live vs batch mode toggle
-- Imports from `@/lib/strategy-registry`: `STRATEGIES`, `getTotalAUM`, `getTotalPnL`, `getTotalMTDPnL`
+- Imports from `@/lib/mocks/fixtures/strategy-instances`: `STRATEGIES`, `getTotalAUM`, `getTotalPnL`, `getTotalMTDPnL`
 
 ### Inline Mock Data
 
 - `ASSET_CLASS_COLORS` — color map for asset classes (move to config)
 - `ARCHETYPES` — archetype filter list (move to config)
 - `STATUSES` — status filter list (move to config)
-- `DEFAULT_STRATEGIES` fallback from `lib/strategy-registry` — already centralized
+- `DEFAULT_STRATEGIES` fallback from `lib/mocks/fixtures/strategy-instances` — already centralized
 
 ---
 
@@ -85,7 +85,7 @@ export interface StrategiesData {
 - **Move**: `ASSET_CLASS_COLORS` to `lib/config/services/strategies.config.ts`
 - **Move**: `ARCHETYPES` and `STATUSES` constants to `lib/config/services/strategies.config.ts`
 - **No new mock data needed** — `useStrategyPerformance()` already sources from MSW
-- `getTotalAUM()`, `getTotalPnL()`, `getTotalMTDPnL()` are already in `lib/strategy-registry` — keep as-is or refactor to accept a strategy array parameter instead of using the global `STRATEGIES`
+- `getTotalAUM()`, `getTotalPnL()`, `getTotalMTDPnL()` are already in `lib/mocks/fixtures/strategy-instances` — keep as-is or refactor to accept a strategy array parameter instead of using the global `STRATEGIES`
 
 ---
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { formatCurrency } from "@/lib/reference-data";
-import { type PnLBreakdownData } from "@/lib/strategy-registry";
+import { type PnLBreakdownData } from "@/lib/mocks/fixtures/strategy-instances";
 import { cn } from "@/lib/utils";
 
 interface PnLWaterfallProps {

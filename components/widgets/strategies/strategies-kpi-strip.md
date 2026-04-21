@@ -12,7 +12,7 @@ Four KPI metrics: active live strategies versus total count, total AUM, aggregat
 
 - `useStrategiesData()` context → derived from `strategies` list
 - Upstream: `useStrategyPerformance()` → `/api/trading/performance` (MSW in demo)
-- Totals: `getTotalAUM`, `getTotalPnL`, `getTotalMTDPnL` from `@/lib/strategy-registry` (passed the loaded strategy array)
+- Totals: `getTotalAUM`, `getTotalPnL`, `getTotalMTDPnL` from `@/lib/mocks/fixtures/strategy-instances` (passed the loaded strategy array)
 
 ## Configuration
 

@@ -7,7 +7,7 @@ import {
   orgSeed,
 } from "@/lib/stores/scope-helpers";
 import { CLIENTS } from "@/lib/mocks/fixtures/trading-data";
-import { STRATEGIES } from "@/lib/strategy-registry";
+import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 
 /**
  * Coverage lift for lib/stores/scope-helpers.ts (was 0%).

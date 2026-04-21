@@ -10,8 +10,8 @@
 // 4. Live vs Batch data with realistic differences
 // 5. Time series with actual movement (not flat)
 //
-// NOTE: Strategy definitions are now sourced from strategy-registry.ts
-// This module derives TradingStrategy from the canonical Strategy type
+// NOTE: Strategy definitions are sourced from lib/mocks/fixtures/strategy-instances (UAC-derived).
+// This module derives TradingStrategy from the canonical StrategyInstance type.
 
 // Import canonical taxonomy for type consistency
 import {
@@ -21,8 +21,8 @@ import {
   type StrategyArchetype,
 } from "@/lib/taxonomy";
 
-// Import canonical strategy registry as the single source of truth
-import { STRATEGIES as REGISTRY_STRATEGIES, type Strategy as RegistryStrategy } from "@/lib/strategy-registry";
+// Import canonical strategy instances (v2 UAC-sourced) as the single source of truth
+import { STRATEGIES as REGISTRY_STRATEGIES, type Strategy as RegistryStrategy } from "@/lib/mocks/fixtures/strategy-instances";
 
 // Re-export taxonomy types for convenience
 export type { AssetClass, StrategyExecutionMode, StrategyStatus, StrategyArchetype };
@@ -377,25 +377,31 @@ export const CLIENTS: TradingClient[] = [
   },
 ];
 
-// Helper to map archetype from registry format to trading-data format
+// Helper to map v2 archetype → trading-data archetype label for downstream mock PnL buckets.
+// The per-archetype attribution logic (basis/options/sports/lending) in generatePnLBreakdown below
+// matches on substring of this lowercased label, so the mapping just preserves the semantic bucket.
 function mapArchetype(archetype: RegistryStrategy["archetype"]): StrategyArchetype | string {
   const archetypeMap: Record<RegistryStrategy["archetype"], string> = {
-    BASIS_TRADE: "basis-trade",
-    RECURSIVE_STAKED_BASIS: "recursive-staked-basis",
-    MARKET_MAKING: "market-making",
-    AMM_LP: "amm-lp",
-    DIRECTIONAL: "ml-directional",
-    ML_DIRECTIONAL: "ml-directional",
-    OPTIONS: "market-making-options",
-    ARBITRAGE: "arbitrage",
-    SPORTS_ARB: "sports-arb",
-    PREDICTION_ARB: "prediction-arb",
-    YIELD: "aave-lending",
-    MOMENTUM: "momentum",
-    MEAN_REVERSION: "mean-reversion",
-    STATISTICAL_ARB: "statistical-arb",
+    ML_DIRECTIONAL_CONTINUOUS: "ml-directional",
+    ML_DIRECTIONAL_EVENT_SETTLED: "sports-ml",
+    RULES_DIRECTIONAL_CONTINUOUS: "ml-directional",
+    RULES_DIRECTIONAL_EVENT_SETTLED: "sports-ml",
+    CARRY_BASIS_DATED: "basis-trade",
+    CARRY_BASIS_PERP: "basis-trade",
+    CARRY_STAKED_BASIS: "basis-trade",
+    CARRY_RECURSIVE_STAKED: "recursive-staked-basis",
+    YIELD_ROTATION_LENDING: "aave-lending",
+    YIELD_STAKING_SIMPLE: "aave-lending",
+    ARBITRAGE_PRICE_DISPERSION: "arbitrage",
+    LIQUIDATION_CAPTURE: "arbitrage",
+    MARKET_MAKING_CONTINUOUS: "market-making-lp",
+    MARKET_MAKING_EVENT_SETTLED: "sports-market-making",
+    EVENT_DRIVEN: "arbitrage",
+    VOL_TRADING_OPTIONS: "options-vol",
+    STAT_ARB_PAIRS_FIXED: "statistical-arb",
+    STAT_ARB_CROSS_SECTIONAL: "statistical-arb",
   };
-  return archetypeMap[archetype] || archetype.toLowerCase();
+  return archetypeMap[archetype] ?? archetype.toLowerCase();
 }
 
 // Helper to extract underlyings from instruments
@@ -413,7 +419,7 @@ function extractUnderlyings(instruments: RegistryStrategy["instruments"]): strin
   return Array.from(underlyings);
 }
 
-// Derive STRATEGIES from strategy-registry.ts (single source of truth)
+// Derive STRATEGIES from strategy-instances.ts (UAC STRATEGY_REGISTRY — single source of truth)
 export const STRATEGIES: TradingStrategy[] = REGISTRY_STRATEGIES.map(
   (rs): TradingStrategy => ({
     id: rs.id,

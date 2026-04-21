@@ -14,8 +14,8 @@ import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
 import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type { Strategy } from "@/lib/strategy-registry";
-import { STRATEGIES } from "@/lib/strategy-registry";
+import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
+import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import { bollingerBands, ema, sma } from "@/lib/utils/indicators";
 
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
@@ -230,17 +230,18 @@ export function useTerminalPageData(): TerminalPageResult {
         setPriceChange(matchedInstrument.change);
       }
     }
-    const longArchetypes = [
-      "BASIS_TRADE",
-      "YIELD",
-      "DIRECTIONAL",
-      "ML_DIRECTIONAL",
-      "MOMENTUM",
-      "RECURSIVE_STAKED_BASIS",
-    ];
-    const shortArchetypes = ["MEAN_REVERSION"];
-    if (longArchetypes.includes(linkedStrategy.archetype)) setOrderSide("buy");
-    else if (shortArchetypes.includes(linkedStrategy.archetype)) setOrderSide("sell");
+    // v2 archetype heuristic — directional / yield / basis bias long, stat-arb tends short-leg first
+    const a: string = linkedStrategy.archetype;
+    if (
+      a.startsWith("ML_DIRECTIONAL") ||
+      a.startsWith("RULES_DIRECTIONAL") ||
+      a.startsWith("CARRY_") ||
+      a.startsWith("YIELD_")
+    ) {
+      setOrderSide("buy");
+    } else if (a.startsWith("STAT_ARB")) {
+      setOrderSide("sell");
+    }
   }, [linkedStrategy, instruments]);
 
   const strategyWarnings: string[] = React.useMemo(() => {
