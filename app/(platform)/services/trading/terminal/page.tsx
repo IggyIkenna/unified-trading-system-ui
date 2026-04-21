@@ -6,6 +6,7 @@ import { useTerminalPageData } from "@/components/widgets/terminal/use-terminal-
 import { AlertTriangle, ShieldAlert } from "lucide-react";
 
 import { FamilyArchetypePicker } from "@/components/architecture-v2";
+import { HealthBar } from "@/components/platform/health-bar";
 import type {
   StrategyArchetype,
   StrategyFamily,
@@ -49,6 +50,14 @@ export default function TradingPage() {
           </span>
         </div>
       )}
+      {/* System health strip — DART-scoped overview. Moved here from /dashboard
+          2026-04-21 per user directive: health signals are DART-relevant only. */}
+      <div
+        className="flex items-center gap-3 border-b bg-muted/10 px-4 py-2"
+        data-testid="trading-terminal-health-strip"
+      >
+        <HealthBar />
+      </div>
       <div
         className="flex items-center gap-3 border-b bg-muted/10 px-4 py-2 text-xs text-muted-foreground"
         data-testid="trading-terminal-family-archetype-scope"

@@ -259,16 +259,16 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Right: Activity + Quick Actions */}
+          {/* Right: Quick Actions only. 2026-04-21 — removed
+              WorkflowContinuity ("Continue where you left off"), ActivityFeed
+              ("Recent Activity"), and Live-vs-Batch drift summary. All three
+              are DART-specific (training runs / strategy candidates / open
+              positions / risk alerts / backtest events / P&L comparisons) and
+              belong inside DART observe / terminal / reports surfaces — not on
+              the services hub. Quick Actions stays because it's cross-cutting
+              navigation (Manage Users, System Health, Audit Log, Deployments,
+              Configuration, Trading) — shortcuts into admin + ops. */}
           <div className="space-y-4">
-            {/* Continue where you left off */}
-            <WorkflowContinuity
-              showResearch={showResearch}
-              showTrading={showTrading}
-              showReporting={showReporting}
-            />
-
-            {/* Quick Actions */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -279,43 +279,6 @@ export default function DashboardPage() {
                 <QuickActions />
               </CardContent>
             </Card>
-
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Recent Activity
-                  </CardTitle>
-                  <Activity className="size-3 text-muted-foreground/40" />
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ActivityFeed maxItems={6} visibleStages={visibleActivityLabels} />
-              </CardContent>
-            </Card>
-
-            {/* Batch/Live drift summary — only for trading users */}
-            {showTrading && (
-              <Card className="border-dashed">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Live vs Batch
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0 space-y-2">
-                  <DriftRow label="Net P&L" liveValue={142_380} batchValue={138_920} />
-                  <DriftRow label="Positions" liveValue={47} batchValue={45} isCurrency={false} />
-                  <DriftRow label="Risk Util." liveValue={62} batchValue={58} isCurrency={false} suffix="%" />
-                  <Link
-                    href="/services/reports/reconciliation"
-                    className="block text-[10px] text-primary hover:underline mt-2"
-                  >
-                    View full reconciliation
-                  </Link>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </main>
