@@ -1,12 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readFile, stat } from "fs/promises";
-import path from "path";
 
-const DOCS_ROOT = path.join(
-  process.cwd(),
-  ".local-dev-cache",
-  "onboarding-docs",
-);
+import { resolveDocStore } from "@/lib/onboarding/doc-store";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -21,43 +15,25 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const dirPath = path.join(DOCS_ROOT, orgId, applicationId);
-
   try {
-    const { readdir } = await import("fs/promises");
-    const files = await readdir(dirPath);
-    const match = files.find((f) => f.startsWith(docType));
-    if (!match) {
-      return NextResponse.json(
-        { error: "Document not found" },
-        { status: 404 },
-      );
+    const store = resolveDocStore();
+    const result = await store.download({
+      org_id: orgId,
+      application_id: applicationId,
+      doc_type: docType,
+    });
+    if (result === null) {
+      return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
-
-    const filePath = path.join(dirPath, match);
-    const fileStats = await stat(filePath);
-    const buffer = await readFile(filePath);
-
-    const ext = match.split(".").pop() || "bin";
-    const contentType =
-      ext === "pdf"
-        ? "application/pdf"
-        : ext === "html"
-          ? "text/html"
-          : ext === "png"
-            ? "image/png"
-            : ext === "jpg" || ext === "jpeg"
-              ? "image/jpeg"
-              : "application/octet-stream";
-
-    return new NextResponse(buffer, {
+    return new NextResponse(result.bytes, {
       headers: {
-        "Content-Type": contentType,
-        "Content-Disposition": `attachment; filename="${match}"`,
-        "Content-Length": String(fileStats.size),
+        "Content-Type": result.content_type,
+        "Content-Disposition": `attachment; filename="${result.filename}"`,
+        "Content-Length": String(result.size),
       },
     });
-  } catch {
-    return NextResponse.json({ error: "Document not found" }, { status: 404 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

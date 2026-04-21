@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Building2, CheckCircle2, Key, Mail, Users } from "lucide-react";
 
+import { OrgDocumentsSection } from "@/components/admin/organizations/org-documents-section";
 import { OrgQuestionnaireSection } from "@/components/admin/organizations/org-questionnaire-section";
 
 interface OrgDetail {
@@ -164,6 +165,8 @@ export default function AdminOrgDetailPage() {
       <OrgQuestionnaireSection
         org={{ id: org.id, name: org.name, contact_email: org.contact_email }}
       />
+
+      <OrgDocumentsSection orgId={org.id} orgName={org.name} />
 
       <Card>
         <CardHeader>

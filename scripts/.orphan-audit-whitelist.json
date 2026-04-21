@@ -1,66 +1,42 @@
 {
   "version": 1,
-  "_comment": "Intentional direct-URL-only pages. Add entries here with a concrete reason string so future maintainers understand why the page is not wired into any nav surface. SSOT: codex/06-coding-standards/orphan-audit.md.",
+  "_comment": "Routes that are NOT and CANNOT BE human-navigable from any nav surface. Reviewers rejecting a whitelist PR MUST apply the triage test: 'Can a human user (any persona) gain from seeing this page?' If yes, it does NOT belong here. Every entry's reason MUST begin with one of MACHINE-ONLY / API-HANDLER / UNAUTHENTICATED-FUNNEL. SSOT: unified-trading-pm/codex/06-coding-standards/orphan-audit.md §Whitelist Triage Rule.",
   "entries": [
     {
       "path": "/health",
-      "reason": "Liveness probe consumed by k8s/Cloud Run health checks — never user-navigated."
-    },
-    {
-      "path": "/pending",
-      "reason": "Post-signup holding page — reached via OAuth redirect flow, not a nav tile."
+      "reason": "MACHINE-ONLY — liveness probe consumed by k8s / Cloud Run health checks; returns JSON, never user-navigated."
     },
     {
       "path": "/login",
-      "reason": "OAuth entry; reached via require-auth redirect, not a declared tile."
+      "reason": "UNAUTHENTICATED-FUNNEL — OAuth entry; reached via require-auth middleware redirect, not a declared tile."
     },
     {
       "path": "/signup",
-      "reason": "Public signup funnel; reached from marketing CTAs."
+      "reason": "UNAUTHENTICATED-FUNNEL — public signup flow; user cannot act until OAuth / invite redirect completes."
+    },
+    {
+      "path": "/pending",
+      "reason": "UNAUTHENTICATED-FUNNEL — post-signup holding page; reached via OAuth redirect flow before session established."
     },
     {
       "path": "/api/accounts/transfer-history",
-      "reason": "API route handler — fetched programmatically, no UI href."
-    },
-    {
-      "path": "/api/onboarding/reset",
-      "reason": "API route handler — fetched programmatically during onboarding."
+      "reason": "API-HANDLER — Next.js route.ts fetched programmatically by the UI; not a page."
     },
     {
       "path": "/api/onboarding/download",
-      "reason": "API route handler — triggered by download button via fetch, not a nav link."
+      "reason": "API-HANDLER — Next.js route.ts triggered by download button via fetch; not a page."
     },
     {
       "path": "/api/onboarding/upload",
-      "reason": "API route handler — POST target for onboarding form, not a nav link."
+      "reason": "API-HANDLER — Next.js route.ts accepting POST uploads from onboarding form; not a page."
     },
     {
-      "path": "/demo/preview",
-      "reason": "Investor/IR demo preview — deep-link shared as URL; not on public nav."
+      "path": "/api/onboarding/docs/list",
+      "reason": "API-HANDLER — Next.js route.ts returning onboarding doc inventory for /admin/organizations/[id] Documents panel; fetched via query-string URL so the scanner's path-literal match misses it."
     },
     {
-      "path": "/engagement",
-      "reason": "Internal ops engagement tracker — admin deep-link; no public nav by design."
-    },
-    {
-      "path": "/internal/data-etl",
-      "reason": "Internal data ETL ops console — admin deep-link; gated by internal role."
-    },
-    {
-      "path": "/services/data/logs",
-      "reason": "Data pipeline logs drilldown — deep-link from DataStatusTab drilldown action; entered programmatically with query params."
-    },
-    {
-      "path": "/services/data/markets/pnl",
-      "reason": "Markets PnL sub-route — deep-link from data overview cards with market context; query-param driven."
-    },
-    {
-      "path": "/services/data/missing",
-      "reason": "Missing-data drilldown — deep-link from honest-coverage manifest v5 red-cell click in deployment-ui DataStatusDrilldown."
-    },
-    {
-      "path": "/services/manage/users/request",
-      "reason": "Client-side access-request form step — reached via POST-then-redirect from users list, not a persistent nav tile."
+      "path": "/api/onboarding/docs/delete",
+      "reason": "API-HANDLER — Next.js route.ts accepting per-doc admin deletes with a typed-confirm token; fetched from /admin/organizations/[id] Documents panel, never navigated."
     }
   ]
 }
