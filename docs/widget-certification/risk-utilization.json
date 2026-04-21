@@ -283,6 +283,13 @@
       "description": "risk-utilization-widget.tsx \u2014 ~3 user-visible strings",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "risk-utilization-widget.tsx:35 \u2014 sortedLimits.slice(0, 8) hardcodes 'Top 8' limits. Widget description says 'Top N ranked by utilization' but N is fixed. No user control to see more/fewer.",
+      "status": "deferred",
+      "deferReason": "UI control gap; low priority \u2014 the widget is a tight overview card. If more detail needed, users scroll to risk-limits-hierarchy."
     }
   ],
   "updatedBy": "agent",

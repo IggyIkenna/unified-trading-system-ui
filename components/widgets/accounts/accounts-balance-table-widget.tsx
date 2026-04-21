@@ -74,10 +74,10 @@ const columns: ColumnDef<BalanceRow, unknown>[] = [
             className={cn(
               "font-mono text-micro",
               util >= 90
-                ? "border-[var(--status-critical)] text-[var(--status-critical)]"
+                ? "border-status-critical text-status-critical"
                 : util >= 75
-                  ? "border-[var(--status-warning)] text-[var(--status-warning)]"
-                  : "border-[var(--status-live)] text-[var(--status-live)]",
+                  ? "border-status-warning text-status-warning"
+                  : "border-status-live text-status-live",
             )}
           >
             {formatPercent(util, 0)}

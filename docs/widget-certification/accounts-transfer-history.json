@@ -273,6 +273,13 @@
       "description": "accounts-transfer-history-widget.tsx:62 \u2014 text-[10px] on status badge, no text-2xs token exists",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro on accounts-transfer-history-widget.tsx:62 (status badge className)."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "accounts-data-context.tsx addTransferEntry \u2014 timestamp format string called toLocaleString without timeZone:'UTC', so new transfer rows showed viewer-local time in the history column",
+      "status": "fixed",
+      "fix": "Added timeZone:'UTC' to the toLocaleString call in addTransferEntry. New transfer rows now timestamped in UTC."
     }
   ],
   "updatedBy": "agent",

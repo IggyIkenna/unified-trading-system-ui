@@ -29,10 +29,10 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
           className={cn(
             "size-1.5 rounded-full",
             wsStatus === "connected"
-              ? "bg-emerald-400"
+              ? "bg-[var(--status-live)]"
               : wsStatus === "connecting"
-                ? "bg-amber-400 animate-pulse"
-                : "bg-red-400",
+                ? "bg-[var(--status-warning)] animate-pulse"
+                : "bg-[var(--status-critical)]",
           )}
         />
         <span className="text-pico text-muted-foreground ml-1 uppercase">
@@ -52,7 +52,7 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
           <span
             className={cn(
               "size-1.5 rounded-full shrink-0",
-              f.status === "SUSP" ? "bg-amber-400" : "bg-emerald-400 animate-pulse",
+              f.status === "SUSP" ? "bg-[var(--status-warning)]" : "bg-[var(--status-live)] animate-pulse",
             )}
           />
           <span className="text-micro font-bold text-foreground truncate max-w-[100px]">{f.home.shortName}</span>

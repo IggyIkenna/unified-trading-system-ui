@@ -301,6 +301,13 @@
       "description": "risk-margin-widget.tsx \u2014 text-[10px], text-[11px], text-[9px] used for dense labels and chart annotations",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "risk-margin-widget.tsx:80-100 \u2014 SPAN Margin IBKR section displayed 5 hardcoded literal strings ($180,000, $135,000, -$22,000, $158,000, 79%). Inline mocks violate 'no inline mock data' rule.",
+      "status": "fixed",
+      "fix": "Extracted to lib/config/services/risk-margin.config.ts as MOCK_SPAN_MARGIN_IBKR; widget now imports and renders via formatCurrency(). Values still static (awaiting /api/risk/margin/span)."
     }
   ],
   "updatedBy": "agent",

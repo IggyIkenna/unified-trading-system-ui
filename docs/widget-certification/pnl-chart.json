@@ -225,9 +225,8 @@
       "date": "2026-04-21",
       "checks": {
         "8.1": {
-          "result": "deferred",
-          "note": "pnl-chart-widget.tsx:65 \u2014 text-[10px] on Badge for mode indicator. No sub-12px token in globals.css. Requests --text-micro (0.625rem / 10px) for compact badge labels.",
-          "deferReason": "missing token \u2014 requests --text-micro for compact badge chip labels"
+          "result": "pass",
+          "note": "pnl-chart-widget.tsx:65 \u2014 text-[10px] replaced with text-micro (token already exists in globals.css: --text-micro 0.625rem / 10px). Zero arbitrary text-[Npx] classes remain."
         },
         "8.2": {
           "result": "pass",
@@ -246,7 +245,7 @@
           "note": "Human check: responsive at minW=3."
         }
       },
-      "notes": "8.1 deferred (missing --text-micro token). 8.2/8.3 pass. 8.4 partial. 8.5 human-only."
+      "notes": "8.1 fixed (text-micro applied). 8.2/8.3 pass. 8.4 partial. 8.5 human-only."
     }
   },
   "relationships": {
@@ -317,10 +316,10 @@
       "level": "l8",
       "check": "8.1",
       "description": "pnl-chart-widget.tsx:65 \u2014 text-[10px] on mode Badge chip",
-      "status": "deferred",
-      "deferReason": "missing token \u2014 requests --text-micro (0.625rem/10px) for compact badge chip labels"
+      "status": "fixed",
+      "fix": "Replaced text-[10px] with text-micro utility (token --text-micro: 0.625rem already exists in globals.css)."
     }
   ],
-  "updatedBy": "agent",
+  "updatedBy": "agent-overview-audit",
   "updatedAt": "2026-04-21"
 }

@@ -32,10 +32,12 @@ const SEVERITY_STYLES: Record<RiskAlertStreamEvent["severity"], { badge: string;
 function formatAlertTime(iso: string): string {
   try {
     const d = new Date(iso);
-    return d.toLocaleTimeString(undefined, {
+    return d.toLocaleTimeString("en-GB", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
+      timeZone: "UTC",
+      hour12: false,
     });
   } catch {
     return iso;

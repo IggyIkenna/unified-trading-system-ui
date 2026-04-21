@@ -292,6 +292,14 @@
       "description": "sports-predictions-widget.tsx \u2014 ~15 user-visible strings not i18n-wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "sports-predictions-widget.tsx:64,66 \u2014 ProbBar Home/Away uses bg-blue-600 / bg-orange-600 thematic categorical palette classes",
+      "status": "deferred",
+      "deferReason": "Home vs Away are categorical/thematic (not status-semantic) and no design token exists for H/A team sides. Creating ad-hoc status token mapping would overload status semantics. Draw probability uses bg-muted which is correct. Defer until design-system provides team-side tokens or a documented chart-category palette.",
+      "fix": null
     }
   ],
   "updatedBy": "agent",

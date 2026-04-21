@@ -16,6 +16,8 @@ import {
 import { formatCurrency } from "@/lib/reference-data";
 import type { BalanceRecord } from "@/lib/types/accounts";
 import { CheckCircle2, Clock, Copy } from "lucide-react";
+import { toast } from "sonner";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import { useAccountsData } from "./accounts-data-context";
 
 type TransferType = "venue-to-venue" | "sub-account" | "withdraw" | "deposit";
@@ -33,6 +35,7 @@ const TYPE_PILLS: { id: TransferType; label: string }[] = [
 
 export function AccountsTransferWidget(_props: WidgetComponentProps) {
   const { balances, isLoading, error: contextError, addTransferEntry } = useAccountsData();
+  const { isBatch, isPaper } = useExecutionMode();
   const { isSubmitting, error: submitError, clearError, handleSubmit } = useFormSubmit();
   const [transferType, setTransferType] = React.useState<TransferType>("venue-to-venue");
   const [fromVenue, setFromVenue] = React.useState<string>(CEFI_VENUES[0]);
@@ -54,9 +57,23 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Gate real-money operations in batch mode (historical replay is read-only).
+  // Paper mode is allowed (simulated transfers are useful); callers append a
+  // "(Paper)" label downstream via the context.
+  const guardBatch = (): boolean => {
+    if (isBatch) {
+      toast.info("Read-only in batch mode", {
+        description: "Transfers are disabled while replaying historical data. Switch to Live or Paper to continue.",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleVenueTransfer = () => {
+    if (!guardBatch()) return;
     addTransferEntry({
-      type: "Venue→Venue",
+      type: isPaper ? "Venue→Venue (Paper)" : "Venue→Venue",
       from: fromVenue,
       to: toVenue,
       asset,
@@ -67,21 +84,45 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
   };
 
   const handleSubAccountTransfer = () => {
+    if (!guardBatch()) return;
     const [from, to] =
       direction === "sub-to-main" ? [subAccount, `${fromVenue} Main`] : [`${fromVenue} Main`, subAccount];
-    addTransferEntry({ type: "Sub↔Main", from, to, asset, amount: amountNum, status: "Processing" });
+    addTransferEntry({
+      type: isPaper ? "Sub↔Main (Paper)" : "Sub↔Main",
+      from,
+      to,
+      asset,
+      amount: amountNum,
+      status: "Processing",
+    });
     setAmount("");
   };
 
   const handleWithdraw = () => {
+    if (!guardBatch()) return;
     const shortAddr = toAddress.length > 12 ? `${toAddress.slice(0, 6)}…${toAddress.slice(-4)}` : toAddress;
-    addTransferEntry({ type: "Withdraw", from: fromVenue, to: shortAddr, asset, amount: amountNum, status: "Pending" });
+    addTransferEntry({
+      type: isPaper ? "Withdraw (Paper)" : "Withdraw",
+      from: fromVenue,
+      to: shortAddr,
+      asset,
+      amount: amountNum,
+      status: "Pending",
+    });
     setAmount("");
     setToAddress("");
   };
 
   const handleDepositConfirm = () => {
-    addTransferEntry({ type: "Deposit", from: "External", to: fromVenue, asset: "—", amount: 0, status: "Pending" });
+    if (!guardBatch()) return;
+    addTransferEntry({
+      type: isPaper ? "Deposit (Paper)" : "Deposit",
+      from: "External",
+      to: fromVenue,
+      asset: "—",
+      amount: 0,
+      status: "Pending",
+    });
   };
 
   const displayError = contextError?.message ?? submitError ?? null;
@@ -189,10 +230,10 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
           </div>
           <Button
             className="w-full h-8 text-xs"
-            disabled={amountNum <= 0 || fromVenue === toVenue || isSubmitting}
+            disabled={amountNum <= 0 || fromVenue === toVenue || isSubmitting || isBatch}
             onClick={() => handleSubmit(handleVenueTransfer)}
           >
-            Initiate Transfer
+            {isBatch ? "Disabled in Batch" : "Initiate Transfer"}
           </Button>
         </div>
       )}
@@ -282,10 +323,10 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
           </div>
           <Button
             className="w-full h-8 text-xs"
-            disabled={amountNum <= 0 || isSubmitting}
+            disabled={amountNum <= 0 || isSubmitting || isBatch}
             onClick={() => handleSubmit(handleSubAccountTransfer)}
           >
-            Transfer
+            {isBatch ? "Disabled in Batch" : "Transfer"}
           </Button>
         </div>
       )}
@@ -375,10 +416,10 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
 
           <Button
             className="w-full h-8 text-xs"
-            disabled={amountNum <= 0 || !toAddress || isSubmitting}
+            disabled={amountNum <= 0 || !toAddress || isSubmitting || isBatch}
             onClick={() => handleSubmit(handleWithdraw)}
           >
-            Withdraw
+            {isBatch ? "Disabled in Batch" : "Withdraw"}
           </Button>
         </div>
       )}
@@ -437,8 +478,13 @@ export function AccountsTransferWidget(_props: WidgetComponentProps) {
               <span className="text-micro text-muted-foreground">QR</span>
             </div>
           </div>
-          <Button variant="outline" className="w-full h-8 text-xs" onClick={() => handleSubmit(handleDepositConfirm)}>
-            I&apos;ve sent the deposit
+          <Button
+            variant="outline"
+            className="w-full h-8 text-xs"
+            disabled={isBatch}
+            onClick={() => handleSubmit(handleDepositConfirm)}
+          >
+            {isBatch ? "Disabled in Batch" : "I've sent the deposit"}
           </Button>
         </div>
       )}

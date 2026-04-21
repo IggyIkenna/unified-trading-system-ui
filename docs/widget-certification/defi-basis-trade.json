@@ -1,0 +1,55 @@
+{
+  "widgetId": "defi-basis-trade",
+  "label": "Basis Trade Workbench",
+  "priority": 3,
+  "domain": "defi",
+  "file": "components/widgets/defi/defi-basis-trade-widget.tsx",
+  "class": "form",
+  "description": "Form widget computing basis-trade (spot vs perp) expected output, margin usage, funding impact, cost-of-carry, net APY, breakeven and a local trade history. NOT REGISTERED in components/widgets/defi/register.ts and no longer rendered anywhere in the app as of 2026-04-21.",
+  "levels": {
+    "l0": {
+      "status": "skipped",
+      "by": "agent",
+      "date": "2026-04-21",
+      "notes": "Audit skipped \u2014 widget is dead code (not in register.ts and no external imports). Certifying would give false coverage."
+    }
+  },
+  "relationships": {
+    "mode": "standalone",
+    "masterOf": [],
+    "detailOf": [],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "keepSeparate": null,
+    "notes": "Functionality supplanted by enhanced-basis-widget + defi-swap-widget (with isBasisTrade/isStakedBasis modes)."
+  },
+  "dataContract": {
+    "channels": ["none"],
+    "primary": "none",
+    "cadence": "n/a",
+    "staleness": "n/a",
+    "mockSource": "lib/mocks/fixtures/defi-basis-trade (via useDeFiData)",
+    "backendOwner": "n/a",
+    "notes": "Inputs come through defi-data-context but widget is never instantiated."
+  },
+  "coverage": {
+    "assetClasses": ["defi"],
+    "strategies": ["CARRY_BASIS_PERP"],
+    "venues": [],
+    "commonTabs": null,
+    "verifiedOn": [],
+    "gaps": [],
+    "notes": null
+  },
+  "knownIssues": ["Dead code \u2014 not registered in defi register.ts."],
+  "findings": [
+    {
+      "level": "audit",
+      "description": "components/widgets/defi/defi-basis-trade-widget.tsx is never imported outside its own file. register.ts does not register defi-basis-trade, and a full-repo grep for DeFiBasisTradeWidget finds only the export itself.",
+      "status": "open",
+      "proposedFix": "Either (a) delete the file, or (b) register it behind a feature flag if a workbench UI is still desired. Dead code in the registry-less path still type-checks and bloats the bundle via tree-shaking hazards from useDeFiData. Keeping two basis-trade UIs (this + enhanced-basis) also confuses future editors."
+    }
+  ],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-21"
+}

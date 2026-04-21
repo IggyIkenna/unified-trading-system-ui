@@ -237,11 +237,11 @@
   "dataContract": {
     "channels": ["rest", "websocket"],
     "primary": "rest",
-    "cadence": "on-demand",
-    "staleness": "near-realtime:<=1s",
+    "cadence": "event-driven",
+    "staleness": "realtime",
     "mockSource": "lib/mocks/fixtures/mock-data-index.ts (getPositionsForScope) + inline DEFI_MOCK_POSITIONS in positions-data-context.tsx",
     "backendOwner": "unified-trading-api (positions endpoint)",
-    "notes": "REST fetches via usePositions() hook. WebSocket on ws://localhost:8030/ws merges pnl_update messages into React Query cache when isLive=true. KPI values derived from filteredPositions computed in context."
+    "notes": "REST fetches via usePositions() hook seed the initial dataset. WebSocket on ws://localhost:8030/ws (positions-data-context.tsx line 511: useWebSocket({ url: \"ws://localhost:8030/ws\", enabled: isLive, onMessage: handleWsMessage })) merges channel=positions/type=pnl_update messages into the React Query cache. The `enabled: isLive` guard ensures the socket is closed in batch mode (no live stream against historical snapshots). KPI metrics derive directly from filteredPositions and so update each time the cache merges \u2014 cadence is event-driven."
   },
   "coverage": {
     "assetClasses": ["cefi", "defi", "tradfi", "sports", "predictions"],
@@ -263,10 +263,11 @@
     ],
     "venues": ["all"],
     "commonTabs": null,
-    "verifiedOn": [],
+    "verifiedOn": ["positions"],
     "gaps": [
       "No human walkthrough yet for paper mode KPI values",
-      "Batch mode KPI aggregation not verified with historical snapshot data"
+      "Batch mode KPI aggregation not verified with historical snapshot data",
+      "Playwright 2026-04-21 render verified: KPI strip renders 6 metrics from mock dataset (40 open positions, $63.6M exposure, +$28K unrealised, $14.0M margin) \u2014 values flow through admin persona + All Orgs scope"
     ],
     "notes": "Widget aggregates positions from all asset classes and strategies. Coverage is breadth-first \u2014 any position record flowing through context is included in KPI totals regardless of asset class or strategy."
   },
@@ -275,6 +276,12 @@
       "id": "ctx-defi-mock-inline",
       "scope": "context",
       "description": "DEFI_MOCK_POSITIONS (5 hardcoded positions) is defined inline in positions-data-context.tsx. Should be moved to lib/mocks/fixtures/ once context is refactored.",
+      "blocking": false
+    },
+    {
+      "id": "kpi-no-close-summary",
+      "scope": "widget",
+      "description": "KPI strip is read-only summary \u2014 cannot close positions. Decision-point for the domain: if Positions tab grows a 'Close All' bulk action, it would naturally sit in the KPI strip row. Today it does not. Not a widget defect, noted for product direction.",
       "blocking": false
     }
   ],

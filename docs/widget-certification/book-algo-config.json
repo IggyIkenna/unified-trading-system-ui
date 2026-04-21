@@ -281,6 +281,8 @@
       "cefi-twap",
       "cefi-vwap",
       "cefi-iceberg",
+      "cefi-sor",
+      "cefi-best-price",
       "cefi-benchmark",
       "defi-sor-dex",
       "defi-sor-twap",
@@ -290,17 +292,17 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "LIMIT order type has no duration/price params shown (these are on the order form price field)",
-      "DeFi SOR_TWAP slices param not shown (only duration field shown)"
+      "DeFi SOR_TWAP slices param only shown when SOR_TWAP is selected (current behavior matches intent)",
+      "BOOK_ALGO_OPTIONS contains 7 entries; only 4 had param branches prior to 2026-04-21 (MARKET, SOR, BEST_PRICE missing)"
     ],
-    "notes": "CeFi branch covers all BOOK_ALGO_OPTIONS. DeFi branch covers INSTRUCTION_ALGO_MAP entries."
+    "notes": "CeFi branch now covers all 7 BOOK_ALGO_OPTIONS (MARKET/TWAP/VWAP/ICEBERG/SOR/BEST_PRICE/BENCHMARK_FILL). DeFi branch covers INSTRUCTION_ALGO_MAP entries."
   },
   "knownIssues": [
     {
       "id": "ki-1",
       "level": "L0",
       "severity": "low",
-      "note": "book-data-context.tsx handleSubmit uses defiAlgo for DeFi lane but the CeFi algo_type is passed as null for non-DeFi orders (line ~345). The CeFi algo from algoParams is not forwarded to placeMockOrder. Pre-existing bug in context \u2014 not in widget file."
+      "note": "book-data-context.tsx handleSubmit previously passed algo_type=null for non-DeFi orders, losing the CeFi algo selection. Fixed 2026-04-21: handleSubmit now forwards `algo` (CeFi) or `defiAlgo` (DeFi) into placeMockOrder.algo_type."
     }
   ],
   "findings": [
@@ -324,6 +326,13 @@
       "description": "book-algo-config-widget.tsx \u2014 ~15 user-visible strings. No i18n applied.",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l5",
+      "check": "5.1",
+      "description": "CeFi branch was missing MARKET, SOR, and BEST_PRICE helper/param sections \u2014 three of the seven BOOK_ALGO_OPTIONS had no UI rendered when selected.",
+      "status": "fixed",
+      "fix": "Added descriptive helper paragraphs for MARKET, SOR, and BEST_PRICE (parameterless algos). TWAP/VWAP/ICEBERG/BENCHMARK_FILL branches unchanged."
     }
   ],
   "updatedBy": "agent",

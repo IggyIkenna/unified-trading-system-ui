@@ -364,7 +364,10 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                             </div>
 
                             <div className="flex flex-col sm:flex-row items-stretch gap-2 pt-3 border-t border-border">
-                              <Link href={`/positions?strategy_id=${strategy.id}`} className="flex-1 min-w-0">
+                              <Link
+                                href={`/services/trading/positions?strategy_id=${strategy.id}`}
+                                className="flex-1 min-w-0"
+                              >
                                 <Button variant="outline" size="sm" className="w-full gap-2">
                                   <Play className="size-3" />
                                   View Live

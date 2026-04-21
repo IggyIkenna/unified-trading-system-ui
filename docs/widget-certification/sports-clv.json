@@ -271,6 +271,13 @@
       "description": "sports-clv-widget.tsx \u2014 ~10 user-visible strings not i18n-wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "sports-clv-widget.tsx:75 \u2014 mid-tier CLV hit rate used hardcoded text-amber-400 palette for 50-60% band",
+      "status": "fixed",
+      "fix": "Replaced text-amber-400 with semantic CSS var token text-[var(--status-warning)] to match status semantics (green/amber/red ladder) used in other sports widgets."
     }
   ],
   "updatedBy": "agent",

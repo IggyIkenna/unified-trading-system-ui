@@ -295,6 +295,12 @@
       "check": "1.7",
       "description": "LENDING_PROTOCOLS, STAKING_PROTOCOLS, LIQUIDITY_POOLS imported from lib/mocks/fixtures/. Moving to lib/constants/ is BP-5 scope.",
       "status": "known-gap"
+    },
+    {
+      "level": "l1",
+      "description": "defi-rates-overview-widget.tsx:75,84 used hardcoded `tvlUsd: 12e9` for lending rows because LendingProtocol type had no TVL field. All lending rows therefore rendered an identical bogus '$12B' TVL.",
+      "status": "fixed",
+      "fix": "2026-04-21 made DeFiRatesRow.tvlUsd optional with JSDoc explaining the gap; lending rows now omit tvlUsd and the table cell renders '\u2014' when absent. LendingProtocol TVL wiring deferred to when a protocol-stats feed lands."
     }
   ],
   "updatedBy": "agent",

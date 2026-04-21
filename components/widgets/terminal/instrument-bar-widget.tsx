@@ -4,7 +4,6 @@ import type { WidgetComponentProps } from "../widget-registry";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ManualTradingPanel } from "@/components/trading/manual-trading-panel";
 import { Database, Maximize2, Radio, RefreshCw, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTerminalData } from "./terminal-data-context";

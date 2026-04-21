@@ -84,7 +84,7 @@ export function PredActiveArbCard({
     <div
       className={cn(
         "relative rounded-xl border overflow-hidden flex flex-col gap-0 transition-all",
-        "border-[var(--pnl-positive)]/30 bg-[#0d140d]",
+        "border-[var(--pnl-positive)]/30 bg-[var(--pnl-positive)]/5",
         isNew && "animate-in slide-in-from-top-3 duration-400",
       )}
     >

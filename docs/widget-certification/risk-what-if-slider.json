@@ -299,6 +299,20 @@
       "description": "risk-what-if-slider-widget.tsx:55 \u2014 <input type='range'> without aria-label",
       "status": "fixed",
       "fix": "Added aria-label='BTC price change percentage' to range input"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "risk-what-if-slider-widget.tsx:35-36 \u2014 BTC-only shock (btcSpot hardcoded at 65000, only BTC delta/gamma considered). Portfolio also has ETH/SOL/other exposure per defiDeltaComposite, but slider ignores it. Limited usefulness for non-BTC-dominant portfolios.",
+      "status": "deferred",
+      "deferReason": "Feature scope \u2014 widget label says 'BTC price shock'. Multi-asset version would need tab/select for underlying. Tracked for product decision."
+    },
+    {
+      "level": "l1",
+      "check": "1.7",
+      "description": "risk-what-if-slider-widget.tsx:35 and use-risk-page-data.ts:348 \u2014 btcSpot = 65000 is a hardcoded literal. Should come from market-data context (matches current BTC/USD tape) to keep the PnL estimate anchored to reality.",
+      "status": "deferred",
+      "deferReason": "Duplicate literal in two places; needs market-data wiring. Tracked for BP-5."
     }
   ],
   "updatedBy": "agent",

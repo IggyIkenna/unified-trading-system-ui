@@ -292,7 +292,14 @@
     ],
     "notes": "Scope selector is asset-class-agnostic. Filters apply to all strategy types."
   },
-  "knownIssues": [],
+  "knownIssues": [
+    {
+      "id": "ki-1",
+      "level": "L4",
+      "severity": "medium",
+      "note": "Client field is a free-text Input \u2014 no validation, no autocomplete against a client registry. Any string is accepted and flows through handleSubmit.client_id. Needs a client-registry lookup or at minimum a scope-store-backed typeahead."
+    }
+  ],
   "findings": [
     {
       "level": "l8",
@@ -307,6 +314,13 @@
       "description": "book-hierarchy-bar-widget.tsx \u2014 ~8 user-visible strings (labels, placeholders, error message). No i18n applied.",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "Client Input is free-text; no registry validation. Accepts empty string and arbitrary values which flow into handleSubmit as client_id.",
+      "status": "open",
+      "proposedFix": "Replace Input with a Combobox wired to a client registry hook (proposed: useClientsList() scoped by orgId). Fall back to free text only if registry lookup fails, with a visual 'unverified' badge."
     }
   ],
   "updatedBy": "agent",

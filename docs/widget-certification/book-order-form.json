@@ -275,27 +275,28 @@
     "notes": "Submits via usePlaceOrder() REST mutation. Compliance check via usePreTradeCheck() REST mutation. Static config from lib/config/services/trading.config and lib/config/services/defi.config."
   },
   "coverage": {
-    "assetClasses": ["cefi", "defi", "tradfi"],
+    "assetClasses": ["cefi", "defi", "tradfi", "sports", "prediction", "otc"],
     "strategies": [
       "cefi-spot",
-      "cefi-futures",
-      "cefi-options",
+      "cefi-derivatives",
       "defi-swap",
       "defi-lp",
       "defi-staking",
       "defi-bridge",
       "tradfi",
+      "sports",
+      "prediction",
       "otc"
     ],
     "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "Sports/predictions asset class has no dedicated category tab",
       "OTC fields (settlementMethod, settlementCurrency, bilateralTerms, isdaReference) are in context but no OTC-specific UI section rendered in widget",
-      "paper mode routing not wired in handleSubmit"
+      "paper mode routing not wired in handleSubmit",
+      "Sports and Prediction categories have no instrument/contract selector specific to the asset class (free-text only)"
     ],
-    "notes": "DeFi category covers SWAP/PROVIDE_LIQUIDITY/STAKE/BRIDGE instruction types with SOR and TWAP algos."
+    "notes": "Actual BookCategoryTab union is cefi_spot | cefi_derivatives | defi | tradfi | sports | prediction | otc (trading.config.ts). No cefi_futures / cefi_options splits \u2014 derivatives is one tab."
   },
   "knownIssues": [
     {
@@ -303,6 +304,18 @@
       "level": "L0",
       "severity": "low",
       "note": "OTC-specific fields (settlementMethod, settlementCurrency, bilateralTerms, isdaReference) are in context but no OTC section renders in this widget. These fields are surfaced nowhere in the current UI \u2014 tracking gap."
+    },
+    {
+      "id": "ki-2",
+      "level": "L4",
+      "severity": "medium",
+      "note": "DeFi branch previously had no Buy/Sell picker but still submitted `side` default 'buy' via context. Fixed 2026-04-21: DeFi branch now exposes Buy/In vs Sell/Out direction buttons."
+    },
+    {
+      "id": "ki-3",
+      "level": "L0",
+      "severity": "low",
+      "note": "BOOK_VENUES_BY_CATEGORY[category] previously crashed if category was missing from the map. Fixed 2026-04-21: added (?? []) fallback."
     }
   ],
   "findings": [
@@ -319,6 +332,27 @@
       "description": "book-order-form-widget.tsx:236 \u2014 text-[9px] on org ID Badge (footer area)",
       "status": "fixed",
       "fix": "Replaced text-[9px] with text-nano utility (maps to --text-nano: 0.5625rem / 9px from @theme)."
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "DeFi branch rendered no Buy/Sell picker but context default side='buy' was still submitted \u2014 hidden state with no user control.",
+      "status": "fixed",
+      "fix": "Added Direction buttons (Buy/In, Sell/Out) to DeFi branch, wiring to existing setSide() from context."
+    },
+    {
+      "level": "l0",
+      "check": "0.4",
+      "description": "BOOK_VENUES_BY_CATEGORY[category] threw at runtime if category absent from map (TS map access without guard).",
+      "status": "fixed",
+      "fix": "Guarded lookup with (?? []) so empty venue list is rendered instead of throwing."
+    },
+    {
+      "level": "l5",
+      "check": "5.1",
+      "description": "coverage.strategies referenced obsolete cefi_futures / cefi_options entries \u2014 actual trading.config ships cefi_derivatives (single tab).",
+      "status": "fixed",
+      "fix": "Updated coverage.strategies / coverage.assetClasses to match BookCategoryTab union (cefi_spot, cefi_derivatives, defi, tradfi, sports, prediction, otc)."
     },
     {
       "level": "l7",

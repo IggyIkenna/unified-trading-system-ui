@@ -124,7 +124,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "Add SAFT button opens dialog (not dead). Save SAFT button is intentionally disabled (demo placeholder \u2014 documented in widget description)."
+          "note": "Add SAFT button opens dialog (not dead). Save SAFT button now wired: clicking emits a sonner toast explaining that SAFT persistence is pending a treasury service, then closes the dialog \u2014 no silent dead button."
         },
         "4.2": {
           "result": "pass",
@@ -284,6 +284,20 @@
       "description": "saft-portfolio-widget.tsx \u2014 var(--accent-blue) used for DollarSign icon and Series A/Exchange badge styling but --accent-blue not defined in globals.css",
       "status": "fixed",
       "fix": "--accent-blue mapped to existing --chart-3 token. Replaced bg-[var(--accent-blue)]/10 + inline style on DollarSign (L91-92) with bg-chart-3/10 + text-chart-3, Series A round badge (L333) with bg-chart-3/10 text-chart-3 border-chart-3/20, and vestingColor 50% branch (L346) with bg-chart-3."
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "saft-portfolio-widget.tsx \u2014 remaining arbitrary-value color classes (bg-[var(--pnl-positive)]/10, text-[var(--pnl-positive)], bg-[var(--status-live)]/10, text-[var(--status-live)], bg-[var(--status-warning)]/10, text-[var(--status-warning)], inline style={{color:'var(--*)'}}) when @theme tokens exist for all of these",
+      "status": "fixed",
+      "fix": "Migrated every remaining arbitrary-value colour class to utility tokens: bg-pnl-positive/text-pnl-positive (vested KPI + Vested badge + vestingColor 100% branch), bg-status-live/text-status-live (active-round icon + progress label + 75% branch), bg-status-warning/text-status-warning (next-unlock KPI + Private round badge + 25% branch). Grep for text-[ / bg-[ / border-[ in components/widgets/accounts/*.tsx now returns zero hits."
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "saft-portfolio-widget.tsx \u2014 Save SAFT button was a permanently-disabled placeholder with no handler: clicking did nothing, leaving the user stuck with a filled form and no feedback",
+      "status": "fixed",
+      "fix": "Imported sonner toast; Save SAFT now calls toast.info('SAFT API not available') explaining the treasury service is pending, then setAddDialogOpen(false) so the form is dismissed. No longer a silent dead button."
     }
   ],
   "updatedBy": "agent",

@@ -277,6 +277,13 @@
       "description": "risk-strategy-heatmap-widget.tsx \u2014 text-[10px], text-[11px] used for dense row labels",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "Strategy heatmap row has \u0394/Fund/HF/VaR inline metrics but clicking the row does not drill into a detail widget. Row-level drill-down (strategy-id selection surfaced via RiskData.selectedNode or new selector) would enable down-stream widgets (limits-hierarchy, exposure-attribution) to filter to the clicked strategy.",
+      "status": "deferred",
+      "deferReason": "Feature gap, not a correctness bug. Requires context wiring (selectedStrategy key). Logged for BP-5 widget-relationship work."
     }
   ],
   "updatedBy": "agent",

@@ -294,6 +294,25 @@
       "description": "defi-strategy-config-widget.tsx:97,125,164,182 text-[10px]; :183 text-[9px]; :187,219 text-[11px] for dense label sizing.",
       "status": "deferred",
       "deferReason": "text-[10px] migrated to text-micro and text-[9px] migrated to text-nano; text-[11px] at :187,219 remains \u2014 no 11px token in scale (nearest are text-nano 9px and text-xs 12px); product decision required for 11px resolution"
+    },
+    {
+      "level": "l1",
+      "description": "defi-strategy-config-widget.tsx:188-204 \u2014 Client Config panel has hardcoded display strings ('OKX, Bybit, Binance', 'HyperLiquid' line-through, 'ETH only', 'Multi-coin: Locked'). These do not vary with the selected strategy or org; they are placeholder UI copy.",
+      "status": "open",
+      "proposedFix": "Source allowed venues from CLIENTS[orgId].venues (already exists in lib/config/services/clients.config.ts) and asset filters from the strategy's LendingArbStrategyConfig.allowedAssets. Treat as display-facts keyed on scope, not placeholder literals."
+    },
+    {
+      "level": "l1",
+      "description": "defi-strategy-config-widget.tsx:211-217 \u2014 Risk Indicators panel has six fully hardcoded rows (Oracle Depeg 0.12%, Borrow-Staking Spread +1.4%, USDT Peg $1.0002, Withdrawal Delay 7d, Est. Rebalance Cost $420, Est. Full Close Cost $2,800). Values do not change with selectedStrategy, do not derive from protocolParams, and are not wired to emergencyExit.",
+      "status": "open",
+      "proposedFix": "Derive rebalance/close cost from emergencyExit estimates already exposed by useDeFiData(). Oracle depeg + USDT peg + spread should flow from healthFactorDashboard (oracle_market_gap_pct, net_spread_pct). Withdrawal delay belongs in LENDING_PROTOCOLS per asset. Replace the literal array with a memo that reads from context."
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "defi-strategy-config-widget.tsx:263 \u2014 'Promote' button fabricates runId with Math.floor(Math.random() * 9000) + 1000 and shows a success toast without calling any API. Misleading \u2014 no promotion actually happens.",
+      "status": "open",
+      "proposedFix": "Either remove the button until a backtest-promotion API exists, or wire it to the promote service. Random-numbered toasts are worse than disabled buttons because they imply a real action."
     }
   ],
   "updatedBy": "agent",

@@ -364,20 +364,21 @@ const FOOTBALL_MARKETS = [
 // ─── Main Export ─────────────────────────────────────────────────────────────
 
 export interface OdumFocusBodyProps {
+  instruments: OdumInstrument[];
   typeFilter: OdumInstrumentFilter;
   setTypeFilter: (f: OdumInstrumentFilter) => void;
   tfFilter: OdumTfFilter;
   setTfFilter: (f: OdumTfFilter) => void;
 }
 
-export function OdumFocusBody({ typeFilter, setTypeFilter, tfFilter, setTfFilter }: OdumFocusBodyProps) {
+export function OdumFocusBody({ instruments, typeFilter, setTypeFilter, tfFilter, setTfFilter }: OdumFocusBodyProps) {
   const filteredInstruments = React.useMemo(() => {
-    return ODUM_INSTRUMENTS.filter((inst) => {
+    return instruments.filter((inst) => {
       if (typeFilter !== "all" && inst.type !== typeFilter) return false;
       if (tfFilter !== "all" && inst.timeframe !== tfFilter) return false;
       return true;
     });
-  }, [typeFilter, tfFilter]);
+  }, [instruments, typeFilter, tfFilter]);
 
   const showFootball = typeFilter === "all" || typeFilter === "football";
   const showQuant = typeFilter === "all" || typeFilter === "crypto" || typeFilter === "tradfi";
@@ -478,6 +479,7 @@ export function OdumFocusTab() {
   const [tfFilter, setTfFilter] = React.useState<TfFilter>("all");
   return (
     <OdumFocusBody
+      instruments={ODUM_INSTRUMENTS}
       typeFilter={typeFilter}
       setTypeFilter={setTypeFilter}
       tfFilter={tfFilter}

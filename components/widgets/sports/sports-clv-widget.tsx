@@ -72,7 +72,7 @@ export function SportsCLVWidget(_props: WidgetComponentProps) {
                       r.clvHitRate >= 0.6
                         ? "text-[var(--pnl-positive)]"
                         : r.clvHitRate >= 0.5
-                          ? "text-amber-400"
+                          ? "text-[var(--status-warning)]"
                           : "text-[var(--pnl-negative)]",
                     )}
                   >

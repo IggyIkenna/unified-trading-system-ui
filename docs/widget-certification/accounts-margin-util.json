@@ -264,6 +264,21 @@
       "description": "accounts-margin-util-widget.tsx \u2014 ~2 user-visible strings not wrapped in i18n helpers",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "accounts-data-context.tsx \u2014 venueMargins.lastUpdate derived via toLocaleTimeString without timeZone:'UTC', so margin-util bars' lastUpdate displayed viewer-local time",
+      "status": "fixed",
+      "fix": "Added timeZone:'UTC' to the toLocaleTimeString call in accounts-data-context.tsx venueMargins memo so margin-util rows render UTC timestamps."
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "components/trading/margin-utilization.tsx (shared component this widget delegates to) still uses text-[10px] and var(--status-error) \u2014 flagged to the shared-primitive sweep, not a widget-local finding",
+      "status": "open",
+      "owner": "shared-primitive-sweep",
+      "note": "Shared component owned outside components/widgets/accounts/. File-boundary rule: accounts sweep should not edit components/trading/. Tracked for the shared-sweep queue."
     }
   ],
   "updatedBy": "agent",

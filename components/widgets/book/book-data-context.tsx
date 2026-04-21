@@ -277,7 +277,10 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
   const qty = parseFloat(quantity) || 0;
   const priceNum = parseFloat(price) || 0;
   const total = priceNum * qty;
-  const canPreview = qty > 0 && priceNum > 0 && instrument.length > 0 && venue.length > 0;
+  // Market orders (no price) are valid; limit orders require priceNum > 0.
+  // record_only always requires a price because it is booking a completed trade.
+  const requiresPrice = executionMode === "record_only";
+  const canPreview = qty > 0 && instrument.length > 0 && venue.length > 0 && (!requiresPrice || priceNum > 0);
 
   const compliancePassed =
     executionMode === "record_only" || complianceUnavailable || (complianceResult?.passed ?? false);
@@ -331,24 +334,29 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
     try {
       // Write to mock trade ledger so all tabs (Orders, Positions, P&L) see the order
       const isDeFi = category === "defi";
+      // Order type is derived from whether a price was supplied, not from execution mode.
+      // execute + price → limit; execute + no price → market; record_only always records at price.
+      const orderType: "market" | "limit" = priceNum > 0 ? "limit" : "market";
+      // Forward CeFi algo (MARKET/TWAP/VWAP/ICEBERG/SOR/BEST_PRICE/BENCHMARK_FILL) to the ledger.
+      const algoType: string | null = isDeFi ? defiAlgo || null : algo || null;
       placeMockOrder({
         strategy_id: strategyId === "manual" ? null : strategyId,
         client_id: clientId || orgId || user?.org?.id || "internal-trader",
         instrument_id: instrument,
         venue,
         side: side as "buy" | "sell",
-        order_type: executionMode === "execute" ? "market" : "limit",
+        order_type: orderType,
         quantity: qty,
         price: priceNum || 0,
         asset_class: isDeFi ? "DeFi" : "CeFi",
         lane: isDeFi ? "defi" : "book",
-        algo_type: isDeFi ? defiAlgo || null : null,
+        algo_type: algoType,
       });
 
       await placeOrder.mutateAsync({
         instrument,
         side,
-        order_type: executionMode === "execute" ? "limit" : "market",
+        order_type: orderType,
         quantity: qty,
         price: priceNum || undefined,
         venue,
@@ -385,6 +393,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
     sourceReference,
     category,
     defiAlgo,
+    algo,
     resetForm,
   ]);
 
@@ -563,7 +572,6 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
       resetForm,
       user,
       scopedTrades,
-      canExecute,
     ],
   );
 

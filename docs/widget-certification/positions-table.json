@@ -237,11 +237,11 @@
   "dataContract": {
     "channels": ["rest", "websocket"],
     "primary": "rest",
-    "cadence": "on-demand",
-    "staleness": "near-realtime:<=1s",
+    "cadence": "event-driven",
+    "staleness": "realtime",
     "mockSource": "lib/mocks/fixtures/mock-data-index.ts (getPositionsForScope) + inline DEFI_MOCK_POSITIONS in positions-data-context.tsx + mock-trade-ledger.ts (deriveDefiPositionDeltas)",
     "backendOwner": "unified-trading-api (positions endpoint)",
-    "notes": "REST fetches via usePositions() hook (React Query). WebSocket on ws://localhost:8030/ws merges pnl_update channel messages into cache when isLive=true. Filter state is local to context. Export uses filteredPositions snapshot."
+    "notes": "REST fetches via usePositions() hook (React Query) seed the table. WebSocket on ws://localhost:8030/ws (positions-data-context.tsx line 511: useWebSocket({ url: \"ws://localhost:8030/ws\", enabled: isLive, onMessage: handleWsMessage })) merges channel=positions/type=pnl_update messages into the cache; `enabled: isLive` gates the socket off in batch mode. Filter state (search/venue/side/strategy/instrumentType) is local to context. Export uses the filteredPositions snapshot. dataFreshness chip on TableWidget reads isLive to flip between isWebSocket/isBatch."
   },
   "coverage": {
     "assetClasses": ["cefi", "defi", "tradfi", "sports", "predictions"],
@@ -263,13 +263,15 @@
     ],
     "venues": ["all"],
     "commonTabs": null,
-    "verifiedOn": [],
+    "verifiedOn": ["positions"],
     "gaps": [
       "Instrument classification (classifyInstrument) may misclassify novel instrument ID formats not matching current regex patterns",
       "getInstrumentRoute for Futures routes to /services/trading/options?tab=futures \u2014 needs human verification",
       "Health factor column only shown for DeFi positions \u2014 CeFi/TradFi rows render '--'; verify visually",
       "Column visibility persistence (via react-table column visibility state) not tested for cross-session persistence",
-      "No human walkthrough yet for any asset class"
+      "No human walkthrough yet for any asset class",
+      "Playwright 2026-04-21 verified: table renders with 16 columns (Instrument, Side, Quantity, Entry Price, Current Price, Today's P&L, Net P&L, Net Delta, HF, Client, Category, Family, Chain, Venue, Updated, Trades). Rows include ETH-PERP, WEETH SUPPLY, ETH-USDC LP, BTC-USDT \u2014 cross-asset-class rendering works.",
+      "Playwright 2026-04-21 verified: navigating to /services/trading/positions/trades?position_id=defi-aave-ausdc-001 lands on trades page but shows 'No trades for this position' \u2014 getTradesForPosition() in lib/mocks/fixtures does not have fills for inline DEFI_MOCK_POSITIONS ids. Positions seeded via fixture have trades; inline-defined DeFi positions do not. Context/fixture layer concern."
     ],
     "notes": "Widget is a universal position viewer covering all asset classes. The instrumentTypeFilters (Spot/Perp/Futures/Options/DeFi/Prediction) buttons are the primary asset-class filter. classifyInstrument function in context provides the classification logic."
   },
@@ -286,6 +288,18 @@
       "description": "Resolved 2026-04-21. All 7 occurrences of text-[10px] replaced with text-micro utility after --text-micro (0.625rem) token landed in globals.css.",
       "blocking": false,
       "resolved": true
+    },
+    {
+      "id": "no-close-action",
+      "scope": "widget",
+      "description": "Positions table has no 'Close' / 'Flatten' / 'Unwind' action per row. Only the 'Trades' drill-down link and the Instrument deep-link exist. Closing a position today requires the user to navigate back to Terminal/DeFi and submit an opposing order manually. Feature gap \u2014 no UI wiring to the close-position execution flow (cefi / defi). scope.mode gating cannot be exercised because no close button exists. Decision required: add a row-level Close action (with batch-mode disable + confirm modal), or explicitly document that closes happen elsewhere.",
+      "blocking": false
+    },
+    {
+      "id": "updated-at-raw-iso",
+      "scope": "widget",
+      "description": "positions-table-widget.tsx line ~358: the 'Updated' column renders row.getValue<string>('updated_at') as a raw ISO-8601 string with trailing Z (e.g. '2026-04-21T03:27:38.145Z'). Technically UTC-correct per L7.5 (no toLocaleString), but unreadable for humans. Should route through a shared UTC formatter that produces e.g. '2026-04-21 03:27:38 UTC'. Deferred to shared formatter task.",
+      "blocking": false
     }
   ],
   "findings": [

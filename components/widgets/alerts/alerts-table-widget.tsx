@@ -22,6 +22,7 @@ import {
   Clock,
   XCircle,
 } from "lucide-react";
+import Link from "next/link";
 import * as React from "react";
 import type { Alert, AlertSeverity, AlertStatus } from "./alerts-data-context";
 import { useAlertsData } from "./alerts-data-context";
@@ -46,9 +47,9 @@ function getSeverityColor(severity: AlertSeverity) {
     case "high":
       return "text-status-critical bg-status-critical/10 border-status-critical";
     case "medium":
-      return "text-[var(--status-warning)] bg-[var(--status-warning)]/10 border-[var(--status-warning)]";
+      return "text-status-warning bg-status-warning/10 border-status-warning";
     case "low":
-      return "text-[var(--status-live)] bg-[var(--status-live)]/10 border-[var(--status-live)]";
+      return "text-status-live bg-status-live/10 border-status-live";
     default:
       return "text-muted-foreground bg-muted/10 border-muted-foreground";
   }
@@ -59,9 +60,9 @@ function getStatusColor(status: AlertStatus) {
     case "active":
       return "text-status-critical";
     case "acknowledged":
-      return "text-[var(--status-warning)]";
+      return "text-status-warning";
     case "resolved":
-      return "text-[var(--status-live)]";
+      return "text-status-live";
     default:
       return "text-muted-foreground";
   }
@@ -150,9 +151,19 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
         header: "Entity",
         cell: ({ row }) => {
           const alert = row.original;
+          const isStrategy = alert.entityType === "strategy" && alert.entity;
           return (
             <div className="flex flex-col">
-              <span className="text-primary hover:underline cursor-pointer">{alert.entity}</span>
+              {isStrategy ? (
+                <Link
+                  href={`/services/trading/strategies/${encodeURIComponent(alert.entity)}`}
+                  className="text-primary hover:underline"
+                >
+                  {alert.entity}
+                </Link>
+              ) : (
+                <span className="text-foreground">{alert.entity}</span>
+              )}
               <span className="text-xs text-muted-foreground capitalize">{alert.entityType}</span>
             </div>
           );
@@ -374,9 +385,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
           {highCount} High
         </Badge>
       )}
-      {isBatchMode && (
-        <span className="text-micro text-[var(--status-warning)] shrink-0">Batch — actions disabled</span>
-      )}
+      {isBatchMode && <span className="text-micro text-status-warning shrink-0">Batch — actions disabled</span>}
     </div>
   );
 

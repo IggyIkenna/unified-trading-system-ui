@@ -284,6 +284,13 @@
       "description": "risk-stress-table-widget.tsx:105 \u2014 <input type='range'> without aria-label",
       "status": "fixed",
       "fix": "Added aria-label='Stress multiplier' to range input"
+    },
+    {
+      "level": "l1",
+      "check": "1.7",
+      "description": "risk-stress-table-widget.tsx:121-123 \u2014 the on-demand stress test dropdown has 3 hardcoded scenario IDs (GFC_2008, COVID_2020, CRYPTO_BLACK_THURSDAY). Should source from /api/risk/stress-test/scenarios (or a config constant) so the set can evolve without an edit to the widget.",
+      "status": "deferred",
+      "deferReason": "Values match the mock API shape; should be replaced when backend returns scenario catalog. Tracked as shared finding for BP-5."
     }
   ],
   "updatedBy": "agent",

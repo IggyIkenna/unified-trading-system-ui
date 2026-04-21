@@ -44,9 +44,10 @@ const columns: ColumnDef<DeFiRatesRow, unknown>[] = [
     accessorKey: "tvlUsd",
     header: () => <span className="flex justify-end">TVL</span>,
     enableSorting: true,
-    cell: ({ row }) => (
-      <div className="text-right font-mono text-muted-foreground">{formatTvl(row.getValue<number>("tvlUsd"))}</div>
-    ),
+    cell: ({ row }) => {
+      const v = row.getValue<number | undefined>("tvlUsd");
+      return <div className="text-right font-mono text-muted-foreground">{v == null ? "—" : formatTvl(v)}</div>;
+    },
   },
 ];
 
@@ -65,6 +66,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
         if (s > bestSupply.apy) bestSupply = { asset: a, apy: s };
         if (b > bestBorrow.apy) bestBorrow = { asset: a, apy: b };
       }
+      // tvlUsd omitted: LendingProtocol has no TVL field yet (see DeFiRatesRow JSDoc).
       out.push({
         id: `lend-s-${n++}`,
         protocol: p.name,
@@ -72,7 +74,6 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
         category: "Lending supply",
         detail: `Best: ${bestSupply.asset}`,
         apyPct: bestSupply.apy,
-        tvlUsd: 12e9,
       });
       out.push({
         id: `lend-b-${n++}`,
@@ -81,7 +82,6 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
         category: "Lending borrow",
         detail: `Best: ${bestBorrow.asset}`,
         apyPct: bestBorrow.apy,
-        tvlUsd: 12e9,
       });
     }
     for (const s of stakingProtocols) {

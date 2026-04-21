@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Clock, DollarSign, TrendingUp, Calendar, Plus, Lock, Unlock } from "lucide-react";
+import { toast } from "sonner";
 import { formatNumber, formatCurrency, formatCompact } from "@/lib/utils/formatters";
 import { useAccountsData, type SAFTRecord } from "./accounts-data-context";
 import { Spinner } from "@/components/shared/spinner";
@@ -101,8 +102,8 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--pnl-positive)]/10">
-                <TrendingUp className="size-5" style={{ color: "var(--pnl-positive)" }} />
+              <div className="p-2 rounded-lg bg-pnl-positive/10">
+                <TrendingUp className="size-5 text-pnl-positive" />
               </div>
               <div>
                 <p className="text-2xl font-semibold font-mono">{formatCurrencyCompact(TOTAL_VESTED_VALUE)}</p>
@@ -114,8 +115,8 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--status-warning)]/10">
-                <Clock className="size-5" style={{ color: "var(--status-warning)" }} />
+              <div className="p-2 rounded-lg bg-status-warning/10">
+                <Clock className="size-5 text-status-warning" />
               </div>
               <div>
                 <p className="text-2xl font-semibold font-mono">{nextUnlock ? `${nextUnlock.daysToUnlock}d` : "--"}</p>
@@ -170,7 +171,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                   <TableCell className="text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       {daysUntil(saft.cliffDate, now) <= 0 ? (
-                        <Unlock className="size-3 text-[var(--status-live)]" />
+                        <Unlock className="size-3 text-status-live" />
                       ) : (
                         <Lock className="size-3" />
                       )}
@@ -184,7 +185,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                       <span>{saft.fullVestDate}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-mono text-sm text-[var(--pnl-positive)]">
+                  <TableCell className="text-right font-mono text-sm text-pnl-positive">
                     {formatCurrencyCompact(saft.currentValue)}
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm">{formatCurrencyCompact(saft.npv)}</TableCell>
@@ -240,7 +241,7 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
                 <span>Cliff (locked)</span>
               </div>
               <div className="flex items-center gap-1">
-                <div className="w-3 h-2 rounded bg-[var(--status-live)]" />
+                <div className="w-3 h-2 rounded bg-status-live" />
                 <span>Vested</span>
               </div>
               <div className="flex items-center gap-1">
@@ -305,7 +306,17 @@ export function SaftPortfolioWidget(_props: WidgetComponentProps) {
               <Button variant="outline" onClick={() => setAddDialogOpen(false)}>
                 Cancel
               </Button>
-              <Button disabled>Save SAFT</Button>
+              <Button
+                onClick={() => {
+                  toast.info("SAFT API not available", {
+                    description:
+                      "SAFT records are demo data in the current build. Saving is disabled until the treasury service ships.",
+                  });
+                  setAddDialogOpen(false);
+                }}
+              >
+                Save SAFT
+              </Button>
             </div>
           </div>
         </DialogContent>
@@ -332,7 +343,7 @@ function roundBadge(round: SAFTRecord["round"]) {
     Seed: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     "Series A": "bg-chart-3/10 text-chart-3 border-chart-3/20",
     Strategic: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-    Private: "bg-[var(--status-warning)]/10 text-[var(--status-warning)] border-[var(--status-warning)]/20",
+    Private: "bg-status-warning/10 text-status-warning border-status-warning/20",
   };
   return (
     <Badge variant="outline" className={`text-micro ${styles[round]}`}>
@@ -342,9 +353,9 @@ function roundBadge(round: SAFTRecord["round"]) {
 }
 
 function vestingColor(pct: number): string {
-  if (pct >= 75) return "bg-[var(--status-live)]";
+  if (pct >= 75) return "bg-status-live";
   if (pct >= 50) return "bg-chart-3";
-  if (pct >= 25) return "bg-[var(--status-warning)]";
+  if (pct >= 25) return "bg-status-warning";
   return "bg-muted-foreground";
 }
 

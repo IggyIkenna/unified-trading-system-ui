@@ -21,17 +21,15 @@ function truncateAddr(addr: string): string {
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
 
-function mockPortfolioUsd(balances: Record<string, number>): number {
-  const ethPx = 3200;
-  const btcPx = 65000;
-  return (
-    (balances.ETH ?? 0) * ethPx +
-    (balances.WETH ?? 0) * ethPx +
-    (balances.USDC ?? 0) +
-    (balances.USDT ?? 0) +
-    (balances.DAI ?? 0) +
-    (balances.WBTC ?? 0) * btcPx
-  );
+function computePortfolioUsd(balances: Record<string, number>, getPrice: (token: string) => number): number {
+  let total = 0;
+  for (const [token, qty] of Object.entries(balances)) {
+    if (!qty) continue;
+    const px = getPrice(token);
+    // getMockPrice returns 1.0 for unknown tokens; stablecoins ~1 by design.
+    total += qty * px;
+  }
+  return total;
 }
 
 type KeyRateRow = {
@@ -103,12 +101,16 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
     stakingProtocols,
     liquidityPools,
     chainPortfolios,
+    getMockPrice,
   } = useDeFiData();
 
   // 0.6 Loading guard — context is synchronous mock; show skeleton when data not yet populated
   const isLoading = chainPortfolios.length === 0 && Object.keys(tokenBalances).length === 0;
 
-  const portfolio = React.useMemo(() => mockPortfolioUsd(tokenBalances), [tokenBalances]);
+  const portfolio = React.useMemo(
+    () => computePortfolioUsd(tokenBalances, getMockPrice),
+    [tokenBalances, getMockPrice],
+  );
 
   const treasuryStatusColor =
     treasury.status === "normal" ? "text-emerald-400" : treasury.status === "low" ? "text-rose-400" : "text-amber-400";

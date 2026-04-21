@@ -132,7 +132,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "onClick handlers: resetFilters (line 46) calls context.resetFilters() \u2014 functional. refresh (line 55) calls context.refresh() which is a no-op stub \u2014 logged as known issue, not a dead button (it will be wired). onToggle in InstructionPipelineRow toggles selectedInstructionId \u2014 functional."
+          "note": "onClick handlers: resetFilters calls context.resetFilters() \u2014 functional. Refresh button wired via handleRefresh callback which calls context.refresh() and surfaces a Sonner toast ('Live refresh not wired \u2014 showing mock fixture data.') until backend API replaces mock fixture. onToggle in InstructionPipelineRow toggles selectedInstructionId \u2014 functional."
         },
         "4.2": {
           "result": "pass",
@@ -344,6 +344,20 @@
       "description": "instruction-detail-grid.tsx:16,29,45 \u2014 text-[10px] hardcoded arbitrary font size in section headers.",
       "status": "fixed",
       "fix": "Replaced all 3 instances with text-caption (0.6875rem = 11px, nearest semantic token)."
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "instructions-pipeline-table-widget.tsx:63 \u2014 Refresh button was wired directly to context.refresh() which is a no-op stub (instructions-data-context.tsx:138). Classified as a 'dead button' under L4.1 since user sees no feedback on click.",
+      "status": "fixed",
+      "fix": "Added handleRefresh React.useCallback that calls context.refresh() and then surfaces a Sonner toast ('Instructions pipeline \u2014 Live refresh not wired, showing mock fixture data.'). Button now gives explicit user feedback until the backend REST/WebSocket subscription replaces synchronous MOCK_STRATEGY_INSTRUCTIONS."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "lib/utils/instructions.ts formatInstructionTimestamp() used en-GB locale but no timeZone option, so rendered timestamps used the browser local timezone \u2014 violates L7.5 UTC datetime reassignment.",
+      "status": "fixed",
+      "fix": "Added timeZone: 'UTC' to toLocaleTimeString options so signal.timestamp renders in UTC across all browser locales. Shared helper \u2014 touches both instr-pipeline-table (via instruction-pipeline-rows.tsx) and instr-detail-panel (via instruction-detail-grid.tsx)."
     }
   ],
   "updatedBy": "agent",

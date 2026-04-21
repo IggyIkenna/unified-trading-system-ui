@@ -284,6 +284,13 @@
       "description": "risk-var-chart-widget.tsx:50 \u2014 text-[10px] on method toggle buttons and legend",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "risk-var-chart-widget.tsx:19 \u2014 adjustedVarData already multiplies by varMethod factor and regimeMultiplier (use-risk-page-data.ts:172-175). No visible indicator in the chart header showing current regimeMultiplier, so users see shifted bars without a unit cue. Legend at bottom only shows asset classes.",
+      "status": "deferred",
+      "deferReason": "Cosmetic cue missing; spec does not mandate it. Consider adding '\u00d7<factor>' badge next to the method selector when regimeMultiplier !== 1 (same pattern as risk-kpi-strip uses)."
     }
   ],
   "updatedBy": "agent",

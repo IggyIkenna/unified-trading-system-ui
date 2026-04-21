@@ -307,6 +307,12 @@
       "description": "text-[10px] for dense label sizing.",
       "status": "deferred",
       "deferReason": "missing token -- requests --text-label-micro (10px)"
+    },
+    {
+      "level": "l1",
+      "description": "enhanced-basis-widget.tsx:23-40 \u2014 SPOT_VENUE_LABEL and PERP_VENUE_LABEL per-asset maps are hardcoded in the widget, but JSDoc falsely claimed the data was 'sourced from BASIS_TRADE_MOCK_DATA via context'. BasisTradeMarketData has no per-asset venue routing field.",
+      "status": "partial",
+      "fix": "2026-04-21 corrected JSDoc to state the labels are display-only hardcoded until the context exposes a per-asset spot/perp-venue map. Widget behaviour unchanged; finding retained to track true fix (surface per-asset venue from context)."
     }
   ],
   "updatedBy": "agent",

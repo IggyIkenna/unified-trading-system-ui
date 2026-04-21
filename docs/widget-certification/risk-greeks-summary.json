@@ -294,6 +294,13 @@
       "description": "risk-greeks-summary-widget.tsx \u2014 text-[10px], text-[11px] used throughout for dense table/chart sizing",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "risk-greeks-summary-widget.tsx:163-184 \u2014 Second-Order Risks block (volga/vanna/slide) reads secondOrderRisks from riskData; value comes from /api/risk/greeks response field 'secondOrder'. Not derived in the UI, not recomputed on regime multiplier change. If backend returns null, widget shows $0 for all three (no empty state).",
+      "status": "deferred",
+      "deferReason": "Empty-state polish \u2014 low severity, mock always returns non-zero."
     }
   ],
   "updatedBy": "agent",

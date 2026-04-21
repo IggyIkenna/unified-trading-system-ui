@@ -46,10 +46,10 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "no dead code. NOTE: 'Cascade Zone' ($2,740) and '24h Liquidated' ($4.2M) KPI values are hardcoded placeholder strings \u2014 flagged for L4."
+          "note": "no dead code. Cascade Zone and 24h Liquidated now computed from context (cascadeZoneUsd, liquidated24hUsd)."
         }
       },
-      "notes": "All 9 checks pass (0.8 partial; 0.9 notes hardcoded KPI placeholder strings)."
+      "notes": "All 9 checks pass (0.8 partial). Hardcoded KPI placeholders removed \u2014 Cascade Zone + 24h Liquidated read from strategies-data-context."
     },
     "l1": {
       "status": "pass",
@@ -148,7 +148,7 @@
         },
         "4.3": {
           "result": "pending",
-          "note": "Human verify: L4 FLAG \u2014 'Cascade Zone' ($2,740) and '24h Liquidated' ($4.2M) KPI strip values are hardcoded; atRiskCount is correctly computed. Hardcoded values should be computed from context data in production."
+          "note": "Human verify: At Risk (count), Cascade Zone (sum debt where HF\u22641.2), and 24h Liquidated (rolling 18% heuristic) are all computed in strategies-data-context. Production still needs a real liquidation feed; values are mock but no longer hardcoded strings."
         },
         "4.4": {
           "result": "pending",
@@ -163,7 +163,7 @@
           "note": "Human verify: table scrolls within widget bounds."
         }
       },
-      "notes": "Key L4 flag: two KPI strip values hardcoded. Agent checks pass. Human must verify 4.3, 4.4, 4.8."
+      "notes": "KPI strip values now context-derived (no hardcoded placeholder strings). Agent checks pass. Human must verify 4.3, 4.4, 4.8."
     },
     "l5": {
       "status": "partial",
@@ -268,7 +268,7 @@
     "staleness": "realtime",
     "mockSource": "components/widgets/strategies/strategies-data-context.tsx (MOCK_LIQUIDATION_POSITIONS)",
     "backendOwner": "unknown",
-    "notes": "In production, liquidation risk data should be WebSocket-driven (real-time health factor updates). Currently static mock in context. Also: 'Cascade Zone' and '24h Liquidated' KPI values are hardcoded placeholders that need backend computation."
+    "notes": "In production, liquidation risk data should be WebSocket-driven (real-time health factor updates). Currently static mock in context. Cascade Zone and 24h Liquidated KPIs are derived in context (cascadeZoneUsd = sum(debtUsd where HF\u22641.2); liquidated24hUsd = 18% heuristic over mock positions) \u2014 heuristic must be replaced by a real feed before prod."
   },
   "coverage": {
     "assetClasses": ["defi"],
@@ -277,16 +277,13 @@
     "commonTabs": ["strategies", "defi", "risk"],
     "verifiedOn": [],
     "gaps": [
-      "Cascade Zone KPI is hardcoded placeholder",
-      "24h Liquidated KPI is hardcoded placeholder",
+      "24h Liquidated KPI uses an 18% heuristic over mock positions \u2014 needs real liquidation-feed integration",
       "No real-time WebSocket integration",
       "No alert/notification on critical HF drop"
     ],
     "notes": "Widget is available on risk tab \u2014 verify that risk tab layout renders it at appropriate size."
   },
-  "knownIssues": [
-    "headerMetrics 'Cascade Zone' ($2,740) and '24h Liquidated' ($4.2M) are hardcoded placeholder strings \u2014 should be computed from liquidationPositions data (L4 item)"
-  ],
+  "knownIssues": [],
   "findings": [
     {
       "level": "l7",
@@ -313,8 +310,8 @@
       "level": "l4",
       "check": "4.3",
       "description": "liquidation-monitor-widget.tsx:113-114 \u2014 'Cascade Zone' ($2,740) and '24h Liquidated' ($4.2M) KPI values are hardcoded strings, not computed from context data",
-      "status": "deferred",
-      "deferReason": "requires backend cascade-zone computation service \u2014 flagged for L4 human review"
+      "status": "fixed",
+      "fix": "Cascade Zone now renders formatUsd(cascadeZoneUsd); 24h Liquidated renders formatUsd(liquidated24hUsd). Both values come from strategies-data-context (cascadeZoneUsd = sum(debtUsd where HF\u22641.2), liquidated24hUsd = 18% heuristic on mock positions)."
     }
   ],
   "updatedBy": "agent",

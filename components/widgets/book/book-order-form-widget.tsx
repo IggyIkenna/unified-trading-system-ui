@@ -90,7 +90,7 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
                 <SelectValue placeholder="Select venue" />
               </SelectTrigger>
               <SelectContent>
-                {BOOK_VENUES_BY_CATEGORY[category].map((v) => (
+                {(BOOK_VENUES_BY_CATEGORY[category] ?? []).map((v) => (
                   <SelectItem key={v} value={v}>
                     {v}
                   </SelectItem>
@@ -111,6 +111,32 @@ export function BookOrderFormWidget(_props: WidgetComponentProps) {
 
           {isDefiCategory ? (
             <>
+              <div className="space-y-1">
+                <label className="text-caption text-muted-foreground">Direction</label>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={side === "buy" ? "default" : "outline"}
+                    className={cn("h-8 text-xs", side === "buy" && "bg-emerald-600 hover:bg-emerald-700")}
+                    onClick={() => setSide("buy")}
+                  >
+                    <TrendingUp className="size-3.5 mr-1" />
+                    Buy / In
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={side === "sell" ? "default" : "outline"}
+                    className={cn("h-8 text-xs", side === "sell" && "bg-rose-600 hover:bg-rose-700")}
+                    onClick={() => setSide("sell")}
+                  >
+                    <TrendingDown className="size-3.5 mr-1" />
+                    Sell / Out
+                  </Button>
+                </div>
+              </div>
+
               <div className="space-y-1">
                 <label className="text-caption text-muted-foreground">Instruction Type</label>
                 <Select value={defiInstructionType} onValueChange={(v) => setDefiInstructionType(v as InstructionType)}>

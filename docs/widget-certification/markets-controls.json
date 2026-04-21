@@ -132,8 +132,8 @@
       "date": "2026-04-21",
       "checks": {
         "4.1": {
-          "result": "noted",
-          "note": "markets-controls-widget.tsx:85 \u2014 Generate Report <Button> has no onClick handler. Logged as deferred finding."
+          "result": "pass",
+          "note": "markets-controls-widget.tsx:86-98 \u2014 Generate Report <Button> now wired to Sonner toast (info toast noting BP-5 pending). No dead buttons remain."
         },
         "4.2": {
           "result": "pass",
@@ -164,7 +164,7 @@
           "note": "Human: verify wrap behavior at narrow widths."
         }
       },
-      "notes": "4.1 dead Generate Report button logged as deferred (backend pending). 4.2/4.5/4.6 pass. Human needed for 4.3/4.4/4.7/4.8."
+      "notes": "4.1 Generate Report button now wired to Sonner toast. 4.2/4.5/4.6 pass. Human needed for 4.3/4.4/4.7/4.8."
     },
     "l5": {
       "status": "partial",
@@ -283,11 +283,13 @@
     "venues": [],
     "commonTabs": "markets",
     "verifiedOn": ["mock"],
-    "gaps": ["Generate Report button has no handler \u2014 pending backend wiring"],
+    "gaps": [
+      "Generate Report button wired to informational Sonner toast; real report export pending BP-5 backend service"
+    ],
     "notes": "Controls asset class toggle (crypto/tradfi/defi), view mode, data mode, date range, order-flow range, and book depth for all markets widgets."
   },
   "knownIssues": [
-    "markets-controls-widget.tsx:85 \u2014 Generate Report <Button> has no onClick handler (dead button). Deferred to BP-5 backend wiring."
+    "markets-controls-widget.tsx:86-98 \u2014 Generate Report button currently surfaces an informational Sonner toast. Real export pipeline pending BP-5 backend service."
   ],
   "findings": [
     {
@@ -308,9 +310,9 @@
     {
       "level": "l4",
       "check": "4.1",
-      "description": "markets-controls-widget.tsx:85-88 \u2014 Generate Report <Button> has no onClick handler (dead button)",
-      "status": "deferred",
-      "deferReason": "Report generation requires backend wiring \u2014 deferred to BP-5. Button kept as placeholder per product intent."
+      "description": "markets-controls-widget.tsx:85-88 \u2014 Generate Report <Button> had no onClick handler (dead button)",
+      "status": "fixed",
+      "fix": "Wired onClick to toast.info('Report generation not yet wired', { description: 'Markets report export pending backend service (BP-5).' }) so click now yields user feedback (markets-controls-widget.tsx:86-98). Real export pipeline still deferred to BP-5."
     }
   ],
   "updatedBy": "agent",

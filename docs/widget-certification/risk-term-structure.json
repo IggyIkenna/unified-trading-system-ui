@@ -284,6 +284,13 @@
       "description": "risk-term-structure-widget.tsx \u2014 text-[9px] on footnote and chart tick labels (fontSize={9} in Recharts props)",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "risk-term-structure-widget.tsx: stacked bar chart by maturity bucket is not an 'interpolated term structure' in the fixed-income sense \u2014 buckets are discrete (Overnight/1W/1M/etc). Label 'DeFi/CeFi perpetuals classified as Overnight (8h funding settlement)' is a static footnote; no tenor interpolation between buckets is computed.",
+      "status": "deferred",
+      "deferReason": "Design intent per widget description ('stacked bar chart: exposure by maturity bucket'). If a curve view is desired, it belongs in a new 'term structure curve' widget with interp config. Logged."
     }
   ],
   "updatedBy": "agent",

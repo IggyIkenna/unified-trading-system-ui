@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { MOCK_SPAN_MARGIN_IBKR } from "@/lib/config/services/risk-margin.config";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -78,26 +79,28 @@ export function RiskMarginWidget(_props: WidgetComponentProps) {
           <div className="space-y-1.5 text-caption pt-1">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Initial Margin</span>
-              <span className="font-mono font-medium">$180,000</span>
+              <span className="font-mono font-medium">{formatCurrency(MOCK_SPAN_MARGIN_IBKR.initialMargin)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Maintenance Margin</span>
-              <span className="font-mono font-medium">$135,000</span>
+              <span className="font-mono font-medium">{formatCurrency(MOCK_SPAN_MARGIN_IBKR.maintenanceMargin)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Cross-Margin Offset</span>
-              <span className="font-mono font-medium text-emerald-400">-$22,000</span>
+              <span className="font-mono font-medium text-emerald-400">
+                {formatCurrency(MOCK_SPAN_MARGIN_IBKR.crossMarginOffset)}
+              </span>
             </div>
             <div className="flex justify-between border-t pt-1.5">
               <span className="font-medium">Net Margin Required</span>
-              <span className="font-mono font-bold">$158,000</span>
+              <span className="font-mono font-bold">{formatCurrency(MOCK_SPAN_MARGIN_IBKR.netMarginRequired)}</span>
             </div>
             <div className="mt-1">
               <div className="flex justify-between mb-0.5">
                 <span className="text-muted-foreground">Margin Utilization</span>
-                <span className="font-mono">79%</span>
+                <span className="font-mono">{MOCK_SPAN_MARGIN_IBKR.utilizationPct}%</span>
               </div>
-              <Progress value={79} className="h-1.5" />
+              <Progress value={MOCK_SPAN_MARGIN_IBKR.utilizationPct} className="h-1.5" />
             </div>
           </div>
         </CollapsibleSection>

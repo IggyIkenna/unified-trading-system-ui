@@ -10,12 +10,59 @@ import { useStrategyHealth } from "@/hooks/api/use-strategies";
 import { useAlertsData } from "./alerts-data-context";
 import { Pause, Power, Square, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+type KillSwitchScope = "firm" | "client" | "strategy" | "venue";
+type KillSwitchAction = "pause" | "cancel" | "flatten" | "disable-venue";
+
+interface ActionMeta {
+  id: KillSwitchAction;
+  label: string;
+  subLabel: string;
+  icon: React.ComponentType<{ className?: string }>;
+  iconClassName: string;
+}
+
+const ACTION_OPTIONS: ActionMeta[] = [
+  {
+    id: "pause",
+    label: "Pause Strategy",
+    subLabel: "Stop new orders",
+    icon: Pause,
+    iconClassName: "text-status-warning",
+  },
+  {
+    id: "cancel",
+    label: "Cancel Orders",
+    subLabel: "Cancel all open",
+    icon: XCircle,
+    iconClassName: "text-status-critical",
+  },
+  {
+    id: "flatten",
+    label: "Flatten",
+    subLabel: "Close all positions",
+    icon: Square,
+    iconClassName: "text-status-critical",
+  },
+  {
+    id: "disable-venue",
+    label: "Disable Venue",
+    subLabel: "Block venue access",
+    icon: Power,
+    iconClassName: "text-status-critical",
+  },
+];
 
 export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
-  const { filteredAlerts, isLoading: alertsLoading } = useAlertsData();
+  const { filteredAlerts, isLoading: alertsLoading, isBatchMode } = useAlertsData();
   const { data: strategies = [], isLoading: strategiesLoading } = useStrategyHealth();
   const isLoading = alertsLoading || strategiesLoading;
+  const [scopeType, setScopeType] = React.useState<KillSwitchScope>("strategy");
   const [entityId, setEntityId] = React.useState<string>("");
+  const [selectedAction, setSelectedAction] = React.useState<KillSwitchAction | null>(null);
+  const [rationale, setRationale] = React.useState<string>("");
 
   React.useEffect(() => {
     if (strategies.length === 0) {
@@ -30,6 +77,44 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const activeEntityAlerts = filteredAlerts.filter(
     (a) => a.entityType === "strategy" && a.entity === entityId && a.status === "active",
   ).length;
+
+  const handleSelectAction = React.useCallback(
+    (actionId: KillSwitchAction) => {
+      if (isBatchMode) {
+        toast.info("Read-only in batch mode", {
+          description: "Switch to live mode to select an intervention action.",
+        });
+        return;
+      }
+      setSelectedAction(actionId);
+    },
+    [isBatchMode],
+  );
+
+  const handleConfirm = React.useCallback(() => {
+    if (isBatchMode) {
+      toast.info("Read-only in batch mode", {
+        description: "Switch to live mode to execute kill-switch actions.",
+      });
+      return;
+    }
+    if (!selectedAction) {
+      toast.error("Select an action", {
+        description: "Choose Pause, Cancel, Flatten, or Disable Venue before confirming.",
+      });
+      return;
+    }
+    if (!rationale.trim()) {
+      toast.error("Rationale required", {
+        description: "Describe the reason for this intervention before confirming.",
+      });
+      return;
+    }
+    const actionMeta = ACTION_OPTIONS.find((a) => a.id === selectedAction);
+    toast.info("Execution API not yet wired", {
+      description: `Would ${actionMeta?.label.toLowerCase() ?? selectedAction} on ${scopeType === "strategy" ? entityId || "selected entity" : scopeType} — backend integration pending.`,
+    });
+  }, [isBatchMode, selectedAction, rationale, scopeType, entityId]);
 
   if (isLoading) {
     return (
@@ -50,7 +135,7 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
           <label id="kill-switch-scope-label" className="text-xs font-medium">
             Scope
           </label>
-          <Select defaultValue="strategy">
+          <Select value={scopeType} onValueChange={(v) => setScopeType(v as KillSwitchScope)}>
             <SelectTrigger className="h-8 text-xs" aria-labelledby="kill-switch-scope-label">
               <SelectValue placeholder="Select scope" />
             </SelectTrigger>
@@ -62,7 +147,7 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
             </SelectContent>
           </Select>
           {strategies.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground">No strategies available.</p>
+            <p className="text-caption text-muted-foreground">No strategies available.</p>
           ) : (
             <Select value={entityId} onValueChange={setEntityId}>
               <SelectTrigger className="h-8 text-xs" aria-label="Select entity">
@@ -81,35 +166,33 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
 
         <div className="space-y-2">
           <p className="text-xs font-medium">Actions</p>
-          <div className="grid grid-cols-1 gap-2">
-            <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <Pause className="size-3.5 text-[var(--status-warning)] shrink-0" />
-              <div className="text-left">
-                <div className="text-xs font-medium">Pause Strategy</div>
-                <div className="text-micro text-muted-foreground">Stop new orders</div>
-              </div>
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <XCircle className="size-3.5 text-status-critical shrink-0" />
-              <div className="text-left">
-                <div className="text-xs font-medium">Cancel Orders</div>
-                <div className="text-micro text-muted-foreground">Cancel all open</div>
-              </div>
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <Square className="size-3.5 text-status-critical shrink-0" />
-              <div className="text-left">
-                <div className="text-xs font-medium">Flatten</div>
-                <div className="text-micro text-muted-foreground">Close all positions</div>
-              </div>
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2 justify-start h-auto py-2">
-              <Power className="size-3.5 text-status-critical shrink-0" />
-              <div className="text-left">
-                <div className="text-xs font-medium">Disable Venue</div>
-                <div className="text-micro text-muted-foreground">Block venue access</div>
-              </div>
-            </Button>
+          <div className="grid grid-cols-1 gap-2" role="radiogroup" aria-label="Kill-switch action">
+            {ACTION_OPTIONS.map((action) => {
+              const Icon = action.icon;
+              const isSelected = selectedAction === action.id;
+              return (
+                <Button
+                  key={action.id}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  role="radio"
+                  aria-checked={isSelected}
+                  disabled={isBatchMode}
+                  className={cn(
+                    "gap-2 justify-start h-auto py-2",
+                    isSelected && "border-status-critical ring-1 ring-status-critical/40",
+                  )}
+                  onClick={() => handleSelectAction(action.id)}
+                >
+                  <Icon className={cn("size-3.5 shrink-0", action.iconClassName)} />
+                  <div className="text-left">
+                    <div className="text-xs font-medium">{action.label}</div>
+                    <div className="text-micro text-muted-foreground">{action.subLabel}</div>
+                  </div>
+                </Button>
+              );
+            })}
           </div>
         </div>
 
@@ -117,20 +200,34 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
           <label htmlFor="kill-switch-rationale" className="text-xs font-medium">
             Rationale (required)
           </label>
-          <Input id="kill-switch-rationale" className="h-8 text-xs" placeholder="Describe reason for intervention..." />
+          <Input
+            id="kill-switch-rationale"
+            className="h-8 text-xs"
+            placeholder="Describe reason for intervention..."
+            value={rationale}
+            onChange={(e) => setRationale(e.target.value)}
+            disabled={isBatchMode}
+          />
         </div>
 
         <Card className="bg-status-critical/5 border-status-critical/20">
           <CardContent className="p-3">
             <div className="text-xs font-medium text-status-critical mb-1.5">Impact preview</div>
-            <div className="text-[11px] text-muted-foreground space-y-1">
+            <div className="text-caption text-muted-foreground space-y-1">
               <div>Active alerts for selected entity: {activeEntityAlerts}</div>
               <div>Position and order impact requires execution API wiring.</div>
             </div>
           </CardContent>
         </Card>
 
-        <Button variant="destructive" size="sm" className="w-full gap-2">
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          className="w-full gap-2"
+          disabled={isBatchMode}
+          onClick={handleConfirm}
+        >
           <Power className="size-3.5" />
           Confirm Action
         </Button>

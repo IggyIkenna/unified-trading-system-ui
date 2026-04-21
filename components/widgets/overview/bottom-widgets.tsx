@@ -76,7 +76,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
                 <Badge
                   variant="outline"
                   className={cn(
-                    "text-[9px] px-1 py-0 h-4",
+                    "text-nano px-1 py-0 h-4",
                     a.severity === "critical"
                       ? "text-rose-400 border-rose-400/30"
                       : a.severity === "high"
@@ -135,7 +135,7 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
                 <Badge
                   variant="outline"
                   className={cn(
-                    "text-[9px] px-1 py-0 h-4 font-mono",
+                    "text-nano px-1 py-0 h-4 font-mono",
                     String(o.side) === "BUY"
                       ? "text-emerald-400 border-emerald-400/30"
                       : "text-rose-400 border-rose-400/30",

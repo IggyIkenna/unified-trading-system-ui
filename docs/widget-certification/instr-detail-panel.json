@@ -329,6 +329,13 @@
       "description": "instruction-detail-grid.tsx:16,29,45 \u2014 text-[10px] in section header paragraphs (Signal Detail, Instruction Detail, Discrepancy labels).",
       "status": "fixed",
       "fix": "Replaced all 3 instances with text-caption (0.6875rem = 11px, nearest semantic token in @theme inline). File changed in same session as instr-pipeline-table L8 pass."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "lib/utils/instructions.ts formatInstructionTimestamp() consumed by instruction-detail-grid.tsx for signal timestamp rendering \u2014 toLocaleTimeString('en-GB') without timeZone option falls back to browser local timezone, violating L7.5 UTC datetime reassignment.",
+      "status": "fixed",
+      "fix": "Added timeZone: 'UTC' to toLocaleTimeString options in shared helper so signal.timestamp renders in UTC for detail-panel consumers."
     }
   ],
   "updatedBy": "agent",

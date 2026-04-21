@@ -104,7 +104,7 @@
         },
         "3.2": {
           "result": "pass",
-          "note": "Widget reads mode as plain const 'Paper' currently. Note: mode badge shows current execution mode \u2014 it should read from useExecutionMode() context rather than hardcoded const. This is a functional gap but not a data-scope issue."
+          "note": "Widget reads mode via useExecutionMode() (line 39) \u2014 modeLabel derived from isLive/execMode. No hardcoded mode string remains."
         },
         "3.5": {
           "result": "pass",
@@ -123,7 +123,7 @@
           "note": "Human verify: mode badge shows correct mode."
         }
       },
-      "notes": "Agent checks done. Note: mode const is hardcoded 'Paper' \u2014 should read from useExecutionMode() in production. Human must verify 3.3, 3.4."
+      "notes": "Agent checks done. Mode now read from useExecutionMode(); modeLabel maps live/paper/batch. Human must verify 3.3, 3.4."
     },
     "l4": {
       "status": "partial",
@@ -289,13 +289,12 @@
     "commonTabs": ["strategies"],
     "verifiedOn": [],
     "gaps": [
-      "Mode hardcoded to 'Paper' \u2014 should read from useExecutionMode()",
       "Save/Deploy are mock toast-only \u2014 no real API integration",
       "Promote from backtest not wired to backtest service"
     ],
     "notes": "Widget covers all CeFi/TradFi strategy families via schema-driven form. Mode badge is cosmetic only."
   },
-  "knownIssues": ["567 lines refactored to 79 via schema-driven form"],
+  "knownIssues": ["567 lines (legacy) refactored to 125 via schema-driven form"],
   "findings": [
     {
       "level": "l0",

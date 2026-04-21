@@ -309,6 +309,20 @@
       "description": "accounts-balance-table-widget.tsx:75 \u2014 text-[10px] used for utilization badge label, no text-2xs token exists",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro on accounts-balance-table-widget.tsx:75 (utilization badge)."
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "accounts-balance-table-widget.tsx:74-80 \u2014 utilization badge used arbitrary-value classes (border-[color:var(--status-*)], text-[color:var(--status-*)]) when @theme tokens are available",
+      "status": "fixed",
+      "fix": "Replaced arbitrary-value classes with utility classes (border-status-critical/warning/live, text-status-critical/warning/live)."
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "accounts-data-context.tsx \u2014 addTransferEntry timestamp and venueMargins lastUpdate called toLocaleString/toLocaleTimeString without timeZone:'UTC'; feeds the balance table's mode-label chain indirectly via shared context",
+      "status": "fixed",
+      "fix": "Added timeZone:'UTC' to both toLocale* calls in accounts-data-context.tsx."
     }
   ],
   "updatedBy": "agent",

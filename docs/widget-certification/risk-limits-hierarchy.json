@@ -287,6 +287,13 @@
       "description": "risk-limits-hierarchy-widget.tsx \u2014 text-[10px], text-[11px] used for dense hierarchy row labels",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "Limits hierarchy table is read-only \u2014 no inline edit affordance. PM/CRO workflow often needs to bump a limit from the same view. Click-to-select-scope works but edit flow is absent.",
+      "status": "deferred",
+      "deferReason": "Feature gap \u2014 limit edits are RBAC-gated and generally live in a dedicated admin view. Out of scope for cert sweep."
     }
   ],
   "updatedBy": "agent",

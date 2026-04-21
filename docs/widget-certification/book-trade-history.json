@@ -212,7 +212,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "formatTimestamp renders UTC via toLocaleDateString/toLocaleTimeString with timeZone:'UTC' and 'UTC' suffix. Fixed 2026-04-21."
         },
         "7.6": {
           "result": "pass",
@@ -304,9 +304,9 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "book-trade-history-widget.tsx \u2014 ~12 user-visible strings (column headers, emptyMessage, side badge values). No i18n applied.",
+      "description": "formatTimestamp previously used toLocaleDateString/toLocaleTimeString with no timeZone \u2014 rendered in the viewer's local time rather than UTC. 7.5 (now UTC-enforcement) required UTC.",
       "status": "fixed",
-      "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+      "fix": "formatTimestamp now calls toLocaleDateString('en-US', { timeZone: 'UTC', \u2026 }) and toLocaleTimeString with hour12=false + timeZone:'UTC' and appends 'UTC' suffix. Matches widget-certification 7.5 UTC policy."
     }
   ],
   "updatedBy": "agent",

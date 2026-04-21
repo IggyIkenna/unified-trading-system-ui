@@ -11,11 +11,13 @@ import type { WidgetComponentProps } from "../widget-registry";
 import { useBookTradeData, type BookTrade } from "./book-data-context";
 
 function formatTimestamp(iso: string): string {
+  // Render in UTC per widget-certification 7.5 (local-tz toggle is a future product feature).
   const d = new Date(iso);
   return (
-    d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+    d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }) +
     " " +
-    d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+    d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" }) +
+    " UTC"
   );
 }
 

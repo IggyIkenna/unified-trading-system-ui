@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ function hfLabel(hf: number): string {
 
 export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
   const { healthFactorDashboard: hf, emergencyExit } = useDeFiData();
+  const { scope } = useGlobalScope();
   const [exitOpen, setExitOpen] = React.useState(false);
 
   // HF gauge: visual bar from 0 to 2.0
@@ -203,6 +205,13 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
               variant="destructive"
               size="sm"
               onClick={() => {
+                if (scope.mode !== "live") {
+                  toast.info("Emergency exit disabled in batch mode", {
+                    description: "Switch to Live to initiate a real unwind. Batch/as-of views are read-only.",
+                  });
+                  setExitOpen(false);
+                  return;
+                }
                 setExitOpen(false);
                 toast.success("Emergency exit initiated", {
                   description: `Unwinding position. Estimated ${emergencyExit.estimated_time_minutes} min, cost $${formatNumber(emergencyExit.total_cost_usd, 0)} (mock).`,

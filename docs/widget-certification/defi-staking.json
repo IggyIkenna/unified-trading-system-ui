@@ -289,6 +289,13 @@
       "level": "l1",
       "description": "1.7 STAKING_PROTOCOLS reference data lives in lib/mocks/fixtures/defi-staking instead of lib/constants/ or lib/config/. Moving to lib/constants/ is BP-5 scope.",
       "status": "known-gap"
+    },
+    {
+      "level": "l3",
+      "check": "3.2",
+      "description": "STAKE/UNSTAKE button called executeDeFiOrder without checking scope.mode; batch-mode (as-of historical) should be read-only.",
+      "status": "fixed",
+      "fix": "2026-04-21 added global guard inside defi-data-context executeDeFiOrder \u2014 isBatch branch returns early with a console.warn so no widget writes to the mock ledger in batch mode. Per-widget check is redundant once the context layer enforces this."
     }
   ],
   "updatedBy": "agent",

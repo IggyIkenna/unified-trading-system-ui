@@ -30,7 +30,7 @@
         },
         "0.5": {
           "result": "pass",
-          "note": "No import from lib/mocks/ \u2014 PLACEHOLDER_EVENTS is a widget-file const, not a mock import."
+          "note": "No import from lib/mocks/ \u2014 widget consumes events from useTerminalData(); source is MOCK_TERMINAL_EVENTS in lib/config/services/terminal-events.config.ts."
         },
         "0.6": {
           "result": "pass",
@@ -46,7 +46,7 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "MOCK_EVENTS renamed to PLACEHOLDER_EVENTS with TODO(L1) annotation."
+          "note": "Inline const retired; events now sourced from MOCK_TERMINAL_EVENTS in lib/config/services/terminal-events.config.ts."
         }
       },
       "notes": "All L0 checks pass. Fixes applied in previous session."
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "fixed",
-          "note": "terminal-data-context.tsx now exposes events/isLoadingEvents/errorEvents (TerminalEvent[] + TerminalEventDomain/Severity types). use-terminal-page-data.ts provides PLACEHOLDER_EVENTS source with isLoadingEvents=false/errorEvents=null until event bus API is wired. Widget reads these via useTerminalData()."
+          "note": "terminal-data-context.tsx now exposes events/isLoadingEvents/errorEvents (TerminalEvent[] + TerminalEventDomain/Severity types). use-terminal-page-data.ts serves MOCK_TERMINAL_EVENTS from lib/config/services/terminal-events.config.ts with isLoadingEvents=false/errorEvents=null until event bus API is wired. Widget reads these via useTerminalData()."
         },
         "1.2": {
           "result": "pass",
@@ -240,7 +240,7 @@
     "primary": "websocket",
     "cadence": "event-driven",
     "staleness": "realtime",
-    "mockSource": "use-terminal-page-data.ts PLACEHOLDER_EVENTS const (10 static entries \u2014 served through TerminalData.events until real event bus is wired)",
+    "mockSource": "lib/config/services/terminal-events.config.ts MOCK_TERMINAL_EVENTS (10 static entries \u2014 served through TerminalData.events until real event bus is wired)",
     "backendOwner": "unknown \u2014 likely unified-events-interface or a dedicated event-bus service",
     "notes": "Context-wired: widget consumes events/isLoadingEvents/errorEvents from useTerminalData(). Source is still placeholder; production path: WS or SSE from platform event bus. Events span EXECUTION, RISK, DATA, SYSTEM, STRATEGY domains. Backend owner TBD."
   },
@@ -251,23 +251,23 @@
     "commonTabs": ["terminal", "overview", "strategies"],
     "verifiedOn": [],
     "gaps": [
-      "Source is still PLACEHOLDER_EVENTS in use-terminal-page-data.ts \u2014 real WS/SSE event bus not wired",
+      "Source is still MOCK_TERMINAL_EVENTS in lib/config/services/terminal-events.config.ts \u2014 real WS/SSE event bus not wired",
       "No filtering by event domain (EXECUTION/RISK/etc.)",
       "No pagination or virtual scrolling for high-volume event streams"
     ],
     "notes": "Context wiring complete; real event bus still pending. Critical gap for monitoring readiness remains until backend owner resolves."
   },
   "knownIssues": [
-    "Events source is still PLACEHOLDER_EVENTS in use-terminal-page-data.ts \u2014 replace with real WS/SSE subscription once event bus owner is resolved",
+    "Events source is still MOCK_TERMINAL_EVENTS in lib/config/services/terminal-events.config.ts \u2014 replace with real WS/SSE subscription once event bus owner is resolved",
     "No virtual scrolling \u2014 will performance-degrade with high-volume event streams"
   ],
   "findings": [
     {
       "level": "l1",
       "check": "1.1",
-      "description": "events-feed-widget.tsx \u2014 events sourced from inline PLACEHOLDER_EVENTS const; terminal-data-context.tsx missing events/isLoadingEvents/errorEvents fields",
+      "description": "events-feed-widget.tsx \u2014 events sourced from inline const; terminal-data-context.tsx missing events/isLoadingEvents/errorEvents fields",
       "status": "fixed",
-      "fix": "Extended terminal-data-context.tsx with TerminalEvent[]/isLoadingEvents/errorEvents (plus TerminalEventDomain/TerminalEventSeverity types). Moved placeholder source to use-terminal-page-data.ts and exposed it through TerminalData. Widget now calls useTerminalData() and renders spinner/error states from errorEvents/isLoadingEvents."
+      "fix": "Extended terminal-data-context.tsx with TerminalEvent[]/isLoadingEvents/errorEvents (plus TerminalEventDomain/TerminalEventSeverity types). Promoted source to lib/config/services/terminal-events.config.ts as MOCK_TERMINAL_EVENTS and exposed it through TerminalData via use-terminal-page-data.ts. Widget now calls useTerminalData() and renders spinner/error states from errorEvents/isLoadingEvents."
     },
     {
       "level": "l7",

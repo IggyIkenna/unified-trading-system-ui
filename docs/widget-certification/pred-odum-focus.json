@@ -247,19 +247,10 @@
     "venues": ["polymarket", "kalshi"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": [
-      "OdumFocusBody directly imports ODUM_INSTRUMENTS from lib/mocks/ \u2014 should receive from context prop",
-      "Crypto/TradFi/football instrument parity not verified end-to-end"
-    ],
+    "gaps": ["Crypto/TradFi/football instrument parity not verified end-to-end"],
     "notes": "ODUM = Odds/Divergence/Underpriced/Market signals."
   },
-  "knownIssues": [
-    {
-      "level": "l1",
-      "description": "OdumFocusBody (trading component) directly imports ODUM_INSTRUMENTS from lib/mocks/fixtures/ rather than receiving it via prop from context \u2014 trading component change, not widget scope.",
-      "status": "known-gap"
-    }
-  ],
+  "knownIssues": [],
   "findings": [
     {
       "level": "l0",
@@ -286,7 +277,8 @@
       "level": "l1",
       "check": "1.7",
       "description": "OdumFocusBody imports ODUM_INSTRUMENTS directly from lib/mocks/fixtures/predictions-data.ts instead of receiving from context. Context already exposes odumInstruments.",
-      "status": "open"
+      "status": "fixed",
+      "fix": "Refactored OdumFocusBody to accept instruments via prop (components/trading/predictions/odum-focus-tab.tsx). PredOdumFocusWidget now passes odumInstruments from usePredictionsData(). OdumFocusTab (standalone route) passes ODUM_INSTRUMENTS directly. Widget-side is now fully context-driven."
     }
   ],
   "updatedBy": "agent",

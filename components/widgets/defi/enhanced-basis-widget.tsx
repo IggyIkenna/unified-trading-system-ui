@@ -19,7 +19,12 @@ interface BasisRow {
   direction: "LONG_SPOT" | "SHORT_PERP";
 }
 
-/** Spot venue label per asset — sourced from BASIS_TRADE_MOCK_DATA.spotVenues via context. */
+/**
+ * Display-only venue labels per asset. These are hardcoded because
+ * BasisTradeMarketData currently has no per-asset venue routing field —
+ * once the context exposes a per-asset spot/perp-venue map, replace these.
+ * Tracked in docs/widget-certification/enhanced-basis.json.
+ */
 const SPOT_VENUE_LABEL: Record<string, string> = {
   ETH: "Uniswap V3",
   BTC: "Uniswap V3",
@@ -29,7 +34,6 @@ const SPOT_VENUE_LABEL: Record<string, string> = {
   LINK: "Uniswap V3",
 };
 
-/** Perp venue label per asset — sourced from BASIS_TRADE_MOCK_DATA.perpVenues via context. */
 const PERP_VENUE_LABEL: Record<string, string> = {
   ETH: "Hyperliquid",
   BTC: "Hyperliquid",

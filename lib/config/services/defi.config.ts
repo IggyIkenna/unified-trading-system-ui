@@ -136,6 +136,35 @@ export const GAS_TOKEN_MIN_THRESHOLDS: Record<string, number> = {
   SOL: 0.05,
 };
 
+/**
+ * Mock per-chain native-transfer gas estimates (native-token qty + USD-equivalent).
+ * Used by defi-transfer widget pre-execution. Replace with live gas oracle feed
+ * when L3 wiring lands.
+ */
+export type TransferGasEstimate = {
+  nativeQty: number;
+  nativeSymbol: string;
+  usd: number;
+};
+
+export const TRANSFER_GAS_ESTIMATES: Record<string, TransferGasEstimate> = {
+  ETHEREUM: { nativeQty: 0.0012, nativeSymbol: "ETH", usd: 4.08 },
+  ARBITRUM: { nativeQty: 0.00004, nativeSymbol: "ETH", usd: 0.14 },
+  OPTIMISM: { nativeQty: 0.00005, nativeSymbol: "ETH", usd: 0.17 },
+  BASE: { nativeQty: 0.00003, nativeSymbol: "ETH", usd: 0.1 },
+  POLYGON: { nativeQty: 0.008, nativeSymbol: "MATIC", usd: 0.07 },
+  BSC: { nativeQty: 0.0005, nativeSymbol: "BNB", usd: 0.17 },
+  AVALANCHE: { nativeQty: 0.002, nativeSymbol: "AVAX", usd: 0.05 },
+  LINEA: { nativeQty: 0.00004, nativeSymbol: "ETH", usd: 0.14 },
+  SOLANA: { nativeQty: 0.00025, nativeSymbol: "SOL", usd: 0.05 },
+};
+
+export const TRANSFER_GAS_ESTIMATE_DEFAULT: TransferGasEstimate = {
+  nativeQty: 0.0012,
+  nativeSymbol: "ETH",
+  usd: 4.08,
+};
+
 /** Funding-rate matrix venues (column headers for defi-funding-matrix widget). */
 export const FUNDING_RATE_VENUES = ["HYPERLIQUID", "OKX", "BYBIT", "BINANCE", "ASTER"] as const;
 

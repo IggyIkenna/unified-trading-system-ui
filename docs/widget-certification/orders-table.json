@@ -277,7 +277,7 @@
     "verifiedOn": [],
     "gaps": [
       "buildColumns() exceeds 200-line function limit \u2014 refactor to sub-renderers recommended",
-      "Cancel/amend action button colors (text-rose-400, text-blue-400) have no design-token equivalents \u2014 token request deferred",
+      "Amend action button color (text-blue-400) has no design-token equivalent \u2014 coordinator to add --action-amend (or --status-info-subtle). Cancel migrated to --destructive token 2026-04-21.",
       "Human walkthrough (cancel, amend, filter cascade, cross-asset) not yet completed"
     ],
     "notes": "classifyInstrument() covers Spot, Perp, Futures, Options, DeFi (AAVE/Uniswap/Lido/Morpho), Prediction (Betfair/Polymarket/Kalshi/NBA/NFL/EPL/LaLiga). Full cross-domain coverage by design."
@@ -322,9 +322,10 @@
     {
       "level": "l8",
       "check": "8.1",
-      "description": "orders-table-widget.tsx:303,312 \u2014 Cancel button uses text-rose-400/hover:bg-rose-400/10; Amend button uses text-blue-400/hover:bg-blue-400/10; no design-token equivalents for action button colors",
-      "status": "deferred",
-      "deferReason": "missing token \u2014 requests --action-cancel and --action-amend (or --status-danger-subtle) for cancel/amend action button affordance colors"
+      "description": "orders-table-widget.tsx:291 \u2014 Cancel button used text-rose-400/hover:bg-rose-400/10 (no token). Amend button uses text-blue-400/hover:bg-blue-400/10 (no token).",
+      "status": "partial",
+      "fix": "Cancel button migrated to existing --destructive token: text-destructive/hover:bg-destructive/10 (2026-04-21).",
+      "deferReason": "Amend button still uses text-blue-400/hover:bg-blue-400/10 \u2014 no --action-info/--action-amend token exists in globals.css. Coordinator to add a non-destructive informational action token (e.g., --action-amend or --status-info-subtle) so amend affordance can be migrated."
     }
   ],
   "updatedBy": "agent",

@@ -296,6 +296,20 @@
       "description": "pred-arb-stream-widget.tsx \u2014 text-[11px] and text-[10px] arbitrary font sizes",
       "status": "fixed",
       "fix": "Applied text-caption (11px, existing) and text-micro (10px, new token) from globals.css (2026-04-21)."
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "pred-arb-ui.tsx:87 (PredActiveArbCard, renders inside pred-arb-stream) \u2014 bg-[#0d140d] hardcoded hex background on success-tinted card.",
+      "status": "fixed",
+      "fix": "Replaced with bg-[var(--pnl-positive)]/5 so the card tint tracks the pnl-positive token."
+    },
+    {
+      "level": "l3",
+      "check": "3.3",
+      "description": "pred-arb-ui.tsx PredActiveArbCard Execute button and context.executeArb do not check scope.mode === 'batch'. A user in batch mode can still click Execute and a mock order is placed.",
+      "status": "deferred",
+      "deferReason": "Cross-widget fix \u2014 batch-mode gating on prediction-market trade actions also applies to pred-trade-panel (TradePanelInner lives in components/trading/predictions/). Better to gate once in context.placeTrade/executeArb in a dedicated pass than to patch each consumer."
     }
   ],
   "updatedBy": "agent",

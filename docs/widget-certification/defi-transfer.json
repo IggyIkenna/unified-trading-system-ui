@@ -298,6 +298,12 @@
       "description": "defi-transfer-widget.tsx:107,152,164,293,305,322,351,357,368,371 \u2014 text-[9px]/text-[10px]/text-[11px] for sub-xs sizing.",
       "status": "deferred",
       "deferReason": "text-[10px] migrated to text-micro and text-[9px] migrated to text-nano; text-[11px] at :107 remains \u2014 no 11px token in scale (nearest are text-nano 9px and text-xs 12px); product decision required for 11px resolution"
+    },
+    {
+      "level": "l1",
+      "description": "defi-transfer-widget.tsx:185-191 \u2014 gas estimates ('0.00025 SOL', '0.008 MATIC', '0.00004 ETH', '0.0012 ETH') were hardcoded inline in JSX ternary.",
+      "status": "fixed",
+      "fix": "2026-04-21 extracted to TRANSFER_GAS_ESTIMATES and TRANSFER_GAS_ESTIMATE_DEFAULT in lib/config/services/defi.config.ts with one row per DEFI_CHAIN; widget looks up by selectedChain and renders native qty + USD."
     }
   ],
   "updatedBy": "agent",

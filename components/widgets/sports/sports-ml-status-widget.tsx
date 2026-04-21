@@ -6,10 +6,10 @@ import { useSportsData, type ModelFamily, type FeatureFreshness } from "./sports
 import { Spinner } from "@/components/shared/spinner";
 
 const statusColors: Record<ModelFamily["status"], string> = {
-  healthy: "bg-emerald-500",
-  stale: "bg-amber-500",
-  training: "bg-blue-500 animate-pulse",
-  failed: "bg-red-500",
+  healthy: "bg-[var(--status-live)]",
+  stale: "bg-[var(--status-warning)]",
+  training: "bg-[var(--status-running)] animate-pulse",
+  failed: "bg-[var(--status-critical)]",
 };
 
 const stalenessColors: Record<FeatureFreshness["staleness"], string> = {

@@ -274,7 +274,8 @@
       "level": "l3",
       "check": "3.2",
       "description": "scope.mode not checked before emergencyExit call \u2014 paper/batch mode should prevent real exit.",
-      "status": "open"
+      "status": "fixed",
+      "fix": "2026-04-21 widget now imports useGlobalScope; Confirm Exit onClick blocks non-live scope.mode with toast.info, plus executeDeFiOrder in defi-data-context gained a global isBatch guard that drops order writes in batch mode."
     },
     {
       "level": "l7",

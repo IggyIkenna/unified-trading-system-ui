@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LiveFeedWidget } from "@/components/shared/live-feed-widget";
@@ -13,6 +14,13 @@ export function InstructionsPipelineTableWidget(_props: WidgetComponentProps) {
   const { refresh, filterDefs, filterValues, handleFilterChange, resetFilters } = useInstructionsData();
 
   const activeFilterCount = Object.values(filterValues).filter(Boolean).length;
+
+  const handleRefresh = React.useCallback(() => {
+    refresh();
+    toast.info("Instructions pipeline", {
+      description: "Live refresh not wired — showing mock fixture data.",
+    });
+  }, [refresh]);
 
   const toolbar = (
     <div className="flex items-center gap-2 px-3 py-1.5 border-b border-border/40 bg-muted/10 overflow-x-auto min-w-0">
@@ -52,7 +60,7 @@ export function InstructionsPipelineTableWidget(_props: WidgetComponentProps) {
 
       <div className="flex-1 min-w-2" />
 
-      <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs shrink-0" onClick={refresh}>
+      <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs shrink-0" onClick={handleRefresh}>
         <RefreshCw className="size-3" />
         Refresh
       </Button>

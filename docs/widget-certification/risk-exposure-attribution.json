@@ -294,6 +294,13 @@
       "description": "risk-exposure-attribution-widget.tsx \u2014 text-[10px], text-[11px] used throughout for dense table/label sizing",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l1",
+      "check": "1.7",
+      "description": "risk-exposure-attribution-widget.tsx:5 imports MOCK_STRATEGIES from risk-data-context which re-exports from lib/mocks/fixtures/risk-data. Reference data (strategy list + archetype \u2192 risk-type map + component \u2192 risk-type map) should live in lib/constants/risk or lib/config/services/risk.config.ts, not lib/mocks/.",
+      "status": "deferred",
+      "deferReason": "Domain-wide refactor \u2014 affects use-risk-page-data.ts and risk-data-context.tsx re-exports; out of scope for per-widget sweep. Tracked in risk-circuit-breakers.json knownIssues[0]."
     }
   ],
   "updatedBy": "agent",

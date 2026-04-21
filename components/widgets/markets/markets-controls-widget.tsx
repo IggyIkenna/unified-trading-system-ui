@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -82,7 +83,16 @@ export function MarketsControlsWidget(_props: WidgetComponentProps) {
             </SelectContent>
           </Select>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 h-8 text-xs">
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 h-8 text-xs"
+          onClick={() =>
+            toast.info("Report generation not yet wired", {
+              description: "Markets report export pending backend service (BP-5).",
+            })
+          }
+        >
           <FileText className="size-3.5" />
           Generate Report
         </Button>

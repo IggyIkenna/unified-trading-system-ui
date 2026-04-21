@@ -288,7 +288,7 @@ function buildColumns(
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-400/10"
+              className="h-7 px-2 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => onCancel(row.original.order_id)}
             >
               <XCircle className="size-3.5 mr-1" />

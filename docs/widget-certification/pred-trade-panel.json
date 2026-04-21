@@ -261,6 +261,13 @@
       "description": "pred-trade-panel-widget.tsx \u2014 1 user-visible string",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l3",
+      "check": "3.3",
+      "description": "TradePanelInner (components/trading/predictions/trade-tab.tsx) submit button and context.placeTrade do not check scope.mode === 'batch'. Batch-mode users can still submit a trade and a mock order is placed.",
+      "status": "deferred",
+      "deferReason": "Batched with pred-arb-stream 3.3 deferral \u2014 same context-level guard (PredictionsDataProvider.placeTrade / executeArb should early-return or surface a toast when isBatch). Out of single-widget scope."
     }
   ],
   "updatedBy": "agent",

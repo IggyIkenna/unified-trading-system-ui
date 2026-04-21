@@ -315,6 +315,12 @@
       "description": "defi-wallet-summary-widget.tsx:237,285,289,319 text-[10px] for table header labels.",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro Tailwind utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+    },
+    {
+      "level": "l1",
+      "description": "defi-wallet-summary-widget.tsx had inline mockPortfolioUsd() with hardcoded ETH=3200, BTC=65000 that drifted from MOCK_PRICES (ETH=3400) used elsewhere.",
+      "status": "fixed",
+      "fix": "2026-04-21 replaced with computePortfolioUsd(balances, getMockPrice) which consults the context-exposed getMockPrice() for each token \u2014 single source of truth."
     }
   ],
   "updatedBy": "agent",

@@ -278,7 +278,11 @@
     ],
     "notes": "Step editor is strategy-agnostic at UI level. Coverage gaps are validation/UX concerns, not rendering failures."
   },
-  "knownIssues": [],
+  "knownIssues": [
+    "GripVertical icon renders with cursor-grab affordance (line 83) but drag-reorder is not implemented \u2014 users expect grab/drop to work",
+    "Quantity/Price number inputs (lines 229-245) lack min/max/step validation; negative values accepted",
+    "Dependency select filters out self (line 214) but does not detect A\u2192B\u2192A cycles"
+  ],
   "findings": [
     {
       "level": "l7",
@@ -307,6 +311,30 @@
       "description": "bundle-steps-widget.tsx \u2014 icon-only buttons (ChevronUp, ChevronDown, Copy, Trash2) missing aria-label",
       "status": "fixed",
       "fix": "Added aria-label='Move leg N up/down', 'Duplicate leg N', 'Remove leg N' to all four icon-only buttons per step row (2026-04-21)"
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "bundle-steps-widget.tsx:83 \u2014 GripVertical icon shown with className='cursor-grab' but no drag handler is wired. Users see grab affordance and try to drag-reorder; nothing happens. Cosmetic misrepresentation of interactivity.",
+      "status": "open",
+      "severity": "medium",
+      "proposedFix": "Either (a) remove cursor-grab and switch to cursor-default / drag-handle-static variant until drag is wired, or (b) wire drag-reorder via react-dnd or @dnd-kit/core with the existing moveStep(fromIndex, toIndex) context action. Recommend (a) as a quick fix, (b) as a follow-up."
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "bundle-steps-widget.tsx:229-245 \u2014 Quantity and Price inputs use type='number' but do not set min/max/step; negative quantities or zero prices are accepted at the input layer.",
+      "status": "open",
+      "severity": "low",
+      "proposedFix": "Add min={0} step='any' to Quantity input and min={0} step='any' to Price input. Consider inputMode='decimal' for mobile keyboards. Server-side validation still required."
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "bundle-steps-widget.tsx:214 \u2014 dependency select excludes self via filter(s=>s.id!==step.id) but does not detect transitive cycles (A depends on B, B depends on A). No cycle warning in UI.",
+      "status": "open",
+      "severity": "low",
+      "proposedFix": "Add a cycle-detection helper in bundles-data-context.tsx (DFS over steps[].dependsOn) and filter the dependency dropdown to exclude any step that would create a cycle. Show toast warning if cycle detected on save."
     }
   ],
   "updatedBy": "agent",

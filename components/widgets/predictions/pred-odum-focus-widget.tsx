@@ -5,7 +5,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { usePredictionsData } from "./predictions-data-context";
 
 export function PredOdumFocusWidget(_props: WidgetComponentProps) {
-  const { odumTypeFilter, setOdumTypeFilter, odumTfFilter, setOdumTfFilter } = usePredictionsData();
+  const { odumInstruments, odumTypeFilter, setOdumTypeFilter, odumTfFilter, setOdumTfFilter } = usePredictionsData();
 
   // PredictionsDataContext is synchronous (mock) — isLoading is always false.
   // When the context adds isLoading + error fields, wire them here.
@@ -31,6 +31,7 @@ export function PredOdumFocusWidget(_props: WidgetComponentProps) {
   return (
     <div className="h-full min-h-0 overflow-auto pr-1">
       <OdumFocusBody
+        instruments={odumInstruments}
         typeFilter={odumTypeFilter}
         setTypeFilter={setOdumTypeFilter}
         tfFilter={odumTfFilter}

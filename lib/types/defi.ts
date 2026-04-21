@@ -596,7 +596,11 @@ export interface DeFiRatesRow {
   category: "Lending supply" | "Lending borrow" | "Staking" | "LP";
   detail: string;
   apyPct: number;
-  tvlUsd: number;
+  /**
+   * TVL in USD. Optional because `LendingProtocol` does not carry a TVL field —
+   * lending rows render `—` until a protocol-stats feed is wired.
+   */
+  tvlUsd?: number;
 }
 
 // ---------------------------------------------------------------------------

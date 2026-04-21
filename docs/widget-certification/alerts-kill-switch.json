@@ -100,11 +100,11 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (actions enabled \u2014 emergency interventions are live-only), batch \u2713 (widget renders but action buttons should be disabled in batch \u2014 currently not guarded by BatchGuardButton unlike alerts-table), paper \u2713 (same as live for now). NOTE: action buttons have no onClick so batch-disabling is moot until execution API wired."
+          "note": "Mode relevance: live \u2713 (actions enabled), batch \u2713 (all 5 action buttons + rationale input disabled when isBatchMode; handlers short-circuit with toast.info 'Read-only in batch mode'), paper \u2713 (same as live). Batch-mode guard landed 2026-04-21 audit pass."
         },
         "3.2": {
           "result": "pass",
-          "note": "AlertsDataProvider reads scope.mode; isBatchMode derived from scope.mode === 'batch'. Widget does not currently use isBatchMode to disable kill-switch actions (separate gap from missing onClick handlers)."
+          "note": "AlertsDataProvider reads scope.mode; isBatchMode derived from scope.mode === 'batch'. Widget now consumes isBatchMode from useAlertsData() and uses it for (a) disabled prop on each action button + Confirm + rationale input, (b) early-return with toast.info in handleSelectAction + handleConfirm."
         },
         "3.5": {
           "result": "pass",
@@ -123,9 +123,9 @@
       "date": "2026-04-21",
       "checks": {
         "4.1": {
-          "result": "deferred",
-          "note": "alerts-kill-switch-widget.tsx:85,92,99,106,133 \u2014 Pause Strategy, Cancel Orders, Flatten, Disable Venue, Confirm Action buttons have no onClick handlers. Execution API wiring not yet implemented.",
-          "deferReason": "Execution API not yet wired \u2014 tracked in knownIssues"
+          "result": "fixed",
+          "note": "alerts-kill-switch-widget.tsx \u2014 action buttons now wired. Pause/Cancel/Flatten/Disable Venue are radio options (role='radio', aria-checked) that set a selectedAction state and are disabled in batch mode. Confirm Action validates rationale + selected action and emits toast.info noting execution API is not yet wired. All five buttons gated by scope.mode batch check (toast.info on batch). Execution API wiring still pending for real write path \u2014 tracked in knownIssues.",
+          "fix": "Added onClick handlers for all 5 action buttons (Pause/Cancel/Flatten/Disable Venue \u2192 selectedAction state; Confirm Action \u2192 validated toast.info). Promoted Actions grid to role='radiogroup' with aria-checked on selected option. Batch-mode guard on every handler + disabled prop."
         },
         "4.2": {
           "result": "pass",
@@ -140,7 +140,7 @@
           "note": "No entitlement checks in render. All handled at widget-wrapper level via registry."
         }
       },
-      "notes": "Agent prep complete. Human checks 4.3/4.4/4.7/4.8 pending. 4.1 deferred \u2014 all action buttons await execution API wiring."
+      "notes": "Agent prep complete. Human checks 4.3/4.4/4.7/4.8 pending. 4.1 fixed 2026-04-21 via toast-based wiring + batch guard."
     },
     "l5": {
       "status": "partial",
@@ -167,8 +167,8 @@
       "checks": {
         "7.1": {
           "result": "fixed",
-          "note": "Mapped --status-error \u2192 text-status-critical / bg-status-critical (existing token surfaced in new rollout). All var(--status-error) usages at lines 93,100,107,123,125 converted. --status-warning usage retained (token already defined).",
-          "fix": "Substituted text-[var(--status-error)] \u2192 text-status-critical and bg-[var(--status-error)]/5 border-[var(--status-error)]/20 \u2192 bg-status-critical/5 border-status-critical/20."
+          "note": "Mapped --status-error \u2192 text-status-critical / bg-status-critical (existing token surfaced in new rollout). All var(--status-error) usages at lines 93,100,107,123,125 converted. text-[var(--status-warning)] on Pause icon also converted to text-status-warning token utility in 2026-04-21 audit pass.",
+          "fix": "Substituted text-[var(--status-error)] \u2192 text-status-critical and bg-[var(--status-error)]/5 border-[var(--status-error)]/20 \u2192 bg-status-critical/5 border-status-critical/20. Also substituted text-[var(--status-warning)] \u2192 text-status-warning on Pause icon."
         },
         "7.2": {
           "result": "pass",
@@ -193,10 +193,10 @@
         },
         "7.7": {
           "result": "pass",
-          "note": "useEffect dep array: [strategies, entityId] \u2014 both stable refs. No inline object/array literals in deps. activeEntityAlerts derived via simple array.filter in render \u2014 not expensive, no useMemo needed."
+          "note": "useEffect dep array: [strategies, entityId] \u2014 both stable refs. handleSelectAction/handleConfirm wrapped in useCallback with [isBatchMode]/[isBatchMode,selectedAction,rationale,scopeType,entityId] deps respectively. ACTION_OPTIONS declared at module scope. No inline object/array literals in deps."
         }
       },
-      "notes": "7.1 fixed via --status-error \u2192 text-status-critical mapping. 7.5 deferred (i18n). All other checks pass."
+      "notes": "7.1 fixed via --status-error \u2192 text-status-critical and text-[var(--status-warning)] \u2192 text-status-warning mappings. 7.5 deferred (i18n). All other checks pass."
     },
     "l8": {
       "status": "partial",
@@ -205,8 +205,8 @@
       "checks": {
         "8.1": {
           "result": "fixed",
-          "note": "text-[10px] \u2192 text-micro applied on action sub-labels (lines 89,96,103,110). text-[11px] at lines 65,122 retained \u2014 no ~11px token in this rollout.",
-          "fix": "Substituted text-[10px] \u2192 text-micro (new 0.625rem / 10px token in @theme inline). 11px residual tracked separately."
+          "note": "text-[10px] \u2192 text-micro applied on action sub-labels. text-[11px] at former lines 65,126 substituted with text-caption token (0.6875rem) in 2026-04-21 audit pass. No remaining arbitrary text-[Npx] values.",
+          "fix": "Substituted text-[10px] \u2192 text-micro and text-[11px] \u2192 text-caption across all action sub-labels, empty-state text, and impact preview text."
         },
         "8.2": {
           "result": "pass",
@@ -256,17 +256,21 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "All action buttons (Pause Strategy, Cancel Orders, Flatten, Disable Venue, Confirm Action) have no onClick handlers \u2014 execution API not wired",
-      "Scope selector state (firm/client/strategy/venue) not used to gate or customize the entity Select \u2014 strategy scope and firm/client scopes not cross-wired",
-      "Kill-switch actions not guarded by batch mode check (unlike alerts-table which uses BatchGuardButton)"
+      "Scope selector state (firm/client/strategy/venue) is now controlled but does not yet customize the entity Select \u2014 entity list shows strategies regardless of scopeType",
+      "Execution API not yet wired \u2014 handleConfirm emits toast.info placeholder; real Pause/Cancel/Flatten/Disable-Venue backend wiring pending"
     ],
-    "notes": "Widget UI shell is complete and accessible. Functional completeness blocked on execution API wiring."
+    "notes": "Widget UI shell is complete, accessible, batch-guarded, and emits toast feedback. Functional completeness blocked on execution API wiring + scope-type-driven entity list."
   },
   "knownIssues": [
     {
+      "level": "L5",
+      "check": "5.3",
+      "description": "Execution API not yet wired. handleConfirm currently emits toast.info('Execution API not yet wired') \u2014 real Pause/Cancel/Flatten/Disable-Venue backend wiring remains pending."
+    },
+    {
       "level": "L4",
-      "check": "4.1",
-      "description": "Action buttons (Pause Strategy, Cancel Orders, Flatten, Disable Venue, Confirm Action) have no onClick handlers. Execution API wiring required."
+      "check": "4.3",
+      "description": "scopeType (firm/client/strategy/venue) does not yet drive the entity Select \u2014 entity list always shows strategies. Scope-driven entity filtering requires a new hook surface and is larger than small-fix scope."
     }
   ],
   "findings": [
@@ -302,9 +306,33 @@
       "check": "0.6",
       "severity": "fix-applied",
       "description": "Missing isLoading guard. Fixed: skeleton displayed while alertsLoading || strategiesLoading."
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "alerts-kill-switch-widget.tsx \u2014 Pause Strategy, Cancel Orders, Flatten, Disable Venue, Confirm Action buttons had no onClick handlers (dead buttons)",
+      "severity": "high",
+      "status": "fixed",
+      "fix": "Promoted 4 action buttons to a role='radiogroup' with aria-checked + local selectedAction state. Confirm Action now validates (selectedAction, rationale) and emits toast.info('Execution API not yet wired') with a precise description of the would-be action + scope. All 5 buttons + rationale input are disabled in batch mode via isBatchMode from useAlertsData(), with handleSelectAction / handleConfirm short-circuiting to toast.info('Read-only in batch mode')."
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "alerts-kill-switch-widget.tsx:86 \u2014 text-[var(--status-warning)] arbitrary variable reference on Pause icon",
+      "severity": "low",
+      "status": "fixed",
+      "fix": "Substituted text-[var(--status-warning)] \u2192 text-status-warning (token utility already exposed via --color-status-warning in globals.css @theme inline)."
+    },
+    {
+      "level": "l8",
+      "check": "8.1",
+      "description": "alerts-kill-switch-widget.tsx \u2014 residual text-[11px] at two sites (no-strategies fallback + impact preview body)",
+      "severity": "low",
+      "status": "fixed",
+      "fix": "Substituted text-[11px] \u2192 text-caption (0.6875rem, already defined as --text-caption in globals.css @theme inline). No remaining text-[Npx] arbitrary values."
     }
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-21",
-  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical and text-[10px] \u2192 text-micro per landed tokens"
+  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical, text-[var(--status-warning)] \u2192 text-status-warning, text-[10px] \u2192 text-micro, text-[11px] \u2192 text-caption; wired all kill-switch buttons with batch-guard + toast feedback"
 }

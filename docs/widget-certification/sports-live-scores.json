@@ -268,6 +268,13 @@
       "description": "sports-live-scores-widget.tsx \u2014 ~4 user-visible strings not i18n-wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "sports-live-scores-widget.tsx \u2014 WS connection status dot (lines 32-35) used bg-emerald-400/bg-amber-400/bg-red-400 and fixture status dot (line 55) used bg-amber-400/bg-emerald-400 hardcoded palette",
+      "status": "fixed",
+      "fix": "Replaced palette colors with semantic CSS var tokens: connected\u2192bg-[var(--status-live)], connecting\u2192bg-[var(--status-warning)] animate-pulse, error/disconnected\u2192bg-[var(--status-critical)]; SUSP\u2192bg-[var(--status-warning)], live\u2192bg-[var(--status-live)] animate-pulse."
     }
   ],
   "updatedBy": "agent",

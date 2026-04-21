@@ -9,7 +9,13 @@ import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } f
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
-import { DEFI_CHAINS, DEFI_TOKENS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
+import {
+  DEFI_CHAINS,
+  DEFI_TOKENS,
+  GAS_TOKEN_MIN_THRESHOLDS,
+  TRANSFER_GAS_ESTIMATES,
+  TRANSFER_GAS_ESTIMATE_DEFAULT,
+} from "@/lib/config/services/defi.config";
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -181,14 +187,10 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                 Gas estimate
               </span>
               <span className="font-mono">
-                ~
-                {selectedChain === "SOLANA"
-                  ? "0.00025 SOL ($0.05)"
-                  : selectedChain === "POLYGON"
-                    ? "0.008 MATIC ($0.07)"
-                    : selectedChain === "ARBITRUM"
-                      ? "0.00004 ETH ($0.14)"
-                      : "0.0012 ETH ($4.08)"}
+                {(() => {
+                  const g = TRANSFER_GAS_ESTIMATES[selectedChain] ?? TRANSFER_GAS_ESTIMATE_DEFAULT;
+                  return `~${g.nativeQty} ${g.nativeSymbol} ($${g.usd.toFixed(2)})`;
+                })()}
               </span>
             </div>
           </div>

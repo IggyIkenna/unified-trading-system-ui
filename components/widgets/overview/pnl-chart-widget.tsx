@@ -62,7 +62,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
           <span>{showTimeSeries ? "Hide" : "Show"} Time Series</span>
         </button>
         <ValueFormatToggle format={valueFormat} onFormatChange={setValueFormat} className="ml-2" />
-        <Badge variant="outline" className="ml-2 text-[10px]">
+        <Badge variant="outline" className="ml-2 text-micro">
           {context.mode === "live" ? (
             <span className="flex items-center gap-1">
               <Radio className="size-2.5 animate-pulse text-[var(--status-live)]" />

@@ -136,11 +136,11 @@
         },
         "4.2": {
           "result": "pass",
-          "note": "Links checked: /positions?strategy_id=${strategy.id} \u2014 route is at /services/trading/positions (different path). /services/trading/strategies/${strategy.id} \u2014 [id] route exists. /config/strategies/${strategy.id} \u2014 no /config/strategies route found in app/. Flag for L4 human verification."
+          "note": "Links checked 2026-04-21: (1) /services/trading/positions?strategy_id=${strategy.id} \u2014 route exists (fixed from /positions 404 this session). (2) /services/trading/strategies/${strategy.id} \u2014 [id] route exists. (3) Per-strategy Config button is now rendered as a disabled <Button title='Per-strategy config page not yet implemented' /> so no dead /config/strategies link remains."
         },
         "4.5": {
-          "result": "partial",
-          "note": "3 link targets verified: /services/trading/strategies/[id] exists. /positions?strategy_id= redirects to /services/trading/positions (query param routing \u2014 may work via middleware or layout). /config/strategies/[id] route NOT found in app/ \u2014 possible 404. Human must verify."
+          "result": "pass",
+          "note": "Route targets verified 2026-04-21: /services/trading/strategies/[id] \u2714, /services/trading/positions \u2714, per-strategy config intentionally disabled (no route). No 404 link targets remain in this widget."
         },
         "4.6": {
           "result": "pass",
@@ -163,7 +163,7 @@
           "note": "Human verify: card grid scrolls within widget bounds."
         }
       },
-      "notes": "L4 FLAG: /config/strategies/[id] route not found in app/. Human must verify 4.3, 4.4, 4.5 (route targets), 4.7, 4.8."
+      "notes": "Agent route checks resolved 2026-04-21: (1) View Live link rewritten to /services/trading/positions, (2) Details link already pointed at existing [id] route, (3) per-strategy Config button is disabled. Human must still verify 4.3, 4.4, 4.7, 4.8."
     },
     "l5": {
       "status": "partial",
@@ -279,8 +279,7 @@
     "commonTabs": ["strategies"],
     "verifiedOn": [],
     "gaps": [
-      "/config/strategies/[id] route may not exist \u2014 needs verification",
-      "View Live button links to /positions not /services/trading/positions",
+      "Per-strategy Config page not yet implemented (button rendered disabled)",
       "sparklineData not connected to real performance history",
       "Performance metrics (Sharpe, Return, Max DD) are from strategy registry static data"
     ],
@@ -320,10 +319,17 @@
       "level": "l4",
       "check": "4.5",
       "description": "strategies-catalogue-widget.tsx:371 \u2014 Link href='/config/strategies/${strategy.id}' \u2014 no /config/strategies route found in app/; possible 404",
-      "status": "deferred",
-      "deferReason": "route existence requires human browser verification \u2014 may be behind (ops) route group"
+      "status": "fixed",
+      "fix": "Resolved 2026-04-21: the /config/strategies link was removed in an earlier session and the per-strategy Config button is now a disabled <Button title='Per-strategy config page not yet implemented'>. No /config/strategies href remains in the widget."
+    },
+    {
+      "level": "l4",
+      "check": "4.2",
+      "description": "strategies-catalogue-widget.tsx:367 \u2014 Link href='/positions?strategy_id=${strategy.id}' targets a non-existent top-level /positions route (real route is /services/trading/positions)",
+      "status": "fixed",
+      "fix": "Rewrote href to /services/trading/positions?strategy_id=${strategy.id}."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-21T03:30:00Z"
 }

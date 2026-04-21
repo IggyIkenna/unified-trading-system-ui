@@ -189,6 +189,26 @@ export function BookAlgoConfigWidget(_props: WidgetComponentProps) {
                 </Select>
               </div>
             )}
+
+            {algo === "SOR" && (
+              <p className="text-caption text-muted-foreground">
+                Smart Order Routing splits this order across configured venues based on top-of-book liquidity. Per-venue
+                limits and routing rules are managed in the venue registry.
+              </p>
+            )}
+
+            {algo === "BEST_PRICE" && (
+              <p className="text-caption text-muted-foreground">
+                Routes the full order to the single venue showing the best price at submission time. No additional
+                parameters required.
+              </p>
+            )}
+
+            {algo === "MARKET" && (
+              <p className="text-caption text-muted-foreground">
+                Marketable order at the best available price. Price field on the order form may be left empty.
+              </p>
+            )}
           </CardContent>
         </Card>
       </CollapsibleSection>

@@ -282,6 +282,13 @@
       "description": "risk-live-alert-feed-widget.tsx \u2014 text-[10px], text-[9px] used for alert category, badge, timestamp, and message",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l7",
+      "check": "7.5",
+      "description": "risk-live-alert-feed-widget.tsx:35 \u2014 formatAlertTime() used d.toLocaleTimeString(undefined, {...}) without timeZone: 'UTC'. Violates UTC-default datetime rendering.",
+      "status": "fixed",
+      "fix": "Switched locale to 'en-GB' (24h), added timeZone: 'UTC' and hour12: false. Alert timestamps now render in UTC."
     }
   ],
   "updatedBy": "agent",

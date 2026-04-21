@@ -68,6 +68,7 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
       month: "short",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "UTC",
     });
     setLocalEntries((prev) => [{ ...entry, timestamp, txHash }, ...prev]);
   }, []);
@@ -112,7 +113,7 @@ export function AccountsDataProvider({ children }: { children: React.ReactNode }
           utilization,
           trend: utilization > 75 ? ("up" as const) : utilization > 50 ? ("stable" as const) : ("down" as const),
           marginCallDistance: utilization < 90 ? 90 - utilization : undefined,
-          lastUpdate: new Date().toLocaleTimeString(),
+          lastUpdate: new Date().toLocaleTimeString("en-GB", { timeZone: "UTC" }),
         };
       }),
     [balances],

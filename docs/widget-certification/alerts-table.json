@@ -124,7 +124,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "No dead buttons. Ack: onClick={() => acknowledgeAlert(alert.id)} \u2713. Escalate: onClick={() => escalateAlert(alert)} \u2713. Resolve: onClick={() => resolveAlert(alert.id)} \u2713. ChevronRight SheetTrigger: opens detail sheet \u2713."
+          "note": "No dead buttons. Ack: onClick={() => acknowledgeAlert(alert.id)} \u2713. Escalate: onClick={() => escalateAlert(alert)} \u2713. Resolve: onClick={() => resolveAlert(alert.id)} \u2713. ChevronRight SheetTrigger: opens detail sheet \u2713. 2026-04-21 audit fix: entity cell (previously styled as a link with cursor-pointer but no handler) now renders an actual next/link \u2192 /services/trading/strategies/[entityId] for strategy entities, or plain foreground text for other entity types \u2014 dead-looking 'link' eliminated."
         },
         "4.2": {
           "result": "pass",
@@ -166,8 +166,8 @@
       "checks": {
         "7.1": {
           "result": "fixed",
-          "note": "Mapped --status-error \u2192 text-status-critical / bg-status-critical / border-status-critical (existing token surfaced in rollout). All arbitrary var(--status-error) usages in getSeverityColor, getStatusColor, and highCount Badge converted to utility classes.",
-          "fix": "Substituted text-[var(--status-error)] \u2192 text-status-critical, bg-[var(--status-error)]/10 \u2192 bg-status-critical/10, border-[var(--status-error)] \u2192 border-status-critical throughout helper fns and badge rendering."
+          "note": "All arbitrary var(--status-*) usages converted to token utilities. getSeverityColor (medium, low), getStatusColor (acknowledged, resolved), and batch-mode warning span now use text-status-warning / text-status-live / bg-status-warning/10 etc. --color-status-warning and --color-status-live are exposed as token utilities via @theme inline in globals.css.",
+          "fix": "Substituted text-[var(--status-error)] \u2192 text-status-critical, bg-[var(--status-error)]/10 \u2192 bg-status-critical/10, border-[var(--status-error)] \u2192 border-status-critical (prior rollout). 2026-04-21 audit pass additionally substituted text-[var(--status-warning)] and text-[var(--status-live)] variants at lines 49, 51, 62, 64, 378 \u2014 widget now has zero arbitrary var(--status-*) references."
         },
         "7.2": {
           "result": "pass",
@@ -282,9 +282,25 @@
       "description": "alerts-table-widget.tsx:378 \u2014 text-[10px] arbitrary font size for batch-mode badge label",
       "status": "fixed",
       "fix": "Substituted text-[10px] \u2192 text-micro (new 0.625rem token in @theme inline) on 'Batch \u2014 actions disabled' badge label at line 378."
+    },
+    {
+      "level": "l7",
+      "check": "7.1",
+      "description": "alerts-table-widget.tsx:49,51,62,64,378 \u2014 text-[var(--status-warning)] / text-[var(--status-live)] / bg-[var(--status-warning)]/10 / border-[var(--status-warning)] arbitrary value utilities in getSeverityColor (medium, low branches), getStatusColor (acknowledged, resolved), and batch-mode warning badge",
+      "severity": "low",
+      "status": "fixed",
+      "fix": "Substituted to token utilities: text-status-warning / bg-status-warning/10 / border-status-warning and text-status-live / bg-status-live/10 / border-status-live. --color-status-warning and --color-status-live were already exposed via @theme inline."
+    },
+    {
+      "level": "l4",
+      "check": "4.1",
+      "description": "alerts-table-widget.tsx:155 \u2014 Entity cell rendered <span className='text-primary hover:underline cursor-pointer'> with no click handler; looked like a navigation link but did nothing",
+      "severity": "medium",
+      "status": "fixed",
+      "fix": "Wrapped strategy-entity cells in next/link \u2192 /services/trading/strategies/[entity]; non-strategy entities render as plain text-foreground. Eliminates the misleading 'cursor-pointer' affordance."
     }
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-21",
-  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical and text-[10px] \u2192 text-micro per landed tokens"
+  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical, text-[var(--status-warning)] \u2192 text-status-warning, text-[var(--status-live)] \u2192 text-status-live, text-[10px] \u2192 text-micro per landed tokens; fixed dead-looking entity link"
 }

@@ -278,6 +278,13 @@
       "description": "risk-circuit-breakers-widget.tsx \u2014 text-[9px], text-[10px], text-[11px] used for dense CB card labels",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "Widget is read-only \u2014 no per-venue trip/reset/kill control. Actions live in risk-strategy-heatmap (per-strategy). Venue-level manual CB override is an acknowledged gap; kill-switch banner surfaces status but not control.",
+      "status": "deferred",
+      "deferReason": "Design intent per widget description ('status badges'). Keep-separate rationale already recorded in relationships.mergeCandidate."
     }
   ],
   "updatedBy": "agent",

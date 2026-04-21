@@ -516,12 +516,23 @@ export function DeFiDataProvider({ children }: { children: React.ReactNode }) {
 
   const bridgeRoutes = React.useMemo<BridgeRouteQuote[]>(() => [], []);
 
-  const executeDeFiOrder = React.useCallback((params: DeFiOrderParams) => {
-    // Write to persistent mock ledger — the trade history is derived from it
-    placeMockOrder(params);
-    // The mock-order-filled event (fired after 200ms fill) triggers ledgerVersion++
-    // which recomputes tradeHistory from the ledger automatically
-  }, []);
+  const executeDeFiOrder = React.useCallback(
+    (params: DeFiOrderParams) => {
+      // Guard: batch (as-of historical) mode is read-only; paper writes into the mock
+      // ledger the same as live so strategies can be rehearsed without real funds.
+      if (isBatch) {
+        if (typeof window !== "undefined") {
+          console.warn("[defi-data-context] executeDeFiOrder ignored in batch mode", params.instruction_type);
+        }
+        return;
+      }
+      // Write to persistent mock ledger — the trade history is derived from it
+      placeMockOrder(params);
+      // The mock-order-filled event (fired after 200ms fill) triggers ledgerVersion++
+      // which recomputes tradeHistory from the ledger automatically
+    },
+    [isBatch],
+  );
 
   // Paper mode: 10x testnet balances; Batch mode: read-only flag
   // When an org without a DeFi desk is selected, show zero balances

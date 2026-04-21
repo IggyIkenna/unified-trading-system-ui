@@ -225,9 +225,8 @@
       "date": "2026-04-21",
       "checks": {
         "8.1": {
-          "result": "deferred",
-          "note": "RecentFillsWidget uses text-[9px] at line 138 for Badge BUY/SELL chip. No sub-12px token exists in globals.css. Requests --text-badge-nano (0.5625rem/9px).",
-          "deferReason": "missing token \u2014 requests --text-badge-nano (9px) for compact BUY/SELL side badge chip labels"
+          "result": "pass",
+          "note": "RecentFillsWidget text-[9px] at line 138 replaced with text-nano (token --text-nano 0.5625rem already exists in globals.css). Zero arbitrary text-[Npx] classes remain."
         },
         "8.2": {
           "result": "pass",
@@ -246,7 +245,7 @@
           "note": "Human check: responsive at minW=2."
         }
       },
-      "notes": "8.1 deferred (missing badge-nano token). 8.2/8.3 pass. 8.4 partial. 8.5 human-only."
+      "notes": "8.1 fixed (text-nano applied). 8.2/8.3 pass. 8.4 partial. 8.5 human-only."
     }
   },
   "relationships": {
@@ -300,10 +299,10 @@
       "level": "l8",
       "check": "8.1",
       "description": "bottom-widgets.tsx:138 \u2014 text-[9px] on Badge BUY/SELL chip in RecentFillsWidget",
-      "status": "deferred",
-      "deferReason": "missing token \u2014 requests --text-badge-nano (0.5625rem/9px) for compact side badge chip labels"
+      "status": "fixed",
+      "fix": "Replaced text-[9px] with text-nano utility (token --text-nano 0.5625rem already exists in globals.css; no new token request needed)."
     }
   ],
-  "updatedBy": "agent",
+  "updatedBy": "agent-overview-audit",
   "updatedAt": "2026-04-21"
 }

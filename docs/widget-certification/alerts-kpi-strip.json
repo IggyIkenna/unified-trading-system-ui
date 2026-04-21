@@ -46,7 +46,7 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "No dead code. AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY are placeholder constants pending API \u2014 documented in file comment, not dead code"
+          "note": "No dead code. MOCK_AVG_RESOLUTION_DISPLAY and MOCK_LAST_24H_DISPLAY are mock constants pending API \u2014 relocated to lib/config/services/alerts.config.ts in 2026-04-21 audit pass per no-inline-mocks rule."
         }
       },
       "notes": null
@@ -82,7 +82,7 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY are module-level constants (correct placement for placeholder values awaiting API)"
+          "note": "MOCK_AVG_RESOLUTION_DISPLAY and MOCK_LAST_24H_DISPLAY live in lib/config/services/alerts.config.ts (MOCK_* naming + mock-data-in-config-services per workspace rule). Widget imports the constants rather than defining them inline."
         }
       },
       "notes": "Pure display widget \u2014 reads 3 computed values from context. No direct filtering required in widget itself."
@@ -170,7 +170,7 @@
         },
         "7.2": {
           "result": "pass",
-          "note": "No lib/mocks imports. No duplicated fixtures."
+          "note": "No lib/mocks imports. Mock constants (MOCK_AVG_RESOLUTION_DISPLAY, MOCK_LAST_24H_DISPLAY) imported from lib/config/services/alerts.config.ts \u2014 correct location per workspace rule (MOCK_* in lib/config/services or lib/mocks/fixtures, never inline)."
         },
         "7.3": {
           "result": "pass",
@@ -252,8 +252,8 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "AVG_RESOLUTION_DISPLAY hardcoded to '12m' \u2014 not sourced from API",
-      "LAST_24H_DISPLAY hardcoded to '23' \u2014 not sourced from API"
+      "MOCK_AVG_RESOLUTION_DISPLAY hardcoded to '12m' in lib/config/services/alerts.config.ts \u2014 awaits alerts summary API field",
+      "MOCK_LAST_24H_DISPLAY hardcoded to '23' in lib/config/services/alerts.config.ts \u2014 awaits alerts summary API field"
     ],
     "notes": "Cross-domain aggregate widget. Coverage is all strategies/venues by design. Gaps are known API shape gaps, not widget code gaps."
   },
@@ -261,7 +261,7 @@
     {
       "level": "L1",
       "check": "1.7",
-      "description": "AVG_RESOLUTION_DISPLAY ('12m') and LAST_24H_DISPLAY ('23') are hardcoded placeholder constants. Real values pending alerts API response shape extension."
+      "description": "MOCK_AVG_RESOLUTION_DISPLAY ('12m') and MOCK_LAST_24H_DISPLAY ('23') are mock constants in lib/config/services/alerts.config.ts. Real values pending alerts API response shape extension."
     }
   ],
   "findings": [
@@ -271,6 +271,14 @@
       "description": "alerts-kpi-strip-widget.tsx \u2014 4 user-visible strings: 'Active Alerts', 'Critical', 'Avg Resolution', 'Last 24h'",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l7",
+      "check": "7.2",
+      "description": "alerts-kpi-strip-widget.tsx:8,9 \u2014 placeholder constants AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY defined inline in widget file (violates MOCK_* naming + no-inline-mocks workspace rule)",
+      "severity": "low",
+      "status": "fixed",
+      "fix": "Renamed to MOCK_AVG_RESOLUTION_DISPLAY / MOCK_LAST_24H_DISPLAY, relocated to lib/config/services/alerts.config.ts with JSDoc citing docs/widget-certification/alerts-kpi-strip.json knownIssue L1.7. Widget now imports the constants."
     }
   ],
   "updatedBy": "agent",

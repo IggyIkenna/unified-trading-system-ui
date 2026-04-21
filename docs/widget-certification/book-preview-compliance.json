@@ -297,8 +297,26 @@
     {
       "id": "ki-2",
       "level": "L0",
+      "severity": "medium",
+      "note": "FIXED 2026-04-21. book-data-context.tsx handleSubmit previously passed algo_type:null for non-DeFi orders \u2014 CeFi algo selection was dropped before reaching the mock ledger. Now forwards `algo` (CeFi) or `defiAlgo` (DeFi)."
+    },
+    {
+      "id": "ki-3",
+      "level": "L4",
+      "severity": "high",
+      "note": "FIXED 2026-04-21. handleSubmit had inverted order_type mapping between the two call sites: mock ledger used executionMode==='execute' ? 'market' : 'limit', placeOrder used the opposite. Both call sites now derive order_type from priceNum > 0 (limit) vs absent (market)."
+    },
+    {
+      "id": "ki-4",
+      "level": "L0",
+      "severity": "medium",
+      "note": "FIXED 2026-04-21. canPreview required priceNum > 0 which blocked market orders entirely (Preview Order stayed disabled). Now priceNum is only required when executionMode === 'record_only' (booking a completed trade always has a price)."
+    },
+    {
+      "id": "ki-5",
+      "level": "L7",
       "severity": "low",
-      "note": "book-data-context.tsx handleSubmit passes algo_type: null for non-DeFi orders \u2014 CeFi algo not forwarded to placeMockOrder. Pre-existing bug in context file."
+      "note": "FIXED 2026-04-21. The value memo deps array listed canExecute twice (React useMemo hashing inefficiency + lint noise). Duplicate removed."
     }
   ],
   "findings": [
@@ -336,6 +354,34 @@
       "description": "book-preview-compliance-widget.tsx \u2014 ~25 user-visible strings. No i18n applied.",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
+    },
+    {
+      "level": "l4",
+      "check": "4.4",
+      "description": "handleSubmit order_type inversion between mock ledger (execute\u2192'market') and placeOrder (execute\u2192'limit') caused the two sinks to disagree for every order.",
+      "status": "fixed",
+      "fix": "Unified to order_type = priceNum > 0 ? 'limit' : 'market' for both call sites. Intent now matches standard limit-vs-market semantics for execute + record_only paths."
+    },
+    {
+      "level": "l0",
+      "check": "0.7",
+      "description": "canPreview required priceNum > 0, so Preview Order stayed disabled for market orders (the natural default when algo=MARKET).",
+      "status": "fixed",
+      "fix": "canPreview now only requires price in record_only mode (which is booking a completed trade). Execute mode can preview without price and route to a market order."
+    },
+    {
+      "level": "l7",
+      "check": "7.7",
+      "description": "value useMemo deps array in book-data-context.tsx listed canExecute twice.",
+      "status": "fixed",
+      "fix": "Removed duplicate canExecute entry from the deps array."
+    },
+    {
+      "level": "l0",
+      "check": "0.4",
+      "description": "handleSubmit useCallback deps did not include `algo`, so a CeFi algo change after the callback was first memoized would not retrigger capture.",
+      "status": "fixed",
+      "fix": "Added `algo` to the handleSubmit deps array alongside `defiAlgo`."
     }
   ],
   "updatedBy": "agent",
