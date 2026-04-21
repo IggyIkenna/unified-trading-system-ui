@@ -7,8 +7,8 @@ test("debug: page loads and content renders", async ({ page }) => {
     localStorage.setItem("portal_token", "demo-token");
   });
 
-  // Navigate to Basis Trade strategy page
-  await page.goto("http://localhost:3100/services/trading/strategies/basis-trade", {
+  // Navigate to Carry Basis strategy page (renamed from basis-trade)
+  await page.goto("http://localhost:3100/services/trading/strategies/carry-basis", {
     waitUntil: "domcontentloaded",
     timeout: 60000,
   });

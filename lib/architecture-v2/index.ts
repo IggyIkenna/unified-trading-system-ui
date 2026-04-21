@@ -28,3 +28,4 @@ export * from "./coverage";
 export * from "./availability";
 export * from "./availability-store";
 export * from "./block-list";
+export * from "./family-filter";

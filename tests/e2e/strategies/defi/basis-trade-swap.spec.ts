@@ -28,8 +28,8 @@ test.describe("DeFi Basis Trade (Swap Widget) E2E", () => {
       localStorage.setItem("portal_token", "demo-token-internal-trader");
     });
 
-    // Navigate to Basis Trade strategy page
-    await page.goto("http://localhost:3100/services/trading/strategies/basis-trade", {
+    // Navigate to Carry Basis strategy page (renamed from basis-trade)
+    await page.goto("http://localhost:3100/services/trading/strategies/carry-basis", {
       waitUntil: "domcontentloaded",
       timeout: 60000,
     });

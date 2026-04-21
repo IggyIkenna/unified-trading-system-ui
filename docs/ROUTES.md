@@ -79,7 +79,7 @@ Legacy flat routes are permanent redirects in `next.config.mjs`.
 | `/services/trading/strategies`                  | Strategy families home     | `strategy-families`   |
 | `/services/trading/strategies/grid`             | Strategy grid view         | `strategy-families`   |
 | `/services/trading/strategies/[id]`             | Individual strategy detail | `strategy-families`   |
-| `/services/trading/strategies/basis-trade`      | Basis trade strategy       | `strategy-families`   |
+| `/services/trading/strategies/carry-basis`      | Carry basis strategy       | `strategy-families`   |
 | `/services/trading/strategies/staked-basis`     | Staked basis strategy      | `strategy-families`   |
 | `/services/trading/strategies/model-portfolios` | Model portfolios           | `strategy-families`   |
 | `/services/trading/defi`                        | DeFi operations            | `defi-bundles`        |

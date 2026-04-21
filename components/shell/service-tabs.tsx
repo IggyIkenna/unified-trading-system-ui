@@ -553,19 +553,34 @@ export const REPORTS_TABS: ServiceTab[] = [
 
 // ── Admin/Ops (Internal Operations) ─────────────────────────────────────────
 // Consolidates all admin + ops surfaces into one tab bar to avoid sprawl.
-// Grouped: User Management | Operations | Configuration
+// Grouped: User Management | Apps & Integrations | Audit & Compliance |
+// Operations | Configuration.
+//
+// Wave 3 follow-up (plan p6-admin-nav-wiring, 2026-04-20): all 12 migrated
+// user-management-ui pages + the `persona-override` deep-link (accessed per
+// user from `users/[id]`) are now reachable from this bar. Destructive-action
+// tabs gate via `hasAdminPermission(user, "admin:X")` at the page level —
+// tab-level `requiredEntitlement: "admin"` is the coarse role gate only.
 export const ADMIN_TABS: ServiceTab[] = [
   // ── User Management ─────────────────────────────────────────────────────
-  { label: "Users", href: "/admin/users", exact: true },
-  { label: "Access Requests", href: "/admin/users/requests" },
+  { label: "Users", href: "/admin/users", exact: true, group: "Users" },
+  { label: "Access Requests", href: "/admin/requests", matchPrefix: "/admin/requests" },
   { label: "Catalogue", href: "/admin/users/catalogue", requiredEntitlement: "admin" },
-  { label: "Onboard", href: "/admin/users/onboard" },
-  { label: "Templates", href: "/admin/users/templates", requiredEntitlement: "admin" },
-  { label: "Firebase Users", href: "/admin/users/firebase", requiredEntitlement: "admin" },
-  { label: "Health Checks", href: "/admin/users/health-checks", requiredEntitlement: "admin" },
+  { label: "Onboard", href: "/admin/onboard", matchPrefix: "/admin/onboard" },
+  { label: "Templates", href: "/admin/templates", matchPrefix: "/admin/templates", requiredEntitlement: "admin" },
+  { label: "Firebase Users", href: "/admin/firebase-users", matchPrefix: "/admin/firebase-users", requiredEntitlement: "admin" },
+  { label: "Groups", href: "/admin/groups", matchPrefix: "/admin/groups", requiredEntitlement: "admin" },
+  { label: "Questionnaires", href: "/admin/questionnaires", matchPrefix: "/admin/questionnaires", requiredEntitlement: "admin" },
+  { label: "Notifications", href: "/admin/notifications", matchPrefix: "/admin/notifications", requiredEntitlement: "admin" },
   { label: "Organisations", href: "/admin/organizations", matchPrefix: "/admin/organizations" },
+  // ── Apps & Integrations ─────────────────────────────────────────────────
+  { label: "Apps", href: "/admin/apps", matchPrefix: "/admin/apps", group: "Apps", requiredEntitlement: "admin" },
+  { label: "GitHub", href: "/admin/github", matchPrefix: "/admin/github", requiredEntitlement: "admin" },
+  // ── Audit & Compliance ──────────────────────────────────────────────────
+  { label: "Audit Log", href: "/admin/audit-log", matchPrefix: "/admin/audit-log", group: "Audit", requiredEntitlement: "admin" },
+  { label: "Health Checks", href: "/admin/health-checks", matchPrefix: "/admin/health-checks", requiredEntitlement: "admin" },
   // ── Operations ──────────────────────────────────────────────────────────
-  { label: "Services", href: "/ops/services", group: "Operations" },
+  { label: "Services", href: "/ops/services", group: "System" },
   { label: "Jobs", href: "/ops/jobs" },
   { label: "Signal Counterparties", href: "/services/signals/counterparties", requiredEntitlement: "admin" },
   { label: "Deployment & Readiness", href: "/devops" },

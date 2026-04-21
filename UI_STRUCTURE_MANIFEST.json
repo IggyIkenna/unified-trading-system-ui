@@ -382,8 +382,8 @@
           "lines": 270
         },
         {
-          "route": "/services/trading/strategies/basis-trade",
-          "file": "app/(platform)/services/trading/strategies/basis-trade/page.tsx",
+          "route": "/services/trading/strategies/carry-basis",
+          "file": "app/(platform)/services/trading/strategies/carry-basis/page.tsx",
           "state": "REAL",
           "lines": 42
         },

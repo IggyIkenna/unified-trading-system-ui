@@ -9,6 +9,8 @@ import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
@@ -613,8 +615,24 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
     if (instrumentTypeFilters.length > 0) {
       result = result.filter((p) => instrumentTypeFilters.includes(classifyInstrument(p.instrument)));
     }
+    // Phase 3 (plan p3-wire-picker-orders-positions): filter by the global
+    // (family, archetype) selection written by TradingFamilyFilterBanner.
+    const familyPredicate = makeFamilyFilterPredicate({
+      family: globalScope.strategyFamily as StrategyFamily | undefined,
+      archetype: globalScope.strategyArchetype as StrategyArchetype | undefined,
+    });
+    result = result.filter(familyPredicate);
     return result;
-  }, [positions, searchQuery, strategyFilter, venueFilter, sideFilter, instrumentTypeFilters]);
+  }, [
+    positions,
+    searchQuery,
+    strategyFilter,
+    venueFilter,
+    sideFilter,
+    instrumentTypeFilters,
+    globalScope.strategyFamily,
+    globalScope.strategyArchetype,
+  ]);
 
   const summary: PositionsSummary = React.useMemo(() => {
     // Use API-provided notional_usd (accounts for contract size on derivatives)

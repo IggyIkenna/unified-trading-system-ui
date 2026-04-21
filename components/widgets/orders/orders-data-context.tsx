@@ -12,6 +12,8 @@ import { SEED_STRATEGIES } from "@/lib/mocks/fixtures/mock-data-seed";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
+import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { getOrders as getLedgerOrders } from "@/lib/api/mock-trade-ledger";
 import type { MockOrder } from "@/lib/api/mock-trade-ledger";
@@ -296,8 +298,25 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
     if (instrumentTypeFilters.length > 0) {
       result = result.filter((o) => instrumentTypeFilters.includes(classifyInstrument(o.instrument)));
     }
+    // Phase 3 (plan p3-wire-picker-orders-positions): filter by the global
+    // (family, archetype) selection written by TradingFamilyFilterBanner.
+    const familyPredicate = makeFamilyFilterPredicate({
+      family: globalScope.strategyFamily as StrategyFamily | undefined,
+      archetype: globalScope.strategyArchetype as StrategyArchetype | undefined,
+    });
+    result = result.filter(familyPredicate);
     return result;
-  }, [scopedOrders, searchQuery, venueFilter, statusFilter, strategyFilter, sideFilter, instrumentTypeFilters]);
+  }, [
+    scopedOrders,
+    searchQuery,
+    venueFilter,
+    statusFilter,
+    strategyFilter,
+    sideFilter,
+    instrumentTypeFilters,
+    globalScope.strategyFamily,
+    globalScope.strategyArchetype,
+  ]);
 
   const uniqueVenues = React.useMemo(() => [...new Set(orders.map((o) => o.venue))].sort(), [orders]);
 

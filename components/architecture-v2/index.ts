@@ -17,3 +17,5 @@ export type {
   FamilyArchetypePickerProps,
   FamilyArchetypeSelection,
 } from "./family-archetype-picker";
+export { TradingFamilyFilterBanner } from "./trading-family-filter-banner";
+export type { TradingFamilyFilterBannerProps } from "./trading-family-filter-banner";

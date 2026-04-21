@@ -11,8 +11,8 @@ test("debug: check page structure", async ({ page }) => {
   page.on("console", (msg) => console.log("CONSOLE:", msg.type(), msg.text()));
   page.on("pageerror", (err) => console.log("PAGE ERROR:", err.message));
 
-  // Navigate to Basis Trade strategy page
-  const response = await page.goto("http://localhost:3100/services/trading/strategies/basis-trade", {
+  // Navigate to Carry Basis strategy page (renamed from basis-trade)
+  const response = await page.goto("http://localhost:3100/services/trading/strategies/carry-basis", {
     waitUntil: "domcontentloaded",
     timeout: 60000,
   });

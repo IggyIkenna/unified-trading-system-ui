@@ -7,8 +7,8 @@ test("debug: find what text is on page", async ({ page }) => {
     localStorage.setItem("portal_token", "demo-token");
   });
 
-  // Navigate
-  await page.goto("http://localhost:3100/services/trading/strategies/basis-trade", {
+  // Navigate (Carry Basis — renamed from basis-trade)
+  await page.goto("http://localhost:3100/services/trading/strategies/carry-basis", {
     waitUntil: "domcontentloaded",
     timeout: 60000,
   });
