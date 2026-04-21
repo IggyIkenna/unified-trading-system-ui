@@ -1,7 +1,6 @@
 "use client";
 
 import { ActivityFeed } from "@/components/platform/activity-feed";
-import { HealthBar } from "@/components/platform/health-bar";
 import { QuickActions } from "@/components/platform/quick-actions";
 import { StatusDot } from "@/components/shared/status-badge";
 import {
@@ -30,7 +29,6 @@ import {
   DollarSign,
   FileText,
   FlaskConical,
-  Radio,
   Shield,
   TrendingUp,
 } from "lucide-react";
@@ -153,7 +151,7 @@ function useRoleKPIs(hasEntitlement: (e: Entitlement) => boolean, isLive: boolea
 
 export default function DashboardPage() {
   const { user, hasEntitlement, isAdmin, isInternal } = useAuth();
-  const { mode, isLive, setMode } = useExecutionMode();
+  const { isLive } = useExecutionMode();
   const kpis = useRoleKPIs(hasEntitlement, isLive);
 
   const allServices = SERVICE_REGISTRY.filter((svc) => {
@@ -172,8 +170,6 @@ export default function DashboardPage() {
   const showResearch = hasEntitlement("strategy-full") || hasEntitlement("ml-full");
   const showTrading = hasEntitlement("execution-basic") || hasEntitlement("execution-full");
   const showReporting = hasEntitlement("reporting");
-  const showBatchLiveToggle = showTrading || showResearch;
-
   const visibleStages = React.useMemo(() => {
     if (!user) return [];
     const stages: PlatformLifecycleStage[] = [];
@@ -204,26 +200,11 @@ export default function DashboardPage() {
               {visibleServices.length} of {allServices.length} services
             </>
           }
-        >
-          <div className="flex items-center gap-3">
-            <HealthBar />
-            {showBatchLiveToggle && (
-              <button
-                type="button"
-                onClick={() => setMode(isLive ? "batch" : "live")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors",
-                  isLive
-                    ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
-                    : "border-primary/30 bg-primary/10 text-primary",
-                )}
-              >
-                {isLive ? <Radio className="size-3" /> : <Database className="size-3" />}
-                {isLive ? "Live" : "Batch"}
-              </button>
-            )}
-          </div>
-        </PageHeader>
+        />
+        {/* HealthBar + Live/Batch toggle removed 2026-04-21 — DART-only.
+            System health belongs on DART observability surfaces (terminal /
+            observe sub-tabs). Live/Batch mode is a DART execution concern.
+            Neither is relevant on /dashboard (the services hub). */}
 
         {/* ── Row 2: Role-aware KPIs ────────────────────────────────── */}
         {/* Every user sees KPIs relevant to their entitlements. Data-only users
