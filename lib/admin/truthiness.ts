@@ -70,12 +70,28 @@ export interface FeatureRegistryRow {
   readonly source: "live" | "mock";
 }
 
+/**
+ * High-level health status of the snapshot. `LIVE` — backend fetched and
+ * reconciled; `MOCK` — adapter short-circuited because env wiring absent or
+ * `CLOUD_MOCK_MODE` was set; `AUTH_ERROR` — live fetch rejected credential
+ * (401/403), fell back to mock data with a tagged warning; `UNREACHABLE` —
+ * network/transport failure to strategy-service, fell back to mock data.
+ *
+ * Consumer pages render a banner per status so operators never confuse
+ * "mock" with "live-but-failed". `AUTH_ERROR` + `UNREACHABLE` always ride
+ * alongside `mode: "mock"` (mock data is what we actually returned) — the
+ * `status` field is what went wrong.
+ */
+export type SnapshotStatus = "LIVE" | "MOCK" | "AUTH_ERROR" | "UNREACHABLE";
+
 export interface CatalogueSnapshot {
   readonly archetypes: readonly ArchetypeRegistryRow[];
   readonly mlModels: readonly MlModelRegistryRow[];
   readonly features: readonly FeatureRegistryRow[];
   readonly fetchedAtUtc: string;
   readonly mode: "live" | "mock";
+  readonly status: SnapshotStatus;
+  readonly mock: boolean;
   readonly warnings: readonly string[];
 }
 
@@ -236,6 +252,42 @@ interface AdapterConfig {
   readonly mockMode?: boolean;
 }
 
+/**
+ * Parse `NEXT_PUBLIC_FEATURES_SERVICE_URLS` — JSON map of
+ * `{"features-onchain": "http://localhost:8012", ...}`. Returns `undefined`
+ * when unset or malformed (adapter treats that as mock-mode for features).
+ */
+function parseFeaturesServiceBaseUrls(
+  raw: string | undefined,
+): Readonly<Record<string, string>> | undefined {
+  if (!raw) return undefined;
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      Array.isArray(parsed)
+    ) {
+      return undefined;
+    }
+    const result: Record<string, string> = {};
+    for (const [serviceKey, baseUrl] of Object.entries(
+      parsed as Record<string, unknown>,
+    )) {
+      if (typeof baseUrl === "string" && baseUrl.length > 0) {
+        result[serviceKey] = baseUrl;
+      }
+    }
+    return Object.keys(result).length > 0 ? result : undefined;
+  } catch {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "CatalogueTruthinessAdapter: NEXT_PUBLIC_FEATURES_SERVICE_URLS is not valid JSON — falling back to mock features.",
+    );
+    return undefined;
+  }
+}
+
 function resolveConfig(override?: AdapterConfig): AdapterConfig {
   const envMock =
     typeof process !== "undefined" &&
@@ -252,13 +304,22 @@ function resolveConfig(override?: AdapterConfig): AdapterConfig {
     typeof process !== "undefined"
       ? (process.env.NEXT_PUBLIC_STRATEGY_SERVICE_URL ?? "")
       : "";
-  // mockMode precedence: explicit override > env flag > missing token
+  const defaultFeaturesUrls =
+    typeof process !== "undefined"
+      ? parseFeaturesServiceBaseUrls(
+          process.env.NEXT_PUBLIC_FEATURES_SERVICE_URLS,
+        )
+      : undefined;
+  // mockMode precedence: explicit override > env flag > missing token/url
+  const hasLiveWiring =
+    !!adminToken && defaultStrategyBase.length > 0;
   const mockMode =
-    override?.mockMode ?? (envMock || publicMock || !adminToken);
+    override?.mockMode ?? (envMock || publicMock || !hasLiveWiring);
   return {
     adminToken,
     strategyServiceBaseUrl: override?.strategyServiceBaseUrl ?? defaultStrategyBase,
-    featuresServiceBaseUrls: override?.featuresServiceBaseUrls,
+    featuresServiceBaseUrls:
+      override?.featuresServiceBaseUrls ?? defaultFeaturesUrls,
     mockMode,
   };
 }
@@ -315,22 +376,64 @@ function coerceArchetype(raw: string): StrategyArchetype | null {
     : null;
 }
 
+/** Discriminated error so callers can decide `AUTH_ERROR` vs `UNREACHABLE`. */
+export class AdminRegistryFetchError extends Error {
+  readonly kind: "auth" | "network";
+  readonly status?: number;
+  readonly url: string;
+  constructor(
+    kind: "auth" | "network",
+    url: string,
+    message: string,
+    status?: number,
+  ) {
+    super(message);
+    this.name = "AdminRegistryFetchError";
+    this.kind = kind;
+    this.url = url;
+    if (status !== undefined) this.status = status;
+  }
+}
+
 async function fetchJson<T>(
   url: string,
   adminToken: string,
   signal?: AbortSignal,
 ): Promise<T> {
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      "X-Admin-Token": adminToken,
-      Accept: "application/json",
-    },
-    signal,
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "GET",
+      headers: {
+        "X-Admin-Token": adminToken,
+        Accept: "application/json",
+      },
+      signal,
+    });
+  } catch (err) {
+    // Network / DNS / CORS / abort — treat as unreachable.
+    const message =
+      err instanceof Error ? err.message : String(err);
+    throw new AdminRegistryFetchError(
+      "network",
+      url,
+      `Admin registry unreachable: ${message}`,
+    );
+  }
+  if (res.status === 401 || res.status === 403) {
+    throw new AdminRegistryFetchError(
+      "auth",
+      url,
+      `Admin registry rejected X-Admin-Token (${res.status} ${res.statusText}) — ${url}`,
+      res.status,
+    );
+  }
   if (!res.ok) {
-    throw new Error(
-      `Admin registry fetch failed (${res.status}): ${res.statusText} — ${url}`,
+    throw new AdminRegistryFetchError(
+      "network",
+      url,
+      `Admin registry fetch failed (${res.status} ${res.statusText}) — ${url}`,
+      res.status,
     );
   }
   return (await res.json()) as T;
@@ -466,23 +569,63 @@ export class CatalogueTruthinessAdapter {
 
   async fetchSnapshot(signal?: AbortSignal): Promise<CatalogueSnapshot> {
     const warnings: string[] = [];
-    const mode: "live" | "mock" = this.isMockMode ? "mock" : "live";
-    if (mode === "mock") {
+    if (this.isMockMode) {
       warnings.push(
-        "Running in mock mode. Admin token unset or CLOUD_MOCK_MODE=true.",
+        "Running in mock mode. Admin token unset, NEXT_PUBLIC_STRATEGY_SERVICE_URL unset, or CLOUD_MOCK_MODE=true.",
       );
+      return {
+        archetypes: buildMockArchetypeRows(),
+        mlModels: buildMockMlModelRows(),
+        features: buildMockFeatureRows(),
+        fetchedAtUtc: new Date().toISOString(),
+        mode: "mock",
+        status: "MOCK",
+        mock: true,
+        warnings,
+      };
     }
-    const [archetypes, mlModels, features] = await Promise.all([
-      this.fetchArchetypes(signal),
-      this.fetchMlModels(signal),
-      this.fetchFeatures(signal),
-    ]);
+    // Live path — but protect against auth / network errors by falling back
+    // to mock data with a tagged status. The UI renders `AUTH_ERROR` /
+    // `UNREACHABLE` banners on this snapshot so operators see what broke.
+    let status: SnapshotStatus = "LIVE";
+    let archetypes: readonly ArchetypeRegistryRow[];
+    let mlModels: readonly MlModelRegistryRow[];
+    let features: readonly FeatureRegistryRow[];
+    try {
+      [archetypes, mlModels, features] = await Promise.all([
+        this.fetchArchetypes(signal),
+        this.fetchMlModels(signal),
+        this.fetchFeatures(signal),
+      ]);
+    } catch (err) {
+      // classify + fall back to mock
+      if (err instanceof AdminRegistryFetchError) {
+        status = err.kind === "auth" ? "AUTH_ERROR" : "UNREACHABLE";
+        warnings.push(err.message);
+      } else {
+        status = "UNREACHABLE";
+        warnings.push(
+          err instanceof Error ? err.message : String(err),
+        );
+      }
+      // eslint-disable-next-line no-console
+      console.warn(
+        "CatalogueTruthinessAdapter: live fetch failed, falling back to mock data.",
+        err,
+      );
+      archetypes = buildMockArchetypeRows();
+      mlModels = buildMockMlModelRows();
+      features = buildMockFeatureRows();
+    }
+    const mock = status !== "LIVE";
     return {
       archetypes,
       mlModels,
       features,
       fetchedAtUtc: new Date().toISOString(),
-      mode,
+      mode: mock ? "mock" : "live",
+      status,
+      mock,
       warnings,
     };
   }

@@ -324,6 +324,11 @@ echo "[UI] Starting Next.js dev server..."
 INTEGRATION="slim"
 if [ "$TIER" = "2" ]; then INTEGRATION="full_mesh"; fi
 
+# Note: admin catalogue truthiness vars (NEXT_PUBLIC_ADMIN_API_TOKEN,
+# NEXT_PUBLIC_STRATEGY_SERVICE_URL, NEXT_PUBLIC_FEATURES_SERVICE_URLS) are
+# intentionally unset here so the admin catalogue falls back to mock seed
+# data — dev-tiers is mock-only. Set these in `.env.local` to exercise the
+# live-mode adapter against a real strategy-service + features-* mesh.
 start_process "ui" "$UI_ROOT" \
   env NEXT_PUBLIC_MOCK_API=true NEXT_PUBLIC_UI_INTEGRATION="$INTEGRATION" \
   npx next dev

@@ -118,7 +118,7 @@ export default function AdminStrategyCatalogueOverviewPage() {
         description="Every family × archetype × cell with representative strategy IDs + representative venues. Admin bypass is active — persona filters do not apply."
       />
 
-      {snapshot?.mode === "mock" ? (
+      {snapshot?.status === "MOCK" ? (
         <Alert
           className="border-amber-500/40 bg-amber-500/10"
           data-testid="catalogue-mock-banner"
@@ -130,6 +130,34 @@ export default function AdminStrategyCatalogueOverviewPage() {
             {" "}Set <code>NEXT_PUBLIC_ADMIN_API_TOKEN</code> and point
             <code> NEXT_PUBLIC_STRATEGY_SERVICE_URL</code> at a reachable
             strategy-service instance to see live registry state.
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
+      {snapshot?.status === "AUTH_ERROR" ? (
+        <Alert
+          className="border-rose-500/40 bg-rose-500/10"
+          data-testid="catalogue-auth-error-banner"
+        >
+          <AlertTriangle className="h-4 w-4 text-rose-300" />
+          <AlertTitle>Admin token rejected</AlertTitle>
+          <AlertDescription>
+            {snapshot.warnings.join(" ")} Showing mock catalogue data while
+            <code> NEXT_PUBLIC_ADMIN_API_TOKEN</code> is rotated.
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
+      {snapshot?.status === "UNREACHABLE" ? (
+        <Alert
+          className="border-amber-500/40 bg-amber-500/10"
+          data-testid="catalogue-unreachable-banner"
+        >
+          <AlertTriangle className="h-4 w-4 text-amber-300" />
+          <AlertTitle>Registry unreachable</AlertTitle>
+          <AlertDescription>
+            {snapshot.warnings.join(" ")} Showing mock catalogue data until
+            the strategy-service endpoint recovers.
           </AlertDescription>
         </Alert>
       ) : null}
