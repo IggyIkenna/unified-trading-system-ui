@@ -55,6 +55,7 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
     settlement: "visible",
     reconciliation: "visible",
     regulatory: "hidden",
+    catalogue: "hidden",
   },
   "investor-relations": {
     board: "hidden",
@@ -65,6 +66,8 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
   admin: {
     users: "hidden",
     orgs: "hidden",
+    "strategy-universe": "hidden",
+    "strategy-lifecycle-editor": "hidden",
     deployments: "hidden",
     "service-registry": "hidden",
     "audit-log": "hidden",
@@ -131,6 +134,7 @@ const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
     settlement: "visible",
     reconciliation: "visible",
     regulatory: "visible",
+    catalogue: "visible",
   },
   "investor-relations": {
     board: "visible",
@@ -141,6 +145,8 @@ const ALL_VISIBLE_SUBROUTES: DashboardSubRouteVisibility = {
   admin: {
     users: "visible",
     orgs: "visible",
+    "strategy-universe": "visible",
+    "strategy-lifecycle-editor": "visible",
     deployments: "visible",
     "service-registry": "visible",
     "audit-log": "visible",
@@ -246,6 +252,8 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
     admin: {
       users: "visible",
       orgs: "visible",
+      "strategy-universe": "visible",
+      "strategy-lifecycle-editor": "visible",
       deployments: "visible",
       "service-registry": "visible",
       "audit-log": "visible",
@@ -265,7 +273,11 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       security: "visible",
       "ir-briefings": "visible",
     },
-    admin: { deployments: "visible", "audit-log": "visible" },
+    admin: {
+      deployments: "visible",
+      "audit-log": "visible",
+      "strategy-universe": "visible",
+    },
   }),
 
   "client-full": subRouteOverride({
@@ -332,6 +344,7 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       "pnl-attribution": "visible",
       settlement: "visible",
       reconciliation: "visible",
+      catalogue: "visible",
     },
     "investor-relations": {
       board: "visible",
@@ -343,6 +356,7 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       "pnl-attribution": "visible",
       settlement: "visible",
       reconciliation: "visible",
+      catalogue: "visible",
     },
     "investor-relations": {
       board: "visible",

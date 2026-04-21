@@ -109,11 +109,12 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
       },
       {
         key: "strategy-catalogue",
-        label: "Strategy Catalogue",
+        label: "Catalogue",
         href: "/services/strategy-catalogue",
         icon: "Layers",
         requiredEntitlements: ["strategy-full", "execution-full"] as readonly Entitlement[],
-        description: "Family × Archetype × Venue × Instrument coverage matrix.",
+        description:
+          "Reality + FOMO view of the shared Tier-3 strategy catalogue primitive.",
       },
       {
         key: "signal-intake",
@@ -225,6 +226,15 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         requiredEntitlements: [],
         description: "Compliance + regulatory reporting.",
       },
+      {
+        key: "catalogue",
+        label: "Catalogue",
+        href: "/services/strategy-catalogue?tab=explore",
+        icon: "Layers",
+        requiredEntitlements: [],
+        description:
+          "Tier-3 strategy catalogue — FOMO tearsheets + Reality allocations for IM personas.",
+      },
     ],
   },
 
@@ -302,6 +312,23 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
         icon: "Building2",
         requiredEntitlements: ["*"],
         description: "Client org onboarding + mandates.",
+      },
+      {
+        key: "strategy-universe",
+        label: "Strategy Universe",
+        href: "/admin/strategy-universe",
+        icon: "Layers",
+        requiredEntitlements: ["*"],
+        description: "Tier-1 read-only catalogue of every UAC-expressed instance.",
+      },
+      {
+        key: "strategy-lifecycle-editor",
+        label: "Strategy Lifecycle Editor",
+        href: "/admin/strategy-lifecycle-editor",
+        icon: "Edit",
+        requiredEntitlements: ["*"],
+        description:
+          "Tier-2 maturity-phase + product-routing editor (enabled post Plan A Phase 3).",
       },
       {
         key: "deployments",
