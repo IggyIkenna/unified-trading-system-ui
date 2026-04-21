@@ -10,6 +10,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { useProvisionedUser, useOffboardUser } from "@/hooks/api/use-user-management";
 import type { OffboardAction } from "@/lib/types/user-management";
+import { useAuth } from "@/hooks/use-auth";
+import { hasAdminPermission } from "@/lib/auth/admin-permissions";
 
 const SERVICE_LABELS: Record<string, string> = {
   github: "GitHub",
@@ -26,6 +28,8 @@ export default function OffboardUserPage() {
   const { data } = useProvisionedUser(params.id);
   const offboard = useOffboardUser();
   const user = data?.user;
+  const { user: currentUser } = useAuth();
+  const canOffboard = hasAdminPermission(currentUser, "admin:offboard_user");
 
   const provisionedServices = React.useMemo(() => {
     if (!user) return [];
@@ -47,6 +51,10 @@ export default function OffboardUserPage() {
   if (!user) return <div className="p-6 text-muted-foreground">Loading...</div>;
 
   const handleOffboard = () => {
+    if (!canOffboard) {
+      // Permission-denied soft-fail — admin:offboard_user required.
+      return;
+    }
     offboard.mutate({ id: params.id, actions }, { onSuccess: () => router.push("/admin/users") });
   };
 
@@ -114,7 +122,8 @@ export default function OffboardUserPage() {
             <Button
               variant="destructive"
               onClick={handleOffboard}
-              disabled={offboard.isPending || provisionedServices.length === 0}
+              disabled={offboard.isPending || provisionedServices.length === 0 || !canOffboard}
+              title={!canOffboard ? "Permission denied: admin:offboard_user required" : undefined}
             >
               {offboard.isPending ? "Offboarding..." : "Confirm Offboard"}
             </Button>

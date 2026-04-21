@@ -18,6 +18,8 @@ import {
   usePermissionCatalogue,
 } from "@/hooks/api/use-user-management";
 import type { ProvisioningRole } from "@/lib/types/user-management";
+import { useAuth } from "@/hooks/use-auth";
+import { hasAdminPermission } from "@/lib/auth/admin-permissions";
 
 const ROLES: ProvisioningRole[] = [
   "admin",
@@ -38,6 +40,9 @@ export default function ModifyUserPage() {
   const templates = useAccessTemplates();
   const { data: catalogueData, isLoading: catalogueLoading } = usePermissionCatalogue();
   const user = data?.user;
+  const { user: currentUser } = useAuth();
+  const canModify = hasAdminPermission(currentUser, "admin:modify_user");
+  const canGrantRole = hasAdminPermission(currentUser, "admin:grant_role");
 
   const [role, setRole] = React.useState<ProvisioningRole | "">("");
   const [githubHandle, setGithubHandle] = React.useState("");
@@ -87,6 +92,14 @@ export default function ModifyUserPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canModify) {
+      // Permission-denied soft-fail — admin:modify_user required.
+      return;
+    }
+    // Promoting to admin requires the separate admin:grant_role permission.
+    if (role === "admin" && !canGrantRole) {
+      return;
+    }
     modify.mutate(
       {
         id: params.id,
