@@ -228,6 +228,34 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "IM desk operator — locks/unlocks strategies via the catalogue admin toggle + sees reporting for cross-client observation. Matches rule 12 IM_desk service family. Maps to G1.7 admin.yaml (nearest profile; IM_desk profile YAML is a G2.x follow-up).",
   },
+  // -------------------------------------------------------------------
+  // Phase 11 additions — 5-path coverage completion (plan todo
+  // p10-add-missing-personas). Fills the counterparty Signals-Out case
+  // and the IM-under-Regulatory hybrid case that weren't previously
+  // represented in the 19-persona set.
+  // -------------------------------------------------------------------
+  {
+    id: "prospect-odum-signals",
+    email: "counterparty@odum-signals.example",
+    password: "demo",
+    displayName: "Odum Signals Counterparty",
+    role: "client",
+    org: { id: "odum-signals-cp", name: "Odum Signals Counterparty" },
+    entitlements: ["execution-full", "reporting"],
+    description:
+      "Counterparty receiving Odum's outbound signal-leasing emissions (Signals-Out direction). Sees Reports only — no DART operational surface, no strategy-catalogue. Complements prospect-signals-only (Signals-In).",
+  },
+  {
+    id: "prospect-im-under-regulatory",
+    email: "cio@hybridfund.example",
+    password: "demo",
+    displayName: "IM-under-Regulatory CIO",
+    role: "client",
+    org: { id: "hybrid-fund", name: "Hybrid Fund" },
+    entitlements: ["reporting", "investor-relations", "data-pro"],
+    description:
+      "Hybrid case — IM client operating under Odum's Regulatory Umbrella. Same Reports surface as other IM clients, plus Manage stage visibility for regulatory-reporting touch points.",
+  },
 ] as const;
 
 export function getPersonaById(id: string): AuthPersona | undefined {

@@ -59,6 +59,9 @@ import {
   Eye,
   FileText,
   FlaskConical,
+  Layers,
+  Presentation,
+  Radio,
   Settings2,
   TrendingUp,
 } from "lucide-react";
@@ -71,6 +74,9 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Eye,
   Settings2,
   FileText,
+  Radio,
+  Layers,
+  Presentation,
   Settings: Settings2,
 };
 

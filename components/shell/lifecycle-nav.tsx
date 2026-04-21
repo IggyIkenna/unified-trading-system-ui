@@ -27,6 +27,7 @@ import {
   type LifecycleStage,
   lifecycleStages,
 } from "@/lib/lifecycle-mapping";
+import { personaLifecycleShape } from "@/lib/auth/persona-lifecycle-shape";
 import { type Phase } from "@/lib/phase/types";
 import { phaseForPath, usePhaseFromRoute } from "@/lib/phase/use-phase-from-route";
 import { cn } from "@/lib/utils";
@@ -123,12 +124,15 @@ export function LifecycleNav({
     return true;
   };
 
-  // Stages hidden from nav — execution folded into Trading
-  const hiddenStages = new Set(["execute"]);
+  // Phase 11: per-persona lifecycle shape — stages marked "hidden" are removed
+  // from nav entirely; "locked" stages render as padlocked; "visible" as
+  // normal. Codex SSOT:
+  // unified-trading-pm/codex/09-strategy/architecture-v2/dart-tab-structure.md
+  const shape = personaLifecycleShape(user);
 
   // Build nav items — keep locked items visible (except ops), mark them as locked
   const navItems = allNavItems
-    .filter((nav) => !hiddenStages.has(nav.stage))
+    .filter((nav) => shape[nav.stage] !== "hidden")
     .map((nav) => ({
       ...nav,
       items: nav.items
@@ -141,7 +145,9 @@ export function LifecycleNav({
         })
         .map((item) => ({
           ...item,
-          locked: !isItemAccessible(item.path),
+          // Locked if persona-lifecycle-shape says the whole stage is locked,
+          // OR the individual item fails the entitlement gate.
+          locked: shape[nav.stage] === "locked" || !isItemAccessible(item.path),
         })),
     }))
     .filter((nav) => nav.items.length > 0);

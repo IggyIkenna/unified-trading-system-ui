@@ -391,6 +391,24 @@ export const TRADING_TABS: ServiceTab[] = [
     requiredEntitlement: { domain: "trading-common", tier: "basic" } as TradingEntitlement,
   },
   { label: "Strategies", href: "/services/trading/strategies", icon: Layers, requiredEntitlement: "strategy-families" },
+  // ── DART umbrella sub-tabs (Phase 11) ─────────────────────────────────────
+  // Strategy Config requires strategy-full entitlement (ml-full is further
+  // enforced at the page level). DART Signals-In personas never see it.
+  {
+    label: "Strategy Config",
+    href: "/services/trading/strategy-config",
+    requiredEntitlement: "strategy-full",
+  },
+  // Signal Intake — inbound signal webhooks for Signals-In + admin cross-client view
+  { label: "Signal Intake", href: "/services/signals/dashboard" },
+  // Observe — risk/alerts/health/live-PnL folded into DART
+  { label: "Observe", href: "/services/observe/risk" },
+  // Deployment — runtime profile + chaos + kill-switch (links to deployment-ui)
+  {
+    label: "Deployment",
+    href: "/services/trading/deployment",
+    requiredEntitlement: "strategy-full",
+  },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
     label: "DeFi",

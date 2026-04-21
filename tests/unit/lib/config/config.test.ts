@@ -68,9 +68,16 @@ describe("lib/config/auth", () => {
 });
 
 describe("lib/config/services", () => {
-  it("exports SERVICE_REGISTRY with 8 services", () => {
+  it("exports SERVICE_REGISTRY with the expected services", () => {
     expect(Array.isArray(SERVICE_REGISTRY)).toBe(true);
-    expect(SERVICE_REGISTRY.length).toBe(8);
+    // Phase 11 (2026-04-20) — added `signals` + `strategy-catalogue` as
+    // top-level services under the DART umbrella (un-orphaning the
+    // previously-unreachable /services/signals/dashboard + strategy
+    // catalogue). Count is now 10.
+    expect(SERVICE_REGISTRY.length).toBe(10);
+    const keys = SERVICE_REGISTRY.map((s) => s.key);
+    expect(keys).toContain("signals");
+    expect(keys).toContain("strategy-catalogue");
   });
 
   it("each service has required fields", () => {

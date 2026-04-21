@@ -23,12 +23,20 @@ export function StrategiesPageHeader() {
               {isLive ? " — Live execution" : " — Batch reconstruction"}
               <span className="block mt-1.5">
                 <span className="text-muted-foreground/80">Multi-widget DeFi verification:</span>{" "}
-                <Link className="text-primary hover:underline" href="/services/trading/strategies/basis-trade">
-                  Basis trade
+                <Link className="text-primary hover:underline" href="/services/trading/strategies/carry-basis">
+                  Carry-basis
                 </Link>
                 <span className="mx-1 opacity-50">·</span>
                 <Link className="text-primary hover:underline" href="/services/trading/strategies/staked-basis">
                   Staked basis
+                </Link>
+                <span className="mx-1 opacity-50">·</span>
+                <Link className="text-primary hover:underline" href="/services/trading/strategies/grid">
+                  Grid strategies
+                </Link>
+                <span className="mx-1 opacity-50">·</span>
+                <Link className="text-primary hover:underline" href="/services/trading/strategies/model-portfolios">
+                  Model portfolios
                 </Link>
               </span>
             </p>

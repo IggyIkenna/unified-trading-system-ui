@@ -37,9 +37,10 @@ const PERSONA_GROUPS: readonly PersonaGroup[] = [
     ids: ["client-full", "client-premium", "client-data-only", "prospect-dart"],
   },
   { label: "DART Signals-In", ids: ["prospect-signals-only"] },
+  { label: "Odum Signals (Counterparty)", ids: ["prospect-odum-signals"] },
   {
     label: "Investment Management",
-    ids: ["client-im-pooled", "client-im-sma", "prospect-im"],
+    ids: ["client-im-pooled", "client-im-sma", "prospect-im", "prospect-im-under-regulatory"],
   },
   {
     label: "Regulatory Umbrella",

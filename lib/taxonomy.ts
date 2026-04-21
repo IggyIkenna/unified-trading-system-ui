@@ -997,8 +997,9 @@ export const PLATFORM_LIFECYCLE_CONFIG: Record<
     color: "text-amber-400",
   },
   run: {
-    label: "Trading",
-    description: "Live trading, positions, orders, and account management",
+    label: "DART",
+    description:
+      "Data-Analytics-Research-Trading umbrella — terminal, positions, orders, P&L, strategy config, deployment, observe, signal intake",
     order: 4,
     icon: "TrendingUp",
     color: "text-emerald-400",
@@ -1036,7 +1037,7 @@ export const SERVICE_LABELS = {
   data: "Data",
   research: "Research",
   promote: "Promote",
-  trading: "Trading",
+  trading: "DART",
   observe: "Observe",
   reports: "Reports",
   "investor-relations": "Investor Relations",

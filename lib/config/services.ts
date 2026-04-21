@@ -77,9 +77,9 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
   },
   {
     key: "trading",
-    label: "Trading",
+    label: "DART",
     description:
-      "Live trading terminal, positions, orders, account balances, market overview, and strategy monitoring.",
+      "Data-Analytics-Research-Trading umbrella — terminal, positions, orders, P&L, observe, strategy config, deployment, and signal intake.",
     href: "/services/trading/overview",
     lifecycleStage: "run",
     requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
@@ -87,11 +87,36 @@ export const SERVICE_REGISTRY: readonly ServiceDefinition[] = [
     internalOnly: false,
   },
   {
+    key: "signals",
+    label: "Odum Signals",
+    description:
+      "Inbound signal intake for DART Signals-In clients + outbound signal emissions for counterparties.",
+    href: "/services/signals/dashboard",
+    lifecycleStage: "run",
+    requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
+    icon: "Radio",
+    internalOnly: false,
+  },
+  {
+    key: "strategy-catalogue",
+    label: "Strategy Catalogue",
+    description:
+      "Family × Archetype × Venue × Instrument coverage matrix — supported / reserved / blocked cells with representative strategy IDs.",
+    href: "/services/strategy-catalogue",
+    lifecycleStage: "run",
+    requiredEntitlements: ["strategy-full", "execution-full"] as readonly Entitlement[],
+    icon: "Layers",
+    internalOnly: false,
+  },
+  {
     key: "observe",
     label: "Observe",
     description:
-      "Risk dashboard, alerts, news feed, strategy health monitoring, and system health.",
-    href: "/services/trading/risk",
+      "Risk dashboard, alerts, news feed, strategy health monitoring, and system health — folded into DART as a sub-tab.",
+    href: "/services/observe/risk",
+    // Phase 11: Observe is now a DART sub-tab conceptually but keeps its
+    // own internal lifecycleStage so route-mapping & breadcrumbs still
+    // resolve. Nav visibility controlled via persona-lifecycle-shape.
     lifecycleStage: "observe",
     requiredEntitlements: ["execution-basic", "execution-full"] as readonly Entitlement[],
     icon: "Eye",

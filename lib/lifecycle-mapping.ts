@@ -46,8 +46,9 @@ export const lifecycleStages: Record<
     color: "text-amber-400",
   },
   run: {
-    label: "Trading",
-    description: "Live trading, positions, orders & account management",
+    label: "DART",
+    description:
+      "Data-Analytics-Research-Trading — research, strategy promotion, execution, observe, deployment config",
     icon: "Play",
     color: "text-emerald-400",
   },
@@ -234,12 +235,45 @@ export function buildLifecycleNav(authRequired: boolean = true): LifecycleNavIte
         description: "Legacy candidate review pipeline",
       },
     ],
+    // DART — absorbs Research + Promote + Run + Execute + Observe + Deployment
+    // per 2026-04-20 Phase 11 lifecycle collapse. Destination ordering
+    // mirrors dart-tab-structure.md § 2.
     run: [
       {
         path: "/services/trading/overview",
-        label: "Trading",
+        label: "DART · Terminal",
         lanes: ["execution", "strategy", "capital"],
-        description: "Overview, terminal, positions, orders",
+        description: "Analytics + reconciliation (manual trading emergency-only)",
+      },
+      {
+        path: "/services/research/overview",
+        label: "DART · Research",
+        lanes: ["ml", "strategy", "execution"],
+        description: "Research, features, models, backtests (folded into DART)",
+      },
+      {
+        path: "/services/promote/pipeline",
+        label: "DART · Promote",
+        lanes: ["strategy", "ml"],
+        description: "Strategy candidate review & approval (folded into DART)",
+      },
+      {
+        path: "/services/observe/risk",
+        label: "DART · Observe",
+        lanes: ["strategy", "execution", "capital"],
+        description: "Risk, alerts, health, live P&L (folded into DART)",
+      },
+      {
+        path: "/services/signals/dashboard",
+        label: "DART · Signal Intake",
+        lanes: ["strategy", "execution"],
+        description: "Inbound counterparty signals (DART Signals-In)",
+      },
+      {
+        path: "/services/strategy-catalogue",
+        label: "DART · Strategy Catalogue",
+        lanes: ["strategy"],
+        description: "Family × Archetype × Venue coverage matrix",
       },
     ],
     execute: [
