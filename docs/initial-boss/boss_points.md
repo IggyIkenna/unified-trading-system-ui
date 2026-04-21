@@ -175,6 +175,4 @@ Was a design constraint, not a standalone pain point. Its useful parts absorbed 
 - [02_codebase_facts.md](02_codebase_facts.md) — still mostly valid, kept as reference
 - [03_test_strategy_options.md](03_test_strategy_options.md) — earlier test layer brainstorm (needs revision)
 - [04_mock_data_and_backend_gap.md](04_mock_data_and_backend_gap.md) — earlier mock-data thinking (feeds BP-5 discussion)
-- [05_repo_structure_question.md](05_repo_structure_question.md) — still valid, no change needed
-- [06_agent_workflow_and_gates.md](06_agent_workflow_and_gates.md) — earlier agent gate thinking (revisit after boss-points)
 - [99_open_questions_and_decisions.md](99_open_questions_and_decisions.md) — cross-doc question ledger (still the decisions log)

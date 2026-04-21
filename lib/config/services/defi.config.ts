@@ -137,33 +137,56 @@ export const GAS_TOKEN_MIN_THRESHOLDS: Record<string, number> = {
 };
 
 /**
- * Mock per-chain native-transfer gas estimates (native-token qty + USD-equivalent).
- * Used by defi-transfer widget pre-execution. Replace with live gas oracle feed
- * when L3 wiring lands.
+ * DeFi gas-fee model (EIP-1559 style).
+ *
+ * Real-world gas = gasUnits × (baseFeeGwei + priorityFeeGwei) × 1e-9, priced in
+ * native token; USD = nativeFee × nativeUsd.
+ *
+ * - `gasUnits` is fixed per operation type (on-chain compute cost) and
+ *   independent of the amount transferred.
+ * - `baseFeeGwei` updates every block on-chain (~12s Ethereum, ~2s L2).
+ * - `priorityFeeGwei` is the wallet-suggested tip.
+ * - `nativeUsd` is the spot price of the chain's gas token.
+ *
+ * Mock: seed values below drive a jitter-based oracle in useGasEstimate until
+ * the backend / gas oracle (Blocknative, eth_feeHistory, etc.) is wired in.
  */
-export type TransferGasEstimate = {
-  nativeQty: number;
+export type DefiGasOperation = "NATIVE_TRANSFER" | "ERC20_TRANSFER" | "BRIDGE_LOCK";
+
+export const DEFI_GAS_UNITS: Record<DefiGasOperation, number> = {
+  NATIVE_TRANSFER: 21_000,
+  ERC20_TRANSFER: 65_000,
+  BRIDGE_LOCK: 120_000,
+};
+
+export type ChainGasBaseline = {
+  baseFeeGwei: number;
+  priorityFeeGwei: number;
   nativeSymbol: string;
-  usd: number;
+  nativeUsd: number;
 };
 
-export const TRANSFER_GAS_ESTIMATES: Record<string, TransferGasEstimate> = {
-  ETHEREUM: { nativeQty: 0.0012, nativeSymbol: "ETH", usd: 4.08 },
-  ARBITRUM: { nativeQty: 0.00004, nativeSymbol: "ETH", usd: 0.14 },
-  OPTIMISM: { nativeQty: 0.00005, nativeSymbol: "ETH", usd: 0.17 },
-  BASE: { nativeQty: 0.00003, nativeSymbol: "ETH", usd: 0.1 },
-  POLYGON: { nativeQty: 0.008, nativeSymbol: "MATIC", usd: 0.07 },
-  BSC: { nativeQty: 0.0005, nativeSymbol: "BNB", usd: 0.17 },
-  AVALANCHE: { nativeQty: 0.002, nativeSymbol: "AVAX", usd: 0.05 },
-  LINEA: { nativeQty: 0.00004, nativeSymbol: "ETH", usd: 0.14 },
-  SOLANA: { nativeQty: 0.00025, nativeSymbol: "SOL", usd: 0.05 },
+/**
+ * Typical-condition baselines per supported chain. Tuned so a NATIVE_TRANSFER
+ * (21k gas) produces a realistic USD fee on each chain.
+ */
+export const CHAIN_GAS_BASELINE: Record<string, ChainGasBaseline> = {
+  ETHEREUM: { baseFeeGwei: 45, priorityFeeGwei: 12, nativeSymbol: "ETH", nativeUsd: 3400 },
+  ARBITRUM: { baseFeeGwei: 1.9, priorityFeeGwei: 0.06, nativeSymbol: "ETH", nativeUsd: 3400 },
+  OPTIMISM: { baseFeeGwei: 2.3, priorityFeeGwei: 0.08, nativeSymbol: "ETH", nativeUsd: 3400 },
+  BASE: { baseFeeGwei: 1.3, priorityFeeGwei: 0.05, nativeSymbol: "ETH", nativeUsd: 3400 },
+  POLYGON: { baseFeeGwei: 350, priorityFeeGwei: 30, nativeSymbol: "MATIC", nativeUsd: 0.85 },
+  BSC: { baseFeeGwei: 3, priorityFeeGwei: 0, nativeSymbol: "BNB", nativeUsd: 600 },
+  AVALANCHE: { baseFeeGwei: 25, priorityFeeGwei: 2, nativeSymbol: "AVAX", nativeUsd: 35 },
+  LINEA: { baseFeeGwei: 1.9, priorityFeeGwei: 0.06, nativeSymbol: "ETH", nativeUsd: 3400 },
+  // Solana doesn't use gwei; baseline normalised so 21k units × 12 ≈ 0.00025 SOL.
+  SOLANA: { baseFeeGwei: 12, priorityFeeGwei: 0, nativeSymbol: "SOL", nativeUsd: 200 },
 };
 
-export const TRANSFER_GAS_ESTIMATE_DEFAULT: TransferGasEstimate = {
-  nativeQty: 0.0012,
-  nativeSymbol: "ETH",
-  usd: 4.08,
-};
+export const CHAIN_GAS_BASELINE_DEFAULT: ChainGasBaseline = CHAIN_GAS_BASELINE.ETHEREUM!;
+
+/** Mock gas-oracle tick interval (ms). Production WS push replaces this. */
+export const DEFI_GAS_TICK_MS = 5000;
 
 /** Funding-rate matrix venues (column headers for defi-funding-matrix widget). */
 export const FUNDING_RATE_VENUES = ["HYPERLIQUID", "OKX", "BYBIT", "BINANCE", "ASTER"] as const;

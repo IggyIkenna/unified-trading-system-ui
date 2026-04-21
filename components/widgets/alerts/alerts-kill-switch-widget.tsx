@@ -9,6 +9,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useStrategyHealth } from "@/hooks/api/use-strategies";
 import { useKillSwitch, type KillSwitchActionType } from "@/hooks/api/use-kill-switch";
 import { useAlertsData } from "./alerts-data-context";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { Pause, Power, Square, XCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -63,9 +64,24 @@ const ACTION_OPTIONS: ActionMeta[] = [
   },
 ];
 
+const SCOPE_ENTITY_LABEL: Record<KillSwitchScope, string> = {
+  firm: "Entity",
+  client: "Client",
+  strategy: "Strategy",
+  venue: "Venue",
+};
+
+const VENUE_OPTIONS: ReadonlyArray<{ id: string; name: string }> = [
+  { id: "binance", name: "Binance" },
+  { id: "deribit", name: "Deribit" },
+  { id: "ibkr", name: "Interactive Brokers" },
+  { id: "okx", name: "OKX" },
+];
+
 export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const { filteredAlerts, isLoading: alertsLoading, isBatchMode } = useAlertsData();
   const { data: strategies = [], isLoading: strategiesLoading } = useStrategyHealth();
+  const { scope } = useGlobalScope();
   const killSwitch = useKillSwitch();
   const isLoading = alertsLoading || strategiesLoading;
   const [scopeType, setScopeType] = React.useState<KillSwitchScope>("strategy");
@@ -73,15 +89,33 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
   const [selectedAction, setSelectedAction] = React.useState<KillSwitchAction | null>(null);
   const [rationale, setRationale] = React.useState<string>("");
 
+  const entityOptions = React.useMemo<ReadonlyArray<{ id: string; name: string }>>(() => {
+    switch (scopeType) {
+      case "strategy":
+        return strategies.map((s) => ({ id: s.id, name: s.name }));
+      case "client":
+        return scope.clientIds.map((id) => ({ id, name: id }));
+      case "venue":
+        return VENUE_OPTIONS;
+      case "firm":
+      default:
+        return [];
+    }
+  }, [scopeType, strategies, scope.clientIds]);
+
   React.useEffect(() => {
-    if (strategies.length === 0) {
+    if (scopeType === "firm") {
       setEntityId("");
       return;
     }
-    if (!entityId || !strategies.some((s) => s.id === entityId)) {
-      setEntityId(strategies[0].id);
+    if (entityOptions.length === 0) {
+      setEntityId("");
+      return;
     }
-  }, [strategies, entityId]);
+    if (!entityId || !entityOptions.some((o) => o.id === entityId)) {
+      setEntityId(entityOptions[0].id);
+    }
+  }, [scopeType, entityOptions, entityId]);
 
   const activeEntityAlerts = filteredAlerts.filter(
     (a) => a.entityType === "strategy" && a.entity === entityId && a.status === "active",
@@ -183,19 +217,23 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
           </div>
           <div className="space-y-1.5">
             <label id="kill-switch-entity-label" className="text-xs font-medium">
-              Strategy
+              {SCOPE_ENTITY_LABEL[scopeType]}
             </label>
-            {strategies.length === 0 ? (
-              <div className="h-8 flex items-center text-caption text-muted-foreground">No strategies available.</div>
+            {scopeType === "firm" ? (
+              <div className="h-8 flex items-center text-caption text-muted-foreground">Applies to entire firm.</div>
+            ) : entityOptions.length === 0 ? (
+              <div className="h-8 flex items-center text-caption text-muted-foreground">
+                No {SCOPE_ENTITY_LABEL[scopeType].toLowerCase()} available.
+              </div>
             ) : (
               <Select value={entityId} onValueChange={setEntityId}>
                 <SelectTrigger className="h-8 text-xs" aria-labelledby="kill-switch-entity-label">
-                  <SelectValue placeholder="Select entity" />
+                  <SelectValue placeholder={`Select ${SCOPE_ENTITY_LABEL[scopeType].toLowerCase()}`} />
                 </SelectTrigger>
                 <SelectContent>
-                  {strategies.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.name}
+                  {entityOptions.map((o) => (
+                    <SelectItem key={o.id} value={o.id}>
+                      {o.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

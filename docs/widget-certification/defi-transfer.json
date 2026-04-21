@@ -112,7 +112,7 @@
         },
         "3.6": {
           "result": "pass",
-          "note": "No WebSocket or interval. N/A."
+          "note": "useGasEstimate hook ticks every 5s (DEFI_GAS_TICK_MS) via setInterval; cleans up on unmount. Production swap to WS subscription or REST poll against gas oracle planned \u2014 widget API unchanged."
         }
       },
       "notes": "3.3/3.4: Human must verify batch-mode behavior."
@@ -232,18 +232,18 @@
     "notes": null
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": ["rest", "websocket"],
     "primary": "rest",
-    "cadence": "on-demand",
+    "cadence": "5s poll (mock) \u2192 WS on backend wire-up",
     "staleness": "seconds",
-    "mockSource": "lib/mocks/fixtures/defi-transfer.ts (via context getBridgeRoutes)",
+    "mockSource": "lib/mocks/fixtures/defi-transfer.ts (bridge routes via context getBridgeRoutes); lib/config/services/defi.config.ts CHAIN_GAS_BASELINE + DEFI_GAS_UNITS (gas quote seeds via useGasEstimate)",
     "backendOwner": "unknown",
-    "notes": "Bridge routes computed on-demand. Gas estimates are hardcoded per chain \u2014 need production pricing API."
+    "notes": "Gas quote follows real EIP-1559 formula: nativeFee = gasUnits \u00d7 (baseFeeGwei + priorityFeeGwei) \u00d7 1e-9; usdFee = nativeFee \u00d7 nativeUsd. gasUnits fixed per op (NATIVE_TRANSFER 21k, ERC20_TRANSFER 65k, BRIDGE_LOCK 120k). Three live inputs on production wire-up: baseFeeGwei (updates per block \u2014 ~12s Ethereum, ~2s L2, ideal for WS), priorityFeeGwei (wallet-suggested, infrequent), nativeUsd (price feed, seconds). Mock ticks every DEFI_GAS_TICK_MS=5000 ms via hooks/use-gas-estimate.ts with \u00b18% baseFee jitter and \u00b10.5% native-price jitter. Bridge routes still on-demand REST."
   },
   "coverage": {
     "assetClasses": ["defi"],
     "strategies": ["YIELD_ROTATION_LENDING", "ARBITRAGE_PRICE_DISPERSION", "CARRY_STAKED_BASIS"],
-    "venues": ["ACROSS", "STARGATE", "HOP", "WORMHOLE"],
+    "venues": ["ACROSS", "STARGATE", "HOP", "LAYERZERO", "LIFI", "NATIVE", "SOCKET"],
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
@@ -302,10 +302,47 @@
     {
       "level": "l1",
       "description": "defi-transfer-widget.tsx:185-191 \u2014 gas estimates ('0.00025 SOL', '0.008 MATIC', '0.00004 ETH', '0.0012 ETH') were hardcoded inline in JSX ternary.",
+      "status": "superseded",
+      "fix": "2026-04-21 extracted to TRANSFER_GAS_ESTIMATES and TRANSFER_GAS_ESTIMATE_DEFAULT in lib/config/services/defi.config.ts with one row per DEFI_CHAIN. Superseded by model upgrade 2026-04-21 (see next finding): flat per-chain USD replaced with real EIP-1559 gas formula driven by hook + config."
+    },
+    {
+      "level": "l1",
+      "description": "Gas estimate was a flat per-chain USD lookup that ignored (a) the real gas formula, (b) differences between native vs ERC-20 transfers, (c) bridge source-chain gas, (d) changing base fee and native-token price.",
       "status": "fixed",
-      "fix": "2026-04-21 extracted to TRANSFER_GAS_ESTIMATES and TRANSFER_GAS_ESTIMATE_DEFAULT in lib/config/services/defi.config.ts with one row per DEFI_CHAIN; widget looks up by selectedChain and renders native qty + USD."
+      "fix": "2026-04-21 upgraded to the real EIP-1559 model. Added DefiGasOperation union (NATIVE_TRANSFER=21k, ERC20_TRANSFER=65k, BRIDGE_LOCK=120k), CHAIN_GAS_BASELINE (per-chain baseFeeGwei, priorityFeeGwei, nativeSymbol, nativeUsd), and DEFI_GAS_TICK_MS=5000 in lib/config/services/defi.config.ts. New hook hooks/use-gas-estimate.ts exposes useGasEstimate({ chain, operation }) returning a GasQuote with gasUnits, baseFee/priority gwei, nativeFee, usdFee, nativeUsd, asOf. Mock impl ticks every 5s with \u00b18% baseFee jitter and \u00b10.5% native-price jitter; widget is agnostic to the data source and will seamlessly switch when backend (gas oracle or WS subscription) is wired. Widget now shows gas in Send mode (NATIVE_TRANSFER vs ERC20_TRANSFER chosen by comparing selected token against chain native symbol) and in Bridge mode (BRIDGE_LOCK on fromChain). Removed dead TRANSFER_GAS_ESTIMATES and TRANSFER_GAS_ESTIMATE_DEFAULT constants."
+    },
+    {
+      "level": "l3",
+      "check": "3.6",
+      "description": "Gas estimate was static (no recurring update). Real gas changes every block; previous mock never refreshed so the number became misleading over a long session.",
+      "status": "fixed",
+      "fix": "2026-04-21 useGasEstimate hook ticks every 5s via setInterval. On production wire-up the tick is replaced with a gas-oracle WS subscription (Blocknative / custom relayer) or a 3\u20135s REST poll against eth_feeHistory-equivalent endpoints. Widget contract unchanged."
+    },
+    {
+      "level": "l1",
+      "check": "1.1",
+      "description": "Gas data now flows through a hook (useGasEstimate) rather than direct config import \u2014 maintains widget-is-data-source-agnostic invariant. Same pattern other L1 data uses (react-query hooks and useDeFiData context).",
+      "status": "informational"
+    },
+    {
+      "level": "l1",
+      "description": "Bridge-route feature is backend-aligned \u2014 verified 2026-04-21 against unified-api-contracts BridgeProtocol enum (NATIVE|STARGATE|ACROSS|HOP|LAYERZERO|SOCKET|LIFI), execution-service SocketBridgeConnector.get_bridge_quotes(), bridge_cost_model.py, and e2e strategy configs defi_cross_chain_sor.yaml / defi_cross_chain_yield_arb.yaml. Public UI-callable endpoint does not yet exist; tracked as BFR-003.",
+      "status": "informational"
+    },
+    {
+      "level": "l1",
+      "description": "Enum drift vs backend: UI mock getMockBridgeRoutes returns 'CCTP' (not in backend BridgeProtocol enum \u2014 backend folds Circle CCTP into NATIVE). coverage.venues previously listed 'WORMHOLE' which is also not in the enum.",
+      "status": "open",
+      "fix": "2026-04-21 updated cert coverage.venues to match backend enum (added LAYERZERO/LIFI/NATIVE/SOCKET, dropped WORMHOLE). CCTP kept in UI mock pending backend decision logged in BFR-003 alignment question #1 \u2014 either add CCTP to the enum or UI drops it and relies on NATIVE when path is USDC-eligible."
     }
   ],
+  "backendFeatureRequest": "BFR-003",
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-21",
+  "changelog": [
+    {
+      "date": "2026-04-21",
+      "summary": "Gas-estimate model upgraded from flat per-chain USD to real EIP-1559 formula sourced via useGasEstimate hook. Added GasQuote shape, CHAIN_GAS_BASELINE + DEFI_GAS_UNITS config, and mock oracle tick (5s, \u00b18% baseFee jitter). Send mode distinguishes NATIVE_TRANSFER vs ERC20_TRANSFER; Bridge mode now also shows BRIDGE_LOCK source-chain gas. dataContract updated: channels += 'websocket' (planned), cadence 5s poll \u2192 WS on wire-up. L3 check 3.6 note updated. Legacy TRANSFER_GAS_ESTIMATES constants removed. Bridge routes feature verified against backend (BridgeProtocol enum + SocketBridgeConnector + cost model + strategy configs all shipped internally in execution-service and unified-api-contracts) \u2014 public endpoint tracked as BFR-003. coverage.venues aligned to backend enum."
+    }
+  ]
 }

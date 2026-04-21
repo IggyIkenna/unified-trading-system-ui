@@ -753,7 +753,7 @@ Understanding naming conventions tells you where to look for something without s
 | `layout.tsx`                | Shell wrappers only                 | Never name a component `layout.tsx`     |
 | `index.ts`                  | Barrel exports                      | Aggregates and re-exports from a folder |
 | `*.test.tsx`                | Test files                          | `positions-table.test.tsx`              |
-| `[param]` folder            | Dynamic route segment               | `[id]/page.tsx` → `/strategies/abc`     |
+| `[param]` folder            | Dynamic route segment               | `[id]/page.tsx` → `/strategies/abc`     |
 | `(group)` folder            | Route group (no URL segment)        | `(platform)/` → not in URL              |
 
 **One naming inconsistency to be aware of:** hooks inside `hooks/deployment/` use `useX` PascalCase filenames (legacy). Do not copy this style for new hooks — use `use-x` kebab-case.
@@ -765,7 +765,7 @@ Understanding naming conventions tells you where to look for something without s
 | Term                         | Plain English definition                                                                               |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
 | **Component**                | A function that returns UI (JSX). The basic building block.                                            |
-| **JSX / TSX**                | HTML-like syntax embedded in JavaScript/TypeScript. `.tsx` = TypeScript + JSX.                         |
+| **JSX / TSX**                | HTML-like syntax embedded in JavaScript/TypeScript.`.tsx` = TypeScript + JSX.                          |
 | **Props**                    | Data passed to a component from its parent, like function arguments.                                   |
 | **State**                    | A component's own internal memory. Changing it triggers a re-render.                                   |
 | **Hook**                     | A function starting with `use` that encapsulates reusable stateful logic.                              |
@@ -788,7 +788,7 @@ Understanding naming conventions tells you where to look for something without s
 | **Coverage**                 | What percentage of source code is executed during tests. Gated at 80% in this project.                 |
 | **Barrel export**            | An `index.ts` that re-exports from multiple files so importers use one path.                           |
 | **`cn()`**                   | Utility function from `lib/utils.ts` for merging Tailwind classes conditionally.                       |
-| **`@/`**                     | Path alias meaning "from the project root". `@/components/ui/button` → `components/ui/button.tsx`.     |
+| **`@/`**                     | Path alias meaning "from the project root".`@/components/ui/button` → `components/ui/button.tsx`.      |
 | **`node_modules/`**          | Where pnpm packages are installed. Never edit.                                                         |
 | **`.next/`**                 | Build output directory. Never edit.                                                                    |
 | **`process.env`**            | How you access environment variables in Node.js/Next.js. Like Python's `os.environ`.                   |

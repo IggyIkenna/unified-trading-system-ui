@@ -10,12 +10,13 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import {
+  CHAIN_GAS_BASELINE,
+  CHAIN_GAS_BASELINE_DEFAULT,
   DEFI_CHAINS,
   DEFI_TOKENS,
   GAS_TOKEN_MIN_THRESHOLDS,
-  TRANSFER_GAS_ESTIMATES,
-  TRANSFER_GAS_ESTIMATE_DEFAULT,
 } from "@/lib/config/services/defi.config";
+import { useGasEstimate } from "@/hooks/use-gas-estimate";
 import { cn } from "@/lib/utils";
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -50,6 +51,14 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
 
   const amountNum = parseFloat(amount) || 0;
   const balance = tokenBalances[token] ?? 0;
+
+  // Send: native-token transfer is cheaper (21k gas) vs ERC-20 (~65k gas).
+  const sendNativeSymbol = (CHAIN_GAS_BASELINE[selectedChain] ?? CHAIN_GAS_BASELINE_DEFAULT).nativeSymbol;
+  const sendOperation = token === sendNativeSymbol ? "NATIVE_TRANSFER" : "ERC20_TRANSFER";
+  const sendGas = useGasEstimate({ chain: selectedChain, operation: sendOperation });
+
+  // Bridge: source-chain lock/burn tx gas; destination gas is baked into protocol fee.
+  const bridgeGas = useGasEstimate({ chain: fromChain, operation: "BRIDGE_LOCK" });
 
   const routes = React.useMemo(
     () => getBridgeRoutes(token, amountNum, fromChain, toChain),
@@ -124,74 +133,74 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Chain</label>
-            <Select
-              value={selectedChain}
-              onValueChange={(v) => {
-                setSelectedChain(v);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DEFI_CHAINS.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs text-muted-foreground">Token</label>
-            <Select value={token} onValueChange={setToken}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DEFI_TOKENS.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    <span className="font-mono">{t}</span>
-                    <span className="text-micro text-muted-foreground ml-2">
-                      Bal: {(tokenBalances[t] ?? 0).toLocaleString()}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground">Amount</label>
-              <span className="text-micro text-muted-foreground font-mono">
-                Balance: {balance.toLocaleString()} {token}
-              </span>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5 min-w-0">
+              <label className="text-xs text-muted-foreground">Chain</label>
+              <Select
+                value={selectedChain}
+                onValueChange={(v) => {
+                  setSelectedChain(v);
+                }}
+              >
+                <SelectTrigger size="sm" className="text-xs w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEFI_CHAINS.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="font-mono"
-            />
+            <div className="space-y-1.5 min-w-0">
+              <label className="text-xs text-muted-foreground">Token</label>
+              <Select value={token} onValueChange={setToken}>
+                <SelectTrigger size="sm" className="text-xs w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {DEFI_TOKENS.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      <span className="font-mono">{t}</span>
+                      <span className="text-micro text-muted-foreground ml-2">
+                        Bal: {(tokenBalances[t] ?? 0).toLocaleString()}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="p-3 rounded-lg border bg-muted/30">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground flex items-center gap-1">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5 min-w-0">
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-muted-foreground">Amount</label>
+                <span className="text-micro text-muted-foreground font-mono truncate">
+                  Bal: {balance.toLocaleString()} {token}
+                </span>
+              </div>
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="font-mono h-8 text-xs w-full"
+              />
+            </div>
+            <div className="space-y-1.5 min-w-0">
+              <label className="text-xs text-muted-foreground flex items-center gap-1">
                 <Fuel className="size-3" />
                 Gas estimate
-              </span>
-              <span className="font-mono">
-                {(() => {
-                  const g = TRANSFER_GAS_ESTIMATES[selectedChain] ?? TRANSFER_GAS_ESTIMATE_DEFAULT;
-                  return `~${g.nativeQty} ${g.nativeSymbol} ($${g.usd.toFixed(2)})`;
-                })()}
-              </span>
+              </label>
+              <div
+                className="h-8 px-3 rounded-md border bg-muted/30 flex items-center justify-end font-mono text-xs"
+                title={`${sendGas.gasUnits.toLocaleString()} units × ${(sendGas.baseFeeGwei + sendGas.priorityFeeGwei).toFixed(2)} gwei @ $${sendGas.nativeUsd.toFixed(0)}/${sendGas.nativeSymbol}`}
+              >
+                ~{formatNumber(sendGas.nativeFee, 5)} {sendGas.nativeSymbol} (${sendGas.usdFee.toFixed(2)})
+              </div>
             </div>
           </div>
 
@@ -301,20 +310,34 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
             </Select>
           </div>
 
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-xs text-muted-foreground">Amount</label>
-              <span className="text-micro text-muted-foreground font-mono">
-                Balance: {balance.toLocaleString()} {token}
-              </span>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5 min-w-0">
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-muted-foreground">Amount</label>
+                <span className="text-micro text-muted-foreground font-mono truncate">
+                  Bal: {balance.toLocaleString()} {token}
+                </span>
+              </div>
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="font-mono h-8 text-xs w-full"
+              />
             </div>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="font-mono"
-            />
+            <div className="space-y-1.5 min-w-0">
+              <label className="text-xs text-muted-foreground flex items-center gap-1">
+                <Fuel className="size-3" />
+                Source gas
+              </label>
+              <div
+                className="h-8 px-3 rounded-md border bg-muted/30 flex items-center justify-end font-mono text-xs"
+                title={`${bridgeGas.gasUnits.toLocaleString()} units × ${(bridgeGas.baseFeeGwei + bridgeGas.priorityFeeGwei).toFixed(2)} gwei @ $${bridgeGas.nativeUsd.toFixed(0)}/${bridgeGas.nativeSymbol}`}
+              >
+                ~{formatNumber(bridgeGas.nativeFee, 5)} {bridgeGas.nativeSymbol} (${bridgeGas.usdFee.toFixed(2)})
+              </div>
+            </div>
           </div>
 
           {routes.length > 0 && (

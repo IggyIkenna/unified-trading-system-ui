@@ -34,7 +34,7 @@
         },
         "0.6": {
           "result": "pass",
-          "note": null
+          "note": "isLoading={false} stub wired to FormWidget (synchronous context; clear backend-swap point). Matches defi-lending pattern."
         },
         "0.7": {
           "result": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "190 lines \u2014 within 500-line limit."
+          "note": "189 lines \u2014 within 500-line limit."
         },
         "7.4": {
           "result": "pass",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "text-[10px] at lines 69, 86, 102, 112 migrated to text-micro utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+          "note": "text-[10px] migrated to text-micro utility backed by --text-micro token (0.625rem) in globals.css @theme. Current usages after 2026-04-21 refactor: line 47 (pool TVL/APR sublabel in Select), 85 (fee tier description text), 98 (min-price unit label), 110 (max-price unit label), 122 (position-size unit label)."
         },
         "8.2": {
           "result": "pass",
@@ -210,7 +210,7 @@
         },
         "8.3": {
           "result": "pass",
-          "note": "Button, Input, Select from components/ui/*. FormWidget and CollapsibleSection used."
+          "note": "Button, Input, Select from components/ui/*. FormWidget shared primitive used. CollapsibleSection wrapper around TVL/APR removed in 2026-04-21 refactor \u2014 pool metrics are now always visible."
         },
         "8.4": {
           "result": "partial",
@@ -289,9 +289,27 @@
       "description": "defi-liquidity-widget.tsx:69,86,102,112 \u2014 text-[10px] for sub-xs label sizing in fee tier buttons and pool info.",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro Tailwind utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+    },
+    {
+      "level": "l8",
+      "description": "Layout refactor 2026-04-21: (a) promoted Pool Select to the top of the form (was below the Add/Remove action row); (b) moved Add/Remove liquidity buttons immediately below the pool; (c) consolidated Min price / Max price / Position size into a single 3-col grid with equal-width h-8 inputs; (d) removed the CollapsibleSection wrapper around TVL / 24h APR / Pool fee tier so pool metrics are always visible.",
+      "status": "fixed"
+    },
+    {
+      "level": "l0",
+      "check": "0.6",
+      "description": "FormWidget was not receiving isLoading \u2014 drift vs. defi-lending widget which had the stub wired for parity and clarity on the backend-swap point.",
+      "status": "fixed",
+      "fix": "Added `const isLoading = false;` stub and wired `isLoading={isLoading}` on FormWidget. Matches defi-lending pattern; single swap point when real data source is wired."
     }
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-21",
-  "l1FixedBy": "defi-data-context.tsx \u2014 adjustedLiquidityPools memo with hasDefiDesk guard"
+  "l1FixedBy": "defi-data-context.tsx \u2014 adjustedLiquidityPools memo with hasDefiDesk guard",
+  "changelog": [
+    {
+      "date": "2026-04-21",
+      "summary": "Layout refactor: Pool Select promoted to top; Add/Remove liquidity moved below pool; Min price / Max price / Position size consolidated into 3-col grid; CollapsibleSection around TVL/APR removed (pool metrics always visible). Parity fix: isLoading={false} stub added to FormWidget to match defi-lending. Cert drift fixes: 7.3 line count 190\u2192189, 8.1 text-micro line refs updated (47/85/98/110/122), 8.3 CollapsibleSection removal noted."
+    }
+  ]
 }

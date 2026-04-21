@@ -18,8 +18,8 @@
 
 1. ~~**[01] Confirm yesterday's incident root cause.**~~ → _Moved to decisions log 2026-04-16._
 2. **[02] How big is the type debt?** Concrete number from `tsc --noEmit` is needed before we can size Phase 0. **Action:** un-stub typecheck briefly, run it, count errors, decide. Could be 50 errors or 5,000.
-3. **[06] What's in `AGENT_PROMPT.md` today?** Required before we can update it with the gate requirement.
-4. **[06] Is there a husky / pre-commit setup already?** Determines whether we add or extend.
+3. ~~**[06] What's in `AGENT_PROMPT.md` today?**~~ → _Deferred. 06 doc retired 2026-04-21 — agent-gate work not a priority right now._
+4. ~~**[06] Is there a husky / pre-commit setup already?**~~ → _Deferred alongside above._
 5. **[02] What does the existing CI run?** `cloudbuild.yaml` and `buildspec.aws.yaml` exist — what's gated there today?
 
 ### High priority (shapes the strategy)
@@ -28,8 +28,8 @@
 7. ~~**[01] What was the symptom of yesterday's bug?**~~ → _Moved to decisions log 2026-04-16._
 8. **[04] How much do hooks depend on FastAPI mock vs local fixtures?** OrdersDataContext imports both — why? Is one canonical?
 9. **[04] What is the FastAPI mock's role long-term?** Will local fixtures go away once it's mature, or are both kept indefinitely?
-10. **[06] Tolerance for slow gates?** 3 / 5 / 10 minutes per agent task?
-11. **[06] Branch strategy** — OK to switch to per-task feature branches or stay single-branch?
+10. ~~**[06] Tolerance for slow gates?**~~ → _Deferred with 06 doc retirement (2026-04-21)._
+11. ~~**[06] Branch strategy** — per-task feature branches or single-branch?~~ → _Deferred with 06 doc retirement (2026-04-21)._
 
 ### Medium priority (refine the design but don't block start)
 
@@ -46,7 +46,7 @@
 
 20. ~~**[03] Visual regression confirmed deferred?**~~ → _Yes. Confirmed non-goal in 07 § 8._
 21. ~~**[03] Storybook confirmed skipped?**~~ → _Yes. Layer D supersedes._
-22. **[06] Smart test selection** — start with full gate or aim for smart selection from day 1?
+22. ~~**[06] Smart test selection** — full gate or smart selection from day 1?~~ → _Deferred with 06 doc retirement (2026-04-21)._
 23. **[04] OpenAPI generation flow** — who updates `lib/registry/openapi.json`, when, and how?
 
 ---
@@ -55,7 +55,7 @@
 
 ### FINALIZED
 
-- **FINALIZED (2026-04-16):** Do not split the repo. Single deploy, no file-level conflicts, widget registry provides isolation. _(Source: 05_repo_structure_question.md)_
+- **FINALIZED (2026-04-16):** Do not split the repo. Single deploy, no file-level conflicts, widget registry provides isolation. _(Originally in 05_repo_structure_question.md — doc deleted 2026-04-21, decision preserved here.)_
 - **FINALIZED (2026-04-16):** Trading target state — all 8 sections confirmed by Harsh. _(Source: 07_trading_target_state.md)_
 - **FINALIZED (2026-04-16):** Three-level entitlement model: whole-tab (`execution-basic` gate) / per-sub-tab (`requiredEntitlement` on `TRADING_TABS`) / per-widget (`requiredEntitlements` on `WidgetDefinition`). "Show + lock, never hide" model. _(Source: 07 § 7)_
 - **FINALIZED (2026-04-16):** Data scoping = backend filters by scope (org/client/strategy). Same widget renders for everyone; the data is different. Not widget scoping. _(Source: 07 § 7)_

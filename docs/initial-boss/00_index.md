@@ -26,20 +26,20 @@ It captures the 7 real pain points Harsh surfaced on 2026-04-15 and proposes the
 
 ## Current docs
 
-| File                                 | Topic                                                                  | Status                                 |
-| ------------------------------------ | ---------------------------------------------------------------------- | -------------------------------------- |
-| **`boss_points.md`**                 | **Canonical list of 7 pain points + discussion order**                 | **DISCUSSING — primary doc**           |
-| `02_codebase_facts.md`               | What actually exists in the repo (test infra, widgets, mocks, hooks)   | REFERENCE — widget counts need refresh |
-| `03_test_strategy_options.md`        | Test layer brainstorm (Layers A-H). Feeds BP-2 and BP-5                | STALE — revisit when discussing BP-2   |
-| `04_mock_data_and_backend_gap.md`    | Mock-data thinking. Feeds BP-5                                         | STALE — revisit when discussing BP-5   |
-| `05_repo_structure_question.md`      | Single repo vs split — captured rationale for not splitting            | **FINALIZED** — do not split           |
-| `06_agent_workflow_and_gates.md`     | Agent gate thinking. Feeds BP-2                                        | STALE — revisit when discussing BP-2   |
-| **`07_trading_target_state.md`**     | **BP-1 Stream B — trading tab target state. All 8 sections confirmed** | **STABLE — all sections confirmed**    |
-| `99_open_questions_and_decisions.md` | Cross-doc open questions and a global decisions log                    | NEEDS UPDATE — many Qs answered        |
+| File                                 | Topic                                                                  | Status                                      |
+| ------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------- |
+| **`boss_points.md`**                 | **Canonical list of 7 pain points + discussion order**                 | **DISCUSSING — primary doc**                |
+| `02_codebase_facts.md`               | What actually exists in the repo (test infra, widgets, mocks, hooks)   | REFERENCE — widget counts need refresh      |
+| `03_test_strategy_options.md`        | Testing state + strategy. Current infra inventory + remaining gaps     | REFRESHED 2026-04-21 — ready for discussion |
+| `04_mock_data_and_backend_gap.md`    | Mock-data thinking. Feeds BP-5                                         | STALE — revisit when discussing BP-5        |
+| **`07_trading_target_state.md`**     | **BP-1 Stream B — trading tab target state. All 8 sections confirmed** | **STABLE — all sections confirmed**         |
+| `99_open_questions_and_decisions.md` | Cross-doc open questions and a global decisions log                    | NEEDS UPDATE — many Qs answered             |
 
 **Deleted (superseded):**
 
 - ~~`01_problem_and_context.md`~~ — deleted. Superseded by `boss_points.md` + `07_trading_target_state.md`.
+- ~~`05_repo_structure_question.md`~~ — deleted. Decision (do not split) captured in `99_open_questions_and_decisions.md`.
+- ~~`06_agent_workflow_and_gates.md`~~ — deleted. Stale agent-gate brainstorm; revisit fresh if/when gates become load-bearing.
 
 ## Conventions
 

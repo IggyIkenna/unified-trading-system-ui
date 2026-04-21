@@ -125,12 +125,17 @@
       "checks": {
         "4.1": {
           "result": "fixed",
-          "note": "alerts-kill-switch-widget.tsx \u2014 action buttons now wired. Pause/Cancel/Flatten/Disable Venue are radio options (role='radio', aria-checked) that set a selectedAction state and are disabled in batch mode. Confirm Action validates rationale + selected action and emits toast.info noting execution API is not yet wired. All five buttons gated by scope.mode batch check (toast.info on batch). Execution API wiring still pending for real write path \u2014 tracked in knownIssues.",
-          "fix": "Added onClick handlers for all 5 action buttons (Pause/Cancel/Flatten/Disable Venue \u2192 selectedAction state; Confirm Action \u2192 validated toast.info). Promoted Actions grid to role='radiogroup' with aria-checked on selected option. Batch-mode guard on every handler + disabled prop."
+          "note": "alerts-kill-switch-widget.tsx \u2014 action buttons wired and Confirm posts to useKillSwitch (POST /api/execution/kill-switch in live, mock returns synthetic request_id in mock mode). Selected action highlighted with critical bg + 2px ring + bolder label. Batch-mode guards still active.",
+          "fix": "Confirm Action calls killSwitch.mutate with {action, scope, entity_id, rationale, idempotency_key}; success toast surfaces request_id + accepted_at; error toast surfaces err.message."
         },
         "4.2": {
           "result": "pass",
           "note": "No href='#' or link elements found."
+        },
+        "4.3": {
+          "result": "fixed",
+          "note": "scopeType now drives the entity select. firm \u2192 hides entity dropdown with 'Applies to entire firm'; strategy \u2192 useStrategyHealth list; client \u2192 scope.clientIds from useGlobalScope; venue \u2192 hardcoded VENUE_OPTIONS (binance/deribit/ibkr/okx) pending venues hook. Label and placeholder driven by SCOPE_ENTITY_LABEL map. Effect resets entityId when scope or options change.",
+          "fix": "Added entityOptions useMemo keyed on scopeType, SCOPE_ENTITY_LABEL map, and conditional render that hides the dropdown for firm scope. Hardcoded VENUE_OPTIONS noted as a placeholder until a venues hook lands \u2014 see knownIssues."
         },
         "4.5": {
           "result": "pass",
@@ -141,7 +146,7 @@
           "note": "No entitlement checks in render. All handled at widget-wrapper level via registry."
         }
       },
-      "notes": "Agent prep complete. Human checks 4.3/4.4/4.7/4.8 pending. 4.1 fixed 2026-04-21 via toast-based wiring + batch guard."
+      "notes": "4.1 + 4.3 fixed 2026-04-21. Human checks 4.4/4.7/4.8 pending."
     },
     "l5": {
       "status": "partial",
@@ -150,10 +155,14 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all strategy types (scope selector allows firm/client/strategy/venue). Entity select populated from useStrategyHealth() \u2014 covers all active strategies. Kill-switch is a cross-strategy emergency panel, not strategy-type-specific."
+          "note": "Target strategies: all strategy types (scope selector allows firm/client/strategy/venue). Entity select now scoped to scopeType: strategy \u2014 useStrategyHealth, client \u2014 scope.clientIds, venue \u2014 VENUE_OPTIONS, firm \u2014 hidden."
+        },
+        "5.3": {
+          "result": "fixed",
+          "note": "Frontend execution flow wired via useKillSwitch (BFR-001). Mock mode returns synthetic request_id after ~150ms; live mode posts to /api/execution/kill-switch. Backend endpoint implementation pending \u2014 tracked via BFR-001 in docs/audits/backend-feature-requests.md."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2-5.6 blocked pending execution API wiring (L4.1 gap). Cannot verify execution flow (5.3) until onClick handlers are implemented."
+      "notes": "5.1 + 5.3 (frontend) complete. Human checks 5.2/5.4/5.5/5.6 pending live backend endpoint."
     },
     "l6": {
       "status": null,
@@ -257,21 +266,22 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "Scope selector state (firm/client/strategy/venue) is now controlled but does not yet customize the entity Select \u2014 entity list shows strategies regardless of scopeType",
-      "Execution API not yet wired \u2014 handleConfirm emits toast.info placeholder; real Pause/Cancel/Flatten/Disable-Venue backend wiring pending"
+      "Venue list is hardcoded (binance/deribit/ibkr/okx) \u2014 swap to a real venues hook when one lands",
+      "Client list reuses scope.clientIds (id-only labels) \u2014 wants a clients hook with display names",
+      "Backend endpoint /api/execution/kill-switch not implemented \u2014 frontend wired, server pending (BFR-001)"
     ],
-    "notes": "Widget UI shell is complete, accessible, batch-guarded, and emits toast feedback. Functional completeness blocked on execution API wiring + scope-type-driven entity list."
+    "notes": "Widget UI shell complete, accessible, batch-guarded, scope-driven entity select, real mutation hook. Outstanding work is backend endpoint + richer client/venue lookup hooks."
   },
   "knownIssues": [
     {
       "level": "L5",
       "check": "5.3",
-      "description": "Execution API not yet wired. handleConfirm currently emits toast.info('Execution API not yet wired') \u2014 real Pause/Cancel/Flatten/Disable-Venue backend wiring remains pending."
+      "description": "Backend /api/execution/kill-switch endpoint not yet implemented. Frontend mutation wired via useKillSwitch (BFR-001); mock mode returns synthetic accepts."
     },
     {
       "level": "L4",
       "check": "4.3",
-      "description": "scopeType (firm/client/strategy/venue) does not yet drive the entity Select \u2014 entity list always shows strategies. Scope-driven entity filtering requires a new hook surface and is larger than small-fix scope."
+      "description": "Venue scope uses a hardcoded VENUE_OPTIONS list (binance/deribit/ibkr/okx); client scope uses raw scope.clientIds for both id and label. Replace with proper hooks (useVenues, useClients) when those land."
     }
   ],
   "findings": [
@@ -331,9 +341,25 @@
       "severity": "low",
       "status": "fixed",
       "fix": "Substituted text-[11px] \u2192 text-caption (0.6875rem, already defined as --text-caption in globals.css @theme inline). No remaining text-[Npx] arbitrary values."
+    },
+    {
+      "level": "l4",
+      "check": "4.3",
+      "description": "alerts-kill-switch-widget.tsx \u2014 entity Select always showed strategies regardless of scopeType; firm scope still rendered a strategy dropdown.",
+      "severity": "medium",
+      "status": "fixed",
+      "fix": "Added entityOptions useMemo keyed on scopeType, sourced from useStrategyHealth (strategy), useGlobalScope().scope.clientIds (client), VENUE_OPTIONS placeholder (venue), or empty (firm). Firm scope hides the dropdown and shows 'Applies to entire firm'. Label + placeholder driven by SCOPE_ENTITY_LABEL map. Effect resets entityId when options change."
+    },
+    {
+      "level": "ux",
+      "check": "layout",
+      "description": "Scope and Strategy dropdowns stacked vertically; selected action button only had a thin 1px ring \u2014 hard to see which intervention was chosen.",
+      "severity": "low",
+      "status": "fixed",
+      "fix": "Promoted Scope+entity row to grid grid-cols-2 with their own labels. Selected action button now uses border-status-critical bg-status-critical/10 ring-2 ring-status-critical/60 shadow-sm + text-status-critical font-semibold on the label (vs prior thin 1px ring)."
     }
   ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-21",
-  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical, text-[var(--status-warning)] \u2192 text-status-warning, text-[10px] \u2192 text-micro, text-[11px] \u2192 text-caption; wired all kill-switch buttons with batch-guard + toast feedback"
+  "lastTokenRolloutFix": "2026-04-21 \u2014 applied --status-error \u2192 text-status-critical, text-[var(--status-warning)] \u2192 text-status-warning, text-[10px] \u2192 text-micro, text-[11px] \u2192 text-caption; wired all kill-switch buttons with batch-guard + toast feedback. 4.3 fixed: entity Select now scope-driven (strategy/client/venue/firm). UX: Scope+entity in single row, selected action highlighted with critical bg + 2px ring."
 }

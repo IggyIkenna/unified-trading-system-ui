@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Droplets, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
@@ -19,6 +18,10 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   const { liquidityPools, executeDeFiOrder } = useDeFiData();
   const { isSubmitting, error, clearError, handleSubmit } = useFormSubmit();
   const activeStrategyId = useActiveStrategyId();
+
+  // Context is synchronous (mock) so isLoading is always false;
+  // retained for when a real data source is wired in.
+  const isLoading = false;
 
   const [selectedPool, setSelectedPool] = React.useState(liquidityPools[0]?.name ?? "");
   const [feeTier, setFeeTier] = React.useState("0.05");
@@ -34,7 +37,26 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget error={error} onClearError={clearError}>
+    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
+      <div className="space-y-1.5">
+        <label className="text-xs text-muted-foreground">Pool</label>
+        <Select value={selectedPool} onValueChange={setSelectedPool}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {liquidityPools.map((p) => (
+              <SelectItem key={p.name} value={p.name}>
+                <span className="font-mono">{p.name}</span>
+                <span className="text-micro text-muted-foreground ml-2">
+                  TVL ${formatNumber(p.tvl / 1_000_000, 0)}M / APR {formatPercent(p.apr24h, 1)}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant={operation === "ADD_LIQUIDITY" ? "default" : "outline"}
@@ -57,25 +79,6 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground">Pool</label>
-        <Select value={selectedPool} onValueChange={setSelectedPool}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {liquidityPools.map((p) => (
-              <SelectItem key={p.name} value={p.name}>
-                <span className="font-mono">{p.name}</span>
-                <span className="text-micro text-muted-foreground ml-2">
-                  TVL ${formatNumber(p.tvl / 1_000_000, 0)}M / APR {formatPercent(p.apr24h, 1)}
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Fee tier</label>
         <div className="grid grid-cols-4 gap-1">
           {DEFI_FEE_TIERS.map((ft) => (
@@ -93,63 +96,65 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground">
-          Price range ({pool.token1} per {pool.token0})
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="space-y-1">
-            <span className="text-micro text-muted-foreground">Min price</span>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={priceMin}
-              onChange={(e) => setPriceMin(e.target.value)}
-              className="font-mono"
-            />
-          </div>
-          <div className="space-y-1">
-            <span className="text-micro text-muted-foreground">Max price</span>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={priceMax}
-              onChange={(e) => setPriceMax(e.target.value)}
-              className="font-mono"
-            />
-          </div>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="space-y-1.5 min-w-0">
+          <label className="text-xs text-muted-foreground">
+            Min price{" "}
+            <span className="text-micro">
+              ({pool.token1}/{pool.token0})
+            </span>
+          </label>
+          <Input
+            type="number"
+            placeholder="0.00"
+            value={priceMin}
+            onChange={(e) => setPriceMin(e.target.value)}
+            className="font-mono h-8 text-xs w-full"
+          />
+        </div>
+        <div className="space-y-1.5 min-w-0">
+          <label className="text-xs text-muted-foreground">
+            Max price{" "}
+            <span className="text-micro">
+              ({pool.token1}/{pool.token0})
+            </span>
+          </label>
+          <Input
+            type="number"
+            placeholder="0.00"
+            value={priceMax}
+            onChange={(e) => setPriceMax(e.target.value)}
+            className="font-mono h-8 text-xs w-full"
+          />
+        </div>
+        <div className="space-y-1.5 min-w-0">
+          <label className="text-xs text-muted-foreground">
+            Position size <span className="text-micro">({pool.token0})</span>
+          </label>
+          <Input
+            type="number"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="font-mono h-8 text-xs w-full"
+          />
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-xs text-muted-foreground">Position size ({pool.token0})</label>
-        <Input
-          type="number"
-          placeholder="0.00"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="font-mono"
-        />
-      </div>
-
-      <CollapsibleSection title="Pool TVL / APR" defaultOpen={false}>
-        <div className="px-2 pb-2">
-          <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">TVL</span>
-              <span className="font-mono">${formatNumber(pool.tvl / 1_000_000, 0)}M</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">24h APR</span>
-              <span className="font-mono text-emerald-400">{formatPercent(pool.apr24h, 1)}</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Pool fee tier</span>
-              <span className="font-mono">{pool.feeTier}%</span>
-            </div>
-          </div>
+      <div className="p-3 rounded-lg border bg-muted/30 space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">TVL</span>
+          <span className="font-mono">${formatNumber(pool.tvl / 1_000_000, 0)}M</span>
         </div>
-      </CollapsibleSection>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">24h APR</span>
+          <span className="font-mono text-emerald-400">{formatPercent(pool.apr24h, 1)}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Pool fee tier</span>
+          <span className="font-mono">{pool.feeTier}%</span>
+        </div>
+      </div>
 
       <Button
         className="w-full"

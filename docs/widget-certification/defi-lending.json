@@ -175,7 +175,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "288 lines \u2014 within 500-line limit. No function >200 lines."
+          "note": "287 lines \u2014 within 500-line limit. No function >200 lines."
         },
         "7.4": {
           "result": "pass",
@@ -203,7 +203,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "text-[10px] at lines 80, 119, 217, 230 migrated to text-micro utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+          "note": "text-[10px] migrated to text-micro utility backed by --text-micro token (0.625rem) in globals.css @theme. Current usages: line 80 (protocol venue_id sublabel), 218 (HF Current label), 231 (HF After label). Line 119 APY sublabel was removed in 2026-04-21 layout refactor."
         },
         "8.2": {
           "result": "pass",
@@ -263,9 +263,7 @@
     ],
     "notes": null
   },
-  "knownIssues": [
-    "Mock import: calculateHealthFactorDelta, getAssetParams (via context \u2014 not direct widget import)"
-  ],
+  "knownIssues": [],
   "findings": [
     {
       "level": "l0",
@@ -320,8 +318,26 @@
       "description": "defi-lending-widget.tsx:80,119,217,230 \u2014 text-[10px] used for sub-xs label sizing in dense layout.",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro Tailwind utility backed by --text-micro token (0.625rem) added to globals.css @theme."
+    },
+    {
+      "level": "l8",
+      "description": "Layout refactor 2026-04-21: (a) removed Supply/Borrow APY sublabels from the asset Select dropdown (noisy at per-row level \u2014 rates live in the APY card below); (b) consolidated Asset / Amount / Max slippage into a single 3-col grid with equal widths and h-8 controls (SelectTrigger size=\"sm\" to match Input h-8); (c) merged the Supply/Borrow APY card and the Health Factor preview card into a 2-col grid, moving the collateral ratio row into the APY card.",
+      "status": "fixed"
+    },
+    {
+      "level": "l0",
+      "check": "0.9",
+      "description": "knownIssues still listed \"Mock import: calculateHealthFactorDelta, getAssetParams\" even though 0.5 already passed \u2014 these flow through useDeFiData() context, not direct widget import.",
+      "status": "fixed",
+      "fix": "Cleared stale knownIssues entry to match 0.5 pass note."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-21",
+  "changelog": [
+    {
+      "date": "2026-04-21",
+      "summary": "Layout refactor: APY sublabels dropped from asset Select; Asset / Amount / Max slippage consolidated into a 3-col equal-width row (h-8 controls via SelectTrigger size=\"sm\"); Supply/Borrow APY card merged with Health Factor card into a 2-col grid with collateral ratio moved into the APY card. Cert drift fixes: 7.3 line count 288\u2192287, 8.1 text-micro line refs updated (dropped 119 which no longer exists), stale knownIssues cleared."
+    }
+  ]
 }
