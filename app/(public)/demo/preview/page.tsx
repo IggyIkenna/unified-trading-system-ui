@@ -488,8 +488,8 @@ export default function DemoPreview() {
                   <div>
                     <div className="font-medium text-emerald-500 mb-2">Sports</div>
                     <div className="space-y-1 text-muted-foreground">
-                      <div>Pinnacle</div>
                       <div>Betfair</div>
+                      <div>Smarkets</div>
                       <div>DraftKings</div>
                       <div>BetMGM</div>
                     </div>

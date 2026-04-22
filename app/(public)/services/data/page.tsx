@@ -399,7 +399,7 @@ export default function DataServicePublicPage() {
                         {
                           label: "Sports Odds — Premier League",
                           categories: ["sports"],
-                          venues: "Betfair, Pinnacle",
+                          venues: "Betfair, Smarkets",
                           mode: "in_system",
                           status: "pending",
                         },
