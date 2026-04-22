@@ -5,6 +5,8 @@
 **Spec section:** BP-2 Migration Spec, S 2
 **Status:** AUDIT COMPLETE — ready for migration
 
+> **Update 2026-04-22:** `book-order-form`, `book-algo-config`, `book-record-details` merged into `book-order-entry` (single widget). This page's references to those three widgets are historical — they no longer exist. See `docs/audits/live-review-findings.md` row #17.
+
 ---
 
 ## 1. Widget Inventory (actual vs spec)

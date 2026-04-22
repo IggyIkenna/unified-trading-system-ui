@@ -1,6 +1,6 @@
 # 4.9 Book — Widget Audit & Merge Plan
 
-> **Status:** DRAFT — awaiting user review
+> **Status:** LANDED 2026-04-22 — `book-order-form` + `book-algo-config` + `book-record-details` + `book-preview-compliance` merged into `book-order-entry` (Option A). See `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md` WU-1. Document retained for historical context.
 > **WORK_TRACKER ref:** §4.9
 > **Page route:** `/services/trading/book`
 

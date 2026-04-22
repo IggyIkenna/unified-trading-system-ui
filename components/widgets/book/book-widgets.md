@@ -21,15 +21,13 @@ All logic and UI live in a single `BookTradePage` function — no child componen
 
 ## 2. Widget Decomposition
 
-| id                        | label                | description                                                                                  | icon           | minW | minH | defaultW | defaultH | singleton |
-| ------------------------- | -------------------- | -------------------------------------------------------------------------------------------- | -------------- | ---- | ---- | -------- | -------- | --------- |
-| `book-hierarchy-bar`      | Hierarchy Selector   | Org → Client → Strategy selector strip                                                       | `Building2`    | 6    | 1    | 12       | 1        | yes       |
-| `book-order-form`         | Order Entry          | Core order form: mode toggle, category, venue, instrument, side, qty, price                  | `ClipboardPen` | 4    | 5    | 6        | 8        | yes       |
-| `book-algo-config`        | Algo Configuration   | Algorithm selector + conditional params (TWAP/VWAP duration, iceberg display qty, benchmark) | `Settings2`    | 3    | 3    | 6        | 4        | yes       |
-| `book-record-details`     | Record Details       | Counterparty, source reference, fee fields for record-only mode                              | `FileText`     | 3    | 3    | 6        | 3        | yes       |
-| `book-preview-compliance` | Preview & Compliance | Order preview grid + pre-trade compliance checks with pass/fail badges                       | `ShieldCheck`  | 4    | 3    | 6        | 5        | yes       |
+| id                   | label              | description                                                                                    | icon           | minW | minH | defaultW | defaultH | singleton |
+| -------------------- | ------------------ | ---------------------------------------------------------------------------------------------- | -------------- | ---- | ---- | -------- | -------- | --------- |
+| `book-trade-history` | Trade History      | Table of executed trades with search, sort, filtering                                          | `History`      | 6    | 4    | 12       | 8        | yes       |
+| `book-hierarchy-bar` | Hierarchy Selector | Org → Client → Strategy selector strip                                                         | `Building2`    | 6    | 1    | 12       | 1        | yes       |
+| `book-order-entry`   | Book Order Entry   | Full trade booking workflow: form body, algo config, record-only details, preview & compliance | `ClipboardPen` | 6    | 10   | 12       | 14       | yes       |
 
-**Note:** Because this is a form page with sequential state machine flow (idle → preview → submit), widgets must share order state. The `book-order-form` widget owns the state machine; other widgets are read-only consumers that appear/hide based on `orderState`.
+**Note (2026-04-22):** The book tab was originally decomposed into four co-dependent widgets (`book-order-form`, `book-algo-config`, `book-record-details`, `book-preview-compliance`) that all wrote to the same shared `useBookTradeData()` context and shared one submit action — none worked alone. They were merged into a single `book-order-entry` widget that owns the full `idle → preview → submitting → success/error` state machine internally.
 
 ---
 
@@ -144,15 +142,13 @@ interface BookTradeData {
 
 ## 8. Default Preset Layout
 
-12-column grid. This is a form page — compact center layout.
+12-column grid. Trade history on top (full width), then scope bar, then the merged order-entry widget.
 
 ```
 book-default:
-  book-hierarchy-bar:   { x: 0,  y: 0,  w: 12, h: 1 }
-  book-order-form:      { x: 0,  y: 1,  w: 6,  h: 8 }
-  book-algo-config:     { x: 6,  y: 1,  w: 6,  h: 4 }
-  book-record-details:  { x: 6,  y: 5,  w: 6,  h: 3 }
-  book-preview-compliance: { x: 6, y: 8, w: 6, h: 5 }
+  book-trade-history:   { x: 0,  y: 0,  w: 12, h: 8  }
+  book-hierarchy-bar:   { x: 0,  y: 8,  w: 12, h: 1  }
+  book-order-entry:     { x: 0,  y: 9,  w: 12, h: 14 }
 ```
 
 ---

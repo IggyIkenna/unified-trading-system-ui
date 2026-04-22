@@ -126,20 +126,20 @@ export function MyWidget(_props: WidgetComponentProps) {
 
 ### Widgets already migrated
 
-| Widget                | Has submit | Notes                                         |
-| --------------------- | ---------- | --------------------------------------------- |
-| `defi-staking`        | Yes        | + submit guard                                |
-| `defi-liquidity`      | Yes        | + submit guard                                |
-| `book-record-details` | No         | Layout wrapper only                           |
-| `book-algo-config`    | No         | Layout wrapper only (both paths)              |
-| `order-entry`         | Yes        | + submit guard, replaced CardContent          |
-| `defi-lending`        | Yes        | + submit guard + mock cleanup                 |
-| `accounts-transfer`   | Yes        | + submit guard on all 4 modes                 |
-| `defi-flash-loans`    | Yes        | + submit guard + S0.3 mock cleanup            |
-| `defi-transfer`       | Yes        | + submit guard (send + bridge) + S0.3 cleanup |
-| `defi-swap`           | Yes        | + submit guard + S0.3 cleanup (3 mock files)  |
-| `defi-basis-trade`    | Yes        | + submit guard + S0.3 cleanup + types moved   |
-| `defi-wallet-summary` | No         | S0.3 mock cleanup only (no submit)            |
+| Widget                    | Has submit | Notes                                            |
+| ------------------------- | ---------- | ------------------------------------------------ |
+| `defi-staking`            | Yes        | + submit guard                                   |
+| `defi-liquidity`          | Yes        | + submit guard                                   |
+| ~~`book-record-details`~~ | —          | Merged into `book-order-entry` 2026-04-22 (WU-1) |
+| ~~`book-algo-config`~~    | —          | Merged into `book-order-entry` 2026-04-22 (WU-1) |
+| `order-entry`             | Yes        | + submit guard, replaced CardContent             |
+| `defi-lending`            | Yes        | + submit guard + mock cleanup                    |
+| `accounts-transfer`       | Yes        | + submit guard on all 4 modes                    |
+| `defi-flash-loans`        | Yes        | + submit guard + S0.3 mock cleanup               |
+| `defi-transfer`           | Yes        | + submit guard (send + bridge) + S0.3 cleanup    |
+| `defi-swap`               | Yes        | + submit guard + S0.3 cleanup (3 mock files)     |
+| `defi-basis-trade`        | Yes        | + submit guard + S0.3 cleanup + types moved      |
+| `defi-wallet-summary`     | No         | S0.3 mock cleanup only (no submit)               |
 
 ---
 

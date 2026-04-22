@@ -127,6 +127,8 @@ The base should provide:
 
 ## § 2 — FormWidget (form class)
 
+> **Update 2026-04-22:** The three `book-*` form widgets listed below (`book-order-form`, `book-algo-config`, `book-record-details`) were merged into `book-order-entry` (WU-1 widget consolidation). Effective FormWidget child count: 13 (was 16). Historical rows retained for traceability.
+
 **Base file:** `components/shared/form-widget.tsx` (NEW)
 **Child count:** 16
 
@@ -259,6 +261,8 @@ The migration per widget is:
 ---
 
 ## § 4 — DetailPanelWidget (detail-panel class)
+
+> **Update 2026-04-22:** `book-preview-compliance` was absorbed into `book-order-entry` (WU-1 widget consolidation). Effective DetailPanelWidget child count: 9. Historical row retained for traceability.
 
 **Base file:** `components/shared/detail-panel-widget.tsx` (NEW)
 **Child count:** 10

@@ -30,6 +30,6 @@ See [pairing guide](../pairing-guide.md).
 | `instrument-bar`  | All other terminal widgets (anchors context)   | **positions** `positions-table` · **orders** `orders-table` |
 | `order-book`      | `price-chart`, `order-entry`, `market-trades`  | **markets** `markets-live-book`, `markets-order-flow`       |
 | `price-chart`     | `order-book`, `order-entry`, `calendar-events` | **options** chain / scenario widgets                        |
-| `order-entry`     | `order-book`, `price-chart`, `market-trades`   | **book** `book-order-form` · **orders** `orders-table`      |
+| `order-entry`     | `order-book`, `price-chart`, `market-trades`   | **book** `book-order-entry` · **orders** `orders-table`     |
 | `market-trades`   | `order-book`, `price-chart`                    | **overview** `recent-fills` · **orders** `orders-kpi-strip` |
 | `calendar-events` | `price-chart`, `instrument-bar`                | **overview** `pnl-chart` (event risk)                       |

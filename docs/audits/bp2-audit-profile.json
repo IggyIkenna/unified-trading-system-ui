@@ -53,10 +53,8 @@
         "isPreset": false,
         "layouts": [
           { "widgetId": "order-entry", "instanceId": "audit-form-order-entry", "x": 0, "y": 0, "w": 4, "h": 5 },
-          { "widgetId": "book-order-form", "instanceId": "audit-form-book-order", "x": 4, "y": 0, "w": 4, "h": 6 },
-          { "widgetId": "book-algo-config", "instanceId": "audit-form-book-algo", "x": 8, "y": 0, "w": 4, "h": 5 },
-          { "widgetId": "book-record-details", "instanceId": "audit-form-book-record", "x": 0, "y": 6, "w": 4, "h": 5 },
-          { "widgetId": "defi-lending", "instanceId": "audit-form-lending", "x": 4, "y": 6, "w": 4, "h": 6 },
+          { "widgetId": "book-order-entry", "instanceId": "audit-form-book-order", "x": 4, "y": 0, "w": 8, "h": 12 },
+          { "widgetId": "defi-lending", "instanceId": "audit-form-lending", "x": 4, "y": 12, "w": 4, "h": 6 },
           { "widgetId": "defi-swap", "instanceId": "audit-form-swap", "x": 8, "y": 6, "w": 4, "h": 6 },
           { "widgetId": "defi-liquidity", "instanceId": "audit-form-liquidity", "x": 0, "y": 12, "w": 4, "h": 7 },
           { "widgetId": "defi-staking", "instanceId": "audit-form-staking", "x": 4, "y": 12, "w": 4, "h": 6 },
@@ -146,8 +144,7 @@
         "tab": "custom-detail-panels",
         "isPreset": false,
         "layouts": [
-          { "widgetId": "book-preview-compliance", "instanceId": "audit-dp-book-prev", "x": 0, "y": 0, "w": 6, "h": 5 },
-          { "widgetId": "instr-detail-panel", "instanceId": "audit-dp-instr", "x": 6, "y": 0, "w": 6, "h": 5 },
+          { "widgetId": "instr-detail-panel", "instanceId": "audit-dp-instr", "x": 0, "y": 0, "w": 12, "h": 5 },
           { "widgetId": "sports-fixture-detail", "instanceId": "audit-dp-sports-fix", "x": 0, "y": 5, "w": 6, "h": 5 },
           { "widgetId": "sports-clv", "instanceId": "audit-dp-sports-clv", "x": 6, "y": 5, "w": 6, "h": 5 },
           { "widgetId": "sports-ml-status", "instanceId": "audit-dp-ml-status", "x": 0, "y": 10, "w": 6, "h": 5 },

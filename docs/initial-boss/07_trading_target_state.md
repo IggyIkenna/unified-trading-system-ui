@@ -162,24 +162,24 @@ A **widget** in this codebase is:
 
 ### Widget classes (16 total, from audit)
 
-| Class          | Count | Has base?                    | Examples                                                                 |
-| -------------- | ----- | ---------------------------- | ------------------------------------------------------------------------ |
-| kpi-strip      | 9     | Yes (`KpiSummaryWidget`)     | orders-kpi, positions-kpi, risk-kpi, alerts-kpi                          |
-| live-feed      | 8     | Yes (`LiveFeedWidget`)       | market-trades, markets-order-flow, defi-trade-history                    |
-| form           | 15    | **No**                       | order-entry, defi-lending, defi-swap, book-order-form, accounts-transfer |
-| inline-table   | 14    | Should use `DataTableWidget` | orders-table, positions-table, alerts-table, options-chain               |
-| recharts-chart | 10    | **No**                       | risk-var-chart, pnl-time-series, risk-margin, risk-term-structure        |
-| card-grid      | 7     | **No**                       | alerts-preview, health-grid, risk-circuit-breakers, bundle-templates     |
-| detail-panel   | 7     | **No**                       | instr-detail-panel, sports-fixture-detail, book-preview-compliance       |
-| control-bar    | 7     | **No**                       | instrument-bar, pnl-controls, markets-controls, options-control-bar      |
-| bespoke        | 9     | N/A                          | pnl-chart, calendar-events, pred-odum-focus, options-greek-surface       |
-| heatmap        | 3     | **No**                       | risk-correlation-heatmap, risk-strategy-heatmap, defi-funding-matrix     |
-| order-book     | 3     | **No**                       | order-book, depth-chart, markets-live-book                               |
-| waterfall      | 3     | **No**                       | pnl-waterfall, pnl-attribution, defi-waterfall-weights                   |
-| data-table     | 2     | Yes (`DataTableWidget`)      | sports-my-bets, pred-settled-positions                                   |
-| filter-grid    | 2     | `FilterBar` (may be demoted) | sports-fixtures, pred-markets-grid                                       |
-| action-panel   | 2     | N/A (too small)              | alerts-kill-switch, pnl-report-button                                    |
-| lw-chart       | 1     | Via `CandlestickChart`       | price-chart                                                              |
+| Class          | Count | Has base?                    | Examples                                                                  |
+| -------------- | ----- | ---------------------------- | ------------------------------------------------------------------------- |
+| kpi-strip      | 9     | Yes (`KpiSummaryWidget`)     | orders-kpi, positions-kpi, risk-kpi, alerts-kpi                           |
+| live-feed      | 8     | Yes (`LiveFeedWidget`)       | market-trades, markets-order-flow, defi-trade-history                     |
+| form           | 15    | **No**                       | order-entry, defi-lending, defi-swap, book-order-entry, accounts-transfer |
+| inline-table   | 14    | Should use `DataTableWidget` | orders-table, positions-table, alerts-table, options-chain                |
+| recharts-chart | 10    | **No**                       | risk-var-chart, pnl-time-series, risk-margin, risk-term-structure         |
+| card-grid      | 7     | **No**                       | alerts-preview, health-grid, risk-circuit-breakers, bundle-templates      |
+| detail-panel   | 7     | **No**                       | instr-detail-panel, sports-fixture-detail, bundle-steps                   |
+| control-bar    | 7     | **No**                       | instrument-bar, pnl-controls, markets-controls, options-control-bar       |
+| bespoke        | 9     | N/A                          | pnl-chart, calendar-events, pred-odum-focus, options-greek-surface        |
+| heatmap        | 3     | **No**                       | risk-correlation-heatmap, risk-strategy-heatmap, defi-funding-matrix      |
+| order-book     | 3     | **No**                       | order-book, depth-chart, markets-live-book                                |
+| waterfall      | 3     | **No**                       | pnl-waterfall, pnl-attribution, defi-waterfall-weights                    |
+| data-table     | 2     | Yes (`DataTableWidget`)      | sports-my-bets, pred-settled-positions                                    |
+| filter-grid    | 2     | `FilterBar` (may be demoted) | sports-fixtures, pred-markets-grid                                        |
+| action-panel   | 2     | N/A (too small)              | alerts-kill-switch, pnl-report-button                                     |
+| lw-chart       | 1     | Via `CandlestickChart`       | price-chart                                                               |
 
 ### Chart library policy
 

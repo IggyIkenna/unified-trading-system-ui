@@ -126,8 +126,7 @@ position state, risk metrics, exit workflow, and trade history table.
 | `components/reports/reconciliation/reconciliation-types.ts`     | Added: balance/gas break types, accepted status                                                                                                                                       |
 | `components/reports/reconciliation/reconciliation-columns.tsx`  | Added: badge styles for new types                                                                                                                                                     |
 | `components/reports/reconciliation/reconciliation-constants.ts` | Added: DeFi venues + break types to filters                                                                                                                                           |
-| `components/widgets/book/book-order-form-widget.tsx`            | Added: DeFi instruction type + algo + slippage dropdowns                                                                                                                              |
-| `components/widgets/book/book-algo-config-widget.tsx`           | Added: DeFi algo detail view                                                                                                                                                          |
+| `components/widgets/book/book-order-entry-widget.tsx`           | Absorbed: DeFi instruction type + algo + slippage dropdowns + algo detail view (merged 2026-04-22 from `book-order-form` + `book-algo-config`)                                        |
 | `components/widgets/book/book-data-context.tsx`                 | Added: DeFi instruction/algo/slippage state                                                                                                                                           |
 
 ## Demo Strategies & Their UI Flows

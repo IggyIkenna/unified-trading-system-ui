@@ -8,13 +8,11 @@ Workspace widgets for **Book Trade** (`/services/trading/book`). Spec: [`book-wi
 
 ## Widgets
 
-| id                        | Role                                                                                                 |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `book-hierarchy-bar`      | Org, client, strategy                                                                                |
-| `book-order-form`         | Execute / record-only, category, venue, instrument, side, qty, price; Preview when idle; user footer |
-| `book-algo-config`        | Execute-mode algos; `CollapsibleSection` + fields                                                    |
-| `book-record-details`     | Record-only counterparty / source / fee; `CollapsibleSection`                                        |
-| `book-preview-compliance` | Summary grid, compliance (execute), Edit / Confirm, success and error                                |
+| id                   | Role                                                                                                                                                                                                                                                                                                                         |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `book-trade-history` | Table of executed trades with search, sort, filtering                                                                                                                                                                                                                                                                        |
+| `book-hierarchy-bar` | Org, client, strategy                                                                                                                                                                                                                                                                                                        |
+| `book-order-entry`   | Full booking workflow: execute / record-only toggle, category tabs, venue, instrument, side, qty, price, CeFi / DeFi algo config, record-only counterparty / source / fee, preview summary + compliance panel, Edit / Confirm. State machine (`orderState`: `idle → preview → submitting → success/error`) owned internally. |
 
 ## Config
 
@@ -22,4 +20,8 @@ Venues, category labels, and algo list: `lib/config/services/trading.config.ts` 
 
 ## Preset
 
-`book-default` is registered in `components/widgets/book/register.ts` (12-column layout aligned with the spec).
+`book-default` and `book-full` are registered in `components/widgets/book/register.ts` (12-column layout aligned with the spec).
+
+## History
+
+`book-order-form`, `book-algo-config`, `book-record-details`, `book-preview-compliance` were merged into the single `book-order-entry` widget on 2026-04-22 — all four wrote to the same shared context and shared one submit action (see `docs/audits/live-review-findings.md` row #17).

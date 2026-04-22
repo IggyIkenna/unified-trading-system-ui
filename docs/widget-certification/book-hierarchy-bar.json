@@ -256,13 +256,7 @@
   },
   "relationships": {
     "mode": "master",
-    "masterOf": [
-      "book-order-form",
-      "book-algo-config",
-      "book-record-details",
-      "book-preview-compliance",
-      "book-trade-history"
-    ],
+    "masterOf": ["book-order-entry", "book-trade-history"],
     "detailOf": [],
     "selectionKey": "orgId+clientId+strategyId",
     "mergeCandidate": null,

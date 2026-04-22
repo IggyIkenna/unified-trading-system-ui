@@ -6,6 +6,8 @@
 **Decision:** All 11 widgets remain standalone. Use cases are too different to justify a shared base. Fix cross-cutting issues (mocks, props, loading) directly in each widget.
 **Spec reference:** [BP2-base-widget-migration-spec.md](../BP2-base-widget-migration-spec.md) § 4
 
+> **Update 2026-04-22:** `book-preview-compliance` was absorbed into `book-order-entry` (WU-1 widget merge). References to it below are historical. Remaining detail-panel widgets: 10. See `docs/audits/live-review-findings.md` row #17.
+
 ---
 
 ## Summary

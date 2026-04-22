@@ -22,5 +22,5 @@ Full orders DataTable (tanstack) with 15 columns: order_id, instrument, side, ty
 See [pairing guide](../pairing-guide.md).
 
 - **Same tab:** `orders-filter`, `orders-kpi-strip`.
-- **Placement & tape:** **terminal** `order-entry`, `market-trades`, `order-book` · **book** `book-order-form`, `book-preview-compliance`.
+- **Placement & tape:** **terminal** `order-entry`, `market-trades`, `order-book` · **book** `book-order-entry`.
 - **Ops & alerts:** **instructions** `instr-pipeline-table` · **overview** `recent-fills` · **alerts** `alerts-table`.
