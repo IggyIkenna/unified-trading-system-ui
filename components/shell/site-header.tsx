@@ -114,7 +114,7 @@ export function SiteHeader() {
       <div className="container flex min-h-14 items-center justify-between gap-3 px-4 py-2 md:px-6">
         {/* Mobile: logo opens nav sheet. Desktop: logo navigates home. */}
         <button
-          className="flex shrink-0 items-center gap-3 md:hidden"
+          className="flex shrink-0 items-center gap-3 lg:hidden"
           onClick={() => setMobileOpen(true)}
           aria-label="Open navigation"
         >
@@ -126,7 +126,7 @@ export function SiteHeader() {
             </Badge>
           </div>
         </button>
-        <Link href="/" className="hidden shrink-0 items-center gap-3 md:flex">
+        <Link href="/" className="hidden shrink-0 items-center gap-3 lg:flex">
           <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
           <div className="flex flex-col items-start gap-0.5 leading-tight">
             <span className="text-lg font-semibold">Odum Research</span>
@@ -189,7 +189,7 @@ export function SiteHeader() {
           </SheetContent>
         </Sheet>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 px-2 md:flex lg:gap-3">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 px-2 lg:flex lg:gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger className="inline-flex shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
               <Compass className="size-3.5" aria-hidden />
@@ -230,10 +230,10 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {!loading && user ? (
             <>
-              <Link href="/dashboard" className="text-sm text-muted-foreground hover:text-foreground hidden sm:block">
+              <Link href="/dashboard" className="hidden text-sm text-muted-foreground hover:text-foreground lg:block">
                 Dashboard
               </Link>
               <Button size="sm" variant="outline" asChild>
@@ -245,13 +245,13 @@ export function SiteHeader() {
                       .join("")
                       .slice(0, 2)}
                   </span>
-                  <span className="hidden sm:inline">{user.displayName.split(" ")[0]}</span>
+                  <span className="hidden lg:inline">{user.displayName.split(" ")[0]}</span>
                 </Link>
               </Button>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground hidden sm:block">
+              <Link href="/login" className="hidden text-sm text-muted-foreground hover:text-foreground lg:block">
                 Sign In
               </Link>
               <Button size="sm" asChild>
