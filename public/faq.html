@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ — Odum Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --bg-card: #111113;
+      --bg-surface: #161618;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(255, 255, 255, 0.12);
+      --text: #e4e4e7;
+      --text-muted: #a1a1aa;
+      --text-secondary: #c4c4cc;
+      --text-dim: #71717a;
+      --primary: #22d3ee;
+      --rose: #fb7185;
+      --emerald: #4ade80;
+      --amber: #fbbf24;
+      --violet: #a78bfa;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-pad {
+      padding: 64px 0;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
+    }
+
+    .hero-content {
+      text-align: center;
+      padding: 72px 24px 48px;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .hero .subtitle {
+      margin-top: 16px;
+      font-size: clamp(15px, 2vw, 17px);
+      color: var(--text-muted);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .faq-category {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .faq-category h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 20px;
+    }
+
+    .faq-item {
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-item h3 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.005em;
+    }
+
+    .faq-item p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .faq-item p:last-child {
+      margin-bottom: 0;
+    }
+
+    .faq-item strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .faq-item a {
+      color: var(--primary);
+      text-decoration: underline;
+      text-decoration-color: rgba(34, 211, 238, 0.4);
+      text-underline-offset: 3px;
+    }
+
+    .faq-item a:hover {
+      text-decoration-color: var(--primary);
+    }
+
+    .faq-item ul {
+      list-style: none;
+      margin: 8px 0 10px;
+      padding: 0;
+    }
+
+    .faq-item ul li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 6px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    .faq-item ul li::before {
+      content: '·';
+      position: absolute;
+      left: 6px;
+      color: var(--text-dim);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #0a0a0b;
+    }
+
+    .btn-primary:hover {
+      background: #06b6d4;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-accent);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .section-pad {
+        padding: 44px 0;
+      }
+
+      .hero-content {
+        padding: 48px 16px 32px;
+      }
+
+      .faq-item h3 {
+        font-size: 16px;
+      }
+
+      .faq-item p {
+        font-size: 14.5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="eyebrow">Frequently asked questions</p>
+      <h1>The short answers</h1>
+      <p class="subtitle">
+        The questions we get asked most, answered in one line each where possible, with links to the deep
+        dives that expand them. Longer versions live in the briefings and the
+        <a href="/our-story" style="color: var(--primary); text-decoration: underline; text-decoration-color: rgba(34, 211, 238, 0.4); text-underline-offset: 3px;">founder&rsquo;s story</a>.
+      </p>
+    </div>
+  </section>
+
+  <!-- THE PRODUCT -->
+  <section class="section-pad">
+    <div class="container faq-category">
+      <h2>The product</h2>
+
+      <div class="faq-item">
+        <h3>What does Odum actually do?</h3>
+        <p>
+          We run a unified trading operating system across <strong>five asset categories</strong> &mdash;
+          crypto, DeFi, traditional markets, sports, prediction markets &mdash; and offer it commercially
+          through four paths: <strong>Investment Management</strong>, <strong>DART</strong> (the full
+          platform), <strong>Odum Signals</strong> (our signals, your execution), and the
+          <strong>Regulatory Umbrella</strong>.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How is this different from [vendor X] &mdash; Hummingbot, QuantConnect, Tardis, Versify, IBKR&hellip;?</h3>
+        <p>
+          Most vendors are deep in one piece &mdash; data, research, charting, execution, a single venue
+          family. That&rsquo;s good work; they&rsquo;re usually best-in-class at what they do. The gap we
+          found is that nobody combines <strong>the full lifecycle</strong> (research → promote → run →
+          post-trade → reporting → regulatory) with <strong>the full asset universe</strong> in a single
+          coherent system.
+        </p>
+        <p>
+          We still use some of them &mdash; TradingView for some charts, for example. The position
+          isn&rsquo;t competing-with-the-world; it&rsquo;s filling the combination that wasn&rsquo;t built.
+          We&rsquo;d happily operate as an affiliate where our capabilities complement rather than compete.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Which asset categories and venues do you cover?</h3>
+        <ul>
+          <li><strong>Crypto exchanges</strong> &mdash; 11+ venues (Binance, OKX, Deribit, Coinbase, Bybit, KuCoin, Gate.io, and more).</li>
+          <li><strong>DeFi protocols</strong> &mdash; 55+ protocols across 8+ chains (Aave, Uniswap V3, Morpho, Hyperliquid, etc.).</li>
+          <li><strong>Traditional markets</strong> &mdash; 8 venues (CME, NYSE, ICE&hellip;) across equities, futures, FX, commodities.</li>
+          <li><strong>Sports</strong> &mdash; Betfair, Pinnacle, and 20+ bookmakers across 100+ leagues.</li>
+          <li><strong>Prediction markets</strong> &mdash; Polymarket, Kalshi, and a handful of others.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- IP & PARTNERSHIP -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container faq-category">
+      <h2>IP, ownership, partnership</h2>
+
+      <div class="faq-item">
+        <h3>How do you protect our strategy IP?</h3>
+        <p>
+          Two modes on DART, and you pick the one that fits where your edge lives.
+        </p>
+        <p>
+          <strong>DART &mdash; Signals In:</strong> you keep the strategy in your own codebase. We never
+          see the code and never see how you make money. What you use is our platform, execution,
+          reporting, and regulatory layers &mdash; the expensive-to-build infrastructure. Your signal goes
+          in; the rest of the pipeline does the job.
+        </p>
+        <p>
+          <strong>DART &mdash; Full:</strong> we build with you from the catalogue of strategy archetypes.
+          Whatever we build together is <strong>locked off</strong>: it doesn&rsquo;t enter our
+          investment-management book, we don&rsquo;t trade it ourselves, and it stays exclusive to you for
+          the length of the contract.
+        </p>
+        <p>
+          Longer version with the matrix: <a href="/briefings/dart-signals-in">DART Signals-In deep dive</a>
+          and <a href="/briefings/dart-full">DART Full deep dive</a>.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Why don&rsquo;t you just trade all the strategies yourselves?</h3>
+        <p>
+          The obvious challenge. We do trade them &mdash; week by week we move strategies from cold through
+          lukewarm to live. But the catalogue is a catalogue because the infrastructure makes it
+          possible, not because we&rsquo;ve personally traded every combination.
+        </p>
+        <p>
+          At a fast pace of two weeks per strategy, <strong>~2,500 strategy combinations is 5,000 weeks
+          &mdash; roughly 100 years of single-desk work</strong>. Partnership is how the maths works:
+          hundred partners each running a slice of the catalogue reaches billions under management without
+          us raising another pound, and every partner is an extension of the platform. Revenue-share
+          aligns both sides.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What happens when a strategy decays?</h3>
+        <p>
+          Strategies decay. That&rsquo;s a fact of the market, not a flaw in the firm. The platform is
+          built for iteration: every strategy starts with a baseline, moves through backtest,
+          paper-traded validation, and live-traded results, and evolves through v2, v3, etc. the way any
+          serious trader evolves their book. You can and should evolve your own. The theoretical cap on
+          strategy count across the taxonomy is vast, and we&rsquo;re nowhere near it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REGULATORY & COMPLIANCE -->
+  <section class="section-pad">
+    <div class="container faq-category">
+      <h2>Regulatory &amp; compliance</h2>
+
+      <div class="faq-item">
+        <h3>Are you regulated?</h3>
+        <p>
+          Yes &mdash; <strong>FCA-authorised (FRN 975797)</strong>, regulated since January 2023. Client
+          scope: professional clients and eligible counterparties under FCA rules. We don&rsquo;t offer
+          services to retail investors.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>How do you handle sanctions &mdash; Iran, Russia, and similar jurisdictions?</h3>
+        <p>
+          Compliance with UK, EU, and US sanctions regimes is built into the operating model. We screen
+          for sanctioned jurisdictions and entities at onboarding and on an ongoing basis; we do not
+          onboard clients subject to sanctions, and we do not route orders or deliver signals to venues
+          or counterparties we can&rsquo;t reach compliantly. This is owned by our compliance function
+          and reviewed regularly against FCA and OFAC guidance.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Can I operate under your FCA permissions?</h3>
+        <p>
+          Yes, via the <strong>Regulatory Umbrella</strong>. Firms that want to conduct regulated
+          activities without the 12&ndash;18 month wait for direct FCA authorisation can operate as an
+          Appointed Representative or under an advisory structure. See the
+          <a href="/briefings/regulatory">Regulatory Umbrella deep dive</a> for the shapes and the
+          onboarding flow.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GETTING STARTED -->
+  <section class="section-pad" style="background: var(--bg-surface);">
+    <div class="container faq-category">
+      <h2>Getting started</h2>
+
+      <div class="faq-item">
+        <h3>How do I read the deep dives?</h3>
+        <p>
+          The deep dives are lightly gated with a shared access code. Ask us for one via
+          <a href="/contact?service=general&action=access">contact</a> or on a 45-minute call
+          &mdash; we issue codes to qualified prospects within a working day.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>What&rsquo;s the flow to become a client?</h3>
+        <ul>
+          <li><strong>Questionnaire</strong> (~2 min) &mdash; lets us pre-configure your path.</li>
+          <li><strong>Demo</strong> (45 min, Calendly) &mdash; we walk you through the matching surfaces.</li>
+          <li><strong>Signup</strong> (post-demo) &mdash; entity details for contract generation; no doc uploads until after approval.</li>
+          <li><strong>Approval + activation</strong> &mdash; Odum compliance reviews, emails contracts, and enables your account.</li>
+        </ul>
+        <p style="margin-top: 12px;">
+          Full workflow:
+          <a href="https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/08-workflows/signup-signin-workflow.md">
+            signup / signin workflow playbook
+          </a>.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Do I need to book a demo before signing up?</h3>
+        <p>
+          For DART and Odum Signals, yes &mdash; account provisioning happens after the demo so we can
+          configure the right platform surfaces, API keys, and rate limits for your setup. For
+          Investment Management and the Regulatory Umbrella, you can start the signup flow directly;
+          we&rsquo;ll schedule the follow-up call either way.
+        </p>
+      </div>
+
+      <div class="faq-item">
+        <h3>Why is the sign-in locked?</h3>
+        <p>
+          Accounts are created <strong>disabled by default</strong>. Our compliance team enables them
+          after KYC / AML review and contract signing &mdash; usually within a couple of working days of
+          the demo. You&rsquo;ll receive an email verification link at that point.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section-pad" style="text-align: center;">
+    <div class="container" style="max-width: 640px; margin: 0 auto;">
+      <p class="eyebrow">Didn&rsquo;t find your answer?</p>
+      <h2 style="font-size: clamp(22px, 2.5vw, 28px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px;">
+        Ask us directly.
+      </h2>
+      <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px;">
+        A 45-minute call is usually the fastest way to get a specific question answered and see whether
+        there&rsquo;s a fit.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
+          class="btn btn-primary">Book a 45-minute call</a>
+        <a href="/contact?service=general" class="btn btn-outline">Contact us</a>
+      </div>
+    </div>
+  </section>
+
+</body>
+
+</html>
