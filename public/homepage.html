@@ -1,2365 +1,2303 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Odum Research — FCA-Regulated Investment Manager &amp; DART</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --bg-card: #111113;
-      --bg-surface: #161618;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(255, 255, 255, 0.12);
-      --text: #e4e4e7;
-      --text-muted: #a1a1aa;
-      --text-secondary: #c4c4cc;
-      --text-dim: #71717a;
-      --primary: #22d3ee;
-      --primary-dim: rgba(34, 211, 238, 0.12);
-      --sky: #38bdf8;
-      --emerald: #4ade80;
-      --violet: #a78bfa;
-      --amber: #fbbf24;
-      --rose: #fb7185;
-      --cyan: #22d3ee;
-      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-    }
-
-    /* Distinct labels for the two client paths (vs one word "Invest") */
-    .lab-invest {
-      color: var(--rose);
-      font-weight: 600;
-    }
-
-    .lab-build {
-      color: var(--cyan);
-      font-weight: 600;
-    }
-
-    .lab-signals {
-      color: var(--violet);
-      font-weight: 600;
-    }
-
-    .lab-regulate {
-      color: #94a3b8;
-      font-weight: 600;
-    }
-
-    /* Glossary tooltip — mirrors the React <Term> primitive used on briefings
-       (SSOT: lib/glossary.ts). Dotted underline + hover/focus popover so copy
-       can stay terse and link acronyms / product labels to one-line defs. */
-    .glossary-term {
-      position: relative;
-      display: inline-block;
-      cursor: help;
-      border: 0;
-      background: none;
-      font: inherit;
-      font-weight: 600;
-      color: inherit;
-      padding: 0;
-      border-bottom: 1px dotted rgba(255, 255, 255, 0.55);
-      transition: border-color 0.15s ease;
-    }
-
-    .glossary-term:hover,
-    .glossary-term:focus-visible {
-      border-bottom-color: rgba(255, 255, 255, 0.95);
-      outline: none;
-    }
-
-    .glossary-term::after {
-      content: attr(data-def);
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 10px);
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: 320px;
-      padding: 10px 12px;
-      background: #0a0a0b;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 8px;
-      font-size: 12px;
-      line-height: 1.5;
-      font-weight: 400;
-      color: rgba(255, 255, 255, 0.88);
-      white-space: normal;
-      text-align: left;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s ease;
-      z-index: 100;
-    }
-
-    .glossary-term:hover::after,
-    .glossary-term:focus-visible::after {
-      opacity: 1;
-    }
-
-    a.glossary-term {
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    /* Keep path label colours when glossary + lab-* combine (glossary-term sets color: inherit). */
-    .glossary-term.lab-invest {
-      color: var(--rose);
-    }
-
-    .glossary-term.lab-build {
-      color: var(--cyan);
-    }
-
-    .glossary-term.lab-signals {
-      color: var(--violet);
-    }
-
-    .glossary-term.lab-regulate {
-      color: #94a3b8;
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    /* --- HEADER --- */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(10, 10, 11, 0.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-    }
-
-    /* Asset-class pill + path icon row (shadow-mounted homepage; public shell adds depth strip in app). */
-    .hero-asset-pill {
-      display: inline-flex;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px 8px;
-      margin: 0 auto 18px;
-      padding: 8px 18px 8px 14px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border-accent);
-      font-size: 12px;
-      font-weight: 500;
-      color: #fafafa;
-      letter-spacing: 0.02em;
-    }
-
-    .hero-asset-pill svg {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      opacity: 0.95;
-    }
-
-    .hero-asset-pill .sep {
-      opacity: 0.45;
-      user-select: none;
-    }
-
-    .hero-service-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px 18px;
-      margin-top: 28px;
-      max-width: 720px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero-service-tile {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      text-decoration: none;
-      color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-      cursor: help;
-    }
-
-    .hero-service-tile:hover,
-    .hero-service-tile:focus-visible {
-      color: var(--text);
-      border-color: var(--border-accent);
-      background: rgba(255, 255, 255, 0.03);
-      outline: none;
-    }
-
-    .hero-service-tile svg {
-      width: 18px;
-      height: 18px;
-      flex-shrink: 0;
-      opacity: 0.9;
-    }
-
-    .hero-service-tile.lab-invest svg {
-      color: var(--rose);
-    }
-
-    .hero-service-tile.lab-build svg {
-      color: var(--cyan);
-    }
-
-    .hero-service-tile.lab-signals svg {
-      color: var(--violet);
-    }
-
-    .hero-service-tile.lab-regulate svg {
-      color: #94a3b8;
-    }
-
-    .hero-service-tile::after {
-      content: attr(data-def);
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 10px);
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: 320px;
-      padding: 10px 12px;
-      background: #0a0a0b;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 8px;
-      font-size: 12px;
-      line-height: 1.5;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: normal;
-      color: rgba(255, 255, 255, 0.88);
-      white-space: normal;
-      text-align: left;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s ease;
-      z-index: 100;
-    }
-
-    .hero-service-tile:hover::after,
-    .hero-service-tile:focus-visible::after {
-      opacity: 1;
-    }
-
-    .hero-stats {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 32px 48px;
-      margin-top: 48px;
-    }
-
-    .hero-stat {
-      text-align: center;
-    }
-
-    .hero-stat strong {
-      display: block;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--primary);
-      font-family: var(--font-mono);
-      letter-spacing: -0.01em;
-    }
-
-    .hero-stat span {
-      display: block;
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--text-dim);
-      letter-spacing: 0.02em;
-    }
-
-    .hero-trust-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px 18px;
-      margin-top: 28px;
-    }
-
-    .hero-trust-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 14px;
-      border-radius: 9999px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--text-secondary);
-      letter-spacing: 0.02em;
-    }
-
-    .hero-trust-badge svg {
-      width: 14px;
-      height: 14px;
-      flex-shrink: 0;
-    }
-
-    .hero-trust-badge strong {
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .hero-trust-badge .sep {
-      opacity: 0.45;
-      user-select: none;
-    }
-
-    .hero-trust-badge .dim {
-      color: var(--text-dim);
-      font-weight: 500;
-    }
-
-    .hero-trust-badge.is-fca svg {
-      color: var(--emerald);
-    }
-
-    .hero-trust-badge.is-security svg {
-      color: var(--sky);
-    }
-
-    .hero-trust-badge.is-flex svg {
-      color: var(--violet);
-    }
-
-    .hero-trust-badge.is-hq svg {
-      color: var(--amber);
-    }
-
-    header .container.header-inner {
-      padding-left: 10px;
-      padding-right: 24px;
-    }
-
-    .logo-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo-img {
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-    }
-
-    .logo-text {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .fca-badge {
-      display: inline-block;
-      margin-left: 8px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--text-muted);
-      border: 1px solid var(--border-accent);
-      border-radius: 9999px;
-      padding: 2px 10px;
-      vertical-align: middle;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    /* Utility links: quieter so the three offerings read as the focus */
-    nav>a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-dim);
-      transition: color 0.15s;
-    }
-
-    nav>a:hover {
-      color: var(--text-muted);
-    }
-
-    nav>a.active {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    nav .nav-dropdown>a.active {
-      font-weight: 700;
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 5px;
-      text-decoration-color: currentColor;
-    }
-
-    nav>span {
-      color: rgba(255, 255, 255, 0.06);
-      font-size: 10px;
-      font-weight: 300;
-      user-select: none;
-      padding: 0 1px;
-    }
-
-    /* Core offerings: subtle brand tint (not full “tab bar” weight) */
-    nav .nav-dropdown>a {
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      transition: color 0.15s, filter 0.15s;
-    }
-
-    nav .nav-dropdown:nth-child(3)>a {
-      color: rgba(251, 113, 133, 0.88);
-    }
-
-    nav .nav-dropdown:nth-child(3)>a:hover {
-      color: #fda4af;
-    }
-
-    nav .nav-dropdown:nth-child(4)>a {
-      color: rgba(34, 211, 238, 0.88);
-    }
-
-    nav .nav-dropdown:nth-child(4)>a:hover {
-      color: #67e8f9;
-    }
-
-    nav .nav-dropdown:nth-child(5)>a {
-      color: #94a3b8;
-    }
-
-    nav .nav-dropdown:nth-child(5)>a:hover {
-      color: #cbd5e1;
-    }
-
-    .nav-dropdown {
-      position: relative;
-    }
-
-    .nav-dropdown>a::after {
-      content: ' \25BE';
-      font-size: 10px;
-      opacity: 0.5;
-    }
-
-    .dropdown-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      min-width: 200px;
-      background: rgba(16, 16, 18, 0.98);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--border-accent);
-      border-radius: 10px;
-      padding: 8px 0;
-      margin-top: 12px;
-      z-index: 200;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
-    }
-
-    .dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: -12px;
-      left: 0;
-      right: 0;
-      height: 12px;
-    }
-
-    .nav-dropdown:hover .dropdown-menu {
-      display: block;
-    }
-
-    .dropdown-menu a {
-      display: block;
-      padding: 8px 20px;
-      font-size: 13px;
-      color: var(--text-dim);
-      white-space: nowrap;
-    }
-
-    .dropdown-menu a:hover {
-      color: var(--cyan);
-      background: rgba(6, 182, 212, 0.06);
-    }
-
-    .dropdown-menu .dd-heading {
-      display: block;
-      padding: 8px 20px 4px;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .dropdown-menu hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 6px 0;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 8px 18px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #0a0a0b;
-    }
-
-    .btn-primary:hover {
-      background: #06b6d4;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border-accent);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-muted);
-      padding: 8px 12px;
-    }
-
-    .btn-ghost:hover {
-      color: var(--text);
-    }
-
-    /* --- HERO --- */
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.10) 0%, transparent 55%),
-        radial-gradient(ellipse at 70% 80%, rgba(167, 139, 250, 0.06) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 50%, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
-    }
-
-    .hero-content {
-      position: relative;
-      text-align: center;
-      padding: 80px 24px 60px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(28px, 4vw, 48px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .hero-tagline {
-      margin-top: 10px;
-      font-size: clamp(17px, 2vw, 22px);
-      font-weight: 500;
-      color: var(--text-secondary);
-      letter-spacing: -0.01em;
-    }
-
-    .stats-strip {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-item strong {
-      display: block;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--primary);
-      font-family: var(--font-mono);
-    }
-
-    .stat-item span {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-top: 4px;
-      display: block;
-    }
-
-    .hero-ctas {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 32px;
-      flex-wrap: wrap;
-    }
-
-    /* Proof strip */
-    .proof-strip {
-      display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin-top: 40px;
-      flex-wrap: wrap;
-    }
-
-    .proof-item {
-      text-align: center;
-    }
-
-    .proof-item strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--primary);
-    }
-
-    .proof-item span {
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    /* --- SECTION COMMON --- */
-    section {
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-pad {
-      padding: 80px 0;
-    }
-
-    .section-header {
-      text-align: center;
-      max-width: 700px;
-      margin: 0 auto 48px;
-    }
-
-    .eyebrow {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .section-header h2 {
-      font-size: clamp(24px, 3vw, 36px);
-      font-weight: 700;
-      letter-spacing: -0.01em;
-    }
-
-    .section-header p {
-      margin-top: 16px;
-      font-size: 16px;
-      color: var(--text-muted);
-    }
-
-    /* --- CARD GRIDS --- */
-    .card-grid {
-      display: grid;
-      gap: 20px;
-    }
-
-    .card-grid-2 {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-
-    .card-grid-3 {
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    }
-
-    .card-grid-4 {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-
-    .card {
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      transition: all 0.2s;
-    }
-
-    .card > ul {
-      flex: 0 0 auto;
-    }
-
-    .card > .card-link {
-      margin-top: auto;
-    }
-
-    .card:hover {
-      border-color: var(--border-accent);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    .card-kicker {
-      font-size: 12px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 8px;
-    }
-
-    .card h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    .card ul {
-      list-style: none;
-      margin-top: 12px;
-    }
-
-    .card ul li {
-      font-size: 0.8125rem;
-      color: var(--text-secondary);
-      padding: 4px 0;
-      padding-left: 18px;
-      position: relative;
-    }
-
-    .card ul li::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 10px;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-
-    .card-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
-      font-weight: 500;
-      margin-top: 14px;
-      transition: color 0.15s;
-    }
-
-    .card-link:hover {
-      text-decoration: underline;
-    }
-
-    .card-link::after {
-      content: '→';
-    }
-
-    /* Colored card variants */
-    .card-cyan {
-      border-color: rgba(34, 211, 238, 0.2);
-    }
-
-    .card-cyan:hover {
-      border-color: rgba(34, 211, 238, 0.4);
-    }
-
-    .card-cyan .card-kicker,
-    .card-cyan .card-link {
-      color: var(--cyan);
-    }
-
-    .card-cyan .icon-dot {
-      background: rgba(34, 211, 238, 0.12);
-      color: var(--cyan);
-    }
-
-    .card-cyan ul li::before {
-      background: var(--cyan);
-    }
-
-    .card-violet {
-      border-color: rgba(167, 139, 250, 0.2);
-    }
-
-    .card-violet:hover {
-      border-color: rgba(167, 139, 250, 0.4);
-    }
-
-    .card-violet .card-kicker,
-    .card-violet .card-link {
-      color: var(--violet);
-    }
-
-    .card-violet .icon-dot {
-      background: rgba(167, 139, 250, 0.12);
-      color: var(--violet);
-    }
-
-    .card-violet ul li::before {
-      background: var(--violet);
-    }
-
-    .card-amber {
-      border-color: rgba(251, 191, 36, 0.2);
-    }
-
-    .card-amber:hover {
-      border-color: rgba(251, 191, 36, 0.4);
-    }
-
-    .card-amber .card-kicker,
-    .card-amber .card-link {
-      color: var(--amber);
-    }
-
-    .card-amber .icon-dot {
-      background: rgba(251, 191, 36, 0.12);
-      color: var(--amber);
-    }
-
-    .card-amber ul li::before {
-      background: var(--amber);
-    }
-
-    .card-slate {
-      border-color: rgba(148, 163, 184, 0.2);
-    }
-
-    .card-slate:hover {
-      border-color: rgba(148, 163, 184, 0.4);
-    }
-
-    .card-slate .card-kicker,
-    .card-slate .card-link {
-      color: #94a3b8;
-    }
-
-    .card-slate .icon-dot {
-      background: rgba(148, 163, 184, 0.12);
-      color: #94a3b8;
-    }
-
-    .card-slate ul li::before {
-      background: #94a3b8;
-    }
-
-    .card-rose {
-      border-color: rgba(251, 113, 133, 0.2);
-    }
-
-    .card-rose:hover {
-      border-color: rgba(251, 113, 133, 0.4);
-    }
-
-    .card-rose .card-kicker,
-    .card-rose .card-link {
-      color: var(--rose);
-    }
-
-    .card-rose .icon-dot {
-      background: rgba(251, 113, 133, 0.12);
-      color: var(--rose);
-    }
-
-    .card-rose ul li::before {
-      background: var(--rose);
-    }
-
-    .card-emerald {
-      border-color: rgba(74, 222, 128, 0.2);
-    }
-
-    .card-emerald:hover {
-      border-color: rgba(74, 222, 128, 0.4);
-    }
-
-    .card-emerald .card-kicker,
-    .card-emerald .card-link {
-      color: var(--emerald);
-    }
-
-    .card-emerald .icon-dot {
-      background: rgba(74, 222, 128, 0.12);
-      color: var(--emerald);
-    }
-
-    .card-emerald ul li::before {
-      background: var(--emerald);
-    }
-
-    .card-sky {
-      border-color: rgba(56, 189, 248, 0.2);
-    }
-
-    .card-sky:hover {
-      border-color: rgba(56, 189, 248, 0.4);
-    }
-
-    .card-sky .card-kicker,
-    .card-sky .card-link {
-      color: var(--sky);
-    }
-
-    .card-sky .icon-dot {
-      background: rgba(56, 189, 248, 0.12);
-      color: var(--sky);
-    }
-
-    .card-sky ul li::before {
-      background: var(--sky);
-    }
-
-    .icon-dot {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      margin-bottom: 14px;
-    }
-
-    /* --- GALAXY SECTION --- */
-    .galaxy-section {
-      background: linear-gradient(180deg, var(--bg) 0%, rgba(17, 17, 19, 0.5) 100%);
-    }
-
-    #galaxyCanvas {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      display: block;
-    }
-
-    /* --- VENUE MARQUEE --- */
-    .venue-marquee {
-      overflow: hidden;
-      position: relative;
-      padding: 16px 0;
-    }
-
-    .venue-marquee::before,
-    .venue-marquee::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 80px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .venue-marquee::before {
-      left: 0;
-      background: linear-gradient(to right, var(--bg), transparent);
-    }
-
-    .venue-marquee::after {
-      right: 0;
-      background: linear-gradient(to left, var(--bg), transparent);
-    }
-
-    .venue-track {
-      display: flex;
-      gap: 12px;
-      animation: scroll-venues 40s linear infinite;
-      width: max-content;
-    }
-
-    @keyframes scroll-venues {
-      0% {
-        transform: translateX(0);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Odum Research — FCA-Regulated Investment Manager &amp; DART</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-surface: #161618;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-accent: rgba(255, 255, 255, 0.12);
+        --text: #e4e4e7;
+        --text-muted: #a1a1aa;
+        --text-secondary: #c4c4cc;
+        --text-dim: #71717a;
+        --primary: #22d3ee;
+        --primary-dim: rgba(34, 211, 238, 0.12);
+        --sky: #38bdf8;
+        --emerald: #4ade80;
+        --violet: #a78bfa;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --cyan: #22d3ee;
+        --font-sans: "IBM Plex Sans", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
       }
 
-      100% {
-        transform: translateX(-50%);
+      /* Distinct labels for the two client paths (vs one word "Invest") */
+      .lab-invest {
+        color: var(--rose);
+        font-weight: 600;
       }
-    }
 
-    .venue-pill {
-      font-size: 13px;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+      .lab-build {
+        color: var(--cyan);
+        font-weight: 600;
+      }
 
-    .venue-pill-cyan {
-      color: var(--cyan);
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      background: rgba(34, 211, 238, 0.05);
-    }
+      .lab-regulate {
+        color: #94a3b8;
+        font-weight: 600;
+      }
 
-    .venue-pill-emerald {
-      color: var(--emerald);
-      border: 1px solid rgba(74, 222, 128, 0.25);
-      background: rgba(74, 222, 128, 0.05);
-    }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    .venue-pill-violet {
-      color: var(--violet);
-      border: 1px solid rgba(167, 139, 250, 0.25);
-      background: rgba(167, 139, 250, 0.05);
-    }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
 
-    .venue-pill-amber {
-      color: var(--amber);
-      border: 1px solid rgba(251, 191, 36, 0.25);
-      background: rgba(251, 191, 36, 0.05);
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    .venue-pill-rose {
-      color: var(--rose);
-      border: 1px solid rgba(251, 113, 133, 0.25);
-      background: rgba(251, 113, 133, 0.05);
-    }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
 
-    .venue-legend {
-      text-align: center;
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--text-dim);
-    }
+      /* --- HEADER --- */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(10, 10, 11, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
 
-    .venue-legend span {
-      margin: 0 6px;
-    }
+      .header-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
 
-    /* --- FEATURE GRID --- */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 24px;
-    }
+      header .container.header-inner {
+        padding-left: 10px;
+        padding-right: 24px;
+      }
 
-    .feature {
-      padding: 20px;
-    }
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-    .feature h3 {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
+      .logo-img {
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+      }
 
-    .feature p {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
+      .logo-text {
+        font-size: 18px;
+        font-weight: 600;
+      }
 
-    /* --- FINAL CTA --- */
-    .final-cta {
-      background: linear-gradient(180deg, var(--bg) 0%, rgba(17, 17, 19, 0.8) 100%);
-    }
+      .fca-badge {
+        display: inline-block;
+        margin-left: 8px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-muted);
+        border: 1px solid var(--border-accent);
+        border-radius: 9999px;
+        padding: 2px 10px;
+        vertical-align: middle;
+      }
 
-    .contact-block {
-      text-align: center;
-      margin-top: 40px;
-      padding-top: 24px;
-      border-top: 1px solid var(--border);
-    }
-
-    .contact-block p {
-      font-size: 14px;
-      color: var(--text-muted);
-    }
-
-    .contact-block a {
-      color: var(--primary);
-    }
-
-    /* --- FOOTER --- */
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-
-    .footer-links a {
-      font-size: 13px;
-      color: var(--text-dim);
-      transition: color 0.15s;
-    }
-
-    .footer-links a:hover {
-      color: var(--text-muted);
-    }
-
-    .footer-copy {
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    /* --- RESPONSIVE --- */
-    @media (max-width: 768px) {
       nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      /* Utility links: quieter so the three offerings read as the focus */
+      nav > a {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-dim);
+        transition: color 0.15s;
+      }
+
+      nav > a:hover {
+        color: var(--text-muted);
+      }
+
+      nav > a.active {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      nav .nav-dropdown > a.active {
+        font-weight: 700;
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 5px;
+        text-decoration-color: currentColor;
+      }
+
+      nav > span {
+        color: rgba(255, 255, 255, 0.06);
+        font-size: 10px;
+        font-weight: 300;
+        user-select: none;
+        padding: 0 1px;
+      }
+
+      /* Core offerings: subtle brand tint (not full “tab bar” weight) */
+      nav .nav-dropdown > a {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        transition:
+          color 0.15s,
+          filter 0.15s;
+      }
+
+      nav .nav-dropdown:nth-child(3) > a {
+        color: rgba(251, 113, 133, 0.88);
+      }
+
+      nav .nav-dropdown:nth-child(3) > a:hover {
+        color: #fda4af;
+      }
+
+      nav .nav-dropdown:nth-child(4) > a {
+        color: rgba(34, 211, 238, 0.88);
+      }
+
+      nav .nav-dropdown:nth-child(4) > a:hover {
+        color: #67e8f9;
+      }
+
+      nav .nav-dropdown:nth-child(5) > a {
+        color: #94a3b8;
+      }
+
+      nav .nav-dropdown:nth-child(5) > a:hover {
+        color: #cbd5e1;
+      }
+
+      .nav-dropdown {
+        position: relative;
+      }
+
+      .nav-dropdown > a::after {
+        content: " \25BE";
+        font-size: 10px;
+        opacity: 0.5;
+      }
+
+      .dropdown-menu {
         display: none;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 200px;
+        background: rgba(16, 16, 18, 0.98);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-accent);
+        border-radius: 10px;
+        padding: 8px 0;
+        margin-top: 12px;
+        z-index: 200;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
       }
 
-      .proof-strip {
-        gap: 16px;
+      .dropdown-menu::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: 0;
+        right: 0;
+        height: 12px;
       }
 
-      .proof-item {
-        min-width: 120px;
+      .nav-dropdown:hover .dropdown-menu {
+        display: block;
       }
 
-      .card-grid-3,
-      .card-grid-4 {
-        grid-template-columns: 1fr;
+      .dropdown-menu a {
+        display: block;
+        padding: 8px 20px;
+        font-size: 13px;
+        color: var(--text-dim);
+        white-space: nowrap;
       }
 
-      .section-pad {
-        padding: 48px 0;
+      .dropdown-menu a:hover {
+        color: var(--cyan);
+        background: rgba(6, 182, 212, 0.06);
+      }
+
+      .dropdown-menu .dd-heading {
+        display: block;
+        padding: 8px 20px 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .dropdown-menu hr {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 6px 0;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 8px 18px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #0a0a0b;
+      }
+
+      .btn-primary:hover {
+        background: #06b6d4;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border-accent);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--text-muted);
+        padding: 8px 12px;
+      }
+
+      .btn-ghost:hover {
+        color: var(--text);
+      }
+
+      /* --- HERO --- */
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(ellipse at 30% 20%, rgba(34, 211, 238, 0.1) 0%, transparent 55%),
+          radial-gradient(ellipse at 70% 80%, rgba(167, 139, 250, 0.06) 0%, transparent 45%),
+          radial-gradient(ellipse at 50% 50%, rgba(34, 211, 238, 0.03) 0%, transparent 70%);
       }
 
       .hero-content {
-        padding: 48px 16px 40px;
+        position: relative;
+        text-align: center;
+        padding: 80px 24px 60px;
+        max-width: 800px;
+        margin: 0 auto;
       }
-    }
-  </style>
-</head>
 
-<body>
+      .hero h1 {
+        font-size: clamp(28px, 4vw, 48px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
 
-  <!-- ============ HEADER ============ -->
-  <header>
-    <div class="container header-inner">
-      <a href="homepage.html" class="logo-group">
-        <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
-        <div>
-          <span class="logo-text">Odum Research</span>
-          <span class="fca-badge">FCA 975797</span>
-        </div>
-      </a>
-      <nav>
-        <a href="homepage.html">Home</a>
-        <span aria-hidden="true">|</span>
-        <div class="nav-dropdown">
-          <a href="strategies.html">Investment Management</a>
-          <div class="dropdown-menu">
-            <span class="dd-heading">Sections</span>
-            <a href="strategies.html#strategies">Sleeves (detail)</a>
-            <a href="strategies.html#breadth">Domain matrix</a>
-            <a href="strategies.html#process">How It Works</a>
-            <a href="strategies.html#allocators">What You Get</a>
-            <a href="strategies.html#contact-cta">Get Started</a>
+      .hero .subtitle {
+        margin-top: 20px;
+        font-size: clamp(16px, 2vw, 20px);
+        color: var(--text-muted);
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero .support {
+        margin-top: 12px;
+        font-size: 15px;
+        color: var(--text-dim);
+      }
+
+      .hero-label {
+        margin-top: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--text-muted);
+        letter-spacing: 0.02em;
+      }
+
+      .stats-strip {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-item strong {
+        display: block;
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary);
+        font-family: var(--font-mono);
+      }
+
+      .stat-item span {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-top: 4px;
+        display: block;
+      }
+
+      .hero-ctas {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 32px;
+        flex-wrap: wrap;
+      }
+
+      /* Proof strip */
+      .proof-strip {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin-top: 40px;
+        flex-wrap: wrap;
+      }
+
+      .proof-item {
+        text-align: center;
+      }
+
+      .proof-item strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .proof-item span {
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      /* --- SECTION COMMON --- */
+      section {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .section-pad {
+        padding: 80px 0;
+      }
+
+      .section-header {
+        text-align: center;
+        max-width: 700px;
+        margin: 0 auto 48px;
+      }
+
+      .eyebrow {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .section-header h2 {
+        font-size: clamp(24px, 3vw, 36px);
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .section-header p {
+        margin-top: 16px;
+        font-size: 16px;
+        color: var(--text-muted);
+      }
+
+      /* --- CARD GRIDS --- */
+      .card-grid {
+        display: grid;
+        gap: 20px;
+      }
+
+      .card-grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .card-grid-3 {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .card-grid-4 {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        transition: all 0.2s;
+      }
+
+      .card:hover {
+        border-color: var(--border-accent);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .card-kicker {
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 8px;
+      }
+
+      .card h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .card p {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      .card ul {
+        list-style: none;
+        margin-top: 12px;
+      }
+
+      .card ul li {
+        font-size: 0.8125rem;
+        color: var(--text-secondary);
+        padding: 4px 0;
+        padding-left: 18px;
+        position: relative;
+      }
+
+      .card ul li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 10px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+
+      .card-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-top: 14px;
+        transition: color 0.15s;
+      }
+
+      .card-link:hover {
+        text-decoration: underline;
+      }
+
+      .card-link::after {
+        content: "→";
+      }
+
+      /* Colored card variants */
+      .card-cyan {
+        border-color: rgba(34, 211, 238, 0.2);
+      }
+
+      .card-cyan:hover {
+        border-color: rgba(34, 211, 238, 0.4);
+      }
+
+      .card-cyan .card-kicker,
+      .card-cyan .card-link {
+        color: var(--cyan);
+      }
+
+      .card-cyan .icon-dot {
+        background: rgba(34, 211, 238, 0.12);
+        color: var(--cyan);
+      }
+
+      .card-cyan ul li::before {
+        background: var(--cyan);
+      }
+
+      .card-violet {
+        border-color: rgba(167, 139, 250, 0.2);
+      }
+
+      .card-violet:hover {
+        border-color: rgba(167, 139, 250, 0.4);
+      }
+
+      .card-violet .card-kicker,
+      .card-violet .card-link {
+        color: var(--violet);
+      }
+
+      .card-violet .icon-dot {
+        background: rgba(167, 139, 250, 0.12);
+        color: var(--violet);
+      }
+
+      .card-violet ul li::before {
+        background: var(--violet);
+      }
+
+      .card-amber {
+        border-color: rgba(251, 191, 36, 0.2);
+      }
+
+      .card-amber:hover {
+        border-color: rgba(251, 191, 36, 0.4);
+      }
+
+      .card-amber .card-kicker,
+      .card-amber .card-link {
+        color: var(--amber);
+      }
+
+      .card-amber .icon-dot {
+        background: rgba(251, 191, 36, 0.12);
+        color: var(--amber);
+      }
+
+      .card-amber ul li::before {
+        background: var(--amber);
+      }
+
+      .card-slate {
+        border-color: rgba(148, 163, 184, 0.2);
+      }
+
+      .card-slate:hover {
+        border-color: rgba(148, 163, 184, 0.4);
+      }
+
+      .card-slate .card-kicker,
+      .card-slate .card-link {
+        color: #94a3b8;
+      }
+
+      .card-slate .icon-dot {
+        background: rgba(148, 163, 184, 0.12);
+        color: #94a3b8;
+      }
+
+      .card-slate ul li::before {
+        background: #94a3b8;
+      }
+
+      .card-rose {
+        border-color: rgba(251, 113, 133, 0.2);
+      }
+
+      .card-rose:hover {
+        border-color: rgba(251, 113, 133, 0.4);
+      }
+
+      .card-rose .card-kicker,
+      .card-rose .card-link {
+        color: var(--rose);
+      }
+
+      .card-rose .icon-dot {
+        background: rgba(251, 113, 133, 0.12);
+        color: var(--rose);
+      }
+
+      .card-rose ul li::before {
+        background: var(--rose);
+      }
+
+      .card-emerald {
+        border-color: rgba(74, 222, 128, 0.2);
+      }
+
+      .card-emerald:hover {
+        border-color: rgba(74, 222, 128, 0.4);
+      }
+
+      .card-emerald .card-kicker,
+      .card-emerald .card-link {
+        color: var(--emerald);
+      }
+
+      .card-emerald .icon-dot {
+        background: rgba(74, 222, 128, 0.12);
+        color: var(--emerald);
+      }
+
+      .card-emerald ul li::before {
+        background: var(--emerald);
+      }
+
+      .card-sky {
+        border-color: rgba(56, 189, 248, 0.2);
+      }
+
+      .card-sky:hover {
+        border-color: rgba(56, 189, 248, 0.4);
+      }
+
+      .card-sky .card-kicker,
+      .card-sky .card-link {
+        color: var(--sky);
+      }
+
+      .card-sky .icon-dot {
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--sky);
+      }
+
+      .card-sky ul li::before {
+        background: var(--sky);
+      }
+
+      .icon-dot {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-bottom: 14px;
+      }
+
+      /* --- GALAXY SECTION --- */
+      .galaxy-section {
+        background: linear-gradient(180deg, var(--bg) 0%, rgba(17, 17, 19, 0.5) 100%);
+      }
+
+      #galaxyCanvas {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        display: block;
+      }
+
+      /* --- VENUE MARQUEE --- */
+      .venue-marquee {
+        overflow: hidden;
+        position: relative;
+        padding: 16px 0;
+      }
+
+      .venue-marquee::before,
+      .venue-marquee::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 80px;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      .venue-marquee::before {
+        left: 0;
+        background: linear-gradient(to right, var(--bg), transparent);
+      }
+
+      .venue-marquee::after {
+        right: 0;
+        background: linear-gradient(to left, var(--bg), transparent);
+      }
+
+      .venue-track {
+        display: flex;
+        gap: 12px;
+        animation: scroll-venues 40s linear infinite;
+        width: max-content;
+      }
+
+      @keyframes scroll-venues {
+        0% {
+          transform: translateX(0);
+        }
+
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+
+      .venue-pill {
+        font-size: 13px;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .venue-pill-cyan {
+        color: var(--cyan);
+        border: 1px solid rgba(34, 211, 238, 0.25);
+        background: rgba(34, 211, 238, 0.05);
+      }
+
+      .venue-pill-emerald {
+        color: var(--emerald);
+        border: 1px solid rgba(74, 222, 128, 0.25);
+        background: rgba(74, 222, 128, 0.05);
+      }
+
+      .venue-pill-violet {
+        color: var(--violet);
+        border: 1px solid rgba(167, 139, 250, 0.25);
+        background: rgba(167, 139, 250, 0.05);
+      }
+
+      .venue-pill-amber {
+        color: var(--amber);
+        border: 1px solid rgba(251, 191, 36, 0.25);
+        background: rgba(251, 191, 36, 0.05);
+      }
+
+      .venue-pill-rose {
+        color: var(--rose);
+        border: 1px solid rgba(251, 113, 133, 0.25);
+        background: rgba(251, 113, 133, 0.05);
+      }
+
+      .venue-legend {
+        text-align: center;
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      .venue-legend span {
+        margin: 0 6px;
+      }
+
+      /* --- FEATURE GRID --- */
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 24px;
+      }
+
+      .feature {
+        padding: 20px;
+      }
+
+      .feature h3 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .feature p {
+        font-size: 13px;
+        color: var(--text-muted);
+      }
+
+      /* --- FINAL CTA --- */
+      .final-cta {
+        background: linear-gradient(180deg, var(--bg) 0%, rgba(17, 17, 19, 0.8) 100%);
+      }
+
+      .contact-block {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+      }
+
+      .contact-block p {
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      .contact-block a {
+        color: var(--primary);
+      }
+
+      /* --- FOOTER --- */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px 0;
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+
+      .footer-links a {
+        font-size: 13px;
+        color: var(--text-dim);
+        transition: color 0.15s;
+      }
+
+      .footer-links a:hover {
+        color: var(--text-muted);
+      }
+
+      .footer-copy {
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+
+      /* --- EXPLORER MOBILE --- */
+      @media (max-width: 640px) {
+        .explorer-grid {
+          grid-template-columns: 1fr !important;
+          overflow: hidden;
+        }
+
+        #explorerPanels {
+          min-width: 0;
+          overflow: hidden;
+        }
+
+        .explorer-detail {
+          padding: 20px 16px;
+          overflow: hidden;
+        }
+
+        .explorer-detail h3 {
+          font-size: 18px;
+        }
+
+        .prev-row {
+          font-size: 12px;
+        }
+
+        .explorer-sidebar {
+          border-right: none !important;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          padding: 0 !important;
+        }
+
+        .explorer-sidebar .explorer-nav {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 0;
+          padding: 0;
+        }
+
+        .explorer-nav li {
+          border-left: none !important;
+          border-bottom: 2px solid transparent;
+          background: none !important;
+          text-align: center;
+        }
+
+        .explorer-nav li.active {
+          border-left-color: transparent !important;
+          border-bottom-color: var(--cyan);
+          background: rgba(34, 211, 238, 0.06) !important;
+        }
+
+        .explorer-nav li button {
+          width: 100% !important;
+          padding: 10px 6px;
+          font-size: 12px;
+          white-space: nowrap;
+          justify-content: center;
+          gap: 6px;
+        }
+      }
+
+      /* --- RESPONSIVE --- */
+      @media (max-width: 768px) {
+        nav:not(.explorer-sidebar) {
+          display: none;
+        }
+
+        .proof-strip {
+          gap: 16px;
+        }
+
+        .proof-item {
+          min-width: 120px;
+        }
+
+        .card-grid-3,
+        .card-grid-4 {
+          grid-template-columns: 1fr;
+        }
+
+        .section-pad {
+          padding: 48px 0;
+        }
+
+        .hero-content {
+          padding: 48px 16px 40px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- ============ HEADER ============ -->
+    <header>
+      <div class="container header-inner">
+        <a href="homepage.html" class="logo-group">
+          <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img" />
+          <div>
+            <span class="logo-text">Odum Research</span>
+            <span class="fca-badge">FCA 975797</span>
           </div>
-        </div>
-        <div class="nav-dropdown">
-          <a href="platform.html">Platform</a>
-          <div class="dropdown-menu">
-            <span class="dd-heading">Sections</span>
-            <a href="platform.html#pipeline">Pipeline</a>
-            <a href="platform.html#data">Data</a>
-            <a href="platform.html#research">Research</a>
-            <a href="platform.html#execution">Execution</a>
-            <a href="platform.html#reporting">Reporting</a>
-            <a href="platform.html#who">Who It's For</a>
+        </a>
+        <nav>
+          <a href="homepage.html">Home</a>
+          <span aria-hidden="true">|</span>
+          <div class="nav-dropdown">
+            <a href="strategies.html">Investment Management</a>
+            <div class="dropdown-menu">
+              <span class="dd-heading">Sections</span>
+              <a href="strategies.html#strategies">Sleeves (detail)</a>
+              <a href="strategies.html#breadth">Domain matrix</a>
+              <a href="strategies.html#process">How It Works</a>
+              <a href="strategies.html#allocators">What You Get</a>
+              <a href="strategies.html#contact-cta">Get Started</a>
+            </div>
           </div>
-        </div>
-        <a href="signals.html">Signals</a>
-        <span aria-hidden="true">|</span>
-        <div class="nav-dropdown">
-          <a href="regulatory.html">Regulatory</a>
-          <div class="dropdown-menu">
-            <span class="dd-heading">Sections</span>
-            <a href="regulatory.html#coverage">What's Covered</a>
-            <a href="regulatory.html#why">Why Structure Matters</a>
-            <a href="regulatory.html#onboarding">Onboarding</a>
-            <a href="regulatory.html#comparison">Umbrella vs Direct</a>
-            <a href="regulatory.html#reg-cta">Get Started</a>
+          <div class="nav-dropdown">
+            <a href="platform.html">Platform</a>
+            <div class="dropdown-menu">
+              <span class="dd-heading">Sections</span>
+              <a href="platform.html#pipeline">Pipeline</a>
+              <a href="platform.html#data">Data</a>
+              <a href="platform.html#research">Research</a>
+              <a href="platform.html#execution">Execution</a>
+              <a href="platform.html#reporting">Reporting</a>
+              <a href="platform.html#who">Who It's For</a>
+            </div>
           </div>
-        </div>
-        <span aria-hidden="true">|</span>
-        <a href="who-we-are.html">Who We Are</a>
-        <a href="/contact?service=general">Contact</a>
-      </nav>
-      <div class="header-actions">
-        <a href="/login" class="btn btn-ghost">Sign In</a>
-        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
-          class="btn btn-primary">Book a 45-minute call</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- ============ 1. HERO ============ -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-content">
-      <div class="hero-asset-pill" aria-label="Market and venue coverage">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M3 12h18M12 3c2.5 3.5 4 7.2 4 9s-1.5 5.5-4 9c-2.5-3.5-4-7.2-4-9s1.5-5.5 4-9z" />
-        </svg>
-        <span>TradFi</span><span class="sep" aria-hidden="true">·</span><span>Crypto</span><span class="sep"
-          aria-hidden="true">·</span><span>DeFi</span><span class="sep"
-          aria-hidden="true">·</span><span>Sports</span><span class="sep"
-          aria-hidden="true">·</span><span>Prediction Markets</span>
-      </div>
-      <h1>Unified Trading Infrastructure</h1>
-      <p class="hero-tagline">The same infrastructure we use to run our own capital &mdash; available to institutional
-        clients at any entry point.</p>
-      <nav class="hero-service-row" aria-label="Four commercial paths">
-        <a class="hero-service-tile lab-invest" href="strategies.html"
-          data-def="Investment Management &mdash; Odum allocates client capital to its own systematic strategies under Odum&apos;s FCA permissions, reporting on the shared operating surface.">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M4 20V10M9 20V4M14 20v-6M19 20V8" />
-          </svg>
-          <span>Investment Management</span>
-        </a>
-        <a class="hero-service-tile lab-build" href="platform.html"
-          data-def="DART (Data Analytics, Research &amp; Trading). Run on the same stack we use internally. DART Full adds research, ML, and strategy promotion; DART Signals-In sends your instructions for execution only.">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <rect x="4" y="4" width="16" height="16" rx="2" />
-            <path d="M4 10h16M10 4v16" />
-          </svg>
-          <span>DART</span>
-        </a>
-        <a class="hero-service-tile lab-signals" href="/signals"
-          data-def="Odum Signals &mdash; Odum-generated trading signals delivered to your execution stack via signed webhooks or REST pull. You run the rest.">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M4 11a9 9 0 0 1 9 9" />
-            <path d="M4 4a16 16 0 0 1 16 16" />
-            <circle cx="5" cy="19" r="1" />
-          </svg>
-          <span>Odum Signals</span>
-        </a>
-        <a class="hero-service-tile lab-regulate" href="regulatory.html"
-          data-def="FCA Regulatory Umbrella &mdash; operate covered regulated activity under Odum&apos;s permissions (AIFM, AR, MiFID II coverage) with aligned governance and reporting.">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
-          </svg>
-          <span>Regulatory Umbrella</span>
-        </a>
-      </nav>
-      <div class="hero-ctas">
-        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
-          class="btn btn-primary">Discuss a Mandate</a>
-        <a href="platform.html" class="btn btn-outline">Explore the Platform</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><strong>5</strong><span>Asset Classes</span></div>
-        <div class="hero-stat"><strong>100+</strong><span>Venues</span></div>
-        <div class="hero-stat"><strong>24/7</strong><span>Trading</span></div>
-        <div class="hero-stat"><strong>100+ TB</strong><span>Market Data</span></div>
-        <div class="hero-stat"><strong>5</strong><span>Service Lines</span></div>
-      </div>
-      <div class="hero-trust-row">
-        <span class="hero-trust-badge is-fca">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
-            <path d="M9 12l2 2 4-4" />
-          </svg>
-          <strong>FCA 975797</strong>
-          <span class="sep" aria-hidden="true">·</span>
-          <span class="dim">$7.5M+ AUM</span>
-        </span>
-        <span class="hero-trust-badge is-security">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <rect x="4" y="11" width="16" height="10" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-          </svg>
-          <strong>Institutional Security</strong>
-          <span class="sep" aria-hidden="true">·</span>
-          <span class="dim">Professional &amp; ECP</span>
-        </span>
-        <span class="hero-trust-badge is-flex">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 2l9 5-9 5-9-5 9-5z" />
-            <path d="M3 12l9 5 9-5" />
-            <path d="M3 17l9 5 9-5" />
-          </svg>
-          <strong>No-Code to Full-Code</strong>
-        </span>
-        <span class="hero-trust-badge is-hq">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-            stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 21s-7-6-7-11a7 7 0 1 1 14 0c0 5-7 11-7 11z" />
-            <circle cx="12" cy="10" r="2.5" />
-          </svg>
-          <strong>London, UK</strong>
-          <span class="sep" aria-hidden="true">·</span>
-          <span class="dim">HQ</span>
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 2. PLATFORM BREADTH + GALAXY + WHO WE SERVE ============ -->
-  <section style="padding: 32px 0; background: var(--bg-surface);">
-    <div class="container">
-      <p
-        style="text-align:center;font-size:12px;color:var(--text-dim);max-width:720px;margin:0 auto;line-height:1.5;">
-        <strong>Four commercial paths</strong> — Investment Management, DART (Signals-In and Full), Odum Signals, and
-        Regulatory Umbrella — are how clients contract. The <strong>fifth</strong> count is <strong>service
-          lines</strong>: cross-cutting platform, data, risk, controls, and client-operations functions that back
-        every path.
-      </p>
-    </div>
-  </section>
-
-  <!-- Galaxy visual + venue marquee -->
-  <section class="galaxy-section section-pad">
-    <div class="container">
-      <div class="section-header">
-        <h2>Five asset groups. One regulated platform.</h2>
-        <p>Move strategies from research and simulation to live trading on one operating surface, with one clean data
-          feed across every source.</p>
-      </div>
-
-      <!-- ArbitrageGalaxy — live animated canvas -->
-      <canvas id="galaxyCanvas"
-        style="display:block;width:100%;max-width:900px;margin:0 auto;aspect-ratio:2.2/1;max-height:450px;background:transparent;border-radius:12px;"></canvas>
-      <script>
-        (function () {
-          var NODES = [
-            { label: "TradFi", sub: "CME \u00b7 ICE", color: "#22d3ee", fill: "#061820", fx: 0.16, fy: 0.36 },
-            { label: "Crypto", sub: "Exchanges", color: "#4ade80", fill: "#061a0f", fx: 0.5, fy: 0.19 },
-            { label: "DeFi", sub: "Protocols", color: "#a78bfa", fill: "#100a20", fx: 0.84, fy: 0.36 },
-            { label: "Sports", sub: "Betfair · Smarkets", color: "#fbbf24", fill: "#1a1205", fx: 0.24, fy: 0.8 },
-            { label: "Predictions", sub: "Polymarket \u00b7 Kalshi", color: "#fb7185", fill: "#1a060c", fx: 0.73, fy: 0.8 }
-          ];
-          var CONNS = [
-            { from: 0, to: 1, label: "BTC", delta: "+0.31%", color: "#f59e0b" },
-            { from: 1, to: 2, label: "BTC", delta: "+0.19%", color: "#f59e0b" },
-            { from: 0, to: 2, label: "BTC", delta: "+0.12%", color: "#f59e0b" },
-            { from: 4, to: 1, label: "BTC", delta: "+0.24%", color: "#f59e0b" },
-            { from: 0, to: 4, label: "S&P", delta: "+0.08%", color: "#60a5fa" },
-            { from: 3, to: 4, label: "Football", delta: "+2.1%", color: "#4ade80" }
-          ];
-          var PKT = 1800, PAU = 500, cv = document.getElementById("galaxyCanvas"), cx = cv.getContext("2d"), dpr = window.devicePixelRatio || 1;
-          function sz() { var W = cv.offsetWidth, H = cv.offsetHeight; cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
-          sz(); window.addEventListener("resize", sz);
-          var stars = []; for (var i = 0; i < 60; i++)stars.push({ x: Math.random(), y: Math.random(), r: Math.random() * 0.8 + 0.2, a: Math.random() * 0.3 + 0.08, p: Math.random() * Math.PI * 2 });
-          var ci = 0, st = -1, pa = false, pe = -1;
-          function xy(n) { return { x: n.fx * cv.offsetWidth, y: n.fy * cv.offsetHeight }; }
-          function rr(x, y, w, h, rx, f, s, lw) { cx.beginPath(); cx.roundRect(x, y, w, h, rx); cx.fillStyle = f; cx.fill(); cx.strokeStyle = s; cx.lineWidth = lw || 1; cx.stroke(); }
-          function draw(t) {
-            var W = cv.offsetWidth, H = cv.offsetHeight, R = Math.min(W, H) * 0.13;
-            cx.clearRect(0, 0, W, H);
-            for (var s of stars) { var a = s.a * (0.55 + 0.45 * Math.sin(t * 0.0007 + s.p)); cx.beginPath(); cx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2); cx.fillStyle = "rgba(255,255,255," + a.toFixed(2) + ")"; cx.fill(); }
-            for (var j = 0; j < CONNS.length; j++) { var c = CONNS[j], a2 = xy(NODES[c.from]), b = xy(NODES[c.to]); cx.save(); cx.beginPath(); cx.moveTo(a2.x, a2.y); cx.lineTo(b.x, b.y); cx.strokeStyle = c.color + "60"; cx.lineWidth = 2; cx.setLineDash([9, 9]); cx.lineDashOffset = -((t * 0.02 + j * 30) % 36); cx.stroke(); cx.restore(); var mx = (a2.x + b.x) / 2, my = (a2.y + b.y) / 2; cx.font = "bold 11px 'IBM Plex Sans',sans-serif"; var tw = cx.measureText(c.label).width + 18, ia = j === ci && !pa; rr(mx - tw / 2, my - 11, tw, 22, 11, ia ? c.color + "40" : c.color + "15", ia ? c.color + "cc" : c.color + "55", ia ? 1.5 : 1); cx.fillStyle = ia ? c.color : c.color + "99"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(c.label, mx, my); }
-            if (pa) { if (t >= pe) { pa = false; ci = (ci + 1) % CONNS.length; st = -1; } }
-            else { if (st < 0) st = t; var pr = Math.min((t - st) / PKT, 1), c2 = CONNS[ci], a3 = xy(NODES[c2.from]), b2 = xy(NODES[c2.to]), px = a3.x + (b2.x - a3.x) * pr, py = a3.y + (b2.y - a3.y) * pr; cx.save(); cx.beginPath(); cx.moveTo(a3.x, a3.y); cx.lineTo(b2.x, b2.y); cx.strokeStyle = c2.color + "cc"; cx.lineWidth = 2.5; cx.setLineDash([9, 9]); cx.lineDashOffset = -((t * 0.06) % 36); cx.stroke(); cx.restore(); for (var k = 8; k >= 0; k--) { var tp = Math.max(0, pr - k * 0.022), tx = a3.x + (b2.x - a3.x) * tp, ty = a3.y + (b2.y - a3.y) * tp, ta = ((8 - k) / 8) * 0.5, tr = 6 - k * 0.5; cx.beginPath(); cx.arc(tx, ty, Math.max(tr, 1), 0, Math.PI * 2); cx.fillStyle = c2.color + Math.floor(ta * 255).toString(16).padStart(2, "0"); cx.fill(); } var gl = cx.createRadialGradient(px, py, 0, px, py, 18); gl.addColorStop(0, c2.color + "bb"); gl.addColorStop(1, c2.color + "00"); cx.beginPath(); cx.arc(px, py, 18, 0, Math.PI * 2); cx.fillStyle = gl; cx.fill(); cx.beginPath(); cx.arc(px, py, 6, 0, Math.PI * 2); cx.fillStyle = "#fff"; cx.fill(); if (pr > 0.12 && pr < 0.88) { cx.font = "bold 10px 'JetBrains Mono',monospace"; var bw = cx.measureText(c2.delta).width + 14; rr(px - bw / 2, py - 26, bw, 18, 9, "#0a0a0b", c2.color, 1.2); cx.fillStyle = c2.color; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(c2.delta, px, py - 17); } if (pr >= 1) { pa = true; pe = t + PAU; } }
-            for (var nd of NODES) { var p = xy(nd), g = cx.createRadialGradient(p.x, p.y, R * 0.3, p.x, p.y, R * 1.8); g.addColorStop(0, nd.color + "18"); g.addColorStop(1, nd.color + "00"); cx.beginPath(); cx.arc(p.x, p.y, R * 1.8, 0, Math.PI * 2); cx.fillStyle = g; cx.fill(); cx.beginPath(); cx.arc(p.x, p.y, R, 0, Math.PI * 2); cx.fillStyle = nd.fill; cx.strokeStyle = nd.color; cx.lineWidth = 2.5; cx.fill(); cx.stroke(); var ts2 = Math.round(R * 0.3); cx.fillStyle = nd.color; cx.font = "bold " + ts2 + "px 'IBM Plex Sans',sans-serif"; cx.textAlign = "center"; cx.textBaseline = "middle"; cx.fillText(nd.label, p.x, p.y - R * 0.18); var ss = Math.round(R * 0.21); cx.fillStyle = "rgba(190,190,200,0.70)"; cx.font = ss + "px 'IBM Plex Sans',sans-serif"; cx.fillText(nd.sub, p.x, p.y + R * 0.3); }
-          }
-          var lf = 0; function loop(ts) { if (ts - lf >= 1000 / 24) { draw(ts); lf = ts; } requestAnimationFrame(loop); } requestAnimationFrame(loop);
-        })();
-      </script>
-
-      <!-- Venue Marquee (trimmed) -->
-      <div class="venue-marquee">
-        <div class="venue-track">
-          <span class="venue-pill venue-pill-cyan">CME</span>
-          <span class="venue-pill venue-pill-cyan">NYSE</span>
-          <span class="venue-pill venue-pill-cyan">ICE</span>
-          <span class="venue-pill venue-pill-emerald">Binance</span>
-          <span class="venue-pill venue-pill-emerald">OKX</span>
-          <span class="venue-pill venue-pill-emerald">Deribit</span>
-          <span class="venue-pill venue-pill-violet">Aave V3</span>
-          <span class="venue-pill venue-pill-violet">Uniswap V3</span>
-          <span class="venue-pill venue-pill-violet">Morpho</span>
-          <span class="venue-pill venue-pill-amber">Betfair</span>
-          <span class="venue-pill venue-pill-amber">Smarkets</span>
-          <span class="venue-pill venue-pill-rose">Polymarket</span>
-          <span class="venue-pill venue-pill-rose">Kalshi</span>
-          <span class="venue-pill venue-pill-cyan">CME</span>
-          <span class="venue-pill venue-pill-cyan">NYSE</span>
-          <span class="venue-pill venue-pill-cyan">ICE</span>
-          <span class="venue-pill venue-pill-emerald">Binance</span>
-          <span class="venue-pill venue-pill-emerald">OKX</span>
-          <span class="venue-pill venue-pill-emerald">Deribit</span>
-          <span class="venue-pill venue-pill-violet">Aave V3</span>
-          <span class="venue-pill venue-pill-violet">Uniswap V3</span>
-          <span class="venue-pill venue-pill-violet">Morpho</span>
-          <span class="venue-pill venue-pill-amber">Betfair</span>
-          <span class="venue-pill venue-pill-amber">Smarkets</span>
-          <span class="venue-pill venue-pill-rose">Polymarket</span>
-          <span class="venue-pill venue-pill-rose">Kalshi</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Who we serve -->
-  <section class="section-pad">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Built for professional and institutional users</p>
-        <h2>Who we work with</h2>
-        <p>Each client path maps to a specific Odum offering &mdash; not a bundle. Hover the bolded term to
-          see how the path fits.</p>
-      </div>
-      <div class="card-grid card-grid-4">
-        <article class="card">
-          <h3>Allocators &amp; family offices</h3>
-          <p>Your edge is capital allocation, not strategy research. You allocate; we run the strategies.
-            <span class="glossary-term" tabindex="0"
-              data-def="Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface. Pooled fund or SMA, no management fee, performance share.">Investment
-              Management</span>
-            mandate under FCA cover; reporting partitioned to your slice.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Professional trading firms</h3>
-          <p>Your edge is alpha; building every operational layer eats the edge.
-            <span class="glossary-term" tabindex="0"
-              data-def="DART Full: unrestricted platform access — research, ML, strategy promotion, execution, analytics, reporting — on the same stack Odum uses for its own capital. Client-exclusivity contract protects your IP.">DART
-              Full</span>
-            puts research, promotion, and live execution on the same stack Odum uses internally, under
-            a client-exclusivity contract.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Emerging managers with their own strategies</h3>
-          <p>You have the signal; you don't yet have the regulated execution and reporting wrapper.
-            <span class="glossary-term" tabindex="0"
-              data-def="DART Signals-In: your code stays upstream on your own infrastructure. You emit instructions on an eight-field schema; Odum runs the execution, reconciliation, positions, P&L, and reporting layer. No research or strategy-promote access.">DART
-              Signals-In</span>
-            takes your instructions into our execution, reconciliation, analytics, and reporting &mdash;
-            optionally under
-            <span class="glossary-term" tabindex="0"
-              data-def="Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage) while they build towards their own authorisation.">Regulatory
-              Umbrella</span>
-            cover.
-          </p>
-        </article>
-        <article class="card">
-          <h3>Institutions &amp; platforms</h3>
-          <p>You have a product, clients, and a brand. Embed Odum signals or platform components &mdash;
-            <span class="glossary-term" tabindex="0"
-              data-def="No-code / low-code: day-to-day work in the authenticated platform — post-login dashboard and services portal (Data, Research, Trading, Observe, Reports, etc., entitlement-sliced) with UI, forms, and tables. Full-code: Unified Trading API and other service REST endpoints for the same operations where we expose them, so you can script flows and integrate without the dashboard. Parity is the product direction; see /docs for what is live.">full-code,
-              low-code, or no-code</span>,
-            <span class="glossary-term" tabindex="0"
-              data-def="Mix and match across the stack: your frontend on our backend, our frontend on your backend, or both ours behind your brand. Backend APIs and typed UI components are both surfaced so integration runs either direction.">your
-              frontend or ours</span>.
-            One integration, one commercial relationship.
-          </p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 3. THREE ENTRY POINTS ============ -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Four ways to plug in</p>
-        <h2><span class="lab-invest">Allocate</span>. <span class="lab-build">Run</span>. <span
-            class="lab-signals">Lease signals</span>. <span class="lab-regulate">Regulate</span>.</h2>
-        <p>Investment Management, DART, Odum Signals, and Regulatory Umbrella &mdash; same infrastructure,
-          plug and play. DART itself runs two ways: DART Full (research-to-live) or DART Signals-In (your
-          signals, our execution). Use one, or stack them &mdash; the paths feed each other.</p>
-      </div>
-      <div class="card-grid card-grid-4">
-        <article class="card card-rose">
-          <div class="icon-dot" style="background:rgba(251,113,133,0.12);color:var(--rose);"><svg width="20" height="20"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-              <rect x="2" y="10" width="6" height="10" rx="1" />
-              <rect x="16" y="8" width="6" height="12" rx="1" />
-            </svg></div>
-          <p class="card-kicker">Investment Management</p>
-          <h3>Allocate capital to Odum-managed strategies</h3>
-          <p>Odum runs systematic strategies under its own FCA permissions. You allocate capital; we trade it.
-            Reporting comes from the same surface Odum uses internally, filtered to the allocator view.</p>
-          <ul>
-            <li>Odum-developed strategies, Odum IP</li>
-            <li>FCA-regulated structure and reporting</li>
-            <li>Twelve-month minimum engagement</li>
-          </ul>
-          <a href="strategies.html" class="card-link">Investment Management &rarr;</a>
-        </article>
-        <article class="card card-cyan">
-          <div class="icon-dot" style="background:rgba(34,211,238,0.12);color:var(--cyan);"><svg width="20" height="20"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" />
-              <line x1="8" y1="21" x2="16" y2="21" />
-              <line x1="12" y1="17" x2="12" y2="21" />
-            </svg></div>
-          <p class="card-kicker"><span class="glossary-term"
-              data-def="Data Analytics, Research &amp; Trading — the set of services Odum uses internally to build, research, promote, execute, and monitor systematic strategies; packaged for client use.">DART</span>
-          </p>
-          <h3>Run your strategy on the same stack Odum uses internally</h3>
-          <p>Two DART paths share one operating system &mdash; your strategy <span class="glossary-term"
-              data-def="DART Signals-In keeps your code entirely upstream; Odum sees only the instruction schema and never the signal generator. DART Full adds research, backtest, and promotion on the same code path under a client-exclusivity contract — Odum does not run your strategy on its own book, and other clients do not run it either.">IP
-              stays protected</span> either way.</p>
-          <ul>
-            <li><a href="/platform/full">DART Full</a> &mdash; research-to-live on one stack</li>
-            <li><a href="/platform/signals-in">DART Signals-In</a> &mdash; your signals, our execution</li>
-            <li><span class="glossary-term"
-                data-def="Per-block pricing with a twelve-month minimum engagement. Exclusivity on DART Full is contractual; on DART Signals-In zero code crosses the boundary.">Per-block
-                pricing, 12-month minimum</span></li>
-          </ul>
-          <a href="platform.html" class="card-link">DART overview &rarr;</a>
-        </article>
-        <article class="card card-violet">
-          <div class="icon-dot" style="background:rgba(167,139,250,0.12);color:var(--violet);"><svg width="20"
-              height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M4 11a9 9 0 0 1 9 9" />
-              <path d="M4 4a16 16 0 0 1 16 16" />
-              <circle cx="5" cy="19" r="1" />
-            </svg></div>
-          <p class="card-kicker">Odum Signals</p>
-          <h3>Lease Odum-generated signals to your own execution</h3>
-          <p>Institutional counterparties take Odum's strategy signals and execute on their own infrastructure.
-            Direction runs Odum &rarr; counterparty &mdash; the mirror image of DART Signals-In.</p>
-          <ul>
-            <li>Odum IP, your execution stack</li>
-            <li>HMAC-signed webhook or REST pull delivery</li>
-            <li>Per-signal-strategy pricing</li>
-          </ul>
-          <a href="/signals" class="card-link">Odum Signals &rarr;</a>
-        </article>
-        <article class="card card-slate">
-          <div class="icon-dot" style="background:rgba(148,163,184,0.12);color:#94a3b8;"><svg width="20" height="20"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg></div>
-          <p class="card-kicker">Regulatory Umbrella</p>
-          <h3>Operate regulated activity under Odum&apos;s FCA permissions</h3>
-          <p>Firms running regulated activity that want operational coverage without seeking direct FCA
-            authorisation can operate under Odum&apos;s permissions. Onboarding handles scope, compliance,
-            MLRO, and supervisory reporting.</p>
-          <ul>
-            <li>FCA 975797 &mdash; scope is named, not assumed</li>
-            <li>Compliance, MLRO, and supervision included</li>
-            <li>Reporting from the same surface as IM and DART, view-filtered</li>
-          </ul>
-          <a href="regulatory.html" class="card-link">Regulatory Umbrella &rarr;</a>
-        </article>
-      </div>
-      <div style="margin-top:28px; text-align:center;">
-        <p style="font-size:14px; color:var(--text-muted); max-width:720px; margin:0 auto;">
-          Direction matters on the two signal paths: <a href="/signals" style="color:var(--primary);">Odum
-            Signals</a> runs Odum &rarr; counterparty; <a href="/platform/signals-in" style="color:var(--primary);">
-            DART Signals-In</a> runs client &rarr; Odum.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 4. WHAT CLIENTS ACCESS ============ -->
-  <style>
-    .explorer-nav {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .explorer-nav li {
-      border-left: 3px solid transparent;
-    }
-
-    .explorer-nav button {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      padding: 14px 18px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font: inherit;
-      font-size: 14px;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .explorer-nav button:hover {
-      color: var(--text-body);
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .explorer-nav li.active {
-      border-left-color: var(--cyan);
-      background: rgba(34, 211, 238, 0.04);
-    }
-
-    .explorer-nav li.active button {
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .explorer-nav .nav-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .explorer-panel {
-      display: none;
-    }
-
-    .explorer-panel.active {
-      display: block;
-    }
-
-    .explorer-detail {
-      padding: 32px;
-    }
-
-    .explorer-detail h3 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      margin: 0 0 8px;
-    }
-
-    .explorer-detail .detail-sub {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    /* Vocabulary tags (not links) — distinct from underlined CTAs below */
-    .explorer-detail .svc-tag {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 5px 11px;
-      border-radius: 999px;
-      border: 1px solid;
-      line-height: 1.2;
-      cursor: default;
-      user-select: none;
-    }
-
-    .explorer-detail .svc-tag-invest {
-      color: var(--rose);
-      background: rgba(251, 113, 133, 0.08);
-      border-color: rgba(251, 113, 133, 0.35);
-    }
-
-    .explorer-detail .svc-tag-build {
-      color: var(--cyan);
-      background: rgba(34, 211, 238, 0.08);
-      border-color: rgba(34, 211, 238, 0.35);
-    }
-
-    .section-header .svc-tag {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid;
-      vertical-align: middle;
-      margin: 0 2px;
-      cursor: default;
-      user-select: none;
-    }
-
-    .section-header .svc-tag-invest {
-      color: var(--rose);
-      background: rgba(251, 113, 133, 0.08);
-      border-color: rgba(251, 113, 133, 0.35);
-    }
-
-    .section-header .svc-tag-build {
-      color: var(--cyan);
-      background: rgba(34, 211, 238, 0.08);
-      border-color: rgba(34, 211, 238, 0.35);
-    }
-
-    .section-header .svc-tag-reg {
-      color: #94a3b8;
-      background: rgba(148, 163, 184, 0.08);
-      border-color: rgba(148, 163, 184, 0.35);
-    }
-
-    .explorer-detail .svc-tag-reg {
-      color: #94a3b8;
-      background: rgba(148, 163, 184, 0.08);
-      border-color: rgba(148, 163, 184, 0.35);
-    }
-
-    .explorer-detail .svc-tag-signals {
-      color: #e879f9;
-      background: rgba(232, 121, 249, 0.08);
-      border-color: rgba(232, 121, 249, 0.35);
-    }
-
-    .section-header .svc-tag-signals {
-      color: #e879f9;
-      background: rgba(232, 121, 249, 0.08);
-      border-color: rgba(232, 121, 249, 0.35);
-    }
-
-    .explorer-detail p {
-      color: var(--text-dim);
-      font-size: 14px;
-      line-height: 1.65;
-      margin-bottom: 16px;
-    }
-
-    .explorer-detail .detail-venues {
-      font-size: 11px;
-      color: var(--text-dim);
-      margin-bottom: 20px;
-    }
-
-    .explorer-detail .detail-ctas {
-      display: flex;
-      gap: 16px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .explorer-detail .detail-ctas.detail-ctas-split {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .explorer-detail .detail-ctas-split .detail-ctas-prefix {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      line-height: 1.45;
-    }
-
-    .explorer-detail .detail-ctas-split .detail-cta-stack {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 4px;
-    }
-
-    .explorer-detail .detail-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-thickness: 1px;
-      text-decoration-color: rgba(161, 161, 170, 0.55);
-      cursor: pointer;
-    }
-
-    .explorer-detail .detail-cta.detail-cta-invest {
-      text-decoration-color: rgba(251, 113, 133, 0.45);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-build {
-      text-decoration-color: rgba(34, 211, 238, 0.45);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-reg {
-      text-decoration-color: rgba(148, 163, 184, 0.5);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-signals {
-      text-decoration-color: rgba(232, 121, 249, 0.45);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-signals:hover {
-      text-decoration-color: #e879f9;
-    }
-
-    .explorer-detail .detail-cta .lab-invest {
-      color: var(--rose);
-      font-weight: 700;
-    }
-
-    .explorer-detail .detail-cta .lab-build {
-      color: var(--cyan);
-      font-weight: 700;
-    }
-
-    .explorer-detail .detail-cta:hover {
-      color: var(--text);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-invest:hover {
-      text-decoration-color: var(--rose);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-build:hover {
-      text-decoration-color: var(--cyan);
-    }
-
-    .explorer-detail .detail-cta.detail-cta-reg:hover {
-      text-decoration-color: #cbd5e1;
-    }
-
-    .detail-ctas .cta-sep {
-      color: var(--border-accent);
-      font-size: 12px;
-      align-self: center;
-    }
-
-    .explorer-preview {
-      margin: 20px 0;
-      padding: 14px;
-      border-radius: 10px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-    }
-
-    .explorer-preview .prev-row {
-      display: grid;
-      gap: 4px;
-      padding: 5px 0;
-      color: var(--text-dim);
-    }
-
-    .explorer-preview .prev-head {
-      font-weight: 600;
-      color: var(--text-muted);
-      font-size: 9px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .explorer-preview .prev-row+.prev-row {
-      border-top: 1px solid rgba(255, 255, 255, 0.03);
-    }
-  </style>
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Coverage &amp; examples</p>
-        <h2>Each ervice spans multiple asset groups</h2>
-        <p>Odum runs four client-facing paths: <span class="svc-tag svc-tag-invest">Investment Management</span>,
-          <span class="svc-tag svc-tag-build">DART</span> (Data Analytics, Research &amp; Trading),
-          <span class="svc-tag svc-tag-signals">Odum Signals</span>, and
-          <span class="svc-tag svc-tag-reg">Regulatory Umbrella</span>. Tags below mark which paths apply per category;
-          links open the relevant briefing.
-        </p>
-      </div>
-
-      <div
-        style="display:grid;grid-template-columns:260px 1fr;border:1px solid rgba(255,255,255,0.08);border-radius:12px;overflow:hidden;background:rgba(255,255,255,0.015);min-height:420px;">
-        <!-- Left sidebar -->
-        <nav style="border-right:1px solid rgba(255,255,255,0.06);padding:8px 0;">
-          <ul class="explorer-nav" id="explorerNav">
-            <li class="active" data-panel="crypto">
-              <button><span class="nav-dot" style="background:var(--emerald);"></span>Crypto Exchanges</button>
-            </li>
-            <li data-panel="defi">
-              <button><span class="nav-dot" style="background:var(--violet);"></span>DeFi Protocols</button>
-            </li>
-            <li data-panel="tradfi">
-              <button><span class="nav-dot" style="background:var(--cyan);"></span>Traditional Markets</button>
-            </li>
-            <li data-panel="sports">
-              <button><span class="nav-dot" style="background:var(--amber);"></span>Sports</button>
-            </li>
-            <li data-panel="predictions">
-              <button><span class="nav-dot" style="background:var(--rose);"></span>Prediction Markets</button>
-            </li>
-            <li data-panel="regulatory">
-              <button><span class="nav-dot" style="background:#94a3b8;"></span>Regulatory Umbrella</button>
-            </li>
-          </ul>
+          <a href="signals.html">Signals</a>
+          <span aria-hidden="true">|</span>
+          <div class="nav-dropdown">
+            <a href="regulatory.html">Regulatory</a>
+            <div class="dropdown-menu">
+              <span class="dd-heading">Sections</span>
+              <a href="regulatory.html#coverage">What's Covered</a>
+              <a href="regulatory.html#why">Why Structure Matters</a>
+              <a href="regulatory.html#onboarding">Onboarding</a>
+              <a href="regulatory.html#comparison">Umbrella vs Direct</a>
+              <a href="regulatory.html#reg-cta">Get Started</a>
+            </div>
+          </div>
+          <span aria-hidden="true">|</span>
+          <a href="who-we-are.html">Who We Are</a>
+          <a href="contact.html">Contact</a>
         </nav>
+        <div class="header-actions">
+          <a href="contact.html" class="btn btn-ghost">Sign In</a>
+          <a href="contact.html" class="btn btn-primary">Book a Call</a>
+        </div>
+      </div>
+    </header>
 
-        <!-- Right content panels -->
-        <div id="explorerPanels">
-          <!-- Crypto -->
-          <div class="explorer-panel active" id="panel-crypto">
-            <div class="explorer-detail">
-              <h3 style="color:var(--emerald);">Digital asset systematic</h3>
-              <div class="detail-sub" aria-label="Paths that apply in this area">
-                <span class="svc-tag svc-tag-invest">Investment Management</span>
-                <span class="svc-tag svc-tag-build">DART</span>
-                <span class="svc-tag svc-tag-signals">Odum Signals</span>
-              </div>
-              <p>ML-backed momentum, mean reversion, stat arb, and market making across 11 crypto exchanges. Highest
-                resolution data available &mdash; tick to daily.</p>
-              <div class="detail-venues">Binance, OKX, Deribit, Coinbase, Bybit, KuCoin, Gate.io +4 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML directional &middot; Funding carry
-                (perp) &middot; Pairs stat-arb &middot; Market making</div>
-              <div class="explorer-preview"
-                style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.12);">
-                <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
-                  <span>Pair</span><span>Signal</span><span>P&amp;L</span><span>Sharpe</span>
-                </div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>BTC-PERP</span><span
-                    style="color:var(--emerald);">LONG</span><span
-                    style="color:var(--emerald);">+2.4%</span><span>2.81</span></div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>ETH-PERP</span><span
-                    style="color:var(--rose);">SHORT</span><span
-                    style="color:var(--emerald);">+1.1%</span><span>1.94</span></div>
-              </div>
-              <div class="detail-ctas detail-ctas-split">
-                <span class="detail-ctas-prefix">Find out more about</span>
-                <div class="detail-cta-stack">
-                  <a href="strategies.html#crypto" class="detail-cta detail-cta-invest detail-cta-line">investing
-                    capital &rarr;</a>
-                  <a href="platform.html#crypto" class="detail-cta detail-cta-build detail-cta-line">getting strategies
-                    to market with our help on our platform &rarr;</a>
-                  <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line">licensing our signals to
-                    run on your own execution &rarr;</a>
-                </div>
-              </div>
-            </div>
+    <!-- ============ 1. HERO ============ -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <h1>Unified Trading Infrastructure</h1>
+        <p class="hero-label">
+          <span style="color: var(--cyan)">FCA-Regulated</span> Investment Manager, Signals Provider, and DART
+        </p>
+        <p class="subtitle">
+          Five paths on one regulated operating system. <span class="lab-invest">Allocate capital</span> to Odum-managed
+          strategies (Investment Management). <span class="lab-build">Run your strategy on our stack</span> via DART
+          &mdash; Data Analytics, Research &amp; Trading &mdash; either DART Signals-In (your signals, our execution) or
+          DART Full Pipeline. <span class="lab-build">Take our signals out</span> via Odum Signals. Operate your
+          regulated activity under our <span class="lab-regulate">FCA Regulatory Umbrella</span>.
+        </p>
+        <p class="support">Across digital assets, traditional markets, sports, and prediction markets.</p>
+        <div class="hero-ctas">
+          <a href="contact.html" class="btn btn-primary">Discuss a Mandate</a>
+          <a href="platform.html" class="btn btn-outline">Explore the Platform</a>
+        </div>
+        <div class="proof-strip">
+          <div class="proof-item"><strong>$7.5M AUM</strong></div>
+          <div class="proof-item"><strong>Clients live under coverage</strong></div>
+          <div class="proof-item"><strong>Platform clients live</strong></div>
+          <div class="proof-item"><strong>FCA 975797</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2. PLATFORM BREADTH + GALAXY + WHO WE SERVE ============ -->
+    <section style="padding: 40px 0; background: var(--bg-surface)">
+      <div class="container">
+        <p class="eyebrow" style="text-align: center; margin-bottom: 20px">Platform Breadth</p>
+        <div class="stats-strip">
+          <div class="stat-item"><strong>5</strong><span>Asset Classes</span></div>
+          <div class="stat-item"><strong>100+</strong><span>Venues</span></div>
+          <div class="stat-item"><strong>24/7</strong><span>Trading</span></div>
+          <div class="stat-item"><strong>100+ TB</strong><span>Market Data</span></div>
+          <div class="stat-item"><strong>5</strong><span>Service Lines</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Galaxy visual + venue marquee -->
+    <section class="galaxy-section section-pad">
+      <div class="container">
+        <div class="section-header">
+          <h2>Five asset groups. One regulated platform.</h2>
+          <p>
+            Move strategies from research and simulation to live trading on one operating surface, with one clean data
+            feed across every source.
+          </p>
+        </div>
+
+        <!-- ArbitrageGalaxy — live animated canvas -->
+        <canvas
+          id="galaxyCanvas"
+          style="
+            display: block;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            aspect-ratio: 2.2/1;
+            max-height: 450px;
+            background: transparent;
+            border-radius: 12px;
+          "
+        ></canvas>
+        <script>
+          (function () {
+            var NODES = [
+              { label: "TradFi", sub: "CME \u00b7 ICE", color: "#22d3ee", fill: "#061820", fx: 0.16, fy: 0.36 },
+              { label: "Crypto", sub: "Exchanges", color: "#4ade80", fill: "#061a0f", fx: 0.5, fy: 0.19 },
+              { label: "DeFi", sub: "Protocols", color: "#a78bfa", fill: "#100a20", fx: 0.84, fy: 0.36 },
+              { label: "Sports", sub: "Betfair \u00b7 Pinnacle", color: "#fbbf24", fill: "#1a1205", fx: 0.24, fy: 0.8 },
+              {
+                label: "Predictions",
+                sub: "Polymarket \u00b7 Kalshi",
+                color: "#fb7185",
+                fill: "#1a060c",
+                fx: 0.73,
+                fy: 0.8,
+              },
+            ];
+            var CONNS = [
+              { from: 0, to: 1, label: "BTC", delta: "+0.31%", color: "#f59e0b" },
+              { from: 1, to: 2, label: "BTC", delta: "+0.19%", color: "#f59e0b" },
+              { from: 0, to: 2, label: "BTC", delta: "+0.12%", color: "#f59e0b" },
+              { from: 4, to: 1, label: "BTC", delta: "+0.24%", color: "#f59e0b" },
+              { from: 0, to: 4, label: "S&P", delta: "+0.08%", color: "#60a5fa" },
+              { from: 3, to: 4, label: "Football", delta: "+2.1%", color: "#4ade80" },
+            ];
+            var PKT = 1800,
+              PAU = 500,
+              cv = document.getElementById("galaxyCanvas"),
+              cx = cv.getContext("2d"),
+              dpr = window.devicePixelRatio || 1;
+            function sz() {
+              var W = cv.offsetWidth,
+                H = cv.offsetHeight;
+              cv.width = W * dpr;
+              cv.height = H * dpr;
+              cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+            sz();
+            window.addEventListener("resize", sz);
+            var stars = [];
+            for (var i = 0; i < 60; i++)
+              stars.push({
+                x: Math.random(),
+                y: Math.random(),
+                r: Math.random() * 0.8 + 0.2,
+                a: Math.random() * 0.3 + 0.08,
+                p: Math.random() * Math.PI * 2,
+              });
+            var ci = 0,
+              st = -1,
+              pa = false,
+              pe = -1;
+            function xy(n) {
+              return { x: n.fx * cv.offsetWidth, y: n.fy * cv.offsetHeight };
+            }
+            function rr(x, y, w, h, rx, f, s, lw) {
+              cx.beginPath();
+              cx.roundRect(x, y, w, h, rx);
+              cx.fillStyle = f;
+              cx.fill();
+              cx.strokeStyle = s;
+              cx.lineWidth = lw || 1;
+              cx.stroke();
+            }
+            function draw(t) {
+              var W = cv.offsetWidth,
+                H = cv.offsetHeight,
+                R = Math.min(W, H) * 0.13;
+              cx.clearRect(0, 0, W, H);
+              for (var s of stars) {
+                var a = s.a * (0.55 + 0.45 * Math.sin(t * 0.0007 + s.p));
+                cx.beginPath();
+                cx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+                cx.fillStyle = "rgba(255,255,255," + a.toFixed(2) + ")";
+                cx.fill();
+              }
+              for (var j = 0; j < CONNS.length; j++) {
+                var c = CONNS[j],
+                  a2 = xy(NODES[c.from]),
+                  b = xy(NODES[c.to]);
+                cx.save();
+                cx.beginPath();
+                cx.moveTo(a2.x, a2.y);
+                cx.lineTo(b.x, b.y);
+                cx.strokeStyle = c.color + "60";
+                cx.lineWidth = 2;
+                cx.setLineDash([9, 9]);
+                cx.lineDashOffset = -((t * 0.02 + j * 30) % 36);
+                cx.stroke();
+                cx.restore();
+                var mx = (a2.x + b.x) / 2,
+                  my = (a2.y + b.y) / 2;
+                cx.font = "bold 11px 'IBM Plex Sans',sans-serif";
+                var tw = cx.measureText(c.label).width + 18,
+                  ia = j === ci && !pa;
+                rr(
+                  mx - tw / 2,
+                  my - 11,
+                  tw,
+                  22,
+                  11,
+                  ia ? c.color + "40" : c.color + "15",
+                  ia ? c.color + "cc" : c.color + "55",
+                  ia ? 1.5 : 1,
+                );
+                cx.fillStyle = ia ? c.color : c.color + "99";
+                cx.textAlign = "center";
+                cx.textBaseline = "middle";
+                cx.fillText(c.label, mx, my);
+              }
+              if (pa) {
+                if (t >= pe) {
+                  pa = false;
+                  ci = (ci + 1) % CONNS.length;
+                  st = -1;
+                }
+              } else {
+                if (st < 0) st = t;
+                var pr = Math.min((t - st) / PKT, 1),
+                  c2 = CONNS[ci],
+                  a3 = xy(NODES[c2.from]),
+                  b2 = xy(NODES[c2.to]),
+                  px = a3.x + (b2.x - a3.x) * pr,
+                  py = a3.y + (b2.y - a3.y) * pr;
+                cx.save();
+                cx.beginPath();
+                cx.moveTo(a3.x, a3.y);
+                cx.lineTo(b2.x, b2.y);
+                cx.strokeStyle = c2.color + "cc";
+                cx.lineWidth = 2.5;
+                cx.setLineDash([9, 9]);
+                cx.lineDashOffset = -((t * 0.06) % 36);
+                cx.stroke();
+                cx.restore();
+                for (var k = 8; k >= 0; k--) {
+                  var tp = Math.max(0, pr - k * 0.022),
+                    tx = a3.x + (b2.x - a3.x) * tp,
+                    ty = a3.y + (b2.y - a3.y) * tp,
+                    ta = ((8 - k) / 8) * 0.5,
+                    tr = 6 - k * 0.5;
+                  cx.beginPath();
+                  cx.arc(tx, ty, Math.max(tr, 1), 0, Math.PI * 2);
+                  cx.fillStyle =
+                    c2.color +
+                    Math.floor(ta * 255)
+                      .toString(16)
+                      .padStart(2, "0");
+                  cx.fill();
+                }
+                var gl = cx.createRadialGradient(px, py, 0, px, py, 18);
+                gl.addColorStop(0, c2.color + "bb");
+                gl.addColorStop(1, c2.color + "00");
+                cx.beginPath();
+                cx.arc(px, py, 18, 0, Math.PI * 2);
+                cx.fillStyle = gl;
+                cx.fill();
+                cx.beginPath();
+                cx.arc(px, py, 6, 0, Math.PI * 2);
+                cx.fillStyle = "#fff";
+                cx.fill();
+                if (pr > 0.12 && pr < 0.88) {
+                  cx.font = "bold 10px 'JetBrains Mono',monospace";
+                  var bw = cx.measureText(c2.delta).width + 14;
+                  rr(px - bw / 2, py - 26, bw, 18, 9, "#0a0a0b", c2.color, 1.2);
+                  cx.fillStyle = c2.color;
+                  cx.textAlign = "center";
+                  cx.textBaseline = "middle";
+                  cx.fillText(c2.delta, px, py - 17);
+                }
+                if (pr >= 1) {
+                  pa = true;
+                  pe = t + PAU;
+                }
+              }
+              for (var nd of NODES) {
+                var p = xy(nd),
+                  g = cx.createRadialGradient(p.x, p.y, R * 0.3, p.x, p.y, R * 1.8);
+                g.addColorStop(0, nd.color + "18");
+                g.addColorStop(1, nd.color + "00");
+                cx.beginPath();
+                cx.arc(p.x, p.y, R * 1.8, 0, Math.PI * 2);
+                cx.fillStyle = g;
+                cx.fill();
+                cx.beginPath();
+                cx.arc(p.x, p.y, R, 0, Math.PI * 2);
+                cx.fillStyle = nd.fill;
+                cx.strokeStyle = nd.color;
+                cx.lineWidth = 2.5;
+                cx.fill();
+                cx.stroke();
+                var ts2 = Math.round(R * 0.3);
+                cx.fillStyle = nd.color;
+                cx.font = "bold " + ts2 + "px 'IBM Plex Sans',sans-serif";
+                cx.textAlign = "center";
+                cx.textBaseline = "middle";
+                cx.fillText(nd.label, p.x, p.y - R * 0.18);
+                var ss = Math.round(R * 0.21);
+                cx.fillStyle = "rgba(190,190,200,0.70)";
+                cx.font = ss + "px 'IBM Plex Sans',sans-serif";
+                cx.fillText(nd.sub, p.x, p.y + R * 0.3);
+              }
+            }
+            var lf = 0;
+            function loop(ts) {
+              if (ts - lf >= 1000 / 24) {
+                draw(ts);
+                lf = ts;
+              }
+              requestAnimationFrame(loop);
+            }
+            requestAnimationFrame(loop);
+          })();
+        </script>
+
+        <!-- Venue Marquee (trimmed) -->
+        <div class="venue-marquee">
+          <div class="venue-track">
+            <span class="venue-pill venue-pill-cyan">CME</span>
+            <span class="venue-pill venue-pill-cyan">NYSE</span>
+            <span class="venue-pill venue-pill-cyan">ICE</span>
+            <span class="venue-pill venue-pill-emerald">Binance</span>
+            <span class="venue-pill venue-pill-emerald">OKX</span>
+            <span class="venue-pill venue-pill-emerald">Deribit</span>
+            <span class="venue-pill venue-pill-violet">Aave V3</span>
+            <span class="venue-pill venue-pill-violet">Uniswap V3</span>
+            <span class="venue-pill venue-pill-violet">Morpho</span>
+            <span class="venue-pill venue-pill-amber">Betfair</span>
+            <span class="venue-pill venue-pill-amber">Pinnacle</span>
+            <span class="venue-pill venue-pill-rose">Polymarket</span>
+            <span class="venue-pill venue-pill-rose">Kalshi</span>
+            <span class="venue-pill venue-pill-cyan">CME</span>
+            <span class="venue-pill venue-pill-cyan">NYSE</span>
+            <span class="venue-pill venue-pill-cyan">ICE</span>
+            <span class="venue-pill venue-pill-emerald">Binance</span>
+            <span class="venue-pill venue-pill-emerald">OKX</span>
+            <span class="venue-pill venue-pill-emerald">Deribit</span>
+            <span class="venue-pill venue-pill-violet">Aave V3</span>
+            <span class="venue-pill venue-pill-violet">Uniswap V3</span>
+            <span class="venue-pill venue-pill-violet">Morpho</span>
+            <span class="venue-pill venue-pill-amber">Betfair</span>
+            <span class="venue-pill venue-pill-amber">Pinnacle</span>
+            <span class="venue-pill venue-pill-rose">Polymarket</span>
+            <span class="venue-pill venue-pill-rose">Kalshi</span>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <!-- DeFi -->
-          <div class="explorer-panel" id="panel-defi">
-            <div class="explorer-detail">
-              <h3 style="color:var(--violet);">On-chain yield and basis</h3>
-              <div class="detail-sub" aria-label="Paths that apply in this area">
-                <span class="svc-tag svc-tag-invest">Investment Management</span>
-                <span class="svc-tag svc-tag-build">DART</span>
-                <span class="svc-tag svc-tag-signals">Odum Signals</span>
-              </div>
-              <p>Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi protocols on 8+
-                blockchains. Per-block resolution data.</p>
-              <div class="detail-venues">Aave, Morpho, Lido, Uniswap, Curve, Compound, Maker +40 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> Staked basis (3-leg atomic) &middot;
-                Recursive staking &middot; Yield rotation (lending) &middot; Liquidation capture</div>
-              <div class="explorer-preview"
-                style="background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.12);">
-                <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
-                  <span>Protocol</span><span>Chain</span><span>APY</span><span>TVL</span>
-                </div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>Aave V3</span><span
-                    style="color:var(--violet);">ETH</span><span
-                    style="color:var(--emerald);">4.8%</span><span>$8.2B</span></div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>Morpho</span><span
-                    style="color:var(--violet);">BASE</span><span
-                    style="color:var(--emerald);">6.1%</span><span>$1.4B</span></div>
-              </div>
-              <div class="detail-ctas detail-ctas-split">
-                <span class="detail-ctas-prefix">Find out more about</span>
-                <div class="detail-cta-stack">
-                  <a href="strategies.html#defi" class="detail-cta detail-cta-invest detail-cta-line">investing
-                    capital &rarr;</a>
-                  <a href="platform.html#defi" class="detail-cta detail-cta-build detail-cta-line">getting strategies
-                    to market with our help on our platform &rarr;</a>
-                  <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line">licensing our signals to
-                    run on your own execution &rarr;</a>
-                </div>
-              </div>
+    <!-- Who we serve -->
+    <section class="section-pad">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Built for professional and institutional users</p>
+          <h2>Who we work with</h2>
+          <p>
+            Allocators, professional trading firms, emerging managers, and institutions that need systematic investment
+            management, trading infrastructure, or regulated market access.
+          </p>
+        </div>
+        <div class="card-grid card-grid-4">
+          <article class="card">
+            <h3>Allocators &amp; family offices</h3>
+            <p>
+              Access managed strategies with regulated reporting, institutional oversight, and a clear allocation
+              framework.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Professional trading firms</h3>
+            <p>Use Odum's research, execution, and reporting stack without building every layer internally.</p>
+          </article>
+          <article class="card">
+            <h3>Emerging managers</h3>
+            <p>Launch under a regulated framework without waiting 12&ndash;24 months for direct authorisation.</p>
+          </article>
+          <article class="card">
+            <h3>Institutions &amp; platforms</h3>
+            <p>
+              Plug Odum's research, execution, and reporting into your existing stack &mdash; one integration, one
+              commercial relationship, no internal build required.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 3. THREE ENTRY POINTS ============ -->
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Five commercial paths</p>
+          <h2>
+            <span class="lab-invest">Allocate</span>. <span class="lab-build">Run</span>.
+            <span class="lab-build">Lease signals</span>. <span class="lab-regulate">Regulate</span>.
+          </h2>
+          <p>
+            Investment Management, DART Signals-In, DART Full Pipeline, Odum Signals, and Regulatory Umbrella &mdash;
+            five paths on one operating system. Most engagements use one; some combine two.
+          </p>
+        </div>
+        <div class="card-grid card-grid-3">
+          <article class="card card-rose">
+            <div class="icon-dot" style="background: rgba(251, 113, 133, 0.12); color: var(--rose)">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                <rect x="2" y="10" width="6" height="10" rx="1" />
+                <rect x="16" y="8" width="6" height="12" rx="1" />
+              </svg>
             </div>
-          </div>
-
-          <!-- TradFi -->
-          <div class="explorer-panel" id="panel-tradfi">
-            <div class="explorer-detail">
-              <h3 style="color:var(--cyan);">Quant directional and execution</h3>
-              <div class="detail-sub" aria-label="Paths that apply in this area">
-                <span class="svc-tag svc-tag-invest">Investment Management</span>
-                <span class="svc-tag svc-tag-build">DART</span>
-                <span class="svc-tag svc-tag-signals">Odum Signals</span>
-              </div>
-              <p>Systematic momentum, mean reversion, commodity regime, and event-driven strategies across equities,
-                futures, FX, and commodities. Institutional-grade data and execution through regulated venues.</p>
-              <div class="detail-venues">CME, NASDAQ, NYSE, ICE, CBOE, LSE, Eurex +3 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML directional (ES/NQ/Brent) &middot; Basis
-                carry (IBKR &harr; CME) &middot; Cross-sectional momentum (S&amp;P 500) &middot; Volatility trading
-              </div>
-              <div class="explorer-preview"
-                style="background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.12);">
-                <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
-                  <span>Instrument</span><span>Signal</span><span>MTD</span><span>Regime</span>
-                </div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>ES (S&amp;P)</span><span
-                    style="color:var(--emerald);">LONG</span><span style="color:var(--emerald);">+3.2%</span><span
-                    style="color:var(--cyan);">Trend</span></div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>CL (Crude)</span><span
-                    style="color:var(--rose);">SHORT</span><span style="color:var(--rose);">-0.8%</span><span
-                    style="color:var(--amber);">MR</span></div>
-              </div>
-              <div class="detail-ctas detail-ctas-split">
-                <span class="detail-ctas-prefix">Find out more about</span>
-                <div class="detail-cta-stack">
-                  <a href="strategies.html#tradfi" class="detail-cta detail-cta-invest detail-cta-line">investing
-                    capital &rarr;</a>
-                  <a href="platform.html#tradfi" class="detail-cta detail-cta-build detail-cta-line">getting strategies
-                    to market with our help on our platform &rarr;</a>
-                  <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line">licensing our signals to
-                    run on your own execution &rarr;</a>
-                </div>
-              </div>
+            <p class="card-kicker">Investment Management</p>
+            <h3>Allocate capital to Odum-managed strategies</h3>
+            <p>
+              Odum runs systematic strategies under its own FCA permissions. You allocate capital; we trade it.
+              Reporting comes from the same surface Odum uses internally, filtered to the allocator view.
+            </p>
+            <ul>
+              <li>Odum-developed strategies, Odum IP</li>
+              <li>FCA-regulated structure and reporting</li>
+              <li>Twelve-month minimum engagement</li>
+            </ul>
+            <a href="strategies.html" class="card-link">Investment Management &rarr;</a>
+          </article>
+          <article class="card card-cyan">
+            <div class="icon-dot" style="background: rgba(34, 211, 238, 0.12); color: var(--cyan)">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
             </div>
-          </div>
-
-          <!-- Sports -->
-          <div class="explorer-panel" id="panel-sports">
-            <div class="explorer-detail">
-              <h3 style="color:var(--amber);">Sports value betting, arbitrage, and ML signals</h3>
-              <div class="detail-sub" aria-label="Paths that apply in this area">
-                <span class="svc-tag svc-tag-invest">Investment Management</span>
-                <span class="svc-tag svc-tag-build">DART</span>
-                <span class="svc-tag svc-tag-signals">Odum Signals</span>
-              </div>
-              <p>Cross-bookmaker odds comparison across 20+ bookmakers, live arbitrage scanning, closing line value
-                (CLV) analytics, and ML-powered match predictions across 100+ leagues and 7+ market types.</p>
-              <div class="detail-venues">Betfair, Smarkets, bet365, Matchbook +20 bookmakers</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> Model-led directional &middot;
-                Cross-book arbitrage &middot; Exchange-liquidity making &middot; Event-driven (lineup / news)</div>
-              <div class="explorer-preview"
-                style="background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.12);">
-                <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
-                  <span>Match</span><span>Market</span><span>Arb%</span><span>CLV</span>
-                </div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>ARS v LIV</span><span>FT
-                    Result</span><span style="color:var(--emerald);">+1.8%</span><span
-                    style="color:var(--amber);">+4.2bps</span></div>
-                <div class="prev-row" style="grid-template-columns:2fr 1fr 1fr 1fr;"><span>BAR v MCI</span><span>O/U
-                    2.5</span><span style="color:var(--emerald);">+2.1%</span><span
-                    style="color:var(--amber);">+6.1bps</span></div>
-              </div>
-              <div class="detail-ctas detail-ctas-split">
-                <span class="detail-ctas-prefix">Find out more about</span>
-                <div class="detail-cta-stack">
-                  <a href="strategies.html#sports" class="detail-cta detail-cta-invest detail-cta-line">investing
-                    capital &rarr;</a>
-                  <a href="platform.html#sports" class="detail-cta detail-cta-build detail-cta-line">getting strategies
-                    to market with our help on our platform &rarr;</a>
-                  <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line">licensing our signals to
-                    run on your own execution &rarr;</a>
-                </div>
-              </div>
+            <p class="card-kicker">DART &mdash; Data Analytics, Research &amp; Trading</p>
+            <h3>Run your strategy on the same stack Odum uses internally</h3>
+            <p>
+              Two DART paths share one operating system. DART Signals-In keeps your strategy IP upstream and Odum runs
+              the downstream execution and reporting layer. DART Full Pipeline adds research, backtest, and promotion on
+              the same code path.
+            </p>
+            <ul>
+              <li><a href="/platform/signals-in">DART Signals-In</a> &mdash; your signals, our execution</li>
+              <li><a href="/platform/full">DART Full Pipeline</a> &mdash; research-to-live on one stack</li>
+              <li>Per-block pricing, twelve-month minimum</li>
+            </ul>
+            <a href="platform.html" class="card-link">DART overview &rarr;</a>
+          </article>
+          <article class="card card-slate">
+            <div class="icon-dot" style="background: rgba(148, 163, 184, 0.12); color: #94a3b8">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
             </div>
-          </div>
+            <p class="card-kicker">Regulatory Umbrella</p>
+            <h3>Operate regulated activity under Odum&apos;s FCA permissions</h3>
+            <p>
+              Firms running regulated activity that want operational coverage without seeking direct FCA authorisation
+              can operate under Odum&apos;s permissions. Onboarding handles scope, compliance, MLRO, and supervisory
+              reporting.
+            </p>
+            <ul>
+              <li>FCA 975797 &mdash; scope is named, not assumed</li>
+              <li>Compliance, MLRO, and supervision included</li>
+              <li>Reporting from the same surface as IM and DART, view-filtered</li>
+            </ul>
+            <a href="regulatory.html" class="card-link">Regulatory Umbrella &rarr;</a>
+          </article>
+        </div>
+        <div style="margin-top: 28px; text-align: center">
+          <p style="font-size: 14px; color: var(--text-muted); max-width: 720px; margin: 0 auto">
+            A fifth path,
+            <a href="/signals" style="color: var(--primary)">Odum Signals &mdash; our signals, your execution</a>,
+            leases Odum-generated strategy signals to institutional counterparties who execute on their own
+            infrastructure. Direction matters: Odum Signals runs Odum &rarr; counterparty; DART Signals-In runs client
+            &rarr; Odum.
+          </p>
+        </div>
+      </div>
+    </section>
 
-          <!-- Predictions -->
-          <div class="explorer-panel" id="panel-predictions">
-            <div class="explorer-detail">
-              <h3 style="color:var(--rose);">Cross-venue prediction market trading</h3>
-              <div class="detail-sub" aria-label="Paths that apply in this area">
-                <span class="svc-tag svc-tag-invest">Investment Management</span>
-                <span class="svc-tag svc-tag-build">DART</span>
-                <span class="svc-tag svc-tag-signals">Odum Signals</span>
-              </div>
-              <p>Browse, compare, and trade prediction markets on Polymarket and Kalshi. Divergence charts overlay
-                prediction odds against underlying asset prices. Live arb stream with Kelly-optimal sizing.</p>
-              <div class="detail-venues">Polymarket, Kalshi, Metaculus +3 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML directional &middot; Cross-venue
-                arbitrage (Polymarket &harr; Unity / Betfair) &middot; Event-driven (debates / elections)</div>
-              <div class="explorer-preview"
-                style="background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.12);">
-                <div class="prev-row prev-head" style="grid-template-columns:3fr 1fr 1fr;">
-                  <span>Market</span><span>Venue</span><span>YES</span>
-                </div>
-                <div class="prev-row" style="grid-template-columns:3fr 1fr 1fr;"><span>BTC above $100K</span><span
-                    style="color:var(--rose);">Poly</span><span style="color:var(--emerald);">72%</span></div>
-                <div class="prev-row" style="grid-template-columns:3fr 1fr 1fr;"><span>Arsenal win EPL</span><span
-                    style="color:var(--rose);">Kalshi</span><span style="color:var(--emerald);">58%</span></div>
-              </div>
-              <div class="detail-ctas detail-ctas-split">
-                <span class="detail-ctas-prefix">Find out more about</span>
-                <div class="detail-cta-stack">
-                  <a href="strategies.html#predictions" class="detail-cta detail-cta-invest detail-cta-line">investing
-                    capital &rarr;</a>
-                  <a href="platform.html#predictions" class="detail-cta detail-cta-build detail-cta-line">getting
-                    strategies to market with our help on our platform &rarr;</a>
-                  <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line">licensing our signals to
-                    run on your own execution &rarr;</a>
-                </div>
-              </div>
-            </div>
-          </div>
+    <!-- ============ 4. WHAT CLIENTS ACCESS ============ -->
+    <style>
+      .explorer-nav {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
 
-          <!-- Regulatory -->
-          <div class="explorer-panel" id="panel-regulatory">
-            <div class="explorer-detail">
-              <h3 style="color:#94a3b8;">Regulatory Umbrella client onboarding</h3>
-              <div class="detail-sub" aria-label="Service that applies">
-                <span class="svc-tag svc-tag-reg">Regulatory Umbrella</span>
-              </div>
-              <p>Fast path to operating under FCA coverage with compliance support, reporting, and supervision.
-                Engagement structure scoped to your specific activities &mdash; typically weeks to months rather than
-                12&ndash;24 months for direct authorisation. Reporting and analytics tool-set inherited from IM and
-                DART &mdash; wired via read-only venue API keys.</p>
-              <div class="explorer-preview"
-                style="background:rgba(148,163,184,0.04);border:1px solid rgba(148,163,184,0.12);">
+      .explorer-nav li {
+        border-left: 3px solid transparent;
+      }
+
+      .explorer-nav button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 14px 18px;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font: inherit;
+        font-size: 14px;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .explorer-nav button:hover {
+        color: var(--text-body);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .explorer-nav li.active {
+        border-left-color: var(--cyan);
+        background: rgba(34, 211, 238, 0.04);
+      }
+
+      .explorer-nav li.active button {
+        color: #fff;
+        font-weight: 600;
+      }
+
+      .explorer-nav .nav-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .explorer-panel {
+        display: none;
+      }
+
+      .explorer-panel.active {
+        display: block;
+      }
+
+      .explorer-detail {
+        padding: 32px;
+      }
+
+      .explorer-detail h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 8px;
+      }
+
+      .explorer-detail .detail-sub {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 16px;
+      }
+
+      /* Vocabulary tags (not links) — distinct from underlined CTAs below */
+      .explorer-detail .svc-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 5px 11px;
+        border-radius: 999px;
+        border: 1px solid;
+        line-height: 1.2;
+        cursor: default;
+        user-select: none;
+      }
+
+      .explorer-detail .svc-tag-invest {
+        color: var(--rose);
+        background: rgba(251, 113, 133, 0.08);
+        border-color: rgba(251, 113, 133, 0.35);
+      }
+
+      .explorer-detail .svc-tag-build {
+        color: var(--cyan);
+        background: rgba(34, 211, 238, 0.08);
+        border-color: rgba(34, 211, 238, 0.35);
+      }
+
+      .section-header .svc-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        border: 1px solid;
+        vertical-align: middle;
+        margin: 0 2px;
+        cursor: default;
+        user-select: none;
+      }
+
+      .section-header .svc-tag-invest {
+        color: var(--rose);
+        background: rgba(251, 113, 133, 0.08);
+        border-color: rgba(251, 113, 133, 0.35);
+      }
+
+      .section-header .svc-tag-build {
+        color: var(--cyan);
+        background: rgba(34, 211, 238, 0.08);
+        border-color: rgba(34, 211, 238, 0.35);
+      }
+
+      .section-header .svc-tag-reg {
+        color: #94a3b8;
+        background: rgba(148, 163, 184, 0.08);
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+
+      .explorer-detail .svc-tag-reg {
+        color: #94a3b8;
+        background: rgba(148, 163, 184, 0.08);
+        border-color: rgba(148, 163, 184, 0.35);
+      }
+
+      .explorer-detail .svc-tag-signals {
+        color: #e879f9;
+        background: rgba(232, 121, 249, 0.08);
+        border-color: rgba(232, 121, 249, 0.35);
+      }
+
+      .section-header .svc-tag-signals {
+        color: #e879f9;
+        background: rgba(232, 121, 249, 0.08);
+        border-color: rgba(232, 121, 249, 0.35);
+      }
+
+      .explorer-detail p {
+        color: var(--text-dim);
+        font-size: 14px;
+        line-height: 1.65;
+        margin-bottom: 16px;
+      }
+
+      .explorer-detail .detail-venues {
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-bottom: 20px;
+      }
+
+      .explorer-detail .detail-ctas {
+        display: flex;
+        gap: 16px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .explorer-detail .detail-ctas.detail-ctas-split {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .explorer-detail .detail-ctas-split .detail-ctas-prefix {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        line-height: 1.45;
+      }
+
+      .explorer-detail .detail-ctas-split .detail-cta-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .explorer-detail .detail-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-thickness: 1px;
+        text-decoration-color: rgba(161, 161, 170, 0.55);
+        cursor: pointer;
+      }
+
+      .explorer-detail .detail-cta.detail-cta-invest {
+        text-decoration-color: rgba(251, 113, 133, 0.45);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-build {
+        text-decoration-color: rgba(34, 211, 238, 0.45);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-reg {
+        text-decoration-color: rgba(148, 163, 184, 0.5);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-signals {
+        text-decoration-color: rgba(232, 121, 249, 0.45);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-signals:hover {
+        text-decoration-color: #e879f9;
+      }
+
+      .explorer-detail .detail-cta .lab-invest {
+        color: var(--rose);
+        font-weight: 700;
+      }
+
+      .explorer-detail .detail-cta .lab-build {
+        color: var(--cyan);
+        font-weight: 700;
+      }
+
+      .explorer-detail .detail-cta:hover {
+        color: var(--text);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-invest:hover {
+        text-decoration-color: var(--rose);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-build:hover {
+        text-decoration-color: var(--cyan);
+      }
+
+      .explorer-detail .detail-cta.detail-cta-reg:hover {
+        text-decoration-color: #cbd5e1;
+      }
+
+      .detail-ctas .cta-sep {
+        color: var(--border-accent);
+        font-size: 12px;
+        align-self: center;
+      }
+
+      .explorer-preview {
+        margin: 20px 0;
+        padding: 14px;
+        border-radius: 10px;
+        font-family: var(--font-mono);
+        font-size: 10px;
+      }
+
+      .explorer-preview .prev-row {
+        display: grid;
+        gap: 4px;
+        padding: 5px 0;
+        color: var(--text-dim);
+      }
+
+      .explorer-preview .prev-head {
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 9px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .explorer-preview .prev-row + .prev-row {
+        border-top: 1px solid rgba(255, 255, 255, 0.03);
+      }
+    </style>
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Coverage &amp; examples</p>
+          <h2>What each service looks like in practice</h2>
+          <p>
+            Odum runs four client-facing paths: <span class="svc-tag svc-tag-invest">Investment Management</span>,
+            <span class="svc-tag svc-tag-build">DART</span> (Data Analytics, Research &amp; Trading),
+            <span class="svc-tag svc-tag-signals">Odum Signals</span>, and
+            <span class="svc-tag svc-tag-reg">Regulatory Umbrella</span>. Tags below mark which paths apply per
+            category; links open the relevant briefing.
+          </p>
+        </div>
+
+        <div
+          class="explorer-grid"
+          style="
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.015);
+            min-height: 420px;
+          "
+        >
+          <!-- Left sidebar -->
+          <nav class="explorer-sidebar" style="border-right: 1px solid rgba(255, 255, 255, 0.06); padding: 8px 0">
+            <ul class="explorer-nav" id="explorerNav">
+              <li class="active" data-panel="crypto">
+                <button><span class="nav-dot" style="background: var(--emerald)"></span>Crypto Exchanges</button>
+              </li>
+              <li data-panel="defi">
+                <button><span class="nav-dot" style="background: var(--violet)"></span>DeFi Protocols</button>
+              </li>
+              <li data-panel="tradfi">
+                <button><span class="nav-dot" style="background: var(--cyan)"></span>Traditional Markets</button>
+              </li>
+              <li data-panel="sports">
+                <button><span class="nav-dot" style="background: var(--amber)"></span>Sports</button>
+              </li>
+              <li data-panel="predictions">
+                <button><span class="nav-dot" style="background: var(--rose)"></span>Prediction Markets</button>
+              </li>
+              <li data-panel="regulatory">
+                <button><span class="nav-dot" style="background: #94a3b8"></span>Regulatory Umbrella</button>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Right content panels -->
+          <div id="explorerPanels">
+            <!-- Crypto -->
+            <div class="explorer-panel active" id="panel-crypto">
+              <div class="explorer-detail">
+                <h3 style="color: var(--emerald)">Digital asset systematic</h3>
+                <div class="detail-sub" aria-label="Paths that apply in this area">
+                  <span class="svc-tag svc-tag-invest">Investment Management</span>
+                  <span class="svc-tag svc-tag-build">DART</span>
+                  <span class="svc-tag svc-tag-signals">Odum Signals</span>
+                </div>
+                <p>
+                  ML-backed momentum, mean reversion, stat arb, and market making across 11 crypto exchanges. Highest
+                  resolution data available &mdash; tick to daily.
+                </p>
+                <div class="detail-venues">Binance, OKX, Deribit, Coinbase, Bybit, KuCoin, Gate.io +4 more</div>
+                <div class="detail-venues">
+                  <strong>Strategy families:</strong> ML directional &middot; Funding carry (perp) &middot; Pairs
+                  stat-arb &middot; Market making
+                </div>
                 <div
-                  style="display:flex;align-items:center;gap:10px;padding:6px 0;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.03);">
-                  <span style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0;"></span>
-                  <span style="flex:1;">Eligibility &amp; scoping</span><span
-                    style="font-size:9px;color:var(--text-muted);">Week 1</span>
+                  class="explorer-preview"
+                  style="background: rgba(74, 222, 128, 0.04); border: 1px solid rgba(74, 222, 128, 0.12)"
+                >
+                  <div class="prev-row prev-head" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>Pair</span><span>Signal</span><span>P&amp;L</span><span>Sharpe</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>BTC-PERP</span><span style="color: var(--emerald)">LONG</span
+                    ><span style="color: var(--emerald)">+2.4%</span><span>2.81</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>ETH-PERP</span><span style="color: var(--rose)">SHORT</span
+                    ><span style="color: var(--emerald)">+1.1%</span><span>1.94</span>
+                  </div>
                 </div>
-                <div
-                  style="display:flex;align-items:center;gap:10px;padding:6px 0;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.03);">
-                  <span style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0;"></span>
-                  <span style="flex:1;">Due diligence &amp; agreement</span><span
-                    style="font-size:9px;color:var(--text-muted);">Week 2&ndash;3</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;padding:6px 0;color:var(--text-dim);">
-                  <span style="width:8px;height:8px;border-radius:50%;background:var(--emerald);flex-shrink:0;"></span>
-                  <span style="flex:1;">Supervised go-live &amp; ongoing oversight</span><span
-                    style="font-size:9px;color:var(--text-muted);">~Month 1+</span>
+                <div class="detail-ctas detail-ctas-split">
+                  <span class="detail-ctas-prefix">Find out more about</span>
+                  <div class="detail-cta-stack">
+                    <a href="strategies.html#crypto" class="detail-cta detail-cta-invest detail-cta-line"
+                      >investing capital &rarr;</a
+                    >
+                    <a href="platform.html#crypto" class="detail-cta detail-cta-build detail-cta-line"
+                      >getting strategies to market with our help on our platform &rarr;</a
+                    >
+                    <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line"
+                      >licensing our signals to run on your own execution &rarr;</a
+                    >
+                  </div>
                 </div>
               </div>
-              <a href="regulatory.html" class="detail-cta detail-cta-reg">Check regulatory fit &rarr;</a>
+            </div>
+
+            <!-- DeFi -->
+            <div class="explorer-panel" id="panel-defi">
+              <div class="explorer-detail">
+                <h3 style="color: var(--violet)">On-chain yield and basis</h3>
+                <div class="detail-sub" aria-label="Paths that apply in this area">
+                  <span class="svc-tag svc-tag-invest">Investment Management</span>
+                  <span class="svc-tag svc-tag-build">DART</span>
+                  <span class="svc-tag svc-tag-signals">Odum Signals</span>
+                </div>
+                <p>
+                  Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi protocols on 8+
+                  blockchains. Per-block resolution data.
+                </p>
+                <div class="detail-venues">Aave, Morpho, Lido, Uniswap, Curve, Compound, Maker +40 more</div>
+                <div class="detail-venues">
+                  <strong>Strategy families:</strong> Staked basis (3-leg atomic) &middot; Recursive staking &middot;
+                  Yield rotation (lending) &middot; Liquidation capture
+                </div>
+                <div
+                  class="explorer-preview"
+                  style="background: rgba(167, 139, 250, 0.04); border: 1px solid rgba(167, 139, 250, 0.12)"
+                >
+                  <div class="prev-row prev-head" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>Protocol</span><span>Chain</span><span>APY</span><span>TVL</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>Aave V3</span><span style="color: var(--violet)">ETH</span
+                    ><span style="color: var(--emerald)">4.8%</span><span>$8.2B</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>Morpho</span><span style="color: var(--violet)">BASE</span
+                    ><span style="color: var(--emerald)">6.1%</span><span>$1.4B</span>
+                  </div>
+                </div>
+                <div class="detail-ctas detail-ctas-split">
+                  <span class="detail-ctas-prefix">Find out more about</span>
+                  <div class="detail-cta-stack">
+                    <a href="strategies.html#defi" class="detail-cta detail-cta-invest detail-cta-line"
+                      >investing capital &rarr;</a
+                    >
+                    <a href="platform.html#defi" class="detail-cta detail-cta-build detail-cta-line"
+                      >getting strategies to market with our help on our platform &rarr;</a
+                    >
+                    <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line"
+                      >licensing our signals to run on your own execution &rarr;</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TradFi -->
+            <div class="explorer-panel" id="panel-tradfi">
+              <div class="explorer-detail">
+                <h3 style="color: var(--cyan)">Quant directional and execution</h3>
+                <div class="detail-sub" aria-label="Paths that apply in this area">
+                  <span class="svc-tag svc-tag-invest">Investment Management</span>
+                  <span class="svc-tag svc-tag-build">DART</span>
+                  <span class="svc-tag svc-tag-signals">Odum Signals</span>
+                </div>
+                <p>
+                  Systematic momentum, mean reversion, commodity regime, and event-driven strategies across equities,
+                  futures, FX, and commodities. Institutional-grade data and execution through regulated venues.
+                </p>
+                <div class="detail-venues">CME, NASDAQ, NYSE, ICE, CBOE, LSE, Eurex +3 more</div>
+                <div class="detail-venues">
+                  <strong>Strategy families:</strong> ML directional (ES/NQ/Brent) &middot; Basis carry (IBKR &harr;
+                  CME) &middot; Cross-sectional momentum (S&amp;P 500) &middot; Volatility trading
+                </div>
+                <div
+                  class="explorer-preview"
+                  style="background: rgba(34, 211, 238, 0.04); border: 1px solid rgba(34, 211, 238, 0.12)"
+                >
+                  <div class="prev-row prev-head" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>Instrument</span><span>Signal</span><span>MTD</span><span>Regime</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>ES (S&amp;P)</span><span style="color: var(--emerald)">LONG</span
+                    ><span style="color: var(--emerald)">+3.2%</span><span style="color: var(--cyan)">Trend</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>CL (Crude)</span><span style="color: var(--rose)">SHORT</span
+                    ><span style="color: var(--rose)">-0.8%</span><span style="color: var(--amber)">MR</span>
+                  </div>
+                </div>
+                <div class="detail-ctas detail-ctas-split">
+                  <span class="detail-ctas-prefix">Find out more about</span>
+                  <div class="detail-cta-stack">
+                    <a href="strategies.html#tradfi" class="detail-cta detail-cta-invest detail-cta-line"
+                      >investing capital &rarr;</a
+                    >
+                    <a href="platform.html#tradfi" class="detail-cta detail-cta-build detail-cta-line"
+                      >getting strategies to market with our help on our platform &rarr;</a
+                    >
+                    <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line"
+                      >licensing our signals to run on your own execution &rarr;</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sports -->
+            <div class="explorer-panel" id="panel-sports">
+              <div class="explorer-detail">
+                <h3 style="color: var(--amber)">Sports value betting, arbitrage, and ML signals</h3>
+                <div class="detail-sub" aria-label="Paths that apply in this area">
+                  <span class="svc-tag svc-tag-invest">Investment Management</span>
+                  <span class="svc-tag svc-tag-build">DART</span>
+                  <span class="svc-tag svc-tag-signals">Odum Signals</span>
+                </div>
+                <p>
+                  Cross-bookmaker odds comparison across 20+ bookmakers, live arbitrage scanning, closing line value
+                  (CLV) analytics, and ML-powered match predictions across 100+ leagues and 7+ market types.
+                </p>
+                <div class="detail-venues">Betfair, Pinnacle, bet365, Smarkets +20 bookmakers</div>
+                <div class="detail-venues">
+                  <strong>Strategy families:</strong> ML value betting (EPL / NBA) &middot; Cross-book arbitrage
+                  &middot; Market making (Betfair lay) &middot; Event-driven (lineup / news)
+                </div>
+                <div
+                  class="explorer-preview"
+                  style="background: rgba(251, 191, 36, 0.04); border: 1px solid rgba(251, 191, 36, 0.12)"
+                >
+                  <div class="prev-row prev-head" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>Match</span><span>Market</span><span>Arb%</span><span>CLV</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>ARS v LIV</span><span>FT Result</span><span style="color: var(--emerald)">+1.8%</span
+                    ><span style="color: var(--amber)">+4.2bps</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 2fr 1fr 1fr 1fr">
+                    <span>BAR v MCI</span><span>O/U 2.5</span><span style="color: var(--emerald)">+2.1%</span
+                    ><span style="color: var(--amber)">+6.1bps</span>
+                  </div>
+                </div>
+                <div class="detail-ctas detail-ctas-split">
+                  <span class="detail-ctas-prefix">Find out more about</span>
+                  <div class="detail-cta-stack">
+                    <a href="strategies.html#sports" class="detail-cta detail-cta-invest detail-cta-line"
+                      >investing capital &rarr;</a
+                    >
+                    <a href="platform.html#sports" class="detail-cta detail-cta-build detail-cta-line"
+                      >getting strategies to market with our help on our platform &rarr;</a
+                    >
+                    <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line"
+                      >licensing our signals to run on your own execution &rarr;</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Predictions -->
+            <div class="explorer-panel" id="panel-predictions">
+              <div class="explorer-detail">
+                <h3 style="color: var(--rose)">Cross-venue prediction market trading</h3>
+                <div class="detail-sub" aria-label="Paths that apply in this area">
+                  <span class="svc-tag svc-tag-invest">Investment Management</span>
+                  <span class="svc-tag svc-tag-build">DART</span>
+                  <span class="svc-tag svc-tag-signals">Odum Signals</span>
+                </div>
+                <p>
+                  Browse, compare, and trade prediction markets on Polymarket and Kalshi. Divergence charts overlay
+                  prediction odds against underlying asset prices. Live arb stream with Kelly-optimal sizing.
+                </p>
+                <div class="detail-venues">Polymarket, Kalshi, Metaculus +3 more</div>
+                <div class="detail-venues">
+                  <strong>Strategy families:</strong> ML directional &middot; Cross-venue arbitrage (Polymarket &harr;
+                  Unity / Betfair) &middot; Event-driven (debates / elections)
+                </div>
+                <div
+                  class="explorer-preview"
+                  style="background: rgba(251, 113, 133, 0.04); border: 1px solid rgba(251, 113, 133, 0.12)"
+                >
+                  <div class="prev-row prev-head" style="grid-template-columns: 3fr 1fr 1fr">
+                    <span>Market</span><span>Venue</span><span>YES</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 3fr 1fr 1fr">
+                    <span>BTC above $100K</span><span style="color: var(--rose)">Poly</span
+                    ><span style="color: var(--emerald)">72%</span>
+                  </div>
+                  <div class="prev-row" style="grid-template-columns: 3fr 1fr 1fr">
+                    <span>Arsenal win EPL</span><span style="color: var(--rose)">Kalshi</span
+                    ><span style="color: var(--emerald)">58%</span>
+                  </div>
+                </div>
+                <div class="detail-ctas detail-ctas-split">
+                  <span class="detail-ctas-prefix">Find out more about</span>
+                  <div class="detail-cta-stack">
+                    <a href="strategies.html#predictions" class="detail-cta detail-cta-invest detail-cta-line"
+                      >investing capital &rarr;</a
+                    >
+                    <a href="platform.html#predictions" class="detail-cta detail-cta-build detail-cta-line"
+                      >getting strategies to market with our help on our platform &rarr;</a
+                    >
+                    <a href="signals.html" class="detail-cta detail-cta-signals detail-cta-line"
+                      >licensing our signals to run on your own execution &rarr;</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Regulatory -->
+            <div class="explorer-panel" id="panel-regulatory">
+              <div class="explorer-detail">
+                <h3 style="color: #94a3b8">Regulatory Umbrella client onboarding</h3>
+                <div class="detail-sub" aria-label="Service that applies">
+                  <span class="svc-tag svc-tag-reg">Regulatory Umbrella</span>
+                </div>
+                <p>
+                  Fast path to operating under FCA coverage with compliance support, reporting, and supervision.
+                  Engagement structure scoped to your specific activities &mdash; typically weeks to months rather than
+                  12&ndash;24 months for direct authorisation. Reporting and analytics tool-set inherited from IM and
+                  DART &mdash; wired via read-only venue API keys.
+                </p>
+                <div
+                  class="explorer-preview"
+                  style="background: rgba(148, 163, 184, 0.04); border: 1px solid rgba(148, 163, 184, 0.12)"
+                >
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 10px;
+                      padding: 6px 0;
+                      color: var(--text-dim);
+                      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                    "
+                  >
+                    <span
+                      style="width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); flex-shrink: 0"
+                    ></span>
+                    <span style="flex: 1">Eligibility &amp; scoping</span
+                    ><span style="font-size: 9px; color: var(--text-muted)">Week 1</span>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      gap: 10px;
+                      padding: 6px 0;
+                      color: var(--text-dim);
+                      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+                    "
+                  >
+                    <span
+                      style="width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); flex-shrink: 0"
+                    ></span>
+                    <span style="flex: 1">Due diligence &amp; agreement</span
+                    ><span style="font-size: 9px; color: var(--text-muted)">Week 2&ndash;3</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px; padding: 6px 0; color: var(--text-dim)">
+                    <span
+                      style="width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); flex-shrink: 0"
+                    ></span>
+                    <span style="flex: 1">Supervised go-live &amp; ongoing oversight</span
+                    ><span style="font-size: 9px; color: var(--text-muted)">~Month 1+</span>
+                  </div>
+                </div>
+                <a href="regulatory.html" class="detail-cta detail-cta-reg">Check regulatory fit &rarr;</a>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <script>
-    (function () {
-      var nav = document.getElementById("explorerNav");
-      var panels = document.getElementById("explorerPanels");
-      if (!nav || !panels) return;
-      nav.addEventListener("click", function (e) {
-        var btn = e.target.closest("button");
-        if (!btn) return;
-        var li = btn.parentElement;
-        var id = li.getAttribute("data-panel");
-        nav.querySelectorAll("li").forEach(function (l) { l.classList.remove("active"); });
-        li.classList.add("active");
-        panels.querySelectorAll(".explorer-panel").forEach(function (p) { p.classList.remove("active"); });
-        var target = document.getElementById("panel-" + id);
-        if (target) target.classList.add("active");
-      });
-    })();
-  </script>
+    <script>
+      (function () {
+        var nav = document.getElementById("explorerNav");
+        var panels = document.getElementById("explorerPanels");
+        if (!nav || !panels) return;
+        nav.addEventListener("click", function (e) {
+          var btn = e.target.closest("button");
+          if (!btn) return;
+          var li = btn.parentElement;
+          var id = li.getAttribute("data-panel");
+          nav.querySelectorAll("li").forEach(function (l) {
+            l.classList.remove("active");
+          });
+          li.classList.add("active");
+          panels.querySelectorAll(".explorer-panel").forEach(function (p) {
+            p.classList.remove("active");
+          });
+          var target = document.getElementById("panel-" + id);
+          if (target) target.classList.add("active");
+        });
+      })();
+    </script>
 
-  <!-- ============ 5. WHY ODUM ============ -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Why Odum</p>
-        <h2>Real capital. Real infrastructure. One regulated platform.</h2>
-        <p>You access the exact same system we use to manage capital and generate returns &mdash;
-          not a watered-down client version, built by traders who ran trading desks at leading
-          prop-trading firms.</p>
-      </div>
-
-      <div class="feature-grid">
-        <article class="feature">
-          <h3 style="color:var(--amber);">Same system, not a client copy</h3>
-          <p>Research, execution, risk, position tracking, reporting &mdash; every component is the one
-            Odum uses to trade its own book.
-            <span class="glossary-term" tabindex="0"
-              data-def="The same component tree serves every audience — admin, IM clients, DART clients, Regulatory Umbrella clients. Each view is sliced by entitlement; there is no separate 'client version' of any screen.">Entitlement
-              filters</span>
-            what each audience sees; the stack is one.
+    <!-- ============ 5. WHY ODUM ============ -->
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Why Odum</p>
+          <h2>Real capital. Real infrastructure. One regulated platform.</h2>
+          <p>
+            You access the exact same system we use to manage capital and generate returns &mdash; not a watered-down
+            client version.
           </p>
-        </article>
-        <article class="feature">
-          <h3 style="color:var(--cyan);">Five asset groups on one stack</h3>
-          <p><span class="glossary-term" tabindex="0"
-              data-def="Centralised Finance — custodial crypto exchanges like Binance, OKX, Deribit, Coinbase, Bybit. Distinct from DeFi (non-custodial protocols).">CeFi</span>
-            exchanges,
-            <span class="glossary-term" tabindex="0"
-              data-def="Decentralised Finance — non-custodial on-chain protocols like Uniswap, Aave, Lido, GMX, Hyperliquid. Distinct from CeFi.">DeFi</span>
-            protocols, traditional venues (commodities, currencies, equities), sports books,
-            <span class="glossary-term" tabindex="0"
-              data-def="Venues like Polymarket and Kalshi where event outcomes trade as binary contracts — elections, sports, weather, macro. Event-based rather than asset-based.">prediction
-              markets</span>.
-            Options, futures, spot across everything. Add a new category
-            <span class="glossary-term" tabindex="0"
-              data-def="Cross-category expansion keeps the same API keys, same data integration, same custody setup, same legal wrapper. Odum already operates across all five groups; your mandate grows by entitlement, not a new procurement cycle.">without
-              a new vendor</span>.
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature">
+            <h3 style="color: var(--amber)">Same platform, same infrastructure</h3>
+            <p>
+              You access the same platform and strategies that Odum uses to manage its own capital. No watered-down
+              client version &mdash; identical system, identical controls.
+            </p>
+          </article>
+          <article class="feature">
+            <h3 style="color: var(--emerald)">Real results from real capital</h3>
+            <p>
+              Live track record from real capital, not hypothetical backtests. Decades of combined experience from
+              leading quantitative firms, exchanges, and regulated financial institutions.
+            </p>
+          </article>
+          <article class="feature">
+            <h3 style="color: var(--rose)">FCA-regulated from day one</h3>
+            <p>
+              Investment Management and Regulatory Umbrella under FCA authorisation (975797). Reporting, compliance, and
+              oversight built into every client engagement.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 6. FINAL CTA ============ -->
+    <section class="final-cta section-pad">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Choose the right next step</p>
+          <h2>Work with Odum in the way that fits</h2>
+          <p>Allocate capital, explore the platform, or check regulatory fit. We'll direct you to the right path.</p>
+        </div>
+        <div class="card-grid card-grid-3">
+          <article class="card" style="text-align: center">
+            <h3>Allocate capital</h3>
+            <p>Discuss a mandate, allocation process, or strategy fit.</p>
+            <a href="contact.html" class="btn btn-primary" style="margin-top: 16px">Discuss a Mandate</a>
+          </article>
+          <article class="card" style="text-align: center">
+            <h3>Explore the platform</h3>
+            <p>Request a guided platform walkthrough based on your use case.</p>
+            <a href="contact.html" class="btn btn-outline" style="margin-top: 16px">Book a Demo</a>
+          </article>
+          <article class="card" style="text-align: center">
+            <h3>Check regulatory fit</h3>
+            <p>Run an eligibility assessment for FCA umbrella coverage.</p>
+            <a href="regulatory.html" class="btn btn-outline" style="margin-top: 16px">Check Regulatory Fit</a>
+          </article>
+        </div>
+        <div class="contact-block" id="contact">
+          <p>
+            Not sure where to start? <a href="contact.html">Talk to us</a> &mdash; we'll help you find the right path.
           </p>
-        </article>
-        <article class="feature">
-          <h3 style="color:var(--violet);">Treasury to reconciliation, one surface</h3>
-          <p>Subscriptions, research, backtest, promotion, live execution, P&amp;L, alerting,
-            <span class="glossary-term" tabindex="0"
-              data-def="Transaction Cost Analysis — post-trade measurement of execution quality against benchmarks such as arrival price, VWAP, and implementation shortfall.">TCA</span>,
-            reconciliation &mdash; one surface. Backtest, paper, and live sit on the
-            <span class="glossary-term" tabindex="0"
-              data-def="Backtest, paper, and live results render on a single chart — same strategy, same engine, three regimes visible side by side. Promotion becomes a like-for-like comparison.">same
-              timeline</span>,
-            and the research surface runs
-            <span class="glossary-term" tabindex="0"
-              data-def="You define the shocks that matter for your mandate — venue outage, funding spike, liquidity drain, correlation break — and watch the strategy respond before any real money moves.">parameterised
-              stress scenarios</span>
-            so promotion is evidence-led before real capital moves.
-          </p>
-        </article>
-        <article class="feature">
-          <h3 style="color:var(--rose);">Operating under FCA authorisation</h3>
-          <p>Odum Research Ltd holds
-            <span class="glossary-term" tabindex="0"
-              data-def="Financial Conduct Authority — the UK financial regulator. Odum Research Ltd's authorisation (FRN 975797) is verifiable on the FCA register at register.fca.org.uk.">FCA
-              authorisation</span>
-            (FRN 975797). <strong>Investment management</strong> under that authorisation <strong>from January
-              2023</strong>; Regulatory Umbrella and DART sit under the same permission set where your activities
-            match.
-            <span class="glossary-term" tabindex="0"
-              data-def="MLRO (Money Laundering Reporting Officer) is the statutory UK role for AML oversight. Compliance monitoring, MLRO, and supervisory reporting run inside Odum — not outsourced to a third-party compliance consultant.">Compliance,
-              MLRO, supervisory reporting</span>
-            &mdash; internal, not outsourced.
-          </p>
-        </article>
+          <p style="margin-top: 8px">info@odum-research.co.uk</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- ============ 6. FINAL CTA ============ -->
-  <section class="final-cta section-pad">
-    <div class="container">
-      <div class="section-header">
-        <p class="eyebrow">Choose the right next step</p>
-        <h2>Work with Odum in the way that fits</h2>
-        <p>Allocate capital, explore the platform, or check regulatory fit. We'll direct you to the right path.</p>
+    <!-- ============ FOOTER ============ -->
+    <footer>
+      <div class="container footer-inner">
+        <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
+        <div class="footer-links">
+          <a href="who-we-are.html">Privacy</a>
+          <a href="who-we-are.html">Terms</a>
+          <a href="regulatory.html">FCA 975797</a>
+          <a href="contact.html">Contact</a>
+        </div>
       </div>
-      <div class="card-grid card-grid-3">
-        <article class="card" style="text-align:center;">
-          <h3>Allocate capital</h3>
-          <p>Discuss a mandate, allocation process, or strategy fit.</p>
-          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-primary"
-            style="margin-top:16px;">Discuss a Mandate</a>
-        </article>
-        <article class="card" style="text-align:center;">
-          <h3>Explore the platform</h3>
-          <p>Request a guided platform walkthrough based on your use case.</p>
-          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-outline"
-            style="margin-top:16px;">Book a Demo</a>
-        </article>
-        <article class="card" style="text-align:center;">
-          <h3>Check regulatory fit</h3>
-          <p>Run an eligibility assessment for FCA umbrella coverage.</p>
-          <a href="regulatory.html" class="btn btn-outline" style="margin-top:16px;">Check Regulatory Fit</a>
-        </article>
-      </div>
-      <div class="contact-block" id="contact">
-        <p>Not sure where to start? <a href="https://calendly.com/odum-ikenna" target="_blank"
-            rel="noopener noreferrer">Book a slot</a> &mdash; we'll help you find the right path.
-        </p>
-        <p style="margin-top:8px;">info@odum-research.co.uk</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ FOOTER ============ -->
-  <footer>
-    <div class="container footer-inner">
-      <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-        <a href="regulatory.html">FCA 975797</a>
-        <a href="/contact?service=general">Contact</a>
-      </div>
-    </div>
-  </footer>
-
-</body>
-
+    </footer>
+  </body>
 </html>

@@ -1,384 +1,493 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signals — Odum Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="platform.html" />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-surface: #161618;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-accent: rgba(255, 255, 255, 0.12);
+        --text: #e4e4e7;
+        --text-muted: #a1a1aa;
+        --text-secondary: #c4c4cc;
+        --text-dim: #71717a;
+        --primary: #22d3ee;
+        --sky: #38bdf8;
+        --emerald: #4ade80;
+        --violet: #a78bfa;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --cyan: #22d3ee;
+        --font-sans: "IBM Plex Sans", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signals — Odum Research</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="platform.html">
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --bg-card: #111113;
-      --bg-surface: #161618;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(255, 255, 255, 0.12);
-      --text: #e4e4e7;
-      --text-muted: #a1a1aa;
-      --text-secondary: #c4c4cc;
-      --text-dim: #71717a;
-      --primary: #22d3ee;
-      --sky: #38bdf8;
-      --emerald: #4ade80;
-      --violet: #a78bfa;
-      --amber: #fbbf24;
-      --rose: #fb7185;
-      --cyan: #22d3ee;
-      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
-    }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: var(--font-sans);
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        font-feature-settings:
+          "kern" 1,
+          "liga" 1;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .section-pad {
+        padding: 80px 0;
+      }
+      header {
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        padding: 16px 0;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .header-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 32px;
+      }
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .logo-img {
+        width: 32px;
+        height: 32px;
+      }
+      .logo-text {
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .fca-badge {
+        display: block;
+        font-size: 11px;
+        color: var(--text-dim);
+        font-family: var(--font-mono);
+      }
+      nav {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        font-size: 14px;
+      }
+      nav a {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      nav a:hover,
+      nav a.active {
+        color: var(--text);
+      }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: var(--font-sans);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      font-feature-settings: 'kern' 1, 'liga' 1;
-    }
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
-    .section-pad { padding: 80px 0; }
-    header {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 0;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .header-inner { display: flex; justify-content: space-between; align-items: center; gap: 32px; }
-    .logo-group { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
-    .logo-img { width: 32px; height: 32px; }
-    .logo-text { font-weight: 600; font-size: 16px; }
-    .fca-badge {
-      display: block;
-      font-size: 11px;
-      color: var(--text-dim);
-      font-family: var(--font-mono);
-    }
-    nav { display: flex; gap: 20px; align-items: center; font-size: 14px; }
-    nav a {
-      color: var(--text-muted);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-    nav a:hover, nav a.active { color: var(--text); }
+      h1 {
+        font-size: 44px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+      }
+      h2 {
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        letter-spacing: -0.01em;
+      }
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      p {
+        color: var(--text-secondary);
+        font-size: 15px;
+      }
 
-    h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
-    h2 { font-size: 28px; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.01em; }
-    h3 { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
-    p { color: var(--text-secondary); font-size: 15px; }
+      .hero {
+        padding: 96px 0 48px;
+        border-bottom: 1px solid var(--border);
+      }
+      .hero .eyebrow {
+        color: var(--amber);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+      }
+      .hero p.lead {
+        font-size: 18px;
+        color: var(--text-muted);
+        max-width: 720px;
+        margin-top: 16px;
+      }
 
-    .hero {
-      padding: 96px 0 48px;
-      border-bottom: 1px solid var(--border);
-    }
-    .hero .eyebrow {
-      color: var(--amber);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 12px;
-    }
-    .hero p.lead {
-      font-size: 18px;
-      color: var(--text-muted);
-      max-width: 720px;
-      margin-top: 16px;
-    }
+      .card-grid {
+        display: grid;
+        gap: 20px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 24px;
+      }
+      .card .stat {
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--amber);
+        font-family: var(--font-mono);
+      }
+      .card p {
+        font-size: 14px;
+        color: var(--text-muted);
+        margin-top: 8px;
+      }
 
-    .card-grid {
-      display: grid;
-      gap: 20px;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    }
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px;
-    }
-    .card .stat {
-      font-size: 26px;
-      font-weight: 600;
-      color: var(--amber);
-      font-family: var(--font-mono);
-    }
-    .card p { font-size: 14px; color: var(--text-muted); margin-top: 8px; }
+      .principles {
+        list-style: none;
+        padding: 0;
+        margin-top: 16px;
+      }
+      .principles li {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+      .principles li:last-child {
+        border-bottom: none;
+      }
+      .principles li strong {
+        color: var(--text);
+        display: block;
+        margin-bottom: 4px;
+      }
 
-    .principles { list-style: none; padding: 0; margin-top: 16px; }
-    .principles li {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-    .principles li:last-child { border-bottom: none; }
-    .principles li strong {
-      color: var(--text);
-      display: block;
-      margin-bottom: 4px;
-    }
+      .code-block {
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 20px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text);
+        overflow-x: auto;
+        line-height: 1.65;
+      }
+      .code-block .c-key {
+        color: var(--sky);
+      }
+      .code-block .c-str {
+        color: var(--emerald);
+      }
+      .code-block .c-num {
+        color: var(--amber);
+      }
+      .code-block .c-com {
+        color: var(--text-dim);
+        font-style: italic;
+      }
 
-    .code-block {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text);
-      overflow-x: auto;
-      line-height: 1.65;
-    }
-    .code-block .c-key { color: var(--sky); }
-    .code-block .c-str { color: var(--emerald); }
-    .code-block .c-num { color: var(--amber); }
-    .code-block .c-com { color: var(--text-dim); font-style: italic; }
+      .btn {
+        display: inline-block;
+        padding: 11px 22px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.15s;
+      }
+      .btn-primary {
+        background: var(--amber);
+        color: var(--bg);
+      }
+      .btn-primary:hover {
+        background: #facc15;
+      }
+      .btn-outline {
+        border: 1px solid var(--border-accent);
+        color: var(--text);
+      }
+      .btn-outline:hover {
+        background: var(--bg-surface);
+      }
 
-    .btn {
-      display: inline-block;
-      padding: 11px 22px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.15s;
-    }
-    .btn-primary {
-      background: var(--amber);
-      color: var(--bg);
-    }
-    .btn-primary:hover { background: #facc15; }
-    .btn-outline {
-      border: 1px solid var(--border-accent);
-      color: var(--text);
-    }
-    .btn-outline:hover { background: var(--bg-surface); }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 32px 0;
+        color: var(--text-dim);
+        font-size: 13px;
+      }
+      footer .container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      a.inline {
+        color: var(--primary);
+        text-decoration: none;
+      }
+      a.inline:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 768px) {
+        header {
+          display: none;
+        }
+      }
+    </style>
+  </head>
 
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 32px 0;
-      color: var(--text-dim);
-      font-size: 13px;
-    }
-    footer .container {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    a.inline { color: var(--primary); text-decoration: none; }
-    a.inline:hover { text-decoration: underline; }
-  </style>
-</head>
+  <body>
+    <header>
+      <div class="container header-inner">
+        <a href="homepage.html" class="logo-group">
+          <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img" />
+          <div>
+            <span class="logo-text">Odum Research</span>
+            <span class="fca-badge">FCA 975797</span>
+          </div>
+        </a>
+        <nav>
+          <a href="homepage.html">Home</a>
+          <a href="strategies.html">Investment Management</a>
+          <a href="platform.html">Platform</a>
+          <a href="signals.html" class="active">Signals</a>
+          <a href="regulatory.html">Regulatory</a>
+          <a href="who-we-are.html">Who We Are</a>
+          <a href="contact.html" class="btn btn-outline" style="padding: 6px 14px">Contact</a>
+        </nav>
+      </div>
+    </header>
 
-<body>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Odum Signals &mdash; Odum &rarr; counterparty</p>
+        <h1>
+          Odum Signals &mdash; our signals, your execution: Odum-generated signals, delivered to your execution stack.
+        </h1>
+        <p class="lead">
+          Backend-first integration for institutional quant shops running their own execution. Odum generates and
+          broadcasts signals; the counterparty executes on its own infrastructure. A light observability UI ships
+          alongside (signal history, backtest comparison, delivery health); the primary integration is API + webhook.
+        </p>
+        <p style="margin-top: 20px; font-size: 14px; color: var(--text-dim); max-width: 720px">
+          Direction matters. Odum Signals runs Odum &rarr; counterparty: our signals flow OUT to your execution, and
+          Odum does not see your fills, positions, or P&amp;L. The inverse path is
+          <a href="/platform/signals-in" class="inline">DART Signals-In</a>, where your instructions flow INTO our
+          execution, reconciliation, and reporting layer.
+        </p>
+      </div>
+    </section>
 
-  <header>
-    <div class="container header-inner">
-      <a href="homepage.html" class="logo-group">
-        <img src="favicon-odum-leaf-512x512.png" alt="Odum Research" class="logo-img">
-        <div>
-          <span class="logo-text">Odum Research</span>
-          <span class="fca-badge">FCA 975797</span>
+    <!-- HOW IT WORKS -->
+    <section class="section-pad">
+      <div class="container">
+        <h2>How the feed works</h2>
+        <p style="margin-bottom: 32px; max-width: 720px">
+          Signals are emitted from the same strategy-service runtime Odum uses for its own capital. A counterparty
+          endpoint is provisioned with a shared HMAC secret and a slot-level entitlement list. Each signal is signed,
+          idempotency-tagged, and delivered over webhook with at-least-once retry semantics.
+        </p>
+
+        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr))">
+          <article class="card">
+            <div class="stat">1</div>
+            <h3>Entitlement-scoped</h3>
+            <p>
+              Per-counterparty allowlist of strategy slots. No signal leaves Odum's scope unless the counterparty is
+              explicitly entitled to that slot.
+            </p>
+          </article>
+          <article class="card">
+            <div class="stat">2</div>
+            <h3>Signed + idempotent</h3>
+            <p>
+              HMAC-signed payload with a per-signal UUID. Delivery is at-least-once with idempotency-key dedup on your
+              side.
+            </p>
+          </article>
+          <article class="card">
+            <div class="stat">3</div>
+            <h3>Failure-isolated</h3>
+            <p>
+              Counterparty endpoint failures never impact Odum strategy-service or any other counterparty. Per-venue
+              failure isolation applies.
+            </p>
+          </article>
+          <article class="card">
+            <div class="stat">4</div>
+            <h3>Audited + metered</h3>
+            <p>
+              Every emission + acknowledgement logged. Billing reads from the audit log; counterparties receive a
+              monthly summary.
+            </p>
+          </article>
         </div>
-      </a>
-      <nav>
-        <a href="homepage.html">Home</a>
-        <a href="strategies.html">Investment Management</a>
-        <a href="platform.html">Platform</a>
-        <a href="signals.html" class="active">Signals</a>
-        <a href="regulatory.html">Regulatory</a>
-        <a href="who-we-are.html">Who We Are</a>
-        <a href="contact.html" class="btn btn-outline" style="padding:6px 14px;">Contact</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <p class="eyebrow">Odum Signals &mdash; Odum &rarr; counterparty</p>
-      <h1>Odum Signals &mdash; our signals, your execution: Odum-generated signals, delivered to your execution stack.</h1>
-      <p class="lead">Backend-first integration for institutional quant shops running their own execution.
-        Odum generates and broadcasts signals; the counterparty executes on its own infrastructure. A light
-        observability UI ships alongside (signal history, backtest comparison, delivery health); the primary
-        integration is API + webhook.</p>
-      <p style="margin-top:20px; font-size:14px; color:var(--text-dim); max-width:720px;">
-        Direction matters. Odum Signals runs Odum &rarr; counterparty: our signals flow OUT to your
-        execution, and Odum does not see your fills, positions, or P&amp;L. The inverse path is
-        <a href="/platform/signals-in" class="inline">DART Signals-In</a>, where your instructions flow INTO
-        our execution, reconciliation, and reporting layer.
-      </p>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="section-pad">
-    <div class="container">
-      <h2>How the feed works</h2>
-      <p style="margin-bottom:32px; max-width:720px;">Signals are emitted from the same strategy-service runtime Odum
-        uses for its own capital. A counterparty endpoint is provisioned with a shared HMAC secret and a slot-level
-        entitlement list. Each signal is signed, idempotency-tagged, and delivered over webhook with at-least-once
-        retry semantics.</p>
-
-      <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));">
-        <article class="card">
-          <div class="stat">1</div>
-          <h3>Entitlement-scoped</h3>
-          <p>Per-counterparty allowlist of strategy slots. No signal leaves Odum's scope unless the counterparty is
-            explicitly entitled to that slot.</p>
-        </article>
-        <article class="card">
-          <div class="stat">2</div>
-          <h3>Signed + idempotent</h3>
-          <p>HMAC-signed payload with a per-signal UUID. Delivery is at-least-once with idempotency-key dedup on your
-            side.</p>
-        </article>
-        <article class="card">
-          <div class="stat">3</div>
-          <h3>Failure-isolated</h3>
-          <p>Counterparty endpoint failures never impact Odum strategy-service or any other counterparty. Per-venue
-            failure isolation applies.</p>
-        </article>
-        <article class="card">
-          <div class="stat">4</div>
-          <h3>Audited + metered</h3>
-          <p>Every emission + acknowledgement logged. Billing reads from the audit log; counterparties receive a
-            monthly summary.</p>
-        </article>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- EXAMPLE PAYLOAD -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <h2>Example payload</h2>
-      <p style="margin-bottom:24px;">Standard schema depth. Fields vary per negotiated contract; minimal and rich
-        depths available.</p>
-      <div class="code-block">
-<span class="c-com">// POST &lt;counterparty_endpoint&gt;</span>
-<span class="c-com">// X-Odum-Signature: sha256=&lt;hmac&gt;</span>
-<span class="c-com">// X-Odum-Idempotency-Key: &lt;uuid&gt;</span>
-{
-  <span class="c-key">"signal_id"</span>: <span class="c-str">"sig_01HMGJZ..."</span>,
-  <span class="c-key">"strategy_id"</span>: <span class="c-str">"STAT_ARB_PAIRS_FIXED/CEFI/spot"</span>,
-  <span class="c-key">"emitted_at"</span>: <span class="c-str">"2026-09-15T14:00:00.123Z"</span>,
-  <span class="c-key">"instrument"</span>: {
-    <span class="c-key">"symbol"</span>: <span class="c-str">"BTCUSDT"</span>,
-    <span class="c-key">"venue"</span>: <span class="c-str">"binance"</span>,
-    <span class="c-key">"type"</span>: <span class="c-str">"spot"</span>
-  },
-  <span class="c-key">"direction"</span>: <span class="c-str">"long"</span>,
-  <span class="c-key">"target_exposure"</span>: <span class="c-num">0.025</span>,  <span class="c-com">// fraction of counterparty's scoped book</span>
-  <span class="c-key">"confidence"</span>: <span class="c-num">0.72</span>,
-  <span class="c-key">"valid_until"</span>: <span class="c-str">"2026-09-15T14:05:00Z"</span>,
-  <span class="c-key">"supersedes"</span>: <span class="c-str">"sig_01HMGJY..."</span>
-}
+    <!-- EXAMPLE PAYLOAD -->
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <h2>Example payload</h2>
+        <p style="margin-bottom: 24px">
+          Standard schema depth. Fields vary per negotiated contract; minimal and rich depths available.
+        </p>
+        <div class="code-block">
+          <span class="c-com">// POST &lt;counterparty_endpoint&gt;</span>
+          <span class="c-com">// X-Odum-Signature: sha256=&lt;hmac&gt;</span>
+          <span class="c-com">// X-Odum-Idempotency-Key: &lt;uuid&gt;</span>
+          {
+          <span class="c-key">"signal_id"</span>: <span class="c-str">"sig_01HMGJZ..."</span>,
+          <span class="c-key">"strategy_id"</span>: <span class="c-str">"STAT_ARB_PAIRS_FIXED/CEFI/spot"</span>,
+          <span class="c-key">"emitted_at"</span>: <span class="c-str">"2026-09-15T14:00:00.123Z"</span>,
+          <span class="c-key">"instrument"</span>: { <span class="c-key">"symbol"</span>:
+          <span class="c-str">"BTCUSDT"</span>, <span class="c-key">"venue"</span>:
+          <span class="c-str">"binance"</span>, <span class="c-key">"type"</span>: <span class="c-str">"spot"</span>
+          },
+          <span class="c-key">"direction"</span>: <span class="c-str">"long"</span>,
+          <span class="c-key">"target_exposure"</span>: <span class="c-num">0.025</span>,
+          <span class="c-com">// fraction of counterparty's scoped book</span> <span class="c-key">"confidence"</span>:
+          <span class="c-num">0.72</span>, <span class="c-key">"valid_until"</span>:
+          <span class="c-str">"2026-09-15T14:05:00Z"</span>, <span class="c-key">"supersedes"</span>:
+          <span class="c-str">"sig_01HMGJY..."</span>
+          }
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- WHAT WE DON'T DO -->
-  <section class="section-pad">
-    <div class="container">
-      <h2>What we explicitly do not do</h2>
-      <p style="margin-bottom:24px; max-width:720px;">Odum Signals is not raw market-data resale and not
-        execution outsourcing. We keep these boundaries tight.</p>
-      <ul class="principles">
-        <li>
-          <strong>We do not resell raw market data.</strong>
-          Signals are enriched output; underlying venue data is not redistributed as a feed.
-        </li>
-        <li>
-          <strong>We do not see your positions or fills.</strong>
-          You execute on your own infrastructure. No return-reporting required.
-        </li>
-        <li>
-          <strong>We do not disclose methodology.</strong>
-          Signal generation, feature logic, and model internals stay on Odum's side of the fence.
-        </li>
-        <li>
-          <strong>We do not permit onward-resale.</strong>
-          Signals are licensed to the named counterparty only; onward distribution is prohibited by contract.
-        </li>
-        <li>
-          <strong>We do not guarantee profitability.</strong>
-          Signals reflect Odum's strategy-service output; counterparty bears execution and market risk.
-        </li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- COMMERCIAL -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container">
-      <h2>Commercial model</h2>
-      <p style="max-width:720px; margin-bottom:24px;">Hybrid — monthly licence floor plus per-signal metering, with
-        an optional P&amp;L revenue-share on Tier B engagements. Fixed twelve-month minimum commitment.</p>
-
-      <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-        <article class="card">
-          <h3>Monthly licence floor</h3>
-          <p>Fixed monthly per-counterparty per signal-scope. Covers authenticated endpoint, audit log access, and a
-            bundled signal volume.</p>
-        </article>
-        <article class="card">
-          <h3>Per-signal uplift</h3>
-          <p>Metered pricing on signals-delivered above the bundled volume. Transparent, auditable via the emission
-            log.</p>
-        </article>
-        <article class="card">
-          <h3>Optional P&amp;L share</h3>
-          <p>Tier B engagements can opt into a revenue-share on counterparty's signal-attributable P&amp;L, with
-            audit rights on the attribution flow.</p>
-        </article>
+    <!-- WHAT WE DON'T DO -->
+    <section class="section-pad">
+      <div class="container">
+        <h2>What we explicitly do not do</h2>
+        <p style="margin-bottom: 24px; max-width: 720px">
+          Odum Signals is not raw market-data resale and not execution outsourcing. We keep these boundaries tight.
+        </p>
+        <ul class="principles">
+          <li>
+            <strong>We do not resell raw market data.</strong>
+            Signals are enriched output; underlying venue data is not redistributed as a feed.
+          </li>
+          <li>
+            <strong>We do not see your positions or fills.</strong>
+            You execute on your own infrastructure. No return-reporting required.
+          </li>
+          <li>
+            <strong>We do not disclose methodology.</strong>
+            Signal generation, feature logic, and model internals stay on Odum's side of the fence.
+          </li>
+          <li>
+            <strong>We do not permit onward-resale.</strong>
+            Signals are licensed to the named counterparty only; onward distribution is prohibited by contract.
+          </li>
+          <li>
+            <strong>We do not guarantee profitability.</strong>
+            Signals reflect Odum's strategy-service output; counterparty bears execution and market risk.
+          </li>
+        </ul>
       </div>
+    </section>
 
-      <p style="margin-top:32px; font-size:14px; color: var(--text-dim); max-width:720px;">
-        Exact pricing is negotiated per counterparty based on scope (single signal family vs bundled multi-family vs
-        full catalogue) and schema depth. Contact us to discuss.
-      </p>
-    </div>
-  </section>
+    <!-- COMMERCIAL -->
+    <section class="section-pad" style="background: var(--bg-surface)">
+      <div class="container">
+        <h2>Commercial model</h2>
+        <p style="max-width: 720px; margin-bottom: 24px">
+          Hybrid — monthly licence floor plus per-signal metering, with an optional P&amp;L revenue-share on Tier B
+          engagements. Fixed twelve-month minimum commitment.
+        </p>
 
-  <!-- CTA -->
-  <section class="section-pad" style="text-align:center;">
-    <div class="container" style="max-width:640px;">
-      <h2>Ready to evaluate the feed?</h2>
-      <p style="margin-bottom:24px;">We run a staged onboarding: contract scoping, integration against a test
-        endpoint, then live delivery against the agreed signal scope. Typical time from signed contract to live
-        feed: 2&ndash;4 weeks.</p>
-      <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
-        <a href="contact.html" class="btn btn-primary">Contact us</a>
-        <a href="platform.html" class="btn btn-outline">See the platform</a>
+        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr))">
+          <article class="card">
+            <h3>Monthly licence floor</h3>
+            <p>
+              Fixed monthly per-counterparty per signal-scope. Covers authenticated endpoint, audit log access, and a
+              bundled signal volume.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Per-signal uplift</h3>
+            <p>
+              Metered pricing on signals-delivered above the bundled volume. Transparent, auditable via the emission
+              log.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Optional P&amp;L share</h3>
+            <p>
+              Tier B engagements can opt into a revenue-share on counterparty's signal-attributable P&amp;L, with audit
+              rights on the attribution flow.
+            </p>
+          </article>
+        </div>
+
+        <p style="margin-top: 32px; font-size: 14px; color: var(--text-dim); max-width: 720px">
+          Exact pricing is negotiated per counterparty based on scope (single signal family vs bundled multi-family vs
+          full catalogue) and schema depth. Contact us to discuss.
+        </p>
       </div>
-      <p style="margin-top:24px; font-size:13px; color: var(--text-dim);">
-        info@odum-research.co.uk &middot; London, United Kingdom
-      </p>
-    </div>
-  </section>
+    </section>
 
-  <footer>
-    <div class="container">
-      <span>&copy; Odum Research Ltd. FCA-authorised (975797).</span>
-      <span>
-        <a href="privacy.html" class="inline">Privacy</a> &middot;
-        <a href="terms.html" class="inline">Terms</a> &middot;
-        <a href="contact.html" class="inline">Contact</a>
-      </span>
-    </div>
-  </footer>
+    <!-- CTA -->
+    <section class="section-pad" style="text-align: center">
+      <div class="container" style="max-width: 640px">
+        <h2>Ready to evaluate the feed?</h2>
+        <p style="margin-bottom: 24px">
+          We run a staged onboarding: contract scoping, integration against a test endpoint, then live delivery against
+          the agreed signal scope. Typical time from signed contract to live feed: 2&ndash;4 weeks.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap">
+          <a href="contact.html" class="btn btn-primary">Contact us</a>
+          <a href="platform.html" class="btn btn-outline">See the platform</a>
+        </div>
+        <p style="margin-top: 24px; font-size: 13px; color: var(--text-dim)">
+          info@odum-research.co.uk &middot; London, United Kingdom
+        </p>
+      </div>
+    </section>
 
-</body>
-
+    <footer>
+      <div class="container">
+        <span>&copy; Odum Research Ltd. FCA-authorised (975797).</span>
+        <span>
+          <a href="privacy.html" class="inline">Privacy</a> &middot;
+          <a href="terms.html" class="inline">Terms</a> &middot;
+          <a href="contact.html" class="inline">Contact</a>
+        </span>
+      </div>
+    </footer>
+  </body>
 </html>

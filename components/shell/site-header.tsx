@@ -5,6 +5,7 @@ import { SpacesNavSections } from "@/components/shell/spaces-nav-sections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Compass } from "lucide-react";
@@ -24,9 +25,7 @@ const NAV_FIVE_PATHS = [
   { href: "/who-we-are", label: "Who We Are" },
 ] as const;
 
-const NAV_SECONDARY = [
-  { href: "/contact", label: "Contact" },
-] as const;
+const NAV_SECONDARY = [{ href: "/contact", label: "Contact" }] as const;
 
 /** Path and fragment for a nav href (e.g. `/#services` → `/` + `#services`). */
 function parseNavHref(href: string): { path: string; hash: string } {
@@ -66,6 +65,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const [hash, setHash] = React.useState("");
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const syncHashFromWindow = React.useCallback(() => {
     setHash(window.location.hash);
@@ -109,7 +109,21 @@ export function SiteHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
       <div className="container flex min-h-14 items-center justify-between gap-3 px-4 py-2 md:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-3">
+        {/* Mobile: logo opens nav sheet. Desktop: logo navigates home. */}
+        <button
+          className="flex shrink-0 items-center gap-3 md:hidden"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open navigation"
+        >
+          <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
+          <div className="flex flex-col items-start gap-0.5 leading-tight">
+            <span className="text-lg font-semibold">Odum Research</span>
+            <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal leading-none">
+              FCA 975797
+            </Badge>
+          </div>
+        </button>
+        <Link href="/" className="hidden shrink-0 items-center gap-3 md:flex">
           <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
           <div className="flex flex-col items-start gap-0.5 leading-tight">
             <span className="text-lg font-semibold">Odum Research</span>
@@ -118,6 +132,59 @@ export function SiteHeader() {
             </Badge>
           </div>
         </Link>
+
+        {/* Mobile nav sheet */}
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetContent side="left" className="w-72 p-0">
+            <SheetHeader className="border-b border-border/40 px-4 py-3">
+              <SheetTitle className="flex items-center gap-3">
+                <img src="/images/odum-logo.png" alt="Odum Research" className="size-8" />
+                <span className="text-base font-semibold">Odum Research</span>
+              </SheetTitle>
+            </SheetHeader>
+            <nav className="flex flex-col gap-1 px-3 py-4">
+              {[NAV_HOME, ...NAV_FIVE_PATHS, ...NAV_SECONDARY].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={cn(
+                    "rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                    isNavItemActive(pathname, hash, item.href)
+                      ? "bg-accent font-medium text-accent-foreground"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <div className="border-t border-border/40 px-4 py-4">
+              {!loading && user ? (
+                <Button asChild className="w-full">
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                    Dashboard
+                  </Link>
+                </Button>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-center text-sm text-muted-foreground hover:text-foreground"
+                  >
+                    Sign In
+                  </Link>
+                  <Button asChild className="w-full">
+                    <Link href="/contact" onClick={() => setMobileOpen(false)}>
+                      Book a call
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
 
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 px-2 md:flex lg:gap-3">
           <DropdownMenu>
@@ -131,12 +198,21 @@ export function SiteHeader() {
             </DropdownMenuContent>
           </DropdownMenu>
           <NavSeparator />
-          <Link href={NAV_HOME.href} onClick={handleNavLinkClick(NAV_HOME.href)} className={navLinkClass(NAV_HOME.href)}>
+          <Link
+            href={NAV_HOME.href}
+            onClick={handleNavLinkClick(NAV_HOME.href)}
+            className={navLinkClass(NAV_HOME.href)}
+          >
             {NAV_HOME.label}
           </Link>
           <NavSeparator />
           {NAV_FIVE_PATHS.map((item) => (
-            <Link key={item.href} href={item.href} onClick={handleNavLinkClick(item.href)} className={navLinkClass(item.href)}>
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={handleNavLinkClick(item.href)}
+              className={navLinkClass(item.href)}
+            >
               {item.label}
             </Link>
           ))}
