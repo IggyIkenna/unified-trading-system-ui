@@ -401,25 +401,34 @@
       <p>
         Something that could give me the view of the universe I needed. Something I could build research on
         without throwing out the infrastructure every time the domain shifted. Over a long period I spoke to,
-        trialled, or built proofs-of-concept across most of what exists. A partial list of what I evaluated:
+        trialled, or built proofs-of-concept across most of what exists. A partial list &mdash; each of them
+        strong at what they set out to do:
       </p>
       <ul>
-        <li><strong>Hummingbot</strong> &mdash; open-source market-making bots, tight scope, single domain</li>
-        <li><strong>Amberdata, Tardis, Databento</strong> &mdash; excellent data, but data is one piece of the
-          puzzle</li>
-        <li><strong>Lean &middot; QuantConnect</strong> &mdash; a real research stack, crypto-flavoured, limited
-          venue reach</li>
-        <li><strong>Deribit &middot; IBKR &middot; CoinRoutes</strong> &mdash; venue-specific execution, not
-          cross-domain infrastructure</li>
-        <li><strong>TradingView</strong> &mdash; charting and scripting, not an operating layer</li>
-        <li><strong>Versify</strong> &mdash; high-quality ML execution, but the protocol assumed you sent entry,
-          exit, take-profit and stop-loss for a single order at a time. Market-making wasn't a first-class citizen</li>
+        <li><strong>Hummingbot</strong> &mdash; best-in-class open-source market-making framework. Deliberately
+          tight on scope so the bots stay simple and predictable.</li>
+        <li><strong>Amberdata, Tardis, Databento</strong> &mdash; three of the cleanest data providers in
+          crypto and beyond. We still source from firms in this tier. Data is one piece of the puzzle; I
+          needed research and execution layers on top of it.</li>
+        <li><strong>Lean &middot; QuantConnect</strong> &mdash; a genuine research stack with a strong
+          community. Crypto-flavoured, and the venue / asset breadth I needed sat outside its focus.</li>
+        <li><strong>Deribit &middot; IBKR &middot; CoinRoutes</strong> &mdash; venue-specific execution that
+          does its job well. None of them was trying to be cross-domain infrastructure, and rightly so.</li>
+        <li><strong>TradingView</strong> &mdash; the best charting and scripting UX in the business.
+          <strong>We still use it for some of our charts today.</strong> It was never trying to be an
+          operating layer.</li>
+        <li><strong>Versify</strong> &mdash; high-quality ML execution. The protocol assumes single-order
+          instructions with entry / exit / take-profit / stop-loss &mdash; the right shape for their customer,
+          not the shape I needed to run market-making through the same pipeline.</li>
       </ul>
       <p>
-        Every one of them had a gap. Some were narrow by design. Some had deep strengths in one asset class and
-        nothing of value in another &mdash; excellent sports arbitrage coverage and nothing usable in crypto, or
-        the other way around. <strong>None of them were multi-dimensional enough</strong> for what I was trying
-        to do.
+        <strong>To be clear: none of this is a criticism.</strong> Several of these firms do what they do
+        better than anyone else, and some of them cover ground we don't (and don't need to). We still use
+        TradingView for charting, we still source from the data-provider tier, and
+        <strong>we would happily operate as an affiliate or partner to any of them where our capabilities
+        complement rather than compete</strong>. The story here isn't that they fell short; it's that the
+        combined problem I was trying to solve required something broader than any single one of them was
+        built for.
       </p>
     </div>
   </section>
