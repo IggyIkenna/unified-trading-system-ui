@@ -184,16 +184,11 @@ export default function DemoPage() {
                           <SelectValue placeholder="Select service" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="data">Data Provision</SelectItem>
-                          <SelectItem value="backtesting">
-                            Research &amp; Build
-                          </SelectItem>
-                          <SelectItem value="platform">
-                            Trading Terminal
-                          </SelectItem>
                           <SelectItem value="investment">
                             Investment Management
                           </SelectItem>
+                          <SelectItem value="platform">DART</SelectItem>
+                          <SelectItem value="signals">Odum Signals</SelectItem>
                           <SelectItem value="regulatory">
                             Regulatory Umbrella
                           </SelectItem>
