@@ -449,34 +449,66 @@
         filter: grayscale(0%);
       }
 
-      /* Zoomed portrait: slight inset + white backing so headroom reads like other headshots */
       .team-photo-frame {
         width: 140px;
         height: 140px;
         margin: 0 auto 16px;
         border-radius: 50%;
         overflow: hidden;
-        border: 2px solid var(--border-accent);
-        background: #ffffff;
         box-sizing: border-box;
       }
 
-      .team-photo-frame .team-photo-harsh {
+      .team-photo-frame.team-photo-frame--light {
+        background: #ffffff;
+      }
+
+      .team-photo-frame .team-photo-harsh,
+      .team-photo-frame .team-photo-rob,
+      .team-photo-frame .team-photo-julian,
+      .team-photo-frame .team-photo-femi {
         width: 100%;
         height: 100%;
         margin: 0;
         border: none;
         border-radius: 0;
         object-fit: cover;
-        object-position: center top;
-        transform: scale(0.88);
-        transform-origin: center center;
         display: block;
         filter: grayscale(20%);
         transition: filter 0.2s;
       }
 
-      .team-photo-frame:hover .team-photo-harsh {
+      /* Harsh: face sits ~15–45% down the 1024×1536 image */
+      .team-photo-frame .team-photo-harsh {
+        object-position: center 18%;
+        transform: scale(1.15);
+        transform-origin: center 22%;
+      }
+
+      /* Rob: face sits ~5–35% down the 1024×1536 image */
+      .team-photo-frame .team-photo-rob {
+        object-position: center 12%;
+        transform: scale(1.2);
+        transform-origin: center 15%;
+      }
+
+      /* Julian: white-bg photo, face centred horizontally, slight zoom to crop shoulders */
+      .team-photo-frame .team-photo-julian {
+        object-position: center 15%;
+        transform: scale(1.05);
+        transform-origin: center 00%;
+      }
+
+      /* Femi: light-bg portrait, face ~10% down */
+      .team-photo-frame .team-photo-femi {
+        object-position: center 10%;
+        transform: scale(1.45);
+        transform-origin: center 12%;
+      }
+
+      .team-photo-frame:hover .team-photo-harsh,
+      .team-photo-frame:hover .team-photo-rob,
+      .team-photo-frame:hover .team-photo-julian,
+      .team-photo-frame:hover .team-photo-femi {
         filter: grayscale(0%);
       }
 
@@ -825,13 +857,27 @@
             </p>
           </div>
           <div class="team-member">
-            <img src="team-robert.png" alt="Rob Osborne" class="team-photo" />
+            <div class="team-photo-frame">
+              <img src="team-robert.png" alt="Rob Osborne" class="team-photo team-photo-rob" />
+            </div>
             <div class="team-name">Rob Osborne</div>
             <div class="team-role">CFO &amp; Adviser</div>
             <p class="team-bio">
               Chartered Tax Adviser with a 24-year career spanning HMRC, a Big&nbsp;4 practice, regulated asset
               management, and venture capital. Has incubated, run, and led businesses through transactions, with deep
               expertise in financial structuring, planning, and operations.
+            </p>
+          </div>
+          <div class="team-member">
+            <div class="team-photo-frame team-photo-frame--light">
+              <img src="team-julian.png" alt="Julian John" class="team-photo team-photo-julian" />
+            </div>
+            <div class="team-name">Julian John</div>
+            <div class="team-role">Programme &amp; Operations</div>
+            <p class="team-bio">
+              15+ years delivering complex digital, AI, and trading technology projects across public and private
+              sectors. Specialises in aligning technical execution with business strategy in fast-paced,
+              multi-stakeholder environments.
             </p>
           </div>
           <div class="team-member">
@@ -847,17 +893,9 @@
             </p>
           </div>
           <div class="team-member">
-            <img src="team-julian.png" alt="Julian John" class="team-photo" style="object-position: center 20%" />
-            <div class="team-name">Julian John</div>
-            <div class="team-role">Programme &amp; Operations</div>
-            <p class="team-bio">
-              15+ years delivering complex digital, AI, and trading technology projects across public and private
-              sectors. Specialises in aligning technical execution with business strategy in fast-paced,
-              multi-stakeholder environments.
-            </p>
-          </div>
-          <div class="team-member">
-            <img src="team-femi.jpg" alt="Femi Amoo" class="team-photo" style="object-position: center 15%" />
+            <div class="team-photo-frame">
+              <img src="team-femi-new.jpg" alt="Femi Amoo" class="team-photo team-photo-femi" />
+            </div>
             <div class="team-name">Femi Amoo</div>
             <div class="team-role">Engineering &amp; Infrastructure</div>
             <p class="team-bio">

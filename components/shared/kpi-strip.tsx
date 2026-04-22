@@ -177,7 +177,7 @@ export function KpiStrip({ metrics, columns, responsive, layoutMode, fill, compa
   }
 
   return (
-    <div className={cn("w-full min-w-0", className)}>
+    <div className={cn("w-full min-w-0 min-h-0", className)}>
       <div className={cn(gridClassName)} style={gridStyle}>
         {metrics.map((m, idx) => (
           <KpiCard key={idx} m={m} compact={compact} />
