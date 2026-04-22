@@ -1,18 +1,19 @@
 ---
-title: AMM_LP_PROVISION — Operator Playbook
-archetype: AMM_LP_PROVISION
+title: MARKET_MAKING_CONTINUOUS (AMM LP sub-mode) — Operator Playbook
+archetype: MARKET_MAKING_CONTINUOUS
+subMode: amm_lp
 status: draft
 owner: ComsicTrader
-last_updated: 2026-04-21
-pairs_with_spec: tests/e2e/strategies/defi/amm-lp-provision.spec.ts
+last_updated: 2026-04-22
+pairs_with_spec: tests/e2e/strategies/defi/market-making-continuous-amm-lp.spec.ts
 ---
 
-# AMM_LP_PROVISION — Operator Playbook
+# MARKET_MAKING_CONTINUOUS (AMM LP sub-mode) — Operator Playbook
 
-A step-by-step manual flow an operator can follow in the UI to replicate the concentrated-liquidity LP provision strategy on AMM venues (Uniswap V3, Curve, Balancer). Each **Scenario** is one user intent (baseline, add liquidity, remove liquidity, switch pool, change fee tier). Each scenario has **Do → Observe → Pass criterion**. The matching Playwright spec automates every Pass criterion so you can re-run the flow as regression.
+A step-by-step manual flow an operator can follow in the UI to replicate the concentrated-liquidity LP provision sub-mode of the `MARKET_MAKING_CONTINUOUS` archetype on AMM venues (Uniswap V3, Curve, Balancer). Each **Scenario** is one user intent (baseline, add liquidity, remove liquidity, switch pool, change fee tier). Each scenario has **Do → Observe → Pass criterion**. The matching Playwright spec automates every Pass criterion so you can re-run the flow as regression.
 
 Source audit: [docs/audits/strategy-widget-findings/amm-lp-provision.md](../../../audits/strategy-widget-findings/amm-lp-provision.md) (TBD)
-Codex SSOT: closest family is [market-making-continuous.md](../../../../../unified-trading-pm/codex/09-strategy/architecture-v2/archetypes/market-making-continuous.md) (sub-mode B: AMM concentrated-liquidity LP).
+Codex SSOT: [market-making-continuous.md](../../../../../unified-trading-pm/codex/09-strategy/architecture-v2/archetypes/market-making-continuous.md) (sub-mode B: AMM concentrated-liquidity LP). The CLOB MM sub-mode is covered by the parametric detail-view spec ([tests/e2e/strategies/detail-view.spec.ts](../../../../tests/e2e/strategies/detail-view.spec.ts)).
 
 ---
 
@@ -135,19 +136,19 @@ These are **expected** gaps — the strategy isn't UI-complete yet. Don't treat 
 
 ## 10. Regression spec
 
-**File:** [tests/e2e/strategies/defi/amm-lp-provision.spec.ts](../../../../tests/e2e/strategies/defi/amm-lp-provision.spec.ts)
+**File:** [tests/e2e/strategies/defi/market-making-continuous-amm-lp.spec.ts](../../../../tests/e2e/strategies/defi/market-making-continuous-amm-lp.spec.ts)
 
 **Run:**
 
 ```bash
 # All tests in the spec
-npx playwright test tests/e2e/strategies/defi/amm-lp-provision.spec.ts
+npx playwright test tests/e2e/strategies/defi/market-making-continuous-amm-lp.spec.ts
 
 # Headed (watch it run)
-npx playwright test tests/e2e/strategies/defi/amm-lp-provision.spec.ts --headed
+npx playwright test tests/e2e/strategies/defi/market-making-continuous-amm-lp.spec.ts --headed
 
 # One scenario only, by test name
-npx playwright test tests/e2e/strategies/defi/amm-lp-provision.spec.ts -g "ADD_LIQUIDITY"
+npx playwright test tests/e2e/strategies/defi/market-making-continuous-amm-lp.spec.ts -g "ADD_LIQUIDITY"
 ```
 
 Spec tests map 1:1 to Scenarios 1–5 above:

@@ -12,6 +12,11 @@ import type { PersonaKey } from "./persona";
 export interface StrategyFixture {
   /** Human-readable strategy name, for logs and playbook cross-references. */
   readonly name: string;
+  /**
+   * SSOT sub-mode discriminator for archetypes that fan out into multiple
+   * execution surfaces (currently only MARKET_MAKING_CONTINUOUS — amm_lp).
+   */
+  readonly subMode?: "amm_lp" | "clob_mm";
   /** Persona to seed before navigation. */
   readonly persona: PersonaKey;
   /** Route to visit relative to the base URL (e.g. "/services/trading/defi"). */

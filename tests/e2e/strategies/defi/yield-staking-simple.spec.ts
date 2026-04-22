@@ -1,40 +1,79 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Locator, type Page } from "@playwright/test";
 import { seedPersona } from "../../_shared/persona";
 import { demoPause } from "../../_shared/demo-pause";
 import { loadStrategyFixture } from "../../_shared/fixtures";
+import { verifyScenarioOutcome } from "../../_shared/verify";
 
 /**
- * YIELD_STAKING_SIMPLE — read-only dashboard verification spec.
+ * YIELD_STAKING_SIMPLE — STAKE / UNSTAKE execution flow spec.
  *
- * Mirrors the yield-rotation-lending reference pattern:
+ * SSOT: architecture-v2/archetypes/yield-staking-simple.md — canonical
+ * instructions are STAKE + UNSTAKE against a validator protocol (Lido,
+ * Rocket Pool, Jito, Marinade). The DeFiStakingWidget mounts on the
+ * /services/trading/defi/staking page above the Positions/Validators/Rewards
+ * tabs and is the execution surface this spec drives.
+ *
+ * Structure mirrors the yield-rotation-lending reference pattern:
  *   1. Load the JSON fixture describing persona, route, and scenarios.
  *   2. Seed the persona into localStorage (mock-mode login shortcut).
  *   3. Open ONE browser session and walk through each scenario in order.
+ *   4. Scope every locator to `[data-testid="defi-staking-widget"]` so we
+ *      don't accidentally drive the generic dashboard Stake/Unstake buttons
+ *      on Positions rows (those share similar labels).
  *
- * Unlike the lending spec, this surface is a read-only staking dashboard
- * (KPI cards + Positions/Validators/Rewards/Unstaking tabs). Scenarios here
- * verify render correctness + tab navigation rather than trade execution, so
- * verify helpers from _shared/verify.ts are intentionally not invoked.
+ * One baseline assertion also checks the read-only dashboard is alongside
+ * the widget — the KPI strip and Positions tab still need to render for
+ * the page to be considered a valid operator surface.
  *
  * Playbook: docs/trading/defi/playbooks/yield-staking-simple.md
  */
 
 const FIXTURE = loadStrategyFixture("yield-staking-simple");
 const BASE_URL = "http://localhost:3100";
+const TRADE_HISTORY_ROUTE = "/services/trading/defi";
 
 test.describe.configure({ mode: "serial" });
+
+async function countTradeRowsOnDefiPage(page: Page): Promise<number> {
+  await page.goto(`${BASE_URL}${TRADE_HISTORY_ROUTE}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+  await page
+    .waitForSelector('[data-testid="defi-trade-history"], [data-testid="trade-history-row"]', { timeout: 15_000 })
+    .catch(() => undefined);
+  return page.locator('[data-testid="trade-history-row"]').count();
+}
+
+async function verifyLedgerRowOnDefiPage(
+  page: Page,
+  beforeRows: number,
+  expected: { tradeType: string; minRowsAdded?: number },
+): Promise<void> {
+  await page.goto(`${BASE_URL}${TRADE_HISTORY_ROUTE}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+  await page.waitForSelector('[data-testid="trade-history-row"]', { timeout: 15_000 });
+  await verifyScenarioOutcome(page, beforeRows, {
+    tradeType: expected.tradeType,
+    minRowsAdded: expected.minRowsAdded ?? 1,
+  });
+}
+
+async function returnToStaking(page: Page): Promise<void> {
+  await page.goto(`${BASE_URL}${FIXTURE.route}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+  await page.waitForSelector(FIXTURE.rootSelector, { timeout: 30_000 });
+}
 
 test.describe(`${FIXTURE.name} — operator flow`, () => {
   test.setTimeout(120_000);
 
   let page: Page;
+  let widget: Locator;
 
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
     await seedPersona(page, FIXTURE.persona);
     await page.goto(`${BASE_URL}${FIXTURE.route}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.keyboard.press("Escape").catch(() => undefined);
     await page.waitForSelector(FIXTURE.rootSelector, { timeout: 30_000 });
+    widget = page.locator(FIXTURE.rootSelector);
   });
 
   test.afterAll(async () => {
@@ -42,132 +81,152 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 0 — baseline render: KPI strip + tab list present
+  // Scenario 0 — baseline: dashboard + widget render
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[0]!.name, async () => {
-    await expect(page.locator(FIXTURE.rootSelector)).toBeVisible();
+    // Dashboard still renders alongside the widget — one sanity check.
+    await expect(page.locator('[data-testid="staking-dashboard"]')).toBeVisible();
+    await expect(page.locator('[data-testid="staking-kpi-strip"]')).toBeVisible();
 
-    // 4 KPI cards
-    await expect(page.locator('[data-testid="staking-kpi-total-staked"]')).toBeVisible();
-    await expect(page.locator('[data-testid="staking-kpi-annual-yield"]')).toBeVisible();
-    await expect(page.locator('[data-testid="staking-kpi-rewards-accrued"]')).toBeVisible();
-    await expect(page.locator('[data-testid="staking-kpi-active-validators"]')).toBeVisible();
+    // Staking widget + its primary controls are all present.
+    await expect(widget).toBeVisible();
+    await expect(widget.locator('[data-testid="operation-button-STAKE"]')).toBeVisible();
+    await expect(widget.locator('[data-testid="operation-button-UNSTAKE"]')).toBeVisible();
+    await expect(widget.locator('[data-testid="protocol-select"]')).toBeVisible();
+    await expect(widget.locator('[data-testid="amount-input"]')).toBeVisible();
+    await expect(widget.locator('[data-testid="execute-button"]')).toBeVisible();
+    await expect(widget.locator('[data-testid="expected-apy"]')).toBeVisible();
+    await expect(widget.locator('[data-testid="expected-yield"]')).toBeVisible();
 
-    // KPI values are rendered (non-empty + contain expected formatting)
-    const totalStakedText = (await page.locator('[data-testid="staking-kpi-total-staked"]').textContent()) ?? "";
-    expect(totalStakedText).toMatch(/\$\d+(\.\d+)?M/);
+    // STAKE is the default operation (emerald highlight).
+    await expect(widget.locator('[data-testid="operation-button-STAKE"]')).toHaveClass(/bg-emerald-600/);
 
-    const annualYieldText = (await page.locator('[data-testid="staking-kpi-annual-yield"]').textContent()) ?? "";
-    expect(annualYieldText).toMatch(/\d+(\.\d+)?\s*%/);
+    // Expected APY renders a percentage string.
+    const apyText = await widget.locator('[data-testid="expected-apy"]').textContent();
+    expect(apyText ?? "").toMatch(/\d+(\.\d+)?\s*%/);
 
-    // 4 tabs present
-    await expect(page.locator('[data-testid="staking-tab-positions"]')).toBeVisible();
-    await expect(page.locator('[data-testid="staking-tab-validators"]')).toBeVisible();
-    await expect(page.locator('[data-testid="staking-tab-rewards"]')).toBeVisible();
-    await expect(page.locator('[data-testid="staking-tab-unstaking"]')).toBeVisible();
-
-    // Default tab is Positions
-    await expect(page.locator('[data-testid="staking-positions-table"]')).toBeVisible();
+    // Amount input empty → execute button disabled + expected-yield shows em dash.
+    expect(await widget.locator('[data-testid="amount-input"]').inputValue()).toBe("");
+    await expect(widget.locator('[data-testid="execute-button"]')).toBeDisabled();
+    expect((await widget.locator('[data-testid="expected-yield"]').textContent()) ?? "").toBe("—");
 
     await demoPause(page);
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 1 — Positions tab renders rows
+  // Scenario 1 — STAKE happy path
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[1]!.name, async () => {
-    // Positions is the default tab, but click explicitly for idempotence.
-    await page.locator('[data-testid="staking-tab-positions"]').click();
+    const sc = FIXTURE.scenarios[1]!;
 
-    const table = page.locator('[data-testid="staking-positions-table"]');
-    await expect(table).toBeVisible();
+    const beforeRows = await countTradeRowsOnDefiPage(page);
+    await returnToStaking(page);
 
-    const rows = page.locator('[data-testid="staking-positions-row"]');
-    const rowCount = await rows.count();
-    expect(rowCount).toBeGreaterThan(0);
+    // STAKE is the default, but toggle explicitly for idempotence.
+    await widget.locator('[data-testid="operation-button-STAKE"]').click();
+    await expect(widget.locator('[data-testid="operation-button-STAKE"]')).toHaveClass(/bg-emerald-600/);
 
-    // Each row should surface a protocol name in its first cell.
-    const firstRowText = (await rows.first().textContent()) ?? "";
-    expect(firstRowText.trim().length).toBeGreaterThan(0);
+    await widget.locator('[data-testid="amount-input"]').fill(String(sc.inputs.amount));
+    await expect(widget.locator('[data-testid="execute-button"]')).toBeEnabled();
+
+    // Annual-yield readout populates once amount is entered.
+    const yieldText = (await widget.locator('[data-testid="expected-yield"]').textContent()) ?? "";
+    expect(yieldText).not.toBe("—");
+    expect(yieldText.trim().length).toBeGreaterThan(0);
+
+    await widget.locator('[data-testid="execute-button"]').click();
+
+    // Toast may appear briefly; tolerate absence.
+    await page.waitForSelector("text=Staking order placed", { timeout: 3_000 }).catch(() => undefined);
+
+    await expect
+      .poll(async () => widget.locator('[data-testid="amount-input"]').inputValue(), { timeout: 3_000 })
+      .toBe("");
+
+    await page.waitForTimeout(800);
+
+    await verifyLedgerRowOnDefiPage(page, beforeRows, { tradeType: "STAKE" });
+    await returnToStaking(page);
 
     await demoPause(page);
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 2 — switching to Validators tab swaps the visible table
+  // Scenario 2 — UNSTAKE
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[2]!.name, async () => {
-    await page.locator('[data-testid="staking-tab-validators"]').click();
+    const sc = FIXTURE.scenarios[2]!;
 
-    const validatorsTable = page.locator('[data-testid="staking-validators-table"]');
-    await expect(validatorsTable).toBeVisible();
+    const beforeRows = await countTradeRowsOnDefiPage(page);
+    await returnToStaking(page);
 
-    // Positions table should no longer be visible (Radix Tabs hides inactive content).
-    await expect(page.locator('[data-testid="staking-positions-table"]')).toBeHidden();
+    await widget.locator(`[data-testid="operation-button-${sc.inputs.operation}"]`).click();
+    await expect(widget.locator(`[data-testid="operation-button-${sc.inputs.operation}"]`)).toHaveClass(/bg-rose-600/);
 
-    const validatorRows = page.locator('[data-testid="staking-validators-row"]');
-    const count = await validatorRows.count();
-    expect(count).toBeGreaterThan(0);
+    await widget.locator('[data-testid="amount-input"]').fill(String(sc.inputs.amount));
+    await expect(widget.locator('[data-testid="execute-button"]')).toBeEnabled();
+
+    await widget.locator('[data-testid="execute-button"]').click();
+
+    await expect
+      .poll(async () => widget.locator('[data-testid="amount-input"]').inputValue(), { timeout: 3_000 })
+      .toBe("");
+
+    await page.waitForTimeout(800);
+
+    await verifyLedgerRowOnDefiPage(page, beforeRows, { tradeType: "UNSTAKE" });
+    await returnToStaking(page);
 
     await demoPause(page);
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 3 — Rewards tab shows monthly chart + reward-history table
+  // Scenario 3 — protocol switch reactivity
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[3]!.name, async () => {
-    await page.locator('[data-testid="staking-tab-rewards"]').click();
+    const sc = FIXTURE.scenarios[3]!;
+    // Reset to STAKE so the widget is in its default operation context.
+    await widget.locator(`[data-testid="operation-button-${sc.inputs.operation}"]`).click();
 
-    await expect(page.locator('[data-testid="staking-monthly-rewards-chart"]')).toBeVisible();
+    const apyLocator = widget.locator('[data-testid="expected-apy"]');
+    const beforeApy = (await apyLocator.textContent()) ?? "";
 
-    const rewardsTable = page.locator('[data-testid="staking-rewards-table"]');
-    await expect(rewardsTable).toBeVisible();
+    await widget.locator('[data-testid="protocol-select"]').click();
+    const options = page.locator('[role="option"]');
+    await expect(options.first()).toBeVisible();
+    if ((await options.count()) < 2) {
+      test.skip(true, "only one staking protocol in fixture — cannot exercise protocol switch");
+    }
+    await options.nth(Number(sc.inputs.switchProtocolToIndex ?? 1)).click();
 
-    const rewardsRows = page.locator('[data-testid="staking-rewards-row"]');
-    const count = await rewardsRows.count();
-    expect(count).toBeGreaterThan(0);
-
-    // Validators table should now be hidden.
-    await expect(page.locator('[data-testid="staking-validators-table"]')).toBeHidden();
+    // Expected APY should re-render (different protocols have different APYs).
+    await expect.poll(async () => (await apyLocator.textContent()) ?? "", { timeout: 2_000 }).not.toBe(beforeApy);
 
     await demoPause(page);
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 4 — Unstaking tab: Withdraw button disabled for Cooling Down rows
+  // Scenario 4 — amount input updates annual-yield readout
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[4]!.name, async () => {
-    await page.locator('[data-testid="staking-tab-unstaking"]').click();
+    const sc = FIXTURE.scenarios[4]!;
+    await widget.locator(`[data-testid="operation-button-${sc.inputs.operation}"]`).click();
 
-    const unstakingTable = page.locator('[data-testid="staking-unstaking-table"]');
-    await expect(unstakingTable).toBeVisible();
+    const yieldLocator = widget.locator('[data-testid="expected-yield"]');
 
-    const rows = page.locator('[data-testid="staking-unstaking-row"]');
-    const totalRows = await rows.count();
-    expect(totalRows).toBeGreaterThan(0);
+    // Start from empty input → yield shows em dash.
+    await widget.locator('[data-testid="amount-input"]').fill("");
+    expect((await yieldLocator.textContent()) ?? "").toBe("—");
 
-    // For every row, verify Withdraw-button enablement matches the row's status.
-    for (let i = 0; i < totalRows; i++) {
-      const row = rows.nth(i);
-      const status = (await row.getAttribute("data-unstaking-status")) ?? "";
-      const button = row.locator('[data-testid="staking-unstaking-withdraw-button"]');
-      if (status === "Ready to Withdraw") {
-        await expect(button).toBeEnabled();
-      } else {
-        await expect(button).toBeDisabled();
-      }
-    }
+    await widget.locator('[data-testid="amount-input"]').fill(String(sc.inputs.amount));
+    await expect.poll(async () => (await yieldLocator.textContent()) ?? "", { timeout: 2_000 }).not.toBe("—");
 
-    // At least one row of each flavour should exist in the fixture so the test
-    // actually exercises both branches above.
-    const cooling = page.locator('[data-testid="staking-unstaking-row"][data-unstaking-status="Cooling Down"]');
-    expect(await cooling.count()).toBeGreaterThan(0);
-
+    // No execute — reactive-only scenario.
     await demoPause(page);
   });
 });

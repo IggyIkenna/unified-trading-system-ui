@@ -1,9 +1,10 @@
 {
-  "name": "AMM_LP_PROVISION",
+  "name": "MARKET_MAKING_CONTINUOUS",
+  "subMode": "amm_lp",
   "persona": "internal-trader",
   "route": "/services/trading/defi",
   "rootSelector": "[data-testid=\"defi-liquidity-widget\"]",
-  "playbook": "docs/trading/defi/playbooks/amm-lp-provision.md",
+  "playbook": "docs/trading/defi/playbooks/market-making-continuous-amm-lp.md",
   "scenarios": [
     {
       "name": "baseline — widget renders, pool stats queryable",

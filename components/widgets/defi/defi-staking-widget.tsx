@@ -32,13 +32,14 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <FormWidget isLoading={false} error={error} onClearError={clearError}>
+    <FormWidget isLoading={false} error={error} onClearError={clearError} data-testid="defi-staking-widget">
       <div className="grid grid-cols-2 gap-2">
         <Button
           variant={operation === "STAKE" ? "default" : "outline"}
           size="sm"
           className={cn("text-xs", operation === "STAKE" && "bg-emerald-600 hover:bg-emerald-700")}
           onClick={() => setOperation("STAKE")}
+          data-testid="operation-button-STAKE"
         >
           <TrendingUp className="size-3 mr-1.5" />
           Stake
@@ -48,6 +49,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
           size="sm"
           className={cn("text-xs", operation === "UNSTAKE" && "bg-rose-600 hover:bg-rose-700")}
           onClick={() => setOperation("UNSTAKE")}
+          data-testid="operation-button-UNSTAKE"
         >
           Unstake
         </Button>
@@ -56,7 +58,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
       <div className="space-y-1.5">
         <label className="text-xs text-muted-foreground">Protocol</label>
         <Select value={protocol} onValueChange={setProtocol}>
-          <SelectTrigger>
+          <SelectTrigger data-testid="protocol-select">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -80,6 +82,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="font-mono"
+          data-testid="amount-input"
         />
         <div className="flex items-center gap-1">
           {[25, 50, 75, 100].map((pct) => (
@@ -99,11 +102,13 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
       <div className="p-3 rounded-lg border bg-muted/30 space-y-2">
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Expected APY</span>
-          <span className="font-mono text-emerald-400 font-bold text-sm">{formatPercent(selected.apy, 1)}</span>
+          <span className="font-mono text-emerald-400 font-bold text-sm" data-testid="expected-apy">
+            {formatPercent(selected.apy, 1)}
+          </span>
         </div>
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Annual yield (mock)</span>
-          <span className="font-mono text-emerald-400">
+          <span className="font-mono text-emerald-400" data-testid="expected-yield">
             {amountNum > 0 ? `${formatNumber(annualYield, 4)} ${selected.asset}` : "—"}
           </span>
         </div>
@@ -124,6 +129,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
       <Button
         className="w-full"
         disabled={amountNum <= 0 || isSubmitting}
+        data-testid="execute-button"
         onClick={() =>
           handleSubmit(() => {
             executeDeFiOrder({

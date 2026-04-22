@@ -6,21 +6,35 @@
   "playbook": "docs/trading/defi/playbooks/carry-basis-perp.md",
   "scenarios": [
     {
-      "name": "baseline — swap widget renders in basis-trade mode",
+      "name": "baseline — swap + perp-short widgets both render",
       "inputs": {},
       "expected": {
-        "notes": "No execution; assert widget + default USDT→ETH selection + ledger are queryable."
+        "notes": "No execution; assert both legs mount (defi-swap-widget + defi-perp-short-widget) with their default inputs + ledger queryable."
       }
     },
     {
-      "name": "swap 90% capital from USDT to ETH",
+      "name": "swap 90% capital from USDT to ETH (spot long)",
       "inputs": {
         "amountIn": "90000"
       },
       "expected": {
         "tradeType": "SWAP",
         "minRowsAdded": 1,
-        "notes": "Swap leg of the CARRY_BASIS_PERP strategy — spot long hedged by perp short."
+        "notes": "Spot leg of the CARRY_BASIS_PERP archetype — spot long hedged by perp short."
+      }
+    },
+    {
+      "name": "short 25 ETH-PERP on Hyperliquid (perp hedge)",
+      "inputs": {
+        "operation": "TRADE",
+        "asset": "ETH",
+        "size": "25"
+      },
+      "expected": {
+        "tradeType": "TRADE",
+        "venueContains": "HYPERLIQUID",
+        "minRowsAdded": 1,
+        "notes": "Perp-short leg — completes the paired spot+perp SSOT flow per architecture-v2 (carry-basis-perp.md). Emits a TRADE row with data-trade-venue containing HYPERLIQUID."
       }
     },
     {

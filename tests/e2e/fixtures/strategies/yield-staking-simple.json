@@ -2,50 +2,58 @@
   "name": "YIELD_STAKING_SIMPLE",
   "persona": "internal-trader",
   "route": "/services/trading/defi/staking",
-  "rootSelector": "[data-testid=\"staking-dashboard\"]",
+  "rootSelector": "[data-testid=\"defi-staking-widget\"]",
   "playbook": "docs/trading/defi/playbooks/yield-staking-simple.md",
   "scenarios": [
     {
-      "name": "baseline — page renders with 4 KPI cards and 4 tabs",
+      "name": "baseline — dashboard + widget render cleanly",
       "inputs": {},
       "expected": {
-        "notes": "Read-only dashboard. Assert KPI strip + tab list render; default tab is Positions with a populated table."
+        "notes": "Assert the staking dashboard is visible and the DeFiStakingWidget mounts above the tabs with STAKE/UNSTAKE buttons, protocol select, amount input, execute button, and expected-yield readout."
       }
     },
     {
-      "name": "Positions tab — table renders staking-position rows",
+      "name": "STAKE 10 on default protocol",
       "inputs": {
-        "tab": "positions"
+        "operation": "STAKE",
+        "amount": "10"
       },
       "expected": {
-        "notes": "Positions tab is default. Assert the positions table shows multiple rows."
+        "tradeType": "STAKE",
+        "minRowsAdded": 1,
+        "notes": "Happy-path STAKE — default protocol is Lido (first staking protocol in mock catalog). Emits a STAKE row on the shared mock ledger."
       }
     },
     {
-      "name": "Validators tab — switching tab swaps the visible table",
+      "name": "UNSTAKE 5 on default protocol",
       "inputs": {
-        "tab": "validators"
+        "operation": "UNSTAKE",
+        "amount": "5"
       },
       "expected": {
-        "notes": "Clicking Validators tab hides positions table and reveals validators table with rows."
+        "tradeType": "UNSTAKE",
+        "minRowsAdded": 1,
+        "notes": "Happy-path UNSTAKE — toggling operation to UNSTAKE switches the button highlight to rose and submits an UNSTAKE row."
       }
     },
     {
-      "name": "Rewards tab — shows monthly chart and reward history",
+      "name": "protocol switch refreshes expected APY",
       "inputs": {
-        "tab": "rewards"
+        "operation": "STAKE",
+        "switchProtocolToIndex": 1
       },
       "expected": {
-        "notes": "Rewards tab renders the monthly-rewards chart card and the reward-history table with rows."
+        "notes": "Reactive-only scenario — no order placed. Switching the protocol select updates the Expected APY readout to the newly selected protocol's rate."
       }
     },
     {
-      "name": "Unstaking tab — Withdraw button disabled for Cooling Down rows",
+      "name": "amount input updates annual-yield readout",
       "inputs": {
-        "tab": "unstaking"
+        "operation": "STAKE",
+        "amount": "20"
       },
       "expected": {
-        "notes": "Cooling Down rows have their Withdraw button disabled; Ready to Withdraw rows enable it."
+        "notes": "Reactive-only — typing an amount updates the Annual yield (mock) value from \"—\" to a non-empty formatted number."
       }
     }
   ]

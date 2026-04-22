@@ -65,7 +65,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 0 — baseline render
+  // Scenario 0 — baseline render (swap + perp-short widgets both present)
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[0]!.name, async () => {
@@ -84,6 +84,15 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     expect(await page.locator('[data-testid="capital-input"]').inputValue()).toBe("");
     await expect(page.locator('[data-testid="execute-button"]')).toBeDisabled();
     await expect(page.locator('[data-testid="expected-output"]')).toContainText("0.00");
+
+    // Perp-short hedge widget is mounted on the same page — completes the
+    // SSOT CARRY_BASIS_PERP paired spot+perp flow.
+    const perp = page.locator('[data-testid="defi-perp-short-widget"]');
+    await expect(perp).toBeVisible();
+    await expect(perp.locator('[data-testid="perp-asset-select"]')).toBeVisible();
+    await expect(perp.locator('[data-testid="perp-venue-select"]')).toBeVisible();
+    await expect(perp.locator('[data-testid="perp-size-input"]')).toBeVisible();
+    await expect(perp.locator('[data-testid="perp-execute-button"]')).toBeDisabled();
 
     await demoPause(page);
   });
@@ -126,11 +135,62 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 2 — slippage tolerance reactivity (no execute)
+  // Scenario 2 — perp-short leg (SSOT paired-flow completion)
   // ---------------------------------------------------------------------------
 
   test(FIXTURE.scenarios[2]!.name, async () => {
     const sc = FIXTURE.scenarios[2]!;
+
+    const beforeRows = await countTradeRowsOnDefiPage(page);
+    await returnToStrategy(page);
+
+    const perp = page.locator('[data-testid="defi-perp-short-widget"]');
+    await expect(perp).toBeVisible();
+
+    // Asset defaults to first entry (ETH); set it explicitly for idempotence.
+    await perp.locator('[data-testid="perp-asset-select"]').click();
+    const assetOptions = page.locator('[role="option"]');
+    await expect(assetOptions.first()).toBeVisible();
+    await assetOptions
+      .filter({ hasText: `${sc.inputs.asset}-PERP` })
+      .first()
+      .click();
+
+    await perp.locator('[data-testid="perp-size-input"]').fill(String(sc.inputs.size));
+
+    // Notional + funding APY panel should populate.
+    await expect
+      .poll(async () => (await perp.locator('[data-testid="perp-notional"]').textContent()) ?? "", { timeout: 2_000 })
+      .not.toBe("—");
+
+    await expect(perp.locator('[data-testid="perp-execute-button"]')).toBeEnabled();
+    await perp.locator('[data-testid="perp-execute-button"]').click();
+
+    // Toast may appear briefly; tolerate absence.
+    await page.waitForSelector("text=Perp short submitted", { timeout: 3_000 }).catch(() => undefined);
+
+    // Size clears after submit.
+    await expect
+      .poll(async () => perp.locator('[data-testid="perp-size-input"]').inputValue(), { timeout: 3_000 })
+      .toBe("");
+
+    // Mock ledger fills after 200ms — wait before navigating to defi page.
+    await page.waitForTimeout(800);
+
+    await page.goto(`${BASE_URL}${TRADE_HISTORY_ROUTE}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await page.waitForSelector('[data-testid="trade-history-row"]', { timeout: 15_000 });
+    await verifyScenarioOutcome(page, beforeRows, sc.expected);
+
+    await returnToStrategy(page);
+    await demoPause(page);
+  });
+
+  // ---------------------------------------------------------------------------
+  // Scenario 3 — slippage tolerance reactivity (no execute)
+  // ---------------------------------------------------------------------------
+
+  test(FIXTURE.scenarios[3]!.name, async () => {
+    const sc = FIXTURE.scenarios[3]!;
     await page.locator('[data-testid="capital-input"]').fill(String(sc.inputs.amountIn));
 
     // Loose slippage first.
@@ -153,30 +213,32 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 3 — basis-trade metrics panel surfaces on input
+  // Scenario 4 — basis-trade metrics panel surfaces on input
   // ---------------------------------------------------------------------------
 
-  test(FIXTURE.scenarios[3]!.name, async () => {
-    const sc = FIXTURE.scenarios[3]!;
-    await page.locator('[data-testid="capital-input"]').fill(String(sc.inputs.amountIn));
+  test(FIXTURE.scenarios[4]!.name, async () => {
+    const sc = FIXTURE.scenarios[4]!;
+    const swap = page.locator('[data-testid="defi-swap-widget"]');
+    await swap.locator('[data-testid="capital-input"]').fill(String(sc.inputs.amountIn));
 
     // Basis Trade Metrics collapsible section only renders when isBasisTrade && amountIn.
-    await expect(page.getByText("Basis Trade Metrics")).toBeVisible();
-    await expect(page.getByText("Funding APY")).toBeVisible();
-    await expect(page.getByText("Cost of Carry")).toBeVisible();
-    await expect(page.getByText("Net APY")).toBeVisible();
+    // Scope to the swap widget — the new perp-short widget also renders a "Funding APY" label.
+    await expect(swap.getByText("Basis Trade Metrics")).toBeVisible();
+    await expect(swap.getByText("Funding APY")).toBeVisible();
+    await expect(swap.getByText("Cost of Carry")).toBeVisible();
+    await expect(swap.getByText("Net APY")).toBeVisible();
 
-    await page.locator('[data-testid="capital-input"]').fill("");
+    await swap.locator('[data-testid="capital-input"]').fill("");
 
     await demoPause(page);
   });
 
   // ---------------------------------------------------------------------------
-  // Scenario 4 — second execute appends another SWAP row
+  // Scenario 5 — second swap execute appends another SWAP row
   // ---------------------------------------------------------------------------
 
-  test(FIXTURE.scenarios[4]!.name, async () => {
-    const sc = FIXTURE.scenarios[4]!;
+  test(FIXTURE.scenarios[5]!.name, async () => {
+    const sc = FIXTURE.scenarios[5]!;
 
     const beforeRows = await countTradeRowsOnDefiPage(page);
     await returnToStrategy(page);

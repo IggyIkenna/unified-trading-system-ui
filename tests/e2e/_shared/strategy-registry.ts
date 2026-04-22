@@ -24,11 +24,27 @@ import type { PersonaKey } from "./persona";
 
 export type ArchetypeCoverage = "execution" | "detail-view";
 
+/**
+ * SSOT sub-mode flag — used when an archetype fans out into multiple
+ * execution surfaces in architecture-v2. Currently only
+ * `MARKET_MAKING_CONTINUOUS` uses it:
+ *   - `clob_mm`: order-book quoting (no dedicated UI widget yet; detail-view)
+ *   - `amm_lp`:  concentrated-liquidity LP (execution via defi-liquidity-widget)
+ */
+export type ArchetypeSubMode = "amm_lp" | "clob_mm";
+
 export interface StrategyRegistryEntry {
   /** Canonical archetype id (matches strategy-instances.ts `archetype` field). */
   readonly archetype: string;
   /** How this archetype surfaces in the UI. */
   readonly coverage: ArchetypeCoverage;
+  /**
+   * Optional SSOT sub-mode discriminator. Today only set for
+   * MARKET_MAKING_CONTINUOUS, which has an AMM LP execution surface but
+   * folds CLOB MM detail-view coverage under the same archetype per
+   * architecture-v2 SSOT.
+   */
+  readonly subMode?: ArchetypeSubMode;
   /** Short description for docs + test-report summaries. */
   readonly description: string;
   /** Persona seeded into localStorage before navigation. */
@@ -97,7 +113,7 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
     description: "Stake an underlying asset on a validator protocol for protocol yield.",
     persona: "internal-trader",
     buildRoute: () => "/services/trading/defi/staking",
-    rootSelector: '[data-testid="staking-dashboard"]',
+    rootSelector: '[data-testid="defi-staking-widget"]',
     fixtureSlug: "yield-staking-simple",
     playbook: "docs/trading/defi/playbooks/yield-staking-simple.md",
     primaryInstanceId: "YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod",
@@ -105,6 +121,7 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
       "YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod",
       "YIELD_STAKING_SIMPLE@jito-jitosol-solana-sol-prod",
     ],
+    defaultInputs: { operation: "STAKE", amount: 10 },
   },
 
   CARRY_BASIS_PERP: {
@@ -123,23 +140,7 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
       "CARRY_BASIS_PERP@uniswap-hyperliquid-eth-usdt-prod",
       "CARRY_BASIS_PERP@lido-hyperliquid-steth-usdt-prod",
     ],
-    defaultInputs: { amountIn: 90_000, slippage: 0.5 },
-  },
-
-  AMM_LP_PROVISION: {
-    archetype: "AMM_LP_PROVISION",
-    coverage: "execution",
-    description: "Provide liquidity to an AMM pool and capture fees + incentives.",
-    persona: "internal-trader",
-    buildRoute: () => "/services/trading/defi",
-    rootSelector: '[data-testid="defi-liquidity-widget"]',
-    fixtureSlug: "amm-lp-provision",
-    playbook: "docs/trading/defi/playbooks/amm-lp-provision.md",
-    // No AMM_LP_PROVISION instance in strategy-instances.ts yet; the
-    // widget accepts arbitrary pool/chain combos without one.
-    primaryInstanceId: "AMM_LP_PROVISION@uniswap-v3-weth-usdc-ethereum-prod",
-    instanceIds: [],
-    defaultInputs: { operation: "ADD_LIQUIDITY", amount: 5, feeTier: 0.05 },
+    defaultInputs: { amountIn: 90_000, slippage: 0.5, perpAsset: "ETH", perpSize: 25 },
   },
 
   CARRY_STAKED_BASIS: {
@@ -156,7 +157,7 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
       "CARRY_STAKED_BASIS@lido-aave-hyperliquid-eth-prod",
       "CARRY_STAKED_BASIS@jito-kamino-drift-sol-usdc-prod",
     ],
-    defaultInputs: { amountIn: 50_000, transferAmount: 25_000 },
+    defaultInputs: { swapAmount: 50_000, pledgeAmount: 10, borrowAmount: 15_000, perpSize: 10 },
   },
 
   // ──────────────────────────────────────────────────────────────────────
@@ -240,11 +241,18 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
 
   MARKET_MAKING_CONTINUOUS: {
     archetype: "MARKET_MAKING_CONTINUOUS",
+    // Parametric detail-view spec iterates all 6 instances (CLOB MM + AMM LP).
+    // The AMM LP sub-mode additionally has an execution spec that drives
+    // the defi-liquidity-widget via the market-making-continuous-amm-lp
+    // fixture — see `subMode` + `fixtureSlug` below.
     coverage: "detail-view",
-    description: "Two-sided quoting on continuous venues for spread + rebate capture.",
+    subMode: "amm_lp",
+    description: "Two-sided quoting on continuous venues for spread + rebate capture (sub-modes: CLOB MM, AMM LP).",
     persona: "internal-trader",
     buildRoute: strategiesRoute,
     rootSelector: '[class*="max-w-"]',
+    fixtureSlug: "market-making-continuous-amm-lp",
+    playbook: "docs/trading/defi/playbooks/market-making-continuous-amm-lp.md",
     primaryInstanceId: "MARKET_MAKING_CONTINUOUS@binance-btc-usdt-mm-usdt-prod",
     instanceIds: [
       "MARKET_MAKING_CONTINUOUS@binance-btc-usdt-mm-usdt-prod",
@@ -254,6 +262,7 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
       "MARKET_MAKING_CONTINUOUS@curve-3pool-ethereum-passive-usdc-prod",
       "MARKET_MAKING_CONTINUOUS@betfair-direct-epl-1x2-mm-gbp-prod",
     ],
+    defaultInputs: { operation: "ADD_LIQUIDITY", amount: 5, feeTier: 0.05 },
     detailViewKpis: ["Avg Spread Captured", "Inventory Turnover", "Fill Rate"],
   },
 

@@ -5,7 +5,12 @@ import { loadStrategyFixture } from "../../_shared/fixtures";
 import { countTradeRows, verifyScenarioOutcome } from "../../_shared/verify";
 
 /**
- * AMM_LP_PROVISION — concentrated-liquidity LP flow spec.
+ * MARKET_MAKING_CONTINUOUS (sub-mode: amm_lp) — concentrated-liquidity LP flow spec.
+ *
+ * SSOT: architecture-v2/archetypes/market-making-continuous.md folds AMM LP
+ * provision under MARKET_MAKING_CONTINUOUS (sub-mode B/C). This spec drives
+ * the AMM LP execution surface; the CLOB MM sub-mode has no dedicated widget
+ * yet and is covered by the parametric detail-view spec.
  *
  * Follows the same structure as the YIELD_ROTATION_LENDING reference spec:
  *   1. Load the JSON fixture describing persona, route, and scenarios.
@@ -23,10 +28,10 @@ import { countTradeRows, verifyScenarioOutcome } from "../../_shared/verify";
  * Serial mode + shared page: `--project=human` shows one continuous browser
  * flow rather than five open/close cycles.
  *
- * Playbook: docs/trading/defi/playbooks/amm-lp-provision.md
+ * Playbook: docs/trading/defi/playbooks/market-making-continuous-amm-lp.md
  */
 
-const FIXTURE = loadStrategyFixture("amm-lp-provision");
+const FIXTURE = loadStrategyFixture("market-making-continuous-amm-lp");
 const BASE_URL = "http://localhost:3100";
 const WORKSPACE_STORAGE_KEY = "unified-workspace-layouts";
 const DEFI_PRESET_WITH_LIQUIDITY = "defi-advanced";
