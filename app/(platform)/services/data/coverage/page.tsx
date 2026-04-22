@@ -159,10 +159,9 @@ export default function CoveragePage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container px-4 py-8 md:px-6">
+    <div className="p-6 space-y-6 platform-page-width">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between">
           <PageHeader
         title="Coverage"
         description="Cross-stage completeness — Instruments → Raw → Processing →
@@ -185,7 +184,7 @@ export default function CoveragePage() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <CardContent className="pt-4">
               <div className="text-2xl font-bold font-mono text-foreground">
@@ -222,7 +221,7 @@ export default function CoveragePage() {
         </div>
 
         {/* Controls */}
-        <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground">Group by:</span>
             <Select
@@ -262,7 +261,7 @@ export default function CoveragePage() {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-[10px] text-muted-foreground mb-4 flex-wrap">
+        <div className="flex items-center gap-4 text-[10px] text-muted-foreground flex-wrap">
           {(Object.entries(STATUS_LABELS) as [CoverageStatus, string][]).map(
             ([status, label]) => (
               <span key={status} className="flex items-center gap-1.5">
@@ -360,7 +359,7 @@ export default function CoveragePage() {
         </Card>
 
         {/* Build Tab note */}
-        <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <ExternalLink className="size-3.5" />
           Features column is read-only here.
           <Link
@@ -374,7 +373,7 @@ export default function CoveragePage() {
 
         {/* Locked categories notice */}
         {locked.length > 0 && (
-          <div className="mt-4 p-3 rounded-lg border border-border/40 bg-muted/10">
+          <div className="p-3 rounded-lg border border-border/40 bg-muted/10">
             <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
               <Lock className="size-3.5" />
               <span className="font-medium">Not in your subscription:</span>
@@ -394,7 +393,6 @@ export default function CoveragePage() {
             </p>
           </div>
         )}
-      </div>
     </div>
   );
 }
