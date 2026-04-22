@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { BriefingHero } from "@/components/briefings/briefing-hero";
 import { DocsNav, type DocsNavSection } from "@/components/docs/docs-nav";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PRODUCT_LABELS } from "@/lib/brand/product-labels";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -119,7 +120,7 @@ const PATHS: ReadonlyArray<{
     who: "Asset managers, trading desks. You already have strategies; you want institutional-grade execution + TCA.",
     what: "Submit parent orders; we run execution algos, produce fills, and return TCA benchmarked against arrival / VWAP / IS.",
     entryService: { href: "/services/execution/overview", label: "Execution surface" },
-    entryBriefing: { href: "/briefings/signals-out", label: "Signals-out briefing" },
+    entryBriefing: { href: "/briefings/signals-out", label: `${PRODUCT_LABELS.odumSignals} briefing` },
   },
 ];
 
@@ -381,7 +382,7 @@ const BRIEFINGS: ReadonlyArray<{ slug: string; title: string; summary: string }>
     title: "DART — Full pipeline",
     summary: "Data → research → strategy → execute, with commitment tiers.",
   },
-  { slug: "signals-out", title: "Signals-out", summary: "Licensing Odum's signals into your own infrastructure." },
+  { slug: "signals-out", title: PRODUCT_LABELS.odumSignals, summary: "Licensing Odum's signals into your own infrastructure." },
   {
     slug: "investment-management",
     title: "Investment Management",
@@ -886,8 +887,8 @@ export default function DocsPage() {
                 simulated fills, parallel to CeFi TCA.
               </li>
               <li>
-                <span className="font-medium">Signals-out marketplace.</span> Subscribing to Odum signals under a
-                signals-out licence, without needing full execution on our infrastructure.
+                <span className="font-medium">{PRODUCT_LABELS.odumSignals} marketplace.</span> Subscribing to
+                {" "}{PRODUCT_LABELS.odumSignals} under a licence, without needing full execution on our infrastructure.
               </li>
             </ul>
           </section>
