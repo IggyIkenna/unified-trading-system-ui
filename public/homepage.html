@@ -431,6 +431,213 @@
         color: var(--text-dim);
       }
 
+      /* --- Hero — restored 2026-04-22: asset pill + service row + in-hero stats + trust chips --- */
+      .hero-asset-pill {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 6px 8px;
+        margin: 0 auto 18px;
+        padding: 8px 18px 8px 14px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border-accent);
+        font-size: 12px;
+        font-weight: 500;
+        color: #fafafa;
+        letter-spacing: 0.02em;
+      }
+
+      .hero-asset-pill svg {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        opacity: 0.95;
+      }
+
+      .hero-asset-pill .sep {
+        opacity: 0.45;
+        user-select: none;
+      }
+
+      .hero-service-row {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 18px;
+        margin-top: 28px;
+        max-width: 720px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-service-tile {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        transition:
+          color 0.15s ease,
+          border-color 0.15s ease,
+          background 0.15s ease;
+        cursor: help;
+      }
+
+      .hero-service-tile:hover,
+      .hero-service-tile:focus-visible {
+        color: var(--text);
+        border-color: var(--border-accent);
+        background: rgba(255, 255, 255, 0.03);
+        outline: none;
+      }
+
+      .hero-service-tile svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.9;
+      }
+
+      .hero-service-tile.lab-invest svg {
+        color: var(--rose);
+      }
+
+      .hero-service-tile.lab-build svg {
+        color: var(--cyan);
+      }
+
+      .hero-service-tile.lab-signals svg {
+        color: var(--violet);
+      }
+
+      .hero-service-tile.lab-regulate svg {
+        color: #94a3b8;
+      }
+
+      .hero-service-tile::after {
+        content: attr(data-def);
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + 10px);
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: 320px;
+        padding: 10px 12px;
+        background: #0a0a0b;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.5;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: normal;
+        color: rgba(255, 255, 255, 0.88);
+        white-space: normal;
+        text-align: left;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s ease;
+        z-index: 100;
+      }
+
+      .hero-service-tile:hover::after,
+      .hero-service-tile:focus-visible::after {
+        opacity: 1;
+      }
+
+      .hero-stats {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 32px 48px;
+        margin-top: 48px;
+      }
+
+      .hero-stat {
+        text-align: center;
+      }
+
+      .hero-stat strong {
+        display: block;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--primary);
+        font-family: var(--font-mono);
+        letter-spacing: -0.01em;
+      }
+
+      .hero-stat span {
+        display: block;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--text-dim);
+        letter-spacing: 0.02em;
+      }
+
+      .hero-trust-row {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+        margin-top: 28px;
+      }
+
+      .hero-trust-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--text-secondary);
+        letter-spacing: 0.02em;
+      }
+
+      .hero-trust-badge svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+      }
+
+      .hero-trust-badge strong {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .hero-trust-badge .sep {
+        opacity: 0.45;
+        user-select: none;
+      }
+
+      .hero-trust-badge .dim {
+        color: var(--text-dim);
+        font-weight: 500;
+      }
+
+      .hero-trust-badge.is-fca svg {
+        color: var(--emerald);
+      }
+
+      .hero-trust-badge.is-security svg {
+        color: var(--sky);
+      }
+
+      .hero-trust-badge.is-flex svg {
+        color: var(--violet);
+      }
+
       /* --- SECTION COMMON --- */
       section {
         border-bottom: 1px solid var(--border);
@@ -1064,44 +1271,175 @@
     <section class="hero">
       <div class="hero-bg"></div>
       <div class="hero-content">
+        <div class="hero-asset-pill" aria-label="Market and venue coverage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18M12 3c2.5 3.5 4 7.2 4 9s-1.5 5.5-4 9c-2.5-3.5-4-7.2-4-9s1.5-5.5 4-9z" />
+          </svg>
+          <span>TradFi</span><span class="sep" aria-hidden="true">·</span><span>Crypto</span
+          ><span class="sep" aria-hidden="true">·</span><span>DeFi</span
+          ><span class="sep" aria-hidden="true">·</span><span>Sports</span
+          ><span class="sep" aria-hidden="true">·</span><span>Prediction Markets</span>
+        </div>
         <h1>Unified Trading Infrastructure</h1>
-        <p class="hero-label">
-          <span style="color: var(--cyan)">FCA-Regulated</span> Investment Manager, Signals Provider, and DART
-        </p>
         <p class="subtitle">
-          Five paths on one regulated operating system. <span class="lab-invest">Allocate capital</span> to Odum-managed
-          strategies (Investment Management). <span class="lab-build">Run your strategy on our stack</span> via DART
-          &mdash; Data Analytics, Research &amp; Trading &mdash; either DART Signals-In (your signals, our execution) or
-          DART Full Pipeline. <span class="lab-build">Take our signals out</span> via Odum Signals. Operate your
-          regulated activity under our <span class="lab-regulate">FCA Regulatory Umbrella</span>.
+          The same infrastructure we use to run our own capital &mdash; available to institutional clients at any entry
+          point.
         </p>
-        <p class="support">Across digital assets, traditional markets, sports, and prediction markets.</p>
+        <nav class="hero-service-row" aria-label="Four commercial paths">
+          <a
+            class="hero-service-tile lab-invest"
+            href="strategies.html"
+            data-def="Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface."
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 20V10M9 20V4M14 20v-6M19 20V8" />
+            </svg>
+            <span>Investment Management</span>
+          </a>
+          <a
+            class="hero-service-tile lab-build"
+            href="platform.html"
+            data-def="DART (Data Analytics, Research & Trading). Run on the same stack we use internally. DART Full adds research, ML, and strategy promotion; DART Signals-In sends your instructions for execution only."
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <path d="M4 10h16M10 4v16" />
+            </svg>
+            <span>DART</span>
+          </a>
+          <a
+            class="hero-service-tile lab-signals"
+            href="/signals"
+            data-def="Odum Signals — Odum-generated trading signals delivered to your execution stack via signed webhooks or REST pull. You run the rest."
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M4 11a9 9 0 0 1 9 9" />
+              <path d="M4 4a16 16 0 0 1 16 16" />
+              <circle cx="5" cy="19" r="1" />
+            </svg>
+            <span>Odum Signals</span>
+          </a>
+          <a
+            class="hero-service-tile lab-regulate"
+            href="regulatory.html"
+            data-def="FCA Regulatory Umbrella — operate covered regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage) with aligned governance and reporting."
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
+            </svg>
+            <span>Regulatory Umbrella</span>
+          </a>
+        </nav>
         <div class="hero-ctas">
-          <a href="contact.html" class="btn btn-primary">Discuss a Mandate</a>
+          <a
+            href="https://calendly.com/odum-ikenna"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-primary"
+            >Discuss a Mandate</a
+          >
           <a href="platform.html" class="btn btn-outline">Explore the Platform</a>
         </div>
-        <div class="proof-strip">
-          <div class="proof-item"><strong>$7.5M AUM</strong></div>
-          <div class="proof-item"><strong>Clients live under coverage</strong></div>
-          <div class="proof-item"><strong>Platform clients live</strong></div>
-          <div class="proof-item"><strong>FCA 975797</strong></div>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>5</strong><span>Asset Classes</span></div>
+          <div class="hero-stat"><strong>100+</strong><span>Venues</span></div>
+          <div class="hero-stat"><strong>24/7</strong><span>Trading</span></div>
+          <div class="hero-stat"><strong>100+ TB</strong><span>Market Data</span></div>
+          <div class="hero-stat"><strong>5</strong><span>Service Lines</span></div>
+        </div>
+        <div class="hero-trust-row">
+          <span class="hero-trust-badge is-fca">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+            <strong>FCA 975797</strong>
+            <span class="sep" aria-hidden="true">·</span>
+            <span class="dim">$7.5M+ AUM</span>
+          </span>
+          <span class="hero-trust-badge is-security">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="4" y="11" width="16" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <strong>Institutional Security</strong>
+            <span class="sep" aria-hidden="true">·</span>
+            <span class="dim">Professional &amp; ECP</span>
+          </span>
+          <span class="hero-trust-badge is-flex">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 2l9 5-9 5-9-5 9-5z" />
+              <path d="M3 12l9 5 9-5" />
+              <path d="M3 17l9 5 9-5" />
+            </svg>
+            <strong>No-Code to Full-Code</strong>
+          </span>
         </div>
       </div>
     </section>
 
     <!-- ============ 2. PLATFORM BREADTH + GALAXY + WHO WE SERVE ============ -->
-    <section style="padding: 40px 0; background: var(--bg-surface)">
-      <div class="container">
-        <p class="eyebrow" style="text-align: center; margin-bottom: 20px">Platform Breadth</p>
-        <div class="stats-strip">
-          <div class="stat-item"><strong>5</strong><span>Asset Classes</span></div>
-          <div class="stat-item"><strong>100+</strong><span>Venues</span></div>
-          <div class="stat-item"><strong>24/7</strong><span>Trading</span></div>
-          <div class="stat-item"><strong>100+ TB</strong><span>Market Data</span></div>
-          <div class="stat-item"><strong>5</strong><span>Service Lines</span></div>
-        </div>
-      </div>
-    </section>
+    <!-- Section-2 stats-strip removed 2026-04-22 — stats now live once, inside the hero (.hero-stats). -->
+    <!-- The "Four commercial paths vs five service lines" caption is no longer rendered as a thin band; -->
+    <!-- the in-hero service row + stat label "Service Lines" carry the same info inline. -->
+
 
     <!-- Galaxy visual + venue marquee -->
     <section class="galaxy-section section-pad">
