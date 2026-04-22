@@ -284,7 +284,7 @@ export function PerformanceOverlayView({
   const [activeViews, setActiveViews] = useState<readonly PerformanceView[]>(views);
 
   const availableViews = useMemo<PerformanceView[]>(() => {
-    if (!response) return [];
+    if (!response || !response.series) return [];
     return views.filter((v) => viewHasData(response.series[v]));
   }, [response, views]);
 
