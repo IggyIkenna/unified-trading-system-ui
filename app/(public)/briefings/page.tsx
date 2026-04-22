@@ -55,17 +55,13 @@ export default function BriefingsHubPage() {
       />
 
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          The commercial paths
-        </h2>
+        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">The commercial paths</h2>
         <div className="grid gap-6 md:grid-cols-2">
           {ORDERED_PILLARS.map((p) => (
             <Card key={p.slug} className="border-border/60">
               <CardHeader>
                 <CardTitle className="text-lg">{p.title}</CardTitle>
-                <p className="text-sm text-foreground/85 leading-relaxed">
-                  {renderWithTerms(p.tldr)}
-                </p>
+                <p className="text-sm text-foreground/85 leading-relaxed">{renderWithTerms(p.tldr)}</p>
               </CardHeader>
               <CardContent>
                 <Link
@@ -93,13 +89,13 @@ export default function BriefingsHubPage() {
       <section className="rounded-lg border border-border bg-card/30 p-6">
         <h2 className="text-sm font-semibold text-foreground">Next steps</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Ready to onboard? Tell us about your firm in a short invite-only questionnaire so we can
-          pre-configure your path. Or book a 45-minute call to walk any path against your specifics.
+          Ready to onboard? Tell us about your firm in a short invite-only questionnaire so we can pre-configure your
+          path. Or book a 45-minute call to walk any path against your specifics.
         </p>
-        <div className="mt-4 flex flex-wrap gap-3">
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
             href="/questionnaire"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto sm:justify-start"
           >
             Start onboarding questionnaire →
           </Link>
@@ -107,13 +103,13 @@ export default function BriefingsHubPage() {
             href={CALENDLY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+            className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
           >
             Book a call
           </a>
           <Link
             href="/"
-            className="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+            className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
           >
             Back to home
           </Link>

@@ -643,9 +643,9 @@ export default function DocsPage() {
             <div className="grid gap-3 md:grid-cols-2">
               {UAC_FACADES.map((f) => (
                 <div key={f.name} className="rounded-md border border-border/60 bg-background p-3">
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex flex-wrap items-baseline gap-1.5">
                     <code className="text-sm font-semibold">{f.name}</code>
-                    <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                    <span className="break-all text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                       unified_api_contracts.{f.name}
                     </span>
                   </div>
