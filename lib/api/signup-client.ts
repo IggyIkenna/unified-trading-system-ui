@@ -71,6 +71,18 @@ export interface SignupResult {
     status: string;
   };
   onboarding_request_id: string;
+  /**
+   * Questionnaire response id the backend resolved at signup, either from
+   * the request payload or by email-matching the persisted envelope. `null`
+   * when no match was found — ops will link manually on review.
+   */
+  questionnaire_response_id?: string | null;
+  /**
+   * `true` when the backend has queued a Firebase email-verification link.
+   * The link is mailed asynchronously; the prospect can sign in only after
+   * ops approves the account regardless of verification status.
+   */
+  email_verification_pending?: boolean;
 }
 
 export async function submitSignup(

@@ -6,26 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitSignup, uploadUserDocument, type ContactChannelKind } from "@/lib/api/signup-client";
+import { submitSignup, type ContactChannelKind } from "@/lib/api/signup-client";
 import { QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY } from "@/lib/questionnaire/types";
-import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { Briefcase, CheckCircle2, Shield } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { OnboardingWizardTail } from "./onboarding-wizard-tail";
 import {
-  getDocSlots,
   INV_OPTS,
   REG_ACTIVITIES,
   REG_ADDONS,
   REG_ENGAGEMENT,
   REG_FUND_OPTS,
   type ApplicantType,
-  type DeclarationField,
-  type DocSlot,
-  type PendingUpload,
 } from "./signup-data";
-import { generateDeclarationPdfBlob } from "./signup-pdf";
 import { OnboardingBackBtn, OnboardingNextBtn, StepIndicator } from "./signup-ui-bits";
 
 export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | "investment" }) {
@@ -47,12 +41,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
   const [entityAddress, setEntityAddress] = React.useState("");
   const [expectedAum, setExpectedAum] = React.useState("");
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set());
-  const [docs, setDocs] = React.useState<Record<string, string>>({});
-  const [pendingUploads, setPendingUploads] = React.useState<Record<string, PendingUpload>>({});
-  const [declarations, setDeclarations] = React.useState<Record<string, Record<string, string>>>({});
-  const [signatures, setSignatures] = React.useState<Record<string, string>>({});
   const [applicantType, setApplicantType] = React.useState<ApplicantType>("individual");
-  const [expandedDecl, setExpandedDecl] = React.useState<string | null>(null);
   const [appId, setAppId] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
@@ -90,9 +79,6 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
           phone,
           expectedAum,
           selOpts: [...selOpts],
-          docs,
-          declarations,
-          signatures,
           step,
           firebaseUid,
           onboardingRequestId,
@@ -110,29 +96,9 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
     phone,
     expectedAum,
     selOpts,
-    docs,
-    declarations,
-    signatures,
     firebaseUid,
     onboardingRequestId,
   ]);
-
-  const orgSlug = company.toLowerCase().replace(/\s+/g, "-") || "unknown";
-  async function prepareDeclarationPdf(
-    docType: string,
-    title: string,
-    fields: DeclarationField[],
-    answers: Record<string, string>,
-    sig: string,
-  ): Promise<PendingUpload> {
-    const pdfBlob = await generateDeclarationPdfBlob(title, name, company, fields, answers, sig);
-    const fileName = `${docType}-${orgSlug}.pdf`;
-    return {
-      file: pdfBlob,
-      file_name: fileName,
-      content_type: "application/pdf",
-    };
-  }
 
   const toggle = (id: string) =>
     setSelOpts((p) => {
@@ -140,69 +106,31 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
       n.has(id) ? n.delete(id) : n.add(id);
       return n;
     });
-  const isReq = (s: DocSlot) =>
-    s.required === true || (s.required === "investment_only" && serviceType === "investment");
-  const docSlots = getDocSlots(applicantType);
-  const uploadedCount = Object.values(docs).filter(Boolean).length;
-  const reqDocs = docSlots.filter(isReq);
 
   async function handleSubmit() {
-    if (password.length < 6) {
-      setSubmitError("Password must be at least 6 characters.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setSubmitError("Passwords do not match.");
-      return;
-    }
-    const missingRequiredDocs = reqDocs.filter((slot) => !docs[slot.key]).map((slot) => slot.label);
-    if (missingRequiredDocs.length > 0) {
-      setSubmitError(`Please upload required documents: ${missingRequiredDocs.join(", ")}.`);
-      return;
-    }
-    const isMock = isMockDataMode();
-    if (!isMock) {
-      const staleDraftDocs = Object.keys(docs).filter((key) => !pendingUploads[key]);
-      if (staleDraftDocs.length > 0) {
-        setSubmitError("This draft was resumed without file binaries. Please re-upload documents before submitting.");
-        return;
-      }
-    }
-
+    // The Firebase Auth account + Firestore profile + onboarding request
+    // are already provisioned in step 1 (`onStep1Next`) so the prospect
+    // can resume after closing the tab. Step-4 submit only finalises the
+    // application: it persists the latest selections + flips the draft to
+    // submitted and shows the confirmation screen.
+    //
+    // Per codex/08-workflows/signup-signin-workflow.md §2.3.2, we do NOT
+    // upload PEP / KYC documents at signup — those move to the admin-side
+    // signed-URL drop-box once an Odum operator approves the application.
+    // So no doc-blocker checks here, and no second submitSignup call.
     setSubmitting(true);
     setSubmitError("");
-
     try {
-      const result = await submitSignup({
-        name,
-        email,
-        password,
-        company,
-        phone,
-        service_type: serviceType,
-        selected_options: [...selOpts],
-        expected_aum: expectedAum,
-      });
-
-      const uid = result.user.firebase_uid;
-      const reqId = result.onboarding_request_id;
-      setFirebaseUid(uid);
-      setOnboardingRequestId(reqId);
-      setAppId(reqId);
-
-      for (const [key, upload] of Object.entries(pendingUploads)) {
-        await uploadUserDocument({
-          firebase_uid: uid,
-          onboarding_request_id: reqId,
-          doc_type: key,
-          file_name: upload.file_name,
-          content_type: upload.content_type,
-          file: upload.file,
-        });
+      if (firebaseUid) {
+        setAppId(onboardingRequestId);
+        await saveProgress(5);
+        localStorage.removeItem("onboarding-draft");
+      } else {
+        // Defensive: should never happen because step 1 creates the
+        // account before letting the user advance, but if it does, just
+        // surface the error rather than silently no-op.
+        setSubmitError("Account is not provisioned yet. Go back to step 1 and re-submit your details.");
       }
-
-      setStep(5);
-      localStorage.removeItem("onboarding-draft");
     } catch (err: unknown) {
       setSubmitError(err instanceof Error ? err.message : "Signup failed. Please try again.");
     } finally {
@@ -251,16 +179,23 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
       try {
         const envelopeRaw = window.localStorage.getItem(QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY);
         if (envelopeRaw) {
-          const parsed = JSON.parse(envelopeRaw) as { response_id?: unknown; id?: unknown };
-          const candidate = typeof parsed.response_id === "string"
-            ? parsed.response_id
-            : typeof parsed.id === "string"
-              ? parsed.id
-              : undefined;
+          const parsed = JSON.parse(envelopeRaw) as {
+            submissionId?: unknown;
+            response_id?: unknown;
+            id?: unknown;
+          };
+          const candidate =
+            typeof parsed.submissionId === "string"
+              ? parsed.submissionId
+              : typeof parsed.response_id === "string"
+                ? parsed.response_id
+                : typeof parsed.id === "string"
+                  ? parsed.id
+                  : undefined;
           if (candidate) questionnaireResponseId = candidate;
         }
       } catch {
-        /* envelope parsing is best-effort */
+        /* envelope parsing is best-effort; backend falls back to email lookup */
       }
 
       try {
@@ -317,7 +252,6 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
           body: JSON.stringify({
             current_step: nextStep,
             selected_options: [...selOpts],
-            docs_uploaded: Object.keys(docs).filter((k) => docs[k]),
           }),
         });
       } catch {
@@ -337,9 +271,6 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
         phone,
         expectedAum,
         selOpts: [...selOpts],
-        docs,
-        declarations,
-        signatures,
         step: nextStep,
       }),
     );
@@ -392,9 +323,6 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
                           setPhone(resumeDraft.phone || "");
                           setExpectedAum(resumeDraft.expectedAum || "");
                           setSelOpts(new Set(resumeDraft.selOpts || []));
-                          setDocs(resumeDraft.docs || {});
-                          setDeclarations(resumeDraft.declarations || {});
-                          setSignatures(resumeDraft.signatures || {});
                           if (resumeDraft.step >= 5) {
                             setStep(3);
                           } else {
@@ -801,19 +729,6 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
           step={step}
           setStep={setStep}
           serviceType={serviceType}
-          docSlots={docSlots}
-          isReq={isReq}
-          docs={docs}
-          setDocs={setDocs}
-          declarations={declarations}
-          setDeclarations={setDeclarations}
-          signatures={signatures}
-          setSignatures={setSignatures}
-          pendingUploads={pendingUploads}
-          setPendingUploads={setPendingUploads}
-          expandedDecl={expandedDecl}
-          setExpandedDecl={setExpandedDecl}
-          prepareDeclarationPdf={prepareDeclarationPdf}
           name={name}
           email={email}
           company={company}
@@ -824,7 +739,6 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
           submitError={submitError}
           selOpts={selOpts}
           allOptLabels={allOptLabels}
-          uploadedCount={uploadedCount}
           appId={appId}
         />
       </div>

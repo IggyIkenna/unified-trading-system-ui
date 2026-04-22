@@ -64,9 +64,22 @@ async function submitToFirestore(
     }
     const docRef = await addDoc(collection(db, "questionnaires"), {
       ...response,
-      ...(envelope !== null ? { submitted_by: envelope } : {}),
+      ...(envelope !== null
+        ? { submitted_by: { ...envelope, submissionId: undefined } }
+        : {}),
       submittedAt: serverTimestamp(),
     });
+    if (envelope !== null && typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(
+          QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY,
+          JSON.stringify({ ...envelope, submissionId: docRef.id }),
+        );
+      } catch {
+        /* envelope persistence is best-effort; signup falls back to
+         * server-side email lookup if it can't read the id. */
+      }
+    }
     return {
       success: true,
       sink: "firestore",

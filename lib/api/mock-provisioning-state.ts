@@ -61,6 +61,26 @@ export interface MockUser {
     applicant_type?: string;
     docs_uploaded?: string[];
     current_step?: number;
+    /** Preferred contact channel (phone / telegram / whatsapp). */
+    contact_channel?: "phone" | "telegram" | "whatsapp";
+    /** Handle or phone number for the chosen channel. */
+    contact_value?: string;
+    /** Entity registered address — used by contract generation post-approval. */
+    entity_address?: string;
+    /**
+     * Firestore doc id of the prospect's prior questionnaire response, when
+     * resolvable at signup. Populated either from the `questionnaire_response_id`
+     * field on the signup body or by email-matching the persisted envelope.
+     * See codex/08-workflows/signup-signin-workflow.md §2.3.4.
+     */
+    questionnaire_response_id?: string;
+    /**
+     * `true` when the prospect requested email verification at signup. The
+     * real backend flips a Firebase admin-SDK link into the outgoing-email
+     * queue; the mock just records the intent so admin tooling can surface
+     * it. See workflow doc §2.3.4 + Gap 5.
+     */
+    email_verification_pending?: boolean;
   };
   provisioned_at: string;
   last_modified: string;

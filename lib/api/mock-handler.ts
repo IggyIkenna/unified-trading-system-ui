@@ -5195,6 +5195,10 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     });
   }
   // --- Mock Signup (standalone, no UMU needed) ---
+  // Mirrors codex/08-workflows/signup-signin-workflow.md §2.3.4: attaches the
+  // prospect's prior questionnaire response by id (when the client passes it)
+  // or by email-matching the persisted envelope. Records the email-verify
+  // request so admin tooling can show the queued verification link.
   if (route === "/api/v1/signup" && opts?.method === "POST") {
     const body = opts.body ? JSON.parse(opts.body as string) : {};
     const uid = `uid-${Date.now()}`;
@@ -5202,6 +5206,40 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const orgSlug = (body.company || body.email.split("@")[1]?.split(".")[0] || "unknown")
       .toLowerCase()
       .replace(/\s+/g, "-");
+
+    let questionnaireResponseId: string | undefined =
+      typeof body.questionnaire_response_id === "string" && body.questionnaire_response_id.length > 0
+        ? body.questionnaire_response_id
+        : undefined;
+    if (!questionnaireResponseId && typeof window !== "undefined") {
+      try {
+        const envelopeRaw = window.localStorage.getItem("questionnaire-envelope-v1");
+        if (envelopeRaw) {
+          const envelope = JSON.parse(envelopeRaw) as {
+            email?: unknown;
+            submissionId?: unknown;
+          };
+          if (
+            typeof envelope.email === "string" &&
+            envelope.email.toLowerCase() === String(body.email).toLowerCase() &&
+            typeof envelope.submissionId === "string" &&
+            envelope.submissionId.length > 0
+          ) {
+            questionnaireResponseId = envelope.submissionId;
+          }
+        }
+      } catch {
+        /* envelope is best-effort; ops manually links on review if absent */
+      }
+    }
+
+    const phoneFromBody: string | undefined =
+      typeof body.phone === "string" && body.phone.length > 0
+        ? body.phone
+        : body.contact_channel === "phone" && typeof body.contact_value === "string"
+          ? body.contact_value
+          : undefined;
+
     const newUser: MockUser = {
       id: userId,
       firebase_uid: uid,
@@ -5218,10 +5256,15 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         selected_options: body.selected_options || [],
         expected_aum: body.expected_aum,
         company: body.company,
-        phone: body.phone,
+        phone: phoneFromBody,
         applicant_type: body.applicant_type,
         docs_uploaded: [],
         current_step: 1,
+        contact_channel: body.contact_channel,
+        contact_value: body.contact_value,
+        entity_address: body.entity_address,
+        questionnaire_response_id: questionnaireResponseId,
+        email_verification_pending: body.send_email_verification === true,
       },
       provisioned_at: new Date().toISOString(),
       last_modified: new Date().toISOString(),
@@ -5238,6 +5281,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     return json({
       user: { firebase_uid: uid, name: body.name, email: body.email, status: "pending_approval" },
       onboarding_request_id: `onb-${Date.now()}`,
+      questionnaire_response_id: questionnaireResponseId ?? null,
+      email_verification_pending: body.send_email_verification === true,
     });
   }
   // --- Get user application state (for resume) ---

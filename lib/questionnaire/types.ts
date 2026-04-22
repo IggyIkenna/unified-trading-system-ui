@@ -158,6 +158,14 @@ export interface QuestionnaireEnvelope {
   readonly firm_name: string;
   /** Hex SHA-256 digest of the access code used to unlock the page. */
   readonly access_code_fingerprint: string;
+  /**
+   * Stable id of the persisted response (Firestore doc id in staging/prod,
+   * `q-local-<ts>` in dev/mock). Written by `submitQuestionnaire` after the
+   * response lands so downstream signup can attach the response without a
+   * server-side email lookup. See codex/08-workflows/signup-signin-workflow.md
+   * §2.3.4.
+   */
+  readonly submissionId?: string;
 }
 
 export const QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY = "questionnaire-envelope-v1" as const;
