@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { recordAdminEvent } from "@/lib/admin/audit";
 import { resolveDocStore } from "@/lib/onboarding/doc-store";
 
 /**
@@ -44,6 +45,15 @@ export async function POST(request: NextRequest) {
     if (result === null) {
       return NextResponse.json({ error: "Document not found" }, { status: 404 });
     }
+    // Fire-and-forget audit event. Never blocks the response; never throws.
+    void recordAdminEvent({
+      type: "ADMIN_DOC_DELETED",
+      target: { org_id, application_id, doc_type },
+      details: {
+        deleted_path: result.deleted_path,
+        backend: store.kind,
+      },
+    });
     return NextResponse.json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

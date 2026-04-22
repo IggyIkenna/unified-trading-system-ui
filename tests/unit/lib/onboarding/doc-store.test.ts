@@ -112,26 +112,16 @@ describe("localStore — round-trip", () => {
   });
 });
 
-describe("cloudStubStore — throws with actionable error", () => {
-  it("upload throws", async () => {
-    const store = _internals_for_testing.cloudStubStore;
-    const file = makeFile("x", "x.txt");
-    await expect(store.upload(ORG, file)).rejects.toThrow(/CLOUD_MOCK_MODE=true/);
+describe("cloudStorageStore — uses @google-cloud/storage", () => {
+  it("has cloud kind", () => {
+    expect(_internals_for_testing.cloudStorageStore.kind).toBe("cloud");
   });
 
-  it("download throws", async () => {
-    const store = _internals_for_testing.cloudStubStore;
-    await expect(store.download(ORG)).rejects.toThrow(/CLOUD_MOCK_MODE=true/);
-  });
-
-  it("list throws", async () => {
-    const store = _internals_for_testing.cloudStubStore;
-    await expect(store.list("acme")).rejects.toThrow(/CLOUD_MOCK_MODE=true/);
-  });
-
-  it("delete throws", async () => {
-    const store = _internals_for_testing.cloudStubStore;
-    await expect(store.delete(ORG)).rejects.toThrow(/CLOUD_MOCK_MODE=true/);
+  it("bucket name is env-dependent", () => {
+    vi.stubEnv("ENVIRONMENT", "staging");
+    expect(_internals_for_testing.bucketName()).toBe("odum-staging-onboarding-docs");
+    vi.stubEnv("ENVIRONMENT", "production");
+    expect(_internals_for_testing.bucketName()).toBe("odum-production-onboarding-docs");
   });
 });
 

@@ -193,28 +193,127 @@ const localStore: DocStore = {
 };
 
 // ────────────────────────────────────────────────────────────────────────
-// Cloud-stub implementation — surfaces a clear error until @google-cloud/
-// storage (or firebase-admin) is installed + ADC credentials are wired.
+// Cloud implementation — @google-cloud/storage with ADC credentials.
+// Bucket naming convention: odum-${env}-onboarding-docs
+// Authentication: Application Default Credentials — expects either
+//   * GOOGLE_APPLICATION_CREDENTIALS env pointing to a service-account JSON
+//   * the workload's attached service account (Cloud Run / GCE)
+//   * gcloud auth application-default login (local admin runs)
+// The bucket must exist in the target project; the SDK will fail loud on
+// first call if it doesn't, which surfaces the provisioning gap cleanly.
 // ────────────────────────────────────────────────────────────────────────
 
-const NOT_IMPLEMENTED =
-  "Cloud doc-store not implemented yet — install @google-cloud/storage " +
-  "and wire ADC credentials (see codex/08-workflows/prospect-questionnaire-flow.md §4). " +
-  "Until then, set CLOUD_MOCK_MODE=true to fall back to local-disk.";
+function bucketName(): string {
+  return `odum-${readEnvironment()}-onboarding-docs`;
+}
 
-const cloudStubStore: DocStore = {
+function objectKey(coords: DocCoordinates, ext: string): string {
+  return `${coords.org_id}/${coords.application_id}/${coords.doc_type}.${ext}`;
+}
+
+function objectKeyPrefix(coords: Pick<DocCoordinates, "org_id" | "application_id"> & Partial<Pick<DocCoordinates, "doc_type">>): string {
+  const base = `${coords.org_id}/${coords.application_id}/`;
+  return coords.doc_type ? `${base}${coords.doc_type}` : base;
+}
+
+async function cloudBucket() {
+  const { Storage } = await import("@google-cloud/storage");
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT ?? process.env.GCP_PROJECT_ID ?? undefined;
+  const storage = new Storage(projectId ? { projectId } : {});
+  return storage.bucket(bucketName());
+}
+
+const cloudStorageStore: DocStore = {
   kind: "cloud",
-  async upload() {
-    throw new Error(NOT_IMPLEMENTED);
+
+  async upload(coords, file) {
+    const ext = extFromName(file.name);
+    const bucket = await cloudBucket();
+    const key = objectKey(coords, ext);
+    const blob = bucket.file(key);
+    const bytes = Buffer.from(await file.arrayBuffer());
+    await blob.save(bytes, {
+      contentType: contentTypeFromExt(ext),
+      resumable: false,
+      metadata: {
+        metadata: {
+          org_id: coords.org_id,
+          application_id: coords.application_id,
+          doc_type: coords.doc_type,
+          original_name: file.name,
+        },
+      },
+    });
+    return {
+      ok: true,
+      gcs_path: `gs://${bucketName()}/${key}`,
+      file_name: file.name,
+      size: file.size,
+    };
   },
-  async download() {
-    throw new Error(NOT_IMPLEMENTED);
+
+  async download(coords) {
+    const bucket = await cloudBucket();
+    // List-prefix so we can find the object even when the ext is
+    // unknown at call-time (caller provides org/app/doc_type, not ext).
+    const [files] = await bucket.getFiles({ prefix: objectKeyPrefix(coords) });
+    if (files.length === 0) return null;
+    // Deterministic pick: shortest key (exact doc-type match takes
+    // precedence over doc_type as a prefix of a longer name).
+    const blob = files
+      .slice()
+      .sort((a, b) => a.name.length - b.name.length)[0];
+    const [bytes] = await blob.download();
+    const filename = blob.name.split("/").pop() ?? blob.name;
+    const ext = extFromName(filename);
+    const [metadata] = await blob.getMetadata();
+    return {
+      filename,
+      content_type: (metadata.contentType as string | undefined) ?? contentTypeFromExt(ext),
+      bytes,
+      size: Number(metadata.size ?? bytes.length),
+    };
   },
-  async list() {
-    throw new Error(NOT_IMPLEMENTED);
+
+  async list(org_id) {
+    const bucket = await cloudBucket();
+    const [files] = await bucket.getFiles({ prefix: `${org_id}/` });
+    const entries: DocEntry[] = [];
+    for (const blob of files) {
+      const [metadata] = await blob.getMetadata();
+      // Key shape: {org}/{app}/{doc_type}.{ext}
+      const parts = blob.name.split("/");
+      if (parts.length < 3) continue;
+      const [bOrg, application_id, fileName] = parts;
+      const dotIdx = fileName.lastIndexOf(".");
+      const doc_type = dotIdx === -1 ? fileName : fileName.slice(0, dotIdx);
+      const ext = dotIdx === -1 ? "bin" : fileName.slice(dotIdx + 1);
+      const size = Number(metadata.size ?? 0);
+      const updatedRaw = metadata.updated ?? metadata.timeCreated;
+      const uploaded_at =
+        typeof updatedRaw === "string" ? updatedRaw : new Date().toISOString();
+      entries.push({
+        org_id: bOrg,
+        application_id,
+        doc_type,
+        filename: fileName,
+        size,
+        uploaded_at,
+        gcs_path: `gs://${bucketName()}/${blob.name}`,
+      });
+    }
+    return entries.slice().sort((a, b) => b.uploaded_at.localeCompare(a.uploaded_at));
   },
-  async delete() {
-    throw new Error(NOT_IMPLEMENTED);
+
+  async delete(coords) {
+    const bucket = await cloudBucket();
+    const [files] = await bucket.getFiles({ prefix: objectKeyPrefix(coords) });
+    if (files.length === 0) return null;
+    const blob = files
+      .slice()
+      .sort((a, b) => a.name.length - b.name.length)[0];
+    await blob.delete({ ignoreNotFound: false });
+    return { ok: true, deleted_path: `gs://${bucketName()}/${blob.name}` };
   },
 };
 
@@ -224,11 +323,12 @@ export function resolveDocStore(): DocStore {
   const env = readEnvironment();
   const isDev = env === "development" || env === "test";
   if (mockMode || isDev) return localStore;
-  return cloudStubStore;
+  return cloudStorageStore;
 }
 
 export const _internals_for_testing = {
   localStore,
-  cloudStubStore,
+  cloudStorageStore,
   canonicalGcsUri,
+  bucketName,
 };

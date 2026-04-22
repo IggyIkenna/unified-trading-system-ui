@@ -39,6 +39,7 @@
     "orphan-audit:write-baseline": "tsx scripts/orphan-audit.ts --write-baseline"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.19.0",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.12",
     "@radix-ui/react-alert-dialog": "1.1.15",
@@ -83,6 +84,7 @@
     "happy-dom": "^20.9.0",
     "html-to-image": "^1.11.13",
     "input-otp": "1.4.2",
+    "js-yaml": "^4.1.1",
     "jspdf": "^4.2.1",
     "lightweight-charts": "^5.1.0",
     "lucide-react": "^0.577.0",
