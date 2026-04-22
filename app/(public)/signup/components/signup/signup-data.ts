@@ -1,47 +1,46 @@
-import { Brain, Briefcase, Database, Layers, Shield } from "lucide-react";
+import { Briefcase, Layers, Radio, Shield } from "lucide-react";
 
+// Public commercial paths — aligned with the four-path nav
+// (Investment Management / DART / Odum Signals / Regulatory Umbrella).
+// Legacy "data" and "backtesting" entries were dropped 2026-04-22 —
+// those weren't commercial paths, they were internal capabilities.
 export const SERVICES = [
-  {
-    id: "data",
-    name: "Data Access",
-    icon: Database,
-    color: "text-sky-400",
-    price: "Contact us",
-    desc: "Market data across 128 venues, 5 asset classes",
-  },
-  {
-    id: "backtesting",
-    name: "Research",
-    icon: Brain,
-    color: "text-violet-400",
-    price: "Contact us",
-    desc: "ML model training, strategy backtesting, signal configuration",
-  },
-  {
-    id: "platform",
-    name: "Trading Terminal",
-    icon: Layers,
-    color: "text-amber-400",
-    price: "Contact us",
-    desc: "Live trading, monitoring, execution, and control in one environment",
-  },
   {
     id: "investment",
     name: "Investment Management",
     icon: Briefcase,
     color: "text-rose-400",
     price: "Contact us",
-    desc: "FCA-authorised managed strategies with full reporting and oversight",
+    desc: "FCA-authorised managed strategies. SMA or pooled-fund allocation with full reporting and oversight.",
+  },
+  {
+    id: "platform",
+    name: "DART",
+    icon: Layers,
+    color: "text-cyan-400",
+    price: "Contact us",
+    desc: "Data, research, execution, reconciliation, reporting — the full trading lifecycle on one platform.",
+  },
+  {
+    id: "signals",
+    name: "Odum Signals",
+    icon: Radio,
+    color: "text-violet-400",
+    price: "Contact us",
+    desc: "Odum-generated signals delivered to your own execution stack via webhook or REST pull.",
   },
   {
     id: "regulatory",
     name: "Regulatory Umbrella",
     icon: Shield,
-    color: "text-slate-400",
+    color: "text-emerald-400",
     price: "Contact us",
-    desc: "FCA Appointed Representative services for algo trading firms",
+    desc: "FCA Appointed Representative or advisory structure for algo trading firms.",
   },
 ];
+// Services that walk the full self-serve onboarding wizard (contracts + docs).
+// DART and Signals onboarding is post-demo and handled via the GenericSignup
+// email-capture flow → user-management-api provisions after account mapping.
 export const ONBOARDING_SERVICES = new Set(["regulatory", "investment"]);
 export const REG_ENGAGEMENT = [
   {
