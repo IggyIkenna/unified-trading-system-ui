@@ -247,7 +247,9 @@
       <p class="subtitle">
         The questions we get asked most, answered in one line each where possible, with links to the deep
         dives that expand them. Longer versions live in the briefings and the
-        <a href="/our-story" style="color: var(--primary); text-decoration: underline; text-decoration-color: rgba(34, 211, 238, 0.4); text-underline-offset: 3px;">founder&rsquo;s story</a>.
+        <a href="/our-story"
+          style="color: var(--primary); text-decoration: underline; text-decoration-color: rgba(34, 211, 238, 0.4); text-underline-offset: 3px;">founder&rsquo;s
+          story</a>.
       </p>
     </div>
   </section>
@@ -267,7 +269,7 @@
         </p>
         <p>
           <strong>Our job is to meet you where you are and accelerate you through the complexity without
-          overloading the first conversation.</strong> Three things carry most of that weight:
+            overloading the first conversation.</strong> Three things carry most of that weight:
         </p>
         <ul>
           <li>
@@ -314,27 +316,73 @@
       </div>
 
       <div class="faq-item">
-        <h3>How is this different from [vendor X] &mdash; Hummingbot, QuantConnect, Tardis, Versify, IBKR&hellip;?</h3>
+        <h3>How is this different from [Deltix / Talos / QuantConnect / CoinRoutes / Amberdata / Hummingbot / TradingView / Waystone&hellip;]?</h3>
         <p>
-          Most vendors are deep in one piece &mdash; data, research, charting, execution, a single venue
-          family. That&rsquo;s good work; they&rsquo;re usually best-in-class at what they do. The gap we
-          found is that nobody combines <strong>the full lifecycle</strong> (research → promote → run →
-          post-trade → reporting → regulatory) with <strong>the full asset universe</strong> in a single
-          coherent system.
+          There isn&rsquo;t a single vendor that&rsquo;s a direct comparable &mdash; the market is
+          fragmented by <strong>layer</strong>, and each specialist is usually excellent at their piece.
+          The gap we fill is between the pieces. Layer by layer:
+        </p>
+        <ul>
+          <li>
+            <strong>Data &amp; market intelligence</strong> &mdash; Amberdata, Tardis, Databento. Best-in-class
+            normalised feeds and derivatives / DeFi analytics. We source from this tier rather than compete
+            with it; what we add on top is a research and execution stack that consumes clean data
+            end-to-end.
+          </li>
+          <li>
+            <strong>Research / backtest / strategy development</strong> &mdash; Deltix QuantOffice,
+            QuantConnect / LEAN. Strong quant environments. We extend further: strategies you build on
+            DART run against the same live execution and reporting layers Odum uses for its own capital,
+            across all five asset categories, and without migrating between backtest and live.
+          </li>
+          <li>
+            <strong>Execution &amp; smart order routing</strong> &mdash; Talos, CoinRoutes, Versify, Aplo,
+            Deltix CryptoCortex, Interactive Brokers. Institutional execution and venue connectivity that
+            does its job well. We integrate with &mdash; not replace &mdash; the venues; the Odum difference
+            is that execution sits inside the same operating system as research, risk, and reporting. No
+            vendor stitching.
+          </li>
+          <li>
+            <strong>Charting &amp; terminal UX</strong> &mdash; TradingView. The best charting UX in the
+            business. <strong>We still use it for some of our own charts.</strong> It was never trying to
+            be an operating layer.
+          </li>
+          <li>
+            <strong>Open-source automation</strong> &mdash; Hummingbot. Excellent modular automation
+            framework for crypto market making; different audience, serves operators who want to run their
+            own infrastructure.
+          </li>
+          <li>
+            <strong>Regulatory platforms / hosted-manager structures</strong> &mdash; Waystone, FundRock.
+            Deep fund-structure and AIFM / ManCo services we respect. Our Regulatory Umbrella is narrower
+            in ambition &mdash; designed for trading firms that want a quick route to operate regulated
+            activity under Odum&rsquo;s permissions, on the same operating stack as our IM clients.
+          </li>
+        </ul>
+        <p>
+          <strong>The unified-vs-fragmented frame</strong>: those specialists are usually sold separately,
+          and clients stitch them together. We offer one operating system across all six layers plus the
+          five asset categories. The advantage is less about beating any single specialist on their
+          strongest lane &mdash; several of them are genuinely better at that lane &mdash; and more about
+          eliminating the vendor stitching, duplicated workflows, and inconsistent UX that come with
+          assembling a stack yourself.
         </p>
         <p>
-          We still use some of them &mdash; TradingView for some charts, for example. The position
-          isn&rsquo;t competing-with-the-world; it&rsquo;s filling the combination that wasn&rsquo;t built.
-          We&rsquo;d happily operate as an affiliate where our capabilities complement rather than compete.
+          The posture is partner-first, not conquest-first. Several of the firms above are in our own
+          supplier stack, and we&rsquo;d happily operate as an affiliate or partner to any of them where
+          capabilities complement rather than overlap.
         </p>
       </div>
 
       <div class="faq-item">
         <h3>Which asset categories and venues do you cover?</h3>
         <ul>
-          <li><strong>Crypto exchanges</strong> &mdash; 11+ venues (Binance, OKX, Deribit, Coinbase, Bybit, KuCoin, Gate.io, and more).</li>
-          <li><strong>DeFi protocols</strong> &mdash; 55+ protocols across 8+ chains (Aave, Uniswap V3, Morpho, Hyperliquid, etc.).</li>
-          <li><strong>Traditional markets</strong> &mdash; 8 venues (CME, NYSE, ICE&hellip;) across equities, futures, FX, commodities.</li>
+          <li><strong>Crypto exchanges</strong> &mdash; 11+ venues (Binance, OKX, Deribit, Coinbase, Bybit, KuCoin,
+            Gate.io, and more).</li>
+          <li><strong>DeFi protocols</strong> &mdash; 55+ protocols across 8+ chains (Aave, Uniswap V3, Morpho,
+            Hyperliquid, etc.).</li>
+          <li><strong>Traditional markets</strong> &mdash; 8 venues (CME, NYSE, ICE&hellip;) across equities, futures,
+            FX, commodities.</li>
           <li><strong>Sports</strong> &mdash; Betfair, Smarkets, and 20+ bookmakers across 100+ leagues.</li>
           <li><strong>Prediction markets</strong> &mdash; Polymarket, Kalshi, and a handful of others.</li>
         </ul>
@@ -398,13 +446,14 @@
           precisely because <strong>the infrastructure makes it possible</strong>, not because we&rsquo;ve
           personally traded every combination. Even at a two-week pace per strategy &mdash; faster than
           anything we&rsquo;ve seen in production &mdash; <strong>~2,500 strategies is 5,000 weeks, roughly
-          100 years of single-desk work</strong>. That&rsquo;s before adding the team, the sales force, and
+            100 years of single-desk work</strong>. That&rsquo;s before adding the team, the sales force, and
           the operational capacity to raise and run capital against each one.
         </p>
         <p>
           Partnership is how the maths works. If a hundred partners each run $100M of Odum-backed
           strategies, we reach <strong>$10B under management without raising another pound</strong> &mdash;
-          and every partner is an extension of the platform. Genuine affiliation, aligned through
+          and every partner is an extension of the platform whilst we're not even 10% of the way there in terms of
+          coverage potential. Genuine affiliation, aligned through
           revenue-share. When partners grow, we grow. That&rsquo;s the dual incentive, and it&rsquo;s
           load-bearing.
         </p>
@@ -422,7 +471,7 @@
           validation, and eventually live-traded results. Strategies evolve &mdash; v1, v2, v3 &mdash; the
           same way any serious trader evolves their book. Clients can and should evolve theirs.
           <strong>The theoretical cap on strategy count across the taxonomy is vast, and we&rsquo;re nowhere
-          near it.</strong>
+            near it.</strong>
         </p>
       </div>
     </div>
@@ -516,7 +565,8 @@
         </ul>
         <p style="margin-top: 12px;">
           Full workflow with SLAs and data contracts:
-          <a href="https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/08-workflows/signup-signin-workflow.md">
+          <a
+            href="https://github.com/IggyIkenna/unified-trading-pm/blob/main/codex/08-workflows/signup-signin-workflow.md">
             signup / signin workflow playbook
           </a>.
         </p>
