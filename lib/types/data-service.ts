@@ -494,7 +494,11 @@ export type CorporateActionType =
   | "delisting"
   | "spinoff"
   | "dividend"
+  | "earnings"
   | "merger";
+
+export type DividendFrequency = "quarterly" | "semi_annual" | "annual" | "special" | "monthly";
+export type EarningsReportTime = "bmo" | "amc" | "during";
 
 export interface CorporateAction {
   id: string;
@@ -502,10 +506,35 @@ export interface CorporateAction {
   symbol: string;
   newSymbol?: string;
   actionType: CorporateActionType;
-  effectiveDate: string;
-  ratio?: number; // for splits: e.g., 4 for 4:1 split
+  effectiveDate: string; // dividends: ex-date; splits: effective date; earnings: report date
+  ratio?: number; // splits: e.g., 4 for 4:1 split; spinoff/merger: share ratio
   description: string;
   dataAdjusted: boolean;
+
+  // Lifecycle dates — shared by dividends/splits/earnings where applicable.
+  declarationDate?: string; // announcement date
+  recordDate?: string; // dividends/splits
+  payDate?: string; // dividends only
+
+  // Dividend-only
+  amount?: number; // cash amount per share
+  currency?: string; // e.g., "USD"
+  frequency?: DividendFrequency;
+  yieldPct?: number; // annualized, as percent (e.g., 2.35)
+
+  // Earnings-only
+  fiscalPeriod?: string; // e.g., "Q4 FY2025"
+  reportTime?: EarningsReportTime;
+  actualEps?: number | null;
+  estimatedEps?: number | null;
+  actualRevenue?: number | null; // in reporting currency (usually USD)
+  estimatedRevenue?: number | null;
+  surprisePct?: number | null; // ((actual - est) / |est|) * 100
+
+  // Spinoff / merger / delisting context
+  parentSymbol?: string;
+  targetSymbol?: string;
+  reason?: string;
 }
 
 // ─── Economic Events (from features-calendar-service) ─────────────────────────
@@ -528,6 +557,8 @@ export interface EconomicEvent {
   unit?: string;
   surprise?: number | null; // (actual - forecast) / |forecast| — null before release
   description: string;
+  source?: string; // e.g., "BLS", "BEA", "Federal Reserve", "U. of Michigan"
+  period?: string; // e.g., "Oct 2025", "Q3 2025"
 }
 
 // ─── Market Structure Events ───────────────────────────────────────────────────
@@ -550,6 +581,16 @@ export interface MarketStructureEvent {
   asset?: string;
   description: string;
   importance: EconomicEventImportance;
+  // Options/futures expiry
+  impactedSymbols?: string[];
+  openInterest?: number; // contracts
+  notionalUsd?: number; // notional value of expiring OI / liquidity event
+  // Halving / network upgrade
+  blockHeight?: number;
+  networkVersion?: string;
+  // Exchange halt
+  haltReason?: string;
+  resumedAt?: string; // ISO timestamp when trading resumed (null while halted)
 }
 
 // ─── Calendar / Holiday Events ─────────────────────────────────────────────────

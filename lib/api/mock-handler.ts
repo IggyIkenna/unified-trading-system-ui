@@ -39,7 +39,13 @@ import {
   MOCK_TRADES as PERF_MOCK_TRADES,
   getMockPerformanceSummary,
 } from "@/lib/mocks/fixtures/client-performance";
-import { MOCK_CATALOGUE } from "@/lib/mocks/fixtures/data-service";
+import {
+  MOCK_CALENDAR_HOLIDAYS,
+  MOCK_CATALOGUE,
+  MOCK_CORPORATE_ACTIONS,
+  MOCK_ECONOMIC_EVENTS,
+  MOCK_MARKET_STRUCTURE_EVENTS,
+} from "@/lib/mocks/fixtures/data-service";
 import { LENDING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-lending";
 import { LIQUIDITY_POOLS } from "@/lib/mocks/fixtures/defi-liquidity";
 import { STAKING_PROTOCOLS } from "@/lib/mocks/fixtures/defi-staking";
@@ -48,7 +54,7 @@ import {
   MOCK_ALGO_BACKTESTS,
   MOCK_EXECUTION_ALGOS,
   MOCK_EXECUTION_CANDIDATES,
-  MOCK_VENUES
+  MOCK_VENUES,
 } from "@/lib/mocks/fixtures/execution-platform";
 import {
   CHAMPION_CHALLENGER_PAIRS,
@@ -64,7 +70,7 @@ import {
   RUN_COMPARISONS,
   UNIFIED_TRAINING_RUNS,
   VALIDATION_PACKAGES,
-  buildSyntheticRunComparisons
+  buildSyntheticRunComparisons,
 } from "@/lib/mocks/fixtures/ml-data";
 import { MOCK_ARB_STREAM, MOCK_BETS, MOCK_FIXTURES, MOCK_ODDS } from "@/lib/mocks/fixtures/sports-data";
 import {
@@ -73,11 +79,7 @@ import {
   ODDS_MARKETS,
   SUBSCRIBED_BOOKMAKERS,
 } from "@/lib/mocks/fixtures/sports-fixtures";
-import {
-  STRATEGY_ALERTS,
-  STRATEGY_CANDIDATES,
-  STRATEGY_TEMPLATES
-} from "@/lib/mocks/fixtures/strategy-platform";
+import { STRATEGY_ALERTS, STRATEGY_CANDIDATES, STRATEGY_TEMPLATES } from "@/lib/mocks/fixtures/strategy-platform";
 import {
   ACCOUNTS,
   CLIENTS,
@@ -2311,7 +2313,8 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   if (route === "/api/ml/training-jobs") return json({ ok: true, jobId: "job-mock-001" });
   if (route === "/api/ml/versions") return json({ data: MODEL_VERSIONS });
   if (route.match(/\/api\/ml\/models\/[^/]+\/promote/)) return json({ ok: true });
-  if (route === "/api/ml/deployments") return json({ deployments: LIVE_DEPLOYMENTS, championChallengerPairs: CHAMPION_CHALLENGER_PAIRS });
+  if (route === "/api/ml/deployments")
+    return json({ deployments: LIVE_DEPLOYMENTS, championChallengerPairs: CHAMPION_CHALLENGER_PAIRS });
   if (route === "/api/ml/features") return json(FEATURE_SET_VERSIONS);
   if (route === "/api/ml/datasets") return json(DATASET_SNAPSHOTS);
   if (route === "/api/ml/validation-results") return json(VALIDATION_PACKAGES);
@@ -2322,7 +2325,16 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const fgUrl = new URL(path, "http://mock.local");
     const cat = fgUrl.searchParams.get("category") ?? "CEFI";
     const groupsByCategory: Record<string, string[]> = {
-      CEFI: ["price_momentum", "volume_profile", "volatility_surface", "orderbook_imbalance", "funding_rate", "open_interest", "whale_flow", "correlation_regime"],
+      CEFI: [
+        "price_momentum",
+        "volume_profile",
+        "volatility_surface",
+        "orderbook_imbalance",
+        "funding_rate",
+        "open_interest",
+        "whale_flow",
+        "correlation_regime",
+      ],
       TRADFI: ["macro_indicators", "yield_curve", "equity_momentum", "fx_carry", "credit_spread", "sector_rotation"],
       SPORTS: ["team_form", "player_stats", "market_movement", "weather_impact", "historical_h2h", "venue_effect"],
     };
@@ -2332,14 +2344,51 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     if (route === "/api/ml/grid-configs") {
       return json({
         data: [
-          { name: "cefi-full", category: "CEFI", description: "All CeFi feature groups", feature_groups: ["price_momentum", "volume_profile", "volatility_surface", "orderbook_imbalance", "funding_rate", "open_interest"], exclude_features: [], created_at: "2026-03-01T10:00:00Z" },
-          { name: "cefi-momentum-only", category: "CEFI", description: "Momentum + volume features only", feature_groups: ["price_momentum", "volume_profile"], exclude_features: ["whale_flow"], created_at: "2026-03-05T14:00:00Z" },
-          { name: "sports-core", category: "SPORTS", description: "Core sports prediction features", feature_groups: ["team_form", "player_stats", "historical_h2h"], exclude_features: [], created_at: "2026-03-10T09:00:00Z" },
+          {
+            name: "cefi-full",
+            category: "CEFI",
+            description: "All CeFi feature groups",
+            feature_groups: [
+              "price_momentum",
+              "volume_profile",
+              "volatility_surface",
+              "orderbook_imbalance",
+              "funding_rate",
+              "open_interest",
+            ],
+            exclude_features: [],
+            created_at: "2026-03-01T10:00:00Z",
+          },
+          {
+            name: "cefi-momentum-only",
+            category: "CEFI",
+            description: "Momentum + volume features only",
+            feature_groups: ["price_momentum", "volume_profile"],
+            exclude_features: ["whale_flow"],
+            created_at: "2026-03-05T14:00:00Z",
+          },
+          {
+            name: "sports-core",
+            category: "SPORTS",
+            description: "Core sports prediction features",
+            feature_groups: ["team_form", "player_stats", "historical_h2h"],
+            exclude_features: [],
+            created_at: "2026-03-10T09:00:00Z",
+          },
         ],
-        total: 3, page: 1, page_size: 50,
+        total: 3,
+        page: 1,
+        page_size: 50,
       });
     }
-    return json({ data: { name: "cefi-full", category: "CEFI", feature_groups: ["price_momentum", "volume_profile", "volatility_surface"], exclude_features: [] } });
+    return json({
+      data: {
+        name: "cefi-full",
+        category: "CEFI",
+        feature_groups: ["price_momentum", "volume_profile", "volatility_surface"],
+        exclude_features: [],
+      },
+    });
   }
 
   // --- Reports ---
@@ -3578,58 +3627,326 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
   // --- News ---
   if (route === "/api/news/feed") return json({ data: [] });
 
-  // --- Economic / corporate calendar (hooks/api/use-calendar) ---
-  if (route === "/api/calendar/economic-results") {
-    return json({
-      data: [
-        {
-          id: "eco-nfp",
-          event_type: "NFP",
-          release_date: getToday(),
-          release_time_utc: "13:30:00Z",
-          actual_value: 216000,
-          previous_value: 227000,
-          unit: "jobs (000s)",
-          status: "released" as const,
-        },
-        {
-          id: "eco-cpi",
-          event_type: "CPI m/m",
-          release_date: getToday(),
-          release_time_utc: "12:30:00Z",
-          actual_value: 0.2,
-          previous_value: 0.3,
-          unit: "%",
-          status: "upcoming" as const,
-        },
-      ],
-    });
+  // --- Calendar / events (hooks/api/use-calendar) ---
+  // Single source: lib/mocks/fixtures/data-service.ts. Consumed by both the
+  // /services/data/events page (full list) and the terminal CalendarEventsWidget
+  // (client-side filtered to "today"). The fixture dates are frozen 2026 values
+  // kept stable for tests; we prepend a small set of today-dated entries here
+  // so the widget has live demo content as the clock rolls forward.
+  if (route === "/api/calendar/economic-events") {
+    const today = getToday();
+    const syntheticToday: typeof MOCK_ECONOMIC_EVENTS = [
+      {
+        id: `eco-today-claims-${today}`,
+        eventType: "initial_claims",
+        label: "Initial Jobless Claims",
+        date: today,
+        time: "13:30",
+        importance: "medium",
+        country: "US",
+        forecast: 220,
+        actual: 224,
+        previous: 218,
+        unit: "K",
+        surprise: 0.018,
+        description: "Weekly initial unemployment insurance claims",
+        source: "DOL",
+        period: `Week ending ${today}`,
+      },
+      {
+        id: `eco-today-pmi-${today}`,
+        eventType: "other_macro",
+        label: "S&P Global Flash PMI",
+        date: today,
+        time: "14:45",
+        importance: "medium",
+        country: "US",
+        forecast: 52.1,
+        actual: 52.7,
+        previous: 51.8,
+        unit: "",
+        surprise: 0.012,
+        description: "Flash Manufacturing + Services PMI composite",
+        source: "S&P Global",
+        period: "Apr 2026 flash",
+      },
+      {
+        id: `eco-today-retail-${today}`,
+        eventType: "other_macro",
+        label: "Retail Sales (MoM)",
+        date: today,
+        time: "13:30",
+        importance: "high",
+        country: "US",
+        forecast: 0.3,
+        actual: 0.5,
+        previous: 0.2,
+        unit: "%",
+        surprise: 0.667,
+        description: "US retail sales — headline month-over-month change",
+        source: "Census Bureau",
+        period: "Mar 2026",
+      },
+      {
+        id: `eco-today-cpi-${today}`,
+        eventType: "cpi",
+        label: "CPI (MoM)",
+        date: today,
+        time: "13:30",
+        importance: "high",
+        country: "US",
+        forecast: 0.3,
+        actual: null,
+        previous: 0.4,
+        unit: "%",
+        surprise: null,
+        description: "US Consumer Price Index — month-over-month change",
+        source: "BLS",
+        period: "Mar 2026",
+      },
+      {
+        id: `eco-today-fed-speaker-${today}`,
+        eventType: "fomc",
+        label: "Powell Speech (Brookings)",
+        date: today,
+        time: "18:00",
+        importance: "high",
+        country: "US",
+        forecast: null,
+        actual: null,
+        previous: null,
+        unit: "",
+        surprise: null,
+        description: "Chair Powell speaks on the economic outlook — Q&A to follow",
+        source: "Federal Reserve",
+        period: "Spring address",
+      },
+    ];
+    return json({ data: [...syntheticToday, ...MOCK_ECONOMIC_EVENTS] });
   }
   if (route === "/api/calendar/corporate-actions") {
-    return json({
-      data: [
-        {
-          id: "ca-aapl-div",
-          ticker: "AAPL",
-          event_type: "dividend" as const,
-          event_date: getToday(),
-          amount: 0.25,
-          actual_eps: null,
-          estimated_eps: null,
-          status: "confirmed" as const,
-        },
-        {
-          id: "ca-msft-earn",
-          ticker: "MSFT",
-          event_type: "earnings" as const,
-          event_date: getToday(),
-          amount: null,
-          actual_eps: null,
-          estimated_eps: 3.12,
-          status: "upcoming" as const,
-        },
-      ],
-    });
+    const today = getToday();
+    const syntheticToday: typeof MOCK_CORPORATE_ACTIONS = [
+      // Dividends ────────────────────────────────────────────────────────
+      {
+        id: `ca-today-div-ko-${today}`,
+        venue: "NYSE",
+        symbol: "KO",
+        actionType: "dividend",
+        effectiveDate: today,
+        description: "Coca-Cola quarterly cash dividend",
+        dataAdjusted: true,
+        declarationDate: "2026-03-30",
+        recordDate: "2026-04-24",
+        payDate: "2026-05-08",
+        amount: 0.51,
+        currency: "USD",
+        frequency: "quarterly",
+        yieldPct: 3.12,
+      },
+      {
+        id: `ca-today-div-jpm-${today}`,
+        venue: "NYSE",
+        symbol: "JPM",
+        actionType: "dividend",
+        effectiveDate: today,
+        description: "JPMorgan Chase quarterly cash dividend",
+        dataAdjusted: true,
+        declarationDate: "2026-03-18",
+        recordDate: "2026-04-25",
+        payDate: "2026-05-13",
+        amount: 1.25,
+        currency: "USD",
+        frequency: "quarterly",
+        yieldPct: 2.18,
+      },
+      {
+        id: `ca-today-div-pg-${today}`,
+        venue: "NYSE",
+        symbol: "PG",
+        actionType: "dividend",
+        effectiveDate: today,
+        description: "Procter & Gamble quarterly cash dividend",
+        dataAdjusted: true,
+        declarationDate: "2026-04-09",
+        recordDate: "2026-04-27",
+        payDate: "2026-05-15",
+        amount: 1.0065,
+        currency: "USD",
+        frequency: "quarterly",
+        yieldPct: 2.47,
+      },
+      {
+        id: `ca-today-div-xom-${today}`,
+        venue: "NYSE",
+        symbol: "XOM",
+        actionType: "dividend",
+        effectiveDate: today,
+        description: "ExxonMobil quarterly cash dividend",
+        dataAdjusted: true,
+        declarationDate: "2026-04-01",
+        recordDate: "2026-04-27",
+        payDate: "2026-06-10",
+        amount: 0.99,
+        currency: "USD",
+        frequency: "quarterly",
+        yieldPct: 3.46,
+      },
+      // Earnings ─────────────────────────────────────────────────────────
+      {
+        id: `ca-today-earn-tsla-${today}`,
+        venue: "NASDAQ",
+        symbol: "TSLA",
+        actionType: "earnings",
+        effectiveDate: today,
+        description: "Tesla Q1 FY26 earnings",
+        dataAdjusted: true,
+        declarationDate: "2026-04-01",
+        fiscalPeriod: "Q1 FY2026",
+        reportTime: "amc",
+        actualEps: null,
+        estimatedEps: 0.67,
+        actualRevenue: null,
+        estimatedRevenue: 24_800_000_000,
+        surprisePct: null,
+      },
+      {
+        id: `ca-today-earn-nflx-${today}`,
+        venue: "NASDAQ",
+        symbol: "NFLX",
+        actionType: "earnings",
+        effectiveDate: today,
+        description: "Netflix Q1 FY26 earnings",
+        dataAdjusted: true,
+        declarationDate: "2026-03-28",
+        fiscalPeriod: "Q1 FY2026",
+        reportTime: "amc",
+        actualEps: 6.42,
+        estimatedEps: 5.89,
+        actualRevenue: 11_200_000_000,
+        estimatedRevenue: 10_900_000_000,
+        surprisePct: 9.0,
+      },
+      {
+        id: `ca-today-earn-ibm-${today}`,
+        venue: "NYSE",
+        symbol: "IBM",
+        actionType: "earnings",
+        effectiveDate: today,
+        description: "IBM Q1 FY26 earnings",
+        dataAdjusted: true,
+        declarationDate: "2026-03-24",
+        fiscalPeriod: "Q1 FY2026",
+        reportTime: "amc",
+        actualEps: 1.68,
+        estimatedEps: 1.74,
+        actualRevenue: 14_500_000_000,
+        estimatedRevenue: 14_400_000_000,
+        surprisePct: -3.45,
+      },
+      {
+        id: `ca-today-earn-axp-${today}`,
+        venue: "NYSE",
+        symbol: "AXP",
+        actionType: "earnings",
+        effectiveDate: today,
+        description: "American Express Q1 FY26 earnings",
+        dataAdjusted: true,
+        declarationDate: "2026-03-27",
+        fiscalPeriod: "Q1 FY2026",
+        reportTime: "bmo",
+        actualEps: null,
+        estimatedEps: 3.28,
+        actualRevenue: null,
+        estimatedRevenue: 16_700_000_000,
+        surprisePct: null,
+      },
+      // Splits / symbol-change sprinkle ──────────────────────────────────
+      {
+        id: `ca-today-split-${today}`,
+        venue: "NASDAQ",
+        symbol: "AVGO",
+        actionType: "split",
+        effectiveDate: today,
+        description: "Broadcom 10-for-1 forward stock split",
+        dataAdjusted: true,
+        ratio: 10,
+        declarationDate: "2026-03-12",
+        recordDate: "2026-04-17",
+      },
+      {
+        id: `ca-today-symbol-${today}`,
+        venue: "IBKR",
+        symbol: "SQ",
+        newSymbol: "XYZ",
+        actionType: "symbol_change",
+        effectiveDate: today,
+        description: "Block, Inc. ticker change from SQ to XYZ",
+        dataAdjusted: true,
+        declarationDate: "2026-03-18",
+        reason: "Corporate rebrand",
+      },
+    ];
+    return json({ data: [...syntheticToday, ...MOCK_CORPORATE_ACTIONS] });
+  }
+  if (route === "/api/calendar/market-structure") {
+    const today = getToday();
+    const syntheticToday: typeof MOCK_MARKET_STRUCTURE_EVENTS = [
+      {
+        id: `mse-today-optx-cboe-${today}`,
+        eventType: "options_expiry",
+        label: "Weekly Equity Options Expiry",
+        date: today,
+        time: "20:00",
+        venue: "CBOE",
+        description: "Weekly US equity options expiry — 4PM ET",
+        importance: "medium",
+        impactedSymbols: ["SPY", "QQQ", "IWM"],
+        openInterest: 4_200_000,
+        notionalUsd: 780_000_000_000,
+      },
+      {
+        id: `mse-today-optx-cme-${today}`,
+        eventType: "options_expiry",
+        label: "CME Weekly Index Options Expiry",
+        date: today,
+        time: "21:00",
+        venue: "CME",
+        description: "CME weekly E-mini S&P + Nasdaq options expiry",
+        importance: "medium",
+        impactedSymbols: ["ES", "NQ"],
+        openInterest: 612_000,
+        notionalUsd: 260_000_000_000,
+      },
+      {
+        id: `mse-today-futx-vx-${today}`,
+        eventType: "futures_expiry",
+        label: "VX Futures Settlement",
+        date: today,
+        time: "14:00",
+        venue: "CFE",
+        asset: "VIX",
+        description: "VIX weekly futures final settlement",
+        importance: "medium",
+        impactedSymbols: ["VXK6"],
+        openInterest: 82_400,
+        notionalUsd: 1_400_000_000,
+      },
+      {
+        id: `mse-today-liq-${today}`,
+        eventType: "liquidity_event",
+        label: "Month-End Index Rebalance",
+        date: today,
+        venue: "multiple",
+        description: "Month-end institutional rebalance — elevated MOC volume",
+        importance: "medium",
+        notionalUsd: 92_000_000_000,
+      },
+    ];
+    return json({ data: [...syntheticToday, ...MOCK_MARKET_STRUCTURE_EVENTS] });
+  }
+  if (route === "/api/calendar/holidays") {
+    return json({ data: MOCK_CALENDAR_HOLIDAYS });
   }
 
   // --- Chat ---
@@ -5496,9 +5813,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const updated = updateUser(uid, { status: "offboarded" });
     return updated
       ? json({
-        user: updated,
-        revocation_steps: [{ service: "portal", status: "revoked" }],
-      })
+          user: updated,
+          revocation_steps: [{ service: "portal", status: "revoked" }],
+        })
       : json({ error: "not found" });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {

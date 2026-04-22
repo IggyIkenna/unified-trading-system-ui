@@ -1,71 +1,62 @@
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
+import type { EconomicEvent, CorporateAction, MarketStructureEvent, CalendarHoliday } from "@/lib/types/data-service";
 
-export interface EconomicResultItem {
-  id: string;
-  event_type: string;
-  release_date: string;
-  release_time_utc: string;
-  actual_value: number | null;
-  previous_value: number | null;
-  unit: string;
-  status: "released" | "upcoming";
+/**
+ * Calendar/events hooks — single source for both `/services/data/events` (all-time
+ * view) and the terminal `CalendarEventsWidget` (today-only slice).
+ *
+ * Both surfaces consume the same shape through these hooks. When the live API is
+ * ready, flip the mock-handler off; no consumer changes.
+ */
+
+export type { EconomicEvent, CorporateAction, MarketStructureEvent, CalendarHoliday } from "@/lib/types/data-service";
+
+interface Envelope<T> {
+  data: T[];
 }
 
-export interface CorporateActionItem {
-  id: string;
-  ticker: string;
-  event_type: "dividend" | "earnings" | "split";
-  event_date: string;
-  amount: number | null;
-  actual_eps: number | null;
-  estimated_eps: number | null;
-  status: "confirmed" | "upcoming";
-}
-
-export function useEconomicResults(params?: {
-  days_back?: number;
-  event_types?: string;
-}) {
+export function useEconomicEvents() {
   const { user, token } = useAuth();
-  const qs = new URLSearchParams();
-  if (params?.days_back) qs.set("days_back", String(params.days_back));
-  if (params?.event_types) qs.set("event_types", params.event_types);
-
   return useQuery({
-    queryKey: ["calendar-economic-results", user?.id, params],
-    queryFn: () =>
-      apiFetch(`/api/calendar/economic-results?${qs.toString()}`, token),
+    queryKey: ["calendar-economic-events", user?.id],
+    queryFn: () => apiFetch(`/api/calendar/economic-events`, token),
     enabled: !!user,
-    refetchInterval: 60_000, // poll every 60 seconds
-    select: (data: unknown) => {
-      const d = data as { data: EconomicResultItem[] };
-      return d.data ?? [];
-    },
+    refetchInterval: 60_000,
+    select: (data: unknown) => (data as Envelope<EconomicEvent>).data ?? [],
   });
 }
 
-export function useCorporateActions(params?: {
-  tickers?: string;
-  event_type?: string;
-  days_forward?: number;
-}) {
+export function useCorporateActions() {
   const { user, token } = useAuth();
-  const qs = new URLSearchParams();
-  if (params?.tickers) qs.set("tickers", params.tickers);
-  if (params?.event_type) qs.set("event_type", params.event_type);
-  if (params?.days_forward) qs.set("days_forward", String(params.days_forward));
-
   return useQuery({
-    queryKey: ["calendar-corporate-actions", user?.id, params],
-    queryFn: () =>
-      apiFetch(`/api/calendar/corporate-actions?${qs.toString()}`, token),
+    queryKey: ["calendar-corporate-actions", user?.id],
+    queryFn: () => apiFetch(`/api/calendar/corporate-actions`, token),
     enabled: !!user,
     refetchInterval: 60_000,
-    select: (data: unknown) => {
-      const d = data as { data: CorporateActionItem[] };
-      return d.data ?? [];
-    },
+    select: (data: unknown) => (data as Envelope<CorporateAction>).data ?? [],
+  });
+}
+
+export function useMarketStructureEvents() {
+  const { user, token } = useAuth();
+  return useQuery({
+    queryKey: ["calendar-market-structure", user?.id],
+    queryFn: () => apiFetch(`/api/calendar/market-structure`, token),
+    enabled: !!user,
+    refetchInterval: 60_000,
+    select: (data: unknown) => (data as Envelope<MarketStructureEvent>).data ?? [],
+  });
+}
+
+export function useCalendarHolidays() {
+  const { user, token } = useAuth();
+  return useQuery({
+    queryKey: ["calendar-holidays", user?.id],
+    queryFn: () => apiFetch(`/api/calendar/holidays`, token),
+    enabled: !!user,
+    refetchInterval: 300_000,
+    select: (data: unknown) => (data as Envelope<CalendarHoliday>).data ?? [],
   });
 }
