@@ -11,6 +11,7 @@ export const MARKETING_STATIC_FILES = [
   "regulatory.html",
   "who-we-are.html",
   "our-story.html",
+  "story.html",
 ] as const;
 
 export type MarketingStaticFilename = (typeof MARKETING_STATIC_FILES)[number];

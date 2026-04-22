@@ -26,7 +26,7 @@ const NAV_FIVE_PATHS = [
 ] as const;
 
 const NAV_SECONDARY = [
-  { href: "/our-story", label: "Our Story" },
+  { href: "/story", label: "Story" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
