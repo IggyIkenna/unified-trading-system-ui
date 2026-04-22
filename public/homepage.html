@@ -7,7 +7,7 @@
   <title>Odum Research — FCA-Regulated Investment Manager &amp; DART</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -28,7 +28,7 @@
       --amber: #fbbf24;
       --rose: #fb7185;
       --cyan: #22d3ee;
-      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -43,9 +43,89 @@
       font-weight: 600;
     }
 
+    .lab-signals {
+      color: var(--violet);
+      font-weight: 600;
+    }
+
     .lab-regulate {
       color: #94a3b8;
       font-weight: 600;
+    }
+
+    /* Glossary tooltip — mirrors the React <Term> primitive used on briefings
+       (SSOT: lib/glossary.ts). Dotted underline + hover/focus popover so copy
+       can stay terse and link acronyms / product labels to one-line defs. */
+    .glossary-term {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+      border: 0;
+      background: none;
+      font: inherit;
+      font-weight: 600;
+      color: inherit;
+      padding: 0;
+      border-bottom: 1px dotted rgba(255, 255, 255, 0.55);
+      transition: border-color 0.15s ease;
+    }
+
+    .glossary-term:hover,
+    .glossary-term:focus-visible {
+      border-bottom-color: rgba(255, 255, 255, 0.95);
+      outline: none;
+    }
+
+    .glossary-term::after {
+      content: attr(data-def);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 10px);
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 320px;
+      padding: 10px 12px;
+      background: #0a0a0b;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.88);
+      white-space: normal;
+      text-align: left;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+    }
+
+    .glossary-term:hover::after,
+    .glossary-term:focus-visible::after {
+      opacity: 1;
+    }
+
+    a.glossary-term {
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Keep path label colours when glossary + lab-* combine (glossary-term sets color: inherit). */
+    .glossary-term.lab-invest {
+      color: var(--rose);
+    }
+
+    .glossary-term.lab-build {
+      color: var(--cyan);
+    }
+
+    .glossary-term.lab-signals {
+      color: var(--violet);
+    }
+
+    .glossary-term.lab-regulate {
+      color: #94a3b8;
     }
 
     *,
@@ -90,6 +170,196 @@
       align-items: center;
       justify-content: space-between;
       height: 56px;
+    }
+
+    /* Asset-class pill + path icon row (shadow-mounted homepage; public shell adds depth strip in app). */
+    .hero-asset-pill {
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px 8px;
+      margin: 0 auto 18px;
+      padding: 8px 18px 8px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-accent);
+      font-size: 12px;
+      font-weight: 500;
+      color: #fafafa;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-asset-pill svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.95;
+    }
+
+    .hero-asset-pill .sep {
+      opacity: 0.45;
+      user-select: none;
+    }
+
+    .hero-service-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 18px;
+      margin-top: 28px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-service-tile {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      cursor: help;
+    }
+
+    .hero-service-tile:hover,
+    .hero-service-tile:focus-visible {
+      color: var(--text);
+      border-color: var(--border-accent);
+      background: rgba(255, 255, 255, 0.03);
+      outline: none;
+    }
+
+    .hero-service-tile svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      opacity: 0.9;
+    }
+
+    .hero-service-tile.lab-invest svg {
+      color: var(--rose);
+    }
+
+    .hero-service-tile.lab-build svg {
+      color: var(--cyan);
+    }
+
+    .hero-service-tile.lab-signals svg {
+      color: var(--violet);
+    }
+
+    .hero-service-tile.lab-regulate svg {
+      color: #94a3b8;
+    }
+
+    .hero-service-tile::after {
+      content: attr(data-def);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 10px);
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 320px;
+      padding: 10px 12px;
+      background: #0a0a0b;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.5;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: normal;
+      color: rgba(255, 255, 255, 0.88);
+      white-space: normal;
+      text-align: left;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+    }
+
+    .hero-service-tile:hover::after,
+    .hero-service-tile:focus-visible::after {
+      opacity: 1;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 32px 48px;
+      margin-top: 48px;
+    }
+
+    .hero-stat {
+      text-align: center;
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: var(--font-mono);
+      letter-spacing: -0.01em;
+    }
+
+    .hero-stat span {
+      display: block;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .hero-trust-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      margin-top: 28px;
+    }
+
+    .hero-trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 0.02em;
+    }
+
+    .hero-trust-badge svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .hero-trust-badge.is-fca svg {
+      color: var(--emerald);
+    }
+
+    .hero-trust-badge.is-security svg {
+      color: var(--sky);
+    }
+
+    .hero-trust-badge.is-flex svg {
+      color: var(--violet);
     }
 
     header .container.header-inner {
@@ -347,27 +617,12 @@
       line-height: 1.2;
     }
 
-    .hero .subtitle {
-      margin-top: 20px;
-      font-size: clamp(16px, 2vw, 20px);
-      color: var(--text-muted);
-      max-width: 640px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .hero .support {
-      margin-top: 12px;
-      font-size: 15px;
-      color: var(--text-dim);
-    }
-
-    .hero-label {
-      margin-top: 12px;
-      font-size: 16px;
+    .hero-tagline {
+      margin-top: 10px;
+      font-size: clamp(17px, 2vw, 22px);
       font-weight: 500;
-      color: var(--text-muted);
-      letter-spacing: 0.02em;
+      color: var(--text-secondary);
+      letter-spacing: -0.01em;
     }
 
     .stats-strip {
@@ -484,11 +739,21 @@
     }
 
     .card {
+      display: flex;
+      flex-direction: column;
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 28px;
       transition: all 0.2s;
+    }
+
+    .card > ul {
+      flex: 0 0 auto;
+    }
+
+    .card > .card-link {
+      margin-top: auto;
     }
 
     .card:hover {
@@ -989,11 +1254,12 @@
         </div>
         <span aria-hidden="true">|</span>
         <a href="who-we-are.html">Who We Are</a>
-        <a href="contact.html">Contact</a>
+        <a href="/contact?service=general">Contact</a>
       </nav>
       <div class="header-actions">
-        <a href="contact.html" class="btn btn-ghost">Sign In</a>
-        <a href="contact.html" class="btn btn-primary">Book a Call</a>
+        <a href="/login" class="btn btn-ghost">Sign In</a>
+        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
+          class="btn btn-primary">Book a 45-minute call</a>
       </div>
     </div>
   </header>
@@ -1002,43 +1268,113 @@
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-content">
+      <div class="hero-asset-pill" aria-label="Market and venue coverage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.5 3.5 4 7.2 4 9s-1.5 5.5-4 9c-2.5-3.5-4-7.2-4-9s1.5-5.5 4-9z" />
+        </svg>
+        <span>TradFi</span><span class="sep" aria-hidden="true">·</span><span>Crypto</span><span class="sep"
+          aria-hidden="true">·</span><span>DeFi</span><span class="sep"
+          aria-hidden="true">·</span><span>Sports</span><span class="sep"
+          aria-hidden="true">·</span><span>Prediction Markets</span>
+      </div>
       <h1>Unified Trading Infrastructure</h1>
-      <p class="hero-label"><span style="color:var(--cyan);">FCA-Regulated</span> Investment Manager, Signals
-        Provider, and DART</p>
-      <p class="subtitle">
-        Five paths on one regulated operating system. <span class="lab-invest">Allocate capital</span> to
-        Odum-managed strategies (Investment Management). <span class="lab-build">Run your strategy on our stack</span>
-        via DART &mdash; Data Analytics, Research &amp; Trading &mdash; either DART Signals-In (your signals, our
-        execution) or DART Full Pipeline. <span class="lab-build">Take our signals out</span> via Odum Signals.
-        Operate your regulated activity under our <span class="lab-regulate">FCA Regulatory Umbrella</span>.
-      </p>
-      <p class="support">
-        Across digital assets, traditional markets, sports, and prediction markets.
-      </p>
+      <p class="hero-tagline">The same infrastructure we use to run our own capital &mdash; available to institutional
+        clients at any entry point.</p>
+      <nav class="hero-service-row" aria-label="Four commercial paths">
+        <a class="hero-service-tile lab-invest" href="strategies.html"
+          data-def="Investment Management &mdash; Odum allocates client capital to its own systematic strategies under Odum&apos;s FCA permissions, reporting on the shared operating surface.">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 20V10M9 20V4M14 20v-6M19 20V8" />
+          </svg>
+          <span>Investment Management</span>
+        </a>
+        <a class="hero-service-tile lab-build" href="platform.html"
+          data-def="DART (Data Analytics, Research &amp; Trading). Run on the same stack we use internally. DART Full adds research, ML, and strategy promotion; DART Signals-In sends your instructions for execution only.">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <path d="M4 10h16M10 4v16" />
+          </svg>
+          <span>DART</span>
+        </a>
+        <a class="hero-service-tile lab-signals" href="/signals"
+          data-def="Odum Signals &mdash; Odum-generated trading signals delivered to your execution stack via signed webhooks or REST pull. You run the rest.">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 11a9 9 0 0 1 9 9" />
+            <path d="M4 4a16 16 0 0 1 16 16" />
+            <circle cx="5" cy="19" r="1" />
+          </svg>
+          <span>Odum Signals</span>
+        </a>
+        <a class="hero-service-tile lab-regulate" href="regulatory.html"
+          data-def="FCA Regulatory Umbrella &mdash; operate covered regulated activity under Odum&apos;s permissions (AIFM, AR, MiFID II coverage) with aligned governance and reporting.">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
+          </svg>
+          <span>Regulatory Umbrella</span>
+        </a>
+      </nav>
       <div class="hero-ctas">
-        <a href="contact.html" class="btn btn-primary">Discuss a Mandate</a>
+        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
+          class="btn btn-primary">Discuss a Mandate</a>
         <a href="platform.html" class="btn btn-outline">Explore the Platform</a>
       </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>5</strong><span>Asset Classes</span></div>
+        <div class="hero-stat"><strong>100+</strong><span>Venues</span></div>
+        <div class="hero-stat"><strong>24/7</strong><span>Trading</span></div>
+        <div class="hero-stat"><strong>100+ TB</strong><span>Market Data</span></div>
+        <div class="hero-stat"><strong>5</strong><span>Service Lines</span></div>
+      </div>
+      <div class="hero-trust-row">
+        <span class="hero-trust-badge is-fca">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
+            <path d="M9 12l2 2 4-4" />
+          </svg>
+          FCA Authorised (975797)
+        </span>
+        <span class="hero-trust-badge is-security">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          Institutional Security
+        </span>
+        <span class="hero-trust-badge is-flex">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2l9 5-9 5-9-5 9-5z" />
+            <path d="M3 12l9 5 9-5" />
+            <path d="M3 17l9 5 9-5" />
+          </svg>
+          No-Code to Full-Code
+        </span>
+      </div>
       <div class="proof-strip">
-        <div class="proof-item"><strong>$7.5M AUM</strong></div>
-        <div class="proof-item"><strong>Clients live under coverage</strong></div>
-        <div class="proof-item"><strong>Platform clients live</strong></div>
-        <div class="proof-item"><strong>FCA 975797</strong></div>
+        <div class="proof-item"><strong>$7.5M+ AUM</strong><span>IM mandate scale</span></div>
+        <div class="proof-item"><strong>Professional &amp; ECP</strong><span>Client classification</span></div>
+        <div class="proof-item"><strong>London, UK</strong><span>Headquarters</span></div>
       </div>
     </div>
   </section>
 
   <!-- ============ 2. PLATFORM BREADTH + GALAXY + WHO WE SERVE ============ -->
-  <section style="padding: 40px 0; background: var(--bg-surface);">
+  <section style="padding: 32px 0; background: var(--bg-surface);">
     <div class="container">
-      <p class="eyebrow" style="text-align:center; margin-bottom:20px;">Platform Breadth</p>
-      <div class="stats-strip">
-        <div class="stat-item"><strong>5</strong><span>Asset Classes</span></div>
-        <div class="stat-item"><strong>100+</strong><span>Venues</span></div>
-        <div class="stat-item"><strong>24/7</strong><span>Trading</span></div>
-        <div class="stat-item"><strong>100+ TB</strong><span>Market Data</span></div>
-        <div class="stat-item"><strong>5</strong><span>Service Lines</span></div>
-      </div>
+      <p
+        style="text-align:center;font-size:12px;color:var(--text-dim);max-width:720px;margin:0 auto;line-height:1.5;">
+        <strong>Four commercial paths</strong> — Investment Management, DART (Signals-In and Full), Odum Signals, and
+        Regulatory Umbrella — are how clients contract. The <strong>fifth</strong> count is <strong>service
+          lines</strong>: cross-cutting platform, data, risk, controls, and client-operations functions that back
+        every path.
+      </p>
     </div>
   </section>
 
@@ -1060,7 +1396,7 @@
             { label: "TradFi", sub: "CME \u00b7 ICE", color: "#22d3ee", fill: "#061820", fx: 0.16, fy: 0.36 },
             { label: "Crypto", sub: "Exchanges", color: "#4ade80", fill: "#061a0f", fx: 0.5, fy: 0.19 },
             { label: "DeFi", sub: "Protocols", color: "#a78bfa", fill: "#100a20", fx: 0.84, fy: 0.36 },
-            { label: "Sports", sub: "Betfair \u00b7 Pinnacle", color: "#fbbf24", fill: "#1a1205", fx: 0.24, fy: 0.8 },
+            { label: "Sports", sub: "Betfair · Smarkets", color: "#fbbf24", fill: "#1a1205", fx: 0.24, fy: 0.8 },
             { label: "Predictions", sub: "Polymarket \u00b7 Kalshi", color: "#fb7185", fill: "#1a060c", fx: 0.73, fy: 0.8 }
           ];
           var CONNS = [
@@ -1104,7 +1440,7 @@
           <span class="venue-pill venue-pill-violet">Uniswap V3</span>
           <span class="venue-pill venue-pill-violet">Morpho</span>
           <span class="venue-pill venue-pill-amber">Betfair</span>
-          <span class="venue-pill venue-pill-amber">Pinnacle</span>
+          <span class="venue-pill venue-pill-amber">Smarkets</span>
           <span class="venue-pill venue-pill-rose">Polymarket</span>
           <span class="venue-pill venue-pill-rose">Kalshi</span>
           <span class="venue-pill venue-pill-cyan">CME</span>
@@ -1117,7 +1453,7 @@
           <span class="venue-pill venue-pill-violet">Uniswap V3</span>
           <span class="venue-pill venue-pill-violet">Morpho</span>
           <span class="venue-pill venue-pill-amber">Betfair</span>
-          <span class="venue-pill venue-pill-amber">Pinnacle</span>
+          <span class="venue-pill venue-pill-amber">Smarkets</span>
           <span class="venue-pill venue-pill-rose">Polymarket</span>
           <span class="venue-pill venue-pill-rose">Kalshi</span>
         </div>
@@ -1131,27 +1467,54 @@
       <div class="section-header">
         <p class="eyebrow">Built for professional and institutional users</p>
         <h2>Who we work with</h2>
-        <p>Allocators, professional trading firms, emerging managers, and institutions that need systematic investment
-          management, trading infrastructure, or regulated market access.</p>
+        <p>Each client path maps to a specific Odum offering &mdash; not a bundle. Hover the bolded term to
+          see how the path fits.</p>
       </div>
       <div class="card-grid card-grid-4">
         <article class="card">
           <h3>Allocators &amp; family offices</h3>
-          <p>Access managed strategies with regulated reporting, institutional oversight, and a clear allocation
-            framework.</p>
+          <p>Your edge is capital allocation, not strategy research. You allocate; we run the strategies.
+            <span class="glossary-term" tabindex="0"
+              data-def="Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface. Pooled fund or SMA, no management fee, performance share.">Investment
+              Management</span>
+            mandate under FCA cover; reporting partitioned to your slice.
+          </p>
         </article>
         <article class="card">
           <h3>Professional trading firms</h3>
-          <p>Use Odum's research, execution, and reporting stack without building every layer internally.</p>
+          <p>Your edge is alpha; building every operational layer eats the edge.
+            <span class="glossary-term" tabindex="0"
+              data-def="DART Full: unrestricted platform access — research, ML, strategy promotion, execution, analytics, reporting — on the same stack Odum uses for its own capital. Client-exclusivity contract protects your IP.">DART
+              Full</span>
+            puts research, promotion, and live execution on the same stack Odum uses internally, under
+            a client-exclusivity contract.
+          </p>
         </article>
         <article class="card">
-          <h3>Emerging managers</h3>
-          <p>Launch under a regulated framework without waiting 12&ndash;24 months for direct authorisation.</p>
+          <h3>Emerging managers with their own strategies</h3>
+          <p>You have the signal; you don't yet have the regulated execution and reporting wrapper.
+            <span class="glossary-term" tabindex="0"
+              data-def="DART Signals-In: your code stays upstream on your own infrastructure. You emit instructions on an eight-field schema; Odum runs the execution, reconciliation, positions, P&L, and reporting layer. No research or strategy-promote access.">DART
+              Signals-In</span>
+            takes your instructions into our execution, reconciliation, analytics, and reporting &mdash;
+            optionally under
+            <span class="glossary-term" tabindex="0"
+              data-def="Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage) while they build towards their own authorisation.">Regulatory
+              Umbrella</span>
+            cover.
+          </p>
         </article>
         <article class="card">
           <h3>Institutions &amp; platforms</h3>
-          <p>Plug Odum's research, execution, and reporting into your existing stack &mdash; one integration, one
-            commercial relationship, no internal build required.</p>
+          <p>You have a product, clients, and a brand. Embed Odum signals or platform components &mdash;
+            <span class="glossary-term" tabindex="0"
+              data-def="No-code / low-code: day-to-day work in the authenticated platform — post-login dashboard and services portal (Data, Research, Trading, Observe, Reports, etc., entitlement-sliced) with UI, forms, and tables. Full-code: Unified Trading API and other service REST endpoints for the same operations where we expose them, so you can script flows and integrate without the dashboard. Parity is the product direction; see /docs for what is live.">full-code,
+              low-code, or no-code</span>,
+            <span class="glossary-term" tabindex="0"
+              data-def="Mix and match across the stack: your frontend on our backend, our frontend on your backend, or both ours behind your brand. Backend APIs and typed UI components are both surfaced so integration runs either direction.">your
+              frontend or ours</span>.
+            One integration, one commercial relationship.
+          </p>
         </article>
       </div>
     </div>
@@ -1161,13 +1524,14 @@
   <section class="section-pad" style="background: var(--bg-surface);">
     <div class="container">
       <div class="section-header">
-        <p class="eyebrow">Five commercial paths</p>
+        <p class="eyebrow">Four ways to plug in</p>
         <h2><span class="lab-invest">Allocate</span>. <span class="lab-build">Run</span>. <span
-            class="lab-build">Lease signals</span>. <span class="lab-regulate">Regulate</span>.</h2>
-        <p>Investment Management, DART Signals-In, DART Full Pipeline, Odum Signals, and Regulatory
-          Umbrella &mdash; five paths on one operating system. Most engagements use one; some combine two.</p>
+            class="lab-signals">Lease signals</span>. <span class="lab-regulate">Regulate</span>.</h2>
+        <p>Investment Management, DART, Odum Signals, and Regulatory Umbrella &mdash; same infrastructure,
+          plug and play. DART itself runs two ways: DART Full (research-to-live) or DART Signals-In (your
+          signals, our execution). Use one, or stack them &mdash; the paths feed each other.</p>
       </div>
-      <div class="card-grid card-grid-3">
+      <div class="card-grid card-grid-4">
         <article class="card card-rose">
           <div class="icon-dot" style="background:rgba(251,113,133,0.12);color:var(--rose);"><svg width="20" height="20"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1195,17 +1559,40 @@
               <line x1="8" y1="21" x2="16" y2="21" />
               <line x1="12" y1="17" x2="12" y2="21" />
             </svg></div>
-          <p class="card-kicker">DART &mdash; Data Analytics, Research &amp; Trading</p>
+          <p class="card-kicker"><span class="glossary-term"
+              data-def="Data Analytics, Research &amp; Trading — the set of services Odum uses internally to build, research, promote, execute, and monitor systematic strategies; packaged for client use.">DART</span>
+          </p>
           <h3>Run your strategy on the same stack Odum uses internally</h3>
-          <p>Two DART paths share one operating system. DART Signals-In keeps your strategy IP upstream and Odum
-            runs the downstream execution and reporting layer. DART Full Pipeline adds research, backtest, and
-            promotion on the same code path.</p>
+          <p>Two DART paths share one operating system &mdash; your strategy <span class="glossary-term"
+              data-def="DART Signals-In keeps your code entirely upstream; Odum sees only the instruction schema and never the signal generator. DART Full adds research, backtest, and promotion on the same code path under a client-exclusivity contract — Odum does not run your strategy on its own book, and other clients do not run it either.">IP
+              stays protected</span> either way.</p>
           <ul>
+            <li><a href="/platform/full">DART Full</a> &mdash; research-to-live on one stack</li>
             <li><a href="/platform/signals-in">DART Signals-In</a> &mdash; your signals, our execution</li>
-            <li><a href="/platform/full">DART Full Pipeline</a> &mdash; research-to-live on one stack</li>
-            <li>Per-block pricing, twelve-month minimum</li>
+            <li><span class="glossary-term"
+                data-def="Per-block pricing with a twelve-month minimum engagement. Exclusivity on DART Full is contractual; on DART Signals-In zero code crosses the boundary.">Per-block
+                pricing, 12-month minimum</span></li>
           </ul>
           <a href="platform.html" class="card-link">DART overview &rarr;</a>
+        </article>
+        <article class="card card-violet">
+          <div class="icon-dot" style="background:rgba(167,139,250,0.12);color:var(--violet);"><svg width="20"
+              height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M4 11a9 9 0 0 1 9 9" />
+              <path d="M4 4a16 16 0 0 1 16 16" />
+              <circle cx="5" cy="19" r="1" />
+            </svg></div>
+          <p class="card-kicker">Odum Signals</p>
+          <h3>Lease Odum-generated signals to your own execution</h3>
+          <p>Institutional counterparties take Odum's strategy signals and execute on their own infrastructure.
+            Direction runs Odum &rarr; counterparty &mdash; the mirror image of DART Signals-In.</p>
+          <ul>
+            <li>Odum IP, your execution stack</li>
+            <li>HMAC-signed webhook or REST pull delivery</li>
+            <li>Per-signal-strategy pricing</li>
+          </ul>
+          <a href="/signals" class="card-link">Odum Signals &rarr;</a>
         </article>
         <article class="card card-slate">
           <div class="icon-dot" style="background:rgba(148,163,184,0.12);color:#94a3b8;"><svg width="20" height="20"
@@ -1228,10 +1615,9 @@
       </div>
       <div style="margin-top:28px; text-align:center;">
         <p style="font-size:14px; color:var(--text-muted); max-width:720px; margin:0 auto;">
-          A fifth path, <a href="/signals" style="color:var(--primary);">Odum Signals &mdash; our signals, your
-          execution</a>, leases Odum-generated strategy signals to institutional counterparties who execute on their
-          own infrastructure. Direction matters: Odum Signals runs Odum &rarr; counterparty; DART Signals-In runs
-          client &rarr; Odum.
+          Direction matters on the two signal paths: <a href="/signals" style="color:var(--primary);">Odum
+            Signals</a> runs Odum &rarr; counterparty; <a href="/platform/signals-in" style="color:var(--primary);">
+            DART Signals-In</a> runs client &rarr; Odum.
         </p>
       </div>
     </div>
@@ -1530,12 +1916,13 @@
     <div class="container">
       <div class="section-header">
         <p class="eyebrow">Coverage &amp; examples</p>
-        <h2>What each service looks like in practice</h2>
+        <h2>Each ervice spans multiple asset groups</h2>
         <p>Odum runs four client-facing paths: <span class="svc-tag svc-tag-invest">Investment Management</span>,
           <span class="svc-tag svc-tag-build">DART</span> (Data Analytics, Research &amp; Trading),
           <span class="svc-tag svc-tag-signals">Odum Signals</span>, and
           <span class="svc-tag svc-tag-reg">Regulatory Umbrella</span>. Tags below mark which paths apply per category;
-          links open the relevant briefing.</p>
+          links open the relevant briefing.
+        </p>
       </div>
 
       <div
@@ -1578,7 +1965,8 @@
               <p>ML-backed momentum, mean reversion, stat arb, and market making across 11 crypto exchanges. Highest
                 resolution data available &mdash; tick to daily.</p>
               <div class="detail-venues">Binance, OKX, Deribit, Coinbase, Bybit, KuCoin, Gate.io +4 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML directional &middot; Funding carry (perp) &middot; Pairs stat-arb &middot; Market making</div>
+              <div class="detail-venues"><strong>Strategy families:</strong> ML directional &middot; Funding carry
+                (perp) &middot; Pairs stat-arb &middot; Market making</div>
               <div class="explorer-preview"
                 style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.12);">
                 <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
@@ -1617,7 +2005,8 @@
               <p>Lending, staked basis, recursive strategies, and structured yield across 55+ DeFi protocols on 8+
                 blockchains. Per-block resolution data.</p>
               <div class="detail-venues">Aave, Morpho, Lido, Uniswap, Curve, Compound, Maker +40 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> Staked basis (3-leg atomic) &middot; Recursive staking &middot; Yield rotation (lending) &middot; Liquidation capture</div>
+              <div class="detail-venues"><strong>Strategy families:</strong> Staked basis (3-leg atomic) &middot;
+                Recursive staking &middot; Yield rotation (lending) &middot; Liquidation capture</div>
               <div class="explorer-preview"
                 style="background:rgba(167,139,250,0.04);border:1px solid rgba(167,139,250,0.12);">
                 <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
@@ -1656,7 +2045,9 @@
               <p>Systematic momentum, mean reversion, commodity regime, and event-driven strategies across equities,
                 futures, FX, and commodities. Institutional-grade data and execution through regulated venues.</p>
               <div class="detail-venues">CME, NASDAQ, NYSE, ICE, CBOE, LSE, Eurex +3 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML directional (ES/NQ/Brent) &middot; Basis carry (IBKR &harr; CME) &middot; Cross-sectional momentum (S&amp;P 500) &middot; Volatility trading</div>
+              <div class="detail-venues"><strong>Strategy families:</strong> ML directional (ES/NQ/Brent) &middot; Basis
+                carry (IBKR &harr; CME) &middot; Cross-sectional momentum (S&amp;P 500) &middot; Volatility trading
+              </div>
               <div class="explorer-preview"
                 style="background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.12);">
                 <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
@@ -1694,8 +2085,9 @@
               </div>
               <p>Cross-bookmaker odds comparison across 20+ bookmakers, live arbitrage scanning, closing line value
                 (CLV) analytics, and ML-powered match predictions across 100+ leagues and 7+ market types.</p>
-              <div class="detail-venues">Betfair, Pinnacle, bet365, Smarkets +20 bookmakers</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML value betting (EPL / NBA) &middot; Cross-book arbitrage &middot; Market making (Betfair lay) &middot; Event-driven (lineup / news)</div>
+              <div class="detail-venues">Betfair, Smarkets, bet365, Matchbook +20 bookmakers</div>
+              <div class="detail-venues"><strong>Strategy families:</strong> Model-led directional &middot;
+                Cross-book arbitrage &middot; Exchange-liquidity making &middot; Event-driven (lineup / news)</div>
               <div class="explorer-preview"
                 style="background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.12);">
                 <div class="prev-row prev-head" style="grid-template-columns:2fr 1fr 1fr 1fr;">
@@ -1734,7 +2126,8 @@
               <p>Browse, compare, and trade prediction markets on Polymarket and Kalshi. Divergence charts overlay
                 prediction odds against underlying asset prices. Live arb stream with Kelly-optimal sizing.</p>
               <div class="detail-venues">Polymarket, Kalshi, Metaculus +3 more</div>
-              <div class="detail-venues"><strong>Strategy families:</strong> ML directional &middot; Cross-venue arbitrage (Polymarket &harr; Unity / Betfair) &middot; Event-driven (debates / elections)</div>
+              <div class="detail-venues"><strong>Strategy families:</strong> ML directional &middot; Cross-venue
+                arbitrage (Polymarket &harr; Unity / Betfair) &middot; Event-driven (debates / elections)</div>
               <div class="explorer-preview"
                 style="background:rgba(251,113,133,0.04);border:1px solid rgba(251,113,133,0.12);">
                 <div class="prev-row prev-head" style="grid-template-columns:3fr 1fr 1fr;">
@@ -1824,24 +2217,68 @@
         <p class="eyebrow">Why Odum</p>
         <h2>Real capital. Real infrastructure. One regulated platform.</h2>
         <p>You access the exact same system we use to manage capital and generate returns &mdash;
-          not a watered-down client version.</p>
+          not a watered-down client version, built by traders who ran trading desks at leading
+          prop-trading firms.</p>
       </div>
 
       <div class="feature-grid">
         <article class="feature">
-          <h3 style="color:var(--amber);">Same platform, same infrastructure</h3>
-          <p>You access the same platform and strategies that Odum uses to manage its own capital.
-            No watered-down client version &mdash; identical system, identical controls.</p>
+          <h3 style="color:var(--amber);">Same system, not a client copy</h3>
+          <p>Research, execution, risk, position tracking, reporting &mdash; every component is the one
+            Odum uses to trade its own book.
+            <span class="glossary-term" tabindex="0"
+              data-def="The same component tree serves every audience — admin, IM clients, DART clients, Regulatory Umbrella clients. Each view is sliced by entitlement; there is no separate 'client version' of any screen.">Entitlement
+              filters</span>
+            what each audience sees; the stack is one.
+          </p>
         </article>
         <article class="feature">
-          <h3 style="color:var(--emerald);">Real results from real capital</h3>
-          <p>Live track record from real capital, not hypothetical backtests. Decades of combined experience
-            from leading quantitative firms, exchanges, and regulated financial institutions.</p>
+          <h3 style="color:var(--cyan);">Five asset groups on one stack</h3>
+          <p><span class="glossary-term" tabindex="0"
+              data-def="Centralised Finance — custodial crypto exchanges like Binance, OKX, Deribit, Coinbase, Bybit. Distinct from DeFi (non-custodial protocols).">CeFi</span>
+            exchanges,
+            <span class="glossary-term" tabindex="0"
+              data-def="Decentralised Finance — non-custodial on-chain protocols like Uniswap, Aave, Lido, GMX, Hyperliquid. Distinct from CeFi.">DeFi</span>
+            protocols, traditional venues (commodities, currencies, equities), sports books,
+            <span class="glossary-term" tabindex="0"
+              data-def="Venues like Polymarket and Kalshi where event outcomes trade as binary contracts — elections, sports, weather, macro. Event-based rather than asset-based.">prediction
+              markets</span>.
+            Options, futures, spot across everything. Add a new category
+            <span class="glossary-term" tabindex="0"
+              data-def="Cross-category expansion keeps the same API keys, same data integration, same custody setup, same legal wrapper. Odum already operates across all five groups; your mandate grows by entitlement, not a new procurement cycle.">without
+              a new vendor</span>.
+          </p>
         </article>
         <article class="feature">
-          <h3 style="color:var(--rose);">FCA-regulated from day one</h3>
-          <p>Investment Management and Regulatory Umbrella under FCA authorisation (975797). Reporting, compliance,
-            and oversight built into every client engagement.</p>
+          <h3 style="color:var(--violet);">Treasury to reconciliation, one surface</h3>
+          <p>Subscriptions, research, backtest, promotion, live execution, P&amp;L, alerting,
+            <span class="glossary-term" tabindex="0"
+              data-def="Transaction Cost Analysis — post-trade measurement of execution quality against benchmarks such as arrival price, VWAP, and implementation shortfall.">TCA</span>,
+            reconciliation &mdash; one surface. Backtest, paper, and live sit on the
+            <span class="glossary-term" tabindex="0"
+              data-def="Backtest, paper, and live results render on a single chart — same strategy, same engine, three regimes visible side by side. Promotion becomes a like-for-like comparison.">same
+              timeline</span>,
+            and the research surface runs
+            <span class="glossary-term" tabindex="0"
+              data-def="You define the shocks that matter for your mandate — venue outage, funding spike, liquidity drain, correlation break — and watch the strategy respond before any real money moves.">parameterised
+              stress scenarios</span>
+            so promotion is evidence-led before real capital moves.
+          </p>
+        </article>
+        <article class="feature">
+          <h3 style="color:var(--rose);">Operating under FCA authorisation</h3>
+          <p>Odum Research Ltd holds
+            <span class="glossary-term" tabindex="0"
+              data-def="Financial Conduct Authority — the UK financial regulator. Odum Research Ltd's authorisation (FRN 975797) is verifiable on the FCA register at register.fca.org.uk.">FCA
+              authorisation</span>
+            (FRN 975797). <strong>Investment management</strong> under that authorisation <strong>from January
+              2023</strong>; Regulatory Umbrella and DART sit under the same permission set where your activities
+            match.
+            <span class="glossary-term" tabindex="0"
+              data-def="MLRO (Money Laundering Reporting Officer) is the statutory UK role for AML oversight. Compliance monitoring, MLRO, and supervisory reporting run inside Odum — not outsourced to a third-party compliance consultant.">Compliance,
+              MLRO, supervisory reporting</span>
+            &mdash; internal, not outsourced.
+          </p>
         </article>
       </div>
     </div>
@@ -1859,12 +2296,14 @@
         <article class="card" style="text-align:center;">
           <h3>Allocate capital</h3>
           <p>Discuss a mandate, allocation process, or strategy fit.</p>
-          <a href="contact.html" class="btn btn-primary" style="margin-top:16px;">Discuss a Mandate</a>
+          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-primary"
+            style="margin-top:16px;">Discuss a Mandate</a>
         </article>
         <article class="card" style="text-align:center;">
           <h3>Explore the platform</h3>
           <p>Request a guided platform walkthrough based on your use case.</p>
-          <a href="contact.html" class="btn btn-outline" style="margin-top:16px;">Book a Demo</a>
+          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-outline"
+            style="margin-top:16px;">Book a Demo</a>
         </article>
         <article class="card" style="text-align:center;">
           <h3>Check regulatory fit</h3>
@@ -1873,7 +2312,8 @@
         </article>
       </div>
       <div class="contact-block" id="contact">
-        <p>Not sure where to start? <a href="contact.html">Talk to us</a> &mdash; we'll help you find the right path.
+        <p>Not sure where to start? <a href="https://calendly.com/odum-ikenna" target="_blank"
+            rel="noopener noreferrer">Book a slot</a> &mdash; we'll help you find the right path.
         </p>
         <p style="margin-top:8px;">info@odum-research.co.uk</p>
       </div>
@@ -1885,10 +2325,10 @@
     <div class="container footer-inner">
       <p class="footer-copy">&copy; 2026 Odum Research Ltd. All rights reserved.</p>
       <div class="footer-links">
-        <a href="who-we-are.html">Privacy</a>
-        <a href="who-we-are.html">Terms</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
         <a href="regulatory.html">FCA 975797</a>
-        <a href="contact.html">Contact</a>
+        <a href="/contact?service=general">Contact</a>
       </div>
     </div>
   </footer>
