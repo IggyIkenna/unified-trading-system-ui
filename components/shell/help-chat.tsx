@@ -97,10 +97,10 @@ export function HelpChat() {
       text: "Hi! I can point you at the right page. What are you after?",
       options: [
         { label: "See Odum's services", action: handleShowServices },
-        { label: "Read a briefing", action: handleBriefings },
+        { label: "Read a deep dive", action: handleBriefings },
         { label: "Book a call or demo", action: handleBookCall },
         { label: "How do I sign in?", action: handleSignIn },
-        { label: "Briefings access code", action: handleAccessCode },
+        { label: "Deep dive access code", action: handleAccessCode },
         { label: "Contact us", action: handleContact },
       ],
     };
@@ -144,7 +144,7 @@ export function HelpChat() {
     appendBot({
       text: svc.oneLiner,
       links: [
-        { href: `/briefings/${svc.briefingSlug}`, label: `Read the ${svc.label} briefing` },
+        { href: `/briefings/${svc.briefingSlug}`, label: `Read the ${svc.label} deep dive` },
         { href: `/questionnaire?service=${svc.questionnaireService}`, label: "Start the questionnaire" },
         { href: svc.marketingHref, label: `${svc.label} overview` },
         { href: CALENDLY_URL, label: "Book a 45-minute call", external: true },
@@ -154,11 +154,11 @@ export function HelpChat() {
   }
 
   function handleBriefings(): void {
-    appendUser("Read a briefing");
+    appendUser("Read a deep dive");
     appendBot({
-      text: "Briefings are lightly gated — one access code unlocks all of them. If you don't have one, ask us on a call or via contact.",
+      text: "Deep dives are lightly gated — one access code unlocks all of them. If you don't have one, ask us on a call or via contact.",
       links: [
-        { href: "/briefings", label: "Briefings hub" },
+        { href: "/briefings", label: "Deep Dive hub" },
         { href: "/contact?service=general", label: "Request an access code" },
       ],
     });
@@ -191,9 +191,9 @@ export function HelpChat() {
   }
 
   function handleAccessCode(): void {
-    appendUser("Briefings access code");
+    appendUser("Deep dive access code");
     appendBot({
-      text: "Access codes are issued to qualified prospects. Tell us who you are and we'll send one — usually within a working day.",
+      text: "Access codes unlock all deep dives and are issued to qualified prospects. Tell us who you are and we'll send one — usually within a working day.",
       links: [
         { href: "/contact?service=general&action=access", label: "Request an access code" },
         { href: CALENDLY_URL, label: "Or hop on a quick call", external: true },
