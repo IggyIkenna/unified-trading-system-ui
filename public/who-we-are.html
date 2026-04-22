@@ -569,6 +569,18 @@
         color: var(--text-dim);
       }
 
+      /* Tablet: 641–1024px */
+      @media (min-width: 641px) and (max-width: 1024px) {
+        .team-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+
+        .card-grid-2 {
+          grid-template-columns: 1fr;
+        }
+      }
+
       @media (max-width: 768px) {
         header {
           display: none;

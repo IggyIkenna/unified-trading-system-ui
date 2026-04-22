@@ -483,6 +483,20 @@ function AuthCard({
 export default function DocsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-6">
+      {/* Mobile / tablet TOC — collapsible, hidden on md+ where the sidebar takes over */}
+      <details className="mb-8 rounded-lg border border-border bg-card/40 md:hidden">
+        <summary className="cursor-pointer px-4 py-3 text-sm font-medium select-none">On this page</summary>
+        <ul className="px-4 pb-3 pt-1 space-y-1">
+          {NAV_SECTIONS.map((s) => (
+            <li key={s.id}>
+              <a href={`#${s.id}`} className="block rounded py-1.5 text-sm text-muted-foreground hover:text-foreground">
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+
       <div className="md:flex md:items-start md:gap-8 lg:gap-10 xl:gap-14">
         <aside
           className="hidden shrink-0 self-start md:block"
