@@ -1,5 +1,6 @@
 import { BriefingHero } from "@/components/briefings/briefing-hero";
 import { StrategyCoverageMatrix } from "@/components/briefings/strategy-coverage-matrix";
+import { DocsNav, type DocsNavSection } from "@/components/docs/docs-nav";
 import { DartMaturityLadderDiagram } from "@/components/marketing/dart-maturity-ladder-diagram";
 import { DartPathsOverviewDiagram } from "@/components/marketing/dart-paths-overview-diagram";
 import { FundSmaHierarchyDiagram } from "@/components/marketing/fund-sma-hierarchy-diagram";
@@ -17,6 +18,11 @@ import { CALENDLY_URL } from "@/lib/marketing/calendly";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import * as React from "react";
+
+/** URL-safe id from a human heading. */
+function slugifyId(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
 
 /**
  * Set of slugs that are valid internal briefing links. Used to linkify
@@ -131,9 +137,9 @@ function DiagramForSlug({ slug }: { slug: BriefingPillar["slug"] }) {
   }
 }
 
-function Section({ section }: { section: BriefingSection }) {
+function Section({ section, id }: { section: BriefingSection; id?: string }) {
   return (
-    <section className="space-y-3">
+    <section id={id} className="scroll-mt-24 space-y-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <h2 className="text-lg font-semibold tracking-tight text-foreground">
           {section.title}
@@ -234,106 +240,160 @@ export default async function BriefingPillarPage({ params }: PageProps) {
   const pillar = BRIEFING_PILLARS.find((p) => p.slug === slug);
   if (!pillar) notFound();
 
+  const showCoverageMatrix = MATRIX_SLUGS.has(pillar.slug);
+  const showFamilyCatalogue = pillar.slug === "dart-full";
+
+  // Build the TOC dynamically so it reflects what this pillar actually renders.
+  const tocSections: DocsNavSection[] = [
+    { id: "overview", label: "Overview" },
+    ...pillar.sections.map((s) => ({ id: slugifyId(s.title), label: s.title })),
+    ...(showCoverageMatrix ? [{ id: "coverage-matrix", label: "Coverage matrix" }] : []),
+    ...(showFamilyCatalogue ? [{ id: "full-catalogue", label: "Full catalogue" }] : []),
+    { id: "key-messages", label: "Key messages" },
+    { id: "second-call", label: "The second call" },
+    { id: "next-steps", label: "Next steps" },
+    { id: "other-briefings", label: "Other briefings" },
+  ];
+
   return (
-    <div className="container max-w-3xl px-4 py-12 md:px-6 space-y-10">
+    <div className="mx-auto max-w-7xl px-4 py-12 md:px-6">
       <Link
         href="/briefings"
-        className="text-xs text-muted-foreground hover:text-foreground"
+        className="mb-6 inline-block text-xs text-muted-foreground hover:text-foreground"
       >
         ← All briefings
       </Link>
 
-      <BriefingHero title={pillar.title} tldr={pillar.tldr} cta={pillar.cta} />
-
-      <section className="space-y-3">
-        <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">
-          {renderBody(pillar.frame)}
-        </p>
-      </section>
-
-      <DiagramForSlug slug={pillar.slug} />
-
-      {pillar.sections.map((s) => (
-        <Section key={s.title} section={s} />
-      ))}
-
-      {MATRIX_SLUGS.has(pillar.slug) && (
-        <section className="space-y-4 border-t border-border/40 pt-8">
-          <div className="space-y-2 max-w-2xl">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">
-              Strategy families × categories — what Odum runs
-            </h2>
-            <p className="text-sm text-foreground/80 leading-relaxed">
-              The matrix below is the operational coverage map — strategy families down the side,
-              asset-class categories across the top. A filled dot means Odum operates live strategies
-              in that cell; a half-filled dot means adapter or configuration work is in progress for
-              some instruments in the cell. Venue detail, specific slot configurations, and maturity
-              tags are covered at the second call.
-            </p>
-          </div>
-          <StrategyCoverageMatrix />
-        </section>
-      )}
-
-      {pillar.slug === "dart-full" && (
-        <section className="space-y-4 border-t border-border/40 pt-8">
-          <div className="space-y-2 max-w-3xl">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">
-              Full archetype × category × instrument-type catalogue
-            </h2>
-            <p className="text-sm text-foreground/80 leading-relaxed">
-              The full combinatoric universe Odum operates on. Eighteen archetypes grouped into
-              three family bands (directional, relative-value, event-driven) mapped across five
-              categories and eight instrument-type cells. Lock-state posture is shown per cell —
-              public slots are a narrow default, the rest of the supported surface is reserved for
-              Odum&apos;s investment-management book unless a client-exclusive carve-out is
-              negotiated.
-            </p>
-          </div>
-          <StrategyFamilyCatalogue />
-        </section>
-      )}
-
-      <section className="space-y-3 border-t border-border/40 pt-8">
-        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Key messages
-        </h2>
-        <ol className="list-decimal pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl leading-relaxed">
-          {pillar.keyMessages.map((m) => (
-            <li key={m}>{renderBody(m)}</li>
-          ))}
-        </ol>
-      </section>
-
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          The second call
-        </h2>
-        <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
-          {renderBody(pillar.nextCall)}
-        </p>
-      </section>
-
-      <BriefingNextSteps slug={pillar.slug} />
-
-      <section className="space-y-3 border-t border-border/40 pt-8">
-        <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Other briefings
-        </h2>
-        <ul className="space-y-3 max-w-2xl">
-          {BRIEFING_PILLARS.filter((p) => p.slug !== pillar.slug).map((p) => (
-            <li key={p.slug} className="text-sm">
-              <Link
-                href={`/briefings/${p.slug}`}
-                className="font-medium text-primary hover:underline"
+      {/* Mobile / tablet TOC — collapsible, hidden on md+ where the sidebar takes over */}
+      <details className="mb-8 rounded-lg border border-border bg-card/40 md:hidden">
+        <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium">
+          On this page
+        </summary>
+        <ul className="space-y-1 px-4 pb-3 pt-1">
+          {tocSections.map((s) => (
+            <li key={s.id}>
+              <a
+                href={`#${s.id}`}
+                className="block rounded py-1.5 text-sm text-muted-foreground hover:text-foreground"
               >
-                {p.title}
-              </Link>
-              <p className="text-foreground/75 leading-relaxed">{renderWithTerms(p.tldr)}</p>
+                {s.label}
+              </a>
             </li>
           ))}
         </ul>
-      </section>
+      </details>
+
+      <div className="md:flex md:items-start md:gap-8 lg:gap-10 xl:gap-14">
+        <aside
+          className="hidden shrink-0 self-start md:block"
+          style={{
+            position: "sticky",
+            top: "5rem",
+            width: "220px",
+            maxHeight: "calc(100vh - 6rem)",
+            overflowY: "auto",
+            paddingBottom: "2.5rem",
+          }}
+        >
+          <DocsNav sections={tocSections} />
+        </aside>
+
+        <div className="min-w-0 flex-1 space-y-10">
+          <section id="overview" className="scroll-mt-24 space-y-6">
+            <BriefingHero title={pillar.title} tldr={pillar.tldr} cta={pillar.cta} />
+
+            <p className="text-body text-foreground/90 max-w-2xl leading-relaxed">
+              {renderBody(pillar.frame)}
+            </p>
+
+            <DiagramForSlug slug={pillar.slug} />
+          </section>
+
+          {pillar.sections.map((s) => (
+            <Section key={s.title} id={slugifyId(s.title)} section={s} />
+          ))}
+
+          {showCoverageMatrix && (
+            <section id="coverage-matrix" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
+              <div className="space-y-2 max-w-2xl">
+                <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                  Strategy families × categories — what Odum runs
+                </h2>
+                <p className="text-sm text-foreground/80 leading-relaxed">
+                  The matrix below is the operational coverage map — strategy families down the side,
+                  asset-class categories across the top. A filled dot means Odum operates live strategies
+                  in that cell; a half-filled dot means adapter or configuration work is in progress for
+                  some instruments in the cell. Venue detail, specific slot configurations, and maturity
+                  tags are covered at the second call.
+                </p>
+              </div>
+              <StrategyCoverageMatrix />
+            </section>
+          )}
+
+          {showFamilyCatalogue && (
+            <section id="full-catalogue" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
+              <div className="space-y-2 max-w-3xl">
+                <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                  Full archetype × category × instrument-type catalogue
+                </h2>
+                <p className="text-sm text-foreground/80 leading-relaxed">
+                  The full combinatoric universe Odum operates on. Eighteen archetypes grouped into
+                  three family bands (directional, relative-value, event-driven) mapped across five
+                  categories and eight instrument-type cells. Lock-state posture is shown per cell —
+                  public slots are a narrow default, the rest of the supported surface is reserved for
+                  Odum&apos;s investment-management book unless a client-exclusive carve-out is
+                  negotiated.
+                </p>
+              </div>
+              <StrategyFamilyCatalogue />
+            </section>
+          )}
+
+          <section id="key-messages" className="scroll-mt-24 space-y-3 border-t border-border/40 pt-8">
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+              Key messages
+            </h2>
+            <ol className="list-decimal pl-5 text-sm text-foreground/85 space-y-2 max-w-2xl leading-relaxed">
+              {pillar.keyMessages.map((m) => (
+                <li key={m}>{renderBody(m)}</li>
+              ))}
+            </ol>
+          </section>
+
+          <section id="second-call" className="scroll-mt-24 space-y-3">
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+              The second call
+            </h2>
+            <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
+              {renderBody(pillar.nextCall)}
+            </p>
+          </section>
+
+          <div id="next-steps" className="scroll-mt-24">
+            <BriefingNextSteps slug={pillar.slug} />
+          </div>
+
+          <section id="other-briefings" className="scroll-mt-24 space-y-3 border-t border-border/40 pt-8">
+            <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+              Other briefings
+            </h2>
+            <ul className="space-y-3 max-w-2xl">
+              {BRIEFING_PILLARS.filter((p) => p.slug !== pillar.slug).map((p) => (
+                <li key={p.slug} className="text-sm">
+                  <Link
+                    href={`/briefings/${p.slug}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {p.title}
+                  </Link>
+                  <p className="text-foreground/75 leading-relaxed">{renderWithTerms(p.tldr)}</p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
