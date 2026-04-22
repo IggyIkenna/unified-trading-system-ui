@@ -3,6 +3,7 @@ import { renderWithTerms } from "@/components/marketing/render-with-terms";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BRIEFING_PILLARS, type BriefingPillar } from "@/lib/briefings/content";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
 import Link from "next/link";
 
 export const metadata = {
@@ -50,7 +51,7 @@ export default function BriefingsHubPage() {
       <BriefingHero
         title="Briefings"
         tldr="How we invest, how we're regulated, and every path through our platform — from signals in, to signals out."
-        cta={{ label: "Book 45-minute call", href: "/contact" }}
+        cta={{ label: "Book 45-minute call", href: CALENDLY_URL }}
       />
 
       <section className="space-y-4">
@@ -86,6 +87,37 @@ export default function BriefingsHubPage() {
           </Link>
           <span className="text-muted-foreground"> — API and integration reference.</span>
         </p>
+      </section>
+
+      {/* Forward CTA — next step after reading the briefings hub. */}
+      <section className="rounded-lg border border-border bg-card/30 p-6">
+        <h2 className="text-sm font-semibold text-foreground">Next steps</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Ready to onboard? Tell us about your firm in a short invite-only questionnaire so we can
+          pre-configure your path. Or book a 45-minute call to walk any path against your specifics.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <Link
+            href="/questionnaire"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            Start onboarding questionnaire →
+          </Link>
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+          >
+            Book a call
+          </a>
+          <Link
+            href="/"
+            className="inline-flex items-center rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-accent"
+          >
+            Back to home
+          </Link>
+        </div>
       </section>
     </div>
   );
