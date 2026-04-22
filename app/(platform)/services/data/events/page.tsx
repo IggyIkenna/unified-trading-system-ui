@@ -11,7 +11,6 @@
  */
 
 import * as React from "react";
-import { PageHeader } from "@/components/shared/page-header";
 import { StatusDot } from "@/components/shared/status-badge";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +18,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
-  Calendar,
   TrendingUp,
   GitBranch,
   Building2,
@@ -28,7 +26,15 @@ import {
   AlertTriangle,
   CheckCircle2,
   CircleDot,
+  List,
+  LayoutGrid,
+  CalendarDays,
+  Waves,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { EconomicGrid } from "@/components/events/economic-grid";
+import { EconomicHeatmap } from "@/components/events/economic-heatmap";
+import { MarketTimeline } from "@/components/events/market-timeline";
 import {
   useCalendarHolidays,
   useCorporateActions,
@@ -170,6 +176,49 @@ const ECONOMIC_EVENT_COLORS: Record<EconomicEventType, string> = {
   other_macro: "text-slate-400 border-slate-400/30 bg-slate-400/10",
 };
 
+// ─── Layout switcher ───────────────────────────────────────────────────────────
+
+type LayoutOption<T extends string> = {
+  value: T;
+  label: string;
+  icon: React.ElementType;
+};
+
+function LayoutSwitcher<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (v: T) => void;
+  options: ReadonlyArray<LayoutOption<T>>;
+}) {
+  return (
+    <div className="inline-flex items-center gap-0.5 rounded-md border border-border/60 bg-muted/30 p-0.5">
+      {options.map((opt) => {
+        const Icon = opt.icon;
+        const active = value === opt.value;
+        return (
+          <Button
+            key={opt.value}
+            type="button"
+            size="sm"
+            variant={active ? "secondary" : "ghost"}
+            onClick={() => onChange(opt.value)}
+            className={cn(
+              "h-7 px-2.5 text-[11px] gap-1.5",
+              active ? "bg-background shadow-sm" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Icon className="size-3.5" />
+            {opt.label}
+          </Button>
+        );
+      })}
+    </div>
+  );
+}
+
 function SurpriseBadge({ surprise }: { surprise: number | null | undefined }) {
   if (surprise === null || surprise === undefined) return null;
   const pct = Math.round(surprise * 100);
@@ -187,7 +236,16 @@ function SurpriseBadge({ surprise }: { surprise: number | null | undefined }) {
   );
 }
 
+const ECONOMIC_LAYOUT_OPTIONS = [
+  { value: "grid", label: "Pro Grid", icon: LayoutGrid },
+  { value: "heatmap", label: "Heatmap", icon: CalendarDays },
+  { value: "list", label: "List", icon: List },
+] as const;
+
+type EconomicLayout = (typeof ECONOMIC_LAYOUT_OPTIONS)[number]["value"];
+
 function EconomicEventsTab({ events }: { events: EconomicEvent[] }) {
+  const [layout, setLayout] = React.useState<EconomicLayout>("grid");
   const sorted = [...events].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const upcoming = sorted.filter((e) => !isPast(e.date));
@@ -195,14 +253,27 @@ function EconomicEventsTab({ events }: { events: EconomicEvent[] }) {
 
   return (
     <div className="space-y-6">
-      <SectionHeader
-        icon={TrendingUp}
-        title="Economic Calendar"
-        subtitle="FOMC, NFP, CPI, GDP and other macro releases. Source: FRED API + hardcoded Fed calendar."
-        count={events.length}
-        iconClass="text-violet-400"
-      />
+      <div className="flex items-start justify-between gap-4">
+        <SectionHeader
+          icon={TrendingUp}
+          title="Economic Calendar"
+          subtitle="FOMC, NFP, CPI, GDP and other macro releases. Source: FRED API + hardcoded Fed calendar."
+          count={events.length}
+          iconClass="text-violet-400"
+        />
+        <LayoutSwitcher value={layout} onChange={setLayout} options={ECONOMIC_LAYOUT_OPTIONS} />
+      </div>
 
+      {layout === "grid" && <EconomicGrid events={events} />}
+      {layout === "heatmap" && <EconomicHeatmap events={events} />}
+      {layout === "list" && <EconomicEventsList upcoming={upcoming} past={past} />}
+    </div>
+  );
+}
+
+function EconomicEventsList({ upcoming, past }: { upcoming: EconomicEvent[]; past: EconomicEvent[] }) {
+  return (
+    <div className="space-y-6">
       {upcoming.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
@@ -686,7 +757,15 @@ const MARKET_STRUCTURE_COLORS: Record<MarketStructureEventType, string> = {
   liquidity_event: "text-sky-400 border-sky-400/30 bg-sky-400/10",
 };
 
+const MARKET_LAYOUT_OPTIONS = [
+  { value: "timeline", label: "Timeline", icon: Waves },
+  { value: "list", label: "List", icon: List },
+] as const;
+
+type MarketLayout = (typeof MARKET_LAYOUT_OPTIONS)[number]["value"];
+
 function MarketStructureTab({ events }: { events: MarketStructureEvent[] }) {
+  const [layout, setLayout] = React.useState<MarketLayout>("timeline");
   const sorted = [...events].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const upcoming = sorted.filter((e) => !isPast(e.date));
@@ -694,14 +773,26 @@ function MarketStructureTab({ events }: { events: MarketStructureEvent[] }) {
 
   return (
     <div className="space-y-6">
-      <SectionHeader
-        icon={Building2}
-        title="Market Structure Events"
-        subtitle="Options and futures expiries, Bitcoin halvings, Ethereum upgrades, and other structural market events."
-        count={events.length}
-        iconClass="text-orange-400"
-      />
+      <div className="flex items-start justify-between gap-4">
+        <SectionHeader
+          icon={Building2}
+          title="Market Structure Events"
+          subtitle="Options and futures expiries, Bitcoin halvings, Ethereum upgrades, and other structural market events."
+          count={events.length}
+          iconClass="text-orange-400"
+        />
+        <LayoutSwitcher value={layout} onChange={setLayout} options={MARKET_LAYOUT_OPTIONS} />
+      </div>
 
+      {layout === "timeline" && <MarketTimeline events={events} />}
+      {layout === "list" && <MarketStructureList upcoming={upcoming} past={past} />}
+    </div>
+  );
+}
+
+function MarketStructureList({ upcoming, past }: { upcoming: MarketStructureEvent[]; past: MarketStructureEvent[] }) {
+  return (
+    <div className="space-y-6">
       {upcoming.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
@@ -983,35 +1074,15 @@ function HolidaysTab({ holidays }: { holidays: CalendarHoliday[] }) {
   );
 }
 
-// ─── KPI Bar ───────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
-function KpiCard({
-  label,
-  value,
-  icon: Icon,
-  iconClass,
-}: {
-  label: string;
-  value: number | string;
-  icon: React.ElementType;
-  iconClass?: string;
-}) {
+function TabCount({ value }: { value: number }) {
   return (
-    <Card className="border-border/50 bg-card/60">
-      <CardContent className="pt-4 pb-3 px-4 flex items-center gap-3">
-        <div className={cn("p-1.5 rounded-md bg-muted/40", iconClass)}>
-          <Icon className="size-3.5" />
-        </div>
-        <div>
-          <div className="text-xl font-bold font-mono tabular-nums">{value}</div>
-          <div className="text-[10px] text-muted-foreground">{label}</div>
-        </div>
-      </CardContent>
-    </Card>
+    <span className="ml-1.5 inline-flex items-center justify-center rounded bg-muted/60 px-1.5 text-[10px] font-mono tabular-nums text-muted-foreground group-data-[state=active]:bg-primary/20 group-data-[state=active]:text-foreground">
+      {value}
+    </span>
   );
 }
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function EventsPage() {
   const { data: economicEvents = [] } = useEconomicEvents();
@@ -1019,52 +1090,15 @@ export default function EventsPage() {
   const { data: marketStructureEvents = [] } = useMarketStructureEvents();
   const { data: holidays = [] } = useCalendarHolidays();
 
-  const upcomingEconomic = economicEvents.filter((e) => !isPast(e.date)).length;
-  const upcomingMarket = marketStructureEvents.filter((e) => !isPast(e.date)).length;
-  const upcomingHolidays = holidays.filter((h) => !isPast(h.date)).length;
-
   return (
-    <div className="p-6 space-y-6 platform-page-width">
-      <PageHeader
-        title={
-          <span className="flex items-center gap-2">
-            <Calendar className="size-5 text-primary" />
-            Events
-          </span>
-        }
-        description="Economic releases, corporate actions, market structure events, and exchange holidays. Equivalent to raw data — pre-processed, no further transformation needed."
-      />
-
-      {/* KPI bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <KpiCard
-          label="Upcoming macro releases"
-          value={upcomingEconomic}
-          icon={TrendingUp}
-          iconClass="text-violet-400"
-        />
-        <KpiCard
-          label="Corporate actions tracked"
-          value={corporateActions.length}
-          icon={GitBranch}
-          iconClass="text-sky-400"
-        />
-        <KpiCard label="Market structure events" value={upcomingMarket} icon={Building2} iconClass="text-orange-400" />
-        <KpiCard
-          label="Upcoming exchange closures"
-          value={upcomingHolidays}
-          icon={Globe}
-          iconClass="text-emerald-400"
-        />
-      </div>
-
-      {/* Sub-tabs */}
+    <div className="p-6 platform-page-width">
       <Tabs defaultValue="economic">
-        <TabsList className="grid grid-cols-4 w-full max-w-lg">
+        <TabsList className="grid grid-cols-4 w-full max-w-xl">
           <Tooltip>
             <TooltipTrigger asChild>
-              <TabsTrigger value="economic" className="text-xs">
+              <TabsTrigger value="economic" className="group text-xs">
                 Economic
+                <TabCount value={economicEvents.length} />
               </TabsTrigger>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-xs">
@@ -1073,8 +1107,9 @@ export default function EventsPage() {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <TabsTrigger value="corporate" className="text-xs">
+              <TabsTrigger value="corporate" className="group text-xs">
                 Corporate
+                <TabCount value={corporateActions.length} />
               </TabsTrigger>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-xs">
@@ -1083,8 +1118,9 @@ export default function EventsPage() {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <TabsTrigger value="market" className="text-xs">
+              <TabsTrigger value="market" className="group text-xs">
                 Market Structure
+                <TabCount value={marketStructureEvents.length} />
               </TabsTrigger>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-xs">
@@ -1093,8 +1129,9 @@ export default function EventsPage() {
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <TabsTrigger value="holidays" className="text-xs">
+              <TabsTrigger value="holidays" className="group text-xs">
                 Holidays
+                <TabCount value={holidays.length} />
               </TabsTrigger>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-xs">
