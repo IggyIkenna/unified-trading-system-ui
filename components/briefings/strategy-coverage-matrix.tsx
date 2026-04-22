@@ -119,7 +119,7 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-muted/30">
-              <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <th className="sticky left-0 z-20 bg-muted/30 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Strategy family
               </th>
               {CATEGORIES.map((c) => {
@@ -138,7 +138,9 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
           <tbody>
             {rows.map((archetype) => (
               <tr key={archetype} className="border-b border-border/40 last:border-b-0">
-                <td className="px-3 py-2 text-foreground/85">{ARCHETYPE_LABELS[archetype]}</td>
+                <td className="sticky left-0 z-10 bg-background px-3 py-2 text-foreground/85">
+                  {ARCHETYPE_LABELS[archetype]}
+                </td>
                 {CATEGORIES.map((category) => {
                   const status = bestStatusForCell(archetype, category);
                   const glyph = statusGlyph(status);

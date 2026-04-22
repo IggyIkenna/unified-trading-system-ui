@@ -22,8 +22,8 @@
 
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { BriefingAccessGate } from "@/components/briefings/briefing-access-gate";
 import type {
@@ -166,6 +166,7 @@ export default function QuestionnairePage() {
 
 export function QuestionnaireForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [state, setState] = useState<FormState>({
     categories: new Set<QuestionnaireCategory>(),
     instrument_types: new Set<QuestionnaireInstrumentType>(),
@@ -187,6 +188,17 @@ export function QuestionnaireForm() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
+
+  // Pre-select service_family from ?service= query param when the visitor
+  // lands here via a briefing-specific CTA. Runs once on mount.
+  useEffect(() => {
+    const raw = searchParams?.get("service");
+    if (!raw) return;
+    const match = QUESTIONNAIRE_SERVICE_FAMILIES.find((sf) => sf === raw);
+    if (match) {
+      setState((s) => ({ ...s, service_family: match }));
+    }
+  }, [searchParams]);
 
   const regUmbrellaVisible = useMemo(
     () => isRegUmbrellaPath(state.service_family),

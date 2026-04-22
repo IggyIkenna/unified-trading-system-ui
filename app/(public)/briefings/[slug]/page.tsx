@@ -159,6 +159,76 @@ function Section({ section }: { section: BriefingSection }) {
   );
 }
 
+/** Per-slug "Next: fill the questionnaire" block.
+ *  Same target form across briefings; entry copy + service pre-select varies. */
+const NEXT_STEPS_COPY: Record<
+  string,
+  { heading: string; service: "IM" | "DART" | "RegUmbrella" | null }
+> = {
+  "investment-management": {
+    heading: "Next: tell us about your investment preferences",
+    service: "IM",
+  },
+  platform: {
+    heading: "Next: tell us about the strategies you want to run",
+    service: "DART",
+  },
+  "dart-signals-in": {
+    heading: "Next: tell us about your signals and execution needs",
+    service: "DART",
+  },
+  "dart-full": {
+    heading: "Next: tell us about your research and execution setup",
+    service: "DART",
+  },
+  "signals-out": {
+    heading: "Next: tell us about the signals you want to licence",
+    service: "DART",
+  },
+  regulatory: {
+    heading: "Next: tell us about your firm's regulatory goals",
+    service: "RegUmbrella",
+  },
+};
+
+function BriefingNextSteps({ slug }: { slug: string }) {
+  const copy = NEXT_STEPS_COPY[slug] ?? {
+    heading: "Next: tell us about your strategy",
+    service: null,
+  };
+  const href = copy.service !== null ? `/questionnaire?service=${copy.service}` : "/questionnaire";
+  return (
+    <section
+      data-testid="briefing-next-steps"
+      className="space-y-4 rounded-lg border border-border/60 bg-card/40 p-6"
+    >
+      <h2 className="text-base font-semibold tracking-tight text-foreground">{copy.heading}</h2>
+      <p className="text-sm text-foreground/85 leading-relaxed max-w-2xl">
+        It&apos;s the same catch-all questionnaire everyone fills &mdash; six quick questions about
+        which asset classes, venues, and strategy styles fit you, plus an optional Regulatory
+        Umbrella branch if you need FCA cover. Takes ~2 minutes and lets us pre-configure the
+        right path before the first call.
+      </p>
+      <div className="flex flex-wrap gap-3 pt-1">
+        <Link
+          href={href}
+          className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+        >
+          Start the questionnaire &rarr;
+        </Link>
+        <a
+          href={CALENDLY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+        >
+          Book a 45-minute call
+        </a>
+      </div>
+    </section>
+  );
+}
+
 export default async function BriefingPillarPage({ params }: PageProps) {
   const { slug } = await params;
   const pillar = BRIEFING_PILLARS.find((p) => p.slug === slug);
@@ -244,37 +314,7 @@ export default async function BriefingPillarPage({ params }: PageProps) {
         </p>
       </section>
 
-      <section
-        data-testid="briefing-next-steps"
-        className="space-y-4 rounded-lg border border-border/60 bg-card/40 p-6"
-      >
-        <h2 className="text-base font-semibold tracking-tight text-foreground">
-          Next: tell us about your strategy
-        </h2>
-        <p className="text-sm text-foreground/85 leading-relaxed max-w-2xl">
-          The questionnaire is the same across every briefing &mdash; six quick
-          questions about which asset classes, venues, and strategy styles you
-          care about, plus an optional Regulatory Umbrella branch if you need FCA
-          cover. Takes ~3 minutes and lets us pre-configure the right path before
-          the first call.
-        </p>
-        <div className="flex flex-wrap gap-3 pt-1">
-          <Link
-            href="/questionnaire"
-            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            Start the questionnaire &rarr;
-          </Link>
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-          >
-            Book a 45-minute call
-          </a>
-        </div>
-      </section>
+      <BriefingNextSteps slug={pillar.slug} />
 
       <section className="space-y-3 border-t border-border/40 pt-8">
         <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
