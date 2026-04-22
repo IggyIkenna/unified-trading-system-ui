@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import type { ObservationWidgetSpec, ScenarioExpectation, StrategyFixture } from "./fixtures";
 
 /**
@@ -11,6 +11,39 @@ import type { ObservationWidgetSpec, ScenarioExpectation, StrategyFixture } from
  */
 
 const TRADE_ROW = '[data-testid="trade-history-row"]';
+
+// ---------------------------------------------------------------------------
+// Human-mode visual demo helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * In `--project=human` runs: scroll the element into view then flash a coloured
+ * CSS outline for `ms` milliseconds so the watcher can see which element was
+ * just verified. No-op in headless/CI runs.
+ *
+ * `colour` should be a valid CSS colour string — use green for "row appeared",
+ * blue for "widget updated".
+ */
+async function demoHighlight(page: Page, loc: Locator, colour = "#22c55e", ms = 1_200): Promise<void> {
+  if (test.info().project.name !== "human") return;
+  const el = loc.first();
+  if ((await el.count()) === 0) return;
+  await el.scrollIntoViewIfNeeded();
+  await el.evaluate(
+    (node, { colour, ms }) => {
+      const el = node as HTMLElement;
+      const prev = el.style.cssText;
+      el.style.outline = `3px solid ${colour}`;
+      el.style.outlineOffset = "2px";
+      el.style.transition = "outline 0.15s ease";
+      setTimeout(() => {
+        el.style.cssText = prev;
+      }, ms);
+    },
+    { colour, ms },
+  );
+  await page.waitForTimeout(ms + 100);
+}
 
 export async function countTradeRows(page: Page): Promise<number> {
   return page.locator(TRADE_ROW).count();
@@ -51,7 +84,8 @@ export async function expectTradeRow(
 
 /**
  * End-to-end scenario verification: wait for rows to appear, then assert the
- * newest row of the expected type.
+ * newest row of the expected type. In human mode scrolls to + highlights the
+ * new row in green so the watcher can see the verification.
  */
 export async function verifyScenarioOutcome(
   page: Page,
@@ -62,6 +96,12 @@ export async function verifyScenarioOutcome(
     await expectRowsAdded(page, beforeCount, expected.minRowsAdded);
   }
   await expectTradeRow(page, expected);
+
+  // Human mode: scroll to trade history and highlight the newly added row(s).
+  if (expected.tradeType) {
+    const matchingRows = page.locator(`${TRADE_ROW}[data-trade-type="${expected.tradeType}"]`);
+    await demoHighlight(page, matchingRows.last(), "#22c55e"); // green — row verified
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -75,13 +115,16 @@ export async function verifyScenarioOutcome(
 
 /**
  * Assert every `observationWidgets[*]` entry in the fixture is visible on the
- * page. Skips gracefully when the fixture does not declare any.
+ * page. In human mode highlights each widget in amber after the visibility check
+ * so the watcher can see which panels were verified at baseline.
+ * Skips gracefully when the fixture does not declare any.
  */
 export async function verifyObservationWidgetsVisible(page: Page, fixture: StrategyFixture): Promise<void> {
   for (const spec of fixture.observationWidgets ?? []) {
     if (spec.assertVisible === false) continue;
     const loc = page.locator(`[data-testid="${spec.testid}"]`);
     await expect(loc, `observation widget "${spec.testid}" should be visible`).toBeVisible();
+    await demoHighlight(page, loc, "#f59e0b"); // amber — widget present at baseline
   }
 }
 
@@ -111,7 +154,8 @@ export async function snapshotObservationWidgets(
 /**
  * Assert that every snapshot captured by `snapshotObservationWidgets()` has
  * changed textContent post-execute. Silent if the snapshot is empty (no widgets
- * opted into delta tracking for this trade type).
+ * opted into delta tracking for this trade type). In human mode highlights each
+ * updated widget in blue so the watcher can see which observation panels reacted.
  */
 export async function verifyObservationsUpdated(
   page: Page,
@@ -126,6 +170,7 @@ export async function verifyObservationsUpdated(
         message: `observation widget "${testid}" should re-render after execute (text snapshot unchanged)`,
       })
       .not.toBe(before);
+    await demoHighlight(page, loc, "#3b82f6"); // blue — widget updated
   }
 }
 
