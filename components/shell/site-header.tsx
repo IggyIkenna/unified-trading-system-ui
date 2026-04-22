@@ -4,11 +4,18 @@ import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
 import { SpacesNavSections } from "@/components/shell/spaces-nav-sections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Compass } from "lucide-react";
+import { ChevronDown, Compass, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -28,6 +35,22 @@ const NAV_FIVE_PATHS = [
 const NAV_SECONDARY = [
   { href: "/story", label: "Story" },
   { href: "/contact", label: "Contact" },
+] as const;
+
+// Deep Dive: public, un-gated briefings + developer docs. Separate from the
+// Spaces dropdown (which holds gated product surfaces behind an access code).
+const DEEP_DIVE_HEADLINE = [
+  { href: "/briefings", label: "Briefings hub" },
+  { href: "/docs", label: "Developer docs" },
+] as const;
+
+const DEEP_DIVE_BRIEFINGS = [
+  { href: "/briefings/investment-management", label: "Investment Management" },
+  { href: "/briefings/platform", label: "DART — Start here" },
+  { href: "/briefings/dart-signals-in", label: "DART — Signals In" },
+  { href: "/briefings/dart-full", label: "DART — Full Pipeline" },
+  { href: "/briefings/signals-out", label: "Odum Signals" },
+  { href: "/briefings/regulatory", label: "Regulatory Umbrella" },
 ] as const;
 
 /** Path and fragment for a nav href (e.g. `/#services` → `/` + `#services`). */
@@ -136,7 +159,18 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        {/* Mobile nav sheet */}
+        {/* Desktop menu pill — opens the same Sheet as the mobile logo tap. */}
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open full site navigation"
+          className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground xl:inline-flex"
+        >
+          <Menu className="size-3.5" aria-hidden />
+          Menu
+        </button>
+
+        {/* Mobile + desktop Menu-pill nav sheet */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetContent side="left" className="w-72 p-0">
             <SheetHeader className="border-b border-border/40 px-4 py-3">
@@ -145,8 +179,8 @@ export function SiteHeader() {
                 <span className="text-base font-semibold">Odum Research</span>
               </SheetTitle>
             </SheetHeader>
-            <nav className="flex flex-col gap-1 px-3 py-4">
-              {[NAV_HOME, ...NAV_FIVE_PATHS, ...NAV_SECONDARY].map((item) => (
+            <nav className="flex flex-col gap-1 overflow-y-auto px-3 py-4">
+              {[NAV_HOME, ...NAV_FIVE_PATHS].map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -161,6 +195,43 @@ export function SiteHeader() {
                   {item.label}
                 </Link>
               ))}
+              <div className="mt-3 border-t border-border/40 pt-3">
+                <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  Deep Dive
+                </p>
+                {[...DEEP_DIVE_HEADLINE, ...DEEP_DIVE_BRIEFINGS].map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                      isNavItemActive(pathname, hash, item.href)
+                        ? "bg-accent font-medium text-accent-foreground"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-3 border-t border-border/40 pt-3">
+                {NAV_SECONDARY.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "block rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                      isNavItemActive(pathname, hash, item.href)
+                        ? "bg-accent font-medium text-accent-foreground"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
             </nav>
             <div className="border-t border-border/40 px-4 py-4">
               {!loading && user ? (
@@ -219,6 +290,40 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <NavSeparator />
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-sm transition-colors hover:text-foreground",
+                pathname.startsWith("/briefings") || pathname.startsWith("/docs")
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground",
+              )}
+            >
+              Deep Dive
+              <ChevronDown className="size-3.5 opacity-70" aria-hidden />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-64">
+              {DEEP_DIVE_HEADLINE.map((item) => (
+                <DropdownMenuItem key={item.href} asChild>
+                  <Link href={item.href} className="cursor-pointer">
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                Briefings
+              </DropdownMenuLabel>
+              {DEEP_DIVE_BRIEFINGS.map((item) => (
+                <DropdownMenuItem key={item.href} asChild>
+                  <Link href={item.href} className="cursor-pointer">
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <NavSeparator />
           {NAV_SECONDARY.map((item, index) => (
             <React.Fragment key={item.href}>

@@ -461,6 +461,59 @@
         user-select: none;
       }
 
+      .hero-lifecycle-strip {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 6px 4px;
+        list-style: none;
+        margin: 14px auto 0;
+        padding: 0;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+      }
+
+      .hero-lifecycle-strip li {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        border-radius: 9999px;
+        background: rgba(34, 211, 238, 0.04);
+        border: 1px solid rgba(34, 211, 238, 0.14);
+        color: #c4c4cc;
+      }
+
+      .hero-lifecycle-strip li + li::before {
+        content: "→";
+        margin-right: 8px;
+        margin-left: -2px;
+        padding-right: 4px;
+        color: var(--primary);
+        opacity: 0.55;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        letter-spacing: 0;
+      }
+
+      @media (max-width: 640px) {
+        .hero-lifecycle-strip {
+          font-size: 10px;
+          gap: 4px 3px;
+        }
+        .hero-lifecycle-strip li {
+          padding: 2px 8px;
+        }
+        .hero-lifecycle-strip li + li::before {
+          margin-right: 4px;
+          padding-right: 2px;
+        }
+      }
+
       .hero-service-row {
         display: flex;
         flex-wrap: wrap;
@@ -1283,9 +1336,17 @@
         </div>
         <h1>Unified Trading Infrastructure</h1>
         <p class="subtitle">
-          The same infrastructure we use to run our own capital &mdash; available to institutional clients at any entry
-          point.
+          The same end-to-end system we use to run our own capital &mdash; from research through post-trade &mdash;
+          available to institutional clients at any entry point.
         </p>
+        <ol class="hero-lifecycle-strip" aria-label="Trading lifecycle covered end-to-end">
+          <li>Research</li>
+          <li>Promote</li>
+          <li>Run</li>
+          <li>Post-trade</li>
+          <li>Reporting</li>
+          <li>Regulatory</li>
+        </ol>
         <nav class="hero-service-row" aria-label="Four commercial paths">
           <a
             class="hero-service-tile lab-invest"
