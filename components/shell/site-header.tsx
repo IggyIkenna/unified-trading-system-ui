@@ -25,7 +25,10 @@ const NAV_FIVE_PATHS = [
   { href: "/who-we-are", label: "Who We Are" },
 ] as const;
 
-const NAV_SECONDARY = [{ href: "/contact", label: "Contact" }] as const;
+const NAV_SECONDARY = [
+  { href: "/our-story", label: "Our Story" },
+  { href: "/contact", label: "Contact" },
+] as const;
 
 /** Path and fragment for a nav href (e.g. `/#services` → `/` + `#services`). */
 function parseNavHref(href: string): { path: string; hash: string } {
