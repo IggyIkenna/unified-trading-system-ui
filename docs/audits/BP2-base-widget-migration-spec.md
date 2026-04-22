@@ -263,6 +263,8 @@ The migration per widget is:
 ## § 4 — DetailPanelWidget (detail-panel class)
 
 > **Update 2026-04-22:** `book-preview-compliance` was absorbed into `book-order-entry` (WU-1 widget consolidation). Effective DetailPanelWidget child count: 9. Historical row retained for traceability.
+>
+> **Update 2026-04-22 (WU-2):** `bundle-steps` was absorbed into `bundle-builder` (bundles widget consolidation). Effective DetailPanelWidget child count: 8. Historical row retained for traceability.
 
 **Base file:** `components/shared/detail-panel-widget.tsx` (NEW)
 **Child count:** 10
@@ -365,6 +367,8 @@ The base should provide:
 ---
 
 ## § 6 — CardGridWidget (card-grid class)
+
+> **Update 2026-04-22 (WU-2):** `bundle-templates` was absorbed into `bundle-builder` (bundles widget consolidation). Effective CardGridWidget child count: 7. Historical row retained for traceability.
 
 **Base file:** `components/shared/card-grid-widget.tsx` (NEW)
 **Child count:** 8

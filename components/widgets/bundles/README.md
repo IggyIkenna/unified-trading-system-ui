@@ -1,15 +1,17 @@
 # Bundles workspace widgets
 
-Atomic bundle builder is split into four singleton widgets on the `bundles` tab. State lives in `BundlesDataProvider` (`bundles-data-context.tsx`) so templates, legs, P&amp;L, and actions stay in sync.
+The atomic bundle builder is a single widget on the `bundles` tab. State lives in `BundlesDataProvider` (`bundles-data-context.tsx`); the builder owns template gallery, leg editor, P&L estimate, and simulate/submit actions in one scrollable surface with a sticky action footer.
 
 ## Widgets
 
-| id                 | File                          | Role                                                                                      |
-| ------------------ | ----------------------------- | ----------------------------------------------------------------------------------------- |
-| `bundle-templates` | `bundle-templates-widget.tsx` | Pre-built template gallery; 2-column grid from `sm` breakpoint; optional collapsible help |
-| `bundle-steps`     | `bundle-steps-widget.tsx`     | Visual flow rail, per-leg editors, reorder/duplicate/remove, add leg, clear all           |
-| `bundle-pnl`       | `bundle-pnl-widget.tsx`       | `KpiStrip` (4 metrics) + `CollapsibleSection` line breakdown                              |
-| `bundle-actions`   | `bundle-actions-widget.tsx`   | Leg count badge, simulate (placeholder), submit (disabled wiring TBD)                     |
+| id                   | File                            | Role                                                                                    |
+| -------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
+| `bundle-builder`     | `bundle-builder-widget.tsx`     | Template gallery (toggleable) + step editor + P&L KPI strip + sticky simulate/submit    |
+| `defi-atomic-bundle` | `defi-atomic-bundle-widget.tsx` | DeFi-specific atomic bundles with Tenderly simulation (independent of `bundle-builder`) |
+
+## History
+
+`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions` were merged into `bundle-builder` on 2026-04-22 — all four wrote to the same shared `useBundlesData()` context and only made sense together (P&L read the steps; actions fired based on steps; templates loaded into steps). See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md` WU-2.
 
 ## Data and fixtures
 
@@ -20,7 +22,7 @@ Atomic bundle builder is split into four singleton widgets on the `bundles` tab.
 
 ## Presets
 
-Registered in `register.ts`: `bundles-default` and `bundles-compact` (layouts match [`bundles-widgets.md`](./bundles-widgets.md) section 8).
+Registered in `register.ts`: `bundles-default`, `bundles-compact`, `bundles-full`.
 
 ## Page
 

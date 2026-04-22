@@ -1,6 +1,8 @@
 # 4.12 Bundles — Widget Audit & Merge Plan
 
-> **Status:** DRAFT — awaiting user review
+> **Status:** LANDED 2026-04-22 — merge shipped as WU-2 under `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md`.
+> The 4 CeFi bundle widgets (`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions`) are now a single `bundle-builder` widget (`components/widgets/bundles/bundle-builder-widget.tsx`). `defi-atomic-bundle` remains independent.
+> Content below is historical — the pre-merge audit — kept for traceability.
 > **Page route:** `/services/trading/bundles`
 
 ---

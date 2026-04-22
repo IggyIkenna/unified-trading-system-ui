@@ -5,6 +5,8 @@
 **Child count:** 10 (spec listed 8 + 2 additional discovered)
 **Base file:** `components/shared/card-grid-widget.tsx` — **NOT CREATED** (see S 3.3 — base not justified)
 
+> **Update 2026-04-22 (WU-2):** `bundle-templates` was absorbed into `bundle-builder` (bundles widget merge). References to it below are historical. Effective card-grid child count: 9.
+
 ---
 
 ## 1. Files Audited

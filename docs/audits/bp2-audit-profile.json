@@ -150,7 +150,6 @@
           { "widgetId": "sports-ml-status", "instanceId": "audit-dp-ml-status", "x": 0, "y": 10, "w": 6, "h": 5 },
           { "widgetId": "pred-market-detail", "instanceId": "audit-dp-pred-detail", "x": 6, "y": 10, "w": 6, "h": 5 },
           { "widgetId": "options-scenario", "instanceId": "audit-dp-opt-scenario", "x": 0, "y": 15, "w": 6, "h": 5 },
-          { "widgetId": "bundle-steps", "instanceId": "audit-dp-bundle-steps", "x": 6, "y": 15, "w": 6, "h": 5 },
           { "widgetId": "defi-health-factor", "instanceId": "audit-dp-health", "x": 0, "y": 20, "w": 4, "h": 8 },
           { "widgetId": "defi-reward-pnl", "instanceId": "audit-dp-reward-pnl", "x": 4, "y": 20, "w": 4, "h": 6 },
           { "widgetId": "commodity-regime", "instanceId": "audit-dp-commodity", "x": 8, "y": 20, "w": 4, "h": 6 }
@@ -185,8 +184,7 @@
           { "widgetId": "health-grid", "instanceId": "audit-cg-health", "x": 8, "y": 0, "w": 4, "h": 4 },
           { "widgetId": "risk-circuit-breakers", "instanceId": "audit-cg-cb", "x": 0, "y": 4, "w": 6, "h": 3 },
           { "widgetId": "saft-portfolio", "instanceId": "audit-cg-saft", "x": 6, "y": 4, "w": 6, "h": 4 },
-          { "widgetId": "bundle-templates", "instanceId": "audit-cg-templates", "x": 0, "y": 8, "w": 6, "h": 5 },
-          { "widgetId": "defi-atomic-bundle", "instanceId": "audit-cg-atomic", "x": 6, "y": 8, "w": 6, "h": 5 },
+          { "widgetId": "defi-atomic-bundle", "instanceId": "audit-cg-atomic", "x": 0, "y": 8, "w": 6, "h": 5 },
           { "widgetId": "strategies-catalogue", "instanceId": "audit-cg-strat-cat", "x": 0, "y": 13, "w": 6, "h": 5 },
           { "widgetId": "pred-top-markets", "instanceId": "audit-cg-top-mkts", "x": 6, "y": 13, "w": 6, "h": 4 },
           {

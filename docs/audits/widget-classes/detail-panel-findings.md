@@ -7,6 +7,8 @@
 **Spec reference:** [BP2-base-widget-migration-spec.md](../BP2-base-widget-migration-spec.md) § 4
 
 > **Update 2026-04-22:** `book-preview-compliance` was absorbed into `book-order-entry` (WU-1 widget merge). References to it below are historical. Remaining detail-panel widgets: 10. See `docs/audits/live-review-findings.md` row #17.
+>
+> **Update 2026-04-22 (WU-2):** `bundle-steps` was absorbed into `bundle-builder` (bundles widget merge). References to it below are historical. Remaining detail-panel widgets: 9.
 
 ---
 

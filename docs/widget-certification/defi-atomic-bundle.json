@@ -247,9 +247,9 @@
     "selectionKey": null,
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "DefiAtomicBundleWidget manages its own DefiOp[] state (distinct from BundleStep used by other 4 bundles widgets). Different data model (DeFi on-chain operations vs generic trading legs), different execution path (Tenderly simulation, atomic on-chain), and different minW/minH constraints. Merging with bundle-steps would require a single shared type and would lose DeFi-specific fields (token, estimatedGas per op)."
+      "rationale": "DefiAtomicBundleWidget manages its own DefiOp[] state (distinct from BundleStep used by bundle-builder). Different data model (DeFi on-chain operations vs generic trading legs), different execution path (Tenderly simulation, atomic on-chain), and different minW/minH constraints. Merging with bundle-builder would require a single shared type and would lose DeFi-specific fields (token, estimatedGas per op)."
     },
-    "notes": "Operates alongside the 4 CeFi bundle widgets in the same tab preset but manages its own state independently. Only shares readOnly from BundlesDataContext."
+    "notes": "Operates alongside the merged CeFi bundle-builder widget in the same tab preset but manages its own state independently. Only shares readOnly from BundlesDataContext. The CeFi bundle-templates + bundle-steps + bundle-pnl + bundle-actions widgets were merged into a single bundle-builder widget on 2026-04-22 (WU-2)."
   },
   "dataContract": {
     "channels": ["rest", "websocket"],
@@ -276,7 +276,7 @@
       "Amount input (line 285) uses type='text' with no numeric validation \u2014 accepts arbitrary strings",
       "Amount/gas arrow separator string uses '--' double-hyphen (line 367); cosmetic typography"
     ],
-    "notes": "Widget covers DeFi-only strategies requiring atomic on-chain execution. CeFi coverage is out of scope for this widget \u2014 bundle-steps handles CeFi multi-leg execution."
+    "notes": "Widget covers DeFi-only strategies requiring atomic on-chain execution. CeFi coverage is out of scope for this widget \u2014 bundle-builder handles CeFi multi-leg execution."
   },
   "knownIssues": [
     "Widget uses local DefiOp[] state instead of a domain data context hook \u2014 recommend DefiAtomicBundlesDataContext (L1.1 partial)",

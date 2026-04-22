@@ -23,12 +23,11 @@ The bundle builder is a multi-step transaction constructor. Users either pick a 
 
 ## 2. Widget Decomposition
 
-| id                 | label            | description                                                                                                                                | icon         | minW | minH | defaultW | defaultH | singleton |
-| ------------------ | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------ | ---- | ---- | -------- | -------- | --------- |
-| `bundle-templates` | Bundle Templates | Pre-built template gallery with category badges, estimated cost/profit, step preview                                                       | `FileText`   | 3    | 3    | 4        | 5        | yes       |
-| `bundle-steps`     | Execution Steps  | Interactive step list with add/remove/reorder/duplicate, per-step fields (op, instrument, venue, side, qty, price, depends-on), visual DAG | `Layers`     | 4    | 4    | 8        | 7        | yes       |
-| `bundle-pnl`       | P&L Estimate     | Buy/sell notional, gas estimate, net P&L calculation                                                                                       | `DollarSign` | 3    | 2    | 4        | 3        | yes       |
-| `bundle-actions`   | Bundle Actions   | Simulate (dry run) and Submit buttons with step count badge                                                                                | `Send`       | 3    | 1    | 4        | 1        | yes       |
+| id               | label          | description                                                                                                   | icon     | minW | minH | defaultW | defaultH | singleton |
+| ---------------- | -------------- | ------------------------------------------------------------------------------------------------------------- | -------- | ---- | ---- | -------- | -------- | --------- |
+| `bundle-builder` | Bundle Builder | Template gallery (toggleable) + step editor with visual flow + P&L KPI strip + sticky simulate/submit actions | `Layers` | 6    | 8    | 12       | 14       | yes       |
+
+**Note (2026-04-22):** Bundles tab was originally decomposed into four co-dependent widgets (`bundle-templates`, `bundle-steps`, `bundle-pnl`, `bundle-actions`) that all wrote to the same shared `useBundlesData()` context and only made sense together (P&L read steps; actions fired on steps; templates loaded into steps). They were merged into a single `bundle-builder` widget that owns the full workflow. See `docs/audits/live-review-findings.md` row #17 and `unified-trading-pm/plans/active/trading_widget_merge_audit_2026_04_22.plan.md` WU-2.
 
 ---
 
