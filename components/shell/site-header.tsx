@@ -1,21 +1,12 @@
 "use client";
 
 import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
-import { SpacesNavSections } from "@/components/shell/spaces-nav-sections";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Compass, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -53,17 +44,6 @@ const DEEP_DIVE_BRIEFINGS = [
   { href: "/briefings/regulatory", label: "Regulatory Umbrella" },
 ] as const;
 
-/** Path and fragment for a nav href (e.g. `/#services` → `/` + `#services`). */
-function parseNavHref(href: string): { path: string; hash: string } {
-  const hashIdx = href.indexOf("#");
-  if (hashIdx === -1) {
-    return { path: href, hash: "" };
-  }
-  const path = href.slice(0, hashIdx);
-  const fragment = href.slice(hashIdx);
-  return { path: path === "" ? "/" : path, hash: fragment };
-}
-
 function isNavItemActive(pathname: string, hash: string, itemHref: string): boolean {
   const [pathPart, hashPart] = itemHref.split("#");
   const normalizedHash = hashPart ? `#${hashPart}` : "";
@@ -77,14 +57,6 @@ function isNavItemActive(pathname: string, hash: string, itemHref: string): bool
   }
 
   return pathname === itemHref || pathname === pathPart;
-}
-
-function NavSeparator() {
-  return (
-    <span className="shrink-0 select-none px-0.5 text-xs font-light text-muted-foreground/40" aria-hidden="true">
-      |
-    </span>
-  );
 }
 
 const NAV_DISMISSED_KEY = "odum.nav.dismissed";
@@ -122,32 +94,6 @@ export function SiteHeader() {
       window.localStorage.setItem(NAV_DISMISSED_KEY, "1");
     }
   }, []);
-
-  const handleNavLinkClick = React.useCallback(
-    (itemHref: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
-      if (e.button !== 0) return;
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
-      const { path, hash: targetHash } = parseNavHref(itemHref);
-      if (path === pathname) {
-        setHash(targetHash);
-        return;
-      }
-
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          syncHashFromWindow();
-        });
-      });
-    },
-    [pathname, syncHashFromWindow],
-  );
-
-  const navLinkClass = (href: string) =>
-    cn(
-      "shrink-0 whitespace-nowrap text-sm transition-colors hover:text-foreground",
-      isNavItemActive(pathname, hash, href) ? "font-medium text-foreground" : "text-muted-foreground",
-    );
 
   return (
     <header
@@ -284,80 +230,8 @@ export function SiteHeader() {
           </SheetContent>
         </Sheet>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 px-2 xl:flex lg:gap-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="inline-flex shrink-0 items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <Compass className="size-3.5" aria-hidden />
-              Spaces
-              <ChevronDown className="size-3.5 opacity-70" aria-hidden />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              <SpacesNavSections />
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <NavSeparator />
-          <Link
-            href={NAV_HOME.href}
-            onClick={handleNavLinkClick(NAV_HOME.href)}
-            className={navLinkClass(NAV_HOME.href)}
-          >
-            {NAV_HOME.label}
-          </Link>
-          <NavSeparator />
-          {NAV_FIVE_PATHS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={handleNavLinkClick(item.href)}
-              className={navLinkClass(item.href)}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <NavSeparator />
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              className={cn(
-                "inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-sm transition-colors hover:text-foreground",
-                pathname.startsWith("/briefings") || pathname.startsWith("/docs")
-                  ? "font-medium text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              Deep Dive
-              <ChevronDown className="size-3.5 opacity-70" aria-hidden />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
-              {DEEP_DIVE_HEADLINE.map((item) => (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href} className="cursor-pointer">
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                Briefings
-              </DropdownMenuLabel>
-              {DEEP_DIVE_BRIEFINGS.map((item) => (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href} className="cursor-pointer">
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <NavSeparator />
-          {NAV_SECONDARY.map((item, index) => (
-            <React.Fragment key={item.href}>
-              {index > 0 ? <NavSeparator /> : null}
-              <Link href={item.href} onClick={handleNavLinkClick(item.href)} className={navLinkClass(item.href)}>
-                {item.label}
-              </Link>
-            </React.Fragment>
-          ))}
-        </nav>
+        {/* Horizontal nav removed 2026-04-22 — Menu pill + Sheet drawer is the single wayfinding surface. */}
+        <div className="flex-1" aria-hidden="true" />
 
         <div className="flex items-center gap-3">
           {!loading && user ? (
