@@ -87,6 +87,8 @@ function NavSeparator() {
   );
 }
 
+const NAV_DISMISSED_KEY = "odum.nav.dismissed";
+
 export function SiteHeader() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
@@ -102,6 +104,24 @@ export function SiteHeader() {
     window.addEventListener("hashchange", syncHashFromWindow);
     return () => window.removeEventListener("hashchange", syncHashFromWindow);
   }, [pathname, syncHashFromWindow]);
+
+  // On first mount, auto-open nav drawer on desktop unless user has closed it before.
+  // Mobile stays closed by default (too much viewport eating for first impression).
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const dismissed = window.localStorage.getItem(NAV_DISMISSED_KEY) === "1";
+    const isDesktop = window.matchMedia("(min-width: 1280px)").matches;
+    if (!dismissed && isDesktop) {
+      setMobileOpen(true);
+    }
+  }, []);
+
+  const handleSheetOpenChange = React.useCallback((open: boolean) => {
+    setMobileOpen(open);
+    if (!open && typeof window !== "undefined") {
+      window.localStorage.setItem(NAV_DISMISSED_KEY, "1");
+    }
+  }, []);
 
   const handleNavLinkClick = React.useCallback(
     (itemHref: string) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -170,8 +190,9 @@ export function SiteHeader() {
           Menu
         </button>
 
-        {/* Mobile + desktop Menu-pill nav sheet */}
-        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        {/* Mobile + desktop Menu-pill nav sheet.
+            Auto-opens on first desktop visit, stays closed after user dismisses. */}
+        <Sheet open={mobileOpen} onOpenChange={handleSheetOpenChange}>
           <SheetContent side="left" className="w-72 p-0">
             <SheetHeader className="border-b border-border/40 px-4 py-3">
               <SheetTitle className="flex items-center gap-3">
