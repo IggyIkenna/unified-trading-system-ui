@@ -66,11 +66,11 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "organizationIds drives isContextComplete \u2014 org filter gates order submission."
+          "note": "organizationIds drives isContextComplete — org filter gates order submission."
         },
         "1.4": {
           "result": "pass",
-          "note": "clientIds drives isContextComplete \u2014 client filter gates order submission."
+          "note": "clientIds drives isContextComplete — client filter gates order submission."
         },
         "1.5": {
           "result": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Modes: live \u2713 (order submission enabled), batch \u2713 (submit button disabled, advisory message shown), paper \u2014 expected same as batch (read-only form)."
+          "note": "Modes: live ✓ (order submission enabled), batch ✓ (submit button disabled, advisory message shown), paper — expected same as batch (read-only form)."
         },
         "3.2": {
           "result": "pass",
@@ -108,7 +108,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode expected: submit button disabled (same as batch guard). Paper mode not yet in UI toggle \u2014 document only."
+          "note": "Paper mode expected: submit button disabled (same as batch guard). Paper mode not yet in UI toggle — document only."
         },
         "3.6": {
           "result": "pass",
@@ -148,16 +148,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all STRATEGIES registry entries \u2014 strategy dropdown includes all registered strategies. Archetype-based side auto-selection: longArchetypes\u2192buy (BASIS_TRADE, YIELD, DIRECTIONAL, ML_DIRECTIONAL, MOMENTUM, RECURSIVE_STAKED_BASIS), shortArchetypes\u2192sell (MEAN_REVERSION). HUF execution mode warns against market orders."
+          "note": "Target strategies: all STRATEGIES registry entries — strategy dropdown includes all registered strategies. Archetype-based side auto-selection: longArchetypes→buy (BASIS_TRADE, YIELD, DIRECTIONAL, ML_DIRECTIONAL, MOMENTUM, RECURSIVE_STAKED_BASIS), shortArchetypes→sell (MEAN_REVERSION). HUF execution mode warns against market orders."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2\u20135.6 required \u2014 this is the primary execution widget and most critical for strategy execution readiness."
+      "notes": "5.1 complete. Human checks 5.2–5.6 required — this is the primary execution widget and most critical for strategy execution readiness."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+      "notes": "Deferred — L6 follows L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "231 lines \u2014 within 500-line limit. No single function >200 lines."
+          "note": "231 lines — within 500-line limit. No single function >200 lines."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "text-[10px] \u2192 text-micro at lines 107, 120, 153, 177, 181, 204, 226; text-[9px] \u2192 text-nano at lines 134 and 184 (Badge). Tokens now available in globals.css @theme."
+          "note": "text-[10px] → text-micro at lines 107, 120, 153, 177, 181, 204, 226; text-[9px] → text-nano at lines 134 and 184 (Badge). Tokens now available in globals.css @theme."
         },
         "8.2": {
           "result": "pass",
@@ -218,22 +218,22 @@
         },
         "8.5": {
           "result": null,
-          "note": "Human check required \u2014 responsive at minW=2, minH=3."
+          "note": "Human check required — responsive at minW=2, minH=3."
         }
       },
-      "notes": "8.1 fixed (tokens applied). 8.2/8.3 clean. 8.4(agent) clean \u2014 labels present. Human 8.4+8.5 required."
+      "notes": "8.1 fixed (tokens applied). 8.2/8.3 clean. 8.4(agent) clean — labels present. Human 8.4+8.5 required."
     }
   },
   "relationships": {
     "mode": "detail",
     "masterOf": [],
-    "detailOf": ["instrument-bar"],
+    "detailOf": ["terminal-watchlist"],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
       "rationale": "Order entry is a singleton form that must be independently resizable and visible alongside order book and price chart."
     },
-    "notes": "Singleton \u2014 only one instance allowed per terminal layout. Driven by selectedInstrument and selectedAccount from instrument-bar. Strategy linking cross-couples with strategies domain."
+    "notes": "Singleton — only one instance allowed per terminal layout. Driven by selectedInstrument and selectedAccount from terminal-watchlist. Strategy linking cross-couples with strategies domain."
   },
   "dataContract": {
     "channels": ["rest"],
@@ -261,12 +261,12 @@
     "verifiedOn": [],
     "gaps": [
       "DeFi-specific order params (gas limit, slippage tolerance) not in form",
-      "Strategy constraints collapsible only shows archetype+executionMode \u2014 full constraint set not displayed"
+      "Strategy constraints collapsible only shows archetype+executionMode — full constraint set not displayed"
     ],
     "notes": "Most critical widget for strategy execution readiness (L5). DeFi execution may require additional form fields not currently present."
   },
   "knownIssues": [
-    "DEFAULT_INSTRUMENTS fallback in use-terminal-page-data.ts rather than lib/constants/ \u2014 minor L1.7 placement gap",
+    "DEFAULT_INSTRUMENTS fallback in use-terminal-page-data.ts rather than lib/constants/ — minor L1.7 placement gap",
     "isLoading and error stubbed as false/null pending real API hook wiring",
     "DeFi order params (slippage, gas) absent from order form"
   ],
@@ -274,16 +274,16 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "order-entry-widget.tsx \u2014 ~15 user-visible strings not i18n wrapped",
+      "description": "order-entry-widget.tsx — ~15 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "order-entry-widget.tsx:107,120,134,153,177,181,204,226 \u2014 text-[10px]/text-[9px] arbitrary typography classes with no matching globals.css token",
+      "description": "order-entry-widget.tsx:107,120,134,153,177,181,204,226 — text-[10px]/text-[9px] arbitrary typography classes with no matching globals.css token",
       "status": "fixed",
-      "deferReason": "missing token \u2014 requests --text-micro (0.625rem/10px) and --text-nano (0.5625rem/9px) for dense form labels and percentage buttons",
+      "deferReason": "missing token — requests --text-micro (0.625rem/10px) and --text-nano (0.5625rem/9px) for dense form labels and percentage buttons",
       "fix": "globals.css @theme now exposes --text-micro and --text-nano; widget updated to text-micro at lines 107, 120, 153, 177, 181, 204, 226 and text-nano at lines 134, 184."
     }
   ],

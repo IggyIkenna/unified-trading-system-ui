@@ -171,7 +171,7 @@ A **widget** in this codebase is:
 | recharts-chart | 10    | **No**                       | risk-var-chart, pnl-time-series, risk-margin, risk-term-structure         |
 | card-grid      | 7     | **No**                       | alerts-preview, health-grid, risk-circuit-breakers, strategies-catalogue  |
 | detail-panel   | 7     | **No**                       | instr-detail-panel, sports-fixture-detail, defi-health-factor             |
-| control-bar    | 7     | **No**                       | instrument-bar, pnl-controls, markets-controls, options-control-bar       |
+| control-bar    | 6     | **No**                       | pnl-controls, markets-controls, options-control-bar, book-hierarchy-bar   |
 | bespoke        | 9     | N/A                          | pnl-chart, calendar-events, pred-odum-focus, options-greek-surface        |
 | heatmap        | 3     | **No**                       | risk-correlation-heatmap, risk-strategy-heatmap, defi-funding-matrix      |
 | order-book     | 3     | **No**                       | order-book, depth-chart, markets-live-book                                |

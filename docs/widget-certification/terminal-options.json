@@ -38,11 +38,11 @@
         },
         "0.7": {
           "result": "pass",
-          "note": "VolSurfaceChart renders 'No vol surface data'; OptionsChain shows 'No live data \u2014 displaying sample options chain'."
+          "note": "VolSurfaceChart renders 'No vol surface data'; OptionsChain shows 'No live data — displaying sample options chain'."
         },
         "0.8": {
           "result": "pass",
-          "note": "OptionsChain renders 'API unavailable \u2014 showing mock data' on isError."
+          "note": "OptionsChain renders 'API unavailable — showing mock data' on isError."
         },
         "0.9": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "n/a",
-          "note": "Options chain is instrument-scoped market data \u2014 not org-filtered."
+          "note": "Options chain is instrument-scoped market data — not org-filtered."
         },
         "1.4": {
           "result": "n/a",
@@ -82,10 +82,10 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "No reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (trading component layer \u2014 acceptable)."
+          "note": "No reference data from lib/mocks in widget file; OptionsChain and VolSurfaceChart use their own mock generators internally (trading component layer — acceptable)."
         }
       },
-      "notes": "L1 pass. 1.3/1.4/1.5 N/A \u2014 instrument-scoped market data."
+      "notes": "L1 pass. 1.3/1.4/1.5 N/A — instrument-scoped market data."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Modes: live \u2713 (options chain fetches live data), batch \u2014 expected behavior: OptionsChain renders historical snapshot for asOf date if API supports it. paper N/A."
+          "note": "Modes: live ✓ (options chain fetches live data), batch — expected behavior: OptionsChain renders historical snapshot for asOf date if API supports it. paper N/A."
         },
         "3.2": {
           "result": "partial",
@@ -112,10 +112,10 @@
         },
         "3.6": {
           "result": "pass",
-          "note": "No WebSocket or timed interval in widget file. Dynamically loaded components may have their own intervals \u2014 need human verification at component level."
+          "note": "No WebSocket or timed interval in widget file. Dynamically loaded components may have their own intervals — need human verification at component level."
         }
       },
-      "notes": "Agent checks partial. 3.2 gap: mode/asOf not passed to OptionsChain/VolSurfaceChart sub-components. Human checks 3.3(N/A \u2014 read-only)/3.4(batch indicator) required."
+      "notes": "Agent checks partial. 3.2 gap: mode/asOf not passed to OptionsChain/VolSurfaceChart sub-components. Human checks 3.3(N/A — read-only)/3.4(batch indicator) required."
     },
     "l4": {
       "status": "partial",
@@ -124,7 +124,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "No buttons in widget file \u2014 all interactivity inside OptionsChain and VolSurfaceChart components."
+          "note": "No buttons in widget file — all interactivity inside OptionsChain and VolSurfaceChart components."
         },
         "4.2": {
           "result": "pass",
@@ -151,13 +151,13 @@
           "note": "Target strategies: options-specific strategies. In STRATEGIES registry: any strategy with assetClass including 'options' or 'cefi'. Currently no DeFi options strategies registered. Widget serves vanilla options trading workflow."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2\u20135.6 required. Known L4 note: OptionsChain UNDERLYINGS constant may not match all selectedInstrument.symbol values \u2014 verify symbol passthrough."
+      "notes": "5.1 complete. Human checks 5.2–5.6 required. Known L4 note: OptionsChain UNDERLYINGS constant may not match all selectedInstrument.symbol values — verify symbol passthrough."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+      "notes": "Deferred — L6 follows L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "40 lines \u2014 minimal widget."
+          "note": "40 lines — minimal widget."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "No text-[\u2026] in widget file. CLEAN."
+          "note": "No text-[…] in widget file. CLEAN."
         },
         "8.2": {
           "result": "pass",
@@ -210,7 +210,7 @@
         },
         "8.3": {
           "result": "pass",
-          "note": "No custom div+tailwind in widget file \u2014 delegates to OptionsChain and VolSurfaceChart trading components. CLEAN."
+          "note": "No custom div+tailwind in widget file — delegates to OptionsChain and VolSurfaceChart trading components. CLEAN."
         },
         "8.4": {
           "result": "partial",
@@ -218,22 +218,22 @@
         },
         "8.5": {
           "result": null,
-          "note": "Human check required \u2014 responsive at minW=4, minH=4. Dynamically loaded components must not overflow."
+          "note": "Human check required — responsive at minW=4, minH=4. Dynamically loaded components must not overflow."
         }
       },
-      "notes": "8.1\u20138.3 clean in widget file. Human 8.4+8.5 required \u2014 critical because dynamic components may have their own typography/spacing issues."
+      "notes": "8.1–8.3 clean in widget file. Human 8.4+8.5 required — critical because dynamic components may have their own typography/spacing issues."
     }
   },
   "relationships": {
     "mode": "detail",
     "masterOf": [],
-    "detailOf": ["instrument-bar"],
+    "detailOf": ["terminal-watchlist"],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
       "rationale": "Options chain requires substantial height for strike table + vol surface. Cannot be merged with other terminal widgets without sacrificing usability."
     },
-    "notes": "Driven by selectedInstrument from instrument-bar. Dynamically loads OptionsChain and VolSurfaceChart to avoid SSR issues with chart libraries."
+    "notes": "Driven by selectedInstrument from terminal-watchlist. Dynamically loads OptionsChain and VolSurfaceChart to avoid SSR issues with chart libraries."
   },
   "dataContract": {
     "channels": ["rest"],
@@ -241,7 +241,7 @@
     "cadence": "on-demand",
     "staleness": "seconds",
     "mockSource": "options-chain/mock-generators.tsx (UNDERLYINGS constant + synthetic options generation inside OptionsChain component)",
-    "backendOwner": "unknown \u2014 likely unified-trading-api (options pricing / vol surface service)",
+    "backendOwner": "unknown — likely unified-trading-api (options pricing / vol surface service)",
     "notes": "OptionsChain fetches options data via internal hook; VolSurfaceChart generates synthetic vol surface. Production path requires options pricing service. Both sub-components handle their own loading/error states."
   },
   "coverage": {
@@ -253,12 +253,12 @@
     "gaps": [
       "DeFi options protocols (Lyra, Dopex, Premia) not verified",
       "OptionsChain UNDERLYINGS constant may not match all instrument symbols passed by terminal context",
-      "Vol surface is fully synthetic \u2014 not backed by real implied volatility data"
+      "Vol surface is fully synthetic — not backed by real implied volatility data"
     ],
     "notes": "Currently CeFi-only. DeFi options protocols are a significant gap. OptionsChain has a hardcoded UNDERLYINGS list that may not react correctly to selectedInstrument.symbol if the symbol is not in the list."
   },
   "knownIssues": [
-    "OptionsChain UNDERLYINGS constant hardcoded \u2014 does not react to selectedInstrument.symbol if symbol not in list (L4 human walkthrough required)",
+    "OptionsChain UNDERLYINGS constant hardcoded — does not react to selectedInstrument.symbol if symbol not in list (L4 human walkthrough required)",
     "Vol surface is synthetic, not real IV data",
     "mode/asOf not passed to OptionsChain/VolSurfaceChart sub-components (3.2 partial)"
   ],
@@ -266,7 +266,7 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "terminal-options-widget.tsx \u2014 no user-visible strings in widget file; all in dynamically loaded sub-components",
+      "description": "terminal-options-widget.tsx — no user-visible strings in widget file; all in dynamically loaded sub-components",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

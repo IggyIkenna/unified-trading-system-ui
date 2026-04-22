@@ -324,6 +324,8 @@ The base should provide:
 
 ## § 5 — ControlBarWidget (control-bar class)
 
+> **Update 2026-04-22 (WU-4):** `instrument-bar` was archived — instrument selection moved to `terminal-watchlist` (shared `WatchlistPanel`); account picker moved into `order-entry`. Effective ControlBarWidget child count: 6. Historical row retained for traceability.
+
 **Base file:** `components/shared/control-bar-widget.tsx` (NEW)
 **Child count:** 7
 

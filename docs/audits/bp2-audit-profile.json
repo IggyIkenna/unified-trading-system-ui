@@ -161,7 +161,6 @@
         "isPreset": false,
         "layouts": [
           { "widgetId": "scope-summary", "instanceId": "audit-cb-scope", "x": 0, "y": 0, "w": 12, "h": 2 },
-          { "widgetId": "instrument-bar", "instanceId": "audit-cb-instrument", "x": 0, "y": 2, "w": 12, "h": 2 },
           { "widgetId": "book-hierarchy-bar", "instanceId": "audit-cb-hierarchy", "x": 0, "y": 4, "w": 12, "h": 2 },
           { "widgetId": "markets-controls", "instanceId": "audit-cb-markets", "x": 0, "y": 6, "w": 12, "h": 2 },
           { "widgetId": "options-control-bar", "instanceId": "audit-cb-options", "x": 0, "y": 8, "w": 12, "h": 2 },

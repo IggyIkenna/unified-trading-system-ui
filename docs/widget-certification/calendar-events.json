@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data sourced from useEconomicResults and useCorporateActions hooks via CalendarEventFeed \u2014 no inline fetch in widget."
+          "note": "Data sourced from useEconomicResults and useCorporateActions hooks via CalendarEventFeed — no inline fetch in widget."
         },
         "1.2": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "n/a",
-          "note": "Calendar data is global macro/corporate-action data \u2014 not org-filtered."
+          "note": "Calendar data is global macro/corporate-action data — not org-filtered."
         },
         "1.4": {
           "result": "n/a",
@@ -85,7 +85,7 @@
           "note": "No reference data in lib/mocks."
         }
       },
-      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A \u2014 global macro data not filtered by trading scope."
+      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A — global macro data not filtered by trading scope."
     },
     "l2": {
       "status": "pass",
@@ -100,22 +100,22 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Modes: live \u2713 (events fetched via API), batch \u2713 (calendar data is time-bound; events for the asOf date are still relevant), paper N/A."
+          "note": "Modes: live ✓ (events fetched via API), batch ✓ (calendar data is time-bound; events for the asOf date are still relevant), paper N/A."
         },
         "3.2": {
           "result": "pass",
-          "note": "Calendar data is not mode-sensitive \u2014 economic events are static scheduled events regardless of live/batch mode."
+          "note": "Calendar data is not mode-sensitive — economic events are static scheduled events regardless of live/batch mode."
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: no behavioral change \u2014 calendar events are read-only reference data."
+          "note": "Paper mode: no behavioral change — calendar events are read-only reference data."
         },
         "3.6": {
           "result": "pass",
           "note": "No WebSocket or timed intervals in widget file. CalendarEventFeed uses REST hooks only."
         }
       },
-      "notes": "Agent checks pass. Human checks 3.3(N/A \u2014 read-only widget)/3.4(N/A \u2014 no mode-sensitive display) required but expected to be N/A."
+      "notes": "Agent checks pass. Human checks 3.3(N/A — read-only widget)/3.4(N/A — no mode-sensitive display) required but expected to be N/A."
     },
     "l4": {
       "status": "partial",
@@ -124,7 +124,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "No buttons in widget file \u2014 all interactivity inside CalendarEventFeed."
+          "note": "No buttons in widget file — all interactivity inside CalendarEventFeed."
         },
         "4.2": {
           "result": "pass",
@@ -148,16 +148,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all \u2014 economic calendar is reference data shared across all strategy types. Not strategy-specific."
+          "note": "Target strategies: all — economic calendar is reference data shared across all strategy types. Not strategy-specific."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2\u20135.6 required."
+      "notes": "5.1 complete. Human checks 5.2–5.6 required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+      "notes": "Deferred — L6 follows L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "12 lines \u2014 minimal wrapper widget."
+          "note": "12 lines — minimal wrapper widget."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -193,7 +193,7 @@
           "note": "No hooks in widget file. CLEAN."
         }
       },
-      "notes": "L7 pass. Minimal wrapper \u2014 nothing to fix."
+      "notes": "L7 pass. Minimal wrapper — nothing to fix."
     },
     "l8": {
       "status": "partial",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "No text-[\u2026] in widget file. CLEAN."
+          "note": "No text-[…] in widget file. CLEAN."
         },
         "8.2": {
           "result": "pass",
@@ -210,7 +210,7 @@
         },
         "8.3": {
           "result": "pass",
-          "note": "Widget file has no custom divs that should be primitives \u2014 single wrapper div is intentional layout container. CalendarEventFeed is a trading component."
+          "note": "Widget file has no custom divs that should be primitives — single wrapper div is intentional layout container. CalendarEventFeed is a trading component."
         },
         "8.4": {
           "result": "partial",
@@ -218,10 +218,10 @@
         },
         "8.5": {
           "result": null,
-          "note": "Human check required \u2014 responsive at minW=3, minH=2. Available on terminal and overview tabs."
+          "note": "Human check required — responsive at minW=3, minH=2. Available on terminal and overview tabs."
         }
       },
-      "notes": "8.1\u20138.3 clean. Human 8.4+8.5 required."
+      "notes": "8.1–8.3 clean. Human 8.4+8.5 required."
     }
   },
   "relationships": {
@@ -231,9 +231,9 @@
     "selectionKey": null,
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Calendar events is global macro reference data \u2014 not driven by instrument selection. It is standalone even though it sits on the terminal tab."
+      "rationale": "Calendar events is global macro reference data — not driven by instrument selection. It is standalone even though it sits on the terminal tab."
     },
-    "notes": "Standalone widget \u2014 not coupled to instrument-bar selection. Available on terminal and overview tabs."
+    "notes": "Standalone widget — not coupled to terminal-watchlist selection. Available on terminal and overview tabs."
   },
   "dataContract": {
     "channels": ["rest"],
@@ -242,7 +242,7 @@
     "staleness": "minutes",
     "mockSource": null,
     "backendOwner": "unified-trading-api (calendar / market-events service)",
-    "notes": "Data fetched via useEconomicResults() and useCorporateActions() hooks in CalendarEventFeed. No real-time streaming required \u2014 economic calendar events are scheduled and change infrequently."
+    "notes": "Data fetched via useEconomicResults() and useCorporateActions() hooks in CalendarEventFeed. No real-time streaming required — economic calendar events are scheduled and change infrequently."
   },
   "coverage": {
     "assetClasses": ["cefi", "defi", "tradfi"],
@@ -261,7 +261,7 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "calendar-events-widget.tsx \u2014 no user-visible strings in widget file itself; all strings in CalendarEventFeed component",
+      "description": "calendar-events-widget.tsx — no user-visible strings in widget file itself; all strings in CalendarEventFeed component",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

@@ -1,6 +1,7 @@
 # 4.17 Terminal — Widget Audit & Merge Plan
 
-> **Status:** DRAFT — awaiting user review
+> **Status:** LANDED 2026-04-22 (WU-4). `instrument-bar` was archived. Instrument selection migrated to `terminal-watchlist` (shared `WatchlistPanel`); account picker moved into `order-entry`. Dropped live-price, %Δ, LIVE/BATCH mode badge, and the dead stub buttons (Refresh / Settings / Maximize). See `docs/audits/live-review-findings.md` rows #4 and #17.
+>
 > **Page route:** `/services/trading/terminal`
 
 ---

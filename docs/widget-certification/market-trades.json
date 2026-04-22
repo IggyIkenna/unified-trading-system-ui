@@ -85,7 +85,7 @@
           "note": "No reference data; mock generators in lib/mocks/generators (not imported by widget)."
         }
       },
-      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A \u2014 market data widget."
+      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A — market data widget."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Modes: live \u2713 (1200ms live trade injection), batch \u2713 (trades stop updating; own trades from ledger are static), paper N/A."
+          "note": "Modes: live ✓ (1200ms live trade injection), batch ✓ (trades stop updating; own trades from ledger are static), paper N/A."
         },
         "3.2": {
           "result": "pass",
@@ -112,10 +112,10 @@
         },
         "3.6": {
           "result": "pass",
-          "note": "1200ms setInterval in use-terminal-page-data.ts generates mock trades \u2014 runs in mock mode only; production uses real trade feed. useLiveFeed 500ms display interval is pure UI animation."
+          "note": "1200ms setInterval in use-terminal-page-data.ts generates mock trades — runs in mock mode only; production uses real trade feed. useLiveFeed 500ms display interval is pure UI animation."
         }
       },
-      "notes": "Agent checks pass. Human checks 3.3(N/A\u2014read-only widget)/3.4(batch indicator on instrument-bar) required."
+      "notes": "Agent checks pass. Human checks 3.3(N/A—read-only widget)/3.4(batch indicator on order-entry) required."
     },
     "l4": {
       "status": "partial",
@@ -148,16 +148,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all \u2014 market trades widget is universal market data. Own Trades tab shows trades placed via order-entry for any strategy."
+          "note": "Target strategies: all — market trades widget is universal market data. Own Trades tab shows trades placed via order-entry for any strategy."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2\u20135.6 required."
+      "notes": "5.1 complete. Human checks 5.2–5.6 required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+      "notes": "Deferred — L6 follows L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "85 lines \u2014 within limit."
+          "note": "85 lines — within limit."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "text-[10px] \u2192 text-micro at lines 42, 45, 61; text-[9px] \u2192 text-nano at line 54; text-[8px] \u2192 text-pico at line 71. Tokens now available in globals.css @theme."
+          "note": "text-[10px] → text-micro at lines 42, 45, 61; text-[9px] → text-nano at line 54; text-[8px] → text-pico at line 71. Tokens now available in globals.css @theme."
         },
         "8.2": {
           "result": "pass",
@@ -218,7 +218,7 @@
         },
         "8.5": {
           "result": null,
-          "note": "Human check required \u2014 responsive at minW=2, minH=2."
+          "note": "Human check required — responsive at minW=2, minH=2."
         }
       },
       "notes": "8.1 fixed (tokens applied). 8.2/8.3 clean. Human 8.4+8.5 required."
@@ -227,13 +227,13 @@
   "relationships": {
     "mode": "detail",
     "masterOf": [],
-    "detailOf": ["instrument-bar"],
+    "detailOf": ["terminal-watchlist"],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Market trades and calendar events occupy the same bottom-row slot but serve different data domains \u2014 merging would require tabbing and lose simultaneous visibility."
+      "rationale": "Market trades and calendar events occupy the same bottom-row slot but serve different data domains — merging would require tabbing and lose simultaneous visibility."
     },
-    "notes": "Singleton. Driven by selectedInstrument from instrument-bar. Own Trades tab cross-references orders placed via order-entry widget."
+    "notes": "Singleton. Driven by selectedInstrument from terminal-watchlist. Own Trades tab cross-references orders placed via order-entry widget."
   },
   "dataContract": {
     "channels": ["websocket", "polling"],
@@ -254,26 +254,26 @@
       "Own Trades key={i} (index-based) will cause display issues when trades are reordered",
       "DeFi on-chain trade feed not verified"
     ],
-    "notes": "key={i} on trade rows is a known cosmetic gap \u2014 acceptable for a live-prepend feed where stable IDs are not exposed by context shape."
+    "notes": "key={i} on trade rows is a known cosmetic gap — acceptable for a live-prepend feed where stable IDs are not exposed by context shape."
   },
   "knownIssues": [
-    "key={i} on trade rows \u2014 no stable ID from Record<string,unknown> shape; acceptable for live feed",
+    "key={i} on trade rows — no stable ID from Record<string,unknown> shape; acceptable for live feed",
     "Tab 'own' shows trades from mock-trade-ledger which persists session-only"
   ],
   "findings": [
     {
       "level": "l7",
       "check": "7.5",
-      "description": "market-trades-widget.tsx \u2014 ~6 user-visible strings not i18n wrapped",
+      "description": "market-trades-widget.tsx — ~6 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "market-trades-widget.tsx:42,45,54,61,71 \u2014 text-[10px], text-[9px], text-[8px] arbitrary typography with no matching globals.css token",
+      "description": "market-trades-widget.tsx:42,45,54,61,71 — text-[10px], text-[9px], text-[8px] arbitrary typography with no matching globals.css token",
       "status": "fixed",
-      "deferReason": "missing token \u2014 requests --text-micro (0.625rem/10px), --text-nano (0.5625rem/9px), --text-pico (0.5rem/8px) for dense trade tape rows and column headers",
+      "deferReason": "missing token — requests --text-micro (0.625rem/10px), --text-nano (0.5625rem/9px), --text-pico (0.5rem/8px) for dense trade tape rows and column headers",
       "fix": "globals.css @theme now exposes --text-micro, --text-nano, --text-pico; widget updated to text-micro at lines 42, 45, 61, text-nano at line 54, text-pico at line 71."
     }
   ],

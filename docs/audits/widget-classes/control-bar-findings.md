@@ -5,6 +5,8 @@
 **Status:** AUDIT COMPLETE — NO BASE CREATED
 **Decision:** Control bars are contextual widgets that work alongside other widgets, not standalone. They will be merged with their companion widgets. No base class warranted.
 
+> **Update 2026-04-22 (WU-4):** `instrument-bar` was archived. Instrument selection migrated to `terminal-watchlist` (shared `WatchlistPanel`); account picker moved into `order-entry`; dropped live-price, %Δ, LIVE/BATCH badge, and dead stub buttons. References below are historical.
+
 ---
 
 ## 1. Widget-by-Widget Audit

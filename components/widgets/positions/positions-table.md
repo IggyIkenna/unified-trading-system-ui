@@ -25,4 +25,4 @@ See [pairing guide](../pairing-guide.md).
 - **Same tab:** `positions-filter`, `positions-kpi-strip`, `account-balances`.
 - **Portfolio / NAV:** **accounts** `accounts-balance-table`, `accounts-margin-util` · **overview** `pnl-chart`, `strategy-table`.
 - **Risk:** **risk** `risk-exposure-attribution`, `risk-var-chart`, `risk-margin` · **alerts** `alerts-table`.
-- **Execution context:** **terminal** `instrument-bar`, `price-chart` · **orders** `orders-table`.
+- **Execution context:** **terminal** `terminal-watchlist`, `price-chart` · **orders** `orders-table`.

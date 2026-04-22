@@ -85,7 +85,7 @@
           "note": "No reference data in widget; mock generation in lib/mocks/generators/order-book.ts (correct, used by context not widget)."
         }
       },
-      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A \u2014 pure market data widget not filtered by org/client/strategy scope."
+      "notes": "L1 pass. 1.3/1.4/1.5/1.6 N/A — pure market data widget not filtered by org/client/strategy scope."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Modes: live \u2713 (real-time WS + REST), batch \u2713 (useOrderBook passes asOf param for historical snapshot), paper N/A."
+          "note": "Modes: live ✓ (real-time WS + REST), batch ✓ (useOrderBook passes asOf param for historical snapshot), paper N/A."
         },
         "3.2": {
           "result": "pass",
@@ -124,7 +124,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "No buttons in this widget \u2014 pure display component delegating to OrderBook."
+          "note": "No buttons in this widget — pure display component delegating to OrderBook."
         },
         "4.2": {
           "result": "pass",
@@ -139,7 +139,7 @@
           "note": "No entitlement checks in render path."
         }
       },
-      "notes": "All agent checks pass. Human checks 4.3(N/A\u2014no form)/4.4(N/A\u2014no submit)/4.7(N/A\u2014no tabs)/4.8(scroll within OrderBook component) required."
+      "notes": "All agent checks pass. Human checks 4.3(N/A—no form)/4.4(N/A—no submit)/4.7(N/A—no tabs)/4.8(scroll within OrderBook component) required."
     },
     "l5": {
       "status": "partial",
@@ -148,16 +148,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all \u2014 order book is market data shared by all strategy types. No strategy-specific logic."
+          "note": "Target strategies: all — order book is market data shared by all strategy types. No strategy-specific logic."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2\u20135.6 required."
+      "notes": "5.1 complete. Human checks 5.2–5.6 required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+      "notes": "Deferred — L6 follows L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "47 lines \u2014 well within limits."
+          "note": "47 lines — well within limits."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "No text-[\u2026] arbitrary sizes in this file. CLEAN."
+          "note": "No text-[…] arbitrary sizes in this file. CLEAN."
         },
         "8.2": {
           "result": "pass",
@@ -210,7 +210,7 @@
         },
         "8.3": {
           "result": "pass",
-          "note": "Delegates to shared OrderBook trading component \u2014 appropriate. No custom div+tailwind replacements needed."
+          "note": "Delegates to shared OrderBook trading component — appropriate. No custom div+tailwind replacements needed."
         },
         "8.4": {
           "result": "partial",
@@ -218,29 +218,29 @@
         },
         "8.5": {
           "result": null,
-          "note": "Human check required \u2014 responsive at minW=2, minH=2."
+          "note": "Human check required — responsive at minW=2, minH=2."
         }
       },
-      "notes": "8.1\u20138.3 pass. 8.4 agent portion clean. Human 8.4+8.5 required."
+      "notes": "8.1–8.3 pass. 8.4 agent portion clean. Human 8.4+8.5 required."
     }
   },
   "relationships": {
     "mode": "detail",
     "masterOf": [],
-    "detailOf": ["instrument-bar"],
+    "detailOf": ["terminal-watchlist"],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Order book is a distinct view from price chart and trades \u2014 independent sizing and layout in the terminal preset. Merging would eliminate resizability."
+      "rationale": "Order book is a distinct view from price chart and trades — independent sizing and layout in the terminal preset. Merging would eliminate resizability."
     },
-    "notes": "Driven by selectedInstrument from instrument-bar via TerminalDataContext. Renders the shared OrderBook trading component."
+    "notes": "Driven by selectedInstrument from terminal-watchlist via TerminalDataContext. Renders the shared OrderBook trading component."
   },
   "dataContract": {
     "channels": ["websocket", "rest"],
     "primary": "websocket",
     "cadence": "event-driven",
     "staleness": "realtime",
-    "mockSource": "lib/mocks/generators/order-book.ts (generateMockOrderBook \u2014 consumed by use-terminal-page-data.ts, not directly by widget)",
+    "mockSource": "lib/mocks/generators/order-book.ts (generateMockOrderBook — consumed by use-terminal-page-data.ts, not directly by widget)",
     "backendOwner": "unified-trading-api (market-data service)",
     "notes": "Bid/ask data ticks with 500ms mock sim in dev; production path: WS for top-of-book updates + REST snapshot via useOrderBook(). Historical (batch) mode uses asOf REST snapshot."
   },
@@ -254,7 +254,7 @@
       "Options and vol surface instruments may have different LOB structure",
       "DeFi on-chain orderbooks (e.g. dYdX) not verified"
     ],
-    "notes": "Venue-agnostic at the widget level \u2014 underlying OrderBook component handles normalization."
+    "notes": "Venue-agnostic at the widget level — underlying OrderBook component handles normalization."
   },
   "knownIssues": [
     "In mock-data mode bids/asks are never truly empty so the empty guard (0.7) is effectively untestable without real API returning no data"
@@ -263,7 +263,7 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "order-book-widget.tsx \u2014 'No order book data', 'Loading...' user-visible strings not i18n wrapped",
+      "description": "order-book-widget.tsx — 'No order book data', 'Loading...' user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

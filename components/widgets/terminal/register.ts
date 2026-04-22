@@ -1,14 +1,14 @@
-import { ArrowRightLeft, BarChart3, BookOpen, Calendar, Layers2, LineChart, Radio, ShoppingCart } from "lucide-react";
+import { ArrowRightLeft, BookOpen, Calendar, Layers2, LineChart, Radio, ShoppingCart, Star } from "lucide-react";
 import { registerPresets } from "../preset-registry";
 import { registerWidget } from "../widget-registry";
 import { CalendarEventsWidget } from "./calendar-events-widget";
 import { EventsFeedWidget } from "./events-feed-widget";
-import { InstrumentBarWidget } from "./instrument-bar-widget";
 import { MarketTradesWidget } from "./market-trades-widget";
 import { OrderBookWidget } from "./order-book-widget";
 import { OrderEntryWidget } from "./order-entry-widget";
 import { PriceChartWidget } from "./price-chart-widget";
 import { TerminalOptionsWidget } from "./terminal-options-widget";
+import { TerminalWatchlistWidget } from "./terminal-watchlist-widget";
 
 registerPresets("terminal", [
   {
@@ -17,12 +17,12 @@ registerPresets("terminal", [
     tab: "terminal",
     isPreset: true,
     layouts: [
-      { widgetId: "instrument-bar", instanceId: "instrument-bar-1", x: 0, y: 0, w: 12, h: 1 },
-      { widgetId: "order-book", instanceId: "order-book-1", x: 0, y: 1, w: 3, h: 8 },
-      { widgetId: "price-chart", instanceId: "price-chart-1", x: 3, y: 1, w: 6, h: 8 },
-      { widgetId: "order-entry", instanceId: "order-entry-1", x: 9, y: 1, w: 3, h: 8 },
-      { widgetId: "market-trades", instanceId: "market-trades-1", x: 0, y: 9, w: 6, h: 3 },
-      { widgetId: "calendar-events", instanceId: "calendar-events-1", x: 6, y: 9, w: 6, h: 3 },
+      { widgetId: "terminal-watchlist", instanceId: "terminal-watchlist-1", x: 0, y: 0, w: 3, h: 12 },
+      { widgetId: "order-book", instanceId: "order-book-1", x: 3, y: 0, w: 2, h: 8 },
+      { widgetId: "price-chart", instanceId: "price-chart-1", x: 5, y: 0, w: 4, h: 8 },
+      { widgetId: "order-entry", instanceId: "order-entry-1", x: 9, y: 0, w: 3, h: 8 },
+      { widgetId: "market-trades", instanceId: "market-trades-1", x: 3, y: 8, w: 4, h: 4 },
+      { widgetId: "calendar-events", instanceId: "calendar-events-1", x: 7, y: 8, w: 5, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -33,14 +33,14 @@ registerPresets("terminal", [
     tab: "terminal",
     isPreset: true,
     layouts: [
-      { widgetId: "instrument-bar", instanceId: "instrument-bar-full", x: 0, y: 0, w: 12, h: 1 },
-      { widgetId: "order-book", instanceId: "order-book-full", x: 0, y: 1, w: 3, h: 8 },
-      { widgetId: "price-chart", instanceId: "price-chart-full", x: 3, y: 1, w: 6, h: 8 },
-      { widgetId: "order-entry", instanceId: "order-entry-full", x: 9, y: 1, w: 3, h: 8 },
-      { widgetId: "market-trades", instanceId: "market-trades-full", x: 0, y: 9, w: 6, h: 3 },
-      { widgetId: "calendar-events", instanceId: "calendar-events-full", x: 6, y: 9, w: 6, h: 3 },
-      { widgetId: "terminal-options", instanceId: "terminal-options-full", x: 0, y: 18, w: 8, h: 8 },
-      { widgetId: "events-feed", instanceId: "events-feed-full", x: 0, y: 26, w: 6, h: 6 },
+      { widgetId: "terminal-watchlist", instanceId: "terminal-watchlist-full", x: 0, y: 0, w: 3, h: 12 },
+      { widgetId: "order-book", instanceId: "order-book-full", x: 3, y: 0, w: 2, h: 8 },
+      { widgetId: "price-chart", instanceId: "price-chart-full", x: 5, y: 0, w: 4, h: 8 },
+      { widgetId: "order-entry", instanceId: "order-entry-full", x: 9, y: 0, w: 3, h: 8 },
+      { widgetId: "market-trades", instanceId: "market-trades-full", x: 3, y: 8, w: 4, h: 4 },
+      { widgetId: "calendar-events", instanceId: "calendar-events-full", x: 7, y: 8, w: 5, h: 4 },
+      { widgetId: "terminal-options", instanceId: "terminal-options-full", x: 0, y: 12, w: 8, h: 8 },
+      { widgetId: "events-feed", instanceId: "events-feed-full", x: 0, y: 20, w: 6, h: 6 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -48,19 +48,19 @@ registerPresets("terminal", [
 ]);
 
 registerWidget({
-  id: "instrument-bar",
-  label: "Instrument & Account",
-  description: "Instrument selector, account picker, live price, and quick actions.",
-  icon: BarChart3,
-  minW: 4,
-  minH: 1,
-  defaultW: 12,
-  defaultH: 1,
+  id: "terminal-watchlist",
+  label: "Watchlist",
+  description: "Instrument list grouped by category with search and one-click selection.",
+  icon: Star,
+  minW: 2,
+  minH: 4,
+  defaultW: 3,
+  defaultH: 12,
   requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
   category: "Terminal",
   availableOn: ["terminal"],
   singleton: true,
-  component: InstrumentBarWidget,
+  component: TerminalWatchlistWidget,
 });
 
 registerWidget({

@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "n/a",
-          "note": "Price chart shows per-instrument market data \u2014 not org-filtered."
+          "note": "Price chart shows per-instrument market data — not org-filtered."
         },
         "1.4": {
           "result": "n/a",
@@ -82,10 +82,10 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "TIMEFRAMES and INDICATORS are widget-local constants (appropriate \u2014 UI config not reference data)."
+          "note": "TIMEFRAMES and INDICATORS are widget-local constants (appropriate — UI config not reference data)."
         }
       },
-      "notes": "L1 pass. 1.3/1.4/1.5 N/A \u2014 instrument-level market data."
+      "notes": "L1 pass. 1.3/1.4/1.5 N/A — instrument-level market data."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Modes: live \u2713 (live candle updates at 500ms), batch \u2713 (useCandles passes asOf param for historical OHLCV), paper N/A."
+          "note": "Modes: live ✓ (live candle updates at 500ms), batch ✓ (useCandles passes asOf param for historical OHLCV), paper N/A."
         },
         "3.2": {
           "result": "pass",
@@ -115,7 +115,7 @@
           "note": "500ms liveCandle tick interval runs always but only affects mock-mode display. WebSocket for price updates disabled when mode!=='live'."
         }
       },
-      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. Human checks 3.3(N/A\u2014chart is read-only)/3.4(batch indicator visible on instrument-bar) required."
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. Human checks 3.3(N/A—chart is read-only)/3.4(batch indicator visible on order-entry) required."
     },
     "l4": {
       "status": "partial",
@@ -139,7 +139,7 @@
           "note": "No entitlement checks in render path."
         }
       },
-      "notes": "All agent checks pass. Human checks 4.3(N/A\u2014no form)/4.4(chart switches correctly)/4.7(N/A\u2014no tabs, uses Buttons)/4.8(chart scrolls within bounds) required."
+      "notes": "All agent checks pass. Human checks 4.3(N/A—no form)/4.4(chart switches correctly)/4.7(N/A—no tabs, uses Buttons)/4.8(chart scrolls within bounds) required."
     },
     "l5": {
       "status": "partial",
@@ -148,16 +148,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all \u2014 price chart is universal market data widget. Supports all strategy types through instrument selection."
+          "note": "Target strategies: all — price chart is universal market data widget. Supports all strategy types through instrument selection."
         }
       },
-      "notes": "5.1 complete. Human checks 5.2\u20135.6 required."
+      "notes": "5.1 complete. Human checks 5.2–5.6 required."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "Deferred \u2014 L6 follows L5 human sign-off."
+      "notes": "Deferred — L6 follows L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "123 lines \u2014 within limit."
+          "note": "123 lines — within limit."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -202,7 +202,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "text-[10px] \u2192 text-micro at line 60; text-[9px] \u2192 text-nano at lines 73, 85. Tokens now available in globals.css @theme."
+          "note": "text-[10px] → text-micro at line 60; text-[9px] → text-nano at lines 73, 85. Tokens now available in globals.css @theme."
         },
         "8.2": {
           "result": "pass",
@@ -218,7 +218,7 @@
         },
         "8.5": {
           "result": null,
-          "note": "Human check required \u2014 responsive at minW=3, minH=2."
+          "note": "Human check required — responsive at minW=3, minH=2."
         }
       },
       "notes": "8.1 fixed (tokens applied). 8.2/8.3/8.4(agent) clean. Human 8.4+8.5 required."
@@ -227,13 +227,13 @@
   "relationships": {
     "mode": "detail",
     "masterOf": [],
-    "detailOf": ["instrument-bar"],
+    "detailOf": ["terminal-watchlist"],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
       "rationale": "Price chart requires full widget space for LightweightCharts canvas; cannot be merged with order book or order entry without breaking the layout architecture."
     },
-    "notes": "Driven by selectedInstrument from instrument-bar. Chart type/timeframe/indicator state is local to this widget."
+    "notes": "Driven by selectedInstrument from terminal-watchlist. Chart type/timeframe/indicator state is local to this widget."
   },
   "dataContract": {
     "channels": ["rest", "polling"],
@@ -251,29 +251,29 @@
     "commonTabs": ["terminal"],
     "verifiedOn": [],
     "gaps": [
-      "Timeframe mapping 4H/1D not passed to useCandles (maps to '1H' \u2014 see line 276)",
+      "Timeframe mapping 4H/1D not passed to useCandles (maps to '1H' — see line 276)",
       "DeFi on-chain price feeds not verified"
     ],
     "notes": "Known gap: timeframe '4H' and '1D' both map to '1H' API param in useTerminalPageData. Candle resolution may be wrong for longer timeframes."
   },
   "knownIssues": [
-    "TerminalData types candleData and indicatorOverlays as Array<Record<string,unknown>> \u2014 double-cast in widget needed",
-    "4H and 1D timeframes both map to '1H' in useCandles call \u2014 candle resolution gap"
+    "TerminalData types candleData and indicatorOverlays as Array<Record<string,unknown>> — double-cast in widget needed",
+    "4H and 1D timeframes both map to '1H' in useCandles call — candle resolution gap"
   ],
   "findings": [
     {
       "level": "l7",
       "check": "7.5",
-      "description": "price-chart-widget.tsx \u2014 user-visible strings not i18n wrapped",
+      "description": "price-chart-widget.tsx — user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "price-chart-widget.tsx:60 \u2014 text-[10px]; :73,85 \u2014 text-[9px] arbitrary typography classes with no matching globals.css token",
+      "description": "price-chart-widget.tsx:60 — text-[10px]; :73,85 — text-[9px] arbitrary typography classes with no matching globals.css token",
       "status": "fixed",
-      "deferReason": "missing token \u2014 requests --text-micro (0.625rem/10px) and --text-nano (0.5625rem/9px) for dense trading control bar labels",
+      "deferReason": "missing token — requests --text-micro (0.625rem/10px) and --text-nano (0.5625rem/9px) for dense trading control bar labels",
       "fix": "globals.css @theme now exposes --text-micro and --text-nano; widget updated to text-micro at line 60 and text-nano at lines 73, 85."
     }
   ],

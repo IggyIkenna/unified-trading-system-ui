@@ -22,5 +22,5 @@ Unified filter bar with search (order ID, instrument, venue), venue select, stat
 See [pairing guide](../pairing-guide.md).
 
 - **Same tab:** `orders-kpi-strip`, `orders-table`.
-- **Live desk:** **terminal** `instrument-bar`, `order-entry` · **markets** `markets-my-orders`.
+- **Live desk:** **terminal** `terminal-watchlist`, `order-entry` · **markets** `markets-my-orders`.
 - **Hierarchy / compliance:** **book** `book-hierarchy-bar`, `book-order-entry`.
