@@ -13,6 +13,7 @@ import {
   type BriefingPillar,
   type BriefingSection,
 } from "@/lib/briefings/content";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import * as React from "react";
@@ -241,6 +242,38 @@ export default async function BriefingPillarPage({ params }: PageProps) {
         <p className="text-body text-foreground/85 max-w-2xl leading-relaxed">
           {renderBody(pillar.nextCall)}
         </p>
+      </section>
+
+      <section
+        data-testid="briefing-next-steps"
+        className="space-y-4 rounded-lg border border-border/60 bg-card/40 p-6"
+      >
+        <h2 className="text-base font-semibold tracking-tight text-foreground">
+          Next: tell us about your strategy
+        </h2>
+        <p className="text-sm text-foreground/85 leading-relaxed max-w-2xl">
+          The questionnaire is the same across every briefing &mdash; six quick
+          questions about which asset classes, venues, and strategy styles you
+          care about, plus an optional Regulatory Umbrella branch if you need FCA
+          cover. Takes ~3 minutes and lets us pre-configure the right path before
+          the first call.
+        </p>
+        <div className="flex flex-wrap gap-3 pt-1">
+          <Link
+            href="/questionnaire"
+            className="inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Start the questionnaire &rarr;
+          </Link>
+          <a
+            href={CALENDLY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          >
+            Book a 45-minute call
+          </a>
+        </div>
       </section>
 
       <section className="space-y-3 border-t border-border/40 pt-8">

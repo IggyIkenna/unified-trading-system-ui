@@ -387,11 +387,11 @@ export function QuestionnaireForm() {
         {regUmbrellaVisible && (
           <section
             data-testid="reg-umbrella-section"
-            className="rounded-lg border border-dashed border-slate-300 bg-slate-50/50 p-5 space-y-6"
+            className="rounded-lg border border-dashed border-border/60 bg-card/30 p-5 space-y-6"
           >
             <header>
               <h2 className="text-lg font-semibold">Regulatory Umbrella details</h2>
-              <p className="text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted-foreground">
                 These help us tailor the umbrella structure to your firm. Skip any
                 you&apos;re unsure of — we&apos;ll follow up.
               </p>
@@ -431,7 +431,7 @@ export function QuestionnaireForm() {
                   setState((s) => ({ ...s, entity_jurisdiction: e.target.value }))
                 }
               />
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 ISO-2 country code preferred; free text accepted for dependent
                 territories or EEA sub-regions.
               </p>
@@ -510,7 +510,7 @@ export function QuestionnaireForm() {
               <legend className="font-medium">
                 11. Business targets (free text)
               </legend>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-muted-foreground">
                 AUM / revenue / headcount / licence-milestone — whatever best
                 captures the plan. Blank entries are fine.
               </p>
