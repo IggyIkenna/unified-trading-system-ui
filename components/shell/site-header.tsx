@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Compass, Menu } from "lucide-react";
@@ -199,6 +199,9 @@ export function SiteHeader() {
                 <img src="/images/odum-logo.png" alt="Odum Research" className="size-8" />
                 <span className="text-base font-semibold">Odum Research</span>
               </SheetTitle>
+              <SheetDescription className="sr-only">
+                Primary site navigation. Select a link to navigate, or press Escape to close.
+              </SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col gap-1 overflow-y-auto px-3 py-4">
               {[NAV_HOME, ...NAV_FIVE_PATHS].map((item) => (
