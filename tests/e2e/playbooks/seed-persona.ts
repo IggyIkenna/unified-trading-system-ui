@@ -72,6 +72,33 @@ const PERSONAS: Readonly<Record<string, DemoUser>> = {
     org: { id: "demo-im", name: "Demo — IM Prospect" },
     entitlements: ["reporting", "investor-relations"],
   },
+  // G3.6 expansion — 2 additional personas covered by the restriction-profile
+  // registry (prospect-dart, prospect-regulatory) + 1 admin-proxy
+  // (internal-trader). Entitlements mirror `lib/auth/personas.ts` exactly.
+  "prospect-dart": {
+    id: "prospect-dart",
+    email: "sarah.quant@examplehedge.com",
+    displayName: "Sarah Quant",
+    role: "client",
+    org: { id: "example-hedge", name: "Example Hedge" },
+    entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
+  },
+  "prospect-regulatory": {
+    id: "prospect-regulatory",
+    email: "prospect-regulatory@odum-research.co.uk",
+    displayName: "Regulatory Prospect",
+    role: "client",
+    org: { id: "odum-ir", name: "Odum Investor Relations" },
+    entitlements: ["investor-relations", "investor-regulatory", "reporting"],
+  },
+  "internal-trader": {
+    id: "internal-trader",
+    email: "trader@odum.internal",
+    displayName: "Internal Trader",
+    role: "internal",
+    org: { id: "odum-internal", name: "Odum Internal" },
+    entitlements: ["*"],
+  },
 };
 
 export async function seedPersona(page: Page, personaId: keyof typeof PERSONAS): Promise<void> {
