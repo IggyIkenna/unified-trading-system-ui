@@ -28,16 +28,39 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
+/** How the prospect wants to be reached. One of phone / telegram / whatsapp. */
+export type ContactChannelKind = "phone" | "telegram" | "whatsapp";
+
 export interface SignupPayload {
   name: string;
   email: string;
   password: string;
   company?: string;
+  /** Legacy field — prefer contact_channel + contact_value on new signups. */
   phone?: string;
+  /** Preferred contact channel (phone / Telegram / WhatsApp). */
+  contact_channel?: ContactChannelKind;
+  /** Handle or phone number for the chosen channel. */
+  contact_value?: string;
   service_type?: string;
   applicant_type?: string;
   selected_options?: string[];
   expected_aum?: string;
+  /** Entity registered address — required for IM / Regulatory contract generation. */
+  entity_address?: string;
+  /**
+   * Firestore doc id of the prospect's prior questionnaire response, when
+   * available. Backend falls back to lookup-by-email if omitted. See
+   * codex/08-workflows/signup-signin-workflow.md §2.3.4.
+   */
+  questionnaire_response_id?: string;
+  /**
+   * Ask the backend to trigger Firebase Auth email verification for the new
+   * account (admin SDK generates the verification link + queues the email).
+   * Client-side `sendEmailVerification()` can't be used here because accounts
+   * are created disabled — the user isn't signed in at signup time.
+   */
+  send_email_verification?: boolean;
 }
 
 export interface SignupResult {

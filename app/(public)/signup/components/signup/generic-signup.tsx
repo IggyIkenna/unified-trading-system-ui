@@ -133,6 +133,7 @@ export function GenericSignup() {
       </div>
     );
   }
+  const isPostDemoPath = [...selectedServices].some((id) => id === "platform" || id === "signals");
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-lg">
@@ -150,6 +151,14 @@ export function GenericSignup() {
               ) : null;
             })}
           </div>
+          {isPostDemoPath && (
+            <p className="mx-auto max-w-md text-xs text-muted-foreground leading-relaxed">
+              Account provisioning for DART and Odum Signals happens
+              <strong className="text-foreground"> post-demo</strong>. Start with a demo call &mdash;
+              we&apos;ll provision the right platform surfaces, keys, and rate limits for you after we
+              understand your setup.
+            </p>
+          )}
         </div>
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           <Card className="border-primary/30 hover:border-primary/50 transition-colors cursor-pointer">

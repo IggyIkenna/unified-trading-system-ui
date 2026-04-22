@@ -16,6 +16,7 @@ import { OnboardingBackBtn, OnboardingNextBtn } from "./signup-ui-bits";
 export type OnboardingWizardTailProps = {
   step: number;
   setStep: React.Dispatch<React.SetStateAction<number>>;
+  serviceType: "regulatory" | "investment";
   docSlots: DocSlot[];
   isReq: (s: DocSlot) => boolean;
   docs: Record<string, string>;
@@ -53,6 +54,7 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
   const {
     step,
     setStep,
+    serviceType,
     docSlots,
     isReq,
     docs,
@@ -82,7 +84,41 @@ export function OnboardingWizardTail(props: OnboardingWizardTailProps) {
 
   return (
     <>
-      {step === 3 && (
+      {step === 3 && serviceType === "investment" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">No uploads needed at signup</CardTitle>
+            <CardDescription>
+              Investment Management contracts are generated from your firm details; KYC / AML documents
+              are handled after approval via a signed-URL drop-box.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-md border border-border/60 bg-muted/20 p-4 text-sm text-foreground/85">
+              <p className="font-medium text-foreground">What happens next</p>
+              <ul className="mt-2 list-disc pl-5 space-y-1 text-muted-foreground">
+                <li>
+                  We generate the <strong>investment management agreement</strong> and the custody / SMA
+                  letters from the entity details you&apos;ve provided.
+                </li>
+                <li>
+                  An Odum team member reviews your application and emails you the draft contracts plus a
+                  secure upload link for any KYC / AML documents needed at that stage.
+                </li>
+                <li>
+                  Once everything&apos;s signed, your account is activated and you&apos;ll receive an email
+                  verification link before first sign-in.
+                </li>
+              </ul>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t">
+              <OnboardingBackBtn onStep={setStep} to={2} />
+              <OnboardingNextBtn onClick={() => saveProgress(4)} />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      {step === 3 && serviceType !== "investment" && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Upload Documents</CardTitle>

@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { submitSignup, uploadUserDocument } from "@/lib/api/signup-client";
+import { submitSignup, uploadUserDocument, type ContactChannelKind } from "@/lib/api/signup-client";
+import { QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY } from "@/lib/questionnaire/types";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { Briefcase, CheckCircle2, Shield } from "lucide-react";
 import Link from "next/link";
@@ -41,6 +42,9 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
   const [email, setEmail] = React.useState("");
   const [company, setCompany] = React.useState("");
   const [phone, setPhone] = React.useState("");
+  const [contactChannel, setContactChannel] = React.useState<ContactChannelKind>("phone");
+  const [contactValue, setContactValue] = React.useState("");
+  const [entityAddress, setEntityAddress] = React.useState("");
   const [expectedAum, setExpectedAum] = React.useState("");
   const [selOpts, setSelOpts] = React.useState<Set<string>>(new Set());
   const [docs, setDocs] = React.useState<Record<string, string>>({});
@@ -239,16 +243,41 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
     if (!firebaseUid) {
       setCreatingAccount(true);
       setSubmitError("");
+
+      // If the prospect has a prior questionnaire response on this device,
+      // surface its envelope id to the backend so it can be attached to the
+      // user profile. Backend falls back to email lookup if absent.
+      let questionnaireResponseId: string | undefined;
+      try {
+        const envelopeRaw = window.localStorage.getItem(QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY);
+        if (envelopeRaw) {
+          const parsed = JSON.parse(envelopeRaw) as { response_id?: unknown; id?: unknown };
+          const candidate = typeof parsed.response_id === "string"
+            ? parsed.response_id
+            : typeof parsed.id === "string"
+              ? parsed.id
+              : undefined;
+          if (candidate) questionnaireResponseId = candidate;
+        }
+      } catch {
+        /* envelope parsing is best-effort */
+      }
+
       try {
         const result = await submitSignup({
           name,
           email,
           password,
           company,
-          phone,
+          phone: contactChannel === "phone" ? phone : undefined,
+          contact_channel: contactChannel,
+          contact_value: contactChannel === "phone" ? phone : contactValue,
+          entity_address: entityAddress || undefined,
           service_type: serviceType,
           applicant_type: applicantType,
           expected_aum: expectedAum,
+          questionnaire_response_id: questionnaireResponseId,
+          send_email_verification: true,
         });
         setFirebaseUid(result.user.firebase_uid);
         setOnboardingRequestId(result.onboarding_request_id);
@@ -467,23 +496,76 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
                     {step1Errors.company && <p className="text-xs text-red-400">{step1Errors.company}</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Phone (optional)</Label>
+                    <Label className="text-xs">Preferred contact channel</Label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(
+                        [
+                          { id: "phone", label: "Phone" },
+                          { id: "telegram", label: "Telegram" },
+                          { id: "whatsapp", label: "WhatsApp" },
+                        ] as const
+                      ).map((opt) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setContactChannel(opt.id);
+                            setPhone("");
+                            setContactValue("");
+                            setStep1Errors((p) => ({ ...p, phone: "" }));
+                          }}
+                          className={
+                            contactChannel === opt.id
+                              ? "rounded-md border border-primary bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+                              : "rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:border-border/80 hover:text-foreground transition-colors"
+                          }
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
                     <Input
-                      type="tel"
-                      value={phone}
+                      type={contactChannel === "phone" || contactChannel === "whatsapp" ? "tel" : "text"}
+                      value={contactChannel === "phone" ? phone : contactValue}
                       onChange={(e) => {
-                        setPhone(e.target.value);
+                        if (contactChannel === "phone") {
+                          setPhone(e.target.value);
+                        } else {
+                          setContactValue(e.target.value);
+                        }
                         setStep1Errors((p) => ({ ...p, phone: "" }));
                       }}
-                      placeholder="+44 7XXX XXX XXX"
+                      placeholder={
+                        contactChannel === "telegram"
+                          ? "@your-handle"
+                          : contactChannel === "whatsapp"
+                            ? "+44 7XXX XXX XXX"
+                            : "+44 7XXX XXX XXX"
+                      }
                       className={step1Errors.phone ? "border-red-500" : ""}
                     />
                     <p className="text-[10px] text-muted-foreground">
-                      Start with + and country code, e.g. +44 for UK, +1 for US
+                      {contactChannel === "telegram"
+                        ? "Telegram handle starting with @."
+                        : "Start with + and country code, e.g. +44 for UK."}
                     </p>
                     {step1Errors.phone && <p className="text-xs text-red-400">{step1Errors.phone}</p>}
                   </div>
                 </div>
+                {applicantType === "company" && (
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">
+                      Entity registered address{" "}
+                      <span className="text-muted-foreground">(for contract generation)</span>
+                    </Label>
+                    <Input
+                      type="text"
+                      value={entityAddress}
+                      onChange={(e) => setEntityAddress(e.target.value)}
+                      placeholder="Registered address"
+                    />
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   <Label className="text-xs">Expected AUM (optional)</Label>
                   <Input
@@ -718,6 +800,7 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
         <OnboardingWizardTail
           step={step}
           setStep={setStep}
+          serviceType={serviceType}
           docSlots={docSlots}
           isReq={isReq}
           docs={docs}
