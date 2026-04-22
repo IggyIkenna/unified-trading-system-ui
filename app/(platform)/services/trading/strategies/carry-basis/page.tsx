@@ -4,6 +4,9 @@ import { Suspense } from "react";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { DeFiSwapWidget } from "@/components/widgets/defi/defi-swap-widget";
 import { DeFiPerpShortWidget } from "@/components/widgets/defi/defi-perp-short-widget";
+import { DeFiFundingMatrixWidget } from "@/components/widgets/defi/defi-funding-matrix-widget";
+import { EnhancedBasisWidget } from "@/components/widgets/defi/enhanced-basis-widget";
+import { DeFiWalletSummaryWidget } from "@/components/widgets/defi/defi-wallet-summary-widget";
 import { DeFiDataProvider } from "@/components/widgets/defi/defi-data-context";
 
 /**
@@ -45,6 +48,26 @@ function CarryBasisPageContent() {
             <WidgetScroll className="flex-1 min-h-0">
               <DeFiPerpShortWidget instanceId="carry-basis-perp-short-1" />
             </WidgetScroll>
+          </div>
+
+          {/* Observation widgets (read-only) — wallet summary, funding matrix, basis dashboard.
+              These reflect post-execution state and are asserted by e2e fixture observationWidgets. */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="border-b border-border px-4 py-3 bg-card/80">
+                <h2 className="text-sm font-semibold">Wallet Summary</h2>
+              </div>
+              <DeFiWalletSummaryWidget instanceId="carry-basis-wallet" />
+            </div>
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="border-b border-border px-4 py-3 bg-card/80">
+                <h2 className="text-sm font-semibold">Funding Rate Matrix</h2>
+              </div>
+              <DeFiFundingMatrixWidget instanceId="carry-basis-funding" />
+            </div>
+            <div className="bg-card border border-border rounded-lg overflow-hidden lg:col-span-2">
+              <EnhancedBasisWidget instanceId="carry-basis-enhanced" />
+            </div>
           </div>
         </div>
       </WidgetScroll>

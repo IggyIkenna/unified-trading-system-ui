@@ -154,7 +154,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
   // 0.6 Loading state — show skeleton while data populates
   if (isLoading) {
     return (
-      <div className="space-y-2 p-1">
+      <div data-testid="defi-wallet-summary-widget" className="space-y-2 p-1">
         <Skeleton className="h-7 w-40" />
         <div className="flex gap-2">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -168,7 +168,7 @@ export function DeFiWalletSummaryWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="space-y-2 p-1">
+    <div data-testid="defi-wallet-summary-widget" className="space-y-2 p-1">
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-micro text-muted-foreground shrink-0">Chain</span>
         <Select value={selectedChain} onValueChange={setSelectedChain}>

@@ -2,7 +2,12 @@ import { test, expect, type Page } from "@playwright/test";
 import { seedPersona } from "../../_shared/persona";
 import { demoPause } from "../../_shared/demo-pause";
 import { loadStrategyFixture } from "../../_shared/fixtures";
-import { verifyScenarioOutcome } from "../../_shared/verify";
+import {
+  snapshotObservationWidgets,
+  verifyObservationWidgetsVisible,
+  verifyObservationsUpdated,
+  verifyScenarioOutcome,
+} from "../../_shared/verify";
 
 /**
  * CARRY_BASIS_PERP — strategy-flow spec for the basis-trade swap leg.
@@ -94,6 +99,9 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await expect(perp.locator('[data-testid="perp-size-input"]')).toBeVisible();
     await expect(perp.locator('[data-testid="perp-execute-button"]')).toBeDisabled();
 
+    // Observation widgets render alongside both execution widgets.
+    await verifyObservationWidgetsVisible(page, FIXTURE);
+
     await demoPause(page);
   });
 
@@ -113,6 +121,8 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await expect(expectedOutput).toBeVisible();
     expect((await expectedOutput.textContent()) ?? "").not.toMatch(/^\s*0\.00\s*$/);
 
+    const snapshot = await snapshotObservationWidgets(page, FIXTURE, "SWAP");
+
     await expect(page.locator('[data-testid="execute-button"]')).toBeEnabled();
     await page.locator('[data-testid="execute-button"]').click();
 
@@ -130,6 +140,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     await verifySwapRowOnDefiPage(page, beforeRows);
     await returnToStrategy(page);
+    await verifyObservationsUpdated(page, snapshot);
 
     await demoPause(page);
   });

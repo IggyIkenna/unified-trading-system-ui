@@ -49,7 +49,7 @@ export function DeFiHealthFactorWidget(_props: WidgetComponentProps) {
   const liquidationPct = (hf.liquidation_at / 2.0) * 100;
 
   return (
-    <div className="space-y-3 p-1">
+    <div data-testid="defi-health-factor-widget" className="space-y-3 p-1">
       {/* Main HF display */}
       <div className={cn("rounded-lg border p-4 text-center space-y-1", hfBgColor(hf.current_hf))}>
         <p className="text-xs text-muted-foreground">Health Factor</p>

@@ -1,5 +1,5 @@
-import { expect, type Page } from "@playwright/test";
-import type { ScenarioExpectation } from "./fixtures";
+import { expect, type Locator, type Page } from "@playwright/test";
+import type { ObservationWidgetSpec, ScenarioExpectation, StrategyFixture } from "./fixtures";
 
 /**
  * Shared verification helpers for strategy flow specs.
@@ -62,4 +62,92 @@ export async function verifyScenarioOutcome(
     await expectRowsAdded(page, beforeCount, expected.minRowsAdded);
   }
   await expectTradeRow(page, expected);
+}
+
+// ---------------------------------------------------------------------------
+// Observation-widget helpers
+//
+// Read-only widgets mount alongside the execution widget on each strategy
+// route. At baseline we only assert visibility. For mutating scenarios callers
+// can snapshot the widget text content pre-execute and re-assert post-execute
+// to confirm the widget reacted to the new ledger state.
+// ---------------------------------------------------------------------------
+
+/**
+ * Assert every `observationWidgets[*]` entry in the fixture is visible on the
+ * page. Skips gracefully when the fixture does not declare any.
+ */
+export async function verifyObservationWidgetsVisible(page: Page, fixture: StrategyFixture): Promise<void> {
+  for (const spec of fixture.observationWidgets ?? []) {
+    if (spec.assertVisible === false) continue;
+    const loc = page.locator(`[data-testid="${spec.testid}"]`);
+    await expect(loc, `observation widget "${spec.testid}" should be visible`).toBeVisible();
+  }
+}
+
+/** Map from observation-widget testid to its pre-execute textContent snapshot. */
+export type ObservationSnapshot = Map<string, string>;
+
+/**
+ * Capture text content for every observation widget whose `assertsUpdatedAfter`
+ * list includes `tradeType`. Call *before* executing the instruction; pair
+ * with `verifyObservationsUpdated(...)` after.
+ */
+export async function snapshotObservationWidgets(
+  page: Page,
+  fixture: StrategyFixture,
+  tradeType: string,
+): Promise<ObservationSnapshot> {
+  const snapshot: ObservationSnapshot = new Map();
+  for (const spec of fixture.observationWidgets ?? []) {
+    if (!spec.assertsUpdatedAfter?.includes(tradeType)) continue;
+    const loc: Locator = page.locator(`[data-testid="${spec.testid}"]`);
+    if ((await loc.count()) === 0) continue;
+    snapshot.set(spec.testid, (await loc.textContent()) ?? "");
+  }
+  return snapshot;
+}
+
+/**
+ * Assert that every snapshot captured by `snapshotObservationWidgets()` has
+ * changed textContent post-execute. Silent if the snapshot is empty (no widgets
+ * opted into delta tracking for this trade type).
+ */
+export async function verifyObservationsUpdated(
+  page: Page,
+  snapshot: ObservationSnapshot,
+  timeout = 4_000,
+): Promise<void> {
+  for (const [testid, before] of snapshot) {
+    const loc = page.locator(`[data-testid="${testid}"]`);
+    await expect
+      .poll(async () => (await loc.textContent()) ?? "", {
+        timeout,
+        message: `observation widget "${testid}" should re-render after execute (text snapshot unchanged)`,
+      })
+      .not.toBe(before);
+  }
+}
+
+/**
+ * Convenience wrapper used by specs that only want baseline visibility + a
+ * single post-execute delta check (no pre-snapshot). Waits for any widget
+ * listed for `tradeType` to become visible, then polls until its text content
+ * is non-empty — catches empty skeleton states but does not enforce delta.
+ */
+export async function verifyObservationWidgetsResponsive(
+  page: Page,
+  fixture: StrategyFixture,
+  tradeType: string,
+): Promise<void> {
+  const relevant: ObservationWidgetSpec[] = (fixture.observationWidgets ?? []).filter((s) =>
+    s.assertsUpdatedAfter?.includes(tradeType),
+  );
+  for (const spec of relevant) {
+    const loc = page.locator(`[data-testid="${spec.testid}"]`);
+    await expect(loc).toBeVisible();
+    await expect
+      .poll(async () => ((await loc.textContent()) ?? "").trim().length, { timeout: 4_000 })
+      .toBeGreaterThan(0);
+  }
 }

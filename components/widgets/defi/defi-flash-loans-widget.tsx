@@ -37,7 +37,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
   const netPnl = flashPnl.netPnl;
 
   return (
-    <FormWidget isLoading={isLoading} error={error} onClearError={clearError}>
+    <FormWidget data-testid="defi-flash-loans-widget" isLoading={isLoading} error={error} onClearError={clearError}>
       <div className="flex items-center gap-2">
         <Zap className="size-4 text-amber-400" />
         <span className="text-xs font-medium">Bundle steps</span>

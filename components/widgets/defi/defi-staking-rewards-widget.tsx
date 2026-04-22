@@ -30,7 +30,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
   // catches thrown errors. Guard against unexpected nullish data here.
   if (!stakingRewards || !rewardPnl) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-staking-rewards-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">Failed to load staking rewards data.</p>
       </div>
     );
@@ -39,7 +39,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
   // 0.7 Empty state: no rewards tracked yet.
   if (stakingRewards.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-staking-rewards-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">No staking rewards available.</p>
       </div>
     );
@@ -50,7 +50,7 @@ export function DeFiStakingRewardsWidget(_props: WidgetComponentProps) {
   const totalSold = stakingRewards.reduce((sum, r) => sum + r.sold_value_usd, 0);
 
   return (
-    <div className="space-y-3 p-1">
+    <div data-testid="defi-staking-rewards-widget" className="space-y-3 p-1">
       {/* Summary strip */}
       <div className="grid grid-cols-3 gap-2">
         <div className="rounded-lg border bg-muted/30 p-2 text-center">

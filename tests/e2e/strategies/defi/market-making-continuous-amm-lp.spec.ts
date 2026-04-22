@@ -2,7 +2,7 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import { seedPersona } from "../../_shared/persona";
 import { demoPause } from "../../_shared/demo-pause";
 import { loadStrategyFixture } from "../../_shared/fixtures";
-import { countTradeRows, verifyScenarioOutcome } from "../../_shared/verify";
+import { countTradeRows, verifyObservationWidgetsVisible, verifyScenarioOutcome } from "../../_shared/verify";
 
 /**
  * MARKET_MAKING_CONTINUOUS (sub-mode: amm_lp) — concentrated-liquidity LP flow spec.
@@ -116,6 +116,8 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     // Ledger is queryable (seeds historical rows; count may be > 0).
     expect(await countTradeRows(page)).toBeGreaterThanOrEqual(0);
+
+    await verifyObservationWidgetsVisible(page, FIXTURE);
 
     await demoPause(page);
   });

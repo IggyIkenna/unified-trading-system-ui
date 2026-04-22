@@ -13,6 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { Coins, TrendingUp, Award, Clock, ShieldCheck, ArrowUpRight, ArrowDownRight, Download } from "lucide-react";
 import { DeFiStakingWidget } from "@/components/widgets/defi/defi-staking-widget";
+import { DeFiStakingRewardsWidget } from "@/components/widgets/defi/defi-staking-rewards-widget";
+import { DeFiWalletSummaryWidget } from "@/components/widgets/defi/defi-wallet-summary-widget";
 import { DeFiDataProvider } from "@/components/widgets/defi/defi-data-context";
 
 // ---------------------------------------------------------------------------
@@ -556,6 +558,27 @@ export default function StakingDashboardPage() {
               <DeFiStakingWidget instanceId="YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod" />
             </CardContent>
           </Card>
+
+          {/* Observation widgets — wallet summary + staking rewards.
+              Mapped in fixtures/strategies/yield-staking-simple.json observationWidgets. */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Wallet Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DeFiWalletSummaryWidget instanceId="yield-staking-wallet" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Staking Rewards</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DeFiStakingRewardsWidget instanceId="yield-staking-rewards" />
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Tabs */}
           <Tabs defaultValue="positions">

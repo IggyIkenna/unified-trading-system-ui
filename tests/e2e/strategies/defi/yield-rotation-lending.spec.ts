@@ -2,7 +2,13 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import { seedPersona } from "../../_shared/persona";
 import { demoPause } from "../../_shared/demo-pause";
 import { loadStrategyFixture } from "../../_shared/fixtures";
-import { countTradeRows, verifyScenarioOutcome } from "../../_shared/verify";
+import {
+  countTradeRows,
+  snapshotObservationWidgets,
+  verifyObservationWidgetsVisible,
+  verifyObservationsUpdated,
+  verifyScenarioOutcome,
+} from "../../_shared/verify";
 
 /**
  * YIELD_ROTATION_LENDING — reference strategy-flow spec.
@@ -75,6 +81,8 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     // Ledger is queryable (fixture seeds historical rows).
     expect(await countTradeRows(page)).toBeGreaterThanOrEqual(0);
 
+    await verifyObservationWidgetsVisible(page, FIXTURE);
+
     await demoPause(page);
   });
 
@@ -92,6 +100,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     expect((await expectedOutput.textContent()) ?? "").toMatch(/a[A-Z]{2,}/);
 
     const beforeRows = await countTradeRows(page);
+    const snapshot = await snapshotObservationWidgets(page, FIXTURE, "LEND");
 
     await widget.locator('[data-testid="execute-button"]').click();
 
@@ -99,6 +108,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await page.waitForSelector("text=DeFi order placed", { timeout: 3_000 }).catch(() => undefined);
 
     await verifyScenarioOutcome(page, beforeRows, sc.expected);
+    await verifyObservationsUpdated(page, snapshot);
 
     expect(await widget.locator('[data-testid="amount-input"]').inputValue()).toBe("");
 

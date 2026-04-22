@@ -120,6 +120,7 @@ export function DeFiRatesOverviewWidget(_props: WidgetComponentProps) {
     // isLoading/error wired explicitly; context does not yet expose these fields.
     // When defi-data-context adds isLoading + error, pass them here.
     <TableWidget
+      data-testid="defi-rates-overview-widget"
       columns={columns}
       data={rows}
       summary={<KpiStrip metrics={headerMetrics} layoutMode="single-row" compact />}

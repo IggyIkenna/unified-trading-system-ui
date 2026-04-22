@@ -2,7 +2,12 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import { seedPersona } from "../../_shared/persona";
 import { demoPause } from "../../_shared/demo-pause";
 import { loadStrategyFixture } from "../../_shared/fixtures";
-import { verifyScenarioOutcome } from "../../_shared/verify";
+import {
+  snapshotObservationWidgets,
+  verifyObservationWidgetsVisible,
+  verifyObservationsUpdated,
+  verifyScenarioOutcome,
+} from "../../_shared/verify";
 
 /**
  * YIELD_STAKING_SIMPLE — STAKE / UNSTAKE execution flow spec.
@@ -111,6 +116,9 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await expect(widget.locator('[data-testid="execute-button"]')).toBeDisabled();
     expect((await widget.locator('[data-testid="expected-yield"]').textContent()) ?? "").toBe("—");
 
+    // Observation widgets render alongside the execution widget.
+    await verifyObservationWidgetsVisible(page, FIXTURE);
+
     await demoPause(page);
   });
 
@@ -136,6 +144,8 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     expect(yieldText).not.toBe("—");
     expect(yieldText.trim().length).toBeGreaterThan(0);
 
+    const stakeSnapshot = await snapshotObservationWidgets(page, FIXTURE, "STAKE");
+
     await widget.locator('[data-testid="execute-button"]').click();
 
     // Toast may appear briefly; tolerate absence.
@@ -149,6 +159,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     await verifyLedgerRowOnDefiPage(page, beforeRows, { tradeType: "STAKE" });
     await returnToStaking(page);
+    await verifyObservationsUpdated(page, stakeSnapshot);
 
     await demoPause(page);
   });
@@ -169,6 +180,8 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await widget.locator('[data-testid="amount-input"]').fill(String(sc.inputs.amount));
     await expect(widget.locator('[data-testid="execute-button"]')).toBeEnabled();
 
+    const unstakeSnapshot = await snapshotObservationWidgets(page, FIXTURE, "UNSTAKE");
+
     await widget.locator('[data-testid="execute-button"]').click();
 
     await expect
@@ -179,6 +192,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     await verifyLedgerRowOnDefiPage(page, beforeRows, { tradeType: "UNSTAKE" });
     await returnToStaking(page);
+    await verifyObservationsUpdated(page, unstakeSnapshot);
 
     await demoPause(page);
   });

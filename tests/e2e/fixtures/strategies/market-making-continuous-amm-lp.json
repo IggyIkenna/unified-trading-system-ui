@@ -5,6 +5,9 @@
   "route": "/services/trading/defi",
   "rootSelector": "[data-testid=\"defi-liquidity-widget\"]",
   "playbook": "docs/trading/defi/playbooks/market-making-continuous-amm-lp.md",
+  "observationWidgets": [
+    { "testid": "defi-wallet-summary-widget", "assertVisible": true, "assertsUpdatedAfter": ["BRIDGE", "SWAP"] }
+  ],
   "scenarios": [
     {
       "name": "baseline — widget renders, pool stats queryable",

@@ -64,14 +64,17 @@ export function DeFiYieldChartWidget(_props: WidgetComponentProps) {
 
   if (allSeries.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-xs text-muted-foreground">
+      <div
+        data-testid="defi-yield-chart-widget"
+        className="flex items-center justify-center h-full text-xs text-muted-foreground"
+      >
         No yield data available
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full gap-3 p-1">
+    <div data-testid="defi-yield-chart-widget" className="flex flex-col h-full gap-3 p-1">
       {/* Controls */}
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="flex gap-1">

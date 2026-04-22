@@ -4,6 +4,13 @@
   "route": "/services/trading/defi",
   "rootSelector": "[data-testid=\"defi-lending-widget\"]",
   "playbook": "docs/trading/defi/playbooks/yield-rotation-lending.md",
+  "observationWidgets": [
+    {
+      "testid": "defi-wallet-summary-widget",
+      "assertVisible": true,
+      "assertsUpdatedAfter": ["LEND", "WITHDRAW", "BORROW"]
+    }
+  ],
   "scenarios": [
     {
       "name": "baseline — widgets render, trade history queryable",

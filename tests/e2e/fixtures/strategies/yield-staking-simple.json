@@ -4,6 +4,10 @@
   "route": "/services/trading/defi/staking",
   "rootSelector": "[data-testid=\"defi-staking-widget\"]",
   "playbook": "docs/trading/defi/playbooks/yield-staking-simple.md",
+  "observationWidgets": [
+    { "testid": "defi-wallet-summary-widget", "assertVisible": true, "assertsUpdatedAfter": ["STAKE", "UNSTAKE"] },
+    { "testid": "defi-staking-rewards-widget", "assertVisible": true }
+  ],
   "scenarios": [
     {
       "name": "baseline — dashboard + widget render cleanly",

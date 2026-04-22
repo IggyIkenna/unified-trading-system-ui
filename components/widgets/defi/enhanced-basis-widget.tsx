@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { useDeFiData } from "@/components/widgets/defi/defi-data-context";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import type { BasisTradeMarketData } from "@/lib/types/defi";
@@ -74,7 +75,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
 
   if (isLoading) {
     return (
-      <Card className="h-full">
+      <Card data-testid="enhanced-basis-widget" className="h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
         </CardHeader>
@@ -87,7 +88,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
 
   if (error) {
     return (
-      <Card className="h-full">
+      <Card data-testid="enhanced-basis-widget" className="h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
         </CardHeader>
@@ -107,7 +108,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
 
   if (rows.length === 0) {
     return (
-      <Card className="h-full">
+      <Card data-testid="enhanced-basis-widget" className="h-full">
         <CardHeader className="pb-2">
           <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
         </CardHeader>
@@ -124,7 +125,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
   );
 
   return (
-    <Card className="h-full">
+    <Card data-testid="enhanced-basis-widget" className="h-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm">Enhanced Basis Dashboard</CardTitle>
       </CardHeader>
@@ -139,7 +140,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
           </Badge>
         </div>
 
-        <div className="overflow-auto max-h-[400px]">
+        <WidgetScroll className="min-h-0 max-h-[400px]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -178,7 +179,7 @@ export function EnhancedBasisWidget(_props: WidgetComponentProps) {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </WidgetScroll>
       </CardContent>
     </Card>
   );

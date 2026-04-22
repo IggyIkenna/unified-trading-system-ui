@@ -25,8 +25,30 @@ export interface StrategyFixture {
   readonly rootSelector: string;
   /** Playbook doc path (for human readers — not used at runtime). */
   readonly playbook?: string;
+  /**
+   * Read-only observation widgets that render alongside the execution widget on
+   * this strategy's route. Each entry is asserted visible at baseline, and may
+   * opt into a post-execute delta check for specific trade types via
+   * `assertsUpdatedAfter`. Consumed by `verifyObservationWidgets` in verify.ts.
+   */
+  readonly observationWidgets?: readonly ObservationWidgetSpec[];
   /** Ordered scenarios to run in a single continuous browser session. */
   readonly scenarios: readonly StrategyScenario[];
+}
+
+/** Declarative spec for a read-only observation widget alongside the exec widget. */
+export interface ObservationWidgetSpec {
+  /** `data-testid` on the widget root. Must exist in the DOM. */
+  readonly testid: string;
+  /** If true (default), the baseline step asserts `toBeVisible()`. */
+  readonly assertVisible?: boolean;
+  /**
+   * Trade types (`STAKE`, `LEND`, `SWAP`, `BORROW`, `TRADE`, ...) for which
+   * executing this instruction must leave the widget's rendered text content
+   * different from the pre-execute snapshot. Catches dead widgets that render
+   * but don't react to state changes.
+   */
+  readonly assertsUpdatedAfter?: readonly string[];
 }
 
 export interface StrategyScenario {

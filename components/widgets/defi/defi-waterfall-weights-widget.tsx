@@ -45,7 +45,7 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
 
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-waterfall-weights-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">Loading allocation weights…</p>
       </div>
     );
@@ -53,14 +53,14 @@ export function DeFiWaterfallWeightsWidget(_props: WidgetComponentProps) {
 
   if (error) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-waterfall-weights-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-rose-400">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 p-1">
+    <div data-testid="defi-waterfall-weights-widget" className="space-y-3 p-1">
       {/* Pillar 1: Coin Weights */}
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">

@@ -2,7 +2,12 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import { seedPersona } from "../../_shared/persona";
 import { demoPause } from "../../_shared/demo-pause";
 import { loadStrategyFixture } from "../../_shared/fixtures";
-import { verifyScenarioOutcome } from "../../_shared/verify";
+import {
+  snapshotObservationWidgets,
+  verifyObservationWidgetsVisible,
+  verifyObservationsUpdated,
+  verifyScenarioOutcome,
+} from "../../_shared/verify";
 
 /**
  * CARRY_STAKED_BASIS — strategy-flow spec for the LST + lending + perp-hedge
@@ -117,6 +122,9 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
     await expect(perp.locator('[data-testid="perp-venue-select"]')).toBeVisible();
     await expect(perp.locator('[data-testid="perp-execute-button"]')).toBeDisabled();
 
+    // Observation widgets alongside the 4-leg execution surface.
+    await verifyObservationWidgetsVisible(page, FIXTURE);
+
     await demoPause(page);
   });
 
@@ -136,6 +144,9 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     await swap.locator('[data-testid="capital-input"]').fill(String(sc.inputs.amountIn));
     await expect(swap.locator('[data-testid="execute-button"]')).toBeEnabled();
+
+    const swapSnapshot = await snapshotObservationWidgets(page, FIXTURE, "SWAP");
+
     await swap.locator('[data-testid="execute-button"]').click();
 
     await page.waitForSelector("text=Staked basis swap submitted", { timeout: 3_000 }).catch(() => undefined);
@@ -148,6 +159,7 @@ test.describe(`${FIXTURE.name} — operator flow`, () => {
 
     await verifyLedgerRowOnDefiPage(page, beforeRows, { tradeType: "SWAP" });
     await returnToStrategy(page);
+    await verifyObservationsUpdated(page, swapSnapshot);
     await demoPause(page);
   });
 

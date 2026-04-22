@@ -104,6 +104,8 @@ interface TableWidgetProps<TData> {
   enableSorting?: boolean;
   tableFooter?: React.ReactNode;
   className?: string;
+  /** Optional testid forwarded to the outer LiveFeedWidget container — used by e2e specs to scope locators. */
+  "data-testid"?: string;
 }
 
 function TableWidget<TData>({
@@ -120,6 +122,7 @@ function TableWidget<TData>({
   enableSorting = true,
   tableFooter,
   className,
+  "data-testid": dataTestId,
 }: TableWidgetProps<TData>) {
   // columnVisibility is owned here so the Columns dropdown always reflects live state.
   // DataTable receives it as a controlled prop — no stale tableInstance snapshot needed.
@@ -327,20 +330,22 @@ function TableWidget<TData>({
   );
 
   return (
-    <LiveFeedWidget isLoading={isLoading} error={error} onRetry={onRetry} header={toolbar} className={className}>
-      <DataTable
-        columns={columns}
-        data={data}
-        enableSorting={enableSorting}
-        enableColumnVisibility
-        hideColumnToggle
-        fillHeight
-        columnVisibility={columnVisibility}
-        onColumnVisibilityChange={setColumnVisibility}
-        emptyMessage={emptyMessage}
-        tableFooter={tableFooter}
-      />
-    </LiveFeedWidget>
+    <div data-testid={dataTestId} className="h-full w-full">
+      <LiveFeedWidget isLoading={isLoading} error={error} onRetry={onRetry} header={toolbar} className={className}>
+        <DataTable
+          columns={columns}
+          data={data}
+          enableSorting={enableSorting}
+          enableColumnVisibility
+          hideColumnToggle
+          fillHeight
+          columnVisibility={columnVisibility}
+          onColumnVisibilityChange={setColumnVisibility}
+          emptyMessage={emptyMessage}
+          tableFooter={tableFooter}
+        />
+      </LiveFeedWidget>
+    </div>
   );
 }
 

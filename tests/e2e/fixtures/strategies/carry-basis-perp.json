@@ -4,6 +4,11 @@
   "route": "/services/trading/strategies/carry-basis",
   "rootSelector": "[data-testid=\"defi-swap-widget\"]",
   "playbook": "docs/trading/defi/playbooks/carry-basis-perp.md",
+  "observationWidgets": [
+    { "testid": "defi-wallet-summary-widget", "assertVisible": true, "assertsUpdatedAfter": ["SWAP", "TRADE"] },
+    { "testid": "defi-funding-matrix-widget", "assertVisible": true },
+    { "testid": "enhanced-basis-widget", "assertVisible": true }
+  ],
   "scenarios": [
     {
       "name": "baseline — swap + perp-short widgets both render",

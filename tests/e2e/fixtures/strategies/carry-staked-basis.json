@@ -4,6 +4,16 @@
   "route": "/services/trading/strategies/staked-basis",
   "rootSelector": "[data-testid=\"defi-swap-widget\"]",
   "playbook": "docs/trading/defi/playbooks/carry-staked-basis.md",
+  "observationWidgets": [
+    {
+      "testid": "defi-wallet-summary-widget",
+      "assertVisible": true,
+      "assertsUpdatedAfter": ["SWAP", "LEND", "BORROW", "TRADE"]
+    },
+    { "testid": "defi-health-factor-widget", "assertVisible": true },
+    { "testid": "defi-funding-matrix-widget", "assertVisible": true },
+    { "testid": "defi-reward-pnl-widget", "assertVisible": true }
+  ],
   "scenarios": [
     {
       "name": "baseline — swap + lending + transfer + perp-short widgets render",

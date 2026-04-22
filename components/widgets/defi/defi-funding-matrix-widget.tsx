@@ -6,6 +6,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
 import { FUNDING_RATE_VENUES, FUNDING_RATE_FLOOR } from "@/lib/config/services/defi.config";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 function rateColor(rate: number | null): string {
   if (rate === null) return "text-muted-foreground/50";
@@ -64,21 +65,21 @@ export function DeFiFundingMatrixWidget(_props: WidgetComponentProps) {
 
   if (coins.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-funding-matrix-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">No funding rate data</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-2 p-1">
+    <div data-testid="defi-funding-matrix-widget" className="space-y-2 p-1">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
           Annualised funding rates (%). Grey = below {FUNDING_RATE_FLOOR}% floor.
         </p>
       </div>
 
-      <div className="overflow-x-auto">
+      <WidgetScroll axes="horizontal" className="min-h-0">
         <table className="w-full text-xs">
           <thead>
             <tr className="border-b border-border/40">
@@ -123,7 +124,7 @@ export function DeFiFundingMatrixWidget(_props: WidgetComponentProps) {
             </tr>
           </tfoot>
         </table>
-      </div>
+      </WidgetScroll>
 
       <div className="flex items-center gap-4 text-micro text-muted-foreground pt-1">
         <span className="flex items-center gap-1">

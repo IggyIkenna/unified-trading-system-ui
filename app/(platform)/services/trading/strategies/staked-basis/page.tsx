@@ -8,6 +8,10 @@ import { DeFiSwapWidget } from "@/components/widgets/defi/defi-swap-widget";
 import { DeFiTransferWidget } from "@/components/widgets/defi/defi-transfer-widget";
 import { DeFiLendingWidget } from "@/components/widgets/defi/defi-lending-widget";
 import { DeFiPerpShortWidget } from "@/components/widgets/defi/defi-perp-short-widget";
+import { DeFiHealthFactorWidget } from "@/components/widgets/defi/defi-health-factor-widget";
+import { DeFiFundingMatrixWidget } from "@/components/widgets/defi/defi-funding-matrix-widget";
+import { DeFiRewardPnlWidget } from "@/components/widgets/defi/defi-reward-pnl-widget";
+import { DeFiWalletSummaryWidget } from "@/components/widgets/defi/defi-wallet-summary-widget";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 
@@ -89,6 +93,35 @@ function StakedBasisPageContent() {
             <WidgetScroll className="flex-1 min-h-0" viewportClassName="p-1">
               <DeFiPerpShortWidget instanceId="staked-basis-perp-short" />
             </WidgetScroll>
+          </div>
+
+          {/* Observation widgets (read-only) — health factor, funding matrix, wallet summary, reward P&L.
+              Mapped in fixtures/strategies/carry-staked-basis.json observationWidgets. */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-card border border-border rounded-lg overflow-hidden lg:col-span-2">
+              <div className="border-b border-border px-4 py-3 bg-card/80">
+                <h2 className="text-sm font-semibold">Wallet Summary</h2>
+              </div>
+              <DeFiWalletSummaryWidget instanceId="staked-basis-wallet" />
+            </div>
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="border-b border-border px-4 py-3 bg-card/80">
+                <h2 className="text-sm font-semibold">Health Factor</h2>
+              </div>
+              <DeFiHealthFactorWidget instanceId="staked-basis-health" />
+            </div>
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="border-b border-border px-4 py-3 bg-card/80">
+                <h2 className="text-sm font-semibold">Funding Rate Matrix</h2>
+              </div>
+              <DeFiFundingMatrixWidget instanceId="staked-basis-funding" />
+            </div>
+            <div className="bg-card border border-border rounded-lg overflow-hidden lg:col-span-2">
+              <div className="border-b border-border px-4 py-3 bg-card/80">
+                <h2 className="text-sm font-semibold">Reward P&amp;L</h2>
+              </div>
+              <DeFiRewardPnlWidget instanceId="staked-basis-reward-pnl" />
+            </div>
           </div>
         </div>
       </WidgetScroll>

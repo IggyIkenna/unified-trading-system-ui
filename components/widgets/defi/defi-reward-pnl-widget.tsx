@@ -50,7 +50,7 @@ export function DeFiRewardPnlWidget(_props: WidgetComponentProps) {
   // Error guard — context value missing
   if (!rewardPnl) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-reward-pnl-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-rose-400">Failed to load reward P&amp;L data.</p>
       </div>
     );
@@ -59,7 +59,7 @@ export function DeFiRewardPnlWidget(_props: WidgetComponentProps) {
   // Loading guard — no factors available yet
   if (rewardPnl.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-reward-pnl-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">Loading reward data…</p>
       </div>
     );
@@ -71,14 +71,14 @@ export function DeFiRewardPnlWidget(_props: WidgetComponentProps) {
   // Empty state — all factors are zero
   if (rewardPnl.every((f) => f.amount === 0)) {
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div data-testid="defi-reward-pnl-widget" className="flex h-full items-center justify-center p-4">
         <p className="text-xs text-muted-foreground">No reward P&amp;L to display.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 p-1">
+    <div data-testid="defi-reward-pnl-widget" className="space-y-3 p-1">
       {/* Total */}
       <div className="rounded-lg border bg-muted/30 p-3 text-center">
         <p className="text-xs text-muted-foreground">Total Reward P&L</p>
