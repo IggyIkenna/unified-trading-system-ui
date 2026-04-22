@@ -1,0 +1,14 @@
+title: Briefings
+tldr: One place to read how we work with clients — before a second call or demo.
+intro: |
+  {{strong:Start here}}. Odum runs {{strong:one regulated operating system}} — the same infrastructure we use to run our own capital, available to institutional clients (Professional and ECP) at any entry point. There are four commercial ways to plug into it: {{term:im|Investment Management}} (we allocate and run capital under our FCA permissions); DART (you operate on the same platform we use — either Signals-In with your instructions only, or Full pipeline with research and promote); Odum Signals (we emit signals; you execute elsewhere); and the Regulatory Umbrella (our permissions cover your regulated activity). Use one, or stack them — the paths feed each other. The cards below go depth-first on each; under DART, open the path briefing that matches (the short DART overview only routes you to the two path briefings).
+cta:
+  label: Book 45-minute call
+  href: /contact
+displayOrder:
+  - investment-management
+  - platform
+  - dart-signals-in
+  - dart-full
+  - signals-out
+  - regulatory

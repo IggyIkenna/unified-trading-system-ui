@@ -7,7 +7,7 @@
   <title>Odum Research — FCA-Regulated Investment Manager &amp; DART</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
     :root {
@@ -28,8 +28,8 @@
       --amber: #fbbf24;
       --rose: #fb7185;
       --cyan: #22d3ee;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
     }
 
     /* Distinct labels for the two client paths (vs one word "Invest") */
@@ -334,12 +334,11 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 9999px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       font-size: 12px;
-      font-weight: 500;
       color: var(--text-secondary);
       letter-spacing: 0.02em;
     }
@@ -348,6 +347,21 @@
       width: 14px;
       height: 14px;
       flex-shrink: 0;
+    }
+
+    .hero-trust-badge strong {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .hero-trust-badge .sep {
+      opacity: 0.45;
+      user-select: none;
+    }
+
+    .hero-trust-badge .dim {
+      color: var(--text-dim);
+      font-weight: 500;
     }
 
     .hero-trust-badge.is-fca svg {
@@ -360,6 +374,10 @@
 
     .hero-trust-badge.is-flex svg {
       color: var(--violet);
+    }
+
+    .hero-trust-badge.is-hq svg {
+      color: var(--amber);
     }
 
     header .container.header-inner {
@@ -1337,7 +1355,9 @@
             <path d="M12 3l8 4v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V7l8-4z" />
             <path d="M9 12l2 2 4-4" />
           </svg>
-          FCA Authorised (975797)
+          <strong>FCA 975797</strong>
+          <span class="sep" aria-hidden="true">·</span>
+          <span class="dim">$7.5M+ AUM</span>
         </span>
         <span class="hero-trust-badge is-security">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -1345,7 +1365,9 @@
             <rect x="4" y="11" width="16" height="10" rx="2" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
           </svg>
-          Institutional Security
+          <strong>Institutional Security</strong>
+          <span class="sep" aria-hidden="true">·</span>
+          <span class="dim">Professional &amp; ECP</span>
         </span>
         <span class="hero-trust-badge is-flex">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -1354,13 +1376,18 @@
             <path d="M3 12l9 5 9-5" />
             <path d="M3 17l9 5 9-5" />
           </svg>
-          No-Code to Full-Code
+          <strong>No-Code to Full-Code</strong>
         </span>
-      </div>
-      <div class="proof-strip">
-        <div class="proof-item"><strong>$7.5M+ AUM</strong><span>IM mandate scale</span></div>
-        <div class="proof-item"><strong>Professional &amp; ECP</strong><span>Client classification</span></div>
-        <div class="proof-item"><strong>London, UK</strong><span>Headquarters</span></div>
+        <span class="hero-trust-badge is-hq">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21s-7-6-7-11a7 7 0 1 1 14 0c0 5-7 11-7 11z" />
+            <circle cx="12" cy="10" r="2.5" />
+          </svg>
+          <strong>London, UK</strong>
+          <span class="sep" aria-hidden="true">·</span>
+          <span class="dim">HQ</span>
+        </span>
       </div>
     </div>
   </section>
