@@ -12,7 +12,7 @@ import { WidgetWrapper } from "./widget-wrapper";
 import "react-grid-layout/css/styles.css";
 
 const ROW_HEIGHT = 80;
-const COLS = { lg: 12, md: 12, sm: 12, xs: 12, xxs: 12 };
+const COLS = { lg: 24, md: 24, sm: 24, xs: 24, xxs: 24 };
 const BREAKPOINTS = { lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 };
 const MARGIN: [number, number] = getActivePreset().margin;
 const CONTAINER_PADDING: [number, number] = [0, 0];
@@ -31,7 +31,7 @@ function placementsToLayouts(placements: WidgetPlacement[]): Layout {
       y: p.y,
       w: p.w,
       h: p.h,
-      minW: def?.minW ?? 3,
+      minW: def?.minW ?? 6,
       minH: def?.minH ?? 2,
       maxW: def?.maxW,
       maxH: def?.maxH,

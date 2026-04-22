@@ -25,7 +25,7 @@ export const ALL_WIDGET_TABS = [
 
 export type WidgetTab = (typeof ALL_WIDGET_TABS)[number];
 
-const GRID_COLS = 12;
+const GRID_COLS = 24;
 
 /** Pack widgets into a non-overlapping grid (same strategy as workspace-store). */
 function findOpenPosition(

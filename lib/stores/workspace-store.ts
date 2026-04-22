@@ -134,11 +134,56 @@ function getActiveLayouts(state: WorkspaceState, tab: string): WidgetPlacement[]
   return ws?.layouts ?? [];
 }
 
+function doubleLayouts(layouts: unknown): WidgetPlacement[] {
+  if (!Array.isArray(layouts)) return [];
+  return layouts.map((p) => {
+    const placement = p as WidgetPlacement;
+    return { ...placement, x: placement.x * 2, w: placement.w * 2 };
+  });
+}
+
+function doubleGridCoords(state: Partial<WorkspaceState>): Partial<WorkspaceState> {
+  const next: Partial<WorkspaceState> = { ...state };
+
+  if (state.workspaces && typeof state.workspaces === "object") {
+    const migrated: Record<string, Workspace[]> = {};
+    for (const [tab, wsList] of Object.entries(state.workspaces)) {
+      if (!Array.isArray(wsList)) continue;
+      migrated[tab] = wsList.map((ws) => ({ ...ws, layouts: doubleLayouts(ws.layouts) }));
+    }
+    next.workspaces = migrated;
+  }
+
+  if (state.snapshots && typeof state.snapshots === "object") {
+    const migrated: Record<string, WorkspaceSnapshot[]> = {};
+    for (const [tab, snaps] of Object.entries(state.snapshots)) {
+      if (!Array.isArray(snaps)) continue;
+      migrated[tab] = snaps.map((snap) => ({
+        ...snap,
+        workspace: { ...snap.workspace, layouts: doubleLayouts(snap.workspace?.layouts) },
+      }));
+    }
+    next.snapshots = migrated;
+  }
+
+  if (Array.isArray(state.profiles)) {
+    next.profiles = state.profiles.map((profile) => {
+      const tabs: Record<string, Workspace> = {};
+      for (const [tab, ws] of Object.entries(profile.tabs ?? {})) {
+        tabs[tab] = { ...ws, layouts: doubleLayouts(ws.layouts) };
+      }
+      return { ...profile, tabs };
+    });
+  }
+
+  return next;
+}
+
 function findOpenPosition(
   existing: WidgetPlacement[],
   w: number,
   h: number,
-  cols: number = 12,
+  cols: number = 24,
 ): { x: number; y: number } {
   if (existing.length === 0) return { x: 0, y: 0 };
   const maxY = Math.max(...existing.map((p) => p.y + p.h));
@@ -804,7 +849,7 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 2,
+      version: 3,
       partialize: (s) => ({
         workspaces: s.workspaces,
         activeWorkspaceId: s.activeWorkspaceId,
@@ -816,11 +861,11 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
       }),
       migrate: (persistedState: unknown, version: number) => {
         const initial = buildInitialState();
+        let s = (persistedState ?? {}) as Partial<WorkspaceState>;
         if (version < 2) {
           // Versions 0-1 predate the profiles field — preserve workspace data
           // but reset profiles so ensureProfiles() can rebuild cleanly.
-          const s = (persistedState ?? {}) as Partial<WorkspaceState>;
-          return {
+          s = {
             ...initial,
             workspaces: s.workspaces && typeof s.workspaces === "object" ? s.workspaces : {},
             activeWorkspaceId:
@@ -832,7 +877,13 @@ export const useWorkspaceStore = create<WorkspaceActions>()(
             activeProfileId: "",
           };
         }
-        return persistedState as WorkspaceState;
+        if (version < 3) {
+          // v2 → v3: grid widened from 12 to 24 columns. Double x and w on every
+          // persisted placement so user-customized layouts render in the same
+          // visual position on the new grid. y and h are row-based, untouched.
+          s = doubleGridCoords(s);
+        }
+        return s as WorkspaceState;
       },
       onRehydrateStorage: () => (state, error) => {
         if (error) {
