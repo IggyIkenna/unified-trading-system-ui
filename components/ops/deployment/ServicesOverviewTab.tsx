@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import * as api from "@/hooks/deployment/_api-stub";
 import type { ServicesOverview } from "@/lib/types/deployment";
 import {
@@ -224,7 +225,7 @@ export function ServicesOverviewTab({ onSelectService }: ServicesOverviewTabProp
               <CardTitle className="text-base">Services</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
+              <WidgetScroll axes="horizontal" scrollbarSize="thin">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-[var(--color-border-subtle)]">
@@ -305,7 +306,7 @@ export function ServicesOverviewTab({ onSelectService }: ServicesOverviewTabProp
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </WidgetScroll>
             </CardContent>
           </Card>
         </>

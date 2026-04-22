@@ -16,6 +16,7 @@ import {
   isResizableFinderColumn,
 } from "@/components/shared/finder/column-width-utils";
 import { finderText } from "@/components/shared/finder/finder-text-sizes";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type {
   FinderBrowserProps,
   FinderColumnDef,
@@ -160,7 +161,12 @@ export function FinderBrowser({
       {/* Column browser + detail panel */}
       <div className="flex flex-1 min-h-0 overflow-hidden border-t border-border/20">
         {/* Left: columns */}
-        <div className="flex flex-1 min-w-0 min-h-0 overflow-x-auto overflow-y-hidden">
+        <WidgetScroll
+          axes="horizontal"
+          scrollbarSize="thin"
+          className="flex-1 min-w-0 min-h-0"
+          viewportClassName="flex"
+        >
           {visibleColumns.map((col, visIndex) => {
             const colIndex = columns.indexOf(col);
             const items = col.getItems(selections);
@@ -203,7 +209,7 @@ export function FinderBrowser({
               )}
             </div>
           )}
-        </div>
+        </WidgetScroll>
 
         {/* Right: detail panel */}
         <FinderDetailPanel title={detailPanelTitle} width={detailPanelWidth} defaultOpen={detailPanelDefaultOpen}>

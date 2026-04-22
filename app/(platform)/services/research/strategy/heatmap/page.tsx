@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -340,7 +341,7 @@ export default function StrategyHeatmapPage() {
         {/* Heatmap Grid */}
         <Card>
           <CardContent className="pt-6">
-            <div className="overflow-x-auto">
+            <WidgetScroll axes="horizontal" scrollbarSize="thin">
               <table className="w-full border-collapse">
                 <thead>
                   <tr>
@@ -402,7 +403,7 @@ export default function StrategyHeatmapPage() {
                   </tr>
                 </tbody>
               </table>
-            </div>
+            </WidgetScroll>
           </CardContent>
         </Card>
 

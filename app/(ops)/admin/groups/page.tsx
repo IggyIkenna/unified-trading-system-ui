@@ -1,36 +1,16 @@
 "use client";
 
 import * as React from "react";
-import {
-  Plus,
-  Trash2,
-  UserPlus,
-  ChevronDown,
-  ChevronRight,
-  Users,
-  FolderOpen,
-} from "lucide-react";
+import { Plus, Trash2, UserPlus, ChevronDown, ChevronRight, Users, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
 import { EmptyState } from "@/components/shared/empty-state";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -40,13 +20,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
@@ -82,12 +56,8 @@ export default function GroupsPage() {
   const [newDesc, setNewDesc] = React.useState("");
   const [creating, setCreating] = React.useState(false);
 
-  const [addMemberGroupId, setAddMemberGroupId] = React.useState<string | null>(
-    null,
-  );
-  const [firebaseUsers, setFirebaseUsers] = React.useState<FirebaseAuthUser[]>(
-    [],
-  );
+  const [addMemberGroupId, setAddMemberGroupId] = React.useState<string | null>(null);
+  const [firebaseUsers, setFirebaseUsers] = React.useState<FirebaseAuthUser[]>([]);
   const [fbLoading, setFbLoading] = React.useState(false);
   const [selectedUid, setSelectedUid] = React.useState("");
   const [addingMember, setAddingMember] = React.useState(false);
@@ -99,9 +69,7 @@ export default function GroupsPage() {
   } | null>(null);
   const [removingMember, setRemovingMember] = React.useState(false);
 
-  const [deleteTarget, setDeleteTarget] = React.useState<UserGroup | null>(
-    null,
-  );
+  const [deleteTarget, setDeleteTarget] = React.useState<UserGroup | null>(null);
   const [deletingGroup, setDeletingGroup] = React.useState(false);
 
   const [bulkGroupId, setBulkGroupId] = React.useState<string | null>(null);
@@ -246,28 +214,21 @@ export default function GroupsPage() {
   }
 
   function toggleApp(appId: string) {
-    setSelectedApps((prev) =>
-      prev.includes(appId) ? prev.filter((a) => a !== appId) : [...prev, appId],
-    );
+    setSelectedApps((prev) => (prev.includes(appId) ? prev.filter((a) => a !== appId) : [...prev, appId]));
   }
 
   function toggleEnv(env: string) {
-    setBulkEnvs((prev) =>
-      prev.includes(env) ? prev.filter((e) => e !== env) : [...prev, env],
-    );
+    setBulkEnvs((prev) => (prev.includes(env) ? prev.filter((e) => e !== env) : [...prev, env]));
   }
 
   const ENV_OPTIONS = ["development", "staging", "production"];
 
   return (
     <div className="space-y-6">
-
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">User Groups</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage groups and their members
-          </p>
+          <p className="text-sm text-muted-foreground">Manage groups and their members</p>
         </div>
         <Dialog open={createOpen} onOpenChange={setCreateOpen}>
           <DialogTrigger asChild>
@@ -280,9 +241,7 @@ export default function GroupsPage() {
             <form onSubmit={handleCreateGroup}>
               <DialogHeader>
                 <DialogTitle>Create Group</DialogTitle>
-                <DialogDescription>
-                  Create a new user group for bulk access management.
-                </DialogDescription>
+                <DialogDescription>Create a new user group for bulk access management.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-1.5">
@@ -315,22 +274,14 @@ export default function GroupsPage() {
         </Dialog>
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
-          {error}
-        </p>
-      )}
+      {error && <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">{error}</p>}
 
       {loading ? (
         <div className="flex justify-center py-12">
           <Spinner className="size-6" />
         </div>
       ) : groups.length === 0 ? (
-        <EmptyState
-          icon={Users}
-          title="No groups yet"
-          description="Create a group to start managing access in bulk."
-        />
+        <EmptyState icon={Users} title="No groups yet" description="Create a group to start managing access in bulk." />
       ) : (
         <div className="space-y-4">
           {groups.map((g) => {
@@ -387,19 +338,13 @@ export default function GroupsPage() {
                   <CardContent>
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-medium">Members</p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => openAddMember(g.id)}
-                      >
+                      <Button size="sm" variant="outline" onClick={() => openAddMember(g.id)}>
                         <UserPlus className="mr-1 size-3.5" />
                         Add Member
                       </Button>
                     </div>
                     {g.members.length === 0 ? (
-                      <p className="text-sm text-muted-foreground py-4 text-center">
-                        No members in this group.
-                      </p>
+                      <p className="text-sm text-muted-foreground py-4 text-center">No members in this group.</p>
                     ) : (
                       <Table>
                         <TableHeader>
@@ -413,12 +358,8 @@ export default function GroupsPage() {
                         <TableBody>
                           {g.members.map((m) => (
                             <TableRow key={m.firebase_uid}>
-                              <TableCell className="font-medium">
-                                {m.name}
-                              </TableCell>
-                              <TableCell className="text-muted-foreground">
-                                {m.email}
-                              </TableCell>
+                              <TableCell className="font-medium">{m.name}</TableCell>
+                              <TableCell className="text-muted-foreground">{m.email}</TableCell>
                               <TableCell className="text-muted-foreground">
                                 {new Date(m.added_at).toLocaleDateString()}
                               </TableCell>
@@ -452,16 +393,11 @@ export default function GroupsPage() {
       )}
 
       {/* Add Member Dialog */}
-      <Dialog
-        open={addMemberGroupId !== null}
-        onOpenChange={(open) => !open && setAddMemberGroupId(null)}
-      >
+      <Dialog open={addMemberGroupId !== null} onOpenChange={(open) => !open && setAddMemberGroupId(null)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add Member</DialogTitle>
-            <DialogDescription>
-              Select a Firebase user to add to this group.
-            </DialogDescription>
+            <DialogDescription>Select a Firebase user to add to this group.</DialogDescription>
           </DialogHeader>
           <div className="py-4">
             {fbLoading ? (
@@ -484,10 +420,7 @@ export default function GroupsPage() {
             )}
           </div>
           <DialogFooter>
-            <Button
-              onClick={handleAddMember}
-              disabled={addingMember || !selectedUid}
-            >
+            <Button onClick={handleAddMember} disabled={addingMember || !selectedUid}>
               {addingMember ? "Adding…" : "Add Member"}
             </Button>
           </DialogFooter>
@@ -495,16 +428,11 @@ export default function GroupsPage() {
       </Dialog>
 
       {/* Bulk Assign Dialog */}
-      <Dialog
-        open={bulkGroupId !== null}
-        onOpenChange={(open) => !open && setBulkGroupId(null)}
-      >
+      <Dialog open={bulkGroupId !== null} onOpenChange={(open) => !open && setBulkGroupId(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Assign Group to Applications</DialogTitle>
-            <DialogDescription>
-              Grant this group access to multiple applications at once.
-            </DialogDescription>
+            <DialogDescription>Grant this group access to multiple applications at once.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-1.5">
@@ -525,14 +453,8 @@ export default function GroupsPage() {
               <Label>Environments</Label>
               <div className="flex gap-4">
                 {ENV_OPTIONS.map((env) => (
-                  <label
-                    key={env}
-                    className="flex items-center gap-1.5 text-sm"
-                  >
-                    <Checkbox
-                      checked={bulkEnvs.includes(env)}
-                      onCheckedChange={() => toggleEnv(env)}
-                    />
+                  <label key={env} className="flex items-center gap-1.5 text-sm">
+                    <Checkbox checked={bulkEnvs.includes(env)} onCheckedChange={() => toggleEnv(env)} />
                     {env}
                   </label>
                 ))}
@@ -545,57 +467,43 @@ export default function GroupsPage() {
                   <Spinner className="size-5" />
                 </div>
               ) : (
-                <div className="max-h-48 overflow-y-auto space-y-1 rounded-md border p-2">
+                <WidgetScroll className="max-h-48 rounded-md border" viewportClassName="space-y-1 p-2">
                   {apps.map((app) => (
                     <label
                       key={app.id}
                       className="flex items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted cursor-pointer"
                     >
-                      <Checkbox
-                        checked={selectedApps.includes(app.id)}
-                        onCheckedChange={() => toggleApp(app.id)}
-                      />
+                      <Checkbox checked={selectedApps.includes(app.id)} onCheckedChange={() => toggleApp(app.id)} />
                       {app.name}
                     </label>
                   ))}
-                </div>
+                </WidgetScroll>
               )}
             </div>
           </div>
           <DialogFooter>
             <Button
               onClick={handleBulkAssign}
-              disabled={
-                bulkAssigning ||
-                selectedApps.length === 0 ||
-                bulkEnvs.length === 0
-              }
+              disabled={bulkAssigning || selectedApps.length === 0 || bulkEnvs.length === 0}
             >
-              {bulkAssigning
-                ? "Assigning…"
-                : `Assign to ${selectedApps.length} app(s)`}
+              {bulkAssigning ? "Assigning…" : `Assign to ${selectedApps.length} app(s)`}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Remove Member Confirm */}
-      <AlertDialog
-        open={removeMember !== null}
-        onOpenChange={(open) => !open && setRemoveMember(null)}
-      >
+      <AlertDialog open={removeMember !== null} onOpenChange={(open) => !open && setRemoveMember(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove member?</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove &ldquo;{removeMember?.name}&rdquo; from this group? They
-              will lose access granted through group membership.
+              Remove &ldquo;{removeMember?.name}&rdquo; from this group? They will lose access granted through group
+              membership.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={removingMember}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={removingMember}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRemoveMember}
               disabled={removingMember}
@@ -608,22 +516,16 @@ export default function GroupsPage() {
       </AlertDialog>
 
       {/* Delete Group Confirm */}
-      <AlertDialog
-        open={deleteTarget !== null}
-        onOpenChange={(open) => !open && setDeleteTarget(null)}
-      >
+      <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete group?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete &ldquo;{deleteTarget?.name}&rdquo;
-              and remove all member associations.
+              This will permanently delete &ldquo;{deleteTarget?.name}&rdquo; and remove all member associations.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deletingGroup}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel disabled={deletingGroup}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteGroup}
               disabled={deletingGroup}

@@ -3,6 +3,7 @@
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { OrdersDataProvider, useOrdersData } from "@/components/widgets/orders/orders-data-context";
 import { TradingFamilyFilterBanner } from "@/components/architecture-v2/trading-family-filter-banner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 /**
  * Orders page. Wraps the widget grid with a FamilyArchetypePicker banner
@@ -21,15 +22,13 @@ function OrdersFilterBanner() {
 
 export default function OrdersPage() {
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 overflow-auto p-2">
-        <OrdersDataProvider>
-          <div className="px-2 pb-2">
-            <OrdersFilterBanner />
-          </div>
-          <WidgetGrid tab="orders" />
-        </OrdersDataProvider>
-      </div>
-    </div>
+    <WidgetScroll viewportClassName="p-2">
+      <OrdersDataProvider>
+        <div className="px-2 pb-2">
+          <OrdersFilterBanner />
+        </div>
+        <WidgetGrid tab="orders" />
+      </OrdersDataProvider>
+    </WidgetScroll>
   );
 }

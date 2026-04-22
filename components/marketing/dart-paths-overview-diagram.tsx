@@ -15,6 +15,7 @@
 
 import Link from "next/link";
 import * as React from "react";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function DartPathsOverviewDiagram(): React.JSX.Element {
   return (
@@ -23,14 +24,11 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
       data-testid="dart-paths-overview-diagram"
       aria-labelledby="dart-paths-diagram-title"
     >
-      <figcaption
-        id="dart-paths-diagram-title"
-        className="mb-4 text-sm font-semibold text-foreground"
-      >
+      <figcaption id="dart-paths-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
         DART — where you sit, where Odum sits, where we meet
       </figcaption>
 
-      <div className="w-full overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
         <svg
           viewBox="0 0 960 320"
           preserveAspectRatio="xMidYMid meet"
@@ -38,15 +36,11 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
           aria-labelledby="dart-paths-svg-title dart-paths-svg-desc"
           className="mx-auto block h-auto w-full min-w-[640px] max-w-[960px]"
         >
-          <title id="dart-paths-svg-title">
-            DART commercial paths overview
-          </title>
+          <title id="dart-paths-svg-title">DART commercial paths overview</title>
           <desc id="dart-paths-svg-desc">
-            Two DART paths run on one shared stack. Signals-In flows
-            client-generated instructions through Odum execution to the
-            client&apos;s venues. Full Pipeline additionally uses Odum&apos;s
-            research and promote layer on the same components. Investment
-            Management, Regulatory Umbrella, and Odum Signals-Out sit alongside
+            Two DART paths run on one shared stack. Signals-In flows client-generated instructions through Odum
+            execution to the client&apos;s venues. Full Pipeline additionally uses Odum&apos;s research and promote
+            layer on the same components. Investment Management, Regulatory Umbrella, and Odum Signals-Out sit alongside
             as sibling commercial paths.
           </desc>
 
@@ -60,10 +54,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               markerHeight="7"
               orient="auto-start-reverse"
             >
-              <path
-                d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-neutral-500 dark:fill-neutral-400"
-              />
+              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-neutral-500 dark:fill-neutral-400" />
             </marker>
             <marker
               id="dart-paths-arrow-back"
@@ -74,10 +65,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               markerHeight="7"
               orient="auto-start-reverse"
             >
-              <path
-                d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-neutral-400/80 dark:fill-neutral-500/80"
-              />
+              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-neutral-400/80 dark:fill-neutral-500/80" />
             </marker>
           </defs>
 
@@ -146,20 +134,10 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             >
               Your signal generator
             </text>
-            <text
-              x="130"
-              y="114"
-              textAnchor="middle"
-              className="fill-sky-700 text-[11px] dark:fill-sky-400"
-            >
+            <text x="130" y="114" textAnchor="middle" className="fill-sky-700 text-[11px] dark:fill-sky-400">
               models, features, regime
             </text>
-            <text
-              x="130"
-              y="130"
-              textAnchor="middle"
-              className="fill-sky-700 text-[11px] italic dark:fill-sky-400"
-            >
+            <text x="130" y="130" textAnchor="middle" className="fill-sky-700 text-[11px] italic dark:fill-sky-400">
               stays on your side
             </text>
           </g>
@@ -182,12 +160,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             >
               Execution · risk · allocation · reporting
             </text>
-            <text
-              x="480"
-              y="116"
-              textAnchor="middle"
-              className="fill-violet-700 text-[11px] dark:fill-violet-400"
-            >
+            <text x="480" y="116" textAnchor="middle" className="fill-violet-700 text-[11px] dark:fill-violet-400">
               instruction schema · 8 fields · idempotent
             </text>
             <text
@@ -218,20 +191,10 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             >
               Venue account
             </text>
-            <text
-              x="830"
-              y="114"
-              textAnchor="middle"
-              className="fill-amber-800 text-[11px] dark:fill-amber-300"
-            >
+            <text x="830" y="114" textAnchor="middle" className="fill-amber-800 text-[11px] dark:fill-amber-300">
               sub-account (default) · or your own
             </text>
-            <text
-              x="830"
-              y="130"
-              textAnchor="middle"
-              className="fill-amber-800 text-[11px] italic dark:fill-amber-300"
-            >
+            <text x="830" y="130" textAnchor="middle" className="fill-amber-800 text-[11px] italic dark:fill-amber-300">
               scoped execute + read keys
             </text>
           </g>
@@ -295,22 +258,13 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               markerEnd="url(#dart-paths-arrow-back)"
               className="stroke-neutral-400/80 dark:stroke-neutral-500/80"
             />
-            <text
-              x="260"
-              y="140"
-              textAnchor="middle"
-              className="fill-neutral-500 text-[9.5px] dark:fill-neutral-400"
-            >
+            <text x="260" y="140" textAnchor="middle" className="fill-neutral-500 text-[9.5px] dark:fill-neutral-400">
               fills · P&amp;L · reconciliation
             </text>
           </g>
 
           {/* Row label (Signals-In) */}
-          <text
-            x="30"
-            y="62"
-            className="fill-sky-700 text-[11px] font-semibold dark:fill-sky-400"
-          >
+          <text x="30" y="62" className="fill-sky-700 text-[11px] font-semibold dark:fill-sky-400">
             DART Signals-In
           </text>
 
@@ -333,12 +287,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             >
               Your researchers
             </text>
-            <text
-              x="130"
-              y="264"
-              textAnchor="middle"
-              className="fill-emerald-700 text-[11px] dark:fill-emerald-400"
-            >
+            <text x="130" y="264" textAnchor="middle" className="fill-emerald-700 text-[11px] dark:fill-emerald-400">
               author on Odum data
             </text>
             <text
@@ -369,12 +318,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             >
               Research · Promote · Paper · Live
             </text>
-            <text
-              x="480"
-              y="266"
-              textAnchor="middle"
-              className="fill-violet-700 text-[11px] dark:fill-violet-400"
-            >
+            <text x="480" y="266" textAnchor="middle" className="fill-violet-700 text-[11px] dark:fill-violet-400">
               8-stage maturity ladder · one catalogue
             </text>
             <text
@@ -405,20 +349,10 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             >
               Your venue accounts
             </text>
-            <text
-              x="830"
-              y="264"
-              textAnchor="middle"
-              className="fill-amber-800 text-[11px] dark:fill-amber-300"
-            >
+            <text x="830" y="264" textAnchor="middle" className="fill-amber-800 text-[11px] dark:fill-amber-300">
               scoped execute + read keys
             </text>
-            <text
-              x="830"
-              y="280"
-              textAnchor="middle"
-              className="fill-amber-800 text-[11px] italic dark:fill-amber-300"
-            >
+            <text x="830" y="280" textAnchor="middle" className="fill-amber-800 text-[11px] italic dark:fill-amber-300">
               same key model as Signals-In
             </text>
           </g>
@@ -481,26 +415,16 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
               markerEnd="url(#dart-paths-arrow-back)"
               className="stroke-neutral-400/80 dark:stroke-neutral-500/80"
             />
-            <text
-              x="260"
-              y="290"
-              textAnchor="middle"
-              className="fill-neutral-500 text-[9.5px] dark:fill-neutral-400"
-            >
+            <text x="260" y="290" textAnchor="middle" className="fill-neutral-500 text-[9.5px] dark:fill-neutral-400">
               backtests · fills · P&amp;L · audit
             </text>
           </g>
 
-          <text
-            x="30"
-            y="212"
-            className="fill-emerald-700 text-[11px] font-semibold dark:fill-emerald-400"
-          >
+          <text x="30" y="212" className="fill-emerald-700 text-[11px] font-semibold dark:fill-emerald-400">
             DART Full Pipeline
           </text>
-
         </svg>
-      </div>
+      </WidgetScroll>
 
       <div className="mt-6 border-t border-border pt-4">
         <p className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -511,12 +435,9 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             href="/briefings/investment-management"
             className="group rounded-md border border-border bg-card/40 p-3 transition-colors hover:border-primary hover:bg-card"
           >
-            <p className="text-sm font-semibold text-foreground group-hover:text-primary">
-              Investment Management
-            </p>
+            <p className="text-sm font-semibold text-foreground group-hover:text-primary">Investment Management</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Odum allocates capital to Odum strategies under Odum&apos;s FCA
-              permissions.
+              Odum allocates capital to Odum strategies under Odum&apos;s FCA permissions.
             </p>
             <p className="mt-2 text-[10px] font-medium text-primary/80 group-hover:text-primary">
               /briefings/investment-management →
@@ -526,9 +447,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             href="/briefings/regulatory"
             className="group rounded-md border border-border bg-card/40 p-3 transition-colors hover:border-primary hover:bg-card"
           >
-            <p className="text-sm font-semibold text-foreground group-hover:text-primary">
-              Regulatory Umbrella
-            </p>
+            <p className="text-sm font-semibold text-foreground group-hover:text-primary">Regulatory Umbrella</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Your regulated activity runs under Odum&apos;s FCA permissions.
             </p>
@@ -540,9 +459,7 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
             href="/briefings/signals-out"
             className="group rounded-md border border-border bg-card/40 p-3 transition-colors hover:border-primary hover:bg-card"
           >
-            <p className="text-sm font-semibold text-foreground group-hover:text-primary">
-              Odum Signals-Out
-            </p>
+            <p className="text-sm font-semibold text-foreground group-hover:text-primary">Odum Signals-Out</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Odum signals to a counterparty who executes on their own stack.
             </p>
@@ -554,11 +471,9 @@ export function DartPathsOverviewDiagram(): React.JSX.Element {
       </div>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        The system is one. The commercial path picks which surfaces you touch.
-        Signals-In and Full Pipeline are the two paths inside DART;
-        Investment Management, Regulatory Umbrella, and Odum Signals-Out are
-        sibling commercial paths on the same underlying stack with different
-        boundaries.
+        The system is one. The commercial path picks which surfaces you touch. Signals-In and Full Pipeline are the two
+        paths inside DART; Investment Management, Regulatory Umbrella, and Odum Signals-Out are sibling commercial paths
+        on the same underlying stack with different boundaries.
       </p>
     </figure>
   );

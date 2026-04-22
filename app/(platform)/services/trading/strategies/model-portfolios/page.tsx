@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { Badge } from "@/components/ui/badge";
@@ -278,7 +279,7 @@ export default function ModelPortfoliosPage() {
     .sort((a, b) => Math.abs(b.drift) - Math.abs(a.drift));
 
   return (
-    <div className="h-full bg-background overflow-auto">
+    <WidgetScroll className="h-full bg-background">
       <div className="p-6 max-w-[1600px] mx-auto space-y-6">
         <PageHeader
           title={
@@ -529,6 +530,6 @@ export default function ModelPortfoliosPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </WidgetScroll>
   );
 }

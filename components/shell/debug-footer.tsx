@@ -15,6 +15,7 @@ import { PERSONAS } from "@/lib/auth/personas";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { resetDemo } from "@/lib/reset-demo";
 import { cn } from "@/lib/utils";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Bug, ChevronUp, RotateCcw, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
@@ -152,45 +153,41 @@ export function DebugFooter() {
               <ChevronUp className="size-3" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            side="top"
-            className="w-72 max-h-[60vh] overflow-y-auto"
-          >
-            {PERSONA_GROUPS.map((group, groupIdx) => {
-              const members = group.ids
-                .map((id) => PERSONAS.find((p) => p.id === id))
-                .filter((p): p is (typeof PERSONAS)[number] => p !== undefined);
-              if (members.length === 0) return null;
-              return (
-                <React.Fragment key={group.label}>
-                  {groupIdx > 0 && <DropdownMenuSeparator />}
-                  <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                    {group.label}
-                  </DropdownMenuLabel>
-                  {members.map((p) => (
-                    <DropdownMenuItem
-                      key={p.id}
-                      onClick={() => handleSwitchPersona(p.id)}
-                      data-testid={`persona-option-${p.id}`}
-                      className={cn(user?.id === p.id && "bg-primary/10")}
-                    >
-                      <div className="flex flex-col">
-                        <span className="text-sm">
-                          {p.displayName}
-                          {user?.id === p.id && (
-                            <span className="ml-1 text-[10px] text-amber-400">(active)</span>
-                          )}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {p.org.name} — {p.role}
-                        </span>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </React.Fragment>
-              );
-            })}
+          <DropdownMenuContent align="end" side="top" className="w-72">
+            <WidgetScroll className="max-h-[60vh]">
+              {PERSONA_GROUPS.map((group, groupIdx) => {
+                const members = group.ids
+                  .map((id) => PERSONAS.find((p) => p.id === id))
+                  .filter((p): p is (typeof PERSONAS)[number] => p !== undefined);
+                if (members.length === 0) return null;
+                return (
+                  <React.Fragment key={group.label}>
+                    {groupIdx > 0 && <DropdownMenuSeparator />}
+                    <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {group.label}
+                    </DropdownMenuLabel>
+                    {members.map((p) => (
+                      <DropdownMenuItem
+                        key={p.id}
+                        onClick={() => handleSwitchPersona(p.id)}
+                        data-testid={`persona-option-${p.id}`}
+                        className={cn(user?.id === p.id && "bg-primary/10")}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm">
+                            {p.displayName}
+                            {user?.id === p.id && <span className="ml-1 text-[10px] text-amber-400">(active)</span>}
+                          </span>
+                          <span className="text-[10px] text-muted-foreground">
+                            {p.org.name} — {p.role}
+                          </span>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
+                  </React.Fragment>
+                );
+              })}
+            </WidgetScroll>
           </DropdownMenuContent>
         </DropdownMenu>
 

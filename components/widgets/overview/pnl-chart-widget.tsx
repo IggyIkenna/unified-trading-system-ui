@@ -51,7 +51,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="p-3 space-y-2 h-full overflow-auto">
+    <div className="p-3 space-y-2">
       <div className="flex items-center gap-2">
         <button
           type="button"

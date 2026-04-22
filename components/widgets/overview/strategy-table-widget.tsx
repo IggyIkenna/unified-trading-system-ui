@@ -248,7 +248,7 @@ export function StrategyTableWidget(_props: WidgetComponentProps) {
           No strategies match the current filters
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div>
           <Table>
             <TableHeader>
               <TableRow className="text-xs">

@@ -1,10 +1,7 @@
 import { Term } from "@/components/marketing/term";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { ARCHETYPE_COVERAGE } from "@/lib/architecture-v2/coverage";
-import type {
-  ArchetypeCoverage,
-  CoverageCell,
-  CoverageStatus,
-} from "@/lib/architecture-v2/coverage";
+import type { ArchetypeCoverage, CoverageCell, CoverageStatus } from "@/lib/architecture-v2/coverage";
 import type { StrategyArchetype, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
 
 /**
@@ -21,13 +18,7 @@ import type { StrategyArchetype, VenueCategoryV2 } from "@/lib/architecture-v2/e
  * Codex: unified-trading-pm/codex/09-strategy/architecture-v2/category-instrument-coverage.md
  */
 
-const CATEGORIES: readonly VenueCategoryV2[] = [
-  "CEFI",
-  "DEFI",
-  "TRADFI",
-  "SPORTS",
-  "PREDICTION",
-];
+const CATEGORIES: readonly VenueCategoryV2[] = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"];
 
 const CATEGORY_GLOSSARY_ID: Readonly<Record<VenueCategoryV2, string | null>> = {
   CEFI: "cefi",
@@ -66,10 +57,7 @@ const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetype, string>> = {
   STAT_ARB_CROSS_SECTIONAL: "Cross-sectional stat-arb",
 };
 
-function bestStatusForCell(
-  archetype: StrategyArchetype,
-  category: VenueCategoryV2,
-): CoverageStatus | null {
+function bestStatusForCell(archetype: StrategyArchetype, category: VenueCategoryV2): CoverageStatus | null {
   const coverage: ArchetypeCoverage = ARCHETYPE_COVERAGE[archetype];
   const matching = coverage.cells.filter((c: CoverageCell) => c.category === category);
   if (matching.length === 0) return null;
@@ -123,13 +111,11 @@ export interface StrategyCoverageMatrixProps {
 
 export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixProps = {}) {
   const rows: readonly StrategyArchetype[] =
-    archetypes && archetypes.length > 0
-      ? archetypes
-      : (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]);
+    archetypes && archetypes.length > 0 ? archetypes : (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]);
 
   return (
     <div className="space-y-3">
-      <div className="overflow-x-auto rounded-md border border-border/60">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="rounded-md border border-border/60">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-muted/30">
@@ -143,11 +129,7 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
                     key={c}
                     className="px-3 py-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   >
-                    {glossaryId ? (
-                      <Term id={glossaryId}>{CATEGORY_LABELS[c]}</Term>
-                    ) : (
-                      CATEGORY_LABELS[c]
-                    )}
+                    {glossaryId ? <Term id={glossaryId}>{CATEGORY_LABELS[c]}</Term> : CATEGORY_LABELS[c]}
                   </th>
                 );
               })}
@@ -156,18 +138,12 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
           <tbody>
             {rows.map((archetype) => (
               <tr key={archetype} className="border-b border-border/40 last:border-b-0">
-                <td className="px-3 py-2 text-foreground/85">
-                  {ARCHETYPE_LABELS[archetype]}
-                </td>
+                <td className="px-3 py-2 text-foreground/85">{ARCHETYPE_LABELS[archetype]}</td>
                 {CATEGORIES.map((category) => {
                   const status = bestStatusForCell(archetype, category);
                   const glyph = statusGlyph(status);
                   return (
-                    <td
-                      key={category}
-                      className="px-3 py-2 text-center"
-                      title={glyph.title}
-                    >
+                    <td key={category} className="px-3 py-2 text-center" title={glyph.title}>
                       <span className={`font-mono ${glyph.className}`}>{glyph.symbol}</span>
                     </td>
                   );
@@ -176,7 +152,7 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
             ))}
           </tbody>
         </table>
-      </div>
+      </WidgetScroll>
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span>
           <span className="font-mono text-emerald-500">●</span> Supported

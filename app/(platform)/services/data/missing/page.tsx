@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/shared/data-table";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
@@ -228,13 +229,15 @@ export default function MissingDataPage() {
       </div>
 
       <Card>
-        <CardContent className="p-0 pt-4 px-4 pb-4 overflow-x-auto">
-          <DataTable
-            columns={gapColumns}
-            data={filtered}
-            enableColumnVisibility={false}
-            emptyMessage="No gaps match the current filters."
-          />
+        <CardContent className="p-0 pt-4 px-4 pb-4">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
+            <DataTable
+              columns={gapColumns}
+              data={filtered}
+              enableColumnVisibility={false}
+              emptyMessage="No gaps match the current filters."
+            />
+          </WidgetScroll>
         </CardContent>
       </Card>
     </div>

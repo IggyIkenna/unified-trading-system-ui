@@ -14,6 +14,7 @@ import {
 } from "@/lib/mocks/fixtures/strategy-catalog-data";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatCurrency } from "@/lib/utils/formatters";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   ArrowLeft,
   ArrowRight,
@@ -57,10 +58,14 @@ function parseGateLevel(code: string): number {
 
 function getGateMax(prefix: string): number {
   switch (prefix) {
-    case "C": return 5;
-    case "D": return 5;
-    case "B": return 6;
-    default: return 5;
+    case "C":
+      return 5;
+    case "D":
+      return 5;
+    case "B":
+      return 6;
+    default:
+      return 5;
   }
 }
 
@@ -114,10 +119,7 @@ function GateProgress({ label, current, max }: { label: string; current: number;
         </span>
       </div>
       <div className="relative h-2 w-full overflow-hidden rounded-full bg-primary/10">
-        <div
-          className={cn("h-full rounded-full transition-all", color)}
-          style={{ width: `${pct}%` }}
-        />
+        <div className={cn("h-full rounded-full transition-all", color)} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
@@ -153,9 +155,7 @@ function MonthlyReturnsChart({ returns }: { returns: number[] }) {
                     className="w-full max-w-[28px] rounded-b bg-red-500/60"
                     style={{ height: `${heightPct}%`, minHeight: "4px" }}
                   />
-                  <span className="text-[9px] font-mono text-red-400 mt-0.5">
-                    {formatNumber(ret, 1)}
-                  </span>
+                  <span className="text-[9px] font-mono text-red-400 mt-0.5">{formatNumber(ret, 1)}</span>
                 </div>
               )}
             </div>
@@ -305,7 +305,10 @@ function PerformanceTab({ strategy }: { strategy: StrategyCatalogEntry }) {
         <SectionCard title="Performance Metrics" icon={<FileText className="size-4" />}>
           <div className="space-y-2">
             {rows.map((r) => (
-              <div key={r.label} className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0">
+              <div
+                key={r.label}
+                className="flex items-center justify-between py-1.5 border-b border-border/30 last:border-0"
+              >
                 <span className="text-sm text-muted-foreground">{r.label}</span>
                 <span className={cn("text-sm font-mono font-semibold", r.highlight && "text-emerald-400")}>
                   {r.value}
@@ -329,9 +332,7 @@ function PerformanceTab({ strategy }: { strategy: StrategyCatalogEntry }) {
                 </span>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Backtest period: {perf.backtest_period}
-            </p>
+            <p className="text-xs text-muted-foreground">Backtest period: {perf.backtest_period}</p>
           </div>
         </SectionCard>
       </div>
@@ -393,9 +394,7 @@ function RiskTab({ strategy }: { strategy: StrategyCatalogEntry }) {
             </div>
             <div className="flex items-center justify-between py-1.5 border-b border-border/30">
               <span className="text-sm text-muted-foreground">Correlation to BTC</span>
-              <span className="text-sm font-mono">
-                {formatNumber(r.correlation_to_btc, 2)}
-              </span>
+              <span className="text-sm font-mono">{formatNumber(r.correlation_to_btc, 2)}</span>
             </div>
             {r.stop_loss_pct !== null && (
               <div className="flex items-center justify-between py-1.5 border-b border-border/30">
@@ -405,7 +404,9 @@ function RiskTab({ strategy }: { strategy: StrategyCatalogEntry }) {
             )}
             {r.liquidation_protection && (
               <div className="pt-2 space-y-2">
-                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Liquidation Protection</p>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Liquidation Protection
+                </p>
                 <p className="text-sm text-muted-foreground">{r.liquidation_protection}</p>
               </div>
             )}
@@ -447,7 +448,9 @@ function MoneyOpsTab({ strategy }: { strategy: StrategyCatalogEntry }) {
             </div>
             <div className="flex items-center justify-between py-1.5 border-b border-border/30">
               <span className="text-sm text-muted-foreground">Recommended Deposit</span>
-              <span className="text-sm font-mono font-semibold">{formatCurrency(m.recommended_deposit_usd, "USD", 0)}</span>
+              <span className="text-sm font-mono font-semibold">
+                {formatCurrency(m.recommended_deposit_usd, "USD", 0)}
+              </span>
             </div>
             <div className="flex items-center justify-between py-1.5 border-b border-border/30">
               <span className="text-sm text-muted-foreground">Accepted Currencies</span>
@@ -568,9 +571,13 @@ function ConfigTab({ strategy }: { strategy: StrategyCatalogEntry }) {
     {
       label: "Config Hot-Reload",
       value: cfg.config_hot_reload ? (
-        <Badge variant="success" className="text-[10px]">Enabled</Badge>
+        <Badge variant="success" className="text-[10px]">
+          Enabled
+        </Badge>
       ) : (
-        <Badge variant="secondary" className="text-[10px]">Disabled</Badge>
+        <Badge variant="secondary" className="text-[10px]">
+          Disabled
+        </Badge>
       ),
     },
     { label: "Schema Version", value: <span className="font-mono">{cfg.schema_version}</span> },
@@ -607,7 +614,11 @@ function ReadinessTab({ strategy }: { strategy: StrategyCatalogEntry }) {
   const secRows: Array<{ label: string; value: string; icon: React.ReactNode }> = [
     { label: "Custody", value: sec.custody, icon: <Lock className="size-4 text-emerald-400" /> },
     { label: "Key Management", value: sec.key_management, icon: <Shield className="size-4 text-blue-400" /> },
-    { label: "Audit Trail", value: sec.audit_trail ? "Full audit trail enabled" : "No audit trail", icon: <FileText className="size-4 text-amber-400" /> },
+    {
+      label: "Audit Trail",
+      value: sec.audit_trail ? "Full audit trail enabled" : "No audit trail",
+      icon: <FileText className="size-4 text-amber-400" />,
+    },
     { label: "Disaster Recovery", value: sec.disaster_recovery, icon: <Zap className="size-4 text-purple-400" /> },
     { label: "Insurance", value: sec.insurance ?? "None", icon: <Shield className="size-4 text-pink-400" /> },
   ];
@@ -618,8 +629,16 @@ function ReadinessTab({ strategy }: { strategy: StrategyCatalogEntry }) {
       <SectionCard title="Readiness Gates" icon={<CheckCircle2 className="size-4 text-emerald-400" />}>
         <div className="space-y-5">
           <GateProgress label={`Code Readiness (${gates.code})`} current={codeLevel} max={getGateMax("C")} />
-          <GateProgress label={`Deployment Readiness (${gates.deployment})`} current={deployLevel} max={getGateMax("D")} />
-          <GateProgress label={`Business Readiness (${gates.business})`} current={businessLevel} max={getGateMax("B")} />
+          <GateProgress
+            label={`Deployment Readiness (${gates.deployment})`}
+            current={deployLevel}
+            max={getGateMax("D")}
+          />
+          <GateProgress
+            label={`Business Readiness (${gates.business})`}
+            current={businessLevel}
+            max={getGateMax("B")}
+          />
         </div>
       </SectionCard>
 
@@ -721,9 +740,7 @@ export default function StrategyDetailPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-page-title font-semibold tracking-tight text-foreground">
-                {strategy.name}
-              </h1>
+              <h1 className="text-page-title font-semibold tracking-tight text-foreground">{strategy.name}</h1>
               <Badge variant="outline" className={cn(STATUS_COLORS[strategy.readiness.status])}>
                 {strategy.readiness.status}
               </Badge>
@@ -733,7 +750,9 @@ export default function StrategyDetailPage() {
                 {CATEGORY_LABELS[strategy.category]}
               </Badge>
               <Badge variant="secondary">{strategy.family}</Badge>
-              <Badge variant="secondary" className="text-[10px]">{strategy.subcategory}</Badge>
+              <Badge variant="secondary" className="text-[10px]">
+                {strategy.subcategory}
+              </Badge>
             </div>
           </div>
           <Button size="lg" className="shrink-0">
@@ -743,14 +762,16 @@ export default function StrategyDetailPage() {
 
         {/* Tabbed Content */}
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="w-full justify-start overflow-x-auto">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-            <TabsTrigger value="risk">Risk</TabsTrigger>
-            <TabsTrigger value="money">Money Ops</TabsTrigger>
-            <TabsTrigger value="config">Configuration</TabsTrigger>
-            <TabsTrigger value="readiness">Readiness</TabsTrigger>
-          </TabsList>
+          <WidgetScroll axes="horizontal" scrollbarSize="thin" className="shrink-0">
+            <TabsList className="w-full justify-start">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+              <TabsTrigger value="risk">Risk</TabsTrigger>
+              <TabsTrigger value="money">Money Ops</TabsTrigger>
+              <TabsTrigger value="config">Configuration</TabsTrigger>
+              <TabsTrigger value="readiness">Readiness</TabsTrigger>
+            </TabsList>
+          </WidgetScroll>
 
           <TabsContent value="overview">
             <OverviewTab strategy={strategy} />

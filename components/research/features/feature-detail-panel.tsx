@@ -12,6 +12,7 @@ import type { IndividualFeature, FeatureServiceNode } from "@/lib/mocks/fixtures
 import { FEATURE_VERSIONS } from "@/lib/mocks/fixtures/build-data";
 import { FEAT_STATUS_CFG, SERVICE_COLORS } from "./feature-helpers";
 import { EditConfigDialog } from "./edit-config-dialog";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function FeatureDetailPanel({
   service,
@@ -43,7 +44,7 @@ export function FeatureDetailPanel({
   const svcColor = service?.color ?? "blue";
 
   return (
-    <div className="h-full overflow-y-auto">
+    <WidgetScroll className="h-full">
       <div className="p-4 space-y-4">
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -226,6 +227,6 @@ export function FeatureDetailPanel({
           });
         }}
       />
-    </div>
+    </WidgetScroll>
   );
 }

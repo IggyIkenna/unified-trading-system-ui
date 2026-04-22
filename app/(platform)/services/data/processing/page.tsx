@@ -8,6 +8,7 @@
 
 import { PROCESSING_COLUMNS, getProcessingContextStats } from "@/components/data/processing-finder-config";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { FinderSelections } from "@/components/shared/finder";
 import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
@@ -194,7 +195,12 @@ export default function ProcessingPage() {
       </div>
 
       {/* Timeframe summary strip */}
-      <div className="flex items-center gap-3 px-6 py-2.5 border-b border-border/30 bg-muted/10 overflow-x-auto">
+      <WidgetScroll
+        axes="horizontal"
+        scrollbarSize="thin"
+        className="border-b border-border/30 bg-muted/10"
+        viewportClassName="flex items-center gap-3 px-6 py-2.5"
+      >
         {timeframeAgg.map(({ tf, pct }) => (
           <div key={tf} className="flex items-center gap-2 shrink-0">
             <span className="text-xs font-mono text-muted-foreground">{tf}</span>
@@ -217,7 +223,7 @@ export default function ProcessingPage() {
             </span>
           </div>
         ))}
-      </div>
+      </WidgetScroll>
 
       {/* FinderBrowser */}
       <FinderBrowser

@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { Activity, AlertCircle, ArrowRight, BarChart3, Database, Eye, Grid3X3, Lock, Play } from "lucide-react";
@@ -223,7 +224,7 @@ export default function DemoPreview() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
+                <WidgetScroll axes="horizontal" scrollbarSize="thin">
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-border">
@@ -258,7 +259,7 @@ export default function DemoPreview() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </WidgetScroll>
               </CardContent>
             </Card>
           </div>

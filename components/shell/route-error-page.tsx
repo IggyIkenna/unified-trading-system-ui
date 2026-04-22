@@ -24,7 +24,7 @@ export function RouteErrorPage({
   homeLabel = "Go to dashboard",
 }: RouteErrorPageProps) {
   React.useEffect(() => {
-    console.error("[route-error]", error?.message, error?.digest ?? "");
+    console.error("[route-error]", error?.message, error?.digest ?? "", error?.stack);
   }, [error]);
 
   const rawMessage = error?.message;

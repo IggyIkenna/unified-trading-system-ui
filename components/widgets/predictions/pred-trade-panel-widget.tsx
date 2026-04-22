@@ -10,7 +10,7 @@ export function PredTradePanelWidget(_props: WidgetComponentProps) {
   const selectedMarket = quickTradeMarketId ? (markets.find((m) => m.id === quickTradeMarketId) ?? null) : null;
 
   return (
-    <div className="flex flex-col h-full min-h-0 overflow-auto px-1 py-0.5 space-y-4">
+    <div className="flex flex-col h-full min-h-0 px-1 py-0.5 space-y-4">
       <MarketSelector markets={markets} value={quickTradeMarketId} onChange={setQuickTradeMarketId} />
       {selectedMarket ? (
         <TradePanelInner market={selectedMarket} onPlaceTrade={placeTrade} />

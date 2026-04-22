@@ -11,6 +11,7 @@
 // to scale without losing legibility.
 
 import * as React from "react";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function FundSmaHierarchyDiagram(): React.JSX.Element {
   return (
@@ -19,14 +20,11 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
       data-testid="fund-sma-hierarchy-diagram"
       aria-labelledby="fund-sma-diagram-title"
     >
-      <figcaption
-        id="fund-sma-diagram-title"
-        className="mb-4 text-sm font-semibold text-foreground"
-      >
+      <figcaption id="fund-sma-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
         Fund / SMA hierarchy
       </figcaption>
 
-      <div className="w-full overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
         <svg
           viewBox="0 0 960 560"
           preserveAspectRatio="xMidYMid meet"
@@ -34,17 +32,12 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
           aria-labelledby="fund-sma-svg-title fund-sma-svg-desc"
           className="mx-auto block h-auto w-full min-w-[560px] max-w-[960px]"
         >
-          <title id="fund-sma-svg-title">
-            Investment Management fund and SMA hierarchy
-          </title>
+          <title id="fund-sma-svg-title">Investment Management fund and SMA hierarchy</title>
           <desc id="fund-sma-svg-desc">
-            Odum as Investment Manager sits above two parallel structural
-            options: a pooled fund with share classes A, B, and C where each
-            client sees only their slice, and an SMA structure where each
-            client has a legally separate managed account. Both paths connect
-            to venue API keys that remain under client custody, scoped as
-            read-only-plus-execute across CeFi venues, TradFi venues, and
-            on-chain wallets.
+            Odum as Investment Manager sits above two parallel structural options: a pooled fund with share classes A,
+            B, and C where each client sees only their slice, and an SMA structure where each client has a legally
+            separate managed account. Both paths connect to venue API keys that remain under client custody, scoped as
+            read-only-plus-execute across CeFi venues, TradFi venues, and on-chain wallets.
           </desc>
 
           {/* ===== Row 1: Odum (Investment Manager) ===== */}
@@ -66,12 +59,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               Odum
             </text>
-            <text
-              x="480"
-              y="62"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[11px] dark:fill-zinc-400"
-            >
+            <text x="480" y="62" textAnchor="middle" className="fill-zinc-600 text-[11px] dark:fill-zinc-400">
               Investment Manager
             </text>
           </g>
@@ -107,12 +95,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               Pooled Fund
             </text>
-            <text
-              x="220"
-              y="172"
-              textAnchor="middle"
-              className="fill-sky-700 text-[11px] dark:fill-sky-400"
-            >
+            <text x="220" y="172" textAnchor="middle" className="fill-sky-700 text-[11px] dark:fill-sky-400">
               e.g. Odum Alpha Fund Ltd
             </text>
           </g>
@@ -135,12 +118,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               SMA Structure
             </text>
-            <text
-              x="740"
-              y="172"
-              textAnchor="middle"
-              className="fill-violet-700 text-[11px] dark:fill-violet-400"
-            >
+            <text x="740" y="172" textAnchor="middle" className="fill-violet-700 text-[11px] dark:fill-violet-400">
               Per client, legally separate
             </text>
           </g>
@@ -194,20 +172,10 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               Share Class A
             </text>
-            <text
-              x="120"
-              y="278"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="120" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Client 1
             </text>
-            <text
-              x="120"
-              y="293"
-              textAnchor="middle"
-              className="fill-sky-700 text-[9.5px] italic dark:fill-sky-400"
-            >
+            <text x="120" y="293" textAnchor="middle" className="fill-sky-700 text-[9.5px] italic dark:fill-sky-400">
               sees own slice only
             </text>
           </g>
@@ -241,20 +209,10 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               Share Class B
             </text>
-            <text
-              x="220"
-              y="278"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="220" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Client 2
             </text>
-            <text
-              x="220"
-              y="293"
-              textAnchor="middle"
-              className="fill-sky-700 text-[9.5px] italic dark:fill-sky-400"
-            >
+            <text x="220" y="293" textAnchor="middle" className="fill-sky-700 text-[9.5px] italic dark:fill-sky-400">
               sees own slice only
             </text>
           </g>
@@ -278,20 +236,10 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               Share Class C
             </text>
-            <text
-              x="320"
-              y="278"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="320" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Client 3
             </text>
-            <text
-              x="320"
-              y="293"
-              textAnchor="middle"
-              className="fill-sky-700 text-[9.5px] italic dark:fill-sky-400"
-            >
+            <text x="320" y="293" textAnchor="middle" className="fill-sky-700 text-[9.5px] italic dark:fill-sky-400">
               sees own slice only
             </text>
           </g>
@@ -315,12 +263,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               SMA &mdash; Client 4
             </text>
-            <text
-              x="660"
-              y="278"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="660" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Own book only
             </text>
             <text
@@ -352,12 +295,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               SMA &mdash; Client 5
             </text>
-            <text
-              x="820"
-              y="278"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="820" y="278" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Own book only
             </text>
             <text
@@ -423,12 +361,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               Pooled: qualified custodian (e.g. Copper)
             </text>
-            <text
-              x="240"
-              y="422"
-              textAnchor="middle"
-              className="fill-sky-800 text-[11px] dark:fill-sky-300"
-            >
+            <text x="240" y="422" textAnchor="middle" className="fill-sky-800 text-[11px] dark:fill-sky-300">
               fund assets under the custodian&apos;s own permissions
             </text>
           </g>
@@ -450,12 +383,7 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               SMA: client-owned venue accounts
             </text>
-            <text
-              x="720"
-              y="422"
-              textAnchor="middle"
-              className="fill-violet-800 text-[11px] dark:fill-violet-300"
-            >
+            <text x="720" y="422" textAnchor="middle" className="fill-violet-800 text-[11px] dark:fill-violet-300">
               in client&apos;s own entity name · scoped Odum execute+read keys
             </text>
           </g>
@@ -508,20 +436,10 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               CeFi
             </text>
-            <text
-              x="280"
-              y="499"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="280" y="499" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Binance &middot; Coinbase
             </text>
-            <text
-              x="280"
-              y="513"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="280" y="513" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Hyperliquid
             </text>
           </g>
@@ -544,20 +462,10 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               TradFi
             </text>
-            <text
-              x="480"
-              y="499"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="480" y="499" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               CME &middot; NSE
             </text>
-            <text
-              x="480"
-              y="513"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="480" y="513" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Regulated brokers
             </text>
           </g>
@@ -580,38 +488,24 @@ export function FundSmaHierarchyDiagram(): React.JSX.Element {
             >
               DeFi
             </text>
-            <text
-              x="680"
-              y="499"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="680" y="499" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               On-chain wallets
             </text>
-            <text
-              x="680"
-              y="513"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="680" y="513" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Client-controlled
             </text>
           </g>
         </svg>
-      </div>
+      </WidgetScroll>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Pooled fund and SMA are the two structural options with different
-        custody mechanics. Pooled: fund assets sit with a qualified
-        third-party custodian (Copper or equivalent) under the custodian&apos;s
-        own regulatory permissions; clients hold share classes in the fund,
-        see balances and P&amp;L via the Odum portal, and submit subscriptions
-        and redemptions through the portal API or UI. SMA: client holds their
-        own venue accounts in their own entity name, funds them directly with
-        the venue, and issues Odum scoped execute+read API keys &mdash; no
-        withdrawal authority, ever. Both paths use the same reporting
-        surface; Odum Research Ltd &mdash; the investment manager &mdash;
-        never holds principal.
+        Pooled fund and SMA are the two structural options with different custody mechanics. Pooled: fund assets sit
+        with a qualified third-party custodian (Copper or equivalent) under the custodian&apos;s own regulatory
+        permissions; clients hold share classes in the fund, see balances and P&amp;L via the Odum portal, and submit
+        subscriptions and redemptions through the portal API or UI. SMA: client holds their own venue accounts in their
+        own entity name, funds them directly with the venue, and issues Odum scoped execute+read API keys &mdash; no
+        withdrawal authority, ever. Both paths use the same reporting surface; Odum Research Ltd &mdash; the investment
+        manager &mdash; never holds principal.
       </p>
     </figure>
   );

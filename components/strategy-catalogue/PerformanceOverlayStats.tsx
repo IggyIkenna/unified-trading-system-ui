@@ -14,11 +14,8 @@
 import { useMemo } from "react";
 
 import { Badge } from "@/components/ui/badge";
-import type {
-  PerformancePerViewSeries,
-  PerformanceSeriesPoint,
-  PerformanceView,
-} from "@/lib/api/performance-overlay";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
+import type { PerformancePerViewSeries, PerformanceSeriesPoint, PerformanceView } from "@/lib/api/performance-overlay";
 
 const VIEW_LABEL: Record<PerformanceView, string> = {
   backtest: "Backtest",
@@ -87,8 +84,7 @@ function cagrPct(points: readonly PerformanceSeriesPoint[]): number | null {
   const last = points[points.length - 1];
   if (!first || !last || first.equity <= 0) return null;
   const totalReturn = last.equity / first.equity;
-  const days =
-    (new Date(last.t).getTime() - new Date(first.t).getTime()) / 86_400_000;
+  const days = (new Date(last.t).getTime() - new Date(first.t).getTime()) / 86_400_000;
   if (days <= 0) return null;
   const years = days / 365.25;
   return (Math.pow(totalReturn, 1 / Math.max(years, 1e-6)) - 1) * 100;
@@ -106,17 +102,11 @@ function computeStats(series: PerformancePerViewSeries | undefined): ViewStats {
   }
   const returns = dailyReturns(series.aggregate);
   const sigma = stddev(returns);
-  const sharpe =
-    sigma > 0 ? (mean(returns) * ANNUALISATION_DAYS) / (sigma * Math.sqrt(ANNUALISATION_DAYS)) : null;
-  const winRate =
-    returns.length > 0
-      ? (returns.filter((r) => r > 0).length / returns.length) * 100
-      : null;
+  const sharpe = sigma > 0 ? (mean(returns) * ANNUALISATION_DAYS) / (sigma * Math.sqrt(ANNUALISATION_DAYS)) : null;
+  const winRate = returns.length > 0 ? (returns.filter((r) => r > 0).length / returns.length) * 100 : null;
   // Avg trade notional: mean absolute equity change between samples,
   // a useful coarse "trade size" proxy for daily samples.
-  const moves = series.aggregate
-    .slice(1)
-    .map((p, i) => Math.abs(p.equity - series.aggregate[i]!.equity));
+  const moves = series.aggregate.slice(1).map((p, i) => Math.abs(p.equity - series.aggregate[i]!.equity));
   const avgTradeNotional = moves.length > 0 ? mean(moves) : null;
   return {
     sharpe,
@@ -139,11 +129,7 @@ function fmtCurrency(value: number | null): string {
   return `$${value.toFixed(0)}`;
 }
 
-export function PerformanceOverlayStats({
-  series,
-  views,
-  className,
-}: PerformanceOverlayStatsProps) {
+export function PerformanceOverlayStats({ series, views, className }: PerformanceOverlayStatsProps) {
   const stats = useMemo(() => {
     return views.map((view) => ({
       view,
@@ -166,55 +152,49 @@ export function PerformanceOverlayStats({
   }, [series, views]);
 
   return (
-    <div
-      className={`overflow-x-auto rounded-md border bg-card/40 ${className ?? ""}`}
-      data-testid="performance-overlay-stats"
-    >
-      <table className="w-full text-left text-xs tabular-nums">
-        <thead className="bg-muted/40 text-[10px] uppercase text-muted-foreground">
-          <tr>
-            <th className="px-3 py-2">View</th>
-            <th className="px-3 py-2 text-right">Sharpe</th>
-            <th className="px-3 py-2 text-right">MDD</th>
-            <th className="px-3 py-2 text-right">CAGR</th>
-            <th className="px-3 py-2 text-right">Win-rate</th>
-            <th className="px-3 py-2 text-right">Avg trade</th>
-          </tr>
-        </thead>
-        <tbody>
-          {stats.map(({ view, stats: row }) => (
-            <tr
-              key={view}
-              data-testid={`performance-overlay-stats-row-${view}`}
-              className="border-t border-border/60"
-            >
-              <td className="px-3 py-2">
-                <Badge variant="outline" className="font-mono text-[10px]">
-                  {VIEW_LABEL[view]}
-                </Badge>
-              </td>
-              <td className="px-3 py-2 text-right font-mono">{fmt(row.sharpe)}</td>
-              <td className="px-3 py-2 text-right font-mono">{fmt(row.maxDrawdownPct, "%", 1)}</td>
-              <td className="px-3 py-2 text-right font-mono">{fmt(row.cagrPct, "%", 1)}</td>
-              <td className="px-3 py-2 text-right font-mono">{fmt(row.winRatePct, "%", 1)}</td>
-              <td className="px-3 py-2 text-right font-mono">{fmtCurrency(row.avgTradeNotional)}</td>
+    <WidgetScroll axes="horizontal" scrollbarSize="thin" className={`rounded-md border bg-card/40 ${className ?? ""}`}>
+      <div data-testid="performance-overlay-stats">
+        <table className="w-full text-left text-xs tabular-nums">
+          <thead className="bg-muted/40 text-[10px] uppercase text-muted-foreground">
+            <tr>
+              <th className="px-3 py-2">View</th>
+              <th className="px-3 py-2 text-right">Sharpe</th>
+              <th className="px-3 py-2 text-right">MDD</th>
+              <th className="px-3 py-2 text-right">CAGR</th>
+              <th className="px-3 py-2 text-right">Win-rate</th>
+              <th className="px-3 py-2 text-right">Avg trade</th>
             </tr>
-          ))}
-          {residual !== null ? (
-            <tr
-              className="border-t border-border/60 bg-muted/20"
-              data-testid="performance-overlay-stats-residual"
-            >
-              <td className="px-3 py-2" colSpan={5}>
-                Residual ({residual.label})
-              </td>
-              <td className="px-3 py-2 text-right font-mono">
-                {fmtCurrency(residual.value)}
-              </td>
-            </tr>
-          ) : null}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {stats.map(({ view, stats: row }) => (
+              <tr
+                key={view}
+                data-testid={`performance-overlay-stats-row-${view}`}
+                className="border-t border-border/60"
+              >
+                <td className="px-3 py-2">
+                  <Badge variant="outline" className="font-mono text-[10px]">
+                    {VIEW_LABEL[view]}
+                  </Badge>
+                </td>
+                <td className="px-3 py-2 text-right font-mono">{fmt(row.sharpe)}</td>
+                <td className="px-3 py-2 text-right font-mono">{fmt(row.maxDrawdownPct, "%", 1)}</td>
+                <td className="px-3 py-2 text-right font-mono">{fmt(row.cagrPct, "%", 1)}</td>
+                <td className="px-3 py-2 text-right font-mono">{fmt(row.winRatePct, "%", 1)}</td>
+                <td className="px-3 py-2 text-right font-mono">{fmtCurrency(row.avgTradeNotional)}</td>
+              </tr>
+            ))}
+            {residual !== null ? (
+              <tr className="border-t border-border/60 bg-muted/20" data-testid="performance-overlay-stats-residual">
+                <td className="px-3 py-2" colSpan={5}>
+                  Residual ({residual.label})
+                </td>
+                <td className="px-3 py-2 text-right font-mono">{fmtCurrency(residual.value)}</td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
+    </WidgetScroll>
   );
 }

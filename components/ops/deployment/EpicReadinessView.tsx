@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useEpics, useEpicDetail } from "@/hooks/deployment/useEpics";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -282,7 +283,11 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
           <h4 className="text-xs font-semibold text-[var(--color-accent-red)] uppercase tracking-wide mb-2 px-1">
             Blocking ({epic.blocking_repos.length})
           </h4>
-          <div className="overflow-x-auto rounded border border-[var(--color-border-default)]">
+          <WidgetScroll
+            axes="horizontal"
+            scrollbarSize="thin"
+            className="rounded border border-[var(--color-border-default)]"
+          >
             <table className="w-full text-left min-w-[600px]">
               <thead>
                 <tr className="border-b border-[var(--color-border-default)] bg-[var(--color-bg-tertiary)]">
@@ -301,7 +306,7 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
         </div>
       )}
 

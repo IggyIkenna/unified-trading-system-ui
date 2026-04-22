@@ -252,7 +252,7 @@ export function PnlWaterfallWidget(_props: WidgetComponentProps) {
             </div>
           </CollapsibleSection>
 
-          <div className="space-y-2 py-1 min-h-0 overflow-auto flex-1 flex flex-col">
+          <div className="space-y-2 py-1 min-h-0 flex-1 flex flex-col">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider px-1 shrink-0">
               Factor Attribution
             </p>

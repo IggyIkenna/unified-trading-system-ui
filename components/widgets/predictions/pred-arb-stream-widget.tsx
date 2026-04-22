@@ -44,7 +44,7 @@ export function PredArbStreamWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 overflow-auto">
+    <div className="flex flex-col gap-3 h-full min-h-0">
       <div className="flex flex-wrap items-center gap-3 shrink-0">
         <div className="flex items-center gap-2">
           <span className="text-caption text-muted-foreground">Min arb:</span>

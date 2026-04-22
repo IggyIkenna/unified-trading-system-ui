@@ -11,6 +11,7 @@ import * as React from "react";
 import { slides } from "./board-presentation-data";
 import { BoardSlidePartA } from "./board-presentation-slide-part-a";
 import { BoardSlidePartB } from "./board-presentation-slide-part-b";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function BoardPresentationPageClient() {
   const [currentSlide, setCurrentSlide] = React.useState(0);
@@ -86,7 +87,7 @@ export function BoardPresentationPageClient() {
       </header>
 
       {/* Slide Content */}
-      <main className="flex-1 flex items-center justify-center p-6 overflow-auto min-h-0">
+      <WidgetScroll className="flex-1 min-h-0" viewportClassName="flex items-center justify-center p-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id}
@@ -100,7 +101,7 @@ export function BoardPresentationPageClient() {
             <BoardSlidePartB slide={slide} />
           </motion.div>
         </AnimatePresence>
-      </main>
+      </WidgetScroll>
 
       {/* Navigation */}
       <footer className="flex items-center justify-between px-6 py-2 border-t border-border bg-card/50 shrink-0">

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   Check,
   ChevronRight,
@@ -311,7 +312,7 @@ export function PromoteFlowModal({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Rocket className="size-5" />
@@ -320,195 +321,197 @@ export function PromoteFlowModal({
           <DialogDescription>Review environment gates and promote to the next stage</DialogDescription>
         </DialogHeader>
 
-        {/* Stage Progress */}
-        <div className="py-4">
-          <div className="flex items-center gap-1 overflow-x-auto pb-2">
-            {gates.map((gate, idx) => (
-              <React.Fragment key={gate.stage}>
-                <button
-                  onClick={() => gate.status !== "locked" && setSelectedStage(gate.stage)}
-                  disabled={gate.status === "locked"}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-lg border transition-all min-w-fit",
-                    gate.status === "completed" && "bg-[var(--status-live)]/10 border-[var(--status-live)]/30",
-                    gate.status === "current" && "bg-primary/10 border-primary ring-2 ring-primary/20",
-                    gate.status === "available" &&
-                      "bg-[var(--status-warning)]/10 border-[var(--status-warning)]/30 hover:border-[var(--status-warning)]",
-                    gate.status === "locked" && "bg-muted/30 border-border/30 opacity-50 cursor-not-allowed",
-                    selectedStage === gate.stage && "ring-2 ring-primary",
-                  )}
-                >
-                  <div
+        <WidgetScroll className="max-h-[85vh]">
+          {/* Stage Progress */}
+          <div className="py-4">
+            <div className="flex items-center gap-1 overflow-x-auto pb-2">
+              {gates.map((gate, idx) => (
+                <React.Fragment key={gate.stage}>
+                  <button
+                    onClick={() => gate.status !== "locked" && setSelectedStage(gate.stage)}
+                    disabled={gate.status === "locked"}
                     className={cn(
-                      "size-6 rounded-full flex items-center justify-center",
-                      gate.status === "completed" && "bg-[var(--status-live)] text-white",
-                      gate.status === "current" && "bg-primary text-primary-foreground",
-                      gate.status === "available" && "bg-[var(--status-warning)] text-white",
-                      gate.status === "locked" && "bg-muted text-muted-foreground",
+                      "flex items-center gap-2 px-3 py-2 rounded-lg border transition-all min-w-fit",
+                      gate.status === "completed" && "bg-[var(--status-live)]/10 border-[var(--status-live)]/30",
+                      gate.status === "current" && "bg-primary/10 border-primary ring-2 ring-primary/20",
+                      gate.status === "available" &&
+                        "bg-[var(--status-warning)]/10 border-[var(--status-warning)]/30 hover:border-[var(--status-warning)]",
+                      gate.status === "locked" && "bg-muted/30 border-border/30 opacity-50 cursor-not-allowed",
+                      selectedStage === gate.stage && "ring-2 ring-primary",
                     )}
                   >
-                    {gate.status === "completed" ? (
-                      <Check className="size-3.5" />
-                    ) : gate.status === "locked" ? (
-                      <Lock className="size-3" />
-                    ) : (
-                      gate.icon
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium">{gate.label}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {TESTING_STAGE_CONFIG[gate.stage]?.label || gate.stage}
+                    <div
+                      className={cn(
+                        "size-6 rounded-full flex items-center justify-center",
+                        gate.status === "completed" && "bg-[var(--status-live)] text-white",
+                        gate.status === "current" && "bg-primary text-primary-foreground",
+                        gate.status === "available" && "bg-[var(--status-warning)] text-white",
+                        gate.status === "locked" && "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {gate.status === "completed" ? (
+                        <Check className="size-3.5" />
+                      ) : gate.status === "locked" ? (
+                        <Lock className="size-3" />
+                      ) : (
+                        gate.icon
+                      )}
                     </div>
-                  </div>
-                </button>
-                {idx < gates.length - 1 && <ChevronRight className="size-4 text-muted-foreground shrink-0" />}
-              </React.Fragment>
-            ))}
+                    <div className="text-left">
+                      <div className="text-xs font-medium">{gate.label}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {TESTING_STAGE_CONFIG[gate.stage]?.label || gate.stage}
+                      </div>
+                    </div>
+                  </button>
+                  {idx < gates.length - 1 && <ChevronRight className="size-4 text-muted-foreground shrink-0" />}
+                </React.Fragment>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Selected Gate Details */}
-        {selectedGate && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold">{selectedGate.label}</h3>
-                <p className="text-sm text-muted-foreground">{selectedGate.description}</p>
+          {/* Selected Gate Details */}
+          {selectedGate && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold">{selectedGate.label}</h3>
+                  <p className="text-sm text-muted-foreground">{selectedGate.description}</p>
+                </div>
+                <Badge
+                  variant={
+                    selectedGate.status === "completed"
+                      ? "default"
+                      : selectedGate.status === "current"
+                        ? "secondary"
+                        : selectedGate.status === "available"
+                          ? "outline"
+                          : "secondary"
+                  }
+                >
+                  {selectedGate.status.toUpperCase()}
+                </Badge>
               </div>
-              <Badge
-                variant={
-                  selectedGate.status === "completed"
-                    ? "default"
-                    : selectedGate.status === "current"
-                      ? "secondary"
-                      : selectedGate.status === "available"
-                        ? "outline"
-                        : "secondary"
-                }
-              >
-                {selectedGate.status.toUpperCase()}
-              </Badge>
-            </div>
 
-            {/* Requirements */}
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Gate Requirements</h4>
+              {/* Requirements */}
               <div className="space-y-2">
-                {selectedGate.requirements.map((req) => (
-                  <div
-                    key={req.id}
-                    className={cn(
-                      "flex items-center justify-between p-3 rounded-lg border",
-                      req.status === "passed" && "bg-[var(--status-live)]/5 border-[var(--status-live)]/20",
-                      req.status === "failed" && "bg-[var(--status-error)]/5 border-[var(--status-error)]/20",
-                      req.status === "pending" && "bg-[var(--status-warning)]/5 border-[var(--status-warning)]/20",
-                      req.status === "skipped" && "bg-muted/30 border-border/30",
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={cn(
-                          "size-5 rounded-full flex items-center justify-center",
-                          req.status === "passed" && "bg-[var(--status-live)] text-white",
-                          req.status === "failed" && "bg-[var(--status-error)] text-white",
-                          req.status === "pending" && "bg-[var(--status-warning)] text-white",
-                          req.status === "skipped" && "bg-muted text-muted-foreground",
-                        )}
-                      >
-                        {req.status === "passed" && <CheckCircle2 className="size-3" />}
-                        {req.status === "failed" && <XCircle className="size-3" />}
-                        {req.status === "pending" && <Clock className="size-3" />}
-                        {req.status === "skipped" && <span className="text-xs">-</span>}
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium flex items-center gap-2">
-                          {req.label}
-                          {req.mandatory && (
-                            <Badge variant="outline" className="text-xs px-1">
-                              Required
-                            </Badge>
+                <h4 className="text-sm font-medium">Gate Requirements</h4>
+                <div className="space-y-2">
+                  {selectedGate.requirements.map((req) => (
+                    <div
+                      key={req.id}
+                      className={cn(
+                        "flex items-center justify-between p-3 rounded-lg border",
+                        req.status === "passed" && "bg-[var(--status-live)]/5 border-[var(--status-live)]/20",
+                        req.status === "failed" && "bg-[var(--status-error)]/5 border-[var(--status-error)]/20",
+                        req.status === "pending" && "bg-[var(--status-warning)]/5 border-[var(--status-warning)]/20",
+                        req.status === "skipped" && "bg-muted/30 border-border/30",
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={cn(
+                            "size-5 rounded-full flex items-center justify-center",
+                            req.status === "passed" && "bg-[var(--status-live)] text-white",
+                            req.status === "failed" && "bg-[var(--status-error)] text-white",
+                            req.status === "pending" && "bg-[var(--status-warning)] text-white",
+                            req.status === "skipped" && "bg-muted text-muted-foreground",
                           )}
+                        >
+                          {req.status === "passed" && <CheckCircle2 className="size-3" />}
+                          {req.status === "failed" && <XCircle className="size-3" />}
+                          {req.status === "pending" && <Clock className="size-3" />}
+                          {req.status === "skipped" && <span className="text-xs">-</span>}
                         </div>
-                        {req.detail && <div className="text-xs text-muted-foreground">{req.detail}</div>}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Config Changes Diff */}
-            {selectedGate.status === "available" && (
-              <div className="space-y-3">
-                <h4 className="text-sm font-medium">Config Changes (Staging → Production)</h4>
-                <div className="rounded-md border bg-muted/20 p-3 space-y-2 text-sm font-mono">
-                  {[
-                    {
-                      param: "min_funding_rate",
-                      current: "0.0001",
-                      proposed: "0.00015",
-                    },
-                    {
-                      param: "health_factor_min",
-                      current: "1.5",
-                      proposed: "1.3",
-                    },
-                    {
-                      param: "max_slippage_bps",
-                      current: "50",
-                      proposed: "35",
-                    },
-                  ].map((change) => (
-                    <div key={change.param} className="flex items-center justify-between">
-                      <span className="text-muted-foreground">{change.param}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="line-through text-muted-foreground">{change.current}</span>
-                        <ArrowRight className="size-3" />
-                        <span className="text-[var(--status-warning)] font-medium">{change.proposed}</span>
+                        <div>
+                          <div className="text-sm font-medium flex items-center gap-2">
+                            {req.label}
+                            {req.mandatory && (
+                              <Badge variant="outline" className="text-xs px-1">
+                                Required
+                              </Badge>
+                            )}
+                          </div>
+                          {req.detail && <div className="text-xs text-muted-foreground">{req.detail}</div>}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">3 parameters changed, 9 unchanged</p>
               </div>
-            )}
 
-            {/* Risk Acknowledgment */}
-            {selectedGate.status === "available" && (
-              <div className="flex items-start gap-3 p-4 rounded-lg bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/20">
-                <AlertTriangle className="size-5 text-[var(--status-warning)] shrink-0 mt-0.5" />
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Promotion Acknowledgment</p>
-                  <p className="text-xs text-muted-foreground">
-                    Promoting to {selectedGate.label} will enable {selectedGate.description.toLowerCase()}. This action
-                    requires appropriate authorization and cannot be undone automatically.
-                  </p>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={acknowledgedRisks}
-                      onCheckedChange={(checked) => setAcknowledgedRisks(checked === true)}
-                    />
-                    <span className="text-sm">I understand the risks and have appropriate authorization</span>
-                  </label>
+              {/* Config Changes Diff */}
+              {selectedGate.status === "available" && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Config Changes (Staging → Production)</h4>
+                  <div className="rounded-md border bg-muted/20 p-3 space-y-2 text-sm font-mono">
+                    {[
+                      {
+                        param: "min_funding_rate",
+                        current: "0.0001",
+                        proposed: "0.00015",
+                      },
+                      {
+                        param: "health_factor_min",
+                        current: "1.5",
+                        proposed: "1.3",
+                      },
+                      {
+                        param: "max_slippage_bps",
+                        current: "50",
+                        proposed: "35",
+                      },
+                    ].map((change) => (
+                      <div key={change.param} className="flex items-center justify-between">
+                        <span className="text-muted-foreground">{change.param}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="line-through text-muted-foreground">{change.current}</span>
+                          <ArrowRight className="size-3" />
+                          <span className="text-[var(--status-warning)] font-medium">{change.proposed}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">3 parameters changed, 9 unchanged</p>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
 
-        {/* No selection state */}
-        {!selectedGate && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Unlock className="size-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Select an environment stage to view requirements</p>
-            {nextGate && (
-              <Button variant="link" size="sm" onClick={() => setSelectedStage(nextGate.stage)} className="mt-2">
-                View next stage: {nextGate.label}
-              </Button>
-            )}
-          </div>
-        )}
+              {/* Risk Acknowledgment */}
+              {selectedGate.status === "available" && (
+                <div className="flex items-start gap-3 p-4 rounded-lg bg-[var(--status-warning)]/10 border border-[var(--status-warning)]/20">
+                  <AlertTriangle className="size-5 text-[var(--status-warning)] shrink-0 mt-0.5" />
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Promotion Acknowledgment</p>
+                    <p className="text-xs text-muted-foreground">
+                      Promoting to {selectedGate.label} will enable {selectedGate.description.toLowerCase()}. This
+                      action requires appropriate authorization and cannot be undone automatically.
+                    </p>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={acknowledgedRisks}
+                        onCheckedChange={(checked) => setAcknowledgedRisks(checked === true)}
+                      />
+                      <span className="text-sm">I understand the risks and have appropriate authorization</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* No selection state */}
+          {!selectedGate && (
+            <div className="text-center py-8 text-muted-foreground">
+              <Unlock className="size-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Select an environment stage to view requirements</p>
+              {nextGate && (
+                <Button variant="link" size="sm" onClick={() => setSelectedStage(nextGate.stage)} className="mt-2">
+                  View next stage: {nextGate.label}
+                </Button>
+              )}
+            </div>
+          )}
+        </WidgetScroll>
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => setOpen(false)}>

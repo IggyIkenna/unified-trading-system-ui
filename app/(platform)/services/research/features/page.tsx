@@ -21,6 +21,7 @@ import { buildFeaturesColumns, getFeaturesContextStats } from "@/components/rese
 import { NewFeatureDialog } from "@/components/research/features/new-feature-dialog";
 import type { FinderSelections } from "@/components/shared/finder";
 import { FinderBrowser, finderText } from "@/components/shared/finder";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -73,7 +74,7 @@ function CatDetailPanel({ feature }: { feature: FeatureCatalogueEntry | null }) 
   const SI = sc.icon;
 
   return (
-    <div className="h-full overflow-y-auto">
+    <WidgetScroll className="h-full">
       <div className="p-4 space-y-4">
         <div className="space-y-1.5">
           <div className="flex items-center gap-1.5 flex-wrap">
@@ -224,7 +225,7 @@ function CatDetailPanel({ feature }: { feature: FeatureCatalogueEntry | null }) 
           });
         }}
       />
-    </div>
+    </WidgetScroll>
   );
 }
 
@@ -513,22 +514,20 @@ function CatalogueView({ search, catalogueSource }: { search: string; catalogueS
       </div>
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
-        <div className="flex-1 overflow-y-auto min-h-0">
-          <div className="p-4">
-            {filtered.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <Search className="size-8 mx-auto mb-3 opacity-30" />
-                <p className="text-sm">No features match</p>
-              </div>
-            ) : viewMode === "grid" ? (
-              <CatGridView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
-            ) : viewMode === "tree" ? (
-              <CatTreeView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
-            ) : (
-              <CatTableView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
-            )}
-          </div>
-        </div>
+        <WidgetScroll className="flex-1" viewportClassName="p-4">
+          {filtered.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Search className="size-8 mx-auto mb-3 opacity-30" />
+              <p className="text-sm">No features match</p>
+            </div>
+          ) : viewMode === "grid" ? (
+            <CatGridView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
+          ) : viewMode === "tree" ? (
+            <CatTreeView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
+          ) : (
+            <CatTableView features={filtered} selected={selectedFeature} onSelect={setSelectedFeature} />
+          )}
+        </WidgetScroll>
         <div className="w-[420px] shrink-0 border-l border-border/50 flex flex-col min-h-0 bg-muted/5">
           <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Feature Detail</p>

@@ -1,5 +1,6 @@
 "use client";
 
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import type { DirectionPerformance, BenchmarkComparison } from "@/lib/types/backtest-analytics";
 import { ProfitStructureChart } from "./profit-structure-chart";
@@ -78,7 +79,7 @@ export function PerformanceSection({ all, long, short, benchmark, className }: P
       {/* Returns Table (All | Long | Short) */}
       <div>
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Returns</h4>
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full">
             <thead>
               <tr>
@@ -139,7 +140,7 @@ export function PerformanceSection({ all, long, short, benchmark, className }: P
               />
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
       </div>
 
       {/* Benchmark Comparison */}
@@ -187,7 +188,7 @@ export function PerformanceSection({ all, long, short, benchmark, className }: P
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
           Risk-Adjusted Performance
         </h4>
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full">
             <thead>
               <tr>
@@ -209,7 +210,7 @@ export function PerformanceSection({ all, long, short, benchmark, className }: P
               />
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { cn } from "@/lib/utils";
 import { useSportsData, type ModelFamily, type FeatureFreshness } from "./sports-data-context";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 const statusColors: Record<ModelFamily["status"], string> = {
   healthy: "bg-[var(--status-live)]",
@@ -65,7 +66,7 @@ export function SportsMLStatusWidget(_props: WidgetComponentProps) {
         <span className="ml-auto text-nano text-muted-foreground/60">{modelFamilies.length} families</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto">
+      <WidgetScroll className="min-h-0 flex-1">
         {/* KPI strip */}
         <div className="grid grid-cols-4 gap-2 p-3 border-b border-border">
           <div className="text-center">
@@ -135,7 +136,7 @@ export function SportsMLStatusWidget(_props: WidgetComponentProps) {
             ))}
           </div>
         </div>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

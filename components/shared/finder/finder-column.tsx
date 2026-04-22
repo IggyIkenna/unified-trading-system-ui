@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ColRow } from "@/components/shared/finder/col-row";
 import { finderText } from "@/components/shared/finder/finder-text-sizes";
 import type { FinderColumnDef, FinderItem } from "@/components/shared/finder/types";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 const PAGE_SIZE = 100;
 
@@ -71,57 +72,55 @@ export function FinderColumn({ columnDef, items, selected, onSelect, search }: F
       )}
 
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="p-1.5 space-y-0.5">
-          {displayItems.length === 0 ? (
-            <div className={cn("text-center py-8 text-muted-foreground", finderText.body)}>No items found</div>
-          ) : (
-            displayItems.map((item) => {
-              const isActive = selected?.id === item.id;
-              const count = columnDef.getCount ? columnDef.getCount(item) : (item.count ?? null);
+      <WidgetScroll className="flex-1 min-h-0" viewportClassName="p-1.5 space-y-0.5">
+        {displayItems.length === 0 ? (
+          <div className={cn("text-center py-8 text-muted-foreground", finderText.body)}>No items found</div>
+        ) : (
+          displayItems.map((item) => {
+            const isActive = selected?.id === item.id;
+            const count = columnDef.getCount ? columnDef.getCount(item) : (item.count ?? null);
 
-              return (
-                <ColRow key={item.id} active={isActive} onClick={() => onSelect(item)}>
-                  {/* Optional custom icon */}
-                  {columnDef.renderIcon?.(item, isActive)}
+            return (
+              <ColRow key={item.id} active={isActive} onClick={() => onSelect(item)}>
+                {/* Optional custom icon */}
+                {columnDef.renderIcon?.(item, isActive)}
 
-                  {/* Label — custom or default */}
-                  {columnDef.renderLabel ? (
-                    columnDef.renderLabel(item)
-                  ) : (
-                    <span
-                      className={cn("flex-1 min-w-0 font-medium break-words text-left leading-snug", finderText.body)}
-                    >
-                      {item.label}
-                    </span>
-                  )}
+                {/* Label — custom or default */}
+                {columnDef.renderLabel ? (
+                  columnDef.renderLabel(item)
+                ) : (
+                  <span
+                    className={cn("flex-1 min-w-0 font-medium break-words text-left leading-snug", finderText.body)}
+                  >
+                    {item.label}
+                  </span>
+                )}
 
-                  {/* Count */}
-                  {count !== null && count !== undefined && (
-                    <span
-                      className={cn(
-                        finderText.meta,
-                        "tabular-nums shrink-0",
-                        isActive ? "text-primary-foreground/70" : "text-muted-foreground",
-                      )}
-                    >
-                      {typeof count === "number" ? count.toLocaleString() : count}
-                    </span>
-                  )}
-
-                  {/* Chevron */}
-                  <ChevronRight
+                {/* Count */}
+                {count !== null && count !== undefined && (
+                  <span
                     className={cn(
-                      "size-3.5 shrink-0",
-                      isActive ? "text-primary-foreground/60" : "text-muted-foreground/50",
+                      finderText.meta,
+                      "tabular-nums shrink-0",
+                      isActive ? "text-primary-foreground/70" : "text-muted-foreground",
                     )}
-                  />
-                </ColRow>
-              );
-            })
-          )}
-        </div>
-      </div>
+                  >
+                    {typeof count === "number" ? count.toLocaleString() : count}
+                  </span>
+                )}
+
+                {/* Chevron */}
+                <ChevronRight
+                  className={cn(
+                    "size-3.5 shrink-0",
+                    isActive ? "text-primary-foreground/60" : "text-muted-foreground/50",
+                  )}
+                />
+              </ColRow>
+            );
+          })
+        )}
+      </WidgetScroll>
 
       {/* Pagination controls */}
       {shouldPaginate && totalPages > 1 && (

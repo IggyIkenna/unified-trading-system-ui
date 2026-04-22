@@ -13,6 +13,7 @@ import {
 import { ARCHETYPE_TO_FAMILY } from "@/lib/architecture-v2";
 import type { StrategyFamily } from "@/lib/architecture-v2";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { SsotLink } from "@/components/shared/ssot-link";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -208,7 +209,7 @@ export default function StrategyCatalogueCoveragePage() {
         </div>
 
         <div className="flex gap-6">
-          <div className="flex-1 overflow-auto rounded-lg border border-border/60">
+          <WidgetScroll axes="both" className="flex-1 rounded-lg border border-border/60">
             <table className="w-full text-xs" data-testid="coverage-matrix-table">
               <thead className="bg-muted/40">
                 <tr>
@@ -244,7 +245,7 @@ export default function StrategyCatalogueCoveragePage() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
 
           {selectedCell ? (
             <aside className="w-80 shrink-0" data-testid="coverage-cell-detail">

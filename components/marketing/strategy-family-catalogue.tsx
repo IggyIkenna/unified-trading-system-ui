@@ -1,18 +1,9 @@
 import { LockStateBadge } from "@/components/architecture-v2";
 import { Badge } from "@/components/ui/badge";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { ARCHETYPE_COVERAGE } from "@/lib/architecture-v2/coverage";
-import type {
-  ArchetypeCoverage,
-  CoverageCell,
-  CoverageStatus,
-  InstrumentTypeV2,
-} from "@/lib/architecture-v2/coverage";
-import type {
-  LockState,
-  StrategyArchetype,
-  StrategyFamily,
-  VenueCategoryV2,
-} from "@/lib/architecture-v2";
+import type { ArchetypeCoverage, CoverageCell, CoverageStatus, InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
+import type { LockState, StrategyArchetype, StrategyFamily, VenueCategoryV2 } from "@/lib/architecture-v2";
 import { listFamiliesOrdered } from "@/lib/architecture-v2/families";
 
 /**
@@ -32,13 +23,7 @@ import { listFamiliesOrdered } from "@/lib/architecture-v2/families";
 
 type CellLockState = LockState | "NEEDS_BUILD";
 
-const CATEGORIES: readonly VenueCategoryV2[] = [
-  "CEFI",
-  "DEFI",
-  "TRADFI",
-  "SPORTS",
-  "PREDICTION",
-] as const;
+const CATEGORIES: readonly VenueCategoryV2[] = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION"] as const;
 
 const CATEGORY_LABELS: Readonly<Record<VenueCategoryV2, string>> = {
   CEFI: "Crypto",
@@ -115,11 +100,7 @@ function getCell(
   instrumentType: InstrumentTypeV2,
 ): CoverageCell | null {
   const coverage: ArchetypeCoverage = ARCHETYPE_COVERAGE[archetype];
-  return (
-    coverage.cells.find(
-      (c) => c.category === category && c.instrumentType === instrumentType,
-    ) ?? null
-  );
+  return coverage.cells.find((c) => c.category === category && c.instrumentType === instrumentType) ?? null;
 }
 
 function cellStatus(cell: CoverageCell | null): CoverageStatus | "NONE" {
@@ -168,15 +149,13 @@ interface CellChipProps {
 function CellChip({ cell, status }: CellChipProps) {
   const glyph = cellGlyph(status);
   const lock = deriveLockState(cell, status);
-  const href = cell && cell.representativeSlotLabels.length > 0
-    ? `/services/strategy-catalogue/strategies/${cell.archetype}/${encodeURIComponent(cell.representativeSlotLabels[0])}`
-    : null;
+  const href =
+    cell && cell.representativeSlotLabels.length > 0
+      ? `/services/strategy-catalogue/strategies/${cell.archetype}/${encodeURIComponent(cell.representativeSlotLabels[0])}`
+      : null;
 
   const inner = (
-    <span
-      className="inline-flex items-center gap-1"
-      title={glyph.title}
-    >
+    <span className="inline-flex items-center gap-1" title={glyph.title}>
       <span className={`font-mono ${glyph.className}`} aria-hidden>
         {glyph.symbol}
       </span>
@@ -189,21 +168,13 @@ function CellChip({ cell, status }: CellChipProps) {
         </Badge>
       )}
       {status === "NONE" && (
-        <Badge
-          variant="outline"
-          className="border-transparent bg-muted text-muted-foreground px-1.5 py-0 text-[10px]"
-        >
+        <Badge variant="outline" className="border-transparent bg-muted text-muted-foreground px-1.5 py-0 text-[10px]">
           Needs build
         </Badge>
       )}
-      {lock === "PUBLIC" && (
-        <LockStateBadge state="PUBLIC" className="px-1.5 py-0 text-[10px]" />
-      )}
+      {lock === "PUBLIC" && <LockStateBadge state="PUBLIC" className="px-1.5 py-0 text-[10px]" />}
       {lock === "INVESTMENT_MANAGEMENT_RESERVED" && (
-        <LockStateBadge
-          state="INVESTMENT_MANAGEMENT_RESERVED"
-          className="px-1.5 py-0 text-[10px]"
-        />
+        <LockStateBadge state="INVESTMENT_MANAGEMENT_RESERVED" className="px-1.5 py-0 text-[10px]" />
       )}
     </span>
   );
@@ -239,10 +210,7 @@ function ArchetypeRow({ archetype }: ArchetypeRowProps) {
           const cell = getCell(archetype, category, instrumentType);
           const status = cellStatus(cell);
           return (
-            <td
-              key={`${category}-${instrumentType}`}
-              className="px-2 py-2 text-center align-middle"
-            >
+            <td key={`${category}-${instrumentType}`} className="px-2 py-2 text-center align-middle">
               <CellChip cell={cell} status={status} />
             </td>
           );
@@ -290,7 +258,7 @@ export function StrategyFamilyCatalogue() {
   //   Relative-Value: CARRY_AND_YIELD, ARBITRAGE_STRUCTURAL, STAT_ARB_PAIRS, MARKET_MAKING
   //   Event-Driven : EVENT_DRIVEN, VOL_TRADING
   const families = listFamiliesOrdered();
-  const byFamily: Record<string, typeof families[number]> = {};
+  const byFamily: Record<string, (typeof families)[number]> = {};
   for (const f of families) byFamily[f.family] = f;
 
   const BANDS: readonly {
@@ -300,12 +268,7 @@ export function StrategyFamilyCatalogue() {
     { label: "Directional", families: ["ML_DIRECTIONAL", "RULES_DIRECTIONAL"] },
     {
       label: "Relative-Value",
-      families: [
-        "CARRY_AND_YIELD",
-        "ARBITRAGE_STRUCTURAL",
-        "STAT_ARB_PAIRS",
-        "MARKET_MAKING",
-      ],
+      families: ["CARRY_AND_YIELD", "ARBITRAGE_STRUCTURAL", "STAT_ARB_PAIRS", "MARKET_MAKING"],
     },
     { label: "Event-Driven", families: ["EVENT_DRIVEN", "VOL_TRADING"] },
   ];
@@ -317,12 +280,11 @@ export function StrategyFamilyCatalogue() {
       role="region"
       aria-label="Strategy family and archetype catalogue"
     >
-      <div className="overflow-x-auto rounded-md border border-border/60">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="rounded-md border border-border/60">
         <table className="w-full border-collapse text-sm">
           <caption className="sr-only">
-            Strategy archetype × category × instrument-type coverage matrix,
-            grouped by strategy family band. Each cell shows coverage status
-            and lock state.
+            Strategy archetype × category × instrument-type coverage matrix, grouped by strategy family band. Each cell
+            shows coverage status and lock state.
           </caption>
           <thead>
             <tr className="border-b border-border/60 bg-muted/30">
@@ -376,7 +338,7 @@ export function StrategyFamilyCatalogue() {
               .filter((x): x is React.JSX.Element => x !== null),
           )}
         </table>
-      </div>
+      </WidgetScroll>
 
       <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
@@ -395,20 +357,15 @@ export function StrategyFamilyCatalogue() {
           <LockStateBadge state="PUBLIC" className="px-1.5 py-0 text-[10px]" /> Public slot
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <LockStateBadge
-            state="INVESTMENT_MANAGEMENT_RESERVED"
-            className="px-1.5 py-0 text-[10px]"
-          />{" "}
-          IM-reserved by default
+          <LockStateBadge state="INVESTMENT_MANAGEMENT_RESERVED" className="px-1.5 py-0 text-[10px]" /> IM-reserved by
+          default
         </span>
       </div>
 
       <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
-        Rows link to the per-strategy detail page in the platform catalogue for
-        allocators and admins with access; prospects without a platform seat
-        see the row but cannot deep-link. Lock state is the default posture —
-        client-exclusive carve-outs are negotiated per mandate and surfaced on
-        the per-strategy page, not here.
+        Rows link to the per-strategy detail page in the platform catalogue for allocators and admins with access;
+        prospects without a platform seat see the row but cannot deep-link. Lock state is the default posture —
+        client-exclusive carve-outs are negotiated per mandate and surfaced on the per-strategy page, not here.
       </p>
     </div>
   );

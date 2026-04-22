@@ -17,6 +17,7 @@ import {
 
 import type { RunAnalysis } from "@/lib/types/ml";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 /**
  * Recharts sets SVG `fill`/`stroke` directly. Theme vars in globals are hex (#…);
@@ -178,7 +179,7 @@ export function RunAnalysisImportanceTab({ analysis }: { analysis: RunAnalysis }
   }
 
   return (
-    <div className="space-y-2 max-h-[min(50vh,360px)] overflow-y-auto pr-1">
+    <WidgetScroll className="max-h-[min(50vh,360px)]" viewportClassName="space-y-2 pr-1">
       <div className="h-[min(200px,28vh)]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -239,7 +240,7 @@ export function RunAnalysisImportanceTab({ analysis }: { analysis: RunAnalysis }
             ))}
         </div>
       )}
-    </div>
+    </WidgetScroll>
   );
 }
 
@@ -251,7 +252,7 @@ export function RunAnalysisRegimesTab({ analysis }: { analysis: RunAnalysis }) {
   }
 
   return (
-    <div className="space-y-4 max-h-[min(55vh,420px)] overflow-y-auto pr-1">
+    <WidgetScroll className="max-h-[min(55vh,420px)]" viewportClassName="space-y-4 pr-1">
       {hasRegime && (
         <div>
           <h4 className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -343,7 +344,7 @@ export function RunAnalysisRegimesTab({ analysis }: { analysis: RunAnalysis }) {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="space-y-0.5 max-h-[140px] overflow-y-auto">
+          <WidgetScroll className="max-h-[140px]" viewportClassName="space-y-0.5">
             {analysis.walk_forward_folds.map((f) => (
               <div
                 key={f.fold_number}
@@ -358,16 +359,16 @@ export function RunAnalysisRegimesTab({ analysis }: { analysis: RunAnalysis }) {
                 </span>
               </div>
             ))}
-          </div>
+          </WidgetScroll>
         </div>
       )}
-    </div>
+    </WidgetScroll>
   );
 }
 
 export function RunAnalysisQualityTab({ analysis }: { analysis: RunAnalysis }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[min(55vh,440px)] overflow-y-auto">
+    <WidgetScroll className="max-h-[min(55vh,440px)]" viewportClassName="grid grid-cols-1 md:grid-cols-2 gap-3">
       {analysis.prediction_distribution && (
         <Card className="border-border/50">
           <CardHeader className="py-2 pb-1">
@@ -416,18 +417,20 @@ export function RunAnalysisQualityTab({ analysis }: { analysis: RunAnalysis }) {
               Data integrity
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-0 space-y-1.5 max-h-[min(200px,30vh)] overflow-y-auto">
-            {analysis.data_integrity_checks.map((check) => (
-              <div key={check.check_name} className="flex items-start gap-2 py-1">
-                {check.status === "pass" && <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0 mt-0.5" />}
-                {check.status === "warn" && <AlertTriangle className="size-3.5 text-amber-400 shrink-0 mt-0.5" />}
-                {check.status === "fail" && <XCircle className="size-3.5 text-red-400 shrink-0 mt-0.5" />}
-                <div>
-                  <p className="text-[11px] font-medium leading-tight">{check.check_name.replace(/_/g, " ")}</p>
-                  <p className="text-[10px] text-muted-foreground leading-snug">{check.message}</p>
+          <CardContent className="pt-0">
+            <WidgetScroll className="max-h-[min(200px,30vh)]" viewportClassName="space-y-1.5">
+              {analysis.data_integrity_checks.map((check) => (
+                <div key={check.check_name} className="flex items-start gap-2 py-1">
+                  {check.status === "pass" && <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0 mt-0.5" />}
+                  {check.status === "warn" && <AlertTriangle className="size-3.5 text-amber-400 shrink-0 mt-0.5" />}
+                  {check.status === "fail" && <XCircle className="size-3.5 text-red-400 shrink-0 mt-0.5" />}
+                  <div>
+                    <p className="text-[11px] font-medium leading-tight">{check.check_name.replace(/_/g, " ")}</p>
+                    <p className="text-[10px] text-muted-foreground leading-snug">{check.message}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </WidgetScroll>
           </CardContent>
         </Card>
       )}
@@ -435,6 +438,6 @@ export function RunAnalysisQualityTab({ analysis }: { analysis: RunAnalysis }) {
       {!analysis.prediction_distribution && analysis.data_integrity_checks.length === 0 && (
         <p className="text-xs text-muted-foreground md:col-span-2">No calibration or integrity checks for this run.</p>
       )}
-    </div>
+    </WidgetScroll>
   );
 }

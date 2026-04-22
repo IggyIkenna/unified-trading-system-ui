@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { KpiStrip, type KpiMetric } from "@/components/shared/kpi-strip";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { getOperationBadgeClass, getOperationColor } from "@/lib/utils/bundles";
 import {
@@ -94,7 +95,7 @@ export function BundleBuilderWidget(_props: WidgetComponentProps) {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-auto px-2 pb-2 space-y-3">
+      <WidgetScroll className="flex-1 min-h-0" viewportClassName="px-2 pb-2 space-y-3">
         {showTemplates && <TemplateGallery templates={templates} loadTemplate={loadTemplate} readOnly={readOnly} />}
 
         {hasSteps ? (
@@ -168,7 +169,7 @@ export function BundleBuilderWidget(_props: WidgetComponentProps) {
             </CollapsibleSection>
           </div>
         )}
-      </div>
+      </WidgetScroll>
 
       {hasSteps && (
         <div className="px-2 py-2 border-t bg-background/95 flex flex-wrap items-center gap-2">

@@ -6,21 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/shared/page-header";
 import { PnLValue } from "@/components/trading/pnl-value";
-import {
-  useClients,
-  usePerformanceSummary,
-  useCoinBreakdown,
-} from "@/hooks/api/use-performance";
+import { useClients, usePerformanceSummary, useCoinBreakdown } from "@/hooks/api/use-performance";
 import { formatCurrency, formatPercent } from "@/lib/utils/formatters";
-import {
-  PieChart as PieChartIcon,
-  Grid3X3,
-  ShieldAlert,
-  Layers3,
-} from "lucide-react";
+import { PieChart as PieChartIcon, Grid3X3, ShieldAlert, Layers3 } from "lucide-react";
 import { AllocatorStrategyOverlay } from "@/components/reports/allocator-strategy-overlay";
 import {
   Area,
@@ -42,10 +34,10 @@ const CORRELATION_COINS = ["BTC", "ETH", "SOL", "USDT"] as const;
 type CorrCoin = (typeof CORRELATION_COINS)[number];
 
 const CORRELATION_MATRIX: Record<CorrCoin, Record<CorrCoin, number>> = {
-  BTC:  { BTC: 1.00, ETH: 0.85, SOL: 0.72, USDT: -0.05 },
-  ETH:  { BTC: 0.85, ETH: 1.00, SOL: 0.78, USDT: -0.03 },
-  SOL:  { BTC: 0.72, ETH: 0.78, SOL: 1.00, USDT: -0.08 },
-  USDT: { BTC: -0.05, ETH: -0.03, SOL: -0.08, USDT: 1.00 },
+  BTC: { BTC: 1.0, ETH: 0.85, SOL: 0.72, USDT: -0.05 },
+  ETH: { BTC: 0.85, ETH: 1.0, SOL: 0.78, USDT: -0.03 },
+  SOL: { BTC: 0.72, ETH: 0.78, SOL: 1.0, USDT: -0.08 },
+  USDT: { BTC: -0.05, ETH: -0.03, SOL: -0.08, USDT: 1.0 },
 };
 
 function getCorrelationColor(value: number): string {
@@ -113,9 +105,10 @@ export function PortfolioAnalytics() {
   }, [coins]);
 
   // Rolling volatility from equity curve
+  const equityCurve = summary?.equity_curve;
   const rollingVolatilityData = React.useMemo(() => {
-    if (!summary?.equity_curve) return [];
-    const curve = summary.equity_curve;
+    if (!equityCurve) return [];
+    const curve = equityCurve;
     const window = 30;
     const points: Array<{ date: string; volatility: number }> = [];
 
@@ -142,14 +135,16 @@ export function PortfolioAnalytics() {
     // Downsample to ~90 points
     const step = Math.max(1, Math.floor(points.length / 90));
     return points.filter((_, i) => i % step === 0 || i === points.length - 1);
-  }, [summary?.equity_curve]);
+  }, [equityCurve]);
 
   if (clientsLoading) {
     return (
       <div className="p-6 max-w-[1600px] mx-auto space-y-6">
         <Skeleton className="h-8 w-64" />
         <div className="grid grid-cols-3 gap-4">
-          {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
         </div>
         <Skeleton className="h-[400px]" />
       </div>
@@ -174,7 +169,11 @@ export function PortfolioAnalytics() {
                   <span className="flex items-center gap-2">
                     {c.name}
                     <span className="text-xs text-muted-foreground">{c.venue}</span>
-                    {c.is_underwater && <Badge variant="destructive" className="text-[9px] px-1 py-0">UW</Badge>}
+                    {c.is_underwater && (
+                      <Badge variant="destructive" className="text-[9px] px-1 py-0">
+                        UW
+                      </Badge>
+                    )}
                   </span>
                 </SelectItem>
               ))}
@@ -185,10 +184,22 @@ export function PortfolioAnalytics() {
         {/* Tabs */}
         <Tabs defaultValue="allocation" className="space-y-6">
           <TabsList className="flex-wrap h-auto">
-            <TabsTrigger value="allocation" className="gap-2"><PieChartIcon className="size-4" />Allocation</TabsTrigger>
-            <TabsTrigger value="allocator" className="gap-2"><Layers3 className="size-4" />Allocator View</TabsTrigger>
-            <TabsTrigger value="correlation" className="gap-2"><Grid3X3 className="size-4" />Correlation</TabsTrigger>
-            <TabsTrigger value="risk" className="gap-2"><ShieldAlert className="size-4" />Risk Metrics</TabsTrigger>
+            <TabsTrigger value="allocation" className="gap-2">
+              <PieChartIcon className="size-4" />
+              Allocation
+            </TabsTrigger>
+            <TabsTrigger value="allocator" className="gap-2">
+              <Layers3 className="size-4" />
+              Allocator View
+            </TabsTrigger>
+            <TabsTrigger value="correlation" className="gap-2">
+              <Grid3X3 className="size-4" />
+              Correlation
+            </TabsTrigger>
+            <TabsTrigger value="risk" className="gap-2">
+              <ShieldAlert className="size-4" />
+              Risk Metrics
+            </TabsTrigger>
           </TabsList>
 
           {/* ── Allocation Tab ────────────────────────────────────────── */}
@@ -196,7 +207,9 @@ export function PortfolioAnalytics() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Pie chart */}
               <Card>
-                <CardHeader><CardTitle className="text-base">Allocation by Coin</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base">Allocation by Coin</CardTitle>
+                </CardHeader>
                 <CardContent>
                   <div className="h-[280px]">
                     <ResponsiveContainer width="100%" height="100%">
@@ -217,7 +230,12 @@ export function PortfolioAnalytics() {
                           ))}
                         </Pie>
                         <Tooltip
-                          contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                          contentStyle={{
+                            backgroundColor: "hsl(var(--card))",
+                            border: "1px solid hsl(var(--border))",
+                            borderRadius: 8,
+                            fontSize: 12,
+                          }}
                           formatter={(value: number) => [`${value}%`, "Allocation"]}
                         />
                       </RechartsPieChart>
@@ -228,7 +246,9 @@ export function PortfolioAnalytics() {
 
               {/* Allocation table */}
               <Card className="lg:col-span-2">
-                <CardHeader><CardTitle className="text-base">Allocation Detail</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base">Allocation Detail</CardTitle>
+                </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
@@ -246,12 +266,21 @@ export function PortfolioAnalytics() {
                         <TableRow key={row.name}>
                           <TableCell className="font-medium font-mono">{row.name}</TableCell>
                           <TableCell className="text-right font-mono">{formatPercent(row.value, 0)}</TableCell>
-                          <TableCell className="text-right font-mono">{formatCurrency(row.marketValue ?? 0, "USD", 0)}</TableCell>
-                          <TableCell className="text-right font-mono">{formatCurrency(row.costBasis ?? 0, "USD", 0)}</TableCell>
-                          <TableCell className="text-right"><PnLValue value={row.pnl ?? 0} size="sm" showSign /></TableCell>
                           <TableCell className="text-right font-mono">
-                            <span className={row.pnlPct >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}>
-                              {row.pnlPct >= 0 ? "+" : ""}{formatPercent(row.pnlPct, 2)}
+                            {formatCurrency(row.marketValue ?? 0, "USD", 0)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            {formatCurrency(row.costBasis ?? 0, "USD", 0)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <PnLValue value={row.pnl ?? 0} size="sm" showSign />
+                          </TableCell>
+                          <TableCell className="text-right font-mono">
+                            <span
+                              className={row.pnlPct >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}
+                            >
+                              {row.pnlPct >= 0 ? "+" : ""}
+                              {formatPercent(row.pnlPct, 2)}
                             </span>
                           </TableCell>
                         </TableRow>
@@ -260,11 +289,21 @@ export function PortfolioAnalytics() {
                       <TableRow className="border-t-2 border-border font-semibold">
                         <TableCell className="font-bold">Total</TableCell>
                         <TableCell className="text-right font-mono">100%</TableCell>
-                        <TableCell className="text-right font-mono">{formatCurrency(allocationTotals.marketValue, "USD", 0)}</TableCell>
-                        <TableCell className="text-right font-mono">{formatCurrency(allocationTotals.costBasis, "USD", 0)}</TableCell>
-                        <TableCell className="text-right"><PnLValue value={allocationTotals.pnl} size="sm" showSign /></TableCell>
                         <TableCell className="text-right font-mono">
-                          <span className={allocationTotals.pnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}>
+                          {formatCurrency(allocationTotals.marketValue, "USD", 0)}
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          {formatCurrency(allocationTotals.costBasis, "USD", 0)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <PnLValue value={allocationTotals.pnl} size="sm" showSign />
+                        </TableCell>
+                        <TableCell className="text-right font-mono">
+                          <span
+                            className={
+                              allocationTotals.pnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"
+                            }
+                          >
                             {allocationTotals.costBasis > 0
                               ? `${allocationTotals.pnl >= 0 ? "+" : ""}${formatPercent((allocationTotals.pnl / allocationTotals.costBasis) * 100, 2)}`
                               : "0.00%"}
@@ -290,14 +329,20 @@ export function PortfolioAnalytics() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base">Correlation Matrix</CardTitle>
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded bg-green-500/10" /> Low</span>
-                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded bg-yellow-500/20" /> Medium</span>
-                    <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded bg-red-500/30" /> High</span>
+                    <span className="flex items-center gap-1">
+                      <span className="inline-block w-3 h-3 rounded bg-green-500/10" /> Low
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="inline-block w-3 h-3 rounded bg-yellow-500/20" /> Medium
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="inline-block w-3 h-3 rounded bg-red-500/30" /> High
+                    </span>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
+                <WidgetScroll axes="horizontal" scrollbarSize="thin">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -327,9 +372,10 @@ export function PortfolioAnalytics() {
                       ))}
                     </TableBody>
                   </Table>
-                </div>
+                </WidgetScroll>
                 <p className="mt-4 text-xs text-muted-foreground">
-                  60-day rolling pairwise Pearson correlation of daily log returns. Values near 1.0 indicate strong positive correlation; near 0.0 indicates low correlation.
+                  60-day rolling pairwise Pearson correlation of daily log returns. Values near 1.0 indicate strong
+                  positive correlation; near 0.0 indicates low correlation.
                 </p>
               </CardContent>
             </Card>
@@ -343,7 +389,9 @@ export function PortfolioAnalytics() {
                 {MOCK_RISK_METRICS.map((metric) => (
                   <Card key={metric.label} className="border-border/50">
                     <CardContent className="pt-5 pb-4 space-y-1">
-                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{metric.label}</p>
+                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                        {metric.label}
+                      </p>
                       <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{metric.value}</p>
                       <p className="text-[10px] text-muted-foreground/60">{metric.description}</p>
                     </CardContent>
@@ -353,25 +401,28 @@ export function PortfolioAnalytics() {
 
               {/* Rolling volatility chart */}
               <Card>
-                <CardHeader><CardTitle className="text-base">Rolling 30-day Volatility (Annualized)</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-base">Rolling 30-day Volatility (Annualized)</CardTitle>
+                </CardHeader>
                 <CardContent>
                   <div className="h-[350px]">
                     {rollingVolatilityData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={rollingVolatilityData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                           <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
-                          <XAxis
-                            dataKey="date"
-                            tick={{ fontSize: 10 }}
-                            className="text-muted-foreground"
-                          />
+                          <XAxis dataKey="date" tick={{ fontSize: 10 }} className="text-muted-foreground" />
                           <YAxis
                             tick={{ fontSize: 10 }}
                             tickFormatter={(v: number) => `${v.toFixed(0)}%`}
                             className="text-muted-foreground"
                           />
                           <Tooltip
-                            contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--card))",
+                              border: "1px solid hsl(var(--border))",
+                              borderRadius: 8,
+                              fontSize: 12,
+                            }}
                             formatter={(value: number) => [`${value.toFixed(2)}%`, "Volatility"]}
                           />
                           <Area

@@ -3,13 +3,7 @@
 import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -21,13 +15,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   listOnboardingRequests,
   getOnboardingRequest,
@@ -122,10 +111,7 @@ function RequestDetailPanel({ request }: { request: OnboardingRequest }) {
     }
   }
 
-  async function handleReview(
-    doc: UserDocument,
-    status: "approved" | "rejected",
-  ) {
+  async function handleReview(doc: UserDocument, status: "approved" | "rejected") {
     setReviewingId(doc.id);
     try {
       await reviewDocument(request.firebase_uid, doc.id, status);
@@ -141,15 +127,11 @@ function RequestDetailPanel({ request }: { request: OnboardingRequest }) {
     <div className="mt-3 border-t pt-4 space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">
-            Applicant Details
-          </h4>
+          <h4 className="text-sm font-semibold text-foreground">Applicant Details</h4>
           <div className="space-y-1.5 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <User className="size-3.5 shrink-0" />
-              <span className="font-medium text-foreground">
-                {request.applicant_name}
-              </span>
+              <span className="font-medium text-foreground">{request.applicant_name}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground">
               <Mail className="size-3.5 shrink-0" />
@@ -171,35 +153,25 @@ function RequestDetailPanel({ request }: { request: OnboardingRequest }) {
         </div>
 
         <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-foreground">
-            Service Request
-          </h4>
+          <h4 className="text-sm font-semibold text-foreground">Service Request</h4>
           <div className="space-y-1.5 text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Briefcase className="size-3.5 shrink-0" />
               <span>
-                Type:{" "}
-                <span className="font-medium text-foreground">
-                  {request.service_type || "General"}
-                </span>
+                Type: <span className="font-medium text-foreground">{request.service_type || "General"}</span>
               </span>
             </div>
             {"expected_aum" in request && request.expected_aum ? (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <DollarSign className="size-3.5 shrink-0" />
                 <span>
-                  Expected AUM:{" "}
-                  <span className="font-medium text-foreground">
-                    {String(request.expected_aum)}
-                  </span>
+                  Expected AUM: <span className="font-medium text-foreground">{String(request.expected_aum)}</span>
                 </span>
               </div>
             ) : null}
             <div className="flex items-center gap-2 text-muted-foreground">
               <Calendar className="size-3.5 shrink-0" />
-              <span>
-                Submitted: {new Date(request.created_at).toLocaleString()}
-              </span>
+              <span>Submitted: {new Date(request.created_at).toLocaleString()}</span>
             </div>
             {request.selected_options.length > 0 && (
               <div className="flex items-start gap-2 text-muted-foreground">
@@ -228,16 +200,11 @@ function RequestDetailPanel({ request }: { request: OnboardingRequest }) {
             Loading documents...
           </div>
         ) : documents.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-1">
-            No documents uploaded.
-          </p>
+          <p className="text-sm text-muted-foreground py-1">No documents uploaded.</p>
         ) : (
           <div className="space-y-1.5">
             {documents.map((doc) => (
-              <div
-                key={doc.id}
-                className="flex items-center justify-between rounded border px-3 py-2 text-sm"
-              >
+              <div key={doc.id} className="flex items-center justify-between rounded border px-3 py-2 text-sm">
                 <div className="flex items-center gap-2 min-w-0 flex-1">
                   <FileText className="size-3.5 text-muted-foreground shrink-0" />
                   <span className="font-medium truncate">{doc.file_name}</span>
@@ -337,9 +304,7 @@ export default function OnboardingRequestsPage() {
   const [actionRole, setActionRole] = React.useState("client");
   const [actionInProgress, setActionInProgress] = React.useState(false);
   const [apps, setApps] = React.useState<Application[]>([]);
-  const [selectedApps, setSelectedApps] = React.useState<
-    Record<string, { selected: boolean; role: string }>
-  >({});
+  const [selectedApps, setSelectedApps] = React.useState<Record<string, { selected: boolean; role: string }>>({});
   const [actionError, setActionError] = React.useState<string | null>(null);
 
   const fetchRequests = React.useCallback(async () => {
@@ -347,7 +312,7 @@ export default function OnboardingRequestsPage() {
     try {
       const filter = statusFilter === "all" ? undefined : statusFilter;
       const res = await listOnboardingRequests(filter);
-      setRequests(res.data.requests);
+      setRequests(res.data?.requests ?? []);
     } catch {
       /* network error */
     } finally {
@@ -382,8 +347,7 @@ export default function OnboardingRequestsPage() {
     }));
   };
 
-  const allAppsSelected =
-    apps.length > 0 && apps.every((a) => selectedApps[a.app_id]?.selected);
+  const allAppsSelected = apps.length > 0 && apps.every((a) => selectedApps[a.app_id]?.selected);
 
   const toggleSelectAll = () => {
     if (allAppsSelected) {
@@ -425,12 +389,7 @@ export default function OnboardingRequestsPage() {
             role: v.role,
             environments: ["dev", "staging", "prod"],
           }));
-        await approveRequest(
-          actionDialog.request.id,
-          actionNote,
-          actionRole,
-          appGrants,
-        );
+        await approveRequest(actionDialog.request.id, actionNote, actionRole, appGrants);
       } else {
         await rejectRequest(actionDialog.request.id, actionNote, false);
       }
@@ -440,9 +399,7 @@ export default function OnboardingRequestsPage() {
       setSelectedApps({});
       fetchRequests();
     } catch (err) {
-      setActionError(
-        err instanceof Error ? err.message : "Action failed. Please try again.",
-      );
+      setActionError(err instanceof Error ? err.message : "Action failed. Please try again.");
     } finally {
       setActionInProgress(false);
     }
@@ -485,9 +442,7 @@ export default function OnboardingRequestsPage() {
         </div>
       ) : requests.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            No requests found.
-          </CardContent>
+          <CardContent className="py-12 text-center text-muted-foreground">No requests found.</CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -499,10 +454,7 @@ export default function OnboardingRequestsPage() {
               <Card key={req.id}>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div
-                      className="flex-1 cursor-pointer"
-                      onClick={() => setExpandedId(isExpanded ? null : req.id)}
-                    >
+                    <div className="flex-1 cursor-pointer" onClick={() => setExpandedId(isExpanded ? null : req.id)}>
                       <CardTitle className="text-base flex items-center gap-2">
                         {req.applicant_name}
                         <Badge variant={config.variant} className="text-xs">
@@ -565,18 +517,12 @@ export default function OnboardingRequestsPage() {
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-                    <span>
-                      Submitted: {new Date(req.created_at).toLocaleDateString()}
-                    </span>
+                    <span>Submitted: {new Date(req.created_at).toLocaleDateString()}</span>
                     {req.selected_options.length > 0 && (
                       <span>
                         Options:{" "}
                         {req.selected_options.map((o) => (
-                          <Badge
-                            key={o}
-                            variant="outline"
-                            className="text-[10px] mx-0.5"
-                          >
+                          <Badge key={o} variant="outline" className="text-[10px] mx-0.5">
                             {o}
                           </Badge>
                         ))}
@@ -598,11 +544,9 @@ export default function OnboardingRequestsPage() {
           setActionError(null);
         }}
       >
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>
-              {actionDialog?.type === "approve" ? "Approve" : "Reject"} Request
-            </DialogTitle>
+            <DialogTitle>{actionDialog?.type === "approve" ? "Approve" : "Reject"} Request</DialogTitle>
             <DialogDescription>
               {actionDialog?.type === "approve"
                 ? `Approve ${actionDialog?.request.applicant_name}'s signup. This will enable their Firebase account and grant access.`
@@ -610,138 +554,128 @@ export default function OnboardingRequestsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          {actionDialog && (
-            <div className="rounded border bg-muted/30 p-3 space-y-1 text-sm">
-              <div className="flex items-center gap-2">
-                <User className="size-3.5 text-muted-foreground" />
-                <span className="font-medium">
-                  {actionDialog.request.applicant_name}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="size-3.5" />
-                <span>{actionDialog.request.applicant_email}</span>
-              </div>
-              {actionDialog.request.company && (
+          <WidgetScroll className="max-h-[85vh]">
+            {actionDialog && (
+              <div className="rounded border bg-muted/30 p-3 space-y-1 text-sm">
+                <div className="flex items-center gap-2">
+                  <User className="size-3.5 text-muted-foreground" />
+                  <span className="font-medium">{actionDialog.request.applicant_name}</span>
+                </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <Building2 className="size-3.5" />
-                  <span>{actionDialog.request.company}</span>
+                  <Mail className="size-3.5" />
+                  <span>{actionDialog.request.applicant_email}</span>
                 </div>
-              )}
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Briefcase className="size-3.5" />
-                <span>{actionDialog.request.service_type || "General"}</span>
-              </div>
-              {actionDialog.request.selected_options.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {actionDialog.request.selected_options.map((o) => (
-                    <Badge key={o} variant="secondary" className="text-xs">
-                      {o}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {actionDialog?.type === "approve" && (
-            <>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Role</Label>
-                <Select value={actionRole} onValueChange={setActionRole}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="client">Client</SelectItem>
-                    <SelectItem value="collaborator">Collaborator</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">
-                    Grant Application Access
-                  </Label>
-                  <div className="flex items-center gap-2">
-                    {Object.values(selectedApps).some((v) => v.selected) && (
-                      <Select onValueChange={setAllAppsRole}>
-                        <SelectTrigger className="w-28 h-7 text-xs">
-                          <SelectValue placeholder="Set all roles" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="viewer">All Viewer</SelectItem>
-                          <SelectItem value="editor">All Editor</SelectItem>
-                          <SelectItem value="admin">All Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs"
-                      onClick={toggleSelectAll}
-                    >
-                      {allAppsSelected ? "Deselect All" : "Select All"}
-                    </Button>
+                {actionDialog.request.company && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Building2 className="size-3.5" />
+                    <span>{actionDialog.request.company}</span>
                   </div>
+                )}
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Briefcase className="size-3.5" />
+                  <span>{actionDialog.request.service_type || "General"}</span>
                 </div>
-                <div className="space-y-2 max-h-48 overflow-y-auto border rounded p-2">
-                  {apps.map((app) => (
-                    <div
-                      key={app.app_id}
-                      className="flex items-center gap-3 py-1"
-                    >
-                      <Checkbox
-                        id={`umu-app-${app.app_id}`}
-                        checked={selectedApps[app.app_id]?.selected || false}
-                        onCheckedChange={() => toggleApp(app.app_id)}
-                      />
-                      <label
-                        htmlFor={`umu-app-${app.app_id}`}
-                        className="flex-1 text-sm cursor-pointer"
-                      >
-                        {app.name}
-                      </label>
-                      {selectedApps[app.app_id]?.selected && (
-                        <Select
-                          value={selectedApps[app.app_id]?.role || "viewer"}
-                          onValueChange={(v) => setAppRole(app.app_id, v)}
-                        >
-                          <SelectTrigger className="w-24 h-7 text-xs">
-                            <SelectValue />
+                {actionDialog.request.selected_options.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {actionDialog.request.selected_options.map((o) => (
+                      <Badge key={o} variant="secondary" className="text-xs">
+                        {o}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {actionDialog?.type === "approve" && (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Role</Label>
+                  <Select value={actionRole} onValueChange={setActionRole}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="client">Client</SelectItem>
+                      <SelectItem value="collaborator">Collaborator</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Grant Application Access</Label>
+                    <div className="flex items-center gap-2">
+                      {Object.values(selectedApps).some((v) => v.selected) && (
+                        <Select onValueChange={setAllAppsRole}>
+                          <SelectTrigger className="w-28 h-7 text-xs">
+                            <SelectValue placeholder="Set all roles" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="viewer">Viewer</SelectItem>
-                            <SelectItem value="editor">Editor</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="viewer">All Viewer</SelectItem>
+                            <SelectItem value="editor">All Editor</SelectItem>
+                            <SelectItem value="admin">All Admin</SelectItem>
                           </SelectContent>
                         </Select>
                       )}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={toggleSelectAll}
+                      >
+                        {allAppsSelected ? "Deselect All" : "Select All"}
+                      </Button>
                     </div>
-                  ))}
+                  </div>
+                  <WidgetScroll className="max-h-48 border rounded" viewportClassName="space-y-2 p-2">
+                    {apps.map((app) => (
+                      <div key={app.app_id} className="flex items-center gap-3 py-1">
+                        <Checkbox
+                          id={`umu-app-${app.app_id}`}
+                          checked={selectedApps[app.app_id]?.selected || false}
+                          onCheckedChange={() => toggleApp(app.app_id)}
+                        />
+                        <label htmlFor={`umu-app-${app.app_id}`} className="flex-1 text-sm cursor-pointer">
+                          {app.name}
+                        </label>
+                        {selectedApps[app.app_id]?.selected && (
+                          <Select
+                            value={selectedApps[app.app_id]?.role || "viewer"}
+                            onValueChange={(v) => setAppRole(app.app_id, v)}
+                          >
+                            <SelectTrigger className="w-24 h-7 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="viewer">Viewer</SelectItem>
+                              <SelectItem value="editor">Editor</SelectItem>
+                              <SelectItem value="admin">Admin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      </div>
+                    ))}
+                  </WidgetScroll>
                 </div>
-              </div>
-            </>
-          )}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Note (optional)</label>
-            <Textarea
-              value={actionNote}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                setActionNote(e.target.value)
-              }
-              placeholder="Add a note..."
-              rows={3}
-            />
-          </div>
-          {actionError && (
-            <div className="rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {actionError}
+              </>
+            )}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Note (optional)</label>
+              <Textarea
+                value={actionNote}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setActionNote(e.target.value)}
+                placeholder="Add a note..."
+                rows={3}
+              />
             </div>
-          )}
+            {actionError && (
+              <div className="rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {actionError}
+              </div>
+            )}
+          </WidgetScroll>
           <DialogFooter>
             <Button
               variant="outline"
@@ -753,15 +687,11 @@ export default function OnboardingRequestsPage() {
               Cancel
             </Button>
             <Button
-              variant={
-                actionDialog?.type === "approve" ? "default" : "destructive"
-              }
+              variant={actionDialog?.type === "approve" ? "default" : "destructive"}
               onClick={handleAction}
               disabled={actionInProgress}
             >
-              {actionInProgress ? (
-                <Loader2 className="size-4 animate-spin mr-2" />
-              ) : null}
+              {actionInProgress ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
               {actionDialog?.type === "approve" ? "Approve & Enable" : "Reject"}
             </Button>
           </DialogFooter>

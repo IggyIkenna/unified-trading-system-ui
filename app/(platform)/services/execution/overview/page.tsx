@@ -5,6 +5,7 @@ import { ResearchFamilyShell } from "@/components/platform/research-family-shell
 import { ApiError } from "@/components/shared/api-error";
 import { MetricCard } from "@/components/shared/metric-card";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -98,10 +99,18 @@ export default function ExecutionOverviewPage() {
   const execTabs = (
     <Tabs defaultValue="overview" className="w-full">
       <TabsList className="h-8">
-        <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-        <TabsTrigger value="algos" className="text-xs">Algos</TabsTrigger>
-        <TabsTrigger value="venues" className="text-xs">Venues</TabsTrigger>
-        <TabsTrigger value="tca" className="text-xs">TCA</TabsTrigger>
+        <TabsTrigger value="overview" className="text-xs">
+          Overview
+        </TabsTrigger>
+        <TabsTrigger value="algos" className="text-xs">
+          Algos
+        </TabsTrigger>
+        <TabsTrigger value="venues" className="text-xs">
+          Venues
+        </TabsTrigger>
+        <TabsTrigger value="tca" className="text-xs">
+          TCA
+        </TabsTrigger>
       </TabsList>
     </Tabs>
   );
@@ -253,70 +262,72 @@ export default function ExecutionOverviewPage() {
               <CardTitle className="text-base">Recent Executions</CardTitle>
               <CardDescription>Latest order fills with TCA metrics</CardDescription>
             </CardHeader>
-            <CardContent className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Algo</TableHead>
-                    <TableHead>Venue</TableHead>
-                    <TableHead className="text-right">Size</TableHead>
-                    <TableHead className="text-right">Avg Price</TableHead>
-                    <TableHead className="text-right">Slippage</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {MOCK_RECENT_ORDERS.length === 0 && (
+            <CardContent>
+              <WidgetScroll axes="horizontal" scrollbarSize="thin">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                        No recent executions
-                      </TableCell>
+                      <TableHead>Order</TableHead>
+                      <TableHead>Algo</TableHead>
+                      <TableHead>Venue</TableHead>
+                      <TableHead className="text-right">Size</TableHead>
+                      <TableHead className="text-right">Avg Price</TableHead>
+                      <TableHead className="text-right">Slippage</TableHead>
+                      <TableHead>Status</TableHead>
                     </TableRow>
-                  )}
-                  {MOCK_RECENT_ORDERS.map((order) => (
-                    <TableRow key={order.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {order.side === "BUY" ? (
-                            <ArrowUpRight className="size-4 text-emerald-500" />
-                          ) : (
-                            <ArrowDownRight className="size-4 text-red-500" />
-                          )}
-                          <span className="font-medium">{order.instrument}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{order.algo}</Badge>
-                      </TableCell>
-                      <TableCell className="capitalize">{order.venue}</TableCell>
-                      <TableCell className="text-right font-mono">${order.filledQty.toLocaleString()}</TableCell>
-                      <TableCell className="text-right font-mono">${order.avgPrice.toLocaleString()}</TableCell>
-                      <TableCell
-                        className={cn(
-                          "text-right font-mono",
-                          order.tca.slippage < 0 ? "text-emerald-500" : "text-red-500",
-                        )}
-                      >
-                        {order.tca.slippage >= 0 ? "+" : ""}
-                        {formatNumber(order.tca.slippage, 1)} bps
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
+                  </TableHeader>
+                  <TableBody>
+                    {MOCK_RECENT_ORDERS.length === 0 && (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          No recent executions
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {MOCK_RECENT_ORDERS.map((order) => (
+                      <TableRow key={order.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {order.side === "BUY" ? (
+                              <ArrowUpRight className="size-4 text-emerald-500" />
+                            ) : (
+                              <ArrowDownRight className="size-4 text-red-500" />
+                            )}
+                            <span className="font-medium">{order.instrument}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{order.algo}</Badge>
+                        </TableCell>
+                        <TableCell className="capitalize">{order.venue}</TableCell>
+                        <TableCell className="text-right font-mono">${order.filledQty.toLocaleString()}</TableCell>
+                        <TableCell className="text-right font-mono">${order.avgPrice.toLocaleString()}</TableCell>
+                        <TableCell
                           className={cn(
-                            order.status === "filled" && "bg-emerald-500/10 text-emerald-500",
-                            order.status === "partial" && "bg-amber-500/10 text-amber-500",
-                            order.status === "active" && "bg-blue-500/10 text-blue-500",
+                            "text-right font-mono",
+                            order.tca.slippage < 0 ? "text-emerald-500" : "text-red-500",
                           )}
                         >
-                          {order.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                          {order.tca.slippage >= 0 ? "+" : ""}
+                          {formatNumber(order.tca.slippage, 1)} bps
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              order.status === "filled" && "bg-emerald-500/10 text-emerald-500",
+                              order.status === "partial" && "bg-amber-500/10 text-amber-500",
+                              order.status === "active" && "bg-blue-500/10 text-blue-500",
+                            )}
+                          >
+                            {order.status}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </WidgetScroll>
             </CardContent>
           </Card>
         </div>
@@ -384,57 +395,61 @@ export default function ExecutionOverviewPage() {
             <CardTitle className="text-base">Live Algorithms</CardTitle>
             <CardDescription>{liveAlgos} algorithms currently in production</CardDescription>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Algorithm</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Version</TableHead>
-                  <TableHead>Venues</TableHead>
-                  <TableHead className="text-right">Avg Slippage</TableHead>
-                  <TableHead className="text-right">Fill Rate</TableHead>
-                  <TableHead className="text-right">Latency</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {MOCK_EXECUTION_ALGOS.length === 0 && (
+          <CardContent>
+            <WidgetScroll axes="horizontal" scrollbarSize="thin">
+              <Table>
+                <TableHeader>
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      No algorithms configured
-                    </TableCell>
+                    <TableHead>Algorithm</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Version</TableHead>
+                    <TableHead>Venues</TableHead>
+                    <TableHead className="text-right">Avg Slippage</TableHead>
+                    <TableHead className="text-right">Fill Rate</TableHead>
+                    <TableHead className="text-right">Latency</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                )}
-                {MOCK_EXECUTION_ALGOS.map((algo) => (
-                  <TableRow key={algo.id}>
-                    <TableCell className="font-medium">{algo.name}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{algo.type}</Badge>
-                    </TableCell>
-                    <TableCell className="font-mono text-muted-foreground">{algo.version}</TableCell>
-                    <TableCell>{algo.supportedVenues.length} venues</TableCell>
-                    <TableCell className="text-right font-mono">
-                      {formatNumber(algo.metrics.avgSlippage, 2)} bps
-                    </TableCell>
-                    <TableCell className="text-right font-mono">{formatPercent(algo.metrics.avgFillRate, 1)}</TableCell>
-                    <TableCell className="text-right font-mono">{algo.metrics.avgLatency}ms</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          algo.status === "live" && "bg-emerald-500/10 text-emerald-500",
-                          algo.status === "testing" && "bg-amber-500/10 text-amber-500",
-                          algo.status === "deprecated" && "bg-red-500/10 text-red-500",
-                        )}
-                      >
-                        {algo.status}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {MOCK_EXECUTION_ALGOS.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        No algorithms configured
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {MOCK_EXECUTION_ALGOS.map((algo) => (
+                    <TableRow key={algo.id}>
+                      <TableCell className="font-medium">{algo.name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{algo.type}</Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-muted-foreground">{algo.version}</TableCell>
+                      <TableCell>{algo.supportedVenues.length} venues</TableCell>
+                      <TableCell className="text-right font-mono">
+                        {formatNumber(algo.metrics.avgSlippage, 2)} bps
+                      </TableCell>
+                      <TableCell className="text-right font-mono">
+                        {formatPercent(algo.metrics.avgFillRate, 1)}
+                      </TableCell>
+                      <TableCell className="text-right font-mono">{algo.metrics.avgLatency}ms</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            algo.status === "live" && "bg-emerald-500/10 text-emerald-500",
+                            algo.status === "testing" && "bg-amber-500/10 text-amber-500",
+                            algo.status === "deprecated" && "bg-red-500/10 text-red-500",
+                          )}
+                        >
+                          {algo.status}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </WidgetScroll>
           </CardContent>
         </Card>
       </div>

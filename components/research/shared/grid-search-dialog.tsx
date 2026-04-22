@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FlaskConical, Zap, Brain } from "lucide-react";
 import { toast } from "sonner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   GridConfigPanel,
   type GridParameter,
@@ -1142,7 +1143,7 @@ export function GridSearchDialog({ open, onClose, domain }: { open: boolean; onC
           </div>
         </div>
 
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain -mx-2 px-2 pr-3">
+        <WidgetScroll className="flex-1 min-h-0 -mx-2" viewportClassName="overscroll-contain px-2 pr-3">
           <div className="pb-2">
             <GridConfigPanel
               subscriptions={subscriptionsWithToggle}
@@ -1153,7 +1154,7 @@ export function GridSearchDialog({ open, onClose, domain }: { open: boolean; onC
               domain={config.selectorOptions.find((o) => o.value === selectedType)?.label ?? domain}
             />
           </div>
-        </div>
+        </WidgetScroll>
       </DialogContent>
     </Dialog>
   );

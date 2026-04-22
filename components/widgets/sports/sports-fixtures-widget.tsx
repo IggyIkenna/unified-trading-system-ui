@@ -134,7 +134,7 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
   const totalCount = filteredFixtures.length;
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-full overflow-auto">
+    <div className="flex flex-col flex-1 min-h-0 h-full">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-border/40">
         <button
           onClick={() => setShowFilters((f) => !f)}

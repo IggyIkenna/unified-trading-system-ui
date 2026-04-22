@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useStrategyCatalog, type StrategyCatalogEntry } from "@/hooks/api/use-strategies";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 const DOMAIN_COLORS: Record<string, string> = {
   defi: "bg-emerald-500/10 text-emerald-600",
@@ -73,44 +74,46 @@ export function StrategyFamilyBrowserWidget(_props: WidgetComponentProps) {
           ))}
         </div>
       </CardHeader>
-      <CardContent className="max-h-[500px] overflow-y-auto">
-        {Object.entries(families).map(([family, entries]) => (
-          <div key={family} className="mb-4">
-            <h3 className="text-sm font-semibold mb-2 capitalize">{family.replace(/-/g, " ")}</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[140px]">ID</TableHead>
-                  <TableHead>Strategy</TableHead>
-                  <TableHead>Domain</TableHead>
-                  <TableHead>Parameters</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {(entries as StrategyCatalogEntry[]).map((entry) => (
-                  <TableRow key={entry.id}>
-                    <TableCell className="font-mono text-xs">{entry.id}</TableCell>
-                    <TableCell className="font-medium text-sm">{entry.label}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={DOMAIN_COLORS[entry.domain] ?? ""}>
-                        {entry.domain}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {entry.params.map((p) => (
-                          <Badge key={p} variant="secondary" className="text-micro py-0">
-                            {p}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
+      <CardContent className="p-0">
+        <WidgetScroll className="min-h-0 max-h-[500px] px-6 py-6">
+          {Object.entries(families).map(([family, entries]) => (
+            <div key={family} className="mb-4">
+              <h3 className="text-sm font-semibold mb-2 capitalize">{family.replace(/-/g, " ")}</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[140px]">ID</TableHead>
+                    <TableHead>Strategy</TableHead>
+                    <TableHead>Domain</TableHead>
+                    <TableHead>Parameters</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ))}
+                </TableHeader>
+                <TableBody>
+                  {(entries as StrategyCatalogEntry[]).map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell className="font-mono text-xs">{entry.id}</TableCell>
+                      <TableCell className="font-medium text-sm">{entry.label}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={DOMAIN_COLORS[entry.domain] ?? ""}>
+                          {entry.domain}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {entry.params.map((p) => (
+                            <Badge key={p} variant="secondary" className="text-micro py-0">
+                              {p}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ))}
+        </WidgetScroll>
       </CardContent>
     </Card>
   );

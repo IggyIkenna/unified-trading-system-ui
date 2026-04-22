@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function MultiSelectDropdown<T extends { id: string }>({
   label,
@@ -110,7 +111,7 @@ export function MultiSelectDropdown<T extends { id: string }>({
           </div>
         </div>
 
-        <div className="max-h-[35vh] overflow-y-auto overscroll-contain">
+        <WidgetScroll className="max-h-[35vh]" viewportClassName="overscroll-contain">
           <div className="p-1">
             <div
               role="button"
@@ -261,7 +262,7 @@ export function MultiSelectDropdown<T extends { id: string }>({
               })
             )}
           </div>
-        </div>
+        </WidgetScroll>
       </PopoverContent>
     </Popover>
   );

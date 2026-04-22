@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -87,7 +88,7 @@ function PositionTradesInner() {
         </div>
       </div>
 
-      <div className="rounded-md border border-border/40 overflow-auto flex-1 min-h-[200px]">
+      <WidgetScroll axes="both" className="rounded-md border border-border/40 flex-1 min-h-[200px]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -130,7 +131,7 @@ function PositionTradesInner() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

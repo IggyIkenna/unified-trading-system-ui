@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Progress } from "@/components/ui/progress";
 import { Play, XCircle, Zap, BarChart3, GitCompare, Star, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -635,7 +636,7 @@ export function ExecutionComparePanel({ selected, onClose }: { selected: string[
         </div>
 
         {/* Metrics comparison table */}
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full text-sm">
             <thead>
               <tr>
@@ -680,7 +681,7 @@ export function ExecutionComparePanel({ selected, onClose }: { selected: string[
               })}
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
 
         {/* Net profit insight */}
         <div className="rounded-lg bg-muted/30 p-3 text-xs space-y-1">

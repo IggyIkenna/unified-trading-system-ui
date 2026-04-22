@@ -27,6 +27,7 @@ import { checkTradingEntitlement, isTradingEntitlement, type TradingEntitlement 
 import { useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
 import { isPathActive, isServiceTabActive } from "@/lib/utils/nav-helpers";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
@@ -247,10 +248,9 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
           )}
         </button>
 
-        {/* Family tabs — collapsible */}
-        {(isExpanded || collapsed) && (
-          <div className={cn(!collapsed && "pl-2")}>{familyTabs.map((tab) => renderTabItem(tab))}</div>
-        )}
+        {/* Family tabs — collapsible. Respect per-family collapse state in both
+            expanded and collapsed nav modes so the user's choice is preserved. */}
+        {isExpanded && <div className={cn(!collapsed && "pl-2")}>{familyTabs.map((tab) => renderTabItem(tab))}</div>}
       </div>
     );
   };
@@ -263,171 +263,181 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
           navWidth,
         )}
       >
-        {/* Collapse toggle */}
-        <div
+        {/* Collapse toggle — entire row is clickable */}
+        <button
+          type="button"
+          onClick={() => setCollapsed((c) => !c)}
           className={cn(
-            "flex items-center border-b border-border px-2 py-1.5",
+            "w-full flex items-center border-b border-border px-2 py-1.5 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors",
             collapsed ? "justify-center" : "justify-between",
           )}
+          aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+          title={collapsed ? "Expand navigation" : "Collapse navigation"}
         >
           {!collapsed && (
             <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 pl-1 select-none">
               Trading
             </span>
           )}
-          <button
-            onClick={() => setCollapsed((c) => !c)}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-            aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-            title={collapsed ? "Expand navigation" : "Collapse navigation"}
-          >
+          <span className="p-1.5 rounded-md">
             {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
-          </button>
-        </div>
+          </span>
+        </button>
 
         {/* Nav items */}
-        <nav className="flex-1 overflow-y-auto py-2" aria-label="Trading sections">
-          {/* Shared tabs (top-level) */}
-          {sharedTabs.map((tab) => renderTabItem(tab))}
+        <WidgetScroll className="flex-1 min-h-0">
+          <nav className="py-2" aria-label="Trading sections">
+            {/* Shared tabs (top-level) */}
+            {sharedTabs.map((tab) => renderTabItem(tab))}
 
-          {/* Separator between shared and family groups */}
-          {Object.keys(familyGroups).length > 0 && (
-            <div className={cn("mx-2 my-2 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
-              {!collapsed && (
-                <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider whitespace-nowrap px-1">
-                  Strategy Families
-                </span>
-              )}
-            </div>
-          )}
-
-          {/* Family groups */}
-          {Object.entries(familyGroups).map(([familyName, familyTabs]) => renderFamilyGroup(familyName, familyTabs))}
-
-          {/* Custom panels */}
-          {customPanels.length > 0 && (
-            <div className={cn("mx-2 my-1 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}>
-              {!collapsed && (
-                <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap px-1">
-                  Custom
-                </span>
-              )}
-            </div>
-          )}
-          {customPanels.map((panel) => {
-            const panelHref = `/services/trading/custom/${panel.id}`;
-            const isActive = isPathActive(pathname, panelHref);
-
-            return (
-              <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>
-                <Link href={panelHref} title={collapsed ? panel.name : undefined}>
-                  <span
-                    className={cn(
-                      "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                      isActive
-                        ? "bg-primary/15 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-accent",
-                      collapsed && "justify-center px-0",
-                    )}
-                  >
-                    <LayoutGrid
-                      className={cn(
-                        "shrink-0",
-                        collapsed ? "size-5" : "size-[18px]",
-                        isActive ? "text-primary" : "text-foreground/60",
-                      )}
-                    />
-                    {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
-                  </span>
-                </Link>
-
+            {/* Separator between shared and family groups */}
+            {Object.keys(familyGroups).length > 0 && (
+              <div
+                className={cn("mx-2 my-2 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}
+              >
                 {!collapsed && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      requestDeletePanel(panel, isActive);
-                    }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
-                    title={`Delete "${panel.name}"`}
-                    aria-label={`Delete panel ${panel.name}`}
-                  >
-                    <X className="size-3" />
-                  </button>
+                  <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider whitespace-nowrap px-1">
+                    Strategy Families
+                  </span>
                 )}
               </div>
-            );
-          })}
+            )}
 
-          {/* New Panel button */}
-          <div className={cn("px-2 mt-1", collapsed && "flex justify-center px-1")}>
-            {!showNewPanel ? (
-              <button
-                onClick={() => setShowNewPanel(true)}
-                className={cn(
-                  "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                  "text-muted-foreground hover:text-foreground hover:bg-accent",
-                  collapsed && "justify-center px-0",
-                )}
-                title={collapsed ? "New Panel" : undefined}
+            {/* Family groups — divider between each family for visual separation */}
+            {Object.entries(familyGroups).map(([familyName, familyTabs], idx, arr) => (
+              <div key={`family-wrap-${familyName}`}>
+                {renderFamilyGroup(familyName, familyTabs)}
+                {idx < arr.length - 1 && <div className="mx-3 my-1 border-t border-border/40" aria-hidden="true" />}
+              </div>
+            ))}
+
+            {/* Custom panels */}
+            {customPanels.length > 0 && (
+              <div
+                className={cn("mx-2 my-1 border-t border-border", !collapsed && "flex items-center gap-2 pt-2 pb-1")}
               >
-                <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
-                {!collapsed && <span className="truncate leading-none">New Panel</span>}
-              </button>
-            ) : (
-              !collapsed && (
-                <div className="flex flex-col gap-0.5 px-1 min-w-0">
-                  <div className="flex items-center gap-1">
-                    <input
-                      ref={newPanelInputRef}
-                      value={newPanelName}
-                      onChange={(e) => setNewPanelName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleCreatePanel();
-                        if (e.key === "Escape") {
-                          setShowNewPanel(false);
-                          setNewPanelName("");
-                        }
-                      }}
-                      placeholder="Panel name"
-                      aria-invalid={newPanelNameTaken}
+                {!collapsed && (
+                  <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap px-1">
+                    Custom
+                  </span>
+                )}
+              </div>
+            )}
+            {customPanels.map((panel) => {
+              const panelHref = `/services/trading/custom/${panel.id}`;
+              const isActive = isPathActive(pathname, panelHref);
+
+              return (
+                <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>
+                  <Link href={panelHref} title={collapsed ? panel.name : undefined}>
+                    <span
                       className={cn(
-                        "flex-1 min-w-0 h-7 px-2 text-xs bg-background border rounded-md focus:outline-none focus:ring-1",
-                        newPanelNameTaken
-                          ? "border-destructive focus:ring-destructive/40 focus:border-destructive"
-                          : "border-border focus:ring-primary",
+                        "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                        isActive
+                          ? "bg-primary/15 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                        collapsed && "justify-center px-0",
                       )}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleCreatePanel}
-                      disabled={!newPanelName.trim() || newPanelNameTaken}
-                      className="h-7 px-2 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
                     >
-                      Create
-                    </button>
+                      <LayoutGrid
+                        className={cn(
+                          "shrink-0",
+                          collapsed ? "size-5" : "size-[18px]",
+                          isActive ? "text-primary" : "text-foreground/60",
+                        )}
+                      />
+                      {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
+                    </span>
+                  </Link>
+
+                  {!collapsed && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setShowNewPanel(false);
-                        setNewPanelName("");
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        requestDeletePanel(panel, isActive);
                       }}
-                      className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent shrink-0"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                      title={`Delete "${panel.name}"`}
+                      aria-label={`Delete panel ${panel.name}`}
                     >
-                      <X className="size-3.5" />
+                      <X className="size-3" />
                     </button>
-                  </div>
-                  {newPanelNameTaken && (
-                    <p className="text-[10px] leading-snug text-destructive pl-0.5 pr-6">
-                      Name already in use — choose another.
-                    </p>
                   )}
                 </div>
-              )
-            )}
-          </div>
-        </nav>
+              );
+            })}
+
+            {/* New Panel button */}
+            <div className={cn("px-2 mt-1", collapsed && "flex justify-center px-1")}>
+              {!showNewPanel ? (
+                <button
+                  onClick={() => setShowNewPanel(true)}
+                  className={cn(
+                    "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                    "text-muted-foreground hover:text-foreground hover:bg-accent",
+                    collapsed && "justify-center px-0",
+                  )}
+                  title={collapsed ? "New Panel" : undefined}
+                >
+                  <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
+                  {!collapsed && <span className="truncate leading-none">New Panel</span>}
+                </button>
+              ) : (
+                !collapsed && (
+                  <div className="flex flex-col gap-0.5 px-1 min-w-0">
+                    <div className="flex items-center gap-1">
+                      <input
+                        ref={newPanelInputRef}
+                        value={newPanelName}
+                        onChange={(e) => setNewPanelName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleCreatePanel();
+                          if (e.key === "Escape") {
+                            setShowNewPanel(false);
+                            setNewPanelName("");
+                          }
+                        }}
+                        placeholder="Panel name"
+                        aria-invalid={newPanelNameTaken}
+                        className={cn(
+                          "flex-1 min-w-0 h-7 px-2 text-xs bg-background border rounded-md focus:outline-none focus:ring-1",
+                          newPanelNameTaken
+                            ? "border-destructive focus:ring-destructive/40 focus:border-destructive"
+                            : "border-border focus:ring-primary",
+                        )}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCreatePanel}
+                        disabled={!newPanelName.trim() || newPanelNameTaken}
+                        className="h-7 px-2 text-xs rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                      >
+                        Create
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowNewPanel(false);
+                          setNewPanelName("");
+                        }}
+                        className="h-7 w-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent shrink-0"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                    {newPanelNameTaken && (
+                      <p className="text-[10px] leading-snug text-destructive pl-0.5 pr-6">
+                        Name already in use — choose another.
+                      </p>
+                    )}
+                  </div>
+                )
+              )}
+            </div>
+          </nav>
+        </WidgetScroll>
 
         {/* Bottom slot (e.g. Live/As-Of toggle) */}
         {bottomSlot && (

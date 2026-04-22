@@ -5,7 +5,7 @@ import { CalendarEventFeed } from "@/components/trading/calendar-event-feed";
 
 export function CalendarEventsWidget(_props: WidgetComponentProps) {
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full">
       <CalendarEventFeed hideTitle />
     </div>
   );

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ContextBar } from "@/components/platform/context-bar";
 import { BatchLiveRail } from "@/components/platform/batch-live-rail";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   LineChart,
   Line,
@@ -411,7 +412,7 @@ export default function StrategyResultsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 space-y-6 overflow-auto">
+      <WidgetScroll className="flex-1" viewportClassName="p-6 space-y-6">
         {/* KPI Summary */}
         {selectedRun && <KPISummary run={selectedRun} />}
 
@@ -589,7 +590,7 @@ export default function StrategyResultsPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

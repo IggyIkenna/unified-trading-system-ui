@@ -1,5 +1,6 @@
 "use client";
 
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import type { DirectionPerformance, PnlBucket } from "@/lib/types/backtest-analytics";
 import { PnlDistributionHistogram } from "./pnl-distribution-histogram";
@@ -87,7 +88,7 @@ export function TradesAnalysisSection({
       {/* Details Table */}
       <div>
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Details</h4>
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full">
             <thead>
               <tr>
@@ -198,7 +199,7 @@ export function TradesAnalysisSection({
               />
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
       </div>
     </div>
   );

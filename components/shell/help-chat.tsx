@@ -5,6 +5,7 @@ import Link from "next/link";
 import { MessageCircle, X, Database, Brain, Layers, Shield, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 type ChatStep = "welcome" | "service" | "action" | "fallback";
 
@@ -192,18 +193,15 @@ export function HelpChat() {
           </div>
 
           {/* Messages */}
-          <div
-            ref={scrollRef}
-            className="flex-1 overflow-y-auto px-4 py-3 space-y-3 max-h-80"
-          >
+          <WidgetScroll viewportRef={scrollRef} className="flex-1 max-h-80" viewportClassName="px-4 py-3 space-y-3">
             {messages.map((msg, i) => (
               <div key={i} className={cn("flex", msg.from === "user" ? "justify-end" : "justify-start")}>
-                <div className={cn(
-                  "rounded-lg px-3 py-2 max-w-[85%] text-sm",
-                  msg.from === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
-                )}>
+                <div
+                  className={cn(
+                    "rounded-lg px-3 py-2 max-w-[85%] text-sm",
+                    msg.from === "user" ? "bg-primary text-primary-foreground" : "bg-muted",
+                  )}
+                >
                   <p>{msg.text}</p>
                   {msg.options && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
@@ -230,7 +228,7 @@ export function HelpChat() {
                 </div>
               </div>
             ))}
-          </div>
+          </WidgetScroll>
         </div>
       )}
     </>

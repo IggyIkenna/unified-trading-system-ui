@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/shared/page-header";
  * Greeks sensitivity, and model comparison.
  */
 
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -220,7 +221,7 @@ function VolatilitySurface() {
         <p className="text-xs text-muted-foreground">Implied vol (%) across moneyness and tenor</p>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full text-xs">
             <thead>
               <tr>
@@ -255,7 +256,7 @@ function VolatilitySurface() {
               ))}
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
         {/* Legend */}
         <div className="flex items-center gap-3 mt-4 text-[10px] text-muted-foreground">
           <span className="flex items-center gap-1">

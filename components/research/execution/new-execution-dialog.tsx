@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import type { ExecutionBacktest } from "@/lib/mocks/fixtures/build-data";
 import { MOCK_STRATEGY_BACKTESTS } from "@/lib/mocks/fixtures/research-execution-backtests";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 // ---------------------------------------------------------------------------
 // Collapsible Config Section (matches ML Training pattern)
@@ -184,7 +185,7 @@ export function NewExecutionBacktestDialog({ open, onClose }: { open: boolean; o
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Zap className="size-5 text-emerald-400" />
@@ -196,7 +197,7 @@ export function NewExecutionBacktestDialog({ open, onClose }: { open: boolean; o
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-2">
+        <WidgetScroll className="max-h-[90vh]" viewportClassName="space-y-4 py-2">
           {/* Section A: Source Config */}
           <CollapsibleConfigSection
             title="Source Config"
@@ -693,7 +694,7 @@ export function NewExecutionBacktestDialog({ open, onClose }: { open: boolean; o
               </div>
             )}
           </CollapsibleConfigSection>
-        </div>
+        </WidgetScroll>
 
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>

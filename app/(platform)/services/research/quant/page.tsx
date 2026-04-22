@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -297,357 +298,197 @@ export default function QuantWorkspacePage() {
         </div>
 
         {/* ── Tab 1: Notebook ──────────────────────────────────────────── */}
-        <TabsContent value="notebook" className="flex-1 overflow-auto p-6">
-          <div className="max-w-[1200px] mx-auto space-y-4">
-            {/* Toolbar */}
-            <div className="flex items-center gap-2">
-              <Button size="sm" onClick={handleRunAll} className="gap-1.5">
-                <Play className="size-3.5" />
-                Run All
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleClearOutput} className="gap-1.5">
-                <Trash2 className="size-3.5" />
-                Clear Output
-              </Button>
-              <div className="ml-auto text-xs text-muted-foreground">
-                Kernel: Python 3.13 | {Object.values(cellOutputs).filter(Boolean).length} / {NOTEBOOK_CELLS.length}{" "}
-                cells executed
-              </div>
-            </div>
-
-            {/* Cells */}
-            {NOTEBOOK_CELLS.map((cell) => (
-              <div key={cell.id} className="border rounded-lg overflow-hidden">
-                {/* Cell header */}
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/30 border-b">
-                  <span className="text-[10px] font-mono text-muted-foreground">[{cell.id}]</span>
-                  <Badge variant="outline" className="text-[10px] h-4 px-1.5 border-muted-foreground/30">
-                    {cell.type === "chart" ? "code" : cell.type}
-                  </Badge>
-                  {cellOutputs[cell.id] && <span className="text-[10px] text-emerald-400 ml-auto">executed</span>}
+        <TabsContent value="notebook" className="flex-1 flex flex-col overflow-hidden">
+          <WidgetScroll viewportClassName="p-6">
+            <div className="max-w-[1200px] mx-auto space-y-4">
+              {/* Toolbar */}
+              <div className="flex items-center gap-2">
+                <Button size="sm" onClick={handleRunAll} className="gap-1.5">
+                  <Play className="size-3.5" />
+                  Run All
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleClearOutput} className="gap-1.5">
+                  <Trash2 className="size-3.5" />
+                  Clear Output
+                </Button>
+                <div className="ml-auto text-xs text-muted-foreground">
+                  Kernel: Python 3.13 | {Object.values(cellOutputs).filter(Boolean).length} / {NOTEBOOK_CELLS.length}{" "}
+                  cells executed
                 </div>
+              </div>
 
-                {/* Cell source */}
-                {(cell.type === "code" || cell.type === "chart") && (
-                  <pre className="p-4 text-sm font-mono leading-relaxed bg-zinc-950 text-zinc-300 overflow-x-auto whitespace-pre">
-                    {cell.source}
-                  </pre>
-                )}
+              {/* Cells */}
+              {NOTEBOOK_CELLS.map((cell) => (
+                <div key={cell.id} className="border rounded-lg overflow-hidden">
+                  {/* Cell header */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/30 border-b">
+                    <span className="text-[10px] font-mono text-muted-foreground">[{cell.id}]</span>
+                    <Badge variant="outline" className="text-[10px] h-4 px-1.5 border-muted-foreground/30">
+                      {cell.type === "chart" ? "code" : cell.type}
+                    </Badge>
+                    {cellOutputs[cell.id] && <span className="text-[10px] text-emerald-400 ml-auto">executed</span>}
+                  </div>
 
-                {/* Cell output */}
-                {cellOutputs[cell.id] && cell.output === "correlation_matrix" && (
-                  <div className="p-4 bg-zinc-950/50 border-t">
-                    <div className="text-xs text-muted-foreground mb-2 font-mono">Out[{cell.id}]:</div>
-                    <div className="overflow-x-auto">
-                      <table className="text-xs font-mono">
-                        <thead>
-                          <tr>
-                            <th className="px-3 py-1 text-left text-muted-foreground" />
-                            <th className="px-3 py-1 text-right text-muted-foreground">BTC</th>
-                            <th className="px-3 py-1 text-right text-muted-foreground">ETH</th>
-                            <th className="px-3 py-1 text-right text-muted-foreground">SOL</th>
-                            <th className="px-3 py-1 text-right text-muted-foreground">AVAX</th>
-                            <th className="px-3 py-1 text-right text-muted-foreground">MATIC</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {CORRELATION_DATA.map((row) => (
-                            <tr key={row.asset}>
-                              <td className="px-3 py-1 text-muted-foreground">{row.asset}</td>
-                              <td className="px-3 py-1 text-right">{row.btc}</td>
-                              <td className="px-3 py-1 text-right">{row.eth}</td>
-                              <td className="px-3 py-1 text-right">{row.sol}</td>
-                              <td className="px-3 py-1 text-right">{row.avax}</td>
-                              <td className="px-3 py-1 text-right">{row.matic}</td>
+                  {/* Cell source */}
+                  {(cell.type === "code" || cell.type === "chart") && (
+                    <pre className="p-4 text-sm font-mono leading-relaxed bg-zinc-950 text-zinc-300 overflow-x-auto whitespace-pre">
+                      {cell.source}
+                    </pre>
+                  )}
+
+                  {/* Cell output */}
+                  {cellOutputs[cell.id] && cell.output === "correlation_matrix" && (
+                    <div className="p-4 bg-zinc-950/50 border-t">
+                      <div className="text-xs text-muted-foreground mb-2 font-mono">Out[{cell.id}]:</div>
+                      <div className="overflow-x-auto">
+                        <table className="text-xs font-mono">
+                          <thead>
+                            <tr>
+                              <th className="px-3 py-1 text-left text-muted-foreground" />
+                              <th className="px-3 py-1 text-right text-muted-foreground">BTC</th>
+                              <th className="px-3 py-1 text-right text-muted-foreground">ETH</th>
+                              <th className="px-3 py-1 text-right text-muted-foreground">SOL</th>
+                              <th className="px-3 py-1 text-right text-muted-foreground">AVAX</th>
+                              <th className="px-3 py-1 text-right text-muted-foreground">MATIC</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {cellOutputs[cell.id] && cell.outputType === "text" && cell.output && (
-                  <div className="p-4 bg-zinc-950/50 border-t">
-                    <div className="text-xs text-muted-foreground mb-1 font-mono">Out[{cell.id}]:</div>
-                    <pre className="text-sm font-mono text-emerald-400">{cell.output}</pre>
-                  </div>
-                )}
-
-                {cellOutputs[cell.id] && cell.outputType === "chart" && cell.type === "chart" && (
-                  <div className="p-4 bg-zinc-950/50 border-t">
-                    <div className="text-xs text-muted-foreground mb-2 font-mono">Out[{cell.id}]:</div>
-                    <div className="h-48 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
-                      <div className="text-center space-y-2">
-                        <BarChart3 className="size-8 text-muted-foreground/50 mx-auto" />
-                        <p className="text-sm text-muted-foreground">{cell.output}</p>
-                        <p className="text-[10px] text-muted-foreground/50">
-                          5,000 portfolio simulations | 5 assets | Sharpe-coloured scatter
-                        </p>
+                          </thead>
+                          <tbody>
+                            {CORRELATION_DATA.map((row) => (
+                              <tr key={row.asset}>
+                                <td className="px-3 py-1 text-muted-foreground">{row.asset}</td>
+                                <td className="px-3 py-1 text-right">{row.btc}</td>
+                                <td className="px-3 py-1 text-right">{row.eth}</td>
+                                <td className="px-3 py-1 text-right">{row.sol}</td>
+                                <td className="px-3 py-1 text-right">{row.avax}</td>
+                                <td className="px-3 py-1 text-right">{row.matic}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+                  )}
+
+                  {cellOutputs[cell.id] && cell.outputType === "text" && cell.output && (
+                    <div className="p-4 bg-zinc-950/50 border-t">
+                      <div className="text-xs text-muted-foreground mb-1 font-mono">Out[{cell.id}]:</div>
+                      <pre className="text-sm font-mono text-emerald-400">{cell.output}</pre>
+                    </div>
+                  )}
+
+                  {cellOutputs[cell.id] && cell.outputType === "chart" && cell.type === "chart" && (
+                    <div className="p-4 bg-zinc-950/50 border-t">
+                      <div className="text-xs text-muted-foreground mb-2 font-mono">Out[{cell.id}]:</div>
+                      <div className="h-48 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
+                        <div className="text-center space-y-2">
+                          <BarChart3 className="size-8 text-muted-foreground/50 mx-auto" />
+                          <p className="text-sm text-muted-foreground">{cell.output}</p>
+                          <p className="text-[10px] text-muted-foreground/50">
+                            5,000 portfolio simulations | 5 assets | Sharpe-coloured scatter
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </WidgetScroll>
         </TabsContent>
 
         {/* ── Tab 2: Data Explorer ─────────────────────────────────────── */}
-        <TabsContent value="data-explorer" className="flex-1 overflow-auto p-6">
-          <div className="max-w-[1400px] mx-auto space-y-4">
-            {/* Search bar and date range */}
-            <div className="flex items-center gap-3">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search instruments..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                />
+        <TabsContent value="data-explorer" className="flex-1 flex flex-col overflow-hidden">
+          <WidgetScroll viewportClassName="p-6">
+            <div className="max-w-[1400px] mx-auto space-y-4">
+              {/* Search bar and date range */}
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search instruments..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>From:</span>
+                  <input
+                    type="date"
+                    defaultValue="2026-03-27"
+                    className="rounded-md border bg-background px-3 py-1.5 text-sm"
+                  />
+                  <span>To:</span>
+                  <input
+                    type="date"
+                    defaultValue="2026-03-28"
+                    className="rounded-md border bg-background px-3 py-1.5 text-sm"
+                  />
+                </div>
+                <Button size="sm" variant="outline" className="gap-1.5 ml-auto">
+                  <Download className="size-3.5" />
+                  Load to Notebook
+                </Button>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>From:</span>
-                <input
-                  type="date"
-                  defaultValue="2026-03-27"
-                  className="rounded-md border bg-background px-3 py-1.5 text-sm"
-                />
-                <span>To:</span>
-                <input
-                  type="date"
-                  defaultValue="2026-03-28"
-                  className="rounded-md border bg-background px-3 py-1.5 text-sm"
-                />
-              </div>
-              <Button size="sm" variant="outline" className="gap-1.5 ml-auto">
-                <Download className="size-3.5" />
-                Load to Notebook
-              </Button>
-            </div>
 
-            {/* Data table */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Database className="size-4" />
-                  OHLCV Data
-                </CardTitle>
-                <CardDescription>
-                  {filteredInstruments.length} records across {new Set(filteredInstruments.map((i) => i.symbol)).size}{" "}
-                  instruments
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DataTable
-                  columns={ohlcvColumns}
-                  data={filteredInstruments}
-                  enableColumnVisibility={false}
-                  emptyMessage="No instruments match your search."
-                  className="rounded-lg border p-2"
-                />
-              </CardContent>
-            </Card>
-          </div>
+              {/* Data table */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Database className="size-4" />
+                    OHLCV Data
+                  </CardTitle>
+                  <CardDescription>
+                    {filteredInstruments.length} records across {new Set(filteredInstruments.map((i) => i.symbol)).size}{" "}
+                    instruments
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <DataTable
+                    columns={ohlcvColumns}
+                    data={filteredInstruments}
+                    enableColumnVisibility={false}
+                    emptyMessage="No instruments match your search."
+                    className="rounded-lg border p-2"
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </WidgetScroll>
         </TabsContent>
 
         {/* ── Tab 3: Backtest Lab ──────────────────────────────────────── */}
-        <TabsContent value="backtest-lab" className="flex-1 overflow-auto p-6">
-          <div className="max-w-[1200px] mx-auto space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Backtest Form */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <FlaskConical className="size-4" />
-                    Quick Backtest
-                  </CardTitle>
-                  <CardDescription>Configure and launch a strategy backtest</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Strategy</label>
-                    <Select value={selectedStrategy} onValueChange={setSelectedStrategy}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {BACKTEST_STRATEGIES.map((s) => (
-                          <SelectItem key={s} value={s}>
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Instrument</label>
-                    <Select defaultValue="BTC-USD">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="BTC-USD">BTC-USD</SelectItem>
-                        <SelectItem value="ETH-USD">ETH-USD</SelectItem>
-                        <SelectItem value="SOL-USD">SOL-USD</SelectItem>
-                        <SelectItem value="AVAX-USD">AVAX-USD</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+        <TabsContent value="backtest-lab" className="flex-1 flex flex-col overflow-hidden">
+          <WidgetScroll viewportClassName="p-6">
+            <div className="max-w-[1200px] mx-auto space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Backtest Form */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <FlaskConical className="size-4" />
+                      Quick Backtest
+                    </CardTitle>
+                    <CardDescription>Configure and launch a strategy backtest</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Start Date</label>
-                      <input
-                        type="date"
-                        defaultValue="2025-01-01"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      />
+                      <label className="text-sm font-medium">Strategy</label>
+                      <Select value={selectedStrategy} onValueChange={setSelectedStrategy}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BACKTEST_STRATEGIES.map((s) => (
+                            <SelectItem key={s} value={s}>
+                              {s}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">End Date</label>
-                      <input
-                        type="date"
-                        defaultValue="2026-03-28"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                      />
-                    </div>
-                  </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Initial Capital</label>
-                      <input
-                        type="text"
-                        defaultValue="$100,000"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Max Position %</label>
-                      <input
-                        type="text"
-                        defaultValue="25%"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-
-                  <Button className="w-full gap-1.5">
-                    <Play className="size-3.5" />
-                    Run Backtest
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Results Panel */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <BarChart3 className="size-4" />
-                    Results
-                  </CardTitle>
-                  <CardDescription>{selectedStrategy} on BTC-USD</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 rounded-lg bg-muted/50">
-                      <div className="text-xs text-muted-foreground">Sharpe Ratio</div>
-                      <div className="text-2xl font-bold font-mono">1.82</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/50">
-                      <div className="text-xs text-muted-foreground">Sortino Ratio</div>
-                      <div className="text-2xl font-bold font-mono">2.14</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/50">
-                      <div className="text-xs text-muted-foreground">Max Drawdown</div>
-                      <div className="text-2xl font-bold font-mono text-red-400">-8.2%</div>
-                    </div>
-                    <div className="p-3 rounded-lg bg-muted/50">
-                      <div className="text-xs text-muted-foreground">Total Return</div>
-                      <div className="text-2xl font-bold font-mono text-emerald-400">+42.3%</div>
-                    </div>
-                  </div>
-
-                  {/* Equity curve placeholder */}
-                  <div className="h-32 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
-                    <div className="text-center space-y-1">
-                      <Activity className="size-6 text-muted-foreground/50 mx-auto" />
-                      <p className="text-xs text-muted-foreground">Equity Curve</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-2">
-                    <Link href="/services/research/strategy/results" className="flex-1">
-                      <Button variant="outline" className="w-full gap-1.5" size="sm">
-                        View Full Results
-                        <ArrowRight className="size-3.5" />
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* ── Tab 4: Signal Builder ────────────────────────────────────── */}
-        <TabsContent value="signal-builder" className="flex-1 overflow-auto p-6">
-          <div className="max-w-[1200px] mx-auto space-y-6">
-            {/* Signal blocks */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <SlidersHorizontal className="size-4" />
-                  Composite Signal
-                </CardTitle>
-                <CardDescription>
-                  Drag indicator blocks to build a weighted signal. Total weight:{" "}
-                  {formatNumber(
-                    SIGNAL_BLOCKS.reduce((s, b) => s + b.weight, 0),
-                    2,
-                  )}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {SIGNAL_BLOCKS.map((block) => (
-                  <div key={block.name} className={`flex items-center gap-4 p-4 rounded-lg border ${block.color}`}>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-sm">{block.name}</span>
-                        <Badge variant="outline" className="text-[10px] font-mono">
-                          w={formatNumber(block.weight, 2)}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">{block.params}</p>
-                    </div>
-                    <div className="w-32">
-                      <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-current opacity-60"
-                          style={{ width: `${block.weight * 100}%` }}
-                        />
-                      </div>
-                      <p className="text-[10px] text-muted-foreground text-right mt-0.5">
-                        {formatPercent(block.weight * 100, 0)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Actions + Signal chart */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Test Signal</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Instrument</label>
                       <Select defaultValue="BTC-USD">
@@ -658,77 +499,245 @@ export default function QuantWorkspacePage() {
                           <SelectItem value="BTC-USD">BTC-USD</SelectItem>
                           <SelectItem value="ETH-USD">ETH-USD</SelectItem>
                           <SelectItem value="SOL-USD">SOL-USD</SelectItem>
+                          <SelectItem value="AVAX-USD">AVAX-USD</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">Lookback</label>
-                      <Select defaultValue="30d">
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="7d">7 days</SelectItem>
-                          <SelectItem value="30d">30 days</SelectItem>
-                          <SelectItem value="90d">90 days</SelectItem>
-                        </SelectContent>
-                      </Select>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Start Date</label>
+                        <input
+                          type="date"
+                          defaultValue="2025-01-01"
+                          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">End Date</label>
+                        <input
+                          type="date"
+                          defaultValue="2026-03-28"
+                          className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <Button className="w-full gap-1.5" onClick={() => setSignalTested(true)}>
-                    <Zap className="size-3.5" />
-                    Test Signal
-                  </Button>
-                  <Link href="/services/research/signals">
-                    <Button variant="outline" className="w-full gap-1.5" size="sm">
-                      <BookOpen className="size-3.5" />
-                      Save to Signals
-                      <ArrowRight className="size-3.5" />
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Initial Capital</label>
+                        <input
+                          type="text"
+                          defaultValue="$100,000"
+                          className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Max Position %</label>
+                        <input
+                          type="text"
+                          defaultValue="25%"
+                          className="w-full rounded-md border bg-background px-3 py-2 text-sm font-mono"
+                        />
+                      </div>
+                    </div>
+
+                    <Button className="w-full gap-1.5">
+                      <Play className="size-3.5" />
+                      Run Backtest
                     </Button>
-                  </Link>
+                  </CardContent>
+                </Card>
+
+                {/* Results Panel */}
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <BarChart3 className="size-4" />
+                      Results
+                    </CardTitle>
+                    <CardDescription>{selectedStrategy} on BTC-USD</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-3 rounded-lg bg-muted/50">
+                        <div className="text-xs text-muted-foreground">Sharpe Ratio</div>
+                        <div className="text-2xl font-bold font-mono">1.82</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-muted/50">
+                        <div className="text-xs text-muted-foreground">Sortino Ratio</div>
+                        <div className="text-2xl font-bold font-mono">2.14</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-muted/50">
+                        <div className="text-xs text-muted-foreground">Max Drawdown</div>
+                        <div className="text-2xl font-bold font-mono text-red-400">-8.2%</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-muted/50">
+                        <div className="text-xs text-muted-foreground">Total Return</div>
+                        <div className="text-2xl font-bold font-mono text-emerald-400">+42.3%</div>
+                      </div>
+                    </div>
+
+                    {/* Equity curve placeholder */}
+                    <div className="h-32 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
+                      <div className="text-center space-y-1">
+                        <Activity className="size-6 text-muted-foreground/50 mx-auto" />
+                        <p className="text-xs text-muted-foreground">Equity Curve</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2">
+                      <Link href="/services/research/strategy/results" className="flex-1">
+                        <Button variant="outline" className="w-full gap-1.5" size="sm">
+                          View Full Results
+                          <ArrowRight className="size-3.5" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </WidgetScroll>
+        </TabsContent>
+
+        {/* ── Tab 4: Signal Builder ────────────────────────────────────── */}
+        <TabsContent value="signal-builder" className="flex-1 flex flex-col overflow-hidden">
+          <WidgetScroll viewportClassName="p-6">
+            <div className="max-w-[1200px] mx-auto space-y-6">
+              {/* Signal blocks */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <SlidersHorizontal className="size-4" />
+                    Composite Signal
+                  </CardTitle>
+                  <CardDescription>
+                    Drag indicator blocks to build a weighted signal. Total weight:{" "}
+                    {formatNumber(
+                      SIGNAL_BLOCKS.reduce((s, b) => s + b.weight, 0),
+                      2,
+                    )}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {SIGNAL_BLOCKS.map((block) => (
+                    <div key={block.name} className={`flex items-center gap-4 p-4 rounded-lg border ${block.color}`}>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">{block.name}</span>
+                          <Badge variant="outline" className="text-[10px] font-mono">
+                            w={formatNumber(block.weight, 2)}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{block.params}</p>
+                      </div>
+                      <div className="w-32">
+                        <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-current opacity-60"
+                            style={{ width: `${block.weight * 100}%` }}
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground text-right mt-0.5">
+                          {formatPercent(block.weight * 100, 0)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm">Signal Output</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {signalTested ? (
-                    <div className="space-y-3">
-                      <div className="h-40 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
-                        <div className="text-center space-y-1">
-                          <Waves className="size-6 text-muted-foreground/50 mx-auto" />
-                          <p className="text-xs text-muted-foreground">Composite Signal vs BTC-USD Price (30d)</p>
-                        </div>
+              {/* Actions + Signal chart */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Test Signal</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Instrument</label>
+                        <Select defaultValue="BTC-USD">
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="BTC-USD">BTC-USD</SelectItem>
+                            <SelectItem value="ETH-USD">ETH-USD</SelectItem>
+                            <SelectItem value="SOL-USD">SOL-USD</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <div className="grid grid-cols-3 gap-3">
-                        <div className="p-2 rounded bg-muted/30 text-center">
-                          <div className="text-[10px] text-muted-foreground">Signals</div>
-                          <div className="text-sm font-mono font-bold">47</div>
-                        </div>
-                        <div className="p-2 rounded bg-muted/30 text-center">
-                          <div className="text-[10px] text-muted-foreground">Hit Rate</div>
-                          <div className="text-sm font-mono font-bold text-emerald-400">62%</div>
-                        </div>
-                        <div className="p-2 rounded bg-muted/30 text-center">
-                          <div className="text-[10px] text-muted-foreground">Avg Return</div>
-                          <div className="text-sm font-mono font-bold text-emerald-400">+0.8%</div>
-                        </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Lookback</label>
+                        <Select defaultValue="30d">
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="7d">7 days</SelectItem>
+                            <SelectItem value="30d">30 days</SelectItem>
+                            <SelectItem value="90d">90 days</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
-                  ) : (
-                    <div className="h-52 flex items-center justify-center text-muted-foreground/50">
-                      <div className="text-center space-y-2">
-                        <Waves className="size-8 mx-auto opacity-30" />
-                        <p className="text-sm">Run a signal test to see results</p>
+                    <Button className="w-full gap-1.5" onClick={() => setSignalTested(true)}>
+                      <Zap className="size-3.5" />
+                      Test Signal
+                    </Button>
+                    <Link href="/services/research/signals">
+                      <Button variant="outline" className="w-full gap-1.5" size="sm">
+                        <BookOpen className="size-3.5" />
+                        Save to Signals
+                        <ArrowRight className="size-3.5" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">Signal Output</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {signalTested ? (
+                      <div className="space-y-3">
+                        <div className="h-40 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/10">
+                          <div className="text-center space-y-1">
+                            <Waves className="size-6 text-muted-foreground/50 mx-auto" />
+                            <p className="text-xs text-muted-foreground">Composite Signal vs BTC-USD Price (30d)</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="p-2 rounded bg-muted/30 text-center">
+                            <div className="text-[10px] text-muted-foreground">Signals</div>
+                            <div className="text-sm font-mono font-bold">47</div>
+                          </div>
+                          <div className="p-2 rounded bg-muted/30 text-center">
+                            <div className="text-[10px] text-muted-foreground">Hit Rate</div>
+                            <div className="text-sm font-mono font-bold text-emerald-400">62%</div>
+                          </div>
+                          <div className="p-2 rounded bg-muted/30 text-center">
+                            <div className="text-[10px] text-muted-foreground">Avg Return</div>
+                            <div className="text-sm font-mono font-bold text-emerald-400">+0.8%</div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    ) : (
+                      <div className="h-52 flex items-center justify-center text-muted-foreground/50">
+                        <div className="text-center space-y-2">
+                          <Waves className="size-8 mx-auto opacity-30" />
+                          <p className="text-sm">Run a signal test to see results</p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
+          </WidgetScroll>
         </TabsContent>
       </Tabs>
     </div>

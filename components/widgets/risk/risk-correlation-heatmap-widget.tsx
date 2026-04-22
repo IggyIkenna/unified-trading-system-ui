@@ -20,7 +20,7 @@ const DynamicCorrelationHeatmap = dynamic(
 
 export function RiskCorrelationHeatmapWidget(_props: WidgetComponentProps) {
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full">
       <DynamicCorrelationHeatmap />
     </div>
   );

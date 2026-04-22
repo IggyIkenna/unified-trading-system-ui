@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,11 +38,7 @@ import { ApiError } from "@/components/shared/api-error";
 import { EmptyState } from "@/components/shared/empty-state";
 import { DataFreshnessStrip } from "@/components/shared/data-freshness-strip";
 import type { DataSource } from "@/components/shared/data-freshness-strip";
-import {
-  ComparisonPanel,
-  DriftPanel,
-  BatchDetailDrawer,
-} from "@/components/batch-workspace";
+import { ComparisonPanel, DriftPanel, BatchDetailDrawer } from "@/components/batch-workspace";
 import type { ComparisonEntity, MetricDefinition } from "@/components/batch-workspace/comparison-panel";
 import type { DriftMetric } from "@/components/batch-workspace/drift-panel";
 import type { DetailSection } from "@/components/batch-workspace/batch-detail-drawer";
@@ -102,10 +99,7 @@ const ML_VERSION_METRICS: MetricDefinition[] = [
   { key: "predictionCount", label: "Predictions", format: "number", higherIsBetter: true, group: "Operational" },
 ];
 
-function versionToComparisonEntity(
-  ver: ModelVersion,
-  familyName: string,
-): ComparisonEntity {
+function versionToComparisonEntity(ver: ModelVersion, familyName: string): ComparisonEntity {
   return {
     id: ver.id,
     name: `v${ver.version}`,
@@ -157,9 +151,14 @@ function versionToDetailSections(ver: ModelVersion): DetailSection[] {
   ];
 }
 
-function championChallengerDriftMetrics(
-  pair: { comparisonMetrics: { championAccuracy: number; challengerAccuracy: number; championSharpe: number; challengerSharpe: number } },
-): DriftMetric[] {
+function championChallengerDriftMetrics(pair: {
+  comparisonMetrics: {
+    championAccuracy: number;
+    challengerAccuracy: number;
+    championSharpe: number;
+    challengerSharpe: number;
+  };
+}): DriftMetric[] {
   return [
     {
       key: "accuracy",
@@ -398,11 +397,20 @@ export default function RegistryPage() {
               <span className="font-medium text-foreground/80">Registry Status</span> —{" "}
               <span className="font-mono">{versions.length}</span> registered versions across{" "}
               <span className="font-mono">{MODEL_FAMILIES.length}</span> families.{" "}
-              <span className="font-mono text-emerald-400">{versions.filter((v) => v.status === "live").length}</span> live,{" "}
-              <span className="font-mono text-blue-400">{versions.filter((v) => v.status === "shadow").length}</span> shadow,{" "}
-              <span className="font-mono text-amber-400">{versions.filter((v) => v.status === "validating").length}</span> validating.
+              <span className="font-mono text-emerald-400">{versions.filter((v) => v.status === "live").length}</span>{" "}
+              live,{" "}
+              <span className="font-mono text-blue-400">{versions.filter((v) => v.status === "shadow").length}</span>{" "}
+              shadow,{" "}
+              <span className="font-mono text-amber-400">
+                {versions.filter((v) => v.status === "validating").length}
+              </span>{" "}
+              validating.
               {CHAMPION_CHALLENGER_PAIRS.length > 0 && (
-                <> <span className="font-mono">{CHAMPION_CHALLENGER_PAIRS.length}</span> champion/challenger evaluation{CHAMPION_CHALLENGER_PAIRS.length !== 1 ? "s" : ""} active.</>
+                <>
+                  {" "}
+                  <span className="font-mono">{CHAMPION_CHALLENGER_PAIRS.length}</span> champion/challenger evaluation
+                  {CHAMPION_CHALLENGER_PAIRS.length !== 1 ? "s" : ""} active.
+                </>
               )}
             </p>
           </div>
@@ -411,7 +419,9 @@ export default function RegistryPage() {
         {/* Tabs: Registry | Compare | Drift */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-8">
-            <TabsTrigger value="registry" className="text-xs">Registry</TabsTrigger>
+            <TabsTrigger value="registry" className="text-xs">
+              Registry
+            </TabsTrigger>
             <TabsTrigger value="compare" className="text-xs">
               Compare
               {compareSet.size >= 2 && (
@@ -439,143 +449,149 @@ export default function RegistryPage() {
                   Registered Versions
                 </CardTitle>
               </CardHeader>
-              <CardContent className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-border/50 hover:bg-transparent">
-                      <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Version</TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Family</TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Status</TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Role</TableHead>
-                      <TableHead
-                        className="text-xs text-muted-foreground cursor-pointer select-none"
-                        onClick={() => handleSort("accuracy")}
-                      >
-                        <span className="flex items-center gap-1">
-                          Accuracy <RegistrySortIcon field="accuracy" currentField={sortField} dir={sortDir} />
-                        </span>
-                      </TableHead>
-                      <TableHead
-                        className="text-xs text-muted-foreground cursor-pointer select-none"
-                        onClick={() => handleSort("sharpe")}
-                      >
-                        <span className="flex items-center gap-1">
-                          Sharpe <RegistrySortIcon field="sharpe" currentField={sortField} dir={sortDir} />
-                        </span>
-                      </TableHead>
-                      <TableHead
-                        className="text-xs text-muted-foreground cursor-pointer select-none"
-                        onClick={() => handleSort("maxDrawdown")}
-                      >
-                        <span className="flex items-center gap-1">
-                          Max DD <RegistrySortIcon field="maxDrawdown" currentField={sortField} dir={sortDir} />
-                        </span>
-                      </TableHead>
-                      <TableHead
-                        className="text-xs text-muted-foreground cursor-pointer select-none"
-                        onClick={() => handleSort("latencyP50")}
-                      >
-                        <span className="flex items-center gap-1">
-                          Latency P50 <RegistrySortIcon field="latencyP50" currentField={sortField} dir={sortDir} />
-                        </span>
-                      </TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Predictions</TableHead>
-                      <TableHead className="text-xs text-muted-foreground">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {sorted.map((ver) => {
-                      const family = MODEL_FAMILIES.find((f: { id: string; name: string }) => f.id === ver.modelFamilyId);
-                      return (
-                        <TableRow
-                          key={ver.id}
-                          className={`border-border/30 cursor-pointer ${compareSet.has(ver.id) ? "bg-blue-500/5" : ""}`}
-                          onClick={() => setDetailVersionId(ver.id)}
+              <CardContent>
+                <WidgetScroll axes="horizontal" scrollbarSize="thin">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-border/50 hover:bg-transparent">
+                        <TableHead className="text-xs text-muted-foreground w-8"></TableHead>
+                        <TableHead className="text-xs text-muted-foreground">Version</TableHead>
+                        <TableHead className="text-xs text-muted-foreground">Family</TableHead>
+                        <TableHead className="text-xs text-muted-foreground">Status</TableHead>
+                        <TableHead className="text-xs text-muted-foreground">Role</TableHead>
+                        <TableHead
+                          className="text-xs text-muted-foreground cursor-pointer select-none"
+                          onClick={() => handleSort("accuracy")}
                         >
-                          <TableCell>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                toggleCompare(ver.id);
-                              }}
-                              className="p-0.5 rounded hover:bg-muted"
-                            >
-                              <GitCompare
-                                className={`size-3.5 ${compareSet.has(ver.id) ? "text-blue-400" : "text-muted-foreground"}`}
-                              />
-                            </button>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-mono font-medium text-sm">v{ver.version}</span>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground text-xs">
-                            {(family as { name: string })?.name ?? ver.modelFamilyId}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className={versionStatusColor(ver.status)}>
-                              {ver.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {ver.isChampion && (
-                              <Badge
-                                variant="outline"
-                                className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
-                              >
-                                <Crown className="size-3 mr-0.5" />
-                                champion
-                              </Badge>
-                            )}
-                            {ver.isChallenger && (
-                              <Badge
-                                variant="outline"
-                                className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
-                              >
-                                <Shield className="size-3 mr-0.5" />
-                                challenger
-                              </Badge>
-                            )}
-                            {!ver.isChampion && !ver.isChallenger && (
-                              <span className="text-muted-foreground text-xs">--</span>
-                            )}
-                          </TableCell>
-                          <TableCell className="font-mono text-sm">{fmtPct(ver.metrics.accuracy)}</TableCell>
-                          <TableCell className="font-mono text-sm">{fmtNum(ver.metrics.sharpe)}</TableCell>
-                          <TableCell className="font-mono text-sm text-red-400">
-                            {fmtPct(ver.metrics.maxDrawdown)}
-                          </TableCell>
-                          <TableCell className="font-mono text-sm">{fmtLatency(ver.metrics.inferenceLatencyP50)}</TableCell>
-                          <TableCell className="font-mono text-xs text-muted-foreground">
-                            {ver.metrics.predictionCount.toLocaleString()}
-                          </TableCell>
-                          <TableCell>
-                            {ver.status !== "live" && ver.status !== "deprecated" && ver.status !== "archived" && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 text-xs"
+                          <span className="flex items-center gap-1">
+                            Accuracy <RegistrySortIcon field="accuracy" currentField={sortField} dir={sortDir} />
+                          </span>
+                        </TableHead>
+                        <TableHead
+                          className="text-xs text-muted-foreground cursor-pointer select-none"
+                          onClick={() => handleSort("sharpe")}
+                        >
+                          <span className="flex items-center gap-1">
+                            Sharpe <RegistrySortIcon field="sharpe" currentField={sortField} dir={sortDir} />
+                          </span>
+                        </TableHead>
+                        <TableHead
+                          className="text-xs text-muted-foreground cursor-pointer select-none"
+                          onClick={() => handleSort("maxDrawdown")}
+                        >
+                          <span className="flex items-center gap-1">
+                            Max DD <RegistrySortIcon field="maxDrawdown" currentField={sortField} dir={sortDir} />
+                          </span>
+                        </TableHead>
+                        <TableHead
+                          className="text-xs text-muted-foreground cursor-pointer select-none"
+                          onClick={() => handleSort("latencyP50")}
+                        >
+                          <span className="flex items-center gap-1">
+                            Latency P50 <RegistrySortIcon field="latencyP50" currentField={sortField} dir={sortDir} />
+                          </span>
+                        </TableHead>
+                        <TableHead className="text-xs text-muted-foreground">Predictions</TableHead>
+                        <TableHead className="text-xs text-muted-foreground">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sorted.map((ver) => {
+                        const family = MODEL_FAMILIES.find(
+                          (f: { id: string; name: string }) => f.id === ver.modelFamilyId,
+                        );
+                        return (
+                          <TableRow
+                            key={ver.id}
+                            className={`border-border/30 cursor-pointer ${compareSet.has(ver.id) ? "bg-blue-500/5" : ""}`}
+                            onClick={() => setDetailVersionId(ver.id)}
+                          >
+                            <TableCell>
+                              <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setDeployDialog(ver.id);
+                                  toggleCompare(ver.id);
                                 }}
+                                className="p-0.5 rounded hover:bg-muted"
                               >
-                                <Rocket className="size-3" />
-                                Deploy
-                              </Button>
-                            )}
-                            {ver.status === "live" && (
-                              <span className="text-xs text-emerald-400 flex items-center gap-1">
-                                <CheckCircle2 className="size-3" />
-                                Deployed
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                                <GitCompare
+                                  className={`size-3.5 ${compareSet.has(ver.id) ? "text-blue-400" : "text-muted-foreground"}`}
+                                />
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <span className="font-mono font-medium text-sm">v{ver.version}</span>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground text-xs">
+                              {(family as { name: string })?.name ?? ver.modelFamilyId}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className={versionStatusColor(ver.status)}>
+                                {ver.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {ver.isChampion && (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                                >
+                                  <Crown className="size-3 mr-0.5" />
+                                  champion
+                                </Badge>
+                              )}
+                              {ver.isChallenger && (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
+                                >
+                                  <Shield className="size-3 mr-0.5" />
+                                  challenger
+                                </Badge>
+                              )}
+                              {!ver.isChampion && !ver.isChallenger && (
+                                <span className="text-muted-foreground text-xs">--</span>
+                              )}
+                            </TableCell>
+                            <TableCell className="font-mono text-sm">{fmtPct(ver.metrics.accuracy)}</TableCell>
+                            <TableCell className="font-mono text-sm">{fmtNum(ver.metrics.sharpe)}</TableCell>
+                            <TableCell className="font-mono text-sm text-red-400">
+                              {fmtPct(ver.metrics.maxDrawdown)}
+                            </TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {fmtLatency(ver.metrics.inferenceLatencyP50)}
+                            </TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {ver.metrics.predictionCount.toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              {ver.status !== "live" && ver.status !== "deprecated" && ver.status !== "archived" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-7 text-xs"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setDeployDialog(ver.id);
+                                  }}
+                                >
+                                  <Rocket className="size-3" />
+                                  Deploy
+                                </Button>
+                              )}
+                              {ver.status === "live" && (
+                                <span className="text-xs text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="size-3" />
+                                  Deployed
+                                </span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </WidgetScroll>
               </CardContent>
             </Card>
           </TabsContent>
@@ -609,113 +625,127 @@ export default function RegistryPage() {
                 </CardContent>
               </Card>
             ) : (
-              CHAMPION_CHALLENGER_PAIRS.map((pair: {
-                id: string;
-                modelFamilyId: string;
-                championId: string;
-                challengerId: string;
-                trafficSplit: { champion: number; challenger: number };
-                startedAt: string;
-                status: string;
-                comparisonMetrics: {
-                  championAccuracy: number;
-                  challengerAccuracy: number;
-                  championSharpe: number;
-                  challengerSharpe: number;
-                  significanceLevel: number;
-                };
-              }) => {
-                const champion = versions.find((v) => v.id === pair.championId);
-                const challenger = versions.find((v) => v.id === pair.challengerId);
-                const family = MODEL_FAMILIES.find((f: { id: string; name: string }) => f.id === pair.modelFamilyId);
+              CHAMPION_CHALLENGER_PAIRS.map(
+                (pair: {
+                  id: string;
+                  modelFamilyId: string;
+                  championId: string;
+                  challengerId: string;
+                  trafficSplit: { champion: number; challenger: number };
+                  startedAt: string;
+                  status: string;
+                  comparisonMetrics: {
+                    championAccuracy: number;
+                    challengerAccuracy: number;
+                    championSharpe: number;
+                    challengerSharpe: number;
+                    significanceLevel: number;
+                  };
+                }) => {
+                  const champion = versions.find((v) => v.id === pair.championId);
+                  const challenger = versions.find((v) => v.id === pair.challengerId);
+                  const family = MODEL_FAMILIES.find((f: { id: string; name: string }) => f.id === pair.modelFamilyId);
 
-                if (!champion || !challenger) return null;
+                  if (!champion || !challenger) return null;
 
-                return (
-                  <div key={pair.id} className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Crown className="size-5 text-amber-400" />
-                        <span className="font-semibold">{(family as { name: string })?.name}</span>
-                        <Badge
-                          variant="outline"
-                          className={
-                            pair.status === "active"
-                              ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                              : "bg-amber-500/15 text-amber-400 border-amber-500/30"
-                          }
-                        >
-                          {pair.status}
-                        </Badge>
+                  return (
+                    <div key={pair.id} className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Crown className="size-5 text-amber-400" />
+                          <span className="font-semibold">{(family as { name: string })?.name}</span>
+                          <Badge
+                            variant="outline"
+                            className={
+                              pair.status === "active"
+                                ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                : "bg-amber-500/15 text-amber-400 border-amber-500/30"
+                            }
+                          >
+                            {pair.status}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span>
+                            Traffic: {pair.trafficSplit.champion}% / {pair.trafficSplit.challenger}%
+                          </span>
+                          <span>Significance: {fmtPct(pair.comparisonMetrics.significanceLevel)}</span>
+                          <span>Since {new Date(pair.startedAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>
-                          Traffic: {pair.trafficSplit.champion}% / {pair.trafficSplit.challenger}%
-                        </span>
-                        <span>Significance: {fmtPct(pair.comparisonMetrics.significanceLevel)}</span>
-                        <span>Since {new Date(pair.startedAt).toLocaleDateString()}</span>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Champion card */}
+                        <Card className="border-emerald-500/20 bg-emerald-500/5">
+                          <CardContent className="pt-0 pb-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Crown className="size-4 text-emerald-400" />
+                              <span className="font-mono text-sm font-medium">v{champion.version}</span>
+                              <Badge
+                                variant="outline"
+                                className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                              >
+                                champion
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-muted-foreground">Accuracy</span>
+                                <p className="font-mono font-medium">
+                                  {fmtPct(pair.comparisonMetrics.championAccuracy)}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Sharpe</span>
+                                <p className="font-mono font-medium">{fmtNum(pair.comparisonMetrics.championSharpe)}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {/* Challenger card */}
+                        <Card className="border-blue-500/20 bg-blue-500/5">
+                          <CardContent className="pt-0 pb-3">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Shield className="size-4 text-blue-400" />
+                              <span className="font-mono text-sm font-medium">v{challenger.version}</span>
+                              <Badge
+                                variant="outline"
+                                className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]"
+                              >
+                                challenger
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              <div>
+                                <span className="text-muted-foreground">Accuracy</span>
+                                <p className="font-mono font-medium">
+                                  {fmtPct(pair.comparisonMetrics.challengerAccuracy)}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-muted-foreground">Sharpe</span>
+                                <p className="font-mono font-medium">
+                                  {fmtNum(pair.comparisonMetrics.challengerSharpe)}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
+
+                      {/* DriftPanel: champion baseline vs challenger current */}
+                      <DriftPanel
+                        title="Challenger Drift from Champion"
+                        metrics={championChallengerDriftMetrics(pair)}
+                        baselineLabel="Champion"
+                        currentLabel="Challenger"
+                        className="border-border/50"
+                      />
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Champion card */}
-                      <Card className="border-emerald-500/20 bg-emerald-500/5">
-                        <CardContent className="pt-0 pb-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Crown className="size-4 text-emerald-400" />
-                            <span className="font-mono text-sm font-medium">v{champion.version}</span>
-                            <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
-                              champion
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div>
-                              <span className="text-muted-foreground">Accuracy</span>
-                              <p className="font-mono font-medium">{fmtPct(pair.comparisonMetrics.championAccuracy)}</p>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Sharpe</span>
-                              <p className="font-mono font-medium">{fmtNum(pair.comparisonMetrics.championSharpe)}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-
-                      {/* Challenger card */}
-                      <Card className="border-blue-500/20 bg-blue-500/5">
-                        <CardContent className="pt-0 pb-3">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Shield className="size-4 text-blue-400" />
-                            <span className="font-mono text-sm font-medium">v{challenger.version}</span>
-                            <Badge variant="outline" className="bg-blue-500/15 text-blue-400 border-blue-500/30 text-[10px]">
-                              challenger
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div>
-                              <span className="text-muted-foreground">Accuracy</span>
-                              <p className="font-mono font-medium">{fmtPct(pair.comparisonMetrics.challengerAccuracy)}</p>
-                            </div>
-                            <div>
-                              <span className="text-muted-foreground">Sharpe</span>
-                              <p className="font-mono font-medium">{fmtNum(pair.comparisonMetrics.challengerSharpe)}</p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-
-                    {/* DriftPanel: champion baseline vs challenger current */}
-                    <DriftPanel
-                      title="Challenger Drift from Champion"
-                      metrics={championChallengerDriftMetrics(pair)}
-                      baselineLabel="Champion"
-                      currentLabel="Challenger"
-                      className="border-border/50"
-                    />
-                  </div>
-                );
-              })
+                  );
+                },
+              )
             )}
           </TabsContent>
         </Tabs>
@@ -763,10 +793,15 @@ export default function RegistryPage() {
                 )}
                 <div className="flex items-center justify-between py-1">
                   <span className="text-xs text-muted-foreground">Family</span>
-                  <span className="text-xs">{(detailFamily as { name: string })?.name ?? detailVersion.modelFamilyId}</span>
+                  <span className="text-xs">
+                    {(detailFamily as { name: string })?.name ?? detailVersion.modelFamilyId}
+                  </span>
                 </div>
                 {detailVersion.isChampion && (
-                  <Badge variant="outline" className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]">
+                  <Badge
+                    variant="outline"
+                    className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px]"
+                  >
                     <Crown className="size-3 mr-0.5" />
                     Current Champion
                   </Badge>

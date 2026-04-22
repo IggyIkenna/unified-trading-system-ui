@@ -113,7 +113,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="p-2 space-y-3 h-full min-h-0 overflow-auto">
+    <div className="p-2 space-y-3">
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">

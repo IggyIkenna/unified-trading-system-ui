@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -154,7 +155,7 @@ export default function SportsBetPage() {
       {/* Main: Fixtures + Bet Slip */}
       <div className="flex-1 flex min-h-0 px-6 pb-6 gap-4">
         {/* Left: Fixture odds grid */}
-        <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+        <WidgetScroll className="flex-1" viewportClassName="space-y-4 pr-1">
           {filtered.map((fwo) => {
             const marketOdds = fwo.odds.filter((o) => o.market === marketFilter);
             // Group by bookmaker
@@ -185,7 +186,7 @@ export default function SportsBetPage() {
                   {bookmakerMap.size === 0 ? (
                     <p className="text-xs text-muted-foreground italic py-2">No {marketFilter} odds available</p>
                   ) : (
-                    <div className="overflow-x-auto">
+                    <WidgetScroll axes="horizontal" scrollbarSize="thin">
                       <table className="w-full text-xs">
                         <thead>
                           <tr className="border-b border-border/30">
@@ -230,13 +231,13 @@ export default function SportsBetPage() {
                           ))}
                         </tbody>
                       </table>
-                    </div>
+                    </WidgetScroll>
                   )}
                 </CardContent>
               </Card>
             );
           })}
-        </div>
+        </WidgetScroll>
 
         {/* Right: Bet Slip */}
         <div className="w-[320px] shrink-0">

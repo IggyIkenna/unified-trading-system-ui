@@ -3,6 +3,7 @@
 import { EntitlementGate, hasAnyEntitlement } from "@/components/platform/entitlement-gate";
 import { LiveAsOfToggle } from "@/components/platform/live-asof-toggle";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { TRADING_TABS } from "@/components/shell/service-tabs";
 import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { Card, CardContent } from "@/components/ui/card";
@@ -86,7 +87,7 @@ function TradingSidebar() {
   const healthyCount = services.filter((s) => s.status === "live" || s.status === "healthy").length;
 
   return (
-    <div className="h-full space-y-3 p-3 overflow-y-auto">
+    <WidgetScroll className="h-full" viewportClassName="space-y-3 p-3">
       {/* Positions */}
       <Link href="/services/trading/positions">
         <Card className="hover:border-white/20 transition-colors cursor-pointer">
@@ -247,7 +248,7 @@ function TradingSidebar() {
           </CardContent>
         </Card>
       </Link>
-    </div>
+    </WidgetScroll>
   );
 }
 
@@ -286,11 +287,11 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
   const mainContent = (
     <div id="widget-fullscreen-boundary" className="h-full flex flex-col overflow-hidden relative">
       {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
-      <div className="flex-1 overflow-auto">
+      <WidgetScroll className="flex-1 min-h-0">
         <EntitlementGate entitlement={{ domain: "trading-common", tier: "basic" }} serviceName="Trading">
           <ErrorBoundary>{children}</ErrorBoundary>
         </EntitlementGate>
-      </div>
+      </WidgetScroll>
       {quickViewCollapsed && (
         <button
           onClick={() => setQuickViewCollapsed(false)}

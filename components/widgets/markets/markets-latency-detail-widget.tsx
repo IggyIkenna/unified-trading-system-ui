@@ -5,6 +5,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import { KpiStrip } from "@/components/shared/kpi-strip";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -197,7 +198,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
 
       {latencyDataMode === "compare" && (
         <CollapsibleSection title="Live vs batch by stage" defaultOpen count={metric.lifecycle.length}>
-          <div className="overflow-x-auto px-1 pb-2">
+          <WidgetScroll axes="horizontal" className="min-h-0 px-1 pb-2">
             <table className="w-full text-micro">
               <thead>
                 <tr className="border-b">
@@ -268,7 +269,7 @@ export function MarketsLatencyDetailWidget(_props: WidgetComponentProps) {
                 })}
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
         </CollapsibleSection>
       )}
     </div>

@@ -7,6 +7,7 @@ import type { BacktestRun, StrategySignal } from "@/lib/types/strategy-platform"
 import { cn } from "@/lib/utils";
 import { CheckCircle2, Star } from "lucide-react";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // ─── Backtest List Item ───────────────────────────────────────────────────────
@@ -116,7 +117,7 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin">
         <table className="w-full text-xs">
           <thead>
             <tr className="text-muted-foreground">
@@ -201,7 +202,7 @@ export function SignalListView({ signals }: { signals: StrategySignal[] }) {
             ))}
           </tbody>
         </table>
-      </div>
+      </WidgetScroll>
       {displayed.length < signals.length && (
         <Button variant="outline" size="sm" className="w-full" onClick={() => setPage((p) => p + 1)}>
           Load more ({signals.length - displayed.length} remaining)

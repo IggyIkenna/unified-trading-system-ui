@@ -32,7 +32,7 @@ export function TerminalOptionsWidget(_props: WidgetComponentProps) {
   const { selectedInstrument } = useTerminalData();
 
   return (
-    <div className="absolute inset-0 flex flex-col gap-4 overflow-auto p-2">
+    <div className="absolute inset-0 flex flex-col gap-4 p-2">
       <OptionsChain underlying={selectedInstrument.symbol} venue={selectedInstrument.venue} />
       <VolSurfaceChart underlying={selectedInstrument.symbol} />
     </div>

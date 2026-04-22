@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -232,7 +233,7 @@ export default function ApprovalsPage() {
           setActionType(null);
         }}
       >
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>{actionType === "approve" ? "Approve" : "Reject"} Request</DialogTitle>
             <DialogDescription>
@@ -240,70 +241,72 @@ export default function ApprovalsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          {actionType === "approve" && (
-            <>
-              {docs.length > 0 && (
+          <WidgetScroll className="max-h-[80vh]">
+            {actionType === "approve" && (
+              <>
+                {docs.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Uploaded Documents</Label>
+                    <div className="space-y-1">
+                      {docs.map((doc) => (
+                        <div key={doc.id} className="flex items-center gap-2 text-sm p-2 rounded border">
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                          <span className="flex-1">{doc.file_name}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {doc.doc_type}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">Uploaded Documents</Label>
-                  <div className="space-y-1">
-                    {docs.map((doc) => (
-                      <div key={doc.id} className="flex items-center gap-2 text-sm p-2 rounded border">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span className="flex-1">{doc.file_name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {doc.doc_type}
-                        </Badge>
+                  <Label className="text-sm font-medium">Grant Application Access</Label>
+                  <WidgetScroll className="max-h-48 border rounded" viewportClassName="space-y-2 p-2">
+                    {apps.map((app) => (
+                      <div key={app.app_id} className="flex items-center gap-3 py-1">
+                        <Checkbox
+                          id={`app-${app.app_id}`}
+                          checked={selectedApps[app.app_id]?.selected || false}
+                          onCheckedChange={() => toggleApp(app.app_id)}
+                        />
+                        <label htmlFor={`app-${app.app_id}`} className="flex-1 text-sm cursor-pointer">
+                          {app.name}
+                        </label>
+                        {selectedApps[app.app_id]?.selected && (
+                          <Select
+                            value={selectedApps[app.app_id]?.role || "viewer"}
+                            onValueChange={(v) => setAppRole(app.app_id, v)}
+                          >
+                            <SelectTrigger className="w-24 h-7 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="viewer">Viewer</SelectItem>
+                              <SelectItem value="editor">Editor</SelectItem>
+                              <SelectItem value="admin">Admin</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                       </div>
                     ))}
-                  </div>
+                  </WidgetScroll>
                 </div>
-              )}
+              </>
+            )}
 
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Grant Application Access</Label>
-                <div className="space-y-2 max-h-48 overflow-y-auto border rounded p-2">
-                  {apps.map((app) => (
-                    <div key={app.app_id} className="flex items-center gap-3 py-1">
-                      <Checkbox
-                        id={`app-${app.app_id}`}
-                        checked={selectedApps[app.app_id]?.selected || false}
-                        onCheckedChange={() => toggleApp(app.app_id)}
-                      />
-                      <label htmlFor={`app-${app.app_id}`} className="flex-1 text-sm cursor-pointer">
-                        {app.name}
-                      </label>
-                      {selectedApps[app.app_id]?.selected && (
-                        <Select
-                          value={selectedApps[app.app_id]?.role || "viewer"}
-                          onValueChange={(v) => setAppRole(app.app_id, v)}
-                        >
-                          <SelectTrigger className="w-24 h-7 text-xs">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="viewer">Viewer</SelectItem>
-                            <SelectItem value="editor">Editor</SelectItem>
-                            <SelectItem value="admin">Admin</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="review-note">Note (optional)</Label>
-            <Textarea
-              id="review-note"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder={actionType === "approve" ? "Welcome message or notes..." : "Reason for rejection..."}
-              rows={3}
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="review-note">Note (optional)</Label>
+              <Textarea
+                id="review-note"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder={actionType === "approve" ? "Welcome message or notes..." : "Reason for rejection..."}
+                rows={3}
+              />
+            </div>
+          </WidgetScroll>
 
           <DialogFooter>
             <Button

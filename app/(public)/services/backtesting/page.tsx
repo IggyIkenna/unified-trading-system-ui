@@ -5,21 +5,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  LineChart,
-  ArrowRight,
-  Cpu,
-  Play,
-  CheckCircle2,
-  Zap,
-} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { LineChart, ArrowRight, Cpu, Play, CheckCircle2, Zap } from "lucide-react";
 
 // This page explains the service and then redirects to the Quant/ML view
 export default function BacktestingServicePage() {
@@ -35,14 +23,13 @@ export default function BacktestingServicePage() {
             </div>
             <h1 className="text-3xl font-bold">Research</h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              One place to build everything. Train ML models (gradient boost,
-              neural networks, regression — your choice), build signals from our
-              feature library, assemble strategies, and watch them run against
-              real historical data across every asset class.
+              One place to build everything. Train ML models (gradient boost, neural networks, regression — your
+              choice), build signals from our feature library, assemble strategies, and watch them run against real
+              historical data across every asset class.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
-              When you&apos;re happy with a strategy, promote it straight to
-              live trading. Same code, same data, same results.
+              When you&apos;re happy with a strategy, promote it straight to live trading. Same code, same data, same
+              results.
             </p>
           </div>
 
@@ -55,8 +42,7 @@ export default function BacktestingServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Simulate strategies across 5 asset classes with realistic
-                  fills, slippage, and costs
+                  Simulate strategies across 5 asset classes with realistic fills, slippage, and costs
                 </CardDescription>
               </CardContent>
             </Card>
@@ -67,8 +53,7 @@ export default function BacktestingServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Run 1000+ parameter combinations in parallel with cloud GPU
-                  infrastructure
+                  Run 1000+ parameter combinations in parallel with cloud GPU infrastructure
                 </CardDescription>
               </CardContent>
             </Card>
@@ -79,9 +64,8 @@ export default function BacktestingServicePage() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  No-code web interface for visual strategy building, or full
-                  backend API for programmatic integration with your own tools.
-                  Your choice.
+                  No-code web interface for visual strategy building, or full backend API for programmatic integration
+                  with your own tools. Your choice.
                 </CardDescription>
               </CardContent>
             </Card>
@@ -97,43 +81,43 @@ export default function BacktestingServicePage() {
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Feature Catalogue</div>
                   <p className="text-xs text-muted-foreground">
-                    Browse hundreds of pre-built features in a 4-column drill-down — filter by
-                    service, category, group, then inspect individual features with full metadata.
+                    Browse hundreds of pre-built features in a 4-column drill-down — filter by service, category, group,
+                    then inspect individual features with full metadata.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">ML Training Pipeline</div>
                   <p className="text-xs text-muted-foreground">
-                    Train gradient boost, neural networks, regression models. Track training runs,
-                    view loss curves, compare champion vs challenger models, promote winners to live.
+                    Train gradient boost, neural networks, regression models. Track training runs, view loss curves,
+                    compare champion vs challenger models, promote winners to live.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Strategy Builder</div>
                   <p className="text-xs text-muted-foreground">
-                    Assemble strategies from your signals, configure parameters, define execution
-                    rules. Run backtests across any asset class with realistic slippage and costs.
+                    Assemble strategies from your signals, configure parameters, define execution rules. Run backtests
+                    across any asset class with realistic slippage and costs.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Backtest Comparison</div>
                   <p className="text-xs text-muted-foreground">
-                    Side-by-side parameter sweeps with Sharpe, return, drawdown, and win rate.
-                    GPU-accelerated — run 1000+ combinations in parallel, then pick the best.
+                    Side-by-side parameter sweeps with Sharpe, return, drawdown, and win rate. GPU-accelerated — run
+                    1000+ combinations in parallel, then pick the best.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Model Registry</div>
                   <p className="text-xs text-muted-foreground">
-                    Every trained model versioned and catalogued. See performance metrics,
-                    training config, and deployment history. One click to deploy or rollback.
+                    Every trained model versioned and catalogued. See performance metrics, training config, and
+                    deployment history. One click to deploy or rollback.
                   </p>
                 </div>
                 <div className="space-y-1">
                   <div className="text-sm font-medium">Promote to Live</div>
                   <p className="text-xs text-muted-foreground">
-                    When a strategy passes your criteria, promote it straight to live trading.
-                    Same code, same data pipeline — what worked in backtest works in production.
+                    When a strategy passes your criteria, promote it straight to live trading. Same code, same data
+                    pipeline — what worked in backtest works in production.
                   </p>
                 </div>
               </div>
@@ -142,14 +126,11 @@ export default function BacktestingServicePage() {
 
           {/* What's Included */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-2">
-              What Research Covers
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">What Research Covers</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Three layers working together: train ML models to generate
-              signals, configure strategies to act on those signals, and define
-              execution rules for how orders hit the market. Your subscription
-              tier determines the depth of each layer.
+              Three layers working together: train ML models to generate signals, configure strategies to act on those
+              signals, and define execution rules for how orders hit the market. Your subscription tier determines the
+              depth of each layer.
             </p>
           </div>
 
@@ -158,9 +139,7 @@ export default function BacktestingServicePage() {
             <Card className="border-border">
               <CardHeader>
                 <CardTitle>Starter</CardTitle>
-                <div className="text-lg font-bold text-primary">
-                  Get in Touch
-                </div>
+                <div className="text-lg font-bold text-primary">Get in Touch</div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -168,12 +147,10 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Pre-built feature sets
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Pre-built feature sets
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> 2 model
-                    families (direction, volatility)
+                    <CheckCircle2 className="size-4 text-emerald-400" /> 2 model families (direction, volatility)
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">
@@ -181,12 +158,10 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Standard signal templates
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Standard signal templates
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> 2 asset
-                    classes
+                    <CheckCircle2 className="size-4 text-emerald-400" /> 2 asset classes
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">
@@ -194,12 +169,10 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> Default
-                    algos (TWAP, VWAP)
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Default algos (TWAP, VWAP)
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> 100
-                    backtest hours/mo
+                    <CheckCircle2 className="size-4 text-emerald-400" /> 100 backtest hours/mo
                   </div>
                 </div>
               </CardContent>
@@ -207,9 +180,7 @@ export default function BacktestingServicePage() {
             <Card className="border-primary">
               <CardHeader>
                 <CardTitle>Professional</CardTitle>
-                <div className="text-lg font-bold text-primary">
-                  Get in Touch
-                </div>
+                <div className="text-lg font-bold text-primary">Get in Touch</div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -217,16 +188,13 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom
-                    feature engineering
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom feature engineering
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> All
-                    model families + custom training
+                    <CheckCircle2 className="size-4 text-emerald-400" /> All model families + custom training
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Champion/challenger model testing
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Champion/challenger model testing
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">
@@ -234,16 +202,13 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> Full
-                    signal configuration
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Full signal configuration
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> All 5
-                    asset classes
+                    <CheckCircle2 className="size-4 text-emerald-400" /> All 5 asset classes
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Cross-asset strategies
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Cross-asset strategies
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">
@@ -251,12 +216,10 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Advanced algos (IS, SOR, Sniper)
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Advanced algos (IS, SOR, Sniper)
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> 500
-                    backtest hours/mo + API access
+                    <CheckCircle2 className="size-4 text-emerald-400" /> 500 backtest hours/mo + API access
                   </div>
                 </div>
               </CardContent>
@@ -264,9 +227,7 @@ export default function BacktestingServicePage() {
             <Card className="border-border">
               <CardHeader>
                 <CardTitle>Enterprise</CardTitle>
-                <div className="text-lg font-bold text-primary">
-                  Get in Touch
-                </div>
+                <div className="text-lg font-bold text-primary">Get in Touch</div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -274,12 +235,10 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Dedicated GPU training clusters
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Dedicated GPU training clusters
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom
-                    model architectures
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom model architectures
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">
@@ -287,12 +246,10 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Unlimited strategies + bespoke signals
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Unlimited strategies + bespoke signals
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom
-                    venue/instrument combinations
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom venue/instrument combinations
                   </div>
                 </div>
                 <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mt-3">
@@ -300,18 +257,15 @@ export default function BacktestingServicePage() {
                 </div>
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom
-                    algo development + backtested deployment
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Custom algo development + backtested deployment
                   </div>
                   <div className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="size-4 text-emerald-400" />{" "}
-                    Unlimited hours + SLA support
+                    <CheckCircle2 className="size-4 text-emerald-400" /> Unlimited hours + SLA support
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-
         </div>
       </main>
 
@@ -322,20 +276,15 @@ export default function BacktestingServicePage() {
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold">See It In Action</h2>
               <p className="mt-2 text-muted-foreground">
-                Preview what your backtesting workflow looks like inside the
-                platform.
+                Preview what your backtesting workflow looks like inside the platform.
               </p>
             </div>
 
             {/* Strategy Config Preview */}
             <Card className="mb-6 border-violet-500/20">
               <CardHeader>
-                <CardTitle className="text-base">
-                  Strategy Configuration
-                </CardTitle>
-                <CardDescription>
-                  Define parameters, asset classes, and execution rules
-                </CardDescription>
+                <CardTitle className="text-base">Strategy Configuration</CardTitle>
+                <CardDescription>Define parameters, asset classes, and execution rules</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid gap-3 md:grid-cols-3">
@@ -350,16 +299,9 @@ export default function BacktestingServicePage() {
                     },
                     { label: "GPU Workers", value: "4x A100" },
                   ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-lg border border-border/50 bg-muted/30 px-3 py-2"
-                    >
-                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                        {item.label}
-                      </div>
-                      <div className="text-sm font-medium mt-0.5">
-                        {item.value}
-                      </div>
+                    <div key={item.label} className="rounded-lg border border-border/50 bg-muted/30 px-3 py-2">
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">{item.label}</div>
+                      <div className="text-sm font-medium mt-0.5">{item.value}</div>
                     </div>
                   ))}
                 </div>
@@ -370,12 +312,10 @@ export default function BacktestingServicePage() {
             <Card className="border-violet-500/20">
               <CardHeader>
                 <CardTitle className="text-base">Backtest Results</CardTitle>
-                <CardDescription>
-                  Compare parameter sweeps side by side
-                </CardDescription>
+                <CardDescription>Compare parameter sweeps side by side</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
+                <WidgetScroll axes="horizontal" scrollbarSize="thin">
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-border text-left text-xs text-muted-foreground">
@@ -424,12 +364,8 @@ export default function BacktestingServicePage() {
                       ].map((row) => (
                         <tr key={row.run} className="border-b border-border/50">
                           <td className="py-2 pr-4 font-medium">{row.run}</td>
-                          <td className="py-2 pr-4 text-sky-400">
-                            {row.sharpe}
-                          </td>
-                          <td className="py-2 pr-4 text-emerald-400">
-                            {row.ret}
-                          </td>
+                          <td className="py-2 pr-4 text-sky-400">{row.sharpe}</td>
+                          <td className="py-2 pr-4 text-emerald-400">{row.ret}</td>
                           <td className="py-2 pr-4 text-rose-400">{row.dd}</td>
                           <td className="py-2 pr-4">{row.wr}</td>
                           <td className="py-2">{row.trades}</td>
@@ -437,7 +373,7 @@ export default function BacktestingServicePage() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </WidgetScroll>
               </CardContent>
             </Card>
           </div>
@@ -449,85 +385,75 @@ export default function BacktestingServicePage() {
         <div className="container px-4 md:px-6">
           <div className="mx-auto max-w-4xl">
             <h3 className="text-lg font-semibold mb-2">How You Can Use This</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              Choose your level of control. Mix and match as needed.
-            </p>
+            <p className="text-sm text-muted-foreground mb-6">Choose your level of control. Mix and match as needed.</p>
             <div className="grid md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Self-Service</CardTitle>
-                  <CardDescription className="text-xs">
-                    Our tools, your research
-                  </CardDescription>
+                  <CardDescription className="text-xs">Our tools, your research</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Web interface for visual strategy building
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Web interface for visual strategy
+                    building
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Full API access for programmatic backtesting
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Full API access for programmatic
+                    backtesting
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    GPU-accelerated parameter sweeps
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> GPU-accelerated parameter sweeps
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Pre-built feature sets and model families
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Pre-built feature sets and model
+                    families
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">Managed</CardTitle>
-                  <CardDescription className="text-xs">
-                    We research for you
-                  </CardDescription>
+                  <CardDescription className="text-xs">We research for you</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Odum quant team designs and tests strategies
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Odum quant team designs and tests
+                    strategies
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Custom model training and feature engineering
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Custom model training and feature
+                    engineering
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Regular strategy review and optimisation
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Regular strategy review and
+                    optimisation
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Champion/challenger testing before live deployment
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Champion/challenger testing before
+                    live deployment
                   </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm">BYO</CardTitle>
-                  <CardDescription className="text-xs">
-                    Your models and signals, our infrastructure
-                  </CardDescription>
+                  <CardDescription className="text-xs">Your models and signals, our infrastructure</CardDescription>
                 </CardHeader>
                 <CardContent className="text-xs text-muted-foreground space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Bring your own models, signals, and logic
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Bring your own models, signals, and
+                    logic
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Run on our data and compute infrastructure
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Run on our data and compute
+                    infrastructure
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Same backtesting engine and realistic fills
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Same backtesting engine and realistic
+                    fills
                   </div>
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" />{" "}
-                    Seamless promotion to live trading
+                    <CheckCircle2 className="size-3 text-emerald-400 shrink-0" /> Seamless promotion to live trading
                   </div>
                 </CardContent>
               </Card>
@@ -540,9 +466,7 @@ export default function BacktestingServicePage() {
       <section className="border-t border-border">
         <div className="container px-4 py-16 md:px-6">
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 text-center max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold mb-2">
-              Ready to get started?
-            </h3>
+            <h3 className="text-lg font-semibold mb-2">Ready to get started?</h3>
             <p className="text-sm text-muted-foreground mb-6">
               Book a demo to see the platform in action, or get in touch with our team.
             </p>

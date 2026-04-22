@@ -3,13 +3,14 @@
 import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { DeFiDataProvider } from "@/components/widgets/defi/defi-data-context";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 function DeFiPageContent() {
   return (
     <DeFiDataProvider>
-      <div className="h-full flex flex-col overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <WidgetGrid tab="defi" />
-      </div>
+      </WidgetScroll>
     </DeFiDataProvider>
   );
 }

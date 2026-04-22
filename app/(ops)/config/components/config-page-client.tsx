@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { EntityLink } from "@/components/trading/entity-link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -476,7 +477,7 @@ export default function ConfigPageClient() {
 
       {/* Config Editor Sheet */}
       <Sheet open={!!editingStrategy} onOpenChange={(open) => !open && setEditingStrategy(null)}>
-        <SheetContent className="w-[600px] sm:max-w-[600px] overflow-y-auto">
+        <SheetContent className="w-[600px] sm:max-w-[600px]">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2">
               <Settings className="size-5" />
@@ -485,202 +486,205 @@ export default function ConfigPageClient() {
             <SheetDescription>{editingStrategy} - Modify parameters below</SheetDescription>
           </SheetHeader>
 
-          {editingStrategy && strategySchemas[editingStrategy] && (
-            <div className="space-y-6 py-6">
-              {/* Schema Editor - Typed Controls */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-semibold text-muted-foreground">Parameters</h4>
-                {strategySchemas[editingStrategy].params.map((param) => (
-                  <div key={param.key} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor={param.key} className="text-sm font-medium">
-                        {param.label}
-                      </Label>
-                      {param.type === "slider" && (
-                        <span className="text-sm font-mono text-muted-foreground">
-                          {(() => {
-                            const val = editedParams[param.key];
-                            return typeof val === "number"
-                              ? formatNumber(val, param.step && param.step < 0.01 ? 4 : 2)
-                              : val;
-                          })()}
-                        </span>
-                      )}
-                    </div>
+          <WidgetScroll>
+            {editingStrategy && strategySchemas[editingStrategy] && (
+              <div className="space-y-6 py-6">
+                {/* Schema Editor - Typed Controls */}
+                <div className="space-y-4">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Parameters</h4>
+                  {strategySchemas[editingStrategy].params.map((param) => (
+                    <div key={param.key} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={param.key} className="text-sm font-medium">
+                          {param.label}
+                        </Label>
+                        {param.type === "slider" && (
+                          <span className="text-sm font-mono text-muted-foreground">
+                            {(() => {
+                              const val = editedParams[param.key];
+                              return typeof val === "number"
+                                ? formatNumber(val, param.step && param.step < 0.01 ? 4 : 2)
+                                : val;
+                            })()}
+                          </span>
+                        )}
+                      </div>
 
-                    {param.type === "slider" && (
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground w-12">{param.min}</span>
-                        <Slider
-                          id={param.key}
-                          min={param.min}
-                          max={param.max}
-                          step={param.step}
-                          value={[
-                            (() => {
-                              const v = editedParams[param.key];
-                              return typeof v === "number" ? v : 0;
-                            })(),
-                          ]}
+                      {param.type === "slider" && (
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-muted-foreground w-12">{param.min}</span>
+                          <Slider
+                            id={param.key}
+                            min={param.min}
+                            max={param.max}
+                            step={param.step}
+                            value={[
+                              (() => {
+                                const v = editedParams[param.key];
+                                return typeof v === "number" ? v : 0;
+                              })(),
+                            ]}
+                            onValueChange={(v) =>
+                              setEditedParams((prev) => ({
+                                ...prev,
+                                [param.key]: v[0],
+                              }))
+                            }
+                            className="flex-1"
+                          />
+                          <span className="text-xs text-muted-foreground w-12 text-right">{param.max}</span>
+                        </div>
+                      )}
+
+                      {param.type === "select" && param.options && (
+                        <Select
+                          value={String(editedParams[param.key])}
                           onValueChange={(v) =>
                             setEditedParams((prev) => ({
                               ...prev,
-                              [param.key]: v[0],
+                              [param.key]: v,
                             }))
                           }
-                          className="flex-1"
-                        />
-                        <span className="text-xs text-muted-foreground w-12 text-right">{param.max}</span>
-                      </div>
-                    )}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {param.options.map((opt) => (
+                              <SelectItem key={opt} value={opt}>
+                                {opt}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
 
-                    {param.type === "select" && param.options && (
-                      <Select
-                        value={String(editedParams[param.key])}
-                        onValueChange={(v) =>
-                          setEditedParams((prev) => ({
-                            ...prev,
-                            [param.key]: v,
-                          }))
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {param.options.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                              {opt}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-
-                    {param.type === "multiselect" && param.options && (
-                      <div className="flex flex-wrap gap-2">
-                        {param.options.map((opt) => {
-                          const selected =
-                            Array.isArray(editedParams[param.key]) &&
-                            (editedParams[param.key] as string[]).includes(opt);
-                          return (
-                            <label key={opt} className="flex items-center gap-1.5 text-sm cursor-pointer">
-                              <Checkbox
-                                checked={selected}
-                                onCheckedChange={(checked) => {
-                                  const current = Array.isArray(editedParams[param.key])
-                                    ? [...(editedParams[param.key] as string[])]
-                                    : [];
-                                  if (checked) {
-                                    setEditedParams((prev) => ({
-                                      ...prev,
-                                      [param.key]: [...current, opt],
-                                    }));
-                                  } else {
-                                    setEditedParams((prev) => ({
-                                      ...prev,
-                                      [param.key]: current.filter((v) => v !== opt),
-                                    }));
-                                  }
-                                }}
-                              />
-                              {opt}
-                            </label>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {param.type === "number" && (
-                      <Input
-                        id={param.key}
-                        type="number"
-                        value={editedParams[param.key] as number}
-                        onChange={(e) =>
-                          setEditedParams((prev) => ({
-                            ...prev,
-                            [param.key]: parseFloat(e.target.value) || 0,
-                          }))
-                        }
-                        className="font-mono"
-                      />
-                    )}
-
-                    {param.type === "switch" && (
-                      <Switch
-                        id={param.key}
-                        checked={!!editedParams[param.key]}
-                        onCheckedChange={(checked) =>
-                          setEditedParams((prev) => ({
-                            ...prev,
-                            [param.key]: checked,
-                          }))
-                        }
-                      />
-                    )}
-
-                    {param.description && <p className="text-xs text-muted-foreground">{param.description}</p>}
-                  </div>
-                ))}
-              </div>
-
-              <Separator />
-
-              {/* Config Diff */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-muted-foreground">Changes</h4>
-                {getChangedParams().length > 0 ? (
-                  <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
-                    <p className="text-sm font-medium">
-                      Changed parameters ({getChangedParams().length} of{" "}
-                      {strategySchemas[editingStrategy].params.length}):
-                    </p>
-                    {getChangedParams().map((param) => (
-                      <div key={param.key} className="flex items-center gap-2 text-sm font-mono">
-                        <span className="text-muted-foreground">{param.key}:</span>
-                        <span className="text-destructive line-through">{JSON.stringify(param.value)}</span>
-                        <ArrowRight className="size-3" />
-                        <span className="text-[var(--status-warning)]">{JSON.stringify(editedParams[param.key])}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No changes made</p>
-                )}
-              </div>
-
-              <Separator />
-
-              {/* Version History */}
-              <div className="space-y-3">
-                <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-                  <History className="size-4" />
-                  Version History
-                </h4>
-                <div className="space-y-2">
-                  {strategySchemas[editingStrategy].versions.map((v) => (
-                    <div key={v.version} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
-                      <div className="flex items-center gap-3">
-                        <Badge variant={v.status === "Active" ? "default" : "secondary"} className="text-xs">
-                          {v.version}
-                        </Badge>
-                        <div>
-                          <p className="text-sm">{v.message}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {v.date} by {v.author}
-                          </p>
+                      {param.type === "multiselect" && param.options && (
+                        <div className="flex flex-wrap gap-2">
+                          {param.options.map((opt) => {
+                            const selected =
+                              Array.isArray(editedParams[param.key]) &&
+                              (editedParams[param.key] as string[]).includes(opt);
+                            return (
+                              <label key={opt} className="flex items-center gap-1.5 text-sm cursor-pointer">
+                                <Checkbox
+                                  checked={selected}
+                                  onCheckedChange={(checked) => {
+                                    const current = Array.isArray(editedParams[param.key])
+                                      ? [...(editedParams[param.key] as string[])]
+                                      : [];
+                                    if (checked) {
+                                      setEditedParams((prev) => ({
+                                        ...prev,
+                                        [param.key]: [...current, opt],
+                                      }));
+                                    } else {
+                                      setEditedParams((prev) => ({
+                                        ...prev,
+                                        [param.key]: current.filter((v) => v !== opt),
+                                      }));
+                                    }
+                                  }}
+                                />
+                                {opt}
+                              </label>
+                            );
+                          })}
                         </div>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {v.status}
-                      </Badge>
+                      )}
+
+                      {param.type === "number" && (
+                        <Input
+                          id={param.key}
+                          type="number"
+                          value={editedParams[param.key] as number}
+                          onChange={(e) =>
+                            setEditedParams((prev) => ({
+                              ...prev,
+                              [param.key]: parseFloat(e.target.value) || 0,
+                            }))
+                          }
+                          className="font-mono"
+                        />
+                      )}
+
+                      {param.type === "switch" && (
+                        <Switch
+                          id={param.key}
+                          checked={!!editedParams[param.key]}
+                          onCheckedChange={(checked) =>
+                            setEditedParams((prev) => ({
+                              ...prev,
+                              [param.key]: checked,
+                            }))
+                          }
+                        />
+                      )}
+
+                      {param.description && <p className="text-xs text-muted-foreground">{param.description}</p>}
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          )}
 
+                <Separator />
+
+                {/* Config Diff */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground">Changes</h4>
+                  {getChangedParams().length > 0 ? (
+                    <div className="rounded-lg border bg-muted/30 p-3 space-y-2">
+                      <p className="text-sm font-medium">
+                        Changed parameters ({getChangedParams().length} of{" "}
+                        {strategySchemas[editingStrategy].params.length}):
+                      </p>
+                      {getChangedParams().map((param) => (
+                        <div key={param.key} className="flex items-center gap-2 text-sm font-mono">
+                          <span className="text-muted-foreground">{param.key}:</span>
+                          <span className="text-destructive line-through">{JSON.stringify(param.value)}</span>
+                          <ArrowRight className="size-3" />
+                          <span className="text-[var(--status-warning)]">
+                            {JSON.stringify(editedParams[param.key])}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No changes made</p>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Version History */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <History className="size-4" />
+                    Version History
+                  </h4>
+                  <div className="space-y-2">
+                    {strategySchemas[editingStrategy].versions.map((v) => (
+                      <div key={v.version} className="flex items-center justify-between p-2 rounded-lg bg-muted/30">
+                        <div className="flex items-center gap-3">
+                          <Badge variant={v.status === "Active" ? "default" : "secondary"} className="text-xs">
+                            {v.version}
+                          </Badge>
+                          <div>
+                            <p className="text-sm">{v.message}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {v.date} by {v.author}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {v.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </WidgetScroll>
           <SheetFooter className="pt-4">
             <Button variant="outline" onClick={() => setEditingStrategy(null)}>
               <X className="size-4 mr-2" />

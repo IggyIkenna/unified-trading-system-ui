@@ -25,7 +25,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -163,16 +162,11 @@ function DataTableInner<TData>({
     onTableReadyRef.current?.(table);
   }, [table]);
 
-  // scrollContainerRef is the outer wrapper used as the measurement anchor (keeps
-  // the ResizeObserver walk-up stable regardless of the themed-scroll internals).
-  // viewportRef points at the WidgetScroll Viewport — that's the actual DOM node
-  // that scrolls, so useVirtualizer must target it.
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const viewportRef = React.useRef<HTMLDivElement>(null);
 
   const virtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => viewportRef.current,
+    getScrollElement: () => scrollContainerRef.current,
     estimateSize: () => virtualRowHeight,
     enabled: enableVirtualization,
     overscan: 20,
@@ -252,141 +246,143 @@ function DataTableInner<TData>({
 
       <div
         ref={scrollContainerRef}
-        className={cn("rounded-md border overflow-hidden", !fillHeight && enableVirtualization && "max-h-[600px]")}
+        className={cn(
+          "rounded-md border",
+          fillHeight && "overflow-auto",
+          !fillHeight && enableVirtualization && "max-h-[600px] overflow-auto",
+        )}
         style={fillHeight && computedHeight != null ? { height: computedHeight } : undefined}
       >
-        <WidgetScroll axes="both" viewportRef={viewportRef}>
-          <Table containerClassName="overflow-x-visible">
-            <TableHeader className="sticky top-0 z-10 bg-background">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers
-                    .filter((header) => columnVisibilityState[header.column.id] !== false)
-                    .map((header) => {
-                      const colType = header.column.columnDef.meta?.type;
-                      const numeric = NUMERIC_TYPES.has(colType as ColumnDataType);
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder ? null : (
-                            <div
-                              className={cn(
-                                "flex items-center w-full",
-                                header.column.getCanSort() && "cursor-pointer select-none",
-                              )}
-                              onClick={header.column.getToggleSortingHandler()}
-                            >
-                              {/*
-                               * The inner div always has flex-1 so it fills the full cell width —
-                               * this is what keeps header text vertically aligned with cell data.
-                               *
-                               * The sort icon lives INSIDE this div, right next to the label:
-                               *
-                               * Text columns (left-aligned):
-                               *   DOM + visual: [label][↕] ────────── (both at left edge)
-                               *
-                               * Numeric columns (right-aligned, flex-row-reverse):
-                               *   DOM:    [label][↕]
-                               *   Visual: ────────── [↕][label]       (both at right edge)
-                               */}
-                              <div
-                                className={cn("flex-1 min-w-0 flex items-center gap-1", numeric && "flex-row-reverse")}
-                              >
-                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                {header.column.getCanSort() && <SortIcon column={header.column} />}
-                              </div>
-                            </div>
-                          )}
-                        </TableHead>
-                      );
-                    })}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            <TableBody>
-              {rows.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    {emptyMessage}
-                  </TableCell>
-                </TableRow>
-              ) : enableVirtualization ? (
-                <>
-                  {virtualizer.getVirtualItems().length > 0 && (
-                    <tr>
-                      <td
-                        colSpan={columns.length}
-                        style={{
-                          height: `${virtualizer.getVirtualItems()[0]?.start ?? 0}px`,
-                          padding: 0,
-                          border: "none",
-                        }}
-                      />
-                    </tr>
-                  )}
-                  {virtualizer.getVirtualItems().map((virtualRow) => {
-                    const row = rows[virtualRow.index];
-                    if (!row) return null;
+        <Table containerClassName="overflow-x-visible">
+          <TableHeader className="sticky top-0 z-10 bg-background">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers
+                  .filter((header) => columnVisibilityState[header.column.id] !== false)
+                  .map((header) => {
+                    const colType = header.column.columnDef.meta?.type;
+                    const numeric = NUMERIC_TYPES.has(colType as ColumnDataType);
                     return (
-                      <TableRow
-                        key={row.id}
-                        data-index={virtualRow.index}
-                        data-state={row.getIsSelected() ? "selected" : undefined}
-                      >
-                        {row.getVisibleCells().map((cell) => {
-                          const ct = cell.column.columnDef.meta?.type;
-                          return (
-                            <TableCell
-                              key={cell.id}
-                              className={cn(
-                                NUMERIC_TYPES.has(ct as ColumnDataType) && "text-right tabular-nums",
-                                MONO_TYPES.has(ct as ColumnDataType) && "font-mono",
-                              )}
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder ? null : (
+                          <div
+                            className={cn(
+                              "flex items-center w-full",
+                              header.column.getCanSort() && "cursor-pointer select-none",
+                            )}
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {/*
+                             * The inner div always has flex-1 so it fills the full cell width —
+                             * this is what keeps header text vertically aligned with cell data.
+                             *
+                             * The sort icon lives INSIDE this div, right next to the label:
+                             *
+                             * Text columns (left-aligned):
+                             *   DOM + visual: [label][↕] ────────── (both at left edge)
+                             *
+                             * Numeric columns (right-aligned, flex-row-reverse):
+                             *   DOM:    [label][↕]
+                             *   Visual: ────────── [↕][label]       (both at right edge)
+                             */}
+                            <div
+                              className={cn("flex-1 min-w-0 flex items-center gap-1", numeric && "flex-row-reverse")}
                             >
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {header.column.getCanSort() && <SortIcon column={header.column} />}
+                            </div>
+                          </div>
+                        )}
+                      </TableHead>
                     );
                   })}
-                  {virtualizer.getVirtualItems().length > 0 && (
-                    <tr>
-                      <td
-                        colSpan={columns.length}
-                        style={{
-                          height: `${virtualizer.getTotalSize() - (virtualizer.getVirtualItems().at(-1)?.end ?? 0)}px`,
-                          padding: 0,
-                          border: "none",
-                        }}
-                      />
-                    </tr>
-                  )}
-                </>
-              ) : (
-                rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
-                    {row.getVisibleCells().map((cell) => {
-                      const ct = cell.column.columnDef.meta?.type;
-                      return (
-                        <TableCell
-                          key={cell.id}
-                          className={cn(
-                            NUMERIC_TYPES.has(ct as ColumnDataType) && "text-right tabular-nums",
-                            MONO_TYPES.has(ct as ColumnDataType) && "font-mono",
-                          )}
-                        >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-            {tableFooter}
-          </Table>
-        </WidgetScroll>
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {rows.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  {emptyMessage}
+                </TableCell>
+              </TableRow>
+            ) : enableVirtualization ? (
+              <>
+                {virtualizer.getVirtualItems().length > 0 && (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      style={{
+                        height: `${virtualizer.getVirtualItems()[0]?.start ?? 0}px`,
+                        padding: 0,
+                        border: "none",
+                      }}
+                    />
+                  </tr>
+                )}
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const row = rows[virtualRow.index];
+                  if (!row) return null;
+                  return (
+                    <TableRow
+                      key={row.id}
+                      data-index={virtualRow.index}
+                      data-state={row.getIsSelected() ? "selected" : undefined}
+                    >
+                      {row.getVisibleCells().map((cell) => {
+                        const ct = cell.column.columnDef.meta?.type;
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            className={cn(
+                              NUMERIC_TYPES.has(ct as ColumnDataType) && "text-right tabular-nums",
+                              MONO_TYPES.has(ct as ColumnDataType) && "font-mono",
+                            )}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        );
+                      })}
+                    </TableRow>
+                  );
+                })}
+                {virtualizer.getVirtualItems().length > 0 && (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      style={{
+                        height: `${virtualizer.getTotalSize() - (virtualizer.getVirtualItems().at(-1)?.end ?? 0)}px`,
+                        padding: 0,
+                        border: "none",
+                      }}
+                    />
+                  </tr>
+                )}
+              </>
+            ) : (
+              rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() ? "selected" : undefined}>
+                  {row.getVisibleCells().map((cell) => {
+                    const ct = cell.column.columnDef.meta?.type;
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          NUMERIC_TYPES.has(ct as ColumnDataType) && "text-right tabular-nums",
+                          MONO_TYPES.has(ct as ColumnDataType) && "font-mono",
+                        )}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+          {tableFooter}
+        </Table>
       </div>
     </div>
   );

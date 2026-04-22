@@ -3,6 +3,7 @@
 import * as React from "react";
 import { AlertTriangle } from "lucide-react";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 type ApiStatus = "reachable" | "degraded" | "offline";
 
@@ -31,9 +32,7 @@ export function RuntimeModeStrip() {
         if (data?.status === "ok" || data?.status === "healthy" || res.ok) {
           if (
             data?.degraded_reasons?.length > 0 ||
-            data?.upstream_checks?.some(
-              (c: { status: string }) => c.status !== "ok",
-            )
+            data?.upstream_checks?.some((c: { status: string }) => c.status !== "ok")
           ) {
             setApiStatus("degraded");
           } else {
@@ -77,11 +76,15 @@ export function RuntimeModeStrip() {
 
       {/* Debug drawer */}
       {showDebug && readinessJson && (
-        <div className="px-4 py-2 bg-card/50 border-b border-border/30 max-h-48 overflow-auto">
+        <WidgetScroll
+          axes="both"
+          className="bg-card/50 border-b border-border/30 max-h-48"
+          viewportClassName="px-4 py-2"
+        >
           <pre className="text-[10px] text-muted-foreground whitespace-pre-wrap">
             {JSON.stringify(readinessJson, null, 2)}
           </pre>
-        </div>
+        </WidgetScroll>
       )}
     </>
   );

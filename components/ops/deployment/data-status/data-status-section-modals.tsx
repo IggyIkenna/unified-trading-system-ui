@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import { AlertCircle, AlertTriangle, CheckCircle, CheckCircle2, FileText, Rocket, XCircle } from "lucide-react";
 import { useDataStatusTabCtx } from "./data-status-context";
@@ -392,7 +393,7 @@ export function DataStatusSectionModals() {
             </DialogTitle>
           </DialogHeader>
           <div>
-            <div className="max-h-[60vh] overflow-auto">
+            <WidgetScroll axes="both" className="max-h-[60vh]">
               {fileListingLoading ? (
                 <div className="flex items-center justify-center py-12">
                   <Spinner size="lg" className="h-8 w-8 text-[var(--color-accent-cyan)]" />
@@ -458,7 +459,10 @@ export function DataStatusSectionModals() {
                   {/* Files by Date */}
                   <div className="space-y-1">
                     <h3 className="text-sm font-medium text-[var(--color-text-muted)] mb-2">Files by Date</h3>
-                    <div className="max-h-[300px] overflow-auto border border-[var(--color-border-subtle)] rounded">
+                    <WidgetScroll
+                      axes="both"
+                      className="max-h-[300px] border border-[var(--color-border-subtle)] rounded"
+                    >
                       <table className="w-full text-sm">
                         <thead className="bg-[var(--color-bg-tertiary)] sticky top-0">
                           <tr>
@@ -510,11 +514,11 @@ export function DataStatusSectionModals() {
                           ))}
                         </tbody>
                       </table>
-                    </div>
+                    </WidgetScroll>
                   </div>
                 </div>
               ) : null}
-            </div>
+            </WidgetScroll>
 
             <div className="flex justify-end pt-4 mt-4 border-t border-[var(--color-border-default)]">
               <Button variant="outline" onClick={() => setShowFileListing(false)}>

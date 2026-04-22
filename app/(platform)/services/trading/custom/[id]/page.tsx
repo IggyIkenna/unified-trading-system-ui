@@ -3,6 +3,7 @@
 import { use } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { useWorkspaceStore } from "@/lib/stores/workspace-store";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 interface CustomPanelPageProps {
   params: Promise<{ id: string }>;
@@ -17,9 +18,7 @@ export default function CustomPanelPage({ params }: CustomPanelPageProps) {
       <div className="h-full flex items-center justify-center text-muted-foreground">
         <div className="text-center space-y-2">
           <p className="text-sm font-medium">Panel not found</p>
-          <p className="text-xs">
-            This custom panel may have been deleted or the link is invalid.
-          </p>
+          <p className="text-xs">This custom panel may have been deleted or the link is invalid.</p>
         </div>
       </div>
     );
@@ -28,8 +27,8 @@ export default function CustomPanelPage({ params }: CustomPanelPageProps) {
   const tab = `custom-${id}`;
 
   return (
-    <div className="h-full flex flex-col overflow-auto p-2">
+    <WidgetScroll viewportClassName="p-2">
       <WidgetGrid tab={tab} />
-    </div>
+    </WidgetScroll>
   );
 }

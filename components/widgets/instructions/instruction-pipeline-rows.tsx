@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { ArrowRight, Clock, TrendingDown, TrendingUp } from "lucide-react";
 import type { StrategyInstruction } from "@/lib/types/instructions";
 import {
@@ -39,7 +40,7 @@ export function InstructionPipelineRows({
         </div>
       </div>
 
-      <div className={cn("min-h-0 overflow-y-auto", fillHeight ? "flex-1" : (scrollClassName ?? "max-h-[600px]"))}>
+      <WidgetScroll className={cn("min-h-0", fillHeight ? "flex-1" : (scrollClassName ?? "max-h-[600px]"))}>
         {filteredInstructions.map((inst) => (
           <InstructionPipelineRow
             key={inst.id}
@@ -54,7 +55,7 @@ export function InstructionPipelineRows({
             No instructions match the current filters
           </div>
         )}
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

@@ -15,6 +15,7 @@
 // Row below the ladder: "Automated watchdog — ops only demote on incident".
 
 import * as React from "react";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 interface Stage {
   readonly label: string;
@@ -66,14 +67,10 @@ const STAGES: readonly Stage[] = [
 ];
 
 const TONE_CLASSES: Readonly<Record<Stage["tone"], string>> = {
-  internal:
-    "fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600",
-  external:
-    "fill-sky-50 stroke-sky-400/70 dark:fill-sky-950/40 dark:stroke-sky-500/70",
-  paper:
-    "fill-violet-50 stroke-violet-400/70 dark:fill-violet-950/40 dark:stroke-violet-500/70",
-  live:
-    "fill-emerald-50 stroke-emerald-400/70 dark:fill-emerald-950/40 dark:stroke-emerald-500/70",
+  internal: "fill-zinc-50 stroke-zinc-400 dark:fill-zinc-900 dark:stroke-zinc-600",
+  external: "fill-sky-50 stroke-sky-400/70 dark:fill-sky-950/40 dark:stroke-sky-500/70",
+  paper: "fill-violet-50 stroke-violet-400/70 dark:fill-violet-950/40 dark:stroke-violet-500/70",
+  live: "fill-emerald-50 stroke-emerald-400/70 dark:fill-emerald-950/40 dark:stroke-emerald-500/70",
 };
 
 const TONE_TEXT: Readonly<Record<Stage["tone"], string>> = {
@@ -97,10 +94,8 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
   const LEFT_PAD = 24;
   const LADDER_Y = 170;
 
-  const externalFenceX =
-    LEFT_PAD + 3 * (STAGE_WIDTH + STAGE_GAP) - STAGE_GAP / 2 - 1;
-  const liveFenceX =
-    LEFT_PAD + 6 * (STAGE_WIDTH + STAGE_GAP) - STAGE_GAP / 2 - 1;
+  const externalFenceX = LEFT_PAD + 3 * (STAGE_WIDTH + STAGE_GAP) - STAGE_GAP / 2 - 1;
+  const liveFenceX = LEFT_PAD + 6 * (STAGE_WIDTH + STAGE_GAP) - STAGE_GAP / 2 - 1;
 
   const totalWidth = LEFT_PAD + 8 * (STAGE_WIDTH + STAGE_GAP) + LEFT_PAD;
 
@@ -110,14 +105,11 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
       data-testid="dart-maturity-ladder-diagram"
       aria-labelledby="dart-ladder-diagram-title"
     >
-      <figcaption
-        id="dart-ladder-diagram-title"
-        className="mb-4 text-sm font-semibold text-foreground"
-      >
+      <figcaption id="dart-ladder-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
         8-stage maturity ladder — one slot, one path to live
       </figcaption>
 
-      <div className="w-full overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
         <svg
           viewBox={`0 0 ${totalWidth} 340`}
           preserveAspectRatio="xMidYMid meet"
@@ -126,18 +118,13 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
           className="mx-auto block h-auto w-full min-w-[720px]"
           style={{ maxWidth: `${totalWidth}px` }}
         >
-          <title id="dart-ladder-svg-title">
-            DART strategy maturity ladder
-          </title>
+          <title id="dart-ladder-svg-title">DART strategy maturity ladder</title>
           <desc id="dart-ladder-svg-desc">
-            A strategy slot moves through eight stages: CODE_NOT_WRITTEN,
-            CODE_WRITTEN, CODE_AUDITED (internal only), then BACKTESTED,
-            PAPER_TRADING, PAPER_VALIDATED (externally visible, no real
-            capital), then LIVE_TINY and LIVE_ALLOCATED (real capital). The
-            external-visibility fence sits between CODE_AUDITED and
-            BACKTESTED. The real-capital fence sits between PAPER_VALIDATED
-            and LIVE_TINY. Progression is automated by watchdog policies; ops
-            only demote on incident.
+            A strategy slot moves through eight stages: CODE_NOT_WRITTEN, CODE_WRITTEN, CODE_AUDITED (internal only),
+            then BACKTESTED, PAPER_TRADING, PAPER_VALIDATED (externally visible, no real capital), then LIVE_TINY and
+            LIVE_ALLOCATED (real capital). The external-visibility fence sits between CODE_AUDITED and BACKTESTED. The
+            real-capital fence sits between PAPER_VALIDATED and LIVE_TINY. Progression is automated by watchdog
+            policies; ops only demote on incident.
           </desc>
 
           <defs>
@@ -150,10 +137,7 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
               markerHeight="7"
               orient="auto-start-reverse"
             >
-              <path
-                d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-neutral-500 dark:fill-neutral-400"
-              />
+              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-neutral-500 dark:fill-neutral-400" />
             </marker>
           </defs>
 
@@ -192,11 +176,7 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
           />
 
           {/* Internal band label above CODE_* stages */}
-          <text
-            x={LEFT_PAD}
-            y={88}
-            className="fill-zinc-500 text-[10px] italic dark:fill-zinc-500"
-          >
+          <text x={LEFT_PAD} y={88} className="fill-zinc-500 text-[10px] italic dark:fill-zinc-500">
             internal-only (not visible to external clients)
           </text>
           <line
@@ -326,14 +306,12 @@ export function DartMaturityLadderDiagram(): React.JSX.Element {
             Automated watchdog — 14-day paper gate · first non-zero allocation · ops only demote on incident
           </text>
         </svg>
-      </div>
+      </WidgetScroll>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Research, paper, and live are phase views of one catalogue.
-        A live-allocated slot can be pulled back into research phase for a
-        re-run over a new regime window; a research candidate promotes
-        through paper to live on the same components. Every transition emits
-        a lifecycle event into your audit trail.
+        Research, paper, and live are phase views of one catalogue. A live-allocated slot can be pulled back into
+        research phase for a re-run over a new regime window; a research candidate promotes through paper to live on the
+        same components. Every transition emits a lifecycle event into your audit trail.
       </p>
     </figure>
   );

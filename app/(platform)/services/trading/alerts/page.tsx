@@ -3,13 +3,14 @@
 import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { AlertsDataProvider } from "@/components/widgets/alerts/alerts-data-context";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 function AlertsPageContent() {
   return (
     <AlertsDataProvider>
-      <div className="h-full flex flex-col overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <WidgetGrid tab="alerts" />
-      </div>
+      </WidgetScroll>
     </AlertsDataProvider>
   );
 }

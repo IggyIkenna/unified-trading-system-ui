@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { TerminalEventDomain, TerminalEventSeverity } from "@/components/widgets/terminal/terminal-data-context";
 import { useTerminalData } from "@/components/widgets/terminal/terminal-data-context";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
@@ -58,7 +59,7 @@ export function EventsFeedWidget(_props: WidgetComponentProps) {
           {events.length} events
         </Badge>
       </div>
-      <div className="flex-1 space-y-1 overflow-auto px-3 pb-3">
+      <WidgetScroll className="min-h-0 flex-1" viewportClassName="space-y-1 px-3 pb-3">
         {events.map((evt) => (
           <div
             key={evt.id}
@@ -77,7 +78,7 @@ export function EventsFeedWidget(_props: WidgetComponentProps) {
             </div>
           </div>
         ))}
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

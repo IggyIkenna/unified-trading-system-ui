@@ -703,6 +703,18 @@
   min-height: 100%;
 }
 
+/* Hide native scrollbars on Radix ScrollArea viewports — the themed
+ * WidgetScrollBar thumb overlays on top, so without this rule the browser's
+ * native bar renders AND the themed one renders (double scrollbars). */
+[data-slot="widget-scroll-viewport"],
+[data-slot="scroll-area-viewport"] {
+  scrollbar-width: none;
+}
+[data-slot="widget-scroll-viewport"]::-webkit-scrollbar,
+[data-slot="scroll-area-viewport"]::-webkit-scrollbar {
+  display: none;
+}
+
 [data-slot="scroll-area-viewport"] > div {
   min-height: 100%;
 }

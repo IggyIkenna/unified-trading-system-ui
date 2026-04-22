@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ArrowUpDown, ArrowUp, ArrowDown, Download, Grid3X3 } from "lucide-react";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export interface DimensionDef {
   key: string;
@@ -178,20 +179,22 @@ export function DimensionalGrid<T extends Record<string, unknown>>({
                   <ChevronDown className="size-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="max-h-64 overflow-auto">
-                {dim.values.map((value) => (
-                  <DropdownMenuCheckboxItem
-                    key={value}
-                    checked={pinnedDimensions[dim.key]?.includes(value)}
-                    onCheckedChange={(checked) => {
-                      const current = pinnedDimensions[dim.key] || [];
-                      const updated = checked ? [...current, value] : current.filter((v) => v !== value);
-                      onDimensionPin?.(dim.key, updated);
-                    }}
-                  >
-                    {value}
-                  </DropdownMenuCheckboxItem>
-                ))}
+              <DropdownMenuContent align="start">
+                <WidgetScroll axes="both" className="max-h-64">
+                  {dim.values.map((value) => (
+                    <DropdownMenuCheckboxItem
+                      key={value}
+                      checked={pinnedDimensions[dim.key]?.includes(value)}
+                      onCheckedChange={(checked) => {
+                        const current = pinnedDimensions[dim.key] || [];
+                        const updated = checked ? [...current, value] : current.filter((v) => v !== value);
+                        onDimensionPin?.(dim.key, updated);
+                      }}
+                    >
+                      {value}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </WidgetScroll>
               </DropdownMenuContent>
             </DropdownMenu>
           ))}

@@ -40,7 +40,7 @@ export function PredMarketDetailWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="h-full min-h-0 overflow-auto">
+    <div className="h-full min-h-0">
       <MarketDetailPanel
         market={selectedMarket}
         allMarkets={markets}

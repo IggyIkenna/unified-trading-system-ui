@@ -1,6 +1,7 @@
 "use client";
 
 import { LiveFeedWidget, useLiveFeed } from "@/components/shared/live-feed-widget";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { CRYPTO_VENUES, TRADFI_VENUES } from "@/lib/config/services/markets.config";
@@ -61,7 +62,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
       }
     >
       <div className="border rounded-md overflow-hidden bg-black/20 mx-2 mb-2">
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" className="min-h-0">
           <table className="w-full text-micro font-mono">
             <thead className="bg-muted/30 sticky top-0 z-[1]">
               <tr>
@@ -182,7 +183,7 @@ export function MarketsLiveBookWidget(_props: WidgetComponentProps) {
               ))}
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
       </div>
     </LiveFeedWidget>
   );

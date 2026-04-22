@@ -6,6 +6,7 @@ import { MessageCircle, X, ChevronLeft, ChevronRight, Bot, ExternalLink, Send } 
 import { cn } from "@/lib/utils";
 import { HELP_TREE, type HelpNode } from "@/lib/help/help-tree";
 import { searchHelp } from "@/lib/help/help-search";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 interface ChatMessage {
   id: string;
@@ -115,19 +116,20 @@ export function ChatWidgetTree({ accentColor = "emerald" }: ChatWidgetTreeProps)
 
     const matches = searchHelp(query, 5);
 
-    const botMsg: ChatMessage = matches.length > 0
-      ? {
-          id: `search-bot-${Date.now()}`,
-          role: "bot",
-          content: `I found ${matches.length} topic${matches.length > 1 ? "s" : ""} that might help:`,
-          options: matches,
-        }
-      : {
-          id: `search-bot-${Date.now()}`,
-          role: "bot",
-          content: "I couldn't find a match for that. Try browsing the topics below, or rephrase your question.",
-          options: HELP_TREE,
-        };
+    const botMsg: ChatMessage =
+      matches.length > 0
+        ? {
+            id: `search-bot-${Date.now()}`,
+            role: "bot",
+            content: `I found ${matches.length} topic${matches.length > 1 ? "s" : ""} that might help:`,
+            options: matches,
+          }
+        : {
+            id: `search-bot-${Date.now()}`,
+            role: "bot",
+            content: "I couldn't find a match for that. Try browsing the topics below, or rephrase your question.",
+            options: HELP_TREE,
+          };
 
     setMessages((prev) => [...prev, userMsg, botMsg]);
     setInput("");
@@ -173,25 +175,24 @@ export function ChatWidgetTree({ accentColor = "emerald" }: ChatWidgetTreeProps)
               <ChevronLeft className="size-3.5 inline" />
               Start over
             </button>
-            <button
-              onClick={() => setOpen(false)}
-              className="p-1 rounded hover:bg-muted text-muted-foreground"
-            >
+            <button onClick={() => setOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground">
               <X className="size-4" />
             </button>
           </div>
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-3 min-h-0">
+        <WidgetScroll
+          viewportRef={scrollRef}
+          className="flex-1 min-h-0"
+          viewportClassName="overscroll-contain p-4 space-y-3"
+        >
           {messages.map((msg) => (
             <div key={msg.id}>
               <div
                 className={cn(
                   "max-w-[85%] rounded-lg px-3 py-2 text-[13px] leading-relaxed",
-                  msg.role === "bot"
-                    ? "bg-muted/60 text-foreground mr-auto"
-                    : cn(colors.userBubble, "ml-auto"),
+                  msg.role === "bot" ? "bg-muted/60 text-foreground mr-auto" : cn(colors.userBubble, "ml-auto"),
                 )}
               >
                 <MarkdownLite text={msg.content} />
@@ -201,7 +202,8 @@ export function ChatWidgetTree({ accentColor = "emerald" }: ChatWidgetTreeProps)
                     onClick={() => setOpen(false)}
                     className={cn(
                       "mt-2 flex items-center gap-1.5 text-[11px] font-medium transition-colors",
-                      colors.icon, "hover:underline",
+                      colors.icon,
+                      "hover:underline",
                     )}
                   >
                     <ExternalLink className="size-3 flex-shrink-0" />
@@ -235,10 +237,13 @@ export function ChatWidgetTree({ accentColor = "emerald" }: ChatWidgetTreeProps)
               )}
             </div>
           ))}
-        </div>
+        </WidgetScroll>
 
         {/* Input */}
-        <form onSubmit={handleSubmit} className="flex items-center gap-2 px-3 py-2 border-t border-border/40 flex-shrink-0">
+        <form
+          onSubmit={handleSubmit}
+          className="flex items-center gap-2 px-3 py-2 border-t border-border/40 flex-shrink-0"
+        >
           <input
             ref={inputRef}
             type="text"
@@ -252,9 +257,7 @@ export function ChatWidgetTree({ accentColor = "emerald" }: ChatWidgetTreeProps)
             disabled={!input.trim()}
             className={cn(
               "p-1.5 rounded-md transition-colors",
-              input.trim()
-                ? cn(colors.button, "text-white")
-                : "text-muted-foreground/30",
+              input.trim() ? cn(colors.button, "text-white") : "text-muted-foreground/30",
             )}
           >
             <Send className="size-3.5" />

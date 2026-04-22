@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import { AlertCircle, Calendar, Database, Eye, Rocket } from "lucide-react";
 import { getCompletionBadgeClass, getCompletionColor } from "./category-metrics";
@@ -229,7 +230,11 @@ export function DataStatusFiltersLower() {
 
                   {/* Dropdown Results */}
                   {showInstrumentDropdown && instrumentSearchResults.length > 0 && !selectedInstrument && (
-                    <div className="absolute z-50 w-full mt-1 max-h-64 overflow-auto bg-[var(--color-bg-primary)] border border-[var(--color-border-default)] rounded-lg shadow-lg">
+                    <WidgetScroll
+                      axes="both"
+                      scrollbarSize="thin"
+                      className="absolute z-50 w-full mt-1 max-h-64 bg-[var(--color-bg-primary)] border border-[var(--color-border-default)] rounded-lg shadow-lg"
+                    >
                       {instrumentSearchResults.map((instrument) => (
                         <Button
                           key={instrument.instrument_key}
@@ -256,7 +261,7 @@ export function DataStatusFiltersLower() {
                           </div>
                         </Button>
                       ))}
-                    </div>
+                    </WidgetScroll>
                   )}
                 </div>
 

@@ -10,6 +10,7 @@
  * role across research / paper / live.
  */
 import { ApiError } from "@/components/shared/api-error";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,10 +37,7 @@ import { cn } from "@/lib/utils";
 import { FlaskConical, GitCompare, Grid3X3, Plus, Search } from "lucide-react";
 import * as React from "react";
 
-import {
-  GridSearchDialog,
-  useCompareMode
-} from "@/components/research/shared";
+import { GridSearchDialog, useCompareMode } from "@/components/research/shared";
 import { NewBacktestDialog } from "@/components/research/strategies/new-backtest-dialog";
 import { ComparePanel, DetailPanel } from "@/components/research/strategies/strategy-detail-panel";
 import { BacktestListItem } from "@/components/research/strategies/strategy-list-panel";
@@ -54,12 +52,8 @@ export default function StrategiesPage() {
   const mockDataMode = isMockDataMode();
   const [search, setSearch] = React.useState("");
   const [archetypeFilter, setArchetypeFilter] = React.useState("all");
-  const [v2Family, setV2Family] = React.useState<StrategyFamily | undefined>(
-    undefined,
-  );
-  const [v2Archetype, setV2Archetype] = React.useState<
-    StrategyArchetype | undefined
-  >(undefined);
+  const [v2Family, setV2Family] = React.useState<StrategyFamily | undefined>(undefined);
+  const [v2Archetype, setV2Archetype] = React.useState<StrategyArchetype | undefined>(undefined);
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [shardFilter, setShardFilter] = React.useState("all");
   const [strategyKindFilter, setStrategyKindFilter] = React.useState("all");
@@ -117,9 +111,7 @@ export default function StrategiesPage() {
     }
     if (archetypeFilter !== "all") items = items.filter((b) => b.archetype === archetypeFilter);
     if (v2Archetype)
-      items = items.filter(
-        (b) => ((b.archetype as string | undefined) ?? "") === (v2Archetype as string),
-      );
+      items = items.filter((b) => ((b.archetype as string | undefined) ?? "") === (v2Archetype as string));
     if (statusFilter !== "all") items = items.filter((b) => b.status === statusFilter);
     if (shardFilter !== "all") items = items.filter((b) => b.shard === shardFilter);
     if (strategyKindFilter !== "all") {
@@ -209,13 +201,8 @@ export default function StrategiesPage() {
             </Button>
           </div>
         </div>
-        <div
-          className="flex flex-wrap items-center gap-3"
-          data-testid="research-strategies-family-picker"
-        >
-          <span className="text-xs uppercase tracking-wide text-muted-foreground">
-            v2 scope
-          </span>
+        <div className="flex flex-wrap items-center gap-3" data-testid="research-strategies-family-picker">
+          <span className="text-xs uppercase tracking-wide text-muted-foreground">v2 scope</span>
           <FamilyArchetypePicker
             idPrefix="research-strategies"
             availabilityFilter="allowed"
@@ -297,11 +284,9 @@ export default function StrategiesPage() {
       {/* Two-Panel Layout */}
       <div className="flex-1 flex min-h-0 px-6 pb-6 gap-4">
         {/* Left Panel: Backtest List */}
-        <div
-          className={cn(
-            "flex flex-col gap-2 overflow-y-auto pr-1",
-            showDetail || showCompare ? "w-[340px] shrink-0" : "flex-1",
-          )}
+        <WidgetScroll
+          className={cn(showDetail || showCompare ? "w-[340px] shrink-0" : "flex-1")}
+          viewportClassName="flex flex-col gap-2 pr-1"
         >
           {btLoading ? (
             Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)
@@ -328,7 +313,7 @@ export default function StrategiesPage() {
               />
             ))
           )}
-        </div>
+        </WidgetScroll>
 
         {/* Right Panel: Detail or Compare */}
         {(showDetail || showCompare) && (

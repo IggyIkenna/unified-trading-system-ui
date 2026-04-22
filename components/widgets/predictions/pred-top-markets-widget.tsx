@@ -18,7 +18,7 @@ export function PredTopMarketsWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-2 h-full min-h-0 overflow-auto">
+    <div className="flex flex-col gap-2 h-full min-h-0">
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5 shrink-0">
         <BarChart3 className="size-3.5" />
         Top Markets by Volume

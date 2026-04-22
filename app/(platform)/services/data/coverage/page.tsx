@@ -2,6 +2,7 @@
 
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 /**
  * /services/data/coverage — Cross-stage coverage matrix.
  * User can select row/column dimensions to compare Instruments, Raw, Processed.
@@ -274,7 +275,8 @@ export default function CoveragePage() {
 
         {/* Coverage Matrix Table */}
         <Card>
-          <CardContent className="pt-4 px-0 overflow-x-auto">
+          <CardContent className="pt-4 px-0">
+            <WidgetScroll axes="horizontal" scrollbarSize="thin">
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-border">
@@ -355,6 +357,7 @@ export default function CoveragePage() {
                 ))}
               </tbody>
             </table>
+            </WidgetScroll>
           </CardContent>
         </Card>
 

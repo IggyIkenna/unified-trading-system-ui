@@ -71,7 +71,7 @@ export function OrderEntryWidget(_props: WidgetComponentProps) {
 
   return (
     <Card className="h-full border-0 rounded-none flex flex-col">
-      <FormWidget error={error} onClearError={clearError} className="flex-1 overflow-auto px-3 pb-3 pt-2">
+      <FormWidget error={error} onClearError={clearError} className="flex-1 px-3 pb-3 pt-2">
         {/* Instrument + account */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">

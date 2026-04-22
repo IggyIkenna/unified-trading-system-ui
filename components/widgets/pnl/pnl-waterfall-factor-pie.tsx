@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer, Sector, Tooltip } from "recharts";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   FactorTooltipCard,
   NEG_FILL,
@@ -70,7 +71,7 @@ function PieLegend({
   onHover,
 }: PieLegendProps) {
   return (
-    <div className="w-[44%] min-w-[180px] max-w-[260px] shrink-0 overflow-auto pr-0.5">
+    <WidgetScroll className="w-[44%] min-w-[180px] max-w-[260px] shrink-0" viewportClassName="pr-0.5">
       <div className="grid grid-cols-[8px_1fr_auto_auto] items-center gap-x-2 text-nano uppercase tracking-[0.08em] text-muted-foreground/60 border-b border-border/60 pb-1 mb-1 sticky top-0 bg-background/95 backdrop-blur-sm">
         <span />
         <span>Factor</span>
@@ -129,7 +130,7 @@ function PieLegend({
           </button>
         )}
       </div>
-    </div>
+    </WidgetScroll>
   );
 }
 

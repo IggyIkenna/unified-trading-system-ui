@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { Prediction } from "@/components/trading/sports/types";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { cn } from "@/lib/utils";
 import { useSportsData } from "./sports-data-context";
@@ -131,7 +132,7 @@ export function SportsPredictionsWidget(_props: WidgetComponentProps) {
         <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Model Predictions</span>
         <span className="ml-auto text-nano text-muted-foreground/60">{filtered.length} upcoming</span>
       </div>
-      <div className="flex-1 overflow-y-auto p-2 space-y-2">
+      <WidgetScroll className="min-h-0 flex-1" viewportClassName="p-2 space-y-2">
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-32 text-xs text-muted-foreground">
             No predictions for current filter
@@ -142,7 +143,7 @@ export function SportsPredictionsWidget(_props: WidgetComponentProps) {
             return <PredictionCard key={pred.fixtureId} pred={pred} fixtureLeague={fixture?.league} />;
           })
         )}
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

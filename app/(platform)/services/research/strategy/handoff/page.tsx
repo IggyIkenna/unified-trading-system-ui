@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,7 @@ export default function StrategyHandoffPage() {
   }
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <WidgetScroll className="flex-1" viewportClassName="p-6">
       <div className="max-w-[900px] mx-auto space-y-6">
         <PageHeader
           title={
@@ -205,6 +206,6 @@ export default function StrategyHandoffPage() {
           </p>
         )}
       </div>
-    </div>
+    </WidgetScroll>
   );
 }

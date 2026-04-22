@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 /**
  * /services/observe/scenarios — What-If / Scenario Analysis.
  * Scenario builder with shock parameters, historical replay,
@@ -634,7 +635,7 @@ function StressMatrix() {
           </p>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
             <table className="w-full text-xs">
               <thead>
                 <tr>
@@ -686,7 +687,7 @@ function StressMatrix() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
           {/* Legend */}
           <div className="flex items-center gap-4 mt-4 text-[10px] text-muted-foreground">
             <span className="flex items-center gap-1">

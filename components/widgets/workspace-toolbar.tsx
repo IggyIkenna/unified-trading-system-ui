@@ -1,6 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -330,22 +331,24 @@ export function WorkspaceToolbar({ tab }: WorkspaceToolbarProps) {
                 <span className="text-[10px] text-muted-foreground">{snapshots.length}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 max-h-64 overflow-y-auto">
-              {snapshots
-                .slice()
-                .reverse()
-                .map((snap) => (
-                  <DropdownMenuItem
-                    key={snap.id}
-                    className="flex items-center justify-between text-xs"
-                    onClick={() => restoreSnapshot(tab, snap.id)}
-                  >
-                    <span className="truncate">{snap.name}</span>
-                    <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
-                      {new Date(snap.createdAt).toLocaleTimeString()}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
+            <DropdownMenuContent align="end" className="w-56">
+              <WidgetScroll className="max-h-64">
+                {snapshots
+                  .slice()
+                  .reverse()
+                  .map((snap) => (
+                    <DropdownMenuItem
+                      key={snap.id}
+                      className="flex items-center justify-between text-xs"
+                      onClick={() => restoreSnapshot(tab, snap.id)}
+                    >
+                      <span className="truncate">{snap.name}</span>
+                      <span className="text-[10px] text-muted-foreground ml-2 shrink-0">
+                        {new Date(snap.createdAt).toLocaleTimeString()}
+                      </span>
+                    </DropdownMenuItem>
+                  ))}
+              </WidgetScroll>
             </DropdownMenuContent>
           </DropdownMenu>
         )}

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMLRunComparison } from "@/hooks/api/use-ml-models";
 import { ApiError } from "@/components/shared/api-error";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import type { RunComparison, UnifiedTrainingRun } from "@/lib/types/ml";
 import { cn } from "@/lib/utils";
 import { Plus, X } from "lucide-react";
@@ -204,51 +205,53 @@ function ConfigDiffMultiTable({
   }
 
   return (
-    <div className="rounded-lg border border-border/50 overflow-x-auto">
-      <table className="w-full min-w-[520px] text-[10px] border-collapse">
-        <thead>
-          <tr className="border-b border-border/50 bg-muted/20 text-[9px] font-medium text-muted-foreground uppercase">
-            <th className="text-left px-2 py-1.5 w-[100px] sticky left-0 z-10 bg-muted/20 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.4)]">
-              Field
-            </th>
-            <th className="text-left px-2 py-1.5 min-w-[88px] text-blue-400">Baseline</th>
-            {compares.map((cr, i) => {
-              const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
-              return (
-                <th
-                  key={cr.id}
-                  className={`text-left px-2 py-1.5 border-l border-border/30 min-w-[100px] max-w-[200px] ${st.label}`}
-                  title={cr.name}
-                >
-                  <span className="line-clamp-2">{cr.name.length > 24 ? `${cr.name.slice(0, 22)}…` : cr.name}</span>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {matrix.map((row) => (
-            <tr key={row.key} className="border-b border-border/20 hover:bg-muted/10 align-top">
-              <td className="px-2 py-1.5 text-muted-foreground font-mono text-[9px] sticky left-0 z-[1] bg-background shadow-[2px_0_8px_-4px_rgba(0,0,0,0.35)] max-w-[140px]">
-                {row.key}
-              </td>
-              <td className="px-2 py-1.5 font-mono text-blue-400 break-words">{row.baseline}</td>
-              {row.values.map((v, i) => {
+    <div className="rounded-lg border border-border/50">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin">
+        <table className="w-full min-w-[520px] text-[10px] border-collapse">
+          <thead>
+            <tr className="border-b border-border/50 bg-muted/20 text-[9px] font-medium text-muted-foreground uppercase">
+              <th className="text-left px-2 py-1.5 w-[100px] sticky left-0 z-10 bg-muted/20 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.4)]">
+                Field
+              </th>
+              <th className="text-left px-2 py-1.5 min-w-[88px] text-blue-400">Baseline</th>
+              {compares.map((cr, i) => {
                 const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
-                const diff = v !== row.baseline;
                 return (
-                  <td
-                    key={`${row.key}-${compares[i]?.id ?? i}`}
-                    className={`px-2 py-1.5 font-mono border-l border-border/30 break-words ${st.value} ${diff ? "bg-amber-500/5" : ""}`}
+                  <th
+                    key={cr.id}
+                    className={`text-left px-2 py-1.5 border-l border-border/30 min-w-[100px] max-w-[200px] ${st.label}`}
+                    title={cr.name}
                   >
-                    {v}
-                  </td>
+                    <span className="line-clamp-2">{cr.name.length > 24 ? `${cr.name.slice(0, 22)}…` : cr.name}</span>
+                  </th>
                 );
               })}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {matrix.map((row) => (
+              <tr key={row.key} className="border-b border-border/20 hover:bg-muted/10 align-top">
+                <td className="px-2 py-1.5 text-muted-foreground font-mono text-[9px] sticky left-0 z-[1] bg-background shadow-[2px_0_8px_-4px_rgba(0,0,0,0.35)] max-w-[140px]">
+                  {row.key}
+                </td>
+                <td className="px-2 py-1.5 font-mono text-blue-400 break-words">{row.baseline}</td>
+                {row.values.map((v, i) => {
+                  const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
+                  const diff = v !== row.baseline;
+                  return (
+                    <td
+                      key={`${row.key}-${compares[i]?.id ?? i}`}
+                      className={`px-2 py-1.5 font-mono border-l border-border/30 break-words ${st.value} ${diff ? "bg-amber-500/5" : ""}`}
+                    >
+                      {v}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </WidgetScroll>
     </div>
   );
 }
@@ -333,120 +336,124 @@ export function RunComparisonView({
   ] as const;
 
   return (
-    <div className="space-y-3 max-h-[min(70vh,560px)] overflow-y-auto pr-1">
+    <WidgetScroll className="max-h-[min(70vh,560px)]" viewportClassName="space-y-3 pr-1">
       {compIsError && compareIds.length > 0 ? (
         <ApiError error={compError as Error} onRetry={() => void refetchComp()} title="Failed to load run comparison" />
       ) : null}
       {fmA && runs.length > 0 && (
-        <div className="rounded-lg border border-border/50 overflow-x-auto">
-          <table className="w-full min-w-[520px] text-[10px] border-collapse">
-            <thead>
-              <tr className="border-b border-border/50 bg-muted/20 text-[9px] font-medium text-muted-foreground uppercase">
-                <th className="text-left px-2 py-1.5 w-[88px]">Metric</th>
-                <th className="text-left px-2 py-1.5 min-w-[72px]">Baseline</th>
-                {runs.map((cr, i) => {
-                  const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
-                  return (
-                    <React.Fragment key={cr.id}>
-                      <th
-                        colSpan={4}
-                        className={`text-center px-1 py-1 border-l border-border/40 ${st.label}`}
-                        title={cr.name}
-                      >
-                        {cr.name.length > 22 ? `${cr.name.slice(0, 20)}…` : cr.name}
-                      </th>
+        <div className="rounded-lg border border-border/50">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
+            <table className="w-full min-w-[520px] text-[10px] border-collapse">
+              <thead>
+                <tr className="border-b border-border/50 bg-muted/20 text-[9px] font-medium text-muted-foreground uppercase">
+                  <th className="text-left px-2 py-1.5 w-[88px]">Metric</th>
+                  <th className="text-left px-2 py-1.5 min-w-[72px]">Baseline</th>
+                  {runs.map((cr, i) => {
+                    const st = COMPARE_RUN_STYLES[i % COMPARE_RUN_STYLES.length];
+                    return (
+                      <React.Fragment key={cr.id}>
+                        <th
+                          colSpan={4}
+                          className={`text-center px-1 py-1 border-l border-border/40 ${st.label}`}
+                          title={cr.name}
+                        >
+                          {cr.name.length > 22 ? `${cr.name.slice(0, 20)}…` : cr.name}
+                        </th>
+                      </React.Fragment>
+                    );
+                  })}
+                </tr>
+                <tr className="border-b border-border/40 bg-muted/10 text-[9px] text-muted-foreground">
+                  <th className="px-2 py-1" />
+                  <th className="px-2 py-1 text-left font-normal">Value</th>
+                  {runs.map((cr) => (
+                    <React.Fragment key={`${cr.id}-sub`}>
+                      <th className="border-l border-border/30 px-1 py-1 text-center font-normal w-[72px]">Value</th>
+                      <th className="px-1 py-1 text-center font-normal">Δ</th>
+                      <th className="px-1 py-1 text-center font-normal">p</th>
+                      <th className="px-1 py-1 text-center font-normal">Sig</th>
                     </React.Fragment>
-                  );
-                })}
-              </tr>
-              <tr className="border-b border-border/40 bg-muted/10 text-[9px] text-muted-foreground">
-                <th className="px-2 py-1" />
-                <th className="px-2 py-1 text-left font-normal">Value</th>
-                {runs.map((cr) => (
-                  <React.Fragment key={`${cr.id}-sub`}>
-                    <th className="border-l border-border/30 px-1 py-1 text-center font-normal w-[72px]">Value</th>
-                    <th className="px-1 py-1 text-center font-normal">Δ</th>
-                    <th className="px-1 py-1 text-center font-normal">p</th>
-                    <th className="px-1 py-1 text-center font-normal">Sig</th>
-                  </React.Fragment>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {metricRows.map((row) => {
-                const fmt = (v: number) =>
-                  "pct" in row && row.pct
-                    ? `${formatPercent(v * 100, 1)}`
-                    : `${formatNumber(v, 2)}${"suffix" in row && row.suffix ? row.suffix : ""}`;
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {metricRows.map((row) => {
+                  const fmt = (v: number) =>
+                    "pct" in row && row.pct
+                      ? `${formatPercent(v * 100, 1)}`
+                      : `${formatNumber(v, 2)}${"suffix" in row && row.suffix ? row.suffix : ""}`;
 
-                const baseVal = row.get(fmA);
+                  const baseVal = row.get(fmA);
 
-                return (
-                  <tr key={row.key} className="border-b border-border/20 hover:bg-muted/10">
-                    <td className="px-2 py-1.5 text-muted-foreground truncate">{row.label}</td>
-                    <td className="px-2 py-1.5 font-mono text-blue-400">{fmt(baseVal)}</td>
-                    {runs.map((cr, ri) => {
-                      const st = COMPARE_RUN_STYLES[ri % COMPARE_RUN_STYLES.length];
-                      const fmB = cr.analysis?.financial_metrics;
-                      const comp = comparisons.find((c) => c.metric === row.key && c.run_b_id === cr.id);
-                      if (!fmB) {
+                  return (
+                    <tr key={row.key} className="border-b border-border/20 hover:bg-muted/10">
+                      <td className="px-2 py-1.5 text-muted-foreground truncate">{row.label}</td>
+                      <td className="px-2 py-1.5 font-mono text-blue-400">{fmt(baseVal)}</td>
+                      {runs.map((cr, ri) => {
+                        const st = COMPARE_RUN_STYLES[ri % COMPARE_RUN_STYLES.length];
+                        const fmB = cr.analysis?.financial_metrics;
+                        const comp = comparisons.find((c) => c.metric === row.key && c.run_b_id === cr.id);
+                        if (!fmB) {
+                          return (
+                            <React.Fragment key={cr.id}>
+                              <td
+                                colSpan={4}
+                                className="border-l border-border/30 px-2 py-1.5 text-muted-foreground text-center"
+                              >
+                                —
+                              </td>
+                            </React.Fragment>
+                          );
+                        }
+                        const bVal = row.get(fmB);
+                        const delta = bVal - baseVal;
+                        const lowerIsBetter = "lower" in row && row.lower === true;
+                        const better = lowerIsBetter ? delta < 0 : delta > 0;
+                        const suffix = "suffix" in row && row.suffix ? row.suffix : "";
+
                         return (
                           <React.Fragment key={cr.id}>
+                            <td className={`border-l border-border/30 px-2 py-1.5 font-mono ${st.value}`}>
+                              {fmt(bVal)}
+                            </td>
                             <td
-                              colSpan={4}
-                              className="border-l border-border/30 px-2 py-1.5 text-muted-foreground text-center"
+                              className={`px-1 py-1.5 font-mono text-center ${better ? "text-emerald-400" : "text-red-400"}`}
                             >
-                              —
+                              {delta > 0 ? "+" : ""}
+                              {"pct" in row && row.pct
+                                ? formatPercent(delta * 100, 1)
+                                : `${formatNumber(delta, 2)}${suffix}`}
+                            </td>
+                            <td className="px-1 py-1.5 font-mono text-muted-foreground text-[9px] text-center">
+                              {compLoading ? "…" : comp ? formatNumber(comp.p_value, 3) : "—"}
+                            </td>
+                            <td className="px-1 py-1.5 text-center">
+                              {compLoading ? (
+                                "…"
+                              ) : comp?.is_significant ? (
+                                <Badge
+                                  variant="outline"
+                                  className="h-5 px-1 text-[9px] bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                >
+                                  Y
+                                </Badge>
+                              ) : comp ? (
+                                <Badge variant="outline" className="h-5 px-1 text-[9px] bg-zinc-500/15 text-zinc-400">
+                                  N
+                                </Badge>
+                              ) : (
+                                "—"
+                              )}
                             </td>
                           </React.Fragment>
                         );
-                      }
-                      const bVal = row.get(fmB);
-                      const delta = bVal - baseVal;
-                      const lowerIsBetter = "lower" in row && row.lower === true;
-                      const better = lowerIsBetter ? delta < 0 : delta > 0;
-                      const suffix = "suffix" in row && row.suffix ? row.suffix : "";
-
-                      return (
-                        <React.Fragment key={cr.id}>
-                          <td className={`border-l border-border/30 px-2 py-1.5 font-mono ${st.value}`}>{fmt(bVal)}</td>
-                          <td
-                            className={`px-1 py-1.5 font-mono text-center ${better ? "text-emerald-400" : "text-red-400"}`}
-                          >
-                            {delta > 0 ? "+" : ""}
-                            {"pct" in row && row.pct
-                              ? formatPercent(delta * 100, 1)
-                              : `${formatNumber(delta, 2)}${suffix}`}
-                          </td>
-                          <td className="px-1 py-1.5 font-mono text-muted-foreground text-[9px] text-center">
-                            {compLoading ? "…" : comp ? formatNumber(comp.p_value, 3) : "—"}
-                          </td>
-                          <td className="px-1 py-1.5 text-center">
-                            {compLoading ? (
-                              "…"
-                            ) : comp?.is_significant ? (
-                              <Badge
-                                variant="outline"
-                                className="h-5 px-1 text-[9px] bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                              >
-                                Y
-                              </Badge>
-                            ) : comp ? (
-                              <Badge variant="outline" className="h-5 px-1 text-[9px] bg-zinc-500/15 text-zinc-400">
-                                N
-                              </Badge>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
-                        </React.Fragment>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </WidgetScroll>
         </div>
       )}
 
@@ -454,6 +461,6 @@ export function RunComparisonView({
         <p className="text-[10px] font-medium text-muted-foreground uppercase">Config diff (vs baseline)</p>
         <ConfigDiffMultiTable baseline={baselineRun} compares={runs} />
       </div>
-    </div>
+    </WidgetScroll>
   );
 }

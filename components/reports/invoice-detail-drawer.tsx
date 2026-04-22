@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFo
 import { useInvoice, useTransitionInvoice, VALID_TRANSITIONS } from "@/hooks/api/use-invoices";
 import type { Invoice, InvoiceStatus, TransitionAction } from "@/hooks/api/use-invoices";
 import { Download, Loader2 } from "lucide-react";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 interface InvoiceDetailDrawerProps {
   invoiceId: string | null;
@@ -17,8 +18,7 @@ interface InvoiceDetailDrawerProps {
 const STATUS_BADGE_CLASS: Record<InvoiceStatus, string> = {
   draft: "bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700",
   issued: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
-  accepted:
-    "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
+  accepted: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
   paid: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
   disputed: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
   voided: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
@@ -82,14 +82,11 @@ function DrawerBody({ invoice }: { invoice: Invoice }) {
         <SheetDescription>{invoice.description}</SheetDescription>
       </SheetHeader>
 
-      <div className="flex-1 overflow-y-auto px-4 space-y-5">
+      <WidgetScroll className="flex-1" viewportClassName="px-4 space-y-5">
         {/* Detail Grid */}
         <div className="space-y-1">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Details</h4>
-          <DetailRow
-            label="Type"
-            value={invoice.type === "performance_fee" ? "Performance Fee" : "Management Fee"}
-          />
+          <DetailRow label="Type" value={invoice.type === "performance_fee" ? "Performance Fee" : "Management Fee"} />
           <DetailRow label="Period" value={invoice.period_month} />
           <DetailRow label="Issued At" value={formatDate(invoice.issued_at)} />
           <DetailRow label="Due Date" value={formatDate(invoice.due_date)} />
@@ -106,7 +103,9 @@ function DrawerBody({ invoice }: { invoice: Invoice }) {
           <DetailRow
             label="P&L"
             value={
-              <span className={invoice.pnl >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+              <span
+                className={invoice.pnl >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}
+              >
                 {formatCurrency(invoice.pnl, invoice.currency)}
               </span>
             }
@@ -136,9 +135,7 @@ function DrawerBody({ invoice }: { invoice: Invoice }) {
           <DetailRow label="Tax" value={formatCurrency(invoice.tax, invoice.currency)} />
           <DetailRow
             label="Total"
-            value={
-              <span className="text-base font-semibold">{formatCurrency(invoice.total, invoice.currency)}</span>
-            }
+            value={<span className="text-base font-semibold">{formatCurrency(invoice.total, invoice.currency)}</span>}
           />
         </div>
 
@@ -164,7 +161,7 @@ function DrawerBody({ invoice }: { invoice: Invoice }) {
             </div>
           </>
         )}
-      </div>
+      </WidgetScroll>
 
       <SheetFooter className="border-t border-border pt-4">
         <div className="flex flex-wrap gap-2 w-full">

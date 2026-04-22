@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { PositionsDataProvider, usePositionsData } from "@/components/widgets/positions/positions-data-context";
 import { TradingFamilyFilterBanner } from "@/components/architecture-v2/trading-family-filter-banner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 /**
  * Positions page. Wraps the widget grid with a FamilyArchetypePicker banner
@@ -24,7 +25,7 @@ function PositionsFilterBanner() {
 function PositionsPageContent() {
   return (
     <PositionsDataProvider>
-      <div className="h-full flex flex-col overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <div className="px-2 pb-2 text-xs text-muted-foreground">
           <span>Position views:</span>{" "}
           <Link className="text-primary hover:underline" href="/services/trading/positions">
@@ -39,7 +40,7 @@ function PositionsPageContent() {
           <PositionsFilterBanner />
         </div>
         <WidgetGrid tab="positions" />
-      </div>
+      </WidgetScroll>
     </PositionsDataProvider>
   );
 }

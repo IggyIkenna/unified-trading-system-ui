@@ -1,5 +1,6 @@
 "use client";
 
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import type { MonthlyReturn } from "@/lib/types/backtest-analytics";
 import { formatPercent } from "@/lib/utils/formatters";
@@ -36,7 +37,7 @@ export function MonthlyReturnsHeatmap({ monthlyReturns, className }: MonthlyRetu
   return (
     <div className={cn("space-y-2", className)}>
       <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Monthly Returns (%)</h4>
-      <div className="overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin">
         <table className="w-full border-collapse text-[10px] sm:text-xs">
           <thead>
             <tr>
@@ -74,7 +75,7 @@ export function MonthlyReturnsHeatmap({ monthlyReturns, className }: MonthlyRetu
             ))}
           </tbody>
         </table>
-      </div>
+      </WidgetScroll>
       <div className="flex flex-wrap gap-3 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1">
           <span className="size-2 rounded-sm bg-emerald-500/90" /> Strong +

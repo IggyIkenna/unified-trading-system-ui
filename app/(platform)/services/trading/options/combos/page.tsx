@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -245,7 +246,7 @@ export default function ComboBuilderPage() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <WidgetScroll className="flex-1" viewportClassName="p-4 space-y-4">
         {/* Strategy template selector */}
         <Card className="py-4">
           <CardContent className="px-4 space-y-3">
@@ -532,7 +533,7 @@ export default function ComboBuilderPage() {
             </Card>
           </div>
         )}
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

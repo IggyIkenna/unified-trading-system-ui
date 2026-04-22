@@ -21,7 +21,7 @@ export function PnLAttributionWidget(_props: WidgetComponentProps) {
     );
   const { pnlComponents, totalPnl, coreLoading } = ctx;
   return (
-    <div className="p-3 h-full overflow-auto">
+    <div className="p-3">
       <div className="flex justify-end mb-2">
         <Link href="/services/trading/pnl">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
@@ -54,7 +54,7 @@ export function AlertsPreviewWidget(_props: WidgetComponentProps) {
     );
   const { mockAlerts, alertsLoading } = ctx;
   return (
-    <div className="p-3 h-full overflow-auto">
+    <div className="p-3">
       <div className="flex justify-end mb-2">
         <Link href="/services/trading/alerts">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
@@ -110,7 +110,7 @@ export function RecentFillsWidget(_props: WidgetComponentProps) {
     : (((ordersData as Record<string, unknown> | null)?.orders ?? []) as Array<Record<string, unknown>>);
 
   return (
-    <div className="p-3 h-full overflow-auto">
+    <div className="p-3">
       <div className="flex justify-end mb-2">
         <Link href="/services/trading/orders">
           <Button variant="ghost" size="sm" className="h-7 text-xs">
@@ -166,7 +166,7 @@ export function HealthGridWidget(_props: WidgetComponentProps) {
     );
   const { allMockServices, coreLoading } = ctx;
   return (
-    <div className="p-3 h-full overflow-auto">
+    <div className="p-3">
       <div className="flex justify-end mb-2">
         <Link href="/services/observe/health">
           <Button variant="ghost" size="sm" className="h-7 text-xs">

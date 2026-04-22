@@ -2,6 +2,7 @@
 
 import { OctagonX } from "lucide-react";
 import { ApiError } from "@/components/shared/api-error";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { RiskDataProvider } from "@/components/widgets/risk/risk-data-context";
@@ -45,11 +46,11 @@ export default function RiskPage() {
           </div>
         </div>
       )}
-      <div className="flex-1 overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <RiskDataProvider value={riskData}>
           <WidgetGrid tab="risk" />
         </RiskDataProvider>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

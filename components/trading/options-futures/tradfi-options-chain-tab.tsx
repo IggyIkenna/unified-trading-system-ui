@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -209,7 +210,7 @@ export function TradFiOptionsChainTab({
       </div>
 
       {/* Chain table */}
-      <div className="rounded-md border overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="rounded-md border">
         <table className="w-full text-xs border-collapse">
           <thead>
             <tr className="bg-muted/30">
@@ -291,7 +292,7 @@ export function TradFiOptionsChainTab({
             })}
           </tbody>
         </table>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

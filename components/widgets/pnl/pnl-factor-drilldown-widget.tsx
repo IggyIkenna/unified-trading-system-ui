@@ -32,7 +32,7 @@ function FactorSummaryTable() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-auto">
+      <div className="flex-1 min-h-0">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-background z-10">
             <tr className="text-micro text-muted-foreground uppercase tracking-wider border-b border-border">
@@ -143,7 +143,7 @@ export function PnlFactorDrilldownWidget(_props: WidgetComponentProps) {
       </div>
 
       {selectedFactorData ? (
-        <div className="space-y-4 flex-1 min-h-0 overflow-auto">
+        <div className="space-y-4 flex-1 min-h-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-2 min-w-0">
               <h4 className="text-xs font-medium text-muted-foreground">By strategy</h4>

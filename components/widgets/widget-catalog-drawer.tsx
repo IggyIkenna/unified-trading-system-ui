@@ -5,6 +5,7 @@ import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { isTradingEntitlement, checkTradingEntitlement, type TradingEntitlement } from "@/lib/config/auth";
 import { useAuth } from "@/hooks/use-auth";
 import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-store";
@@ -82,117 +83,119 @@ function WidgetDetailPanel({
   const isDisabled = !hasAccess || (def.singleton && isPlaced);
 
   return (
-    <div className="p-4 space-y-4 overflow-y-auto h-full">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <div
-            className={cn(
-              "flex size-9 items-center justify-center rounded-lg shrink-0",
-              hasAccess ? "bg-accent" : "bg-amber-500/10",
-            )}
-          >
-            {hasAccess ? (
-              <def.icon className="size-4.5 text-foreground" />
-            ) : (
-              <Lock className="size-4.5 text-amber-500" />
-            )}
+    <WidgetScroll className="h-full">
+      <div className="p-4 space-y-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "flex size-9 items-center justify-center rounded-lg shrink-0",
+                hasAccess ? "bg-accent" : "bg-amber-500/10",
+              )}
+            >
+              {hasAccess ? (
+                <def.icon className="size-4.5 text-foreground" />
+              ) : (
+                <Lock className="size-4.5 text-amber-500" />
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold">{def.label}</p>
+              <p className="text-[10px] text-muted-foreground font-mono">{def.id}</p>
+            </div>
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold">{def.label}</p>
-            <p className="text-[10px] text-muted-foreground font-mono">{def.id}</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">{def.description}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <p className="text-muted-foreground mb-1">Category</p>
+            <p className="font-medium">{def.category}</p>
           </div>
-        </div>
-        <p className="text-xs text-muted-foreground leading-relaxed">{def.description}</p>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 text-xs">
-        <div>
-          <p className="text-muted-foreground mb-1">Category</p>
-          <p className="font-medium">{def.category}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground mb-1">Default size</p>
-          <p className="font-mono">
-            {def.defaultW} x {def.defaultH}
-          </p>
-        </div>
-        <div>
-          <p className="text-muted-foreground mb-1">Min size</p>
-          <p className="font-mono">
-            {def.minW} x {def.minH}
-          </p>
-        </div>
-        <div>
-          <p className="text-muted-foreground mb-1">Singleton</p>
-          <p>{def.singleton ? "Yes" : "No"}</p>
-        </div>
-      </div>
-
-      {def.availableOn.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Available on</p>
-          <div className="flex flex-wrap gap-1">
-            {def.availableOn.map((t) => (
-              <Badge
-                key={t}
-                variant="outline"
-                className={cn("text-[10px] h-5 px-1.5", t === tab && "border-primary/50 text-primary")}
-              >
-                {t}
-              </Badge>
-            ))}
+          <div>
+            <p className="text-muted-foreground mb-1">Default size</p>
+            <p className="font-mono">
+              {def.defaultW} x {def.defaultH}
+            </p>
+          </div>
+          <div>
+            <p className="text-muted-foreground mb-1">Min size</p>
+            <p className="font-mono">
+              {def.minW} x {def.minH}
+            </p>
+          </div>
+          <div>
+            <p className="text-muted-foreground mb-1">Singleton</p>
+            <p>{def.singleton ? "Yes" : "No"}</p>
           </div>
         </div>
-      )}
 
-      {def.requiredEntitlements.length > 0 && (
-        <div className="space-y-1.5">
-          <p className="text-xs text-muted-foreground">Required entitlements</p>
-          <div className="flex flex-wrap gap-1">
-            {def.requiredEntitlements.map((e) => {
-              const label = isTradingEntitlement(e) ? `${e.domain}/${e.tier}` : e;
-              return (
+        {def.availableOn.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Available on</p>
+            <div className="flex flex-wrap gap-1">
+              {def.availableOn.map((t) => (
                 <Badge
-                  key={label}
+                  key={t}
                   variant="outline"
-                  className={cn(
-                    "text-[10px] h-5 px-1.5",
-                    hasAccess ? "border-emerald-400/30 text-emerald-400" : "border-amber-400/30 text-amber-400",
-                  )}
+                  className={cn("text-[10px] h-5 px-1.5", t === tab && "border-primary/50 text-primary")}
                 >
-                  {hasAccess ? <Check className="size-2.5 mr-0.5" /> : <Lock className="size-2.5 mr-0.5" />}
-                  {label}
+                  {t}
                 </Badge>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {!hasAccess && (
-        <div className="rounded-lg border border-amber-400/20 bg-amber-400/5 p-3 text-xs">
-          <div className="flex items-center gap-2 text-amber-400 font-medium mb-1">
-            <Lock className="size-3" />
-            Subscription required
-          </div>
-          <p className="text-muted-foreground">Upgrade your subscription to unlock this widget.</p>
-        </div>
-      )}
-
-      <Button size="sm" className="w-full gap-2" disabled={isDisabled} onClick={() => onAdd(def.id)}>
-        {def.singleton && isPlaced ? (
-          <>
-            <Check className="size-3.5" />
-            Already added
-          </>
-        ) : (
-          <>
-            <Plus className="size-3.5" />
-            Add to Workspace
-          </>
         )}
-      </Button>
-    </div>
+
+        {def.requiredEntitlements.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="text-xs text-muted-foreground">Required entitlements</p>
+            <div className="flex flex-wrap gap-1">
+              {def.requiredEntitlements.map((e) => {
+                const label = isTradingEntitlement(e) ? `${e.domain}/${e.tier}` : e;
+                return (
+                  <Badge
+                    key={label}
+                    variant="outline"
+                    className={cn(
+                      "text-[10px] h-5 px-1.5",
+                      hasAccess ? "border-emerald-400/30 text-emerald-400" : "border-amber-400/30 text-amber-400",
+                    )}
+                  >
+                    {hasAccess ? <Check className="size-2.5 mr-0.5" /> : <Lock className="size-2.5 mr-0.5" />}
+                    {label}
+                  </Badge>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {!hasAccess && (
+          <div className="rounded-lg border border-amber-400/20 bg-amber-400/5 p-3 text-xs">
+            <div className="flex items-center gap-2 text-amber-400 font-medium mb-1">
+              <Lock className="size-3" />
+              Subscription required
+            </div>
+            <p className="text-muted-foreground">Upgrade your subscription to unlock this widget.</p>
+          </div>
+        )}
+
+        <Button size="sm" className="w-full gap-2" disabled={isDisabled} onClick={() => onAdd(def.id)}>
+          {def.singleton && isPlaced ? (
+            <>
+              <Check className="size-3.5" />
+              Already added
+            </>
+          ) : (
+            <>
+              <Plus className="size-3.5" />
+              Add to Workspace
+            </>
+          )}
+        </Button>
+      </div>
+    </WidgetScroll>
   );
 }
 

@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/hooks/api/use-chat";
 import { Bot, User } from "lucide-react";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 interface ChatMessagesProps {
   messages: ChatMessage[];
@@ -25,27 +26,17 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
       <div className="flex-1 flex items-center justify-center p-6 text-center">
         <div className="space-y-2">
           <Bot className="mx-auto size-8 text-muted-foreground/50" />
-          <p className="text-sm text-muted-foreground">
-            Ask me anything about the Unified Trading System.
-          </p>
-          <p className="text-xs text-muted-foreground/70">
-            Your access level determines what I can help with.
-          </p>
+          <p className="text-sm text-muted-foreground">Ask me anything about the Unified Trading System.</p>
+          <p className="text-xs text-muted-foreground/70">Your access level determines what I can help with.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-3">
+    <WidgetScroll viewportRef={scrollRef} className="flex-1" viewportClassName="p-3 space-y-3">
       {messages.map((msg) => (
-        <div
-          key={msg.id}
-          className={cn(
-            "flex gap-2",
-            msg.role === "user" ? "justify-end" : "justify-start",
-          )}
-        >
+        <div key={msg.id} className={cn("flex gap-2", msg.role === "user" ? "justify-end" : "justify-start")}>
           {msg.role === "assistant" && (
             <div className="flex-shrink-0 mt-0.5">
               <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center">
@@ -56,9 +47,7 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
           <div
             className={cn(
               "max-w-[85%] rounded-lg px-3 py-2 text-sm leading-relaxed",
-              msg.role === "user"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-foreground",
+              msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted text-foreground",
             )}
           >
             {msg.content ||
@@ -80,7 +69,7 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
           )}
         </div>
       ))}
-    </div>
+    </WidgetScroll>
   );
 }
 

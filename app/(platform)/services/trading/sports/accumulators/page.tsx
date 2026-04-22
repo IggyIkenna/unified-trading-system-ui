@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,7 +108,7 @@ export default function AccumulatorBuilderPage() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          <WidgetScroll className="flex-1" viewportClassName="p-3 space-y-2">
             {filteredFixtures.map((fixture) => {
               const alreadySelected = selectedFixtureIds.has(fixture.id);
               return (
@@ -186,7 +187,7 @@ export default function AccumulatorBuilderPage() {
             {filteredFixtures.length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-12">No fixtures match your search</div>
             )}
-          </div>
+          </WidgetScroll>
         </div>
 
         {/* Right: accumulator slip */}
@@ -198,7 +199,7 @@ export default function AccumulatorBuilderPage() {
             </p>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          <WidgetScroll className="flex-1" viewportClassName="p-3 space-y-2">
             {legs.length === 0 && (
               <div className="text-center text-sm text-muted-foreground py-8 space-y-2">
                 <Plus className="size-8 mx-auto opacity-30" />
@@ -240,7 +241,7 @@ export default function AccumulatorBuilderPage() {
                 </button>
               </div>
             ))}
-          </div>
+          </WidgetScroll>
 
           {/* Summary */}
           <div className="border-t border-border p-4 space-y-3 bg-card/40">

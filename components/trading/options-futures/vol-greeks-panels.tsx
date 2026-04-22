@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -104,7 +105,7 @@ export function VolSurfacePanel({ asset }: { asset: Asset }) {
       </CollapsibleTrigger>
       <CollapsibleContent>
         <div className="p-3 border rounded-lg mt-1">
-          <div className="overflow-x-auto">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
             <table className="w-full text-[10px]">
               <thead>
                 <tr>
@@ -136,7 +137,7 @@ export function VolSurfacePanel({ asset }: { asset: Asset }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
           <div className="flex items-center gap-3 mt-2 text-[9px] text-muted-foreground">
             <span className="flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded" style={{ backgroundColor: ivToColor(42) }} />
@@ -253,7 +254,7 @@ export function GreeksSurfacePanel({ asset }: { asset: Asset }) {
               <SelectItem value="theta">Theta</SelectItem>
             </SelectContent>
           </Select>
-          <div className="overflow-x-auto">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
             <table className="w-full text-[10px]">
               <thead>
                 <tr>
@@ -285,7 +286,7 @@ export function GreeksSurfacePanel({ asset }: { asset: Asset }) {
                 ))}
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
         </div>
       </CollapsibleContent>
     </Collapsible>

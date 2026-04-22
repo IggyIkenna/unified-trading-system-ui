@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Plus, Save, Settings2, Trash2 } from "lucide-react";
 import type { FeatureCatalogueEntry, IndividualFeature } from "@/lib/mocks/fixtures/build-data";
 import { FEATURE_SERVICES } from "@/lib/mocks/fixtures/build-data";
@@ -214,25 +215,30 @@ export function NewFeatureDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-end border-b border-border/50 shrink-0 px-6 overflow-x-auto overflow-y-hidden">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setActiveTab(t.id)}
-              className={cn(
-                "px-3 py-2.5 text-xs font-medium border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0",
-                activeTab === t.id
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+        <WidgetScroll axes="horizontal" scrollbarSize="thin" className="shrink-0 border-b border-border/50">
+          <div className="flex items-end px-6">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setActiveTab(t.id)}
+                className={cn(
+                  "px-3 py-2.5 text-xs font-medium border-b-2 -mb-px transition-colors whitespace-nowrap shrink-0",
+                  activeTab === t.id
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </WidgetScroll>
 
-        <div className="h-[min(52rem,calc(90vh-10rem))] shrink-0 overflow-y-auto overflow-x-hidden px-6 py-5">
+        <WidgetScroll
+          className="h-[min(52rem,calc(90vh-10rem))] shrink-0"
+          viewportClassName="overflow-x-hidden px-6 py-5"
+        >
           {activeTab === "placement" && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -546,7 +552,7 @@ export function NewFeatureDialog({
               </div>
             </div>
           )}
-        </div>
+        </WidgetScroll>
 
         <DialogFooter className="px-6 py-4 border-t border-border/50 shrink-0">
           <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>

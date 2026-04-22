@@ -2,6 +2,7 @@
 
 import { ApiError } from "@/components/shared/api-error";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { AccountsDataProvider, useAccountsData } from "@/components/widgets/accounts/accounts-data-context";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { Suspense } from "react";
@@ -27,9 +28,9 @@ function AccountsWorkspaceBody() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-auto p-2">
+    <WidgetScroll viewportClassName="p-2">
       <WidgetGrid tab="accounts" />
-    </div>
+    </WidgetScroll>
   );
 }
 

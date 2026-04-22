@@ -12,6 +12,7 @@
 import * as React from "react";
 import { ApiError } from "@/components/shared/api-error";
 import { DataFreshnessStrip, type DataSource } from "@/components/shared/data-freshness-strip";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { OverviewDataProvider } from "@/components/widgets/overview/overview-data-context";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { useOverviewPageData } from "@/components/widgets/overview/use-overview-page-data";
@@ -107,11 +108,11 @@ export default function OverviewPage() {
         formatDollar={formatDollar}
         isLive={context.mode === "live"}
       />
-      <div className="flex-1 overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <OverviewDataProvider value={overviewData}>
           <WidgetGrid tab="overview" />
         </OverviewDataProvider>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

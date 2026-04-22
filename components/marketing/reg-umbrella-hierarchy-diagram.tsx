@@ -18,6 +18,7 @@
 // to scale without losing legibility.
 
 import * as React from "react";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
   return (
@@ -26,14 +27,11 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
       data-testid="reg-umbrella-hierarchy-diagram"
       aria-labelledby="reg-umbrella-diagram-title"
     >
-      <figcaption
-        id="reg-umbrella-diagram-title"
-        className="mb-4 text-sm font-semibold text-foreground"
-      >
+      <figcaption id="reg-umbrella-diagram-title" className="mb-4 text-sm font-semibold text-foreground">
         Regulatory umbrella hierarchy
       </figcaption>
 
-      <div className="w-full overflow-x-auto">
+      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="w-full">
         <svg
           viewBox="0 0 960 620"
           preserveAspectRatio="xMidYMid meet"
@@ -41,18 +39,13 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
           aria-labelledby="reg-umbrella-svg-title reg-umbrella-svg-desc"
           className="mx-auto block h-auto w-full min-w-[560px] max-w-[960px]"
         >
-          <title id="reg-umbrella-svg-title">
-            Regulatory umbrella hierarchy
-          </title>
+          <title id="reg-umbrella-svg-title">Regulatory umbrella hierarchy</title>
           <desc id="reg-umbrella-svg-desc">
-            A regulatory umbrella client operates a multi-vehicle mandate,
-            orchestrating two sub-funds and one SMA underneath. Sub-Fund 1 is
-            pooled with N share classes for N end-investors, Sub-Fund 2 is
-            pooled with M share classes for M end-investors, and SMA A is a
-            legally separate managed account for a single end-investor. All
-            sub-entities use the same scoped-venue-key model, and all
-            supervisory artefacts flow upward to the umbrella client in an
-            N-to-one rollup.
+            A regulatory umbrella client operates a multi-vehicle mandate, orchestrating two sub-funds and one SMA
+            underneath. Sub-Fund 1 is pooled with N share classes for N end-investors, Sub-Fund 2 is pooled with M share
+            classes for M end-investors, and SMA A is a legally separate managed account for a single end-investor. All
+            sub-entities use the same scoped-venue-key model, and all supervisory artefacts flow upward to the umbrella
+            client in an N-to-one rollup.
           </desc>
 
           {/* ===== Row 1: Regulatory Umbrella Client ===== */}
@@ -74,20 +67,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               Umbrella Client
             </text>
-            <text
-              x="480"
-              y="62"
-              textAnchor="middle"
-              className="fill-emerald-800 text-[11px] dark:fill-emerald-400"
-            >
+            <text x="480" y="62" textAnchor="middle" className="fill-emerald-800 text-[11px] dark:fill-emerald-400">
               Multi-vehicle mandate &mdash; N sub-funds + N SMAs
             </text>
-            <text
-              x="480"
-              y="76"
-              textAnchor="middle"
-              className="fill-emerald-700 text-[10px] dark:fill-emerald-400"
-            >
+            <text x="480" y="76" textAnchor="middle" className="fill-emerald-700 text-[10px] dark:fill-emerald-400">
               Regulatory posture per mandate shape (Odum-as-IM default; AR optional)
             </text>
           </g>
@@ -129,20 +112,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               Sub-Fund 1
             </text>
-            <text
-              x="200"
-              y="178"
-              textAnchor="middle"
-              className="fill-sky-700 text-[11px] dark:fill-sky-400"
-            >
+            <text x="200" y="178" textAnchor="middle" className="fill-sky-700 text-[11px] dark:fill-sky-400">
               Pooled &middot; N share classes
             </text>
-            <text
-              x="200"
-              y="192"
-              textAnchor="middle"
-              className="fill-sky-700 text-[10px] dark:fill-sky-400"
-            >
+            <text x="200" y="192" textAnchor="middle" className="fill-sky-700 text-[10px] dark:fill-sky-400">
               Own share-class book
             </text>
           </g>
@@ -166,20 +139,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               Sub-Fund 2
             </text>
-            <text
-              x="480"
-              y="178"
-              textAnchor="middle"
-              className="fill-sky-700 text-[11px] dark:fill-sky-400"
-            >
+            <text x="480" y="178" textAnchor="middle" className="fill-sky-700 text-[11px] dark:fill-sky-400">
               Pooled &middot; M share classes
             </text>
-            <text
-              x="480"
-              y="192"
-              textAnchor="middle"
-              className="fill-sky-700 text-[10px] dark:fill-sky-400"
-            >
+            <text x="480" y="192" textAnchor="middle" className="fill-sky-700 text-[10px] dark:fill-sky-400">
               Own share-class book
             </text>
           </g>
@@ -203,20 +166,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               SMA A
             </text>
-            <text
-              x="760"
-              y="178"
-              textAnchor="middle"
-              className="fill-violet-700 text-[11px] dark:fill-violet-400"
-            >
+            <text x="760" y="178" textAnchor="middle" className="fill-violet-700 text-[11px] dark:fill-violet-400">
               Per end-investor
             </text>
-            <text
-              x="760"
-              y="192"
-              textAnchor="middle"
-              className="fill-violet-700 text-[10px] dark:fill-violet-400"
-            >
+            <text x="760" y="192" textAnchor="middle" className="fill-violet-700 text-[10px] dark:fill-violet-400">
               Legally separate book
             </text>
           </g>
@@ -282,12 +235,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               End-investor 1
             </text>
-            <text
-              x="112"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
-            >
+            <text x="112" y="291" textAnchor="middle" className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400">
               slice-scoped
             </text>
           </g>
@@ -310,12 +258,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               End-investor 2
             </text>
-            <text
-              x="200"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
-            >
+            <text x="200" y="291" textAnchor="middle" className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400">
               slice-scoped
             </text>
           </g>
@@ -338,12 +281,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               End-investor N
             </text>
-            <text
-              x="288"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
-            >
+            <text x="288" y="291" textAnchor="middle" className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400">
               slice-scoped
             </text>
           </g>
@@ -367,12 +305,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               End-investor 1
             </text>
-            <text
-              x="392"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
-            >
+            <text x="392" y="291" textAnchor="middle" className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400">
               slice-scoped
             </text>
           </g>
@@ -395,12 +328,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               End-investor 2
             </text>
-            <text
-              x="480"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
-            >
+            <text x="480" y="291" textAnchor="middle" className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400">
               slice-scoped
             </text>
           </g>
@@ -423,12 +351,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               End-investor M
             </text>
-            <text
-              x="568"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400"
-            >
+            <text x="568" y="291" textAnchor="middle" className="fill-zinc-600 text-[9px] italic dark:fill-zinc-400">
               slice-scoped
             </text>
           </g>
@@ -452,12 +375,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               Single end-investor
             </text>
-            <text
-              x="760"
-              y="291"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400"
-            >
+            <text x="760" y="291" textAnchor="middle" className="fill-zinc-600 text-[9.5px] italic dark:fill-zinc-400">
               own book only
             </text>
           </g>
@@ -501,12 +419,7 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               Venue API keys &mdash; read-only-plus-execute
             </text>
-            <text
-              x="480"
-              y="422"
-              textAnchor="middle"
-              className="fill-amber-800 text-[11px] dark:fill-amber-300"
-            >
+            <text x="480" y="422" textAnchor="middle" className="fill-amber-800 text-[11px] dark:fill-amber-300">
               Same custody model across all sub-entities. Withdrawal permission never requested.
             </text>
           </g>
@@ -547,20 +460,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               CeFi
             </text>
-            <text
-              x="280"
-              y="498"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="280" y="498" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Binance &middot; Coinbase
             </text>
-            <text
-              x="280"
-              y="511"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="280" y="511" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Hyperliquid
             </text>
           </g>
@@ -583,20 +486,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               TradFi
             </text>
-            <text
-              x="480"
-              y="498"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="480" y="498" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               CME &middot; NSE
             </text>
-            <text
-              x="480"
-              y="511"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="480" y="511" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Regulated brokers
             </text>
           </g>
@@ -619,20 +512,10 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               DeFi
             </text>
-            <text
-              x="680"
-              y="498"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="680" y="498" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               On-chain wallets
             </text>
-            <text
-              x="680"
-              y="511"
-              textAnchor="middle"
-              className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400"
-            >
+            <text x="680" y="511" textAnchor="middle" className="fill-zinc-600 text-[10.5px] dark:fill-zinc-400">
               Client-controlled
             </text>
           </g>
@@ -657,13 +540,9 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
             >
               Supervisory rollup (N-to-one)
             </text>
-            <text
-              x="480"
-              y="590"
-              textAnchor="middle"
-              className="fill-emerald-800 text-[10.5px] dark:fill-emerald-400"
-            >
-              NAV, attribution, compliance artefacts, audit trail &mdash; all sub-entities roll into the regulatory client
+            <text x="480" y="590" textAnchor="middle" className="fill-emerald-800 text-[10.5px] dark:fill-emerald-400">
+              NAV, attribution, compliance artefacts, audit trail &mdash; all sub-entities roll into the regulatory
+              client
             </text>
           </g>
 
@@ -684,25 +563,19 @@ export function RegUmbrellaHierarchyDiagram(): React.JSX.Element {
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path
-                d="M 0 0 L 10 5 L 0 10 z"
-                className="fill-emerald-500/70 dark:fill-emerald-400/70"
-              />
+              <path d="M 0 0 L 10 5 L 0 10 z" className="fill-emerald-500/70 dark:fill-emerald-400/70" />
             </marker>
           </defs>
         </svg>
-      </div>
+      </WidgetScroll>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        The umbrella client operates a multi-vehicle mandate spanning N
-        sub-funds and N SMAs. Each sub-entity has its own share-class or SMA
-        book and uses the same scoped-venue-key model. Supervisory artefacts
-        &mdash; NAV, attribution, compliance, audit trail &mdash; roll up
-        N-to-one into the umbrella client&apos;s reporting surface (one
-        consolidated pane for MLRO sign-off and regulator response). The
-        hierarchy is identical across the three umbrella mandate shapes
-        (Shape 1, 2, or 3); only the regulatory posture between the umbrella
-        client and Odum differs.
+        The umbrella client operates a multi-vehicle mandate spanning N sub-funds and N SMAs. Each sub-entity has its
+        own share-class or SMA book and uses the same scoped-venue-key model. Supervisory artefacts &mdash; NAV,
+        attribution, compliance, audit trail &mdash; roll up N-to-one into the umbrella client&apos;s reporting surface
+        (one consolidated pane for MLRO sign-off and regulator response). The hierarchy is identical across the three
+        umbrella mandate shapes (Shape 1, 2, or 3); only the regulatory posture between the umbrella client and Odum
+        differs.
       </p>
     </figure>
   );

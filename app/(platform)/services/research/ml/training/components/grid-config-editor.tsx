@@ -4,30 +4,15 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Copy, Layers, X } from "lucide-react";
 
-import {
-  useCreateMLGridConfig,
-  useFeatureGroups,
-  useUpdateMLGridConfig,
-} from "@/hooks/api/use-ml-models";
+import { useCreateMLGridConfig, useFeatureGroups, useUpdateMLGridConfig } from "@/hooks/api/use-ml-models";
 import type { GridConfigCategory, MLGridConfig } from "@/lib/types/ml";
 
 interface GridConfigEditorProps {
@@ -37,12 +22,7 @@ interface GridConfigEditorProps {
   onSaved?: () => void;
 }
 
-export function GridConfigEditor({
-  open,
-  onOpenChange,
-  config,
-  onSaved,
-}: GridConfigEditorProps) {
+export function GridConfigEditor({ open, onOpenChange, config, onSaved }: GridConfigEditorProps) {
   const [isSaveAs, setIsSaveAs] = React.useState(false);
   const isEdit = !!config && !isSaveAs;
 
@@ -81,11 +61,7 @@ export function GridConfigEditor({
   }, [config, open]);
 
   function toggleGroup(group: string) {
-    setSelectedGroups((prev) =>
-      prev.includes(group)
-        ? prev.filter((g) => g !== group)
-        : [...prev, group],
-    );
+    setSelectedGroups((prev) => (prev.includes(group) ? prev.filter((g) => g !== group) : [...prev, group]));
   }
 
   function selectAllGroups() {
@@ -118,15 +94,12 @@ export function GridConfigEditor({
     };
 
     if (isEdit) {
-      updateConfig.mutate(
-        { ...body, name } as MLGridConfig,
-        {
-          onSuccess: () => {
-            onOpenChange(false);
-            onSaved?.();
-          },
+      updateConfig.mutate({ ...body, name } as MLGridConfig, {
+        onSuccess: () => {
+          onOpenChange(false);
+          onSaved?.();
         },
-      );
+      });
     } else {
       createConfig.mutate(body, {
         onSuccess: () => {
@@ -210,22 +183,14 @@ export function GridConfigEditor({
                   >
                     Select all
                   </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 text-xs px-2"
-                    onClick={clearAllGroups}
-                  >
+                  <Button type="button" variant="ghost" size="sm" className="h-6 text-xs px-2" onClick={clearAllGroups}>
                     Clear
                   </Button>
                 </div>
               </div>
-              <div className="rounded-md border border-border/50 p-3 max-h-48 overflow-y-auto">
+              <WidgetScroll className="rounded-md border border-border/50 max-h-48" viewportClassName="p-3">
                 {availableGroups.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">
-                    Loading feature groups...
-                  </p>
+                  <p className="text-xs text-muted-foreground">Loading feature groups...</p>
                 ) : (
                   <div className="grid grid-cols-2 gap-2">
                     {availableGroups.map((group) => (
@@ -233,21 +198,15 @@ export function GridConfigEditor({
                         key={group}
                         className="flex items-center gap-2 text-sm cursor-pointer hover:text-foreground transition-colors"
                       >
-                        <Checkbox
-                          checked={selectedGroups.includes(group)}
-                          onCheckedChange={() => toggleGroup(group)}
-                        />
-                        <span className="truncate text-xs">
-                          {group.replace(/_/g, " ")}
-                        </span>
+                        <Checkbox checked={selectedGroups.includes(group)} onCheckedChange={() => toggleGroup(group)} />
+                        <span className="truncate text-xs">{group.replace(/_/g, " ")}</span>
                       </label>
                     ))}
                   </div>
                 )}
-              </div>
+              </WidgetScroll>
               <p className="text-[11px] text-muted-foreground">
-                {selectedGroups.length} of {availableGroups.length} groups
-                selected
+                {selectedGroups.length} of {availableGroups.length} groups selected
               </p>
             </div>
 
@@ -255,8 +214,7 @@ export function GridConfigEditor({
             <div className="space-y-2">
               <Label>Exclude features</Label>
               <p className="text-[11px] text-muted-foreground">
-                Individual features to exclude from selected groups (e.g. RSI,
-                funding_rate)
+                Individual features to exclude from selected groups (e.g. RSI, funding_rate)
               </p>
               <div className="flex gap-2">
                 <Input
@@ -290,11 +248,7 @@ export function GridConfigEditor({
                       className="gap-1 text-xs border-red-500/30 text-red-400 bg-red-500/10"
                     >
                       {feat}
-                      <button
-                        type="button"
-                        onClick={() => removeExclusion(feat)}
-                        className="hover:text-red-300"
-                      >
+                      <button type="button" onClick={() => removeExclusion(feat)} className="hover:text-red-300">
                         <X className="size-3" />
                       </button>
                     </Badge>
@@ -324,11 +278,7 @@ export function GridConfigEditor({
             )}
           </div>
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button
@@ -336,13 +286,7 @@ export function GridConfigEditor({
               disabled={isPending || !name.trim() || selectedGroups.length === 0}
               onClick={handleSave}
             >
-              {isPending
-                ? "Saving..."
-                : isSaveAs
-                  ? "Save copy"
-                  : isEdit
-                    ? "Update config"
-                    : "Create config"}
+              {isPending ? "Saving..." : isSaveAs ? "Save copy" : isEdit ? "Update config" : "Create config"}
             </Button>
           </div>
         </DialogFooter>

@@ -29,7 +29,7 @@ export function PredOdumFocusWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="h-full min-h-0 overflow-auto pr-1">
+    <div className="h-full min-h-0 pr-1">
       <OdumFocusBody
         instruments={odumInstruments}
         typeFilter={odumTypeFilter}

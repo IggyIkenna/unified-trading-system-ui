@@ -1,7 +1,6 @@
 "use client";
 
 import { Spinner } from "@/components/shared/spinner";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AlertCircle, RefreshCw } from "lucide-react";
@@ -117,13 +116,13 @@ export function LiveFeedWidget({
   return (
     <div className={cn("flex h-full flex-col overflow-hidden min-h-0", className)}>
       {header != null && <div className="shrink-0">{header}</div>}
-      <WidgetScroll axes="both" className="flex-1 min-h-0">
+      <div className="flex-1 overflow-auto min-h-0">
         {isEmpty ? (
           <div className="flex h-full items-center justify-center text-sm text-muted-foreground">{emptyMessage}</div>
         ) : (
           children
         )}
-      </WidgetScroll>
+      </div>
       {footer != null && <div className="shrink-0">{footer}</div>}
     </div>
   );

@@ -8,6 +8,7 @@
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
 import { AlertRow } from "@/components/shared/alert-row";
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { MetricCard } from "@/components/shared/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -268,79 +269,81 @@ export default function GapsPage() {
 
         {/* Gap Table */}
         <Card className="mb-6">
-          <CardContent className="pt-4 px-0 overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="px-4 py-2 w-8">
-                    <Checkbox
-                      checked={selected.size === actionableGaps.length && actionableGaps.length > 0}
-                      onCheckedChange={() => {
-                        toggleSelectAll();
-                      }}
-                    />
-                  </th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Severity</th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Status</th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Category</th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Venue</th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Instrument</th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Gap Period</th>
-                  <th className="text-center px-3 py-2 font-medium text-muted-foreground">Days</th>
-                  <th className="text-left px-3 py-2 font-medium text-muted-foreground">Cause</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((gap) => {
-                  const sevConfig = SEVERITY_CONFIG[gap.severity];
-                  const statConfig = STATUS_CONFIG[gap.status];
-                  const isActionable = gap.status === "open" || gap.status === "backfilling";
+          <CardContent className="pt-4 px-0">
+            <WidgetScroll axes="horizontal" scrollbarSize="thin">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="px-4 py-2 w-8">
+                      <Checkbox
+                        checked={selected.size === actionableGaps.length && actionableGaps.length > 0}
+                        onCheckedChange={() => {
+                          toggleSelectAll();
+                        }}
+                      />
+                    </th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Severity</th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Status</th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Category</th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Venue</th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Instrument</th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Gap Period</th>
+                    <th className="text-center px-3 py-2 font-medium text-muted-foreground">Days</th>
+                    <th className="text-left px-3 py-2 font-medium text-muted-foreground">Cause</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((gap) => {
+                    const sevConfig = SEVERITY_CONFIG[gap.severity];
+                    const statConfig = STATUS_CONFIG[gap.status];
+                    const isActionable = gap.status === "open" || gap.status === "backfilling";
 
-                  return (
-                    <tr
-                      key={gap.id}
-                      className={cn(
-                        "border-b border-border/50 hover:bg-accent/20 transition-colors",
-                        selected.has(gap.id) && "bg-primary/5",
-                      )}
-                    >
-                      <td className="px-4 py-2">
-                        {isActionable && (
-                          <Checkbox
-                            checked={selected.has(gap.id)}
-                            onCheckedChange={() => {
-                              toggleSelect(gap.id);
-                            }}
-                          />
+                    return (
+                      <tr
+                        key={gap.id}
+                        className={cn(
+                          "border-b border-border/50 hover:bg-accent/20 transition-colors",
+                          selected.has(gap.id) && "bg-primary/5",
                         )}
-                      </td>
-                      <td className="px-3 py-2">
-                        <Badge variant="outline" className={cn("text-[10px]", sevConfig.color)}>
-                          {sevConfig.label}
-                        </Badge>
-                      </td>
-                      <td className="px-3 py-2">
-                        <Badge variant="outline" className={cn("text-[10px]", statConfig.color)}>
-                          {statConfig.label}
-                        </Badge>
-                      </td>
-                      <td className="px-3 py-2">
-                        <Badge variant="outline" className={cn("text-[10px]", CATEGORY_COLORS[gap.category])}>
-                          {DATA_CATEGORY_LABELS[gap.category]}
-                        </Badge>
-                      </td>
-                      <td className="px-3 py-2 font-medium capitalize">{gap.venue.replace(/_/g, " ")}</td>
-                      <td className="px-3 py-2 font-mono">{gap.instrument ?? "—"}</td>
-                      <td className="px-3 py-2 font-mono text-muted-foreground">
-                        {gap.gapStart === gap.gapEnd ? gap.gapStart : `${gap.gapStart} → ${gap.gapEnd}`}
-                      </td>
-                      <td className="px-3 py-2 text-center font-mono">{gap.daysAffected}</td>
-                      <td className="px-3 py-2 text-muted-foreground max-w-[160px] truncate">{gap.cause ?? "—"}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      >
+                        <td className="px-4 py-2">
+                          {isActionable && (
+                            <Checkbox
+                              checked={selected.has(gap.id)}
+                              onCheckedChange={() => {
+                                toggleSelect(gap.id);
+                              }}
+                            />
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant="outline" className={cn("text-[10px]", sevConfig.color)}>
+                            {sevConfig.label}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant="outline" className={cn("text-[10px]", statConfig.color)}>
+                            {statConfig.label}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant="outline" className={cn("text-[10px]", CATEGORY_COLORS[gap.category])}>
+                            {DATA_CATEGORY_LABELS[gap.category]}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2 font-medium capitalize">{gap.venue.replace(/_/g, " ")}</td>
+                        <td className="px-3 py-2 font-mono">{gap.instrument ?? "—"}</td>
+                        <td className="px-3 py-2 font-mono text-muted-foreground">
+                          {gap.gapStart === gap.gapEnd ? gap.gapStart : `${gap.gapStart} → ${gap.gapEnd}`}
+                        </td>
+                        <td className="px-3 py-2 text-center font-mono">{gap.daysAffected}</td>
+                        <td className="px-3 py-2 text-muted-foreground max-w-[160px] truncate">{gap.cause ?? "—"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </WidgetScroll>
             {filtered.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                 <CheckCircle2 className="size-8 mb-2 text-emerald-400" />

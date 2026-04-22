@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { ChevronDown, ChevronRight, TrendingUp, TrendingDown, DollarSign, Target } from "lucide-react";
 import type { PredictionPosition, SettlementOutcome } from "./types";
 import { MOCK_POSITIONS } from "@/lib/mocks/fixtures/predictions-data";
@@ -215,7 +216,7 @@ export function PortfolioTab() {
               <p className="text-sm text-muted-foreground">No open positions</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <WidgetScroll axes="horizontal" scrollbarSize="thin">
               <table className="w-full min-w-[700px]">
                 <thead>
                   <tr className="border-b border-border/50 text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -234,7 +235,7 @@ export function PortfolioTab() {
                   ))}
                 </tbody>
               </table>
-            </div>
+            </WidgetScroll>
           )}
         </CardContent>
       </Card>
@@ -272,7 +273,7 @@ export function PortfolioTab() {
                 <p className="text-sm text-muted-foreground">No settled positions</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <WidgetScroll axes="horizontal" scrollbarSize="thin">
                 <table className="w-full min-w-[700px]">
                   <thead>
                     <tr className="border-b border-border/50 text-[10px] text-muted-foreground uppercase tracking-wider">
@@ -291,7 +292,7 @@ export function PortfolioTab() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </WidgetScroll>
             )}
           </CardContent>
         )}

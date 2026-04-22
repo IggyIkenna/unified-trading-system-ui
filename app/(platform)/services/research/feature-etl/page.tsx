@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/shared/page-header";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -309,37 +310,39 @@ function HeatmapView() {
       </div>
 
       <Card>
-        <CardContent className="p-4 overflow-x-auto">
-          <table className="w-full border-separate border-spacing-0.5">
-            <thead>
-              <tr>
-                <th className="text-left text-xs font-medium text-muted-foreground p-1 w-[140px]">Feature Group</th>
-                {dates.map((d) => (
-                  <th key={d} className="text-xs font-medium text-muted-foreground p-1 min-w-[36px]">
-                    {format(new Date(d), "MM/dd")}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {groups.map((group) => (
-                <tr key={group}>
-                  <td className="text-xs font-medium p-1 pr-3">{group}</td>
-                  {dates.map((d) => {
-                    const pct = getPct(group, d);
-                    return (
-                      <td key={d} className="p-0.5">
-                        <div
-                          title={`${group} — ${d}: ${pct}%`}
-                          className={cn("w-full h-6 rounded transition-colors", cellColor(pct))}
-                        />
-                      </td>
-                    );
-                  })}
+        <CardContent className="p-4">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
+            <table className="w-full border-separate border-spacing-0.5">
+              <thead>
+                <tr>
+                  <th className="text-left text-xs font-medium text-muted-foreground p-1 w-[140px]">Feature Group</th>
+                  {dates.map((d) => (
+                    <th key={d} className="text-xs font-medium text-muted-foreground p-1 min-w-[36px]">
+                      {format(new Date(d), "MM/dd")}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {groups.map((group) => (
+                  <tr key={group}>
+                    <td className="text-xs font-medium p-1 pr-3">{group}</td>
+                    {dates.map((d) => {
+                      const pct = getPct(group, d);
+                      return (
+                        <td key={d} className="p-0.5">
+                          <div
+                            title={`${group} — ${d}: ${pct}%`}
+                            className={cn("w-full h-6 rounded transition-colors", cellColor(pct))}
+                          />
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </WidgetScroll>
         </CardContent>
       </Card>
     </div>

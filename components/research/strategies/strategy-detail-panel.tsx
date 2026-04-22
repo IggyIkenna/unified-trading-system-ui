@@ -34,6 +34,7 @@ import { SignalOverlayChart } from "@/components/research/signal-overlay-chart";
 import { SignalOverlapPanel } from "@/components/research/signal-overlap-panel";
 
 import { SignalListView } from "./strategy-list-panel";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 // ─── Detail Panel ─────────────────────────────────────────────────────────────
 
@@ -115,7 +116,7 @@ export function DetailPanel({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 pb-6 mt-3">
+      <WidgetScroll className="flex-1" viewportClassName="px-4 pb-6 mt-3">
         {viewMode === "signals" ? (
           <SignalListView signals={signals} />
         ) : (
@@ -234,7 +235,7 @@ export function DetailPanel({
             </Accordion>
           </div>
         )}
-      </div>
+      </WidgetScroll>
     </div>
   );
 }
@@ -373,7 +374,7 @@ export function ComparePanel({
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <WidgetScroll className="flex-1" viewportClassName="p-4 space-y-6">
         {equityCurves.length >= 2 && <OverlaidEquityCurves curves={equityCurves} height={260} normalize />}
 
         <SignalOverlayChart
@@ -419,7 +420,7 @@ export function ComparePanel({
           </div>
         )}
 
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full text-sm">
             <thead>
               <tr>
@@ -487,7 +488,7 @@ export function ComparePanel({
               })}
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
 
         <Button variant="outline" size="sm" className="w-full gap-1 text-xs" asChild>
           <Link href={compareExecutionHref}>
@@ -495,7 +496,7 @@ export function ComparePanel({
             Send best ({bestBySharpe.configName ?? bestBySharpe.id.slice(0, 8)}) to Execution
           </Link>
         </Button>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

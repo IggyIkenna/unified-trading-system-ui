@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/shared/spinner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { AlertTriangle, Rocket, X } from "lucide-react";
 
 const DEPLOY_REGIONS = [
@@ -54,7 +55,7 @@ export function ExecutionDataStatusDeployModal() {
             </Button>
           </div>
         </CardHeader>
-        <CardContent className="flex-1 overflow-y-auto space-y-4">
+        <WidgetScroll className="flex-1" viewportClassName="space-y-4 px-6">
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-[var(--color-bg-secondary)] p-3 rounded-lg">
               <p className="text-xs text-[var(--color-text-muted)]">Total Configs</p>
@@ -132,7 +133,7 @@ export function ExecutionDataStatusDeployModal() {
                 <p className="text-xs text-[var(--color-text-muted)] mb-1">
                   By Date ({Object.keys(missingShardsData.breakdown?.by_date ?? {}).length} dates):
                 </p>
-                <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
+                <WidgetScroll className="max-h-20" viewportClassName="flex flex-wrap gap-1">
                   {Object.entries(missingShardsData.breakdown?.by_date ?? {})
                     .slice(0, 10)
                     .map(([date, count]) => (
@@ -145,7 +146,7 @@ export function ExecutionDataStatusDeployModal() {
                       +{Object.keys(missingShardsData.breakdown?.by_date ?? {}).length - 10} more dates
                     </Badge>
                   )}
-                </div>
+                </WidgetScroll>
               </div>
             )}
           </div>
@@ -183,7 +184,7 @@ export function ExecutionDataStatusDeployModal() {
               </div>
             )}
           </div>
-        </CardContent>
+        </WidgetScroll>
 
         <div className="flex-shrink-0 p-4 border-t border-[var(--color-border-subtle)] flex items-center justify-end gap-3">
           <Button variant="outline" onClick={closeDeployModal}>

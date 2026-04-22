@@ -7,6 +7,7 @@ import type { WidgetComponentProps } from "@/components/widgets/widget-registry"
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { useSportsData } from "./sports-data-context";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 export function SportsCLVWidget(_props: WidgetComponentProps) {
   const { clvRecords: records } = useSportsData();
@@ -44,7 +45,7 @@ export function SportsCLVWidget(_props: WidgetComponentProps) {
         <KpiTile label="CLV Hit Rate" value={formatPercent(avgHitRate, 1)} valueClassName="text-primary" />
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <WidgetScroll axes="both" className="min-h-0 flex-1">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-card z-10">
             <tr className="text-xs text-muted-foreground uppercase tracking-wider border-b border-border">
@@ -102,7 +103,7 @@ export function SportsCLVWidget(_props: WidgetComponentProps) {
             ))}
           </tbody>
         </table>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

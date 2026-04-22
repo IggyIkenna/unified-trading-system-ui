@@ -35,6 +35,7 @@ interface WidgetScrollProps {
   scrollbarSize?: ScrollbarSize;
   className?: string;
   viewportClassName?: string;
+  viewportRef?: React.Ref<HTMLDivElement>;
 }
 
 export function WidgetScroll({
@@ -43,6 +44,7 @@ export function WidgetScroll({
   scrollbarSize = "default",
   className,
   viewportClassName,
+  viewportRef,
 }: WidgetScrollProps) {
   const showVertical = axes === "vertical" || axes === "both";
   const showHorizontal = axes === "horizontal" || axes === "both";
@@ -53,6 +55,7 @@ export function WidgetScroll({
       className={cn("relative flex h-full min-h-0 w-full flex-col overflow-hidden", className)}
     >
       <ScrollAreaPrimitive.Viewport
+        ref={viewportRef}
         data-slot="widget-scroll-viewport"
         className={cn(
           "min-h-0 min-w-0 flex-1 rounded-[inherit]",

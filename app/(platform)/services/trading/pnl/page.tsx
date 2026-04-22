@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { PnLDataProvider } from "@/components/widgets/pnl/pnl-data-context";
 import { TradingFamilyFilterBanner } from "@/components/architecture-v2/trading-family-filter-banner";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 /**
  * P&L page. Exposes a FamilyArchetypePicker banner that writes to
@@ -19,12 +20,12 @@ function PnlFilterBanner() {
 function PnlPageContent() {
   return (
     <PnLDataProvider>
-      <div className="h-full flex flex-col overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <div className="px-2 pb-2">
           <PnlFilterBanner />
         </div>
         <WidgetGrid tab="pnl" />
-      </div>
+      </WidgetScroll>
     </PnLDataProvider>
   );
 }

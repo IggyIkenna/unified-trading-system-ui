@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import type { StrategyTemplate } from "@/lib/types/strategy-platform";
 import { Badge } from "@/components/ui/badge";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   CollapsibleConfigSection,
   DEFI_ARCHETYPES,
@@ -44,7 +45,7 @@ export function BacktestsRunDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FlaskConical className="size-5 text-primary" />
@@ -54,7 +55,7 @@ export function BacktestsRunDialog({
             Configure strategy template, risk parameters, signal config, and test window.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-2">
+        <WidgetScroll className="max-h-[90vh]" viewportClassName="space-y-4 py-2">
           {/* Section A: Core Config */}
           <CollapsibleConfigSection
             title="Core Config"
@@ -517,7 +518,7 @@ export function BacktestsRunDialog({
               </div>
             </CollapsibleConfigSection>
           )}
-        </div>
+        </WidgetScroll>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel

@@ -8,7 +8,7 @@ export function InstructionsDetailPanelWidget(_props: WidgetComponentProps) {
   const { selectedInstruction } = useInstructionsData();
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-y-auto p-3 text-xs">
+    <div className="flex min-h-0 flex-col p-3 text-xs">
       {selectedInstruction ? (
         <InstructionDetailGrid inst={selectedInstruction} />
       ) : (

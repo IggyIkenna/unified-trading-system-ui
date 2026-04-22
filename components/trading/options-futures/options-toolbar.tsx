@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -158,205 +159,207 @@ export function OptionsToolbar({
   const unpinnedTradFi = TRADFI_ASSETS.filter((a) => !pinnedTradFiAssets.includes(a));
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 border-b bg-muted/10 overflow-x-auto min-h-[42px]">
-      {/* Watchlist toggle */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-7 w-7 p-0 shrink-0"
-        onClick={() => setShowWatchlist(!showWatchlist)}
-        title={showWatchlist ? "Hide watchlist" : "Show watchlist"}
-      >
-        {showWatchlist ? <PanelLeftClose className="size-3.5" /> : <PanelLeftOpen className="size-3.5" />}
-      </Button>
-
-      <Separator orientation="vertical" className="h-5 shrink-0" />
-
-      {/* Asset class */}
-      <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
-        <Button
-          variant={isCrypto ? "default" : "ghost"}
-          size="sm"
-          className="h-6 px-2.5 text-xs font-medium"
-          onClick={() => setAssetClass("crypto")}
-        >
-          Crypto
-        </Button>
-        <Button
-          variant={!isCrypto ? "default" : "ghost"}
-          size="sm"
-          className="h-6 px-2.5 text-xs font-medium"
-          onClick={() => setAssetClass("tradfi")}
-        >
-          TradFi
-        </Button>
-      </div>
-
-      {/* Settlement (crypto only) */}
-      {isCrypto && (
-        <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
-          <Button
-            variant={settlement === "inverse" ? "default" : "ghost"}
-            size="sm"
-            className="h-6 px-2 text-xs"
-            onClick={() => setSettlement("inverse")}
-          >
-            Inv
-          </Button>
-          <Button
-            variant={settlement === "linear" ? "default" : "ghost"}
-            size="sm"
-            className="h-6 px-2 text-xs"
-            onClick={() => setSettlement("linear")}
-          >
-            Lin
-          </Button>
-        </div>
-      )}
-
-      {/* Exchange */}
-      {isCrypto ? (
-        <Select value={market} onValueChange={(v) => setMarket(v as Market)}>
-          <SelectTrigger className="h-7 w-[100px] text-xs shrink-0">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="deribit">Deribit</SelectItem>
-            <SelectItem value="okx">OKX</SelectItem>
-            <SelectItem value="bybit">Bybit</SelectItem>
-          </SelectContent>
-        </Select>
-      ) : (
-        <Select value={tradFiMarket} onValueChange={(v) => setTradFiMarket(v as TradFiMarket)}>
-          <SelectTrigger className="h-7 w-[110px] text-xs shrink-0">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="cboe">CBOE</SelectItem>
-            <SelectItem value="td">TD Ameritrade</SelectItem>
-            <SelectItem value="ibkr">IBKR</SelectItem>
-          </SelectContent>
-        </Select>
-      )}
-
-      <Separator orientation="vertical" className="h-5 shrink-0" />
-
-      {/* Pinned asset pills — up to 5, configurable */}
-      <div className="flex items-center gap-0.5 shrink-0">
-        {isCrypto
-          ? pinnedCryptoAssets.map((a) => (
-              <div key={a} className="relative group">
-                <Button
-                  variant={asset === a ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 px-2.5 text-xs font-mono"
-                  onClick={() => setAsset(a)}
-                >
-                  {a}
-                </Button>
-                {editingPins && pinnedCryptoAssets.length > 1 && (
-                  <button
-                    onClick={() => {
-                      const next = pinnedCryptoAssets.filter((x) => x !== a);
-                      setPinnedCryptoAssets(next);
-                      if (asset === a) setAsset(next[0]);
-                    }}
-                    className="absolute -top-1 -right-1 z-10 rounded-full bg-destructive text-destructive-foreground size-3.5 flex items-center justify-center"
-                  >
-                    <X className="size-2.5" />
-                  </button>
-                )}
-              </div>
-            ))
-          : pinnedTradFiAssets.map((a) => (
-              <div key={a} className="relative group">
-                <Button
-                  variant={tradFiAsset === a ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 px-2.5 text-xs font-mono"
-                  onClick={() => setTradFiAsset(a)}
-                >
-                  {a}
-                </Button>
-                {editingPins && pinnedTradFiAssets.length > 1 && (
-                  <button
-                    onClick={() => {
-                      const next = pinnedTradFiAssets.filter((x) => x !== a);
-                      setPinnedTradFiAssets(next);
-                      if (tradFiAsset === a) setTradFiAsset(next[0]);
-                    }}
-                    className="absolute -top-1 -right-1 z-10 rounded-full bg-destructive text-destructive-foreground size-3.5 flex items-center justify-center"
-                  >
-                    <X className="size-2.5" />
-                  </button>
-                )}
-              </div>
-            ))}
-
-        {/* Add pin — only when < 5 pinned and in edit mode */}
-        {editingPins &&
-          (isCrypto
-            ? unpinnedCrypto.length > 0 &&
-              pinnedCryptoAssets.length < 5 && (
-                <Select onValueChange={(v) => setPinnedCryptoAssets([...pinnedCryptoAssets, v as Asset])}>
-                  <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
-                    <Plus className="size-3 mr-0.5" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {unpinnedCrypto.map((a) => (
-                      <SelectItem key={a} value={a}>
-                        {a}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )
-            : unpinnedTradFi.length > 0 &&
-              pinnedTradFiAssets.length < 5 && (
-                <Select onValueChange={(v) => setPinnedTradFiAssets([...pinnedTradFiAssets, v as TradFiAsset])}>
-                  <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
-                    <Plus className="size-3 mr-0.5" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {unpinnedTradFi.map((a) => (
-                      <SelectItem key={a} value={a}>
-                        {a}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ))}
-
-        {/* Edit / done toggle */}
+    <WidgetScroll axes="horizontal" scrollbarSize="thin" className="shrink-0 border-b bg-muted/10">
+      <div className="flex items-center gap-2 px-3 py-1.5 min-h-[42px]">
+        {/* Watchlist toggle */}
         <Button
           variant="ghost"
           size="sm"
-          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-          onClick={() => setEditingPins(!editingPins)}
-          title={editingPins ? "Done editing" : "Edit pinned symbols"}
+          className="h-7 w-7 p-0 shrink-0"
+          onClick={() => setShowWatchlist(!showWatchlist)}
+          title={showWatchlist ? "Hide watchlist" : "Show watchlist"}
         >
-          {editingPins ? <Check className="size-3.5" /> : <Pencil className="size-3" />}
+          {showWatchlist ? <PanelLeftClose className="size-3.5" /> : <PanelLeftOpen className="size-3.5" />}
         </Button>
-      </div>
 
-      {/* Spacer */}
-      <div className="flex-1 min-w-0" />
+        <Separator orientation="vertical" className="h-5 shrink-0" />
 
-      {/* Tabs on the right */}
-      <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
-        {TABS.filter((t) => !t.cryptoOnly || isCrypto).map((t) => (
+        {/* Asset class */}
+        <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
           <Button
-            key={t.value}
-            variant={activeTab === t.value ? "default" : "ghost"}
+            variant={isCrypto ? "default" : "ghost"}
             size="sm"
-            className="h-6 px-2.5 text-xs gap-1"
-            onClick={() => setActiveTab(t.value)}
+            className="h-6 px-2.5 text-xs font-medium"
+            onClick={() => setAssetClass("crypto")}
           >
-            {t.icon}
-            {t.label}
+            Crypto
           </Button>
-        ))}
+          <Button
+            variant={!isCrypto ? "default" : "ghost"}
+            size="sm"
+            className="h-6 px-2.5 text-xs font-medium"
+            onClick={() => setAssetClass("tradfi")}
+          >
+            TradFi
+          </Button>
+        </div>
+
+        {/* Settlement (crypto only) */}
+        {isCrypto && (
+          <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
+            <Button
+              variant={settlement === "inverse" ? "default" : "ghost"}
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => setSettlement("inverse")}
+            >
+              Inv
+            </Button>
+            <Button
+              variant={settlement === "linear" ? "default" : "ghost"}
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => setSettlement("linear")}
+            >
+              Lin
+            </Button>
+          </div>
+        )}
+
+        {/* Exchange */}
+        {isCrypto ? (
+          <Select value={market} onValueChange={(v) => setMarket(v as Market)}>
+            <SelectTrigger className="h-7 w-[100px] text-xs shrink-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="deribit">Deribit</SelectItem>
+              <SelectItem value="okx">OKX</SelectItem>
+              <SelectItem value="bybit">Bybit</SelectItem>
+            </SelectContent>
+          </Select>
+        ) : (
+          <Select value={tradFiMarket} onValueChange={(v) => setTradFiMarket(v as TradFiMarket)}>
+            <SelectTrigger className="h-7 w-[110px] text-xs shrink-0">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cboe">CBOE</SelectItem>
+              <SelectItem value="td">TD Ameritrade</SelectItem>
+              <SelectItem value="ibkr">IBKR</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+
+        <Separator orientation="vertical" className="h-5 shrink-0" />
+
+        {/* Pinned asset pills — up to 5, configurable */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          {isCrypto
+            ? pinnedCryptoAssets.map((a) => (
+                <div key={a} className="relative group">
+                  <Button
+                    variant={asset === a ? "default" : "ghost"}
+                    size="sm"
+                    className="h-7 px-2.5 text-xs font-mono"
+                    onClick={() => setAsset(a)}
+                  >
+                    {a}
+                  </Button>
+                  {editingPins && pinnedCryptoAssets.length > 1 && (
+                    <button
+                      onClick={() => {
+                        const next = pinnedCryptoAssets.filter((x) => x !== a);
+                        setPinnedCryptoAssets(next);
+                        if (asset === a) setAsset(next[0]);
+                      }}
+                      className="absolute -top-1 -right-1 z-10 rounded-full bg-destructive text-destructive-foreground size-3.5 flex items-center justify-center"
+                    >
+                      <X className="size-2.5" />
+                    </button>
+                  )}
+                </div>
+              ))
+            : pinnedTradFiAssets.map((a) => (
+                <div key={a} className="relative group">
+                  <Button
+                    variant={tradFiAsset === a ? "default" : "ghost"}
+                    size="sm"
+                    className="h-7 px-2.5 text-xs font-mono"
+                    onClick={() => setTradFiAsset(a)}
+                  >
+                    {a}
+                  </Button>
+                  {editingPins && pinnedTradFiAssets.length > 1 && (
+                    <button
+                      onClick={() => {
+                        const next = pinnedTradFiAssets.filter((x) => x !== a);
+                        setPinnedTradFiAssets(next);
+                        if (tradFiAsset === a) setTradFiAsset(next[0]);
+                      }}
+                      className="absolute -top-1 -right-1 z-10 rounded-full bg-destructive text-destructive-foreground size-3.5 flex items-center justify-center"
+                    >
+                      <X className="size-2.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+
+          {/* Add pin — only when < 5 pinned and in edit mode */}
+          {editingPins &&
+            (isCrypto
+              ? unpinnedCrypto.length > 0 &&
+                pinnedCryptoAssets.length < 5 && (
+                  <Select onValueChange={(v) => setPinnedCryptoAssets([...pinnedCryptoAssets, v as Asset])}>
+                    <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
+                      <Plus className="size-3 mr-0.5" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unpinnedCrypto.map((a) => (
+                        <SelectItem key={a} value={a}>
+                          {a}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )
+              : unpinnedTradFi.length > 0 &&
+                pinnedTradFiAssets.length < 5 && (
+                  <Select onValueChange={(v) => setPinnedTradFiAssets([...pinnedTradFiAssets, v as TradFiAsset])}>
+                    <SelectTrigger className="h-7 w-16 text-xs shrink-0 border-dashed">
+                      <Plus className="size-3 mr-0.5" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {unpinnedTradFi.map((a) => (
+                        <SelectItem key={a} value={a}>
+                          {a}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ))}
+
+          {/* Edit / done toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+            onClick={() => setEditingPins(!editingPins)}
+            title={editingPins ? "Done editing" : "Edit pinned symbols"}
+          >
+            {editingPins ? <Check className="size-3.5" /> : <Pencil className="size-3" />}
+          </Button>
+        </div>
+
+        {/* Spacer */}
+        <div className="flex-1 min-w-0" />
+
+        {/* Tabs on the right */}
+        <div className="flex items-center gap-0.5 rounded-md border p-0.5 bg-muted/30 shrink-0">
+          {TABS.filter((t) => !t.cryptoOnly || isCrypto).map((t) => (
+            <Button
+              key={t.value}
+              variant={activeTab === t.value ? "default" : "ghost"}
+              size="sm"
+              className="h-6 px-2.5 text-xs gap-1"
+              onClick={() => setActiveTab(t.value)}
+            >
+              {t.icon}
+              {t.label}
+            </Button>
+          ))}
+        </div>
       </div>
-    </div>
+    </WidgetScroll>
   );
 }

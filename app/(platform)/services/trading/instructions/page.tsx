@@ -3,13 +3,14 @@
 import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { InstructionsDataProvider } from "@/components/widgets/instructions/instructions-data-context";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 function InstructionsPageContent() {
   return (
     <InstructionsDataProvider>
-      <div className="h-full flex flex-col overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <WidgetGrid tab="instructions" />
-      </div>
+      </WidgetScroll>
     </InstructionsDataProvider>
   );
 }

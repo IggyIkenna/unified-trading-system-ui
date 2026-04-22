@@ -40,7 +40,7 @@ export function PredMarketsGridWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex flex-col gap-3 h-full min-h-0 overflow-auto">
+    <div className="flex flex-col gap-3 h-full min-h-0">
       <FilterBar
         filters={marketsFilterDefs}
         values={marketsFilterValues as Record<string, string | undefined>}

@@ -22,7 +22,7 @@ export function SportsLiveScoresWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="flex items-stretch h-full min-h-[2rem] overflow-x-auto gap-px bg-border/30 rounded border border-border">
+    <div className="flex items-stretch h-full min-h-[2rem] gap-px bg-border/30 rounded border border-border">
       {/* Connection status */}
       <div className="shrink-0 flex items-center px-2 border-r border-border/50">
         <span

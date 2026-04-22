@@ -3,13 +3,14 @@
 import { Suspense } from "react";
 import { WidgetGrid } from "@/components/widgets/widget-grid";
 import { MarketsDataProvider } from "@/components/widgets/markets/markets-data-context";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 function MarketsPageContent() {
   return (
     <MarketsDataProvider>
-      <div className="h-full flex flex-col overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <WidgetGrid tab="markets" />
-      </div>
+      </WidgetScroll>
     </MarketsDataProvider>
   );
 }

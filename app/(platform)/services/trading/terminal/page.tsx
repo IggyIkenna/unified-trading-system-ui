@@ -7,10 +7,8 @@ import { AlertTriangle, ShieldAlert } from "lucide-react";
 
 import { FamilyArchetypePicker } from "@/components/architecture-v2";
 import { HealthBar } from "@/components/platform/health-bar";
-import type {
-  StrategyArchetype,
-  StrategyFamily,
-} from "@/lib/architecture-v2";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 
 export default function TradingPage() {
@@ -33,10 +31,9 @@ export default function TradingPage() {
       >
         <ShieldAlert className="size-4 shrink-0 mt-0.5 text-amber-400" aria-hidden />
         <span>
-          <strong className="text-amber-100">Analytics + Reconciliation surface.</strong> Manual
-          trading is for emergency use only — routine execution runs through strategy schedulers.
-          The Family / Archetype picker below scopes all views. Manual-order actions are
-          audit-logged.
+          <strong className="text-amber-100">Analytics + Reconciliation surface.</strong> Manual trading is for
+          emergency use only — routine execution runs through strategy schedulers. The Family / Archetype picker below
+          scopes all views. Manual-order actions are audit-logged.
         </span>
       </div>
       {(errors.tickers || errors.positions || errors.alerts) && (
@@ -76,11 +73,11 @@ export default function TradingPage() {
           }}
         />
       </div>
-      <div className="flex-1 overflow-auto p-2">
+      <WidgetScroll viewportClassName="p-2">
         <TerminalDataProvider value={terminalData}>
           <WidgetGrid tab="terminal" />
         </TerminalDataProvider>
-      </div>
+      </WidgetScroll>
     </div>
   );
 }

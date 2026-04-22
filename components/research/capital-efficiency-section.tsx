@@ -1,5 +1,6 @@
 "use client";
 
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { cn } from "@/lib/utils";
 import type { CapitalEfficiency } from "@/lib/types/backtest-analytics";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
@@ -26,7 +27,7 @@ export function CapitalEfficiencySection({ data, showMargin = false, className }
     <div className={cn("space-y-4", className)}>
       <div>
         <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Capital Usage</h4>
-        <div className="overflow-x-auto">
+        <WidgetScroll axes="horizontal" scrollbarSize="thin">
           <table className="w-full">
             <thead>
               <tr>
@@ -52,13 +53,13 @@ export function CapitalEfficiencySection({ data, showMargin = false, className }
               />
             </tbody>
           </table>
-        </div>
+        </WidgetScroll>
       </div>
 
       {showMargin && (
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Margin Usage</h4>
-          <div className="overflow-x-auto">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
             <table className="w-full">
               <thead>
                 <tr>
@@ -73,7 +74,7 @@ export function CapitalEfficiencySection({ data, showMargin = false, className }
                 <Row label="Margin calls" all="0" />
               </tbody>
             </table>
-          </div>
+          </WidgetScroll>
         </div>
       )}
     </div>

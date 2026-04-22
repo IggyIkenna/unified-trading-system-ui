@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { WidgetScroll } from "@/components/shared/widget-scroll";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,24 +18,14 @@ import { useInvoices, useTransitionInvoice, VALID_TRANSITIONS } from "@/hooks/ap
 import type { Invoice, InvoiceStatus, TransitionAction } from "@/hooks/api/use-invoices";
 import { InvoiceGenerateModal } from "@/components/reports/invoice-generate-modal";
 import { InvoiceDetailDrawer } from "@/components/reports/invoice-detail-drawer";
-import {
-  ChevronDown,
-  Download,
-  Eye,
-  FileText,
-  Loader2,
-  Plus,
-  RefreshCw,
-  AlertTriangle,
-} from "lucide-react";
+import { ChevronDown, Download, Eye, FileText, Loader2, Plus, RefreshCw, AlertTriangle } from "lucide-react";
 
 // ── Status Badge Styles ────────────────────────────────────────────────────────
 
 const STATUS_BADGE_CLASS: Record<InvoiceStatus, string> = {
   draft: "bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700",
   issued: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800",
-  accepted:
-    "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
+  accepted: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-800",
   paid: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800",
   disputed: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800",
   voided: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800",
@@ -92,13 +83,7 @@ function LoadingSkeleton() {
 
 // ── Invoice Row Actions ────────────────────────────────────────────────────────
 
-function InvoiceActions({
-  invoice,
-  onViewDetail,
-}: {
-  invoice: Invoice;
-  onViewDetail: (id: string) => void;
-}) {
+function InvoiceActions({ invoice, onViewDetail }: { invoice: Invoice; onViewDetail: (id: string) => void }) {
   const transitionMutation = useTransitionInvoice();
   const validActions = VALID_TRANSITIONS[invoice.status];
 
@@ -117,7 +102,12 @@ function InvoiceActions({
 
   return (
     <div className="flex items-center gap-1.5 justify-end">
-      <Button variant="ghost" size="sm" className="gap-1 text-xs h-7 px-2" onClick={() => onViewDetail(invoice.invoice_id)}>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-1 text-xs h-7 px-2"
+        onClick={() => onViewDetail(invoice.invoice_id)}
+      >
         <Eye className="size-3" />
         View
       </Button>
@@ -128,7 +118,12 @@ function InvoiceActions({
       {validActions.length > 0 && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-1 text-xs h-7 px-2" disabled={transitionMutation.isPending}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1 text-xs h-7 px-2"
+              disabled={transitionMutation.isPending}
+            >
               {transitionMutation.isPending ? (
                 <Loader2 className="size-3 animate-spin" />
               ) : (
@@ -207,11 +202,7 @@ export function InvoiceDashboard() {
       <div className="max-w-[1600px] mx-auto space-y-6">
         <PageHeader
           title="Invoice Management"
-          description={
-            <p>
-              Generate, track, and manage fee invoices across organizations.
-            </p>
-          }
+          description={<p>Generate, track, and manage fee invoices across organizations.</p>}
         >
           <Button className="gap-1.5" onClick={() => setGenerateOpen(true)}>
             <Plus className="size-4" />
@@ -236,7 +227,9 @@ export function InvoiceDashboard() {
         <div className="grid grid-cols-4 gap-4">
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Outstanding</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Total Outstanding
+              </p>
               <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono text-amber-600 dark:text-amber-400">
                 {formatCurrency(summary.outstanding)}
               </p>
@@ -261,7 +254,9 @@ export function InvoiceDashboard() {
           </Card>
           <Card className="border-border/50">
             <CardContent className="pt-5 pb-4 space-y-1">
-              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Current Month Fees</p>
+              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                Current Month Fees
+              </p>
               <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
                 {formatCurrency(summary.currentMonthFees)}
               </p>
@@ -279,17 +274,31 @@ export function InvoiceDashboard() {
                 <p className="text-sm text-muted-foreground">No invoices found for this organization.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <WidgetScroll axes="horizontal" scrollbarSize="thin">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border text-left">
-                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Invoice ID</th>
-                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
-                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Period</th>
-                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">Total</th>
-                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Due Date</th>
-                      <th className="pb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Invoice ID
+                      </th>
+                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Period
+                      </th>
+                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">
+                        Total
+                      </th>
+                      <th className="pb-3 pr-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                        Due Date
+                      </th>
+                      <th className="pb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -308,9 +317,7 @@ export function InvoiceDashboard() {
                             {invoice.status}
                           </Badge>
                         </td>
-                        <td className="py-3 pr-4 text-right font-mono text-sm">
-                          {formatCurrency(invoice.total)}
-                        </td>
+                        <td className="py-3 pr-4 text-right font-mono text-sm">{formatCurrency(invoice.total)}</td>
                         <td className="py-3 pr-4 text-sm">{formatDate(invoice.due_date)}</td>
                         <td className="py-3">
                           <InvoiceActions invoice={invoice} onViewDetail={setDetailId} />
@@ -319,7 +326,7 @@ export function InvoiceDashboard() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </WidgetScroll>
             )}
           </CardContent>
         </Card>
