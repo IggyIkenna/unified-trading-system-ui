@@ -49,7 +49,7 @@
           "note": "No dead code."
         }
       },
-      "notes": "0.6/0.8 partial \u2014 isLoading/error not in OptionsDataContextValue; blocked on BP-5."
+      "notes": "0.6/0.8 partial — isLoading/error not in OptionsDataContextValue; blocked on BP-5."
     },
     "l1": {
       "status": "pass",
@@ -82,7 +82,7 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "ASSETS/SPOT_PRICES in lib/mocks/fixtures/options-futures-mock \u2014 mock fixture data, acceptable for current stage."
+          "note": "ASSETS/SPOT_PRICES in lib/mocks/fixtures/options-futures-mock — mock fixture data, acceptable for current stage."
         }
       },
       "notes": "All data flows via useOptionsData(); scope wired via globalScope in context."
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (real-time funding/basis), paper \u2713 (simulated fills), batch N/A for crypto futures (only crypto asset class supported)."
+          "note": "Mode relevance: live ✓ (real-time funding/basis), paper ✓ (simulated fills), batch N/A for crypto futures (only crypto asset class supported)."
         },
         "3.2": {
           "result": "pass",
@@ -151,7 +151,7 @@
           "note": "Target strategies: futures-basis-trading, futures-calendar-spread. Widget drives futures-trade-panel via setSelectedFuture/setSelectedInstrument. Crypto only (isCrypto guard)."
         }
       },
-      "notes": "5.2\u20135.6 require human walkthrough."
+      "notes": "5.2–5.6 require human walkthrough."
     },
     "l6": {
       "status": null,
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
           "deferReason": "i18n not shipped"
         },
         "7.6": {
@@ -222,15 +222,15 @@
     }
   },
   "relationships": {
-    "mode": "master",
-    "masterOf": ["futures-trade-panel"],
+    "mode": "self-contained",
+    "masterOf": [],
     "detailOf": [],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Table and trade panel have very different minW/minH and layout roles; kept separate for grid flexibility."
+      "rationale": "Trade panel is docked inside futures-table as a bottom pane (WU-3, 2026-04-22) — rendered when selectedFuture is set."
     },
-    "notes": "Futures table drives futures-trade-panel via setSelectedFuture + setSelectedInstrument. Crypto-only (isCrypto guard renders informational message for TradFi)."
+    "notes": "Futures table + docked TradePanel. Futures pick sets selectedFuture + selectedInstrument. Crypto-only (isCrypto guard renders informational message for TradFi)."
   },
   "dataContract": {
     "channels": ["rest", "websocket"],
@@ -251,28 +251,28 @@
     "notes": "Crypto perp + dated futures only; TradFi path renders informational message."
   },
   "knownIssues": [
-    "context does not expose isLoading or error fields \u2014 loading/error states at widget level require context update",
+    "context does not expose isLoading or error fields — loading/error states at widget level require context update",
     "FuturesTab sub-component imports directly from lib/mocks/fixtures/options-futures-mock (outside widget file scope)"
   ],
   "findings": [
     {
       "level": "l0",
       "check": "0.6",
-      "description": "options-futures-table-widget.tsx \u2014 context has no isLoading field; loading state not wirable at widget level",
+      "description": "options-futures-table-widget.tsx — context has no isLoading field; loading state not wirable at widget level",
       "status": "deferred",
-      "deferReason": "Requires OptionsDataContextValue update (isLoading field) \u2014 blocked on BP-5 data wiring."
+      "deferReason": "Requires OptionsDataContextValue update (isLoading field) — blocked on BP-5 data wiring."
     },
     {
       "level": "l0",
       "check": "0.8",
-      "description": "options-futures-table-widget.tsx \u2014 context has no error field; error state not wirable at widget level",
+      "description": "options-futures-table-widget.tsx — context has no error field; error state not wirable at widget level",
       "status": "deferred",
-      "deferReason": "Requires OptionsDataContextValue update (error field) \u2014 blocked on BP-5 data wiring."
+      "deferReason": "Requires OptionsDataContextValue update (error field) — blocked on BP-5 data wiring."
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "options-futures-table-widget.tsx \u2014 2 user-visible strings not i18n-wrapped",
+      "description": "options-futures-table-widget.tsx — 2 user-visible strings not i18n-wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

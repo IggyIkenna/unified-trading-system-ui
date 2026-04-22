@@ -6,6 +6,8 @@
 **Status:** AUDIT COMPLETE — ready for migration
 
 > **Update 2026-04-22:** `book-order-form`, `book-algo-config`, `book-record-details` merged into `book-order-entry` (single widget). This page's references to those three widgets are historical — they no longer exist. See `docs/audits/live-review-findings.md` row #17.
+>
+> **Update 2026-04-22 (WU-3):** `options-trade-panel` and `futures-trade-panel` were absorbed into their host widgets (`options-chain` and `futures-table`) as docked panes that render when an instrument is selected. References to them below are historical.
 
 ---
 

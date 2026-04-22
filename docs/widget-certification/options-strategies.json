@@ -49,7 +49,7 @@
           "note": "No dead code or commented-out blocks in widget file."
         }
       },
-      "notes": "0.6/0.8 N/A \u2014 synchronous mock data, no async paths."
+      "notes": "0.6/0.8 N/A — synchronous mock data, no async paths."
     },
     "l1": {
       "status": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Widget reads strategiesMode, setStrategiesMode, isCrypto, asset, setSelectedInstrument, setSelectedFuture via useOptionsData() exclusively. Panel sub-components re-derive their own data from mocks \u2014 panel-layer behavior; widget file is clean."
+          "note": "Widget reads strategiesMode, setStrategiesMode, isCrypto, asset, setSelectedInstrument, setSelectedFuture via useOptionsData() exclusively. Panel sub-components re-derive their own data from mocks — panel-layer behavior; widget file is clean."
         },
         "1.2": {
           "result": "pass",
@@ -70,11 +70,11 @@
         },
         "1.4": {
           "result": "n/a",
-          "note": "clientIds not applicable \u2014 strategy builder is asset-scoped."
+          "note": "clientIds not applicable — strategy builder is asset-scoped."
         },
         "1.5": {
           "result": "n/a",
-          "note": "Strategy filter not applicable \u2014 builder lets user construct new strategies."
+          "note": "Strategy filter not applicable — builder lets user construct new strategies."
         },
         "1.6": {
           "result": "pass",
@@ -82,10 +82,10 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "COMBO_TYPES, CALENDAR_EXPIRIES, generateSpreadMatrix in lib/mocks/fixtures \u2014 panel-level, widget file clean."
+          "note": "COMBO_TYPES, CALENDAR_EXPIRIES, generateSpreadMatrix in lib/mocks/fixtures — panel-level, widget file clean."
         }
       },
-      "notes": "FuturesSpreadsTab and OptionsCombosPanel re-derive data from mocks \u2014 tracked in knownIssues."
+      "notes": "FuturesSpreadsTab and OptionsCombosPanel re-derive data from mocks — tracked in knownIssues."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (real-time spread/combo construction), paper \u2713 (strategy selection routes to paper), batch \u2014 strategy construction read-only in batch mode."
+          "note": "Mode relevance: live ✓ (real-time spread/combo construction), paper ✓ (strategy selection routes to paper), batch — strategy construction read-only in batch mode."
         },
         "3.2": {
           "result": "pass",
@@ -151,7 +151,7 @@
           "note": "Target strategies: vertical-spread, iron-condor, options-combo (options-combos mode), futures-calendar-spread (futures-spreads mode). Widget drives options-trade-panel via setSelectedInstrument."
         }
       },
-      "notes": "5.2\u20135.6 require human walkthrough."
+      "notes": "5.2–5.6 require human walkthrough."
     },
     "l6": {
       "status": null,
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
           "deferReason": "i18n not shipped"
         },
         "7.6": {
@@ -222,15 +222,15 @@
     }
   },
   "relationships": {
-    "mode": "master",
-    "masterOf": ["options-trade-panel"],
+    "mode": "self-contained",
+    "masterOf": [],
     "detailOf": [],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Strategy builder is large and complex; trade panel is a compact form \u2014 different sizes, layout roles."
+      "rationale": "Scenario payoff is embedded inside options-strategies as a right pane (WU-3, 2026-04-22) — visualizes the legs currently built."
     },
-    "notes": "Drives options-trade-panel via setSelectedInstrument for combo instruments. Also clears setSelectedFuture on combo pick to avoid ambiguity with futures-trade-panel."
+    "notes": "Strategies + embedded ScenarioTab pane. Combo/spread pick sets selectedInstrument and clears selectedFuture (so futures-table's docked panel stays dormant)."
   },
   "dataContract": {
     "channels": ["rest", "websocket"],
@@ -257,8 +257,8 @@
     "notes": "Futures Spreads tab crypto-only; Options Combos tab works for both crypto and TradFi."
   },
   "knownIssues": [
-    "FuturesSpreadsTab and OptionsCombosPanel import spread matrix generators and combo types directly from lib/mocks/fixtures \u2014 should be injected via context props in a future refactor.",
-    "COMBO_TYPES and CALENDAR_EXPIRIES config constants live in lib/mocks/fixtures \u2014 should move to lib/config/services/options.config.ts."
+    "FuturesSpreadsTab and OptionsCombosPanel import spread matrix generators and combo types directly from lib/mocks/fixtures — should be injected via context props in a future refactor.",
+    "COMBO_TYPES and CALENDAR_EXPIRIES config constants live in lib/mocks/fixtures — should move to lib/config/services/options.config.ts."
   ],
   "findings": [
     {
@@ -271,7 +271,7 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "options-strategies-widget.tsx:31,39 \u2014 'Futures Spreads' and 'Options Combos' button labels not i18n-wrapped",
+      "description": "options-strategies-widget.tsx:31,39 — 'Futures Spreads' and 'Options Combos' button labels not i18n-wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

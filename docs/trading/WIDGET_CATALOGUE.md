@@ -225,17 +225,14 @@ Maps every registered widget to its UI tab, source file, UI class, chart library
 
 ## Options & Futures tab (`/services/trading/options`)
 
-| Widget ID               | Display Name        | Class        | Chart Lib | File                                             | Description                                                       |
-| ----------------------- | ------------------- | ------------ | --------- | ------------------------------------------------ | ----------------------------------------------------------------- |
-| `options-control-bar`   | Options Controls    | control-bar  | —         | `options/options-control-bar-widget.tsx`         | Asset class, venue, settlement, main tabs, watchlist toggle       |
-| `options-watchlist`     | Watchlist           | inline-table | —         | `options/options-watchlist-widget.tsx`           | Saved watchlists and symbol selection for active underlying       |
-| `options-chain`         | Options Chain       | inline-table | —         | `options/options-chain-widget.tsx`               | Calls and puts per strike with greeks, IV, open interest          |
-| `options-trade-panel`   | Options Trade Panel | form         | —         | `options/options-trade-panel-widget.tsx`         | Order entry for options, spreads, combos from chain or strategies |
-| `futures-table`         | Futures Table       | inline-table | —         | `options/options-futures-table-widget.tsx`       | Perpetual and dated futures with funding, basis, volume           |
-| `futures-trade-panel`   | Futures Trade Panel | form         | —         | `options/options-futures-trade-panel-widget.tsx` | Futures order entry after selecting a contract                    |
-| `options-strategies`    | Strategy Builder    | bespoke      | —         | `options/options-strategies-widget.tsx`          | Futures calendar spreads and multi-leg options combos             |
-| `options-scenario`      | Scenario Analysis   | detail-panel | —         | `options/options-scenario-widget.tsx`            | Spot and vol shock grid with preset scenarios                     |
-| `options-greek-surface` | Greek / Vol Surface | bespoke      | —         | `options/options-greek-surface-widget.tsx`       | Crypto greek surface; TradFi shows skew-aware vol grid            |
+| Widget ID               | Display Name        | Class        | Chart Lib | File                                       | Description                                                                                                                                       |
+| ----------------------- | ------------------- | ------------ | --------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options-control-bar`   | Options Controls    | control-bar  | —         | `options/options-control-bar-widget.tsx`   | Asset class, venue, settlement, main tabs, watchlist toggle                                                                                       |
+| `options-watchlist`     | Watchlist           | inline-table | —         | `options/options-watchlist-widget.tsx`     | Saved watchlists and symbol selection for active underlying                                                                                       |
+| `options-chain`         | Options Chain       | inline-table | —         | `options/options-chain-widget.tsx`         | Calls and puts per strike with greeks, IV, open interest; docks `TradePanel` as a right-side pane when a contract is selected (merged 2026-04-22) |
+| `futures-table`         | Futures Table       | inline-table | —         | `options/options-futures-table-widget.tsx` | Perpetual and dated futures with funding, basis, volume; docks `TradePanel` as a bottom pane when a contract is selected (merged 2026-04-22)      |
+| `options-strategies`    | Strategy Builder    | bespoke      | —         | `options/options-strategies-widget.tsx`    | Futures calendar spreads and multi-leg options combos; embeds `ScenarioTab` as a right-side payoff pane (merged 2026-04-22)                       |
+| `options-greek-surface` | Greek / Vol Surface | bespoke      | —         | `options/options-greek-surface-widget.tsx` | Crypto greek surface; TradFi shows skew-aware vol grid                                                                                            |
 
 ---
 
@@ -313,9 +310,9 @@ Maps every registered widget to its UI tab, source file, UI class, chart library
 | Priority | Proposed base                                      | Class          | Current count | Widgets                                                                                                                                                                                                                                                                                                                                                                                                                                       | Rationale                                                                                                                 |
 | -------- | -------------------------------------------------- | -------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **1**    | `RechartsWidget`                                   | recharts-chart | 10            | risk-var-chart, risk-exposure-attribution, risk-greeks-summary, risk-margin, risk-term-structure, pnl-time-series, pnl-factor-drilldown, markets-latency-detail, defi-yield-chart, risk-kpi-strip (sparklines)                                                                                                                                                                                                                                | Common ResponsiveContainer + theme + resize boilerplate. Base handles container sizing, dark theme, empty state, loading. |
-| **2**    | `FormWidget`                                       | form           | 13            | order-entry, book-order-entry, defi-lending, defi-swap, defi-liquidity, defi-staking, defi-flash-loans, defi-transfer, defi-strategy-config, defi-staking-rewards, accounts-transfer, options-trade-panel, futures-trade-panel, pred-trade-panel, cefi-strategy-config                                                                                                                                                                        | Most are submit-with-validation forms. Base handles submit/loading/error state, validation, submit button chrome.         |
+| **2**    | `FormWidget`                                       | form           | 11            | order-entry, book-order-entry, defi-lending, defi-swap, defi-liquidity, defi-staking, defi-flash-loans, defi-transfer, defi-strategy-config, defi-staking-rewards, accounts-transfer, pred-trade-panel, cefi-strategy-config                                                                                                                                                                                                                  | Most are submit-with-validation forms. Base handles submit/loading/error state, validation, submit button chrome.         |
 | **3**    | `InlineTableWidget` → migrate to `DataTableWidget` | inline-table   | 18            | orders-table, positions-table, alerts-table, book-trade-history, accounts-balance-table, accounts-transfer-history, risk-stress-table, risk-limits-hierarchy, pnl-by-client, markets-my-orders, markets-recon, markets-latency-summary, options-watchlist, options-chain, options-futures-table, pred-open-positions, pred-arb-closed, defi-rates-overview, sports-standings, lending-arb-dashboard, liquidation-monitor, active-lp-dashboard | Not a new base — migrate these to use the existing `DataTableWidget<T>`.                                                  |
-| **4**    | `DetailPanelWidget`                                | detail-panel   | 8             | instr-detail-panel, sports-fixture-detail, pred-market-detail, options-scenario, defi-health-factor, defi-reward-pnl, sports-clv, sports-ml-status, commodity-regime                                                                                                                                                                                                                                                                          | Master-detail with header + body + optional actions. Base handles selection state, empty state, back navigation.          |
+| **4**    | `DetailPanelWidget`                                | detail-panel   | 7             | instr-detail-panel, sports-fixture-detail, pred-market-detail, defi-health-factor, defi-reward-pnl, sports-clv, sports-ml-status, commodity-regime                                                                                                                                                                                                                                                                                            | Master-detail with header + body + optional actions. Base handles selection state, empty state, back navigation.          |
 | **5**    | `ControlBarWidget`                                 | control-bar    | 7             | scope-summary, instrument-bar, book-hierarchy-bar, pnl-controls, markets-controls, options-control-bar, sports-live-scores                                                                                                                                                                                                                                                                                                                    | Horizontal bar with selects/toggles/badges. Base handles responsive collapse, shared filter state.                        |
 | **6**    | `CardGridWidget`                                   | card-grid      | 7             | alerts-preview, recent-fills, health-grid, risk-circuit-breakers, saft-portfolio, defi-atomic-bundle, strategies-catalogue, pred-top-markets, strategy-family-browser                                                                                                                                                                                                                                                                         | Grid of uniform cards. Base handles responsive columns, empty state, card click.                                          |
 | **7**    | `HeatmapWidget`                                    | heatmap        | 3             | risk-strategy-heatmap, risk-correlation-heatmap, defi-funding-matrix                                                                                                                                                                                                                                                                                                                                                                          | Matrix with colour-coded cells. Base handles axis labels, colour scale, tooltip, cell click.                              |
@@ -386,11 +383,8 @@ Which widgets appear in the tab's default layout (visible on first load) vs. whi
 | **Options & Futures** | `options-control-bar`       | ✅ in default preset               |
 |                       | `options-watchlist`         | ✅ in default preset               |
 |                       | `options-chain`             | ✅ in default preset               |
-|                       | `options-trade-panel`       | ✅ in default preset               |
 |                       | `futures-table`             | ✅ in default preset               |
-|                       | `futures-trade-panel`       | ➕ catalogue only                  |
 |                       | `options-strategies`        | ✅ in default preset               |
-|                       | `options-scenario`          | ✅ in default preset               |
 |                       | `options-greek-surface`     | ✅ in default preset               |
 | **Orders**            | `orders-kpi-strip`          | ✅ in default preset               |
 |                       | `orders-table`              | ✅ in default preset               |
@@ -463,25 +457,24 @@ Which widgets appear in the tab's default layout (visible on first load) vs. whi
 
 ### Catalogue-only summary (20 widgets not in default preset)
 
-| Widget ID                 | Tab               | Why it might be catalogue-only                              |
-| ------------------------- | ----------------- | ----------------------------------------------------------- |
-| `depth-chart`             | Terminal          | Just split out from price-chart; not yet placed in preset   |
-| `terminal-options`        | Terminal          | Just split out from price-chart; not yet placed in preset   |
-| `defi-flash-loans`        | DeFi              | Advanced / power-user feature                               |
-| `defi-rates-overview`     | DeFi              | Supplementary overview, not core workflow                   |
-| `markets-defi-amm`        | Markets           | DeFi-specific sub-view, not core markets workflow           |
-| `futures-trade-panel`     | Options & Futures | Secondary panel; shown on demand after selecting a contract |
-| `pnl-report-button`       | P&L               | Single-button CTA, optional add-on                          |
-| `pred-market-detail`      | Predictions       | Master-detail secondary panel                               |
-| `pred-settled-positions`  | Predictions       | Secondary view, collapsed by default                        |
-| `pred-top-markets`        | Predictions       | Supplementary quick-access cards                            |
-| `sports-standings`        | Sports            | In Full preset only; league standings for deeper analysis   |
-| `sports-clv`              | Sports            | In Full preset only; CLV performance analysis               |
-| `sports-predictions`      | Sports            | In Full preset only; ML model predictions                   |
-| `sports-ml-status`        | Sports            | In Full preset only; ML pipeline monitoring                 |
-| `cefi-strategy-config`    | Strategies        | In Full preset only; strategy configuration panel           |
-| `strategy-family-browser` | Strategies        | In Full preset only; browse all strategy families           |
-| `lending-arb-dashboard`   | Strategies        | New — cross-protocol lending rate comparison                |
-| `liquidation-monitor`     | Strategies        | New — DeFi liquidation risk monitor                         |
-| `active-lp-dashboard`     | Strategies        | New — concentrated liquidity position tracker               |
-| `commodity-regime`        | Strategies        | New — regime detection dashboard                            |
+| Widget ID                 | Tab         | Why it might be catalogue-only                            |
+| ------------------------- | ----------- | --------------------------------------------------------- |
+| `depth-chart`             | Terminal    | Just split out from price-chart; not yet placed in preset |
+| `terminal-options`        | Terminal    | Just split out from price-chart; not yet placed in preset |
+| `defi-flash-loans`        | DeFi        | Advanced / power-user feature                             |
+| `defi-rates-overview`     | DeFi        | Supplementary overview, not core workflow                 |
+| `markets-defi-amm`        | Markets     | DeFi-specific sub-view, not core markets workflow         |
+| `pnl-report-button`       | P&L         | Single-button CTA, optional add-on                        |
+| `pred-market-detail`      | Predictions | Master-detail secondary panel                             |
+| `pred-settled-positions`  | Predictions | Secondary view, collapsed by default                      |
+| `pred-top-markets`        | Predictions | Supplementary quick-access cards                          |
+| `sports-standings`        | Sports      | In Full preset only; league standings for deeper analysis |
+| `sports-clv`              | Sports      | In Full preset only; CLV performance analysis             |
+| `sports-predictions`      | Sports      | In Full preset only; ML model predictions                 |
+| `sports-ml-status`        | Sports      | In Full preset only; ML pipeline monitoring               |
+| `cefi-strategy-config`    | Strategies  | In Full preset only; strategy configuration panel         |
+| `strategy-family-browser` | Strategies  | In Full preset only; browse all strategy families         |
+| `lending-arb-dashboard`   | Strategies  | New — cross-protocol lending rate comparison              |
+| `liquidation-monitor`     | Strategies  | New — DeFi liquidation risk monitor                       |
+| `active-lp-dashboard`     | Strategies  | New — concentrated liquidity position tracker             |
+| `commodity-regime`        | Strategies  | New — regime detection dashboard                          |

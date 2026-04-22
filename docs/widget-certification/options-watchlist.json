@@ -38,7 +38,7 @@
         },
         "0.7": {
           "result": "pass",
-          "note": "Empty state handled \u2014 WatchlistPanel uses activeList?.symbols ?? []; empty symbol list renders an empty ScrollArea with no rows \u2014 no crash."
+          "note": "Empty state handled — WatchlistPanel uses activeList?.symbols ?? []; empty symbol list renders an empty ScrollArea with no rows — no crash."
         },
         "0.8": {
           "result": "n/a",
@@ -49,7 +49,7 @@
           "note": "No dead code or commented-out blocks in widget file."
         }
       },
-      "notes": "0.6/0.8 N/A \u2014 synchronous mock data, no async paths."
+      "notes": "0.6/0.8 N/A — synchronous mock data, no async paths."
     },
     "l1": {
       "status": "pass",
@@ -66,11 +66,11 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "Org filter \u2014 when organizationIds set and does not include 'odum', only crypto watchlists shown; tradfi-us excluded. Org change visibly changes available watchlist tabs."
+          "note": "Org filter — when organizationIds set and does not include 'odum', only crypto watchlists shown; tradfi-us excluded. Org change visibly changes available watchlist tabs."
         },
         "1.4": {
           "result": "n/a",
-          "note": "clientIds not applicable to watchlist \u2014 symbol lists are not per-client filtered."
+          "note": "clientIds not applicable to watchlist — symbol lists are not per-client filtered."
         },
         "1.5": {
           "result": "n/a",
@@ -78,14 +78,14 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty organizationIds \u2192 scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown)."
+          "note": "Empty organizationIds → scopedWatchlists === DEFAULT_WATCHLISTS (all lists shown)."
         },
         "1.7": {
           "result": "pass",
-          "note": "DEFAULT_WATCHLISTS in lib/mocks/fixtures/options-futures-mock \u2014 reference data, tracked in knownIssues for future extraction."
+          "note": "DEFAULT_WATCHLISTS in lib/mocks/fixtures/options-futures-mock — reference data, tracked in knownIssues for future extraction."
         }
       },
-      "notes": "Org scoping is the primary filtering mechanism \u2014 watchlists visible/hidden by org. All data via useOptionsData()."
+      "notes": "Org scoping is the primary filtering mechanism — watchlists visible/hidden by org. All data via useOptionsData()."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 / paper \u2713 / batch \u2713 \u2014 watchlist symbol selection meaningful in all modes."
+          "note": "Mode relevance: live ✓ / paper ✓ / batch ✓ — watchlist symbol selection meaningful in all modes."
         },
         "3.2": {
           "result": "pass",
@@ -108,7 +108,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: symbol selection identical \u2014 drives chain display for paper positions."
+          "note": "Paper mode: symbol selection identical — drives chain display for paper positions."
         },
         "3.6": {
           "result": "pass",
@@ -148,10 +148,10 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all options and futures strategies on the options tab. Watchlist is the primary symbol selection entry point \u2014 drives asset which drives all downstream data."
+          "note": "Target strategies: all options and futures strategies on the options tab. Watchlist is the primary symbol selection entry point — drives asset which drives all downstream data."
         }
       },
-      "notes": "5.2\u20135.6 require human walkthrough."
+      "notes": "5.2–5.6 require human walkthrough."
     },
     "l6": {
       "status": null,
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
           "deferReason": "i18n not shipped"
         },
         "7.6": {
@@ -218,19 +218,19 @@
           "note": "Agent grep: no bare div onClick, no img without alt in widget file. Human keyboard pass for WatchlistPanel symbol selection required."
         }
       },
-      "notes": "Note: min-h-[200px] is a layout sizing constraint (minH for scroll area), not a typography/spacing token \u2014 acceptable per spec. 8.5 responsive resize requires human verification."
+      "notes": "Note: min-h-[200px] is a layout sizing constraint (minH for scroll area), not a typography/spacing token — acceptable per spec. 8.5 responsive resize requires human verification."
     }
   },
   "relationships": {
     "mode": "master",
-    "masterOf": ["options-chain", "futures-table", "options-greek-surface", "options-scenario"],
+    "masterOf": ["options-chain", "futures-table", "options-greek-surface"],
     "detailOf": [],
     "selectionKey": "symbolId",
     "mergeCandidate": null,
     "keepSeparate": {
       "rationale": "Watchlist is a persistent sidebar widget that drives all downstream data; separate from chain for independent resizing and toggling (showWatchlist flag in control bar)."
     },
-    "notes": "Drives asset selection (via handleWatchlistSelect) which propagates to all options widgets via OptionsDataContext."
+    "notes": "Drives asset selection (via handleWatchlistSelect) which propagates to all options widgets via OptionsDataContext. (options-trade-panel + futures-trade-panel + options-scenario absorbed into their host widgets on 2026-04-22 WU-3.)"
   },
   "dataContract": {
     "channels": ["rest"],
@@ -248,12 +248,12 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "Watchlist editing (add/remove symbols) not persisted \u2014 editable prop is UI-only in current mock implementation"
+      "Watchlist editing (add/remove symbols) not persisted — editable prop is UI-only in current mock implementation"
     ],
     "notes": "Crypto watchlists (BTC, ETH, SOL, AVAX, MATIC) and TradFi watchlists (SPY, QQQ, SPX, NDX) pre-loaded. Org filter restricts to crypto-only for non-odum orgs."
   },
   "knownIssues": [
-    "DEFAULT_WATCHLISTS reference data lives in lib/mocks/fixtures/options-futures-mock \u2014 should be moved to lib/config/services/options.config.ts or lib/constants/options.ts."
+    "DEFAULT_WATCHLISTS reference data lives in lib/mocks/fixtures/options-futures-mock — should be moved to lib/config/services/options.config.ts or lib/constants/options.ts."
   ],
   "findings": [
     {
@@ -266,7 +266,7 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "options-watchlist-widget.tsx \u2014 0 direct user-visible strings in widget file; strings in WatchlistPanel sub-component",
+      "description": "options-watchlist-widget.tsx — 0 direct user-visible strings in widget file; strings in WatchlistPanel sub-component",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

@@ -21,5 +21,5 @@ Min size: 4 x 2 columns/rows
 See [pairing guide](../pairing-guide.md).
 
 - **Same tab:** `risk-exposure-attribution`, `risk-what-if-slider`, `risk-var-chart`.
-- **Derivatives desk:** **options** `options-chain`, `options-trade-panel`, `options-scenario` · **terminal** `price-chart`.
+- **Derivatives desk:** **options** `options-chain` (docks trade panel on selection), `options-strategies` (embeds scenario payoff pane) · **terminal** `price-chart`.
 - **Portfolio:** **positions** `positions-table`.

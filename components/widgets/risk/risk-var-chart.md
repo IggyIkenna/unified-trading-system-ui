@@ -21,5 +21,5 @@ Horizontal bar chart showing marginal VaR (95%) contribution by position. Bars c
 See [pairing guide](../pairing-guide.md).
 
 - **Same tab:** `risk-kpi-strip`, `risk-stress-table`, `risk-exposure-attribution`, `risk-correlation-heatmap`.
-- **Tail risk:** `risk-what-if-slider` · **options** `options-scenario`, `options-greek-surface`.
+- **Tail risk:** `risk-what-if-slider` · **options** `options-strategies` (embeds scenario payoff pane), `options-greek-surface`.
 - **Book:** **positions** `positions-table` · **overview** `pnl-chart`.

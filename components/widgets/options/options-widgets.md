@@ -1,5 +1,7 @@
 # Options & Futures — Widget Decomposition Spec
 
+> **Update 2026-04-22 (WU-3):** `options-trade-panel` + `futures-trade-panel` + `options-scenario` were absorbed into their host widgets as docked/embedded panes. Live inventory is 6 widgets: `options-control-bar`, `options-watchlist`, `options-chain` (docks trade panel on selection), `futures-table` (docks trade panel on selection), `options-strategies` (embeds scenario payoff pane), `options-greek-surface`. Rows below and the default-preset block are historical — see `components/widgets/options/register.ts` and `README.md` for live definitions.
+
 **Page:** `app/(platform)/services/trading/options/page.tsx`
 **Component:** `components/trading/options-futures-panel.tsx`
 **Tier:** 3 (low priority — massive monolith, ~4700+ lines)

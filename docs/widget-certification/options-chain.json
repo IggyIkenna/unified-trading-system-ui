@@ -49,7 +49,7 @@
           "note": "No dead code, no commented-out blocks."
         }
       },
-      "notes": "0.6/0.8 partial \u2014 isLoading/error not in OptionsDataContextValue; tracked in knownIssues."
+      "notes": "0.6/0.8 partial — isLoading/error not in OptionsDataContextValue; tracked in knownIssues."
     },
     "l1": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (real-time chain updates), paper \u2713 (same UI, simulated fills), batch \u2713 (historical chain display, order entry disabled)."
+          "note": "Mode relevance: live ✓ (real-time chain updates), paper ✓ (same UI, simulated fills), batch ✓ (historical chain display, order entry disabled)."
         },
         "3.2": {
           "result": "pass",
@@ -108,7 +108,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: expected behavior is same UI as live, but order submission routes to paper ledger not live venue. Not yet visually distinct \u2014 no separate paper banner."
+          "note": "Paper mode: expected behavior is same UI as live, but order submission routes to paper ledger not live venue. Not yet visually distinct — no separate paper banner."
         },
         "3.6": {
           "result": "pass",
@@ -151,13 +151,13 @@
           "note": "Target strategies: options-buying (long call/put), options-selling (short call/put), vertical-spread, iron-condor (via combos). Serves crypto and TradFi underlyings."
         }
       },
-      "notes": "5.2\u20135.6 require human walkthrough. Strategy list cross-referenced against lib/strategy-registry.ts (registry deprecated; options strategies are archetype-level)."
+      "notes": "5.2–5.6 require human walkthrough. Strategy list cross-referenced against lib/strategy-registry.ts (registry deprecated; options strategies are archetype-level)."
     },
     "l6": {
       "status": null,
       "by": null,
       "date": null,
-      "notes": "L6 deferred \u2014 tests to be written after L5 human sign-off."
+      "notes": "L6 deferred — tests to be written after L5 human sign-off."
     },
     "l7": {
       "status": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
           "deferReason": "i18n not shipped"
         },
         "7.6": {
@@ -222,15 +222,15 @@
     }
   },
   "relationships": {
-    "mode": "master",
-    "masterOf": ["options-trade-panel"],
+    "mode": "self-contained",
+    "masterOf": [],
     "detailOf": [],
     "selectionKey": "instrumentId",
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Chain is a large data table; trade panel is a form \u2014 different sizes, different interactivity, different minW."
+      "rationale": "Trade panel is docked inside options-chain as a right-side pane (WU-3, 2026-04-22) — rendered when selectedInstrument is set and is non-future."
     },
-    "notes": "Chain drives options-trade-panel via setSelectedInstrument. Also triggers setSelectedFuture(null) on options pick to avoid ambiguity with futures-trade-panel."
+    "notes": "Chain + docked TradePanel. Options pick sets selectedInstrument and clears selectedFuture (so futures-table's docked panel stays dormant)."
   },
   "dataContract": {
     "channels": ["rest", "websocket"],
@@ -248,31 +248,31 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": ["Sports/predictions options not applicable", "DeFi on-chain options not in current scope"],
-    "notes": "Widget branches on isCrypto \u2014 crypto path uses OptionsChainTab (Deribit), TradFi path uses TradFiOptionsChainTab (CBOE)."
+    "notes": "Widget branches on isCrypto — crypto path uses OptionsChainTab (Deribit), TradFi path uses TradFiOptionsChainTab (CBOE)."
   },
   "knownIssues": [
-    "context does not expose isLoading or error fields \u2014 loading/error states at widget level require context update",
+    "context does not expose isLoading or error fields — loading/error states at widget level require context update",
     "OptionsChainTab sub-component imports directly from lib/mocks/fixtures/options-futures-mock (outside widget file scope)"
   ],
   "findings": [
     {
       "level": "l0",
       "check": "0.6",
-      "description": "options-chain-widget.tsx \u2014 context has no isLoading field; loading state not wirable at widget level",
+      "description": "options-chain-widget.tsx — context has no isLoading field; loading state not wirable at widget level",
       "status": "deferred",
-      "deferReason": "Requires OptionsDataContextValue update (isLoading field) \u2014 tracked in knownIssues, blocked on BP-5 data wiring."
+      "deferReason": "Requires OptionsDataContextValue update (isLoading field) — tracked in knownIssues, blocked on BP-5 data wiring."
     },
     {
       "level": "l0",
       "check": "0.8",
-      "description": "options-chain-widget.tsx \u2014 context has no error field; error state not wirable at widget level",
+      "description": "options-chain-widget.tsx — context has no error field; error state not wirable at widget level",
       "status": "deferred",
-      "deferReason": "Requires OptionsDataContextValue update (error field) \u2014 tracked in knownIssues, blocked on BP-5 data wiring."
+      "deferReason": "Requires OptionsDataContextValue update (error field) — tracked in knownIssues, blocked on BP-5 data wiring."
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "options-chain-widget.tsx:19 \u2014 1 user-visible string not i18n-wrapped",
+      "description": "options-chain-widget.tsx:19 — 1 user-visible string not i18n-wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

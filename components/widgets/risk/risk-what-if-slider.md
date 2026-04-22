@@ -21,5 +21,5 @@ BTC price shock slider (-30% to +30%) with real-time estimated portfolio PnL usi
 See [pairing guide](../pairing-guide.md).
 
 - **Same tab:** `risk-var-chart`, `risk-greeks-summary`, `risk-stress-table`.
-- **Scenario depth:** **options** `options-scenario` · **terminal** `price-chart`.
+- **Scenario depth:** **options** `options-strategies` (embeds scenario payoff pane) · **terminal** `price-chart`.
 - **Quick book impact:** **positions** `positions-kpi-strip`.

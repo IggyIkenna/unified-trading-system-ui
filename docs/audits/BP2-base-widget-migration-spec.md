@@ -128,6 +128,8 @@ The base should provide:
 ## § 2 — FormWidget (form class)
 
 > **Update 2026-04-22:** The three `book-*` form widgets listed below (`book-order-form`, `book-algo-config`, `book-record-details`) were merged into `book-order-entry` (WU-1 widget consolidation). Effective FormWidget child count: 13 (was 16). Historical rows retained for traceability.
+>
+> **Update 2026-04-22 (WU-3):** `options-trade-panel` and `futures-trade-panel` were absorbed into their host widgets (`options-chain` and `futures-table` respectively) as docked panes. Effective FormWidget child count: 11. Historical rows retained for traceability.
 
 **Base file:** `components/shared/form-widget.tsx` (NEW)
 **Child count:** 16
@@ -265,6 +267,8 @@ The migration per widget is:
 > **Update 2026-04-22:** `book-preview-compliance` was absorbed into `book-order-entry` (WU-1 widget consolidation). Effective DetailPanelWidget child count: 9. Historical row retained for traceability.
 >
 > **Update 2026-04-22 (WU-2):** `bundle-steps` was absorbed into `bundle-builder` (bundles widget consolidation). Effective DetailPanelWidget child count: 8. Historical row retained for traceability.
+>
+> **Update 2026-04-22 (WU-3):** `options-scenario` was absorbed into `options-strategies` (options widget consolidation — scenario payoff is now an embedded right pane). Effective DetailPanelWidget child count: 7. Historical row retained for traceability.
 
 **Base file:** `components/shared/detail-panel-widget.tsx` (NEW)
 **Child count:** 10

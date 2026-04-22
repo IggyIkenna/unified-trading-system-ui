@@ -77,8 +77,6 @@
             "w": 4,
             "h": 6
           },
-          { "widgetId": "options-trade-panel", "instanceId": "audit-form-opt-trade", "x": 4, "y": 25, "w": 4, "h": 5 },
-          { "widgetId": "futures-trade-panel", "instanceId": "audit-form-fut-trade", "x": 8, "y": 25, "w": 4, "h": 5 },
           { "widgetId": "pred-trade-panel", "instanceId": "audit-form-pred-trade", "x": 0, "y": 31, "w": 4, "h": 5 },
           {
             "widgetId": "cefi-strategy-config",
@@ -149,7 +147,6 @@
           { "widgetId": "sports-clv", "instanceId": "audit-dp-sports-clv", "x": 6, "y": 5, "w": 6, "h": 5 },
           { "widgetId": "sports-ml-status", "instanceId": "audit-dp-ml-status", "x": 0, "y": 10, "w": 6, "h": 5 },
           { "widgetId": "pred-market-detail", "instanceId": "audit-dp-pred-detail", "x": 6, "y": 10, "w": 6, "h": 5 },
-          { "widgetId": "options-scenario", "instanceId": "audit-dp-opt-scenario", "x": 0, "y": 15, "w": 6, "h": 5 },
           { "widgetId": "defi-health-factor", "instanceId": "audit-dp-health", "x": 0, "y": 20, "w": 4, "h": 8 },
           { "widgetId": "defi-reward-pnl", "instanceId": "audit-dp-reward-pnl", "x": 4, "y": 20, "w": 4, "h": 6 },
           { "widgetId": "commodity-regime", "instanceId": "audit-dp-commodity", "x": 8, "y": 20, "w": 4, "h": 6 }

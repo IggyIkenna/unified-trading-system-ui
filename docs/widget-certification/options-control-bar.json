@@ -49,7 +49,7 @@
           "note": "No dead code."
         }
       },
-      "notes": "0.6/0.7/0.8 N/A \u2014 pure control bar widget."
+      "notes": "0.6/0.7/0.8 N/A — pure control bar widget."
     },
     "l1": {
       "status": "pass",
@@ -85,7 +85,7 @@
           "note": "No reference data constants in widget file."
         }
       },
-      "notes": "Pure UI widget; 1.3\u20131.7 N/A per spec note."
+      "notes": "Pure UI widget; 1.3–1.7 N/A per spec note."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 / paper \u2713 / batch \u2713 \u2014 control bar always shown; asset selection meaningful in all modes."
+          "note": "Mode relevance: live ✓ / paper ✓ / batch ✓ — control bar always shown; asset selection meaningful in all modes."
         },
         "3.2": {
           "result": "pass",
@@ -151,7 +151,7 @@
           "note": "Serves all options and futures strategies on the options tab as primary configuration entry point. Strategy applicability determined by downstream widgets driven by this control bar."
         }
       },
-      "notes": "5.2\u20135.6 require human walkthrough."
+      "notes": "5.2–5.6 require human walkthrough."
     },
     "l6": {
       "status": null,
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering",
           "deferReason": "i18n not shipped"
         },
         "7.6": {
@@ -223,23 +223,14 @@
   },
   "relationships": {
     "mode": "master",
-    "masterOf": [
-      "options-chain",
-      "options-watchlist",
-      "futures-table",
-      "options-strategies",
-      "options-scenario",
-      "options-greek-surface",
-      "options-trade-panel",
-      "futures-trade-panel"
-    ],
+    "masterOf": ["options-chain", "options-watchlist", "futures-table", "options-strategies", "options-greek-surface"],
     "detailOf": [],
     "selectionKey": null,
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "Singleton control bar at top row \u2014 standard layout pattern, must remain separate from data widgets."
+      "rationale": "Singleton control bar at top row — standard layout pattern, must remain separate from data widgets."
     },
-    "notes": "Drives assetClass, venue, settlement, and activeTab that all other options widgets consume from OptionsDataContext."
+    "notes": "Drives assetClass, venue, settlement, and activeTab that all other options widgets consume from OptionsDataContext. (options-trade-panel + futures-trade-panel + options-scenario absorbed into their host widgets on 2026-04-22 WU-3.)"
   },
   "dataContract": {
     "channels": [],
@@ -264,7 +255,7 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "options-control-bar-widget.tsx \u2014 0 direct user-visible strings in widget file; OptionsToolbar strings not audited here",
+      "description": "options-control-bar-widget.tsx — 0 direct user-visible strings in widget file; OptionsToolbar strings not audited here",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }

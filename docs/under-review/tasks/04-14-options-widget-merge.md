@@ -1,6 +1,6 @@
 # 4.14 Options & Futures — Widget Audit & Merge Plan
 
-> **Status:** DRAFT — awaiting user review
+> **Status:** LANDED 2026-04-22 (WU-3). `options-trade-panel` is now a right-side docked pane inside `options-chain`; `futures-trade-panel` is now a bottom docked pane inside `futures-table`; `options-scenario` is now an embedded right pane inside `options-strategies`. Presets rewritten in `components/widgets/options/register.ts`. See `docs/audits/live-review-findings.md` row #17.
 > **Page route:** `/services/trading/options`
 
 ---
