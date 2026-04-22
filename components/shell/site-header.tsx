@@ -101,21 +101,8 @@ export function SiteHeader() {
       className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
     >
       <div className="container flex min-h-14 items-center justify-between gap-3 px-4 py-2 md:px-6">
-        {/* Mobile: logo opens nav sheet. Desktop: logo navigates home. */}
-        <button
-          className="flex shrink-0 items-center gap-3 xl:hidden"
-          onClick={() => setMobileOpen(true)}
-          aria-label="Open navigation"
-        >
-          <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
-          <div className="flex flex-col items-start gap-0.5 leading-tight">
-            <span className="text-lg font-semibold">Odum Research</span>
-            <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal leading-none">
-              FCA 975797
-            </Badge>
-          </div>
-        </button>
-        <Link href="/" className="hidden shrink-0 items-center gap-3 xl:flex">
+        {/* Logo — always navigates home across breakpoints. */}
+        <Link href="/" className="flex shrink-0 items-center gap-3">
           <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
           <div className="flex flex-col items-start gap-0.5 leading-tight">
             <span className="text-lg font-semibold">Odum Research</span>
@@ -125,15 +112,15 @@ export function SiteHeader() {
           </div>
         </Link>
 
-        {/* Desktop menu pill — opens the same Sheet as the mobile logo tap. */}
+        {/* Menu pill — single visible entry point to the nav Sheet, all breakpoints. */}
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
           aria-label="Open full site navigation"
-          className="hidden shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground xl:inline-flex"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-background/40 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-border hover:bg-accent hover:text-foreground sm:px-3"
         >
           <Menu className="size-3.5" aria-hidden />
-          Menu
+          <span className="hidden sm:inline">Menu</span>
         </button>
 
         {/* Mobile + desktop Menu-pill nav sheet.

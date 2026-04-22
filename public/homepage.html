@@ -1199,14 +1199,25 @@
           padding: 0 !important;
         }
 
+        /* Mobile: horizontally scrollable tab strip so long labels
+           ("Traditional Markets", "Regulatory Umbrella") never clip. */
         .explorer-sidebar .explorer-nav {
-          display: grid !important;
-          grid-template-columns: 1fr 1fr 1fr;
+          display: flex !important;
+          flex-direction: row !important;
+          flex-wrap: nowrap !important;
           gap: 0;
           padding: 0;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          scrollbar-width: none;
+        }
+
+        .explorer-sidebar .explorer-nav::-webkit-scrollbar {
+          display: none;
         }
 
         .explorer-nav li {
+          flex: 0 0 auto !important;
           border-left: none !important;
           border-bottom: 2px solid transparent;
           background: none !important;
@@ -1220,8 +1231,8 @@
         }
 
         .explorer-nav li button {
-          width: 100% !important;
-          padding: 10px 6px;
+          width: auto !important;
+          padding: 10px 14px;
           font-size: 12px;
           white-space: nowrap;
           justify-content: center;
