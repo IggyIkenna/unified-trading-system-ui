@@ -33,6 +33,7 @@ const NAV_SECONDARY = [
 const DEEP_DIVE_HEADLINE = [
   { href: "/briefings", label: "Briefings hub" },
   { href: "/docs", label: "Developer docs" },
+  { href: "/faq", label: "FAQ" },
 ] as const;
 
 const DEEP_DIVE_BRIEFINGS = [
