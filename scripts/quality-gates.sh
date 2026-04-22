@@ -14,6 +14,9 @@
 #   bash scripts/quality-gates.sh --no-fix  # Same as full (no-op flag; kept for compatibility)
 #
 EXPECTED_BASE_VERSION="1.0"
+# UI coverage floor: actual is ~45% (many feature tabs are visual/stateful + deferred testing).
+# Track uplift via unified-trading-pm/plans/active/coverage_uplift_*.plan.md; raise as test suite matures.
+MIN_UI_COVERAGE=${MIN_UI_COVERAGE:-40}
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$(cd "$(git rev-parse --show-toplevel)/.." && pwd)}"
 BASE_UI="${WORKSPACE_ROOT}/unified-trading-pm/scripts/quality-gates-base/base-ui.sh"
 
