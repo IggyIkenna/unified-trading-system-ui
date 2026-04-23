@@ -15,7 +15,7 @@
       ]
     },
     {
-      "target": "staging",
+      "target": "uat",
       "public": ".next/static",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [

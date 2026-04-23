@@ -3,22 +3,27 @@
 #
 # SSOT for the build+deploy contract: docs/core/DEPLOYMENT.md.
 #
-# STAGING AND PRODUCTION ARE INDEPENDENT DEPLOYS.
-#   - Different Cloud Run services (odum-portal-staging vs odum-portal).
-#   - Different image tags (:staging vs :production).
-#   - Different BUILD_ENV_FILE (config/docker-build.env.staging vs .production) →
-#     different NEXT_PUBLIC_* baked in → different auth provider + Firebase project.
-#   - Never deploy both in one operation; stage → verify → promote to prod.
+# TWO INDEPENDENT ENVIRONMENTS — NO SILENT DEFAULT.
+# You must pass `--env=prod` or `--env=uat`. The script exits 2 otherwise.
+#
+#   | env  | Cloud Run service      | Image tag    | BUILD_ENV_FILE                        | Domain                        |
+#   |------|------------------------|--------------|---------------------------------------|-------------------------------|
+#   | prod | odum-portal            | :production  | config/docker-build.env.production    | www.odum-research.com         |
+#   | uat  | odum-portal-staging *  | :uat         | config/docker-build.env.uat           | uat.odum-research.com         |
+#
+#   * Cloud Run service name still carries the historical "staging" suffix;
+#     rename to odum-portal-uat is a separate follow-up (see DEPLOYMENT.md).
 #
 # NEXT_PUBLIC_* are inlined at Docker build time; Cloud Run runtime env vars do
 # not retro-rewrite the client bundle. Change env → rebuild → redeploy.
 #
 # Usage:
-#   bash scripts/deploy-cloud-run.sh                       # local Docker build → STAGING
-#   bash scripts/deploy-cloud-run.sh --cloud               # Cloud Build       → STAGING
-#   bash scripts/deploy-cloud-run.sh --cloud --production  # Cloud Build       → PRODUCTION
-#   bash scripts/deploy-cloud-run.sh --build-env-file=config/docker-build.env.staging.firebase.local
-#       # optional: override BUILD_ENV_FILE (repo-relative path). Works with --cloud / --production.
+#   bash scripts/deploy-cloud-run.sh --env=uat                  # local Docker build → UAT
+#   bash scripts/deploy-cloud-run.sh --env=prod                 # local Docker build → PROD
+#   bash scripts/deploy-cloud-run.sh --env=uat --cloud          # Cloud Build       → UAT
+#   bash scripts/deploy-cloud-run.sh --env=prod --cloud         # Cloud Build       → PROD
+#   bash scripts/deploy-cloud-run.sh --env=uat --build-env-file=config/docker-build.env.staging.firebase.local
+#       # optional: override BUILD_ENV_FILE (repo-relative path). Works with any --env.
 #
 # Build speed: cloudbuild-odum-portal.yaml pulls the previous image tag and
 # passes --cache-from. Code-only changes reuse the deps stage layer; dep changes
@@ -27,36 +32,60 @@ set -euo pipefail
 
 PROJECT_ID="central-element-323112"
 REGION="europe-west4"
-SERVICE_PRODUCTION="odum-portal"
-SERVICE_STAGING="odum-portal-staging"
+SERVICE_PROD="odum-portal"
+SERVICE_UAT="odum-portal-staging"
 # Registry repository name (image); not necessarily the same as Cloud Run service id.
 IMAGE_REPO="odum-portal"
 IMAGE="europe-west4-docker.pkg.dev/${PROJECT_ID}/cloud-run-source-deploy/${IMAGE_REPO}"
 
 USE_CLOUD_BUILD=false
-DEPLOY_TARGET="staging"
+DEPLOY_ENV=""
 BUILD_ENV_FILE_OVERRIDE=""
 for arg in "$@"; do
   case "$arg" in
     --cloud) USE_CLOUD_BUILD=true ;;
-    --production) DEPLOY_TARGET="production" ;;
+    --env=*) DEPLOY_ENV="${arg#*=}" ;;
     --build-env-file=*)
       BUILD_ENV_FILE_OVERRIDE="${arg#*=}"
+      ;;
+    # Back-compat / fail-loud: reject the old flag instead of silently mis-targeting.
+    --production)
+      echo "ERROR: --production is gone. Use --env=prod explicitly." >&2
+      exit 2
+      ;;
+    *)
+      echo "ERROR: unrecognised argument: $arg" >&2
+      echo "       Usage: bash scripts/deploy-cloud-run.sh --env=prod|uat [--cloud] [--build-env-file=...]" >&2
+      exit 2
       ;;
   esac
 done
 
-if [[ "${DEPLOY_TARGET}" == "production" ]]; then
-  SERVICE="${SERVICE_PRODUCTION}"
-  IMAGE_TAG="production"
-  BUILD_ENV_FILE="config/docker-build.env.production"
-  echo "=== Deploy target: PRODUCTION (${SERVICE}) — odum-research.com (if mapped) ==="
-else
-  SERVICE="${SERVICE_STAGING}"
-  IMAGE_TAG="staging"
-  BUILD_ENV_FILE="config/docker-build.env.staging"
-  echo "=== Deploy target: STAGING (${SERVICE}) — verify https://odum-research.co.uk/ ==="
-fi
+case "${DEPLOY_ENV}" in
+  prod)
+    SERVICE="${SERVICE_PROD}"
+    IMAGE_TAG="production"
+    BUILD_ENV_FILE="config/docker-build.env.production"
+    PUBLIC_URL="https://www.odum-research.com"
+    ;;
+  uat)
+    SERVICE="${SERVICE_UAT}"
+    IMAGE_TAG="uat"
+    BUILD_ENV_FILE="config/docker-build.env.uat"
+    PUBLIC_URL="https://uat.odum-research.com"
+    ;;
+  "")
+    echo "ERROR: --env=prod|uat is required. Staging and prod are independent deploys; there is no default." >&2
+    echo "       Usage: bash scripts/deploy-cloud-run.sh --env=prod|uat [--cloud] [--build-env-file=...]" >&2
+    exit 2
+    ;;
+  *)
+    echo "ERROR: unknown --env value: ${DEPLOY_ENV}. Must be one of: prod, uat." >&2
+    exit 2
+    ;;
+esac
+
+echo "=== Deploy target: $(echo "${DEPLOY_ENV}" | tr '[:lower:]' '[:upper:]') (${SERVICE}) — ${PUBLIC_URL} ==="
 
 IMAGE_REF="${IMAGE}:${IMAGE_TAG}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -65,7 +94,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 if [[ -n "${BUILD_ENV_FILE_OVERRIDE}" ]]; then
   case "${BUILD_ENV_FILE_OVERRIDE}" in
     /*)
-      echo "ERROR: --build-env-file must be repo-relative (e.g. config/docker-build.env.staging.firebase.local)." >&2
+      echo "ERROR: --build-env-file must be repo-relative (e.g. config/docker-build.env.uat.firebase.local)." >&2
       exit 1
       ;;
   esac
@@ -99,24 +128,12 @@ else
 fi
 
 echo "=== Deploying to Cloud Run (${SERVICE}) ==="
-if [[ "${DEPLOY_TARGET}" == "production" ]]; then
-  # Preserve existing prod env / scaling — only roll the image. Client auth is baked at build time.
-  gcloud run deploy "${SERVICE}" \
-    --image "${IMAGE_REF}" \
-    --region "${REGION}" \
-    --platform managed \
-    --allow-unauthenticated \
-    --port=3000
-else
-  # Staging: demo + mock are baked at build time (docker-build.env.staging). Do not rely on
-  # Cloud Run NEXT_PUBLIC_* overrides — they cannot change already-inlined client bundles.
-  gcloud run deploy "${SERVICE}" \
-    --image "${IMAGE_REF}" \
-    --region "${REGION}" \
-    --platform managed \
-    --allow-unauthenticated \
-    --port=3000
-fi
+gcloud run deploy "${SERVICE}" \
+  --image "${IMAGE_REF}" \
+  --region "${REGION}" \
+  --platform managed \
+  --allow-unauthenticated \
+  --port=3000
 
 echo "=== Routing 100% traffic to latest ==="
 gcloud run services update-traffic "${SERVICE}" \
@@ -143,10 +160,5 @@ gcloud run revisions list \
   done
 
 echo "=== Done — Cloud Run ${SERVICE} updated (${REGION}) ==="
-if [[ "${DEPLOY_TARGET}" == "production" ]]; then
-  echo "  Production service updated (image only). Confirm traffic: odum-research.com → ${SERVICE_PRODUCTION}"
-else
-  echo "  Staging service updated. Confirm: https://odum-research.co.uk/ (Firebase → ${SERVICE_STAGING})"
-  echo "  If you changed firebase.json, run: firebase deploy --only hosting --project=${PROJECT_ID}"
-fi
+echo "  $(echo "${DEPLOY_ENV}" | tr '[:lower:]' '[:upper:]') service updated (image only). Confirm traffic: ${PUBLIC_URL} → ${SERVICE}"
 echo "  Active revision: ${LATEST}"
