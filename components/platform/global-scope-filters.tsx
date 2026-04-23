@@ -394,8 +394,10 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
   ].filter(Boolean).length;
 
   if (isClientScoped && user?.org) {
-    const clientScopeActiveFilters = scope.strategyIds.length > 0 ? 1 : 0;
+    const clientScopeActiveFilters =
+      (scope.strategyIds.length > 0 ? 1 : 0) + (scope.strategyFamilyIds.length > 0 ? 1 : 0);
     const allowedClasses = entitlementAssetClasses(user?.entitlements ?? []);
+    const allowedFamilies = STRATEGY_FAMILIES.filter((f) => allowedClasses.has(f.id));
     const strategyAllLabel = allowedClasses.size === 1 ? `All ${[...allowedClasses][0]} Strategies` : "All Strategies";
     return (
       <div className={cn("flex items-center gap-0.5", className)}>
@@ -403,10 +405,34 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
           <Building2 className="size-3" />
           <span className="font-medium text-foreground">{user.org.name}</span>
         </div>
+        {allowedFamilies.length > 1 && (
+          <>
+            <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
+            <CompactMultiSelect
+              icon={<Layers className="size-3" />}
+              items={allowedFamilies}
+              selectedIds={scope.strategyFamilyIds}
+              onSelectionChange={(ids) => {
+                setStrategyFamilyIds(ids);
+                setStrategyIds([]);
+              }}
+              allLabel="All Asset Classes"
+              renderItem={(family) => (
+                <span className="flex items-center gap-2 flex-1">
+                  <span className={cn("size-2 rounded-full", family.color)} />
+                  {family.name}
+                </span>
+              )}
+              dropdownWidthClass="w-44"
+            />
+          </>
+        )}
         <span className="text-muted-foreground/30 text-xs hidden sm:inline">/</span>
         <CompactMultiSelect
           icon={<BarChart3 className="size-3" />}
-          items={clientOrgStrategies}
+          items={clientOrgStrategies.filter(
+            (s) => scope.strategyFamilyIds.length === 0 || scope.strategyFamilyIds.includes(s.assetClass),
+          )}
           selectedIds={scope.strategyIds}
           onSelectionChange={setStrategyIds}
           allLabel={strategyAllLabel}
@@ -435,7 +461,10 @@ export function GlobalScopeFilters({ className }: { className?: string }) {
               variant="ghost"
               size="sm"
               className="h-6 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
-              onClick={() => setStrategyIds([])}
+              onClick={() => {
+                setStrategyIds([]);
+                setStrategyFamilyIds([]);
+              }}
             >
               <X className="size-3 mr-0.5" />
               Clear

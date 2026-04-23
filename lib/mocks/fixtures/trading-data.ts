@@ -288,6 +288,7 @@ export const ORGANIZATIONS: TradingOrganization[] = [
   { id: "meridian-fund", name: "Meridian Fund", type: "external" },
   { id: "atlas-ventures", name: "Atlas Ventures", type: "external" },
   { id: "elysium", name: "Elysium", type: "external" },
+  { id: "desmond-capital", name: "Desmond Capital", type: "external" },
 ];
 
 export const CLIENTS: TradingClient[] = [
@@ -375,6 +376,13 @@ export const CLIENTS: TradingClient[] = [
     status: "active",
     capitalAllocation: 5000000,
   },
+  {
+    id: "desmond-perp",
+    name: "Perp Funding Desk",
+    orgId: "desmond-capital",
+    status: "active",
+    capitalAllocation: 3000000,
+  },
 ];
 
 // Helper to map v2 archetype → trading-data archetype label for downstream mock PnL buckets.
@@ -420,23 +428,71 @@ function extractUnderlyings(instruments: RegistryStrategy["instruments"]): strin
 }
 
 // Derive STRATEGIES from strategy-instances.ts (UAC STRATEGY_REGISTRY — single source of truth)
-export const STRATEGIES: TradingStrategy[] = REGISTRY_STRATEGIES.map(
-  (rs): TradingStrategy => ({
-    id: rs.id,
-    name: rs.name,
-    clientId: rs.clientId,
-    archetype: mapArchetype(rs.archetype),
-    assetClass: rs.assetClass,
-    executionMode: rs.executionMode,
-    status: rs.status === "development" ? "paused" : (rs.status as StrategyStatus),
-    configVersion: rs.version,
-    underlyings: extractUnderlyings(rs.instruments),
-    venues: rs.venues,
-    baseCapital: rs.performance.netExposure,
-    expectedSharpe: rs.performance.sharpe,
-    expectedVolatility: rs.performance.maxDrawdown / 100,
-  }),
-);
+export const STRATEGIES: TradingStrategy[] = [
+  ...REGISTRY_STRATEGIES.map(
+    (rs): TradingStrategy => ({
+      id: rs.id,
+      name: rs.name,
+      clientId: rs.clientId,
+      archetype: mapArchetype(rs.archetype),
+      assetClass: rs.assetClass,
+      executionMode: rs.executionMode,
+      status: rs.status === "development" ? "paused" : (rs.status as StrategyStatus),
+      configVersion: rs.version,
+      underlyings: extractUnderlyings(rs.instruments),
+      venues: rs.venues,
+      baseCapital: rs.performance.netExposure,
+      expectedSharpe: rs.performance.sharpe,
+      expectedVolatility: rs.performance.maxDrawdown / 100,
+    }),
+  ),
+  // Desmond Capital bespoke cross-exchange perp-funding arbitrage strategies
+  {
+    id: "desmond-xex-btc-perp-funding",
+    name: "XEX-PERP-FUNDING-BTC",
+    clientId: "desmond-perp",
+    archetype: "basis-trade",
+    assetClass: "CeFi",
+    executionMode: "HUF" as const,
+    status: "live",
+    configVersion: "1.0.0",
+    underlyings: ["BTC"],
+    venues: ["BINANCE", "OKX", "BYBIT"],
+    baseCapital: 1200000,
+    expectedSharpe: 2.8,
+    expectedVolatility: 0.08,
+  },
+  {
+    id: "desmond-xex-eth-perp-funding",
+    name: "XEX-PERP-FUNDING-ETH",
+    clientId: "desmond-perp",
+    archetype: "basis-trade",
+    assetClass: "CeFi",
+    executionMode: "HUF" as const,
+    status: "live",
+    configVersion: "1.0.0",
+    underlyings: ["ETH"],
+    venues: ["BINANCE", "OKX", "HYPERLIQUID"],
+    baseCapital: 900000,
+    expectedSharpe: 2.4,
+    expectedVolatility: 0.10,
+  },
+  {
+    id: "desmond-xex-price-dispersion",
+    name: "XEX-PRICE-DISPERSION-MAJORS",
+    clientId: "desmond-perp",
+    archetype: "arbitrage",
+    assetClass: "DeFi",
+    executionMode: "EVT" as const,
+    status: "live",
+    configVersion: "1.0.0",
+    underlyings: ["BTC", "ETH", "SOL"],
+    venues: ["HYPERLIQUID", "DYDX", "BINANCE"],
+    baseCapital: 900000,
+    expectedSharpe: 3.1,
+    expectedVolatility: 0.07,
+  },
+];
 
 // =============================================================================
 // P&L ATTRIBUTION TYPES - Strategy-specific breakdowns

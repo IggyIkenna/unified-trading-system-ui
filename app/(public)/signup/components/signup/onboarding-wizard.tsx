@@ -7,7 +7,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { submitSignup, type ContactChannelKind } from "@/lib/api/signup-client";
+import { getFirebaseAuth } from "@/lib/auth/firebase-config";
 import { QUESTIONNAIRE_ENVELOPE_LOCAL_STORAGE_KEY } from "@/lib/questionnaire/types";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 import { Briefcase, CheckCircle2, Shield } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
@@ -198,6 +200,9 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
         /* envelope parsing is best-effort; backend falls back to email lookup */
       }
 
+      let uid = "";
+      let onboardingId = "";
+
       try {
         const result = await submitSignup({
           name,
@@ -214,29 +219,68 @@ export function OnboardingWizard({ serviceType }: { serviceType: "regulatory" | 
           questionnaire_response_id: questionnaireResponseId,
           send_email_verification: true,
         });
-        setFirebaseUid(result.user.firebase_uid);
-        setOnboardingRequestId(result.onboarding_request_id);
-        // Save draft with UID so resume works
-        localStorage.setItem(
-          "onboarding-draft",
-          JSON.stringify({
-            firebaseUid: result.user.firebase_uid,
-            onboardingRequestId: result.onboarding_request_id,
-            service: serviceType,
-            applicantType,
-            name,
-            email,
-            company,
-            phone,
-            expectedAum,
-            step: 2,
-          }),
-        );
-      } catch (err: unknown) {
-        setSubmitError(err instanceof Error ? err.message : "Account creation failed. Please try again.");
-        setCreatingAccount(false);
-        return;
+        uid = result.user.firebase_uid;
+        onboardingId = result.onboarding_request_id;
+      } catch {
+        // Backend not available (demo/staging) — fall back to Firebase client-side auth.
+        // Account is created enabled so the prospect can sign in immediately for demo review.
+        const auth = getFirebaseAuth();
+        if (!auth) {
+          setSubmitError("Firebase is not configured. Please contact support.");
+          setCreatingAccount(false);
+          return;
+        }
+        try {
+          const credential = await createUserWithEmailAndPassword(auth, email, password);
+          uid = credential.user.uid;
+          onboardingId = `onb-${uid.slice(0, 8)}`;
+          // Best-effort: send verification email via client SDK
+          await sendEmailVerification(credential.user).catch(() => undefined);
+        } catch (fbErr: unknown) {
+          const fbCode = (fbErr as { code?: string }).code;
+          const msg =
+            fbCode === "auth/email-already-in-use"
+              ? "An account with this email already exists. Sign in instead."
+              : fbCode === "auth/weak-password"
+                ? "Password is too weak — use at least 6 characters."
+                : "Account creation failed. Please try again.";
+          setSubmitError(msg);
+          setCreatingAccount(false);
+          return;
+        }
       }
+
+      setFirebaseUid(uid);
+      setOnboardingRequestId(onboardingId);
+
+      // Send welcome confirmation email — best-effort (doesn't block account creation).
+      fetch("/api/onboarding/confirm-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          name,
+          company: company || undefined,
+          serviceType,
+        }),
+      }).catch(() => undefined);
+
+      // Save draft with UID so resume works
+      localStorage.setItem(
+        "onboarding-draft",
+        JSON.stringify({
+          firebaseUid: uid,
+          onboardingRequestId: onboardingId,
+          service: serviceType,
+          applicantType,
+          name,
+          email,
+          company,
+          phone,
+          expectedAum,
+          step: 2,
+        }),
+      );
       setCreatingAccount(false);
     }
     setStep(2);

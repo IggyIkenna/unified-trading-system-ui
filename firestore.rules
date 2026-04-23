@@ -62,6 +62,28 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------------
+    // Contact form submissions.
+    // Anonymous creates allowed so unauthenticated prospects can submit.
+    // Reads gated to admin only.
+    // ------------------------------------------------------------------
+    match /contact_submissions/{doc} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null
+                                  && request.auth.token.admin == true;
+    }
+
+    // ------------------------------------------------------------------
+    // App entitlements — written by admin "Grant" action on questionnaire
+    // review page; read by the auth provider on sign-in to seed the
+    // client demo session.
+    // ------------------------------------------------------------------
+    match /app_entitlements/{email} {
+      allow write: if request.auth != null
+                   && request.auth.token.admin == true;
+      allow read: if request.auth != null;
+    }
+
+    // ------------------------------------------------------------------
     // Deny everything else by default — add explicit rules above when
     // new collections are introduced.
     // ------------------------------------------------------------------

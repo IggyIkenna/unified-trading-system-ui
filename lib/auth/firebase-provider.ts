@@ -6,11 +6,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import {
   fetchAuthorization,
   type AuthorizeResult,
 } from "./authorize-client";
-import { getFirebaseAuth } from "./firebase-config";
+import { getFirebaseAuth, getFirebaseDb } from "./firebase-config";
 import type { AuthProvider, AuthUser, UserStatus } from "./types";
 
 function mapBackendRole(role: AuthorizeResult["role"]): UserRole {
@@ -58,6 +59,32 @@ function mapCapabilitiesToEntitlements(
   return Array.from(entitlements);
 }
 
+/**
+ * Reads admin-granted entitlements from Firestore `app_entitlements/{email}`.
+ * Written by the "Grant" button on /admin/questionnaires when an operator
+ * reviews a prospect's questionnaire and provisions their demo session.
+ * Returns an empty array when the doc doesn't exist or Firestore is unavailable.
+ */
+async function fetchGrantedEntitlements(
+  email: string,
+): Promise<readonly (string | { domain: string; tier: string })[]> {
+  const db = getFirebaseDb();
+  if (!db || !email) return [];
+  try {
+    const safeKey = email.toLowerCase().replace(/[^a-z0-9@._-]/g, "_");
+    const snap = await getDoc(doc(db, "app_entitlements", safeKey));
+    if (!snap.exists()) return [];
+    const data = snap.data() as {
+      entitlements?: unknown;
+    };
+    const raw = data.entitlements;
+    if (!Array.isArray(raw)) return [];
+    return raw as (string | { domain: string; tier: string })[];
+  } catch {
+    return [];
+  }
+}
+
 async function enrichUserFromBackend(
   fbUser: FirebaseUser,
 ): Promise<AuthUser> {
@@ -70,19 +97,65 @@ async function enrichUserFromBackend(
     entitlements: [],
   };
 
-  try {
-    const authz = await fetchAuthorization(fbUser.uid);
+  // Check custom claims first — written by the Admin SDK via /api/admin/set-claims.
+  // These are the strongest signal: server-signed, enforced at the token level.
+  const idTokenResult = await fbUser.getIdTokenResult();
+  const claimsEntitlements = idTokenResult.claims["entitlements"];
+  if (Array.isArray(claimsEntitlements) && claimsEntitlements.length > 0) {
+    return {
+      ...base,
+      entitlements: claimsEntitlements as AuthUser["entitlements"],
+      authorized: true,
+      status: "active",
+    };
+  }
+
+  // Read admin-granted entitlements in parallel with the backend authorize call.
+  // These are written by the "Grant" button on /admin/questionnaires and override
+  // the empty entitlement list when the user management API is not running (staging).
+  const [authzResult, grantedEntitlements] = await Promise.allSettled([
+    fetchAuthorization(fbUser.uid),
+    fetchGrantedEntitlements(fbUser.email ?? ""),
+  ]);
+
+  const granted = grantedEntitlements.status === "fulfilled" ? grantedEntitlements.value : [];
+
+  if (authzResult.status === "fulfilled") {
+    const authz = authzResult.value;
+    const backendEntitlements = mapCapabilitiesToEntitlements(authz.capabilities);
+    // Merge: backend entitlements + admin-granted entitlements (deduped by string comparison)
+    const merged = backendEntitlements.includes(ALL_ENTITLEMENTS)
+      ? backendEntitlements
+      : [
+          ...backendEntitlements,
+          ...granted.filter(
+            (g) =>
+              !backendEntitlements.some(
+                (e) => JSON.stringify(e) === JSON.stringify(g),
+              ),
+          ),
+        ];
     return {
       ...base,
       role: mapBackendRole(authz.role),
-      entitlements: mapCapabilitiesToEntitlements(authz.capabilities),
+      entitlements: merged as AuthUser["entitlements"],
       authorized: authz.authorized,
       status: (authz.user_status as UserStatus) || "unknown",
       capabilities: authz.capabilities,
     };
-  } catch {
-    return { ...base, authorized: false, status: "unknown" };
   }
+
+  // Backend unavailable (staging / demo) — fall back to granted entitlements only.
+  if (granted.length > 0) {
+    return {
+      ...base,
+      entitlements: granted as AuthUser["entitlements"],
+      authorized: true,
+      status: "active",
+    };
+  }
+
+  return { ...base, authorized: false, status: "unknown" };
 }
 
 /**

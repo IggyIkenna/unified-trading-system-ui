@@ -2,25 +2,31 @@
  * G1.10 — Admin playback of questionnaire submissions.
  *
  * Lists all documents from the Firestore `questionnaires` collection.
- * Each row shows the 6-axis response + submission timestamp. Clicking
- * a row reveals the raw JSON + a "seed demo session" magic-link helper
- * (Wave E stub — G2.x wires the real Firebase custom-token minting).
+ * Each row shows the 6-axis response + submission timestamp + a
+ * "Grant entitlements" button that resolves the persona from the response
+ * and writes to Firestore `app_entitlements/{email}` so the prospect can
+ * log in with the correct platform surface pre-provisioned.
  *
  * SSOT schema: unified-api-contracts/.../restriction_profiles.py
- *              QuestionnaireResponse (6 axes).
- * Public-side submit: unified-trading-system-ui/app/(public)/questionnaire/page.tsx
- *
- * Operator directive 2026-04-20: "Firebase IS the API — no
- * user-management-api repo." Reads use the same client SDK as this UI
- * already uses for auth.
+ *              QuestionnaireResponse (6 axes + 7 Reg-Umbrella axes).
+ * Persona catalogue: lib/auth/personas.ts
+ * Persona resolver: lib/questionnaire/resolve-persona.ts
+ * Public-side submit: app/(public)/questionnaire/page.tsx
  */
 
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { firebaseDb } from "@/lib/admin/firebase";
+import { getFirebaseAuth } from "@/lib/auth/firebase-config";
+import { getPersonaById, PERSONAS } from "@/lib/auth/personas";
+import {
+  RESOLVED_PERSONA_TO_AUTH_ID,
+  resolvePersonaFromQuestionnaire,
+} from "@/lib/questionnaire/resolve-persona";
+import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
 
 interface QuestionnaireDoc {
   readonly id: string;
@@ -45,15 +51,145 @@ interface OrgLookupEntry {
 }
 
 function seedDemoUrl(doc: QuestionnaireDoc): string {
-  // G1.10 stub — sales operator opens this URL to seed a demo session
-  // with the prospect's responses. G2.x will mint a Firebase custom
-  // token; today it's a query-param seed readable by the target UI's
-  // demo-provider.
   const params = new URLSearchParams({
     submissionId: doc.id,
     service_family: doc.service_family ?? "DART",
   });
   return `/seed-demo?${params.toString()}`;
+}
+
+/** Cast a raw Firestore doc to the QuestionnaireResponse shape for the resolver. */
+function toResolverInput(d: QuestionnaireDoc): QuestionnaireResponse {
+  return {
+    categories: (d.categories ?? []) as QuestionnaireResponse["categories"],
+    instrument_types: (d.instrument_types ?? []) as QuestionnaireResponse["instrument_types"],
+    venue_scope: d.venue_scope ?? "all",
+    strategy_style: (d.strategy_style ?? []) as QuestionnaireResponse["strategy_style"],
+    service_family: (d.service_family ?? "DART") as QuestionnaireResponse["service_family"],
+    fund_structure: (d.fund_structure ?? "NA") as QuestionnaireResponse["fund_structure"],
+  };
+}
+
+/** Derive the persona label and entitlements for a questionnaire doc. */
+function resolveGrant(d: QuestionnaireDoc): {
+  resolvedId: string;
+  authId: string;
+  label: string;
+  entitlements: readonly (string | { domain: string; tier: string })[];
+} | null {
+  try {
+    const resolved = resolvePersonaFromQuestionnaire(toResolverInput(d));
+    const authId = RESOLVED_PERSONA_TO_AUTH_ID[resolved];
+    const persona = getPersonaById(authId);
+    if (!persona) return null;
+    return {
+      resolvedId: resolved,
+      authId,
+      label: persona.displayName,
+      entitlements: persona.entitlements,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function GrantButton({ row }: { row: QuestionnaireDoc }) {
+  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const email = row.submitted_by?.email;
+  const grant = resolveGrant(row);
+
+  if (!email || !grant) {
+    return (
+      <span className="text-[10px] text-muted-foreground italic">
+        {!email ? "No email" : "Unresolvable"}
+      </span>
+    );
+  }
+
+  const handleGrant = async () => {
+    if (!firebaseDb) {
+      setStatus("error");
+      setErrorMsg("Firebase not configured");
+      return;
+    }
+    setStatus("loading");
+    try {
+      // 1. Write entitlements to Firestore — works whether the user exists in
+      //    Firebase Auth yet or not. Picked up on their next sign-in.
+      const safeKey = email.toLowerCase().replace(/[^a-z0-9@._-]/g, "_");
+      await setDoc(
+        doc(firebaseDb, "app_entitlements", safeKey),
+        {
+          email: email.toLowerCase(),
+          resolved_persona_id: grant.resolvedId,
+          auth_persona_id: grant.authId,
+          persona_label: grant.label,
+          entitlements: grant.entitlements,
+          questionnaire_doc_id: row.id,
+          granted_at: serverTimestamp(),
+        },
+        { merge: true },
+      );
+
+      // 2. Also write as Firebase custom claims via Admin SDK so the claims are
+      //    baked into the user's token (stronger than a Firestore read). Fails
+      //    silently if the user hasn't signed up yet — Firestore fallback covers that.
+      try {
+        const auth = getFirebaseAuth();
+        const callerToken = auth?.currentUser ? await auth.currentUser.getIdToken() : null;
+        if (callerToken) {
+          await fetch("/api/admin/set-claims", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${callerToken}`,
+            },
+            body: JSON.stringify({
+              targetEmail: email,
+              entitlements: grant.entitlements,
+              personaId: grant.resolvedId,
+            }),
+          });
+        }
+      } catch {
+        // Custom claims are best-effort; Firestore write above is the durable path.
+      }
+
+      setStatus("done");
+    } catch (e) {
+      setStatus("error");
+      setErrorMsg(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  if (status === "done") {
+    return (
+      <span className="text-[10px] text-emerald-600 font-medium">
+        ✓ Granted — {grant.resolvedId}
+      </span>
+    );
+  }
+  if (status === "error") {
+    return (
+      <span className="text-[10px] text-red-500" title={errorMsg}>
+        Error (hover)
+      </span>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      disabled={status === "loading"}
+      onClick={() => void handleGrant()}
+      className="text-emerald-700 underline text-[11px] disabled:opacity-50"
+      title={`Grant ${grant.resolvedId} → ${grant.entitlements.length} entitlements to ${email}`}
+    >
+      {status === "loading" ? "Granting…" : `Grant (${grant.resolvedId})`}
+    </button>
+  );
 }
 
 export default function QuestionnairesAdminPage() {
@@ -86,8 +222,6 @@ export default function QuestionnairesAdminPage() {
       }
     };
     const loadOrgs = async () => {
-      // Best-effort org lookup for the "View org" cross-link. Silent
-      // failure in mock mode / when the endpoint is unavailable.
       try {
         const res = await fetch("/api/auth/provisioning/organizations");
         if (!res.ok) return;
@@ -135,11 +269,13 @@ export default function QuestionnairesAdminPage() {
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-8" data-testid="questionnaires-admin-page">
+    <main className="mx-auto max-w-6xl px-6 py-8" data-testid="questionnaires-admin-page">
       <h1 className="text-2xl font-semibold">Prospect questionnaires</h1>
       <p className="mt-1 text-slate-500">
-        Submissions from the public `/questionnaire` flow. Replay any row to preview the
-        prospect&apos;s restriction profile pre-demo.
+        Submissions from the public <code>/questionnaire</code> flow. Use{" "}
+        <strong>Grant</strong> to write entitlements to Firestore so the prospect can sign in
+        with the correct platform surface. The resolved persona is derived from their responses
+        using the same logic as the live restriction-profile engine.
       </p>
 
       {loading && (
@@ -154,7 +290,7 @@ export default function QuestionnairesAdminPage() {
       )}
       {!loading && error === null && rows.length === 0 && (
         <p className="mt-8" data-testid="questionnaires-empty">
-          No submissions yet. When prospects submit `/questionnaire`, their responses land
+          No submissions yet. When prospects submit <code>/questionnaire</code>, their responses land
           here.
         </p>
       )}
@@ -209,6 +345,7 @@ export default function QuestionnairesAdminPage() {
                     >
                       Seed demo
                     </a>
+                    <GrantButton row={row} />
                     {org && (
                       <a
                         href={`/admin/organizations/${org.id}`}

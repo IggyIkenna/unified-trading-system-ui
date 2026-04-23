@@ -33,6 +33,8 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { CALENDLY_URL } from "@/lib/marketing/calendly";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { getFirebaseDb } from "@/lib/auth/firebase-config";
 
 /**
  * Commercial-path labels and pre-fill message templates for the five paths
@@ -121,6 +123,8 @@ const ACTION_CONFIG: Record<string, { suffix: string }> = {
 function ContactPageContent() {
   const searchParams = useSearchParams();
   const [submitted, setSubmitted] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState("");
   const [formData, setFormData] = React.useState({
     name: "",
     email: "",
@@ -187,10 +191,33 @@ function ContactPageContent() {
     setPrefillApplied(true);
   }, [searchParams, prefillApplied]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock submission
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const db = getFirebaseDb();
+      if (db) {
+        await addDoc(collection(db, "contact_submissions"), {
+          ...formData,
+          submittedAt: serverTimestamp(),
+          source: "contact-page",
+          destination: "info@odum-research.co.uk",
+        });
+      }
+      // Fallback: also POST to the Next.js route handler so server-side
+      // email forwarding can pick it up when the route exists.
+      await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData }),
+      }).catch(() => undefined);
+      setSubmitted(true);
+    } catch {
+      setSubmitError("Failed to send — please email us directly at info@odum-research.co.uk");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -432,13 +459,16 @@ function ContactPageContent() {
                       />
                     </div>
 
+                    {submitError && (
+                      <p className="text-sm text-red-500">{submitError}</p>
+                    )}
                     <div className="flex items-center justify-between">
                       <p className="text-xs text-muted-foreground">
                         * Required fields
                       </p>
-                      <Button type="submit">
+                      <Button type="submit" disabled={submitting}>
                         <Send className="mr-2 size-4" />
-                        Send Message
+                        {submitting ? "Sending…" : "Send Message"}
                       </Button>
                     </div>
                   </form>
