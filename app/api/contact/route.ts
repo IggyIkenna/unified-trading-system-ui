@@ -11,10 +11,9 @@
  */
 
 import { NextResponse } from "next/server";
+import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_ADDRESS = "website@mail.odum-research.com";
-const TO_ADDRESS = "info@odum-research.co.uk";
+const TO_ADDRESS = "info@odum-research.com";
 const BCC_ADDRESS = "ikenna@odum-research.com";
 
 export async function POST(request: Request) {
@@ -38,14 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  if (!RESEND_API_KEY) {
-    // No email provider configured — log and return success so the Firestore
-    // capture is still the record of truth in development.
-    console.warn("[contact] RESEND_API_KEY not set — email not sent");
-    return NextResponse.json({ ok: true, sent: false, reason: "no_api_key" });
-  }
-
-  const emailHtml = `
+  const html = `
     <h2>New contact form submission</h2>
     <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">
       <tr><td style="padding:6px 12px;font-weight:bold;width:120px">Name</td><td style="padding:6px 12px">${escapeHtml(name)}</td></tr>
@@ -58,35 +50,18 @@ export async function POST(request: Request) {
     <p style="color:#888;font-size:12px">Sent via odum-research.com contact form</p>
   `;
 
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-    },
-    body: JSON.stringify({
-      from: FROM_ADDRESS,
-      to: [TO_ADDRESS],
-      bcc: [BCC_ADDRESS],
-      reply_to: email,
-      subject: `[odum-research.com] ${inquiry ?? "Contact form"} — ${name}`,
-      html: emailHtml,
-    }),
+  const result = await sendEmail({
+    from: getSenderFor("hello"),
+    to: TO_ADDRESS,
+    bcc: [BCC_ADDRESS],
+    replyTo: email,
+    subject: `[odum-research.com] ${inquiry ?? "Contact form"} — ${name}`,
+    html,
   });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    console.error("[contact] Resend error", res.status, err);
+  if (!result.ok) {
     return NextResponse.json({ error: "Email send failed" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, sent: true });
-}
-
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  return NextResponse.json({ ok: true, sent: result.sent, reason: result.reason });
 }

@@ -239,6 +239,21 @@ export default function InvestmentManagementPage() {
               </li>
             </ul>
           </div>
+
+          <div className="mt-10 rounded-lg border border-border bg-card/30 p-5">
+            <p className="text-sm font-medium">Have a strategy to evaluate?</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Submit our strategy evaluation pack to assess fit for incubation, signal integration, or regulatory coverage.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-3">
+              <Button asChild size="sm">
+                <Link href="/strategy-evaluation">Submit evaluation <ArrowRight className="ml-1.5 size-3.5" /></Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/contact">Book a call</Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </main>
     </div>

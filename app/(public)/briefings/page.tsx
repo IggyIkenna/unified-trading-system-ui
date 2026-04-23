@@ -90,14 +90,21 @@ export default function BriefingsHubPage() {
         <h2 className="text-sm font-semibold text-foreground">Next steps</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Ready to onboard? Tell us about your firm in a short invite-only questionnaire so we can pre-configure your
-          path. Or book a 45-minute call to walk any path against your specifics.
+          path. If you have a strategy to evaluate for incubation or signal integration, submit our strategy evaluation
+          form. Or book a 45-minute call to walk any path against your specifics.
         </p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
-            href="/questionnaire"
+            href="/strategy-evaluation"
             className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 sm:w-auto sm:justify-start"
           >
-            Start onboarding questionnaire →
+            Submit a strategy evaluation →
+          </Link>
+          <Link
+            href="/questionnaire"
+            className="inline-flex w-full items-center justify-center rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent sm:w-auto sm:justify-start"
+          >
+            Onboarding questionnaire →
           </Link>
           <a
             href={CALENDLY_URL}

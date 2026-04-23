@@ -226,6 +226,19 @@ export function QuestionnaireForm() {
     if (outcome.success) {
       const personaId = resolvePersonaFromQuestionnaire(response);
       persistResolvedPersona(personaId);
+      // Fire-and-forget: email ack + internal notify
+      fetch("/api/questionnaire/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: state.email.trim() || undefined,
+          firmName: state.firm_name.trim() || undefined,
+          serviceFamily: state.service_family,
+          submissionId: outcome.submissionId,
+          categories: [...state.categories],
+          fundStructure: state.fund_structure,
+        }),
+      }).catch(() => {/* non-critical */});
     }
     setResult(outcome);
     setSubmitting(false);

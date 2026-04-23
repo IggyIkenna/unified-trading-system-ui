@@ -22,6 +22,7 @@ export function PresentationShell({ slides, footerLabel }: PresentationShellProp
   const [isFullscreen, setIsFullscreen] = React.useState(false);
   const [isAutoPlay, setIsAutoPlay] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
 
   const nextSlide = () => setCurrentSlide((prev) => Math.min(prev + 1, slides.length - 1));
   const prevSlide = () => setCurrentSlide((prev) => Math.max(prev - 1, 0));

@@ -179,11 +179,15 @@ export default function MarketingPlatformPage() {
           {/* CTA */}
           <div className="mt-12 text-center">
             <p className="mb-4 text-sm text-muted-foreground">
-              For a detailed walk-through of either DART path, the deeper brief
-              is in the briefings hub.
+              Have a strategy to evaluate for incubation or signal integration?
+              Submit our strategy evaluation pack — or open the briefings hub for a
+              detailed walk-through of either DART path.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button asChild>
+                <Link href="/strategy-evaluation">Submit a strategy evaluation</Link>
+              </Button>
+              <Button asChild variant="outline">
                 <Link href="/briefings">Open briefings</Link>
               </Button>
               <Button asChild variant="outline">

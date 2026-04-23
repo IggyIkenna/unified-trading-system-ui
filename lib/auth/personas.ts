@@ -294,6 +294,17 @@ export const PERSONAS: readonly AuthPersona[] = [
     description: "Hybrid case — IM client operating under Odum's Regulatory Umbrella.",
   },
   {
+    id: "prospect-platform",
+    email: "platform-prospect@odum-research.com",
+    password: "demo",
+    displayName: "Platform Prospect",
+    role: "client",
+    org: { id: "example-platform", name: "Example Platform Co" },
+    entitlements: ["data-pro", "execution-full", "strategy-full", "reporting"],
+    description:
+      "Generic DART / platform prospect. Full DART access + reporting; no Manage stage.",
+  },
+  {
     id: "prospect-perp-funding",
     email: "ops@desmond-capital.example",
     password: "demo",

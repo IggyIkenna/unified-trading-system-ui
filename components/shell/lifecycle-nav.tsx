@@ -206,51 +206,35 @@ export function LifecycleNav({
                   <div
                     className={cn(
                       "flex items-center rounded-md border border-transparent transition-all duration-150",
-                      !allLocked && isActive && "border-primary/20 bg-primary/10 text-primary",
-                      !allLocked &&
-                        !isActive &&
+                      isActive && !allLocked && "border-primary/20 bg-primary/10 text-primary",
+                      !isActive && !allLocked &&
                         "hover:border-border hover:bg-muted text-muted-foreground hover:text-foreground",
-                      allLocked && "text-muted-foreground/40",
+                      allLocked && "text-muted-foreground/50 hover:border-border hover:bg-muted hover:text-muted-foreground",
                     )}
                   >
-                    {allLocked ? (
-                      <span
-                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium cursor-not-allowed"
-                        aria-disabled
-                      >
-                        <Icon className="size-3.5 shrink-0" />
-                        <span className="hidden sm:inline">{nav.label}</span>
-                        <Lock className="size-3 opacity-40" />
-                      </span>
-                    ) : (
-                      <Link
-                        href={primaryHref}
-                        className={cn(
-                          "flex items-center gap-1.5 pl-2.5 pr-1 py-1.5 rounded-l-md text-xs font-medium",
-                          isActive ? "text-primary" : "",
-                        )}
-                      >
-                        <Icon className="size-3.5 shrink-0" />
-                        <span className="hidden sm:inline">{nav.label}</span>
-                      </Link>
-                    )}
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        className={cn(
-                          "flex items-center px-1.5 py-1.5 rounded-r-md text-xs shrink-0",
-                          allLocked ? "cursor-not-allowed opacity-40" : "hover:bg-muted/80",
-                        )}
-                        aria-label={`${nav.label} destinations`}
-                        disabled={allLocked}
-                      >
-                        {allLocked ? (
-                          <Lock className="size-3 opacity-40" />
-                        ) : (
+                    <Link
+                      href={primaryHref}
+                      className={cn(
+                        "flex items-center gap-1.5 pl-2.5 py-1.5 rounded-l-md text-xs font-medium",
+                        allLocked ? "pr-2.5" : "pr-1",
+                        isActive && !allLocked ? "text-primary" : "",
+                      )}
+                    >
+                      <Icon className="size-3.5 shrink-0" />
+                      <span className="hidden sm:inline">{nav.label}</span>
+                      {allLocked && <Lock className="size-3 opacity-50" />}
+                    </Link>
+                    {!allLocked && (
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex items-center px-1.5 py-1.5 rounded-r-md text-xs shrink-0 hover:bg-muted/80"
+                          aria-label={`${nav.label} destinations`}
+                        >
                           <ChevronDown className="size-3 opacity-50" />
-                        )}
-                      </button>
-                    </DropdownMenuTrigger>
+                        </button>
+                      </DropdownMenuTrigger>
+                    )}
                   </div>
                   <DropdownMenuContent align="start" className="w-56">
                     <DropdownMenuLabel className="flex items-center gap-2">

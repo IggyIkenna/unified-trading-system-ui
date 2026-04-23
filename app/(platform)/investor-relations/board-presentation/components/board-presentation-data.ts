@@ -69,7 +69,7 @@ export const slides = [
       { value: "$7.5M", label: "Under Management" },
       { value: "4", label: "Commercial Paths" },
       { value: "Jan '23", label: "FCA Authorised" },
-      { value: "3", label: "Clients Acquired" },
+      { value: "15", label: "Clients Acquired" },
     ],
   },
 

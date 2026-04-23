@@ -70,14 +70,14 @@ export default function LoginPage() {
       setResetSent(true);
       return;
     }
-    // In production, use Firebase sendPasswordResetEmail
+    // In production, use our Resend-backed reset route (Firebase Admin generates the link)
     try {
-      const { getFirebaseAuth } = await import("@/lib/auth/firebase-config");
-      const auth = getFirebaseAuth();
-      if (auth) {
-        const { sendPasswordResetEmail } = await import("firebase/auth");
-        await sendPasswordResetEmail(auth, email);
-      }
+      const res = await fetch("/api/auth/send-reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (!res.ok) throw new Error("send failed");
       toast({ title: "Reset email sent", description: `Check ${email} for a password reset link.` });
       setResetSent(true);
     } catch {

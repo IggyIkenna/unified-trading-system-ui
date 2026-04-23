@@ -37,6 +37,42 @@
     {
       "path": "/api/onboarding/docs/delete",
       "reason": "API-HANDLER — Next.js route.ts accepting per-doc admin deletes with a typed-confirm token; fetched from /admin/organizations/[id] Documents panel, never navigated."
+    },
+    {
+      "path": "/api/auth/send-verification",
+      "reason": "API-HANDLER — Next.js route.ts called via fetch from signup flow to send Firebase verification email via Resend; not a page."
+    },
+    {
+      "path": "/api/auth/send-reset",
+      "reason": "API-HANDLER — Next.js route.ts called via fetch from login page forgot-password flow; not a page."
+    },
+    {
+      "path": "/api/contact",
+      "reason": "API-HANDLER — Next.js route.ts accepting POST from contact form; not a page."
+    },
+    {
+      "path": "/api/questionnaire/email",
+      "reason": "API-HANDLER — Next.js route.ts called fire-and-forget after questionnaire Firestore write; not a page."
+    },
+    {
+      "path": "/api/strategy-evaluation/submit",
+      "reason": "API-HANDLER — Next.js route.ts accepting POST from strategy evaluation form; not a page."
+    },
+    {
+      "path": "/api/onboarding/confirm-email",
+      "reason": "API-HANDLER — Next.js route.ts called after signup wizard completion to send welcome email via Resend; not a page."
+    },
+    {
+      "path": "/api/admin/set-claims",
+      "reason": "API-HANDLER — Next.js route.ts for setting Firebase custom claims from admin panel; not a page."
+    },
+    {
+      "path": "/auth/verify-email",
+      "reason": "UNAUTHENTICATED-FUNNEL — Firebase custom action handler; reached via emailed verification link, not a declared nav tile."
+    },
+    {
+      "path": "/auth/reset-password",
+      "reason": "UNAUTHENTICATED-FUNNEL — Firebase custom action handler; reached via emailed password-reset link, not a declared nav tile."
     }
   ]
 }
