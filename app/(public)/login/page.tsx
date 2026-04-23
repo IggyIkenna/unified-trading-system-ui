@@ -95,6 +95,19 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
+    // On the main production site, demo/advisor accounts (@odum-research.co.uk) are homed
+    // on the UAT demo environment. Redirect there so they authenticate once on UAT and get
+    // the full demo experience (sandbox banner, deck click-throughs, demo trading views).
+    if (
+      email.toLowerCase().endsWith("@odum-research.co.uk") &&
+      typeof window !== "undefined" &&
+      window.location.hostname === "www.odum-research.com"
+    ) {
+      const target = encodeURIComponent(redirectTo || "/investor-relations");
+      window.location.href = `https://uat.odum-research.com/login?redirect=${target}`;
+      return;
+    }
+
     const success = await loginByEmail(email, password);
     if (success) {
       // Check if user has a pending application to resume
