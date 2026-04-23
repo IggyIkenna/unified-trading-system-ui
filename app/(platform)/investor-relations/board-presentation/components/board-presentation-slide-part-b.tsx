@@ -628,6 +628,62 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
         </div>
       )}
 
+      {/* Demand Evidence Slide */}
+      {slide.type === "demand" && (
+        <div>
+          <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
+          <p className="text-muted-foreground mb-4">{slide.subtitle}</p>
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            {slide.signals?.map(
+              (signal: { label: string; detail: string; color?: string }, i: number) => {
+                const colors = {
+                  cyan: "border-cyan-400/30 bg-cyan-400/5",
+                  violet: "border-violet-400/30 bg-violet-400/5",
+                  amber: "border-amber-400/30 bg-amber-400/5",
+                  emerald: "border-emerald-400/30 bg-emerald-400/5",
+                  rose: "border-rose-400/30 bg-rose-400/5",
+                };
+                return (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 * i }}
+                    className={cn("p-3 rounded-lg border", colors[signal.color as keyof typeof colors])}
+                  >
+                    <div className="font-semibold text-sm mb-1">{signal.label}</div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{signal.detail}</p>
+                  </motion.div>
+                );
+              },
+            )}
+          </div>
+          {slide.marketSizes && (
+            <div className="overflow-hidden rounded-lg border border-border mb-3">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-card border-b border-border">
+                    <th className="text-left p-2 text-primary font-semibold">Comparable</th>
+                    <th className="text-left p-2 text-primary font-semibold">Scale</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(slide.marketSizes as Array<{ name: string; scale: string }>).map((row, i) => (
+                    <tr key={i} className={cn("border-b border-border last:border-b-0", i % 2 === 0 ? "bg-card" : "bg-card/50")}>
+                      <td className="p-2 font-medium">{row.name}</td>
+                      <td className="p-2 text-muted-foreground">{row.scale}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="p-3 rounded-lg border border-primary/30 bg-primary/5 text-center">
+            <p className="text-sm font-medium text-primary">{slide.callout}</p>
+          </div>
+        </div>
+      )}
+
       {/* Ask Slide */}
       {slide.type === "ask" && (
         <div className="text-center">

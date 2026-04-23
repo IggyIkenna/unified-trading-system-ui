@@ -1,4 +1,4 @@
-// Board Presentation \u2014 data for 14-slide strategic advisor deck.
+// Board Presentation \u2014 data for 15-slide strategic advisor deck.
 // Last restructured: April 2026 \u2014 reframed around four commercial paths,
 // named-competitor landscape, founder narrative, and structured context-to-ask progression.
 
@@ -135,56 +135,62 @@ export const slides = [
       {
         competitor: "QuantConnect",
         users: "Retail → hedge fund quant",
-        gap: "Research and backtest across TradFi + crypto. Execution only against select venues. No alternative asset classes, no managed capital, no regulatory shell, no cross-domain unification.",
+        gap: "Free to $8/mo cloud research; Enterprise custom. Backtest across TradFi + crypto. Execution against select venues only. No alternative asset classes, no managed capital, no regulatory shell, no cross-domain unification.",
         color: "violet",
       },
       {
         competitor: "Deltix (EPAM) — QuantOffice + CryptoCortex",
         users: "Institutional quant + sell-side",
-        gap: "Serious research-to-execution stack across TradFi + crypto (TimeBase, QuantOffice, TradeHub, CryptoCortex). 15 years of product, strong at what it does — several Odum suppliers use Deltix components. Separate research and execution environments, not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer that hosts clients under an FCA permission.",
+        gap: "~$100K–$500K/yr enterprise licence. Serious research-to-execution stack across TradFi + crypto (TimeBase, QuantOffice, TradeHub, CryptoCortex). 15 years of product, strong institutional quant tooling. Separate research and execution environments, not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer that hosts clients under an FCA permission.",
         color: "emerald",
       },
       {
         competitor: "Talos",
         users: "Institutional digital-asset lifecycle",
-        gap: "Strong institutional crypto execution and operations lifecycle. Crypto-only. No TradFi, no DeFi on-chain programmability, no sports, no prediction. Execution-layer product, not a cross-domain research + execution + reporting operating system with managed capital.",
+        gap: "$105M raised; custom institutional pricing. Strong institutional crypto execution and operations lifecycle. Crypto-only. No TradFi, no DeFi on-chain programmability, no sports, no prediction. Execution-layer product, not a cross-domain research + execution + reporting operating system with managed capital.",
         color: "emerald",
       },
       {
         competitor: "Hummingbot / 3Commas / Cryptohopper",
         users: "Crypto retail / prosumer",
-        gap: "Open-source market-making bots and strategy templates. Crypto-only. No TradFi, no DeFi programmability, no research pipeline, no compliance, no reporting fit for institutional capital.",
+        gap: "Free–$99/mo retail. Open-source market-making bots and strategy templates. Crypto-only. No TradFi, no DeFi programmability, no research pipeline, no compliance, no reporting fit for institutional capital.",
         color: "amber",
       },
       {
-        competitor: "FalconX / Galaxy / Wintermute OTC",
-        users: "Crypto prime broker",
-        gap: "Execution and OTC, crypto only. No research stack, no DeFi programmability, no cross-asset unification, no research-to-live infrastructure.",
+        competitor: "FalconX / Galaxy / Wintermute / Haiku",
+        users: "Crypto execution & DeFi routing",
+        gap: "Commission-based OTC; Haiku $1M pre-seed (DeFi intent-solver, 20+ chains, 45+ protocols). All crypto-only. No research stack, no TradFi, no cross-asset unification, no research-to-live infrastructure. Haiku routes DeFi trades optimally but has no compliance layer, no fund structure, no managed capital.",
         color: "emerald",
       },
       {
         competitor: "FlexTrade / Eze / Aladdin",
         users: "TradFi institutional OMS/EMS",
-        gap: "Venue connectivity for equities / futures / FX. No crypto, no DeFi, no sports, no prediction. No built-in research environment, no managed-capital layer.",
+        gap: "~$100K–$500K/yr enterprise OMS/EMS. Venue connectivity for equities / futures / FX. No crypto, no DeFi, no sports, no prediction. No built-in research environment, no managed-capital layer.",
         color: "cyan",
       },
       {
         competitor: "Interactive Brokers",
         users: "Retail + institutional broker",
-        gap: "Broad TradFi coverage and thin crypto. No research platform, no backtest-to-live, no DeFi, no sports, no prediction, no FCA-cover-as-a-service.",
+        gap: "$0.005/share equities; IBKR Lite commission-free. Broad TradFi coverage and thin crypto. No research platform, no backtest-to-live, no DeFi, no sports, no prediction, no FCA-cover-as-a-service.",
         color: "violet",
       },
       {
         competitor: "Tardis / Kaiko / Amberdata",
         users: "Crypto data providers",
-        gap: "High-quality crypto tick and L2 data. Data only. No TradFi parity, no DeFi protocol coverage, no sports, no prediction. Does not touch execution, research, or compliance.",
+        gap: "$500–$5K+/mo data feeds. High-quality crypto tick and L2 data. Data only. No TradFi parity, no DeFi protocol coverage, no sports, no prediction. Does not touch execution, research, or compliance.",
         color: "amber",
       },
       {
         competitor: "Citadel / Jane Street / Two Sigma",
         users: "Internal only",
-        gap: "The reference architecture for cross-domain quant. Not for sale. Even they do not unify crypto + DeFi + sports + prediction + TradFi in one stack at scale \u2014 the combinatory surface is outside their mandate.",
+        gap: "Internal \u2014 not for sale. The reference architecture for cross-domain quant. Even they do not unify crypto + DeFi + sports + prediction + TradFi in one stack at scale \u2014 the combinatory surface is outside their mandate.",
         color: "emerald",
+      },
+      {
+        competitor: "Unbiased Alpha",
+        users: "Institutional quant signal infra",
+        gap: "$70\u2013$200/hr Upwork; AuraStream API. Two-person firm serving $1B+ hedge funds: 65 jobs logged, ~3,000 hours billed. Pure signals and analytics layer \u2014 no execution, no compliance, no fund structure. Demonstrates institutional capital pays for quant infrastructure from a small specialist operation. Odum delivers the full stack at institutional discipline.",
+        color: "rose",
       },
     ],
     callout:
@@ -547,13 +553,59 @@ export const slides = [
       "Every service line now has live commercial traction. The remaining constraint is commercial focus and sequencing, not core engineering.",
   },
 
+
+  // ── Slide 11: Why We Know The Demand Is Real ─────────────
+  {
+    id: 11,
+    type: "demand",
+    title: "Why We Know The Demand Is Real",
+    subtitle:
+      "Five direct demand signals from the market \u2014 not projections or surveys. Each is a real conversation or signed contract, each mapping to a different part of the system.",
+    signals: [
+      {
+        label: "DeFi Client \u2014 Signed",
+        detail: "Elysium: $125K signed, growing to $250K+ annual. Three live DeFi strategies at 5\u201320% yield. First paying DART client.",
+        color: "emerald",
+      },
+      {
+        label: "India Options Inquiry",
+        detail: "$100K onboarding + $5\u201310M IM allocation (NSE delta-neutral trading). Counterparty seeking a signal aggregation and execution framework \u2014 Odum fits the entire stack.",
+        color: "violet",
+      },
+      {
+        label: "US Equities Scanner",
+        detail: "Professional asked: how to build a scanner for all US equities and run daily factor screens. Looking for exactly what DART Full Pipeline provides \u2014 data, research, and execution under one roof.",
+        color: "cyan",
+      },
+      {
+        label: "Sports Prediction \u2014 Institutional",
+        detail: "Individual with a sports prediction system asked how to turn it into institutional-grade fund infrastructure. Exact use case for DART Full Pipeline + Regulatory Umbrella.",
+        color: "amber",
+      },
+      {
+        label: "Unbiased Alpha \u2014 Competitor Demand Signal",
+        detail: "Two-person quant firm billing $70\u2013$200/hr on Upwork: 65 jobs, ~3,000 hours logged. Proves institutional capital pays for quant signal infrastructure from small specialist operations. Odum delivers the full stack with execution, compliance, and fund structure.",
+        color: "rose",
+      },
+    ],
+    marketSizes: [
+      { name: "Bloomberg Terminal", scale: "~325K subscribers · ~$6B/yr revenue" },
+      { name: "QuantConnect", scale: "~200K users · $25M raised · cloud quant research" },
+      { name: "Talos (institutional crypto)", scale: "$105M raised · $1.5B valuation · crypto ops lifecycle" },
+      { name: "Deltix / EPAM", scale: "$100K\u2013$500K/yr enterprise licences · 15-year institutional quant stack" },
+      { name: "FlexTrade / Aladdin", scale: "$100K\u2013$500K/yr OMS/EMS · TradFi institutional standard" },
+    ],
+    callout:
+      "The market does not lack buyers. It lacks one provider spanning the full lifecycle across five asset classes under a live FCA permission \u2014 that is the gap Odum closes.",
+  },
+
   // ══════════════════════════════════════════════════════════════
   // ACT V \u2014 FORWARD
   // ══════════════════════════════════════════════════════════════
 
-  // ── Slide 11: Why One Sale Leads To Others ────────────────
+  // ── Slide 12: Why One Sale Leads To Others ────────────────
   {
-    id: 11,
+    id: 12,
     type: "flywheel",
     title: "Why One Sale Leads To Others",
     subtitle:
@@ -574,9 +626,9 @@ export const slides = [
     ],
   },
 
-  // ── Slide 12: 2026 Cashflow Shape ─────────────────────────
+  // ── Slide 13: 2026 Cashflow Shape ─────────────────────────
   {
-    id: 12,
+    id: 13,
     type: "trajectory",
     title: "2026 Cashflow Shape \u2014 Self-Funded",
     subtitle:
@@ -600,9 +652,9 @@ export const slides = [
   // ACT VI \u2014 CLOSE
   // ══════════════════════════════════════════════════════════════
 
-  // ── Slide 13: What Fits Your Network ──────────────────────
+  // ── Slide 14: What Fits Your Network ──────────────────────
   {
-    id: 13,
+    id: 14,
     type: "ask",
     title: "What Fits Your Network",
     subtitle:
@@ -644,9 +696,9 @@ export const slides = [
     contact: "ikenna@odum-research.com",
   },
 
-  // ── Slide 14: Live Demo ──────────────────────────────────
+  // ── Slide 15: Live Demo ──────────────────────────────────
   {
-    id: 14,
+    id: 15,
     type: "demo",
     title: "See It Live",
     subtitle:
