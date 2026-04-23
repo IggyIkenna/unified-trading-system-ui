@@ -322,10 +322,81 @@
         font-size: 16px;
       }
     }
+
+    /* SIDEBAR TOC ──────────────────────────────── */
+    .toc-sidebar {
+      display: none;
+    }
+    @media (min-width: 1280px) {
+      .toc-sidebar {
+        display: block;
+        position: fixed;
+        top: 96px;
+        left: clamp(24px, 4vw, 64px);
+        width: 220px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding-bottom: 24px;
+        z-index: 10;
+      }
+      .toc-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0 10px 6px;
+        margin: 0;
+      }
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc-list li {
+        margin: 0;
+      }
+      .toc-link {
+        display: block;
+        padding: 7px 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--text-muted);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        border-radius: 0 6px 6px 0;
+        transition: color 0.15s, background 0.15s, border-color 0.15s;
+      }
+      .toc-link:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .toc-link.is-active {
+        color: var(--text);
+        border-left-color: var(--primary);
+        background: rgba(34, 211, 238, 0.06);
+        font-weight: 500;
+      }
+    }
   </style>
 </head>
 
 <body>
+
+
+  <!-- SIDEBAR TOC (visible ≥1280px) -->
+  <aside class="toc-sidebar" aria-label="Our Story sections">
+    <p class="toc-label">On this page</p>
+    <ul class="toc-list">
+      <li><a href="#part-1" class="toc-link">Part I — The arb desk</a></li>
+      <li><a href="#part-2" class="toc-link">Part II — The chicken-and-egg</a></li>
+      <li><a href="#part-3" class="toc-link">Part III — The vendor search</a></li>
+      <li><a href="#part-4" class="toc-link">Part IV — The Citadel realisation</a></li>
+      <li><a href="#part-5" class="toc-link">Part V — What we built</a></li>
+      <li><a href="#part-6" class="toc-link">Part VI — The landscape</a></li>
+      <li><a href="#cta" class="toc-link">Why it matters →</a></li>
+    </ul>
+  </aside>
 
   <!-- HERO -->
   <section class="hero">
@@ -349,7 +420,7 @@
   </section>
 
   <!-- PART I — THE ARB DESK -->
-  <section class="section-pad">
+  <section id="part-1" class="section-pad">
     <div class="container prose">
       <p class="eyebrow">Part I &mdash; The problem</p>
       <h2>It started on a crypto arb desk.</h2>
@@ -372,7 +443,7 @@
   </section>
 
   <!-- PART II — THE CHICKEN AND EGG -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="part-2" class="section-pad" style="background: var(--bg-surface);">
     <div class="container prose">
       <p class="eyebrow">Part II &mdash; The chicken-and-egg</p>
       <h2>Building a strategy is a chicken-and-egg problem.</h2>
@@ -395,7 +466,7 @@
   </section>
 
   <!-- PART III — THE VENDOR SEARCH -->
-  <section class="section-pad">
+  <section id="part-3" class="section-pad">
     <div class="container prose">
       <p class="eyebrow">Part III &mdash; The vendor search</p>
       <h2>I went looking &mdash; not for a strategy, for a stack.</h2>
@@ -441,7 +512,7 @@
   </section>
 
   <!-- PART IV — THE CITADEL REALISATION -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="part-4" class="section-pad" style="background: var(--bg-surface);">
     <div class="container prose">
       <p class="eyebrow">Part IV &mdash; The Citadel realisation</p>
       <h2>I started to realise what I wanted simply didn't exist.</h2>
@@ -468,7 +539,7 @@
   </section>
 
   <!-- PART V — WHAT WE BUILT -->
-  <section class="section-pad">
+  <section id="part-5" class="section-pad">
     <div class="container prose">
       <p class="eyebrow">Part V &mdash; What we built</p>
       <h2>One operating system across five categories.</h2>
@@ -511,7 +582,7 @@
   </section>
 
   <!-- PART VI — THE INDUSTRY LANDSCAPE -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="part-6" class="section-pad" style="background: var(--bg-surface);">
     <div class="container prose">
       <p class="eyebrow">Part VI &mdash; The landscape</p>
       <h2>What the industry actually offers today.</h2>
@@ -559,7 +630,7 @@
   </section>
 
   <!-- CTA — DUAL INCENTIVE -->
-  <section class="section-pad" style="background: var(--bg-surface); text-align: center;">
+  <section id="cta" class="section-pad" style="background: var(--bg-surface); text-align: center;">
     <div class="container" style="max-width: 760px; margin: 0 auto;">
       <p class="eyebrow">Why this matters</p>
       <h2 style="font-size: clamp(24px, 3vw, 32px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px;">
@@ -589,6 +660,51 @@
     </div>
   </section>
 
+
+  <script>
+    (function () {
+      var links = document.querySelectorAll('.toc-sidebar .toc-link');
+      if (!links || links.length === 0) return;
+
+      // Click: smooth-scroll within shadow DOM to the target id
+      links.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          var href = link.getAttribute('href') || '';
+          if (href.charAt(0) !== '#') return;
+          var id = href.slice(1);
+          var target = document.getElementById(id);
+          if (target && target.scrollIntoView) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+      // Scroll-spy: highlight the link for the currently-visible section
+      if (typeof IntersectionObserver === 'undefined') return;
+      var linkById = {};
+      links.forEach(function (link) {
+        var href = link.getAttribute('href') || '';
+        if (href.charAt(0) === '#') linkById[href.slice(1)] = link;
+      });
+      var targets = Object.keys(linkById)
+        .map(function (id) { return document.getElementById(id); })
+        .filter(function (el) { return !!el; });
+      if (targets.length === 0) return;
+
+      var observer = new IntersectionObserver(function (entries) {
+        var visible = entries
+          .filter(function (e) { return e.isIntersecting; })
+          .sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+        if (visible.length === 0) return;
+        var activeId = visible[0].target.id;
+        Object.keys(linkById).forEach(function (id) {
+          linkById[id].classList.toggle('is-active', id === activeId);
+        });
+      }, { rootMargin: '-25% 0px -60% 0px', threshold: [0, 1] });
+      targets.forEach(function (t) { observer.observe(t); });
+    })();
+  </script>
 </body>
 
 </html>

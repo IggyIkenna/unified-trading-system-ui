@@ -32,6 +32,7 @@ export type ResolvedPersonaId =
   | "prospect-im-pooled"
   | "prospect-regulatory"
   | "prospect-signals-only"
+  | "prospect-perp-funding"
   | "prospect-generic";
 
 /**
@@ -50,6 +51,7 @@ export const RESOLVED_PERSONA_TO_AUTH_ID: Readonly<
   "prospect-im-pooled": "client-im-pooled",
   "prospect-regulatory": "prospect-regulatory",
   "prospect-signals-only": "prospect-signals-only",
+  "prospect-perp-funding": "prospect-perp-funding",
   "prospect-generic": "prospect-dart",
 };
 
@@ -94,9 +96,35 @@ function isDartSignalsIn(response: QuestionnaireResponse): boolean {
   );
 }
 
+/**
+ * True iff the questionnaire signature matches a Desmond-shape prospect:
+ * Reg Umbrella OR combo + perp instruments + arbitrage (or carry) strategy
+ * style + CeFi or DeFi categories. Route to `prospect-perp-funding` so the
+ * demo session lands with cross-exchange perp-funding arb strategies
+ * unlocked and everything else scoped away.
+ */
+function isPerpFundingArbShape(response: QuestionnaireResponse): boolean {
+  const regOrCombo =
+    response.service_family === "RegUmbrella" ||
+    response.service_family === "combo";
+  if (!regOrCombo) return false;
+  const hasPerp = response.instrument_types.includes("perp");
+  const hasArbStyle =
+    response.strategy_style.includes("arbitrage") ||
+    response.strategy_style.includes("carry");
+  const hasCrossExchangeCats =
+    response.categories.includes("CeFi") || response.categories.includes("DeFi");
+  return hasPerp && hasArbStyle && hasCrossExchangeCats;
+}
+
 export function resolvePersonaFromQuestionnaire(
   response: QuestionnaireResponse,
 ): ResolvedPersonaId {
+  // Desmond-shape route takes precedence over the generic family switch —
+  // a RegUmbrella prospect who specifically answered perp + arbitrage gets
+  // the perp-funding demo surface rather than the bare regulatory one.
+  if (isPerpFundingArbShape(response)) return "prospect-perp-funding";
+
   switch (response.service_family) {
     case "IM": {
       if (response.fund_structure === "SMA") return "prospect-im-sma";
@@ -144,6 +172,7 @@ export function readResolvedPersona(): ResolvedPersonaId | null {
       "prospect-im-pooled",
       "prospect-regulatory",
       "prospect-signals-only",
+      "prospect-perp-funding",
       "prospect-generic",
     ];
     return valid.includes(raw as ResolvedPersonaId)

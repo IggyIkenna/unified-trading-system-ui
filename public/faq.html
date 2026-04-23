@@ -234,10 +234,80 @@
         font-size: 14.5px;
       }
     }
+
+    /* SIDEBAR TOC ──────────────────────────────── */
+    .toc-sidebar {
+      display: none;
+    }
+    @media (min-width: 1280px) {
+      .toc-sidebar {
+        display: block;
+        position: fixed;
+        top: 96px;
+        left: clamp(24px, 4vw, 64px);
+        width: 220px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        padding-bottom: 24px;
+        z-index: 10;
+      }
+      .toc-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0 10px 6px;
+        margin: 0;
+      }
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .toc-list li {
+        margin: 0;
+      }
+      .toc-link {
+        display: block;
+        padding: 7px 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--text-muted);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        border-radius: 0 6px 6px 0;
+        transition: color 0.15s, background 0.15s, border-color 0.15s;
+      }
+      .toc-link:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+      }
+      .toc-link.is-active {
+        color: var(--text);
+        border-left-color: var(--primary);
+        background: rgba(34, 211, 238, 0.06);
+        font-weight: 500;
+      }
+    }
   </style>
 </head>
 
 <body>
+
+
+  <!-- SIDEBAR TOC (visible ≥1280px) -->
+  <aside class="toc-sidebar" aria-label="FAQ sections">
+    <p class="toc-label">Jump to</p>
+    <ul class="toc-list">
+      <li><a href="#first-time" class="toc-link">First time here?</a></li>
+      <li><a href="#product" class="toc-link">The product</a></li>
+      <li><a href="#ip" class="toc-link">IP, ownership, partnership</a></li>
+      <li><a href="#regulatory" class="toc-link">Regulatory &amp; compliance</a></li>
+      <li><a href="#getting-started" class="toc-link">Getting started</a></li>
+      <li><a href="#cta" class="toc-link">Still stuck? →</a></li>
+    </ul>
+  </aside>
 
   <!-- HERO -->
   <section class="hero">
@@ -255,7 +325,7 @@
   </section>
 
   <!-- FIRST TIME HERE -->
-  <section class="section-pad">
+  <section id="first-time" class="section-pad">
     <div class="container faq-category">
       <h2>First time here?</h2>
 
@@ -300,7 +370,7 @@
   </section>
 
   <!-- THE PRODUCT -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="product" class="section-pad" style="background: var(--bg-surface);">
     <div class="container faq-category">
       <h2>The product</h2>
 
@@ -391,7 +461,7 @@
   </section>
 
   <!-- IP & PARTNERSHIP -->
-  <section class="section-pad">
+  <section id="ip" class="section-pad">
     <div class="container faq-category">
       <h2>IP, ownership, partnership</h2>
 
@@ -478,7 +548,7 @@
   </section>
 
   <!-- REGULATORY & COMPLIANCE -->
-  <section class="section-pad" style="background: var(--bg-surface);">
+  <section id="regulatory" class="section-pad" style="background: var(--bg-surface);">
     <div class="container faq-category">
       <h2>Regulatory &amp; compliance</h2>
 
@@ -516,7 +586,7 @@
   </section>
 
   <!-- GETTING STARTED -->
-  <section class="section-pad">
+  <section id="getting-started" class="section-pad">
     <div class="container faq-category">
       <h2>Getting started</h2>
 
@@ -595,7 +665,7 @@
   </section>
 
   <!-- CTA -->
-  <section class="section-pad" style="background: var(--bg-surface); text-align: center;">
+  <section id="cta" class="section-pad" style="background: var(--bg-surface); text-align: center;">
     <div class="container" style="max-width: 640px; margin: 0 auto;">
       <p class="eyebrow">Didn&rsquo;t find your answer?</p>
       <h2 style="font-size: clamp(22px, 2.5vw, 28px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px;">
@@ -613,6 +683,46 @@
     </div>
   </section>
 
+
+  <script>
+    (function () {
+      var links = document.querySelectorAll('.toc-sidebar .toc-link');
+      if (!links || links.length === 0) return;
+      links.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          var href = link.getAttribute('href') || '';
+          if (href.charAt(0) !== '#') return;
+          var id = href.slice(1);
+          var target = document.getElementById(id);
+          if (target && target.scrollIntoView) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+      if (typeof IntersectionObserver === 'undefined') return;
+      var linkById = {};
+      links.forEach(function (link) {
+        var href = link.getAttribute('href') || '';
+        if (href.charAt(0) === '#') linkById[href.slice(1)] = link;
+      });
+      var targets = Object.keys(linkById)
+        .map(function (id) { return document.getElementById(id); })
+        .filter(function (el) { return !!el; });
+      if (targets.length === 0) return;
+      var observer = new IntersectionObserver(function (entries) {
+        var visible = entries
+          .filter(function (e) { return e.isIntersecting; })
+          .sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
+        if (visible.length === 0) return;
+        var activeId = visible[0].target.id;
+        Object.keys(linkById).forEach(function (id) {
+          linkById[id].classList.toggle('is-active', id === activeId);
+        });
+      }, { rootMargin: '-25% 0px -60% 0px', threshold: [0, 1] });
+      targets.forEach(function (t) { observer.observe(t); });
+    })();
+  </script>
 </body>
 
 </html>

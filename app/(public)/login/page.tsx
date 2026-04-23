@@ -20,13 +20,33 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading, loginByEmail, loginError } = useAuth();
+  const { user, loading, loginByEmail, loginError, hasEntitlement } = useAuth();
   const [redirectTo, setRedirectTo] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     setRedirectTo(sp.get("redirect"));
   }, []);
+
+  /**
+   * Post-login default landing. Investor / board users go straight to the IR hub —
+   * the advisor email (board-website-update) assumes this. Everyone else lands on /dashboard.
+   * An explicit `?redirect=` query param always wins.
+   *
+   * Detection is belt-and-suspenders: (a) the `investor-board` / `investor-archive`
+   * entitlements when the user-management-api has returned them, (b) a hardcoded email
+   * fallback for the canonical advisor account so the redirect also works when the
+   * authz backend is slow or momentarily unreachable.
+   */
+  const defaultLanding = React.useCallback((): string => {
+    if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
+      return "/investor-relations";
+    }
+    if (user?.email === "investor@odum-research.co.uk") {
+      return "/investor-relations";
+    }
+    return "/dashboard";
+  }, [hasEntitlement, user?.email]);
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -66,9 +86,9 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (!loading && user) {
-      router.replace(redirectTo || "/dashboard");
+      router.replace(redirectTo || defaultLanding());
     }
-  }, [loading, user, router, redirectTo]);
+  }, [loading, user, router, redirectTo, defaultLanding]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +121,7 @@ export default function LoginPage() {
           }
         }
       } catch { /* no backend, continue */ }
-      router.push(redirectTo || "/dashboard");
+      router.push(redirectTo || defaultLanding());
     } else if (!loginError) {
       setError("Invalid credentials. Check your email and password.");
     }

@@ -22,6 +22,7 @@ export interface BriefingHeroProps {
 }
 
 export function BriefingHero({ title, tldr, cta }: BriefingHeroProps) {
+  const isExternal = /^https?:\/\//.test(cta.href);
   return (
     <section
       data-briefing-hero=""
@@ -31,7 +32,13 @@ export function BriefingHero({ title, tldr, cta }: BriefingHeroProps) {
       <p className="text-body text-foreground/90 max-w-2xl">{renderWithTerms(tldr)}</p>
       <div className="pt-1" data-testid="briefing-primary-cta">
         <Button asChild size="sm">
-          <Link href={cta.href}>{cta.label}</Link>
+          {isExternal ? (
+            <a href={cta.href} target="_blank" rel="noopener noreferrer">
+              {cta.label}
+            </a>
+          ) : (
+            <Link href={cta.href}>{cta.label}</Link>
+          )}
         </Button>
       </div>
     </section>

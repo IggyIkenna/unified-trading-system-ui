@@ -1,4 +1,5 @@
 import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
+import { SandboxBanner } from "@/components/sandbox-banner";
 import { StagingGate } from "@/components/staging-gate";
 import { ProtocolIndicator } from "@/components/ui/protocol-indicator";
 import { Toaster } from "@/components/ui/sonner";
@@ -75,6 +76,7 @@ export default function RootLayout({
         className={`${ibmPlexSans.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground`}
       >
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <SandboxBanner />
           <StagingGate>
             <Providers>
               <ExecutionModeProvider>{children}</ExecutionModeProvider>

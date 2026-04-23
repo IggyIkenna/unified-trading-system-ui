@@ -1,7 +1,7 @@
-// Board Presentation — data for 11-slide core deck + 2 appendix slides (FAQ, Demo)
-// Last updated: April 2026
+// Board Presentation \u2014 data for 14-slide strategic advisor deck.
+// Last restructured: April 2026 \u2014 reframed around four commercial paths,
+// named-competitor landscape, founder narrative, and McKinsey-grade arc.
 
-// Venue list for scrolling display - color-coded by asset class
 export const VENUE_LIST = [
   // Traditional Finance - cyan
   { name: "CME Group", color: "cyan" },
@@ -47,66 +47,203 @@ export const VENUE_LIST = [
   { name: "Kalshi", color: "rose" },
 ];
 
-// Slide data
+
+// Slide data \u2014 arc: (I) how we got here  (II) the market problem
+// (III) the Odum solution  (IV) proof  (V) forward  (VI) close.
 export const slides = [
+  // ══════════════════════════════════════════════════════════════
+  // ACT I \u2014 HOW WE GOT HERE
+  // ══════════════════════════════════════════════════════════════
+
   // ── Slide 1: Cover ────────────────────────────────────────
   {
     id: 1,
     type: "cover",
-    title: "One Unified Trading System",
+    title: "One Regulated Operating System",
     subtitle:
-      "A single operating layer for multi-asset trading, execution, and oversight. Built for our own capital. Structured for institutional clients.",
-    tagline: "FCA Authorised",
+      "Four commercial paths, five asset groups, one code path. Built by traders who ran desks at leading prop-trading firms. Running our own capital at $7.5M through the same infrastructure we sell.",
+    tagline: "Strategic Advisor Deck",
     stats: [
       { value: "5", label: "Asset Classes" },
       { value: "12,000+", label: "Live Instruments" },
       { value: "$7.5M", label: "Under Management" },
-      { value: "3", label: "Commercial Wrappers" },
+      { value: "4", label: "Commercial Paths" },
+      { value: "Jan '23", label: "FCA Authorised" },
     ],
   },
 
-  // ── Slide 2: The Problem ──────────────────────────────────
+  // ── Slide 2: The Founder Story (one slide) ────────────────
   {
     id: 2,
     type: "doctrine",
-    title: "The Market Is Still Stitched Together",
+    title: "How Odum Came To Be",
     subtitle:
-      "Most firms stitch together fragmented systems across venues, asset classes, and workflows. We built one unified operating layer instead.",
+      "Three years ago I was running high-frequency cross-exchange arbitrage in crypto. The edges compressed. The only way to stay competitive was to iterate on strategy faster than the market iterated on me. That shaped Odum.",
     points: [
       {
-        problem: "80+ venues, 5 asset classes, dozens of schemas",
-        solution: "One codebase, one language, one normalised schema",
-      },
-      {
-        problem: "Strategies break when promoted to live",
+        problem:
+          "Needed a top-down view across the full universe \u2014 crypto, TradFi, DeFi, sports, predictions \u2014 to decide where to spend research time.",
         solution:
-          "One configuration structure \u2014 config change to promote, not a rewrite",
+          "Built one canonical ontology for instruments, venues, timeframes, and strategy archetypes. Every domain normalised to the same schema.",
       },
       {
-        problem: "Execution fragmented across venues and chains",
-        solution: "One deployment infrastructure, one algo layer across all venues",
-      },
-      {
-        problem: "Monitoring and compliance bolted on after the fact",
+        problem:
+          "Went looking for the stack instead of the strategy. Bloomberg, Tardis, QuantConnect, Hummingbot \u2014 each solved ~15% of the pipeline.",
         solution:
-          "One web-based interface for trading, reporting, and controls",
+          "Realised the stack I needed did not exist. Even Citadel, Jane Street, Two Sigma do not unify crypto + DeFi + sports + prediction + TradFi \u2014 and they do not sell it.",
+      },
+      {
+        problem:
+          "Backtest-to-live was a rewrite on every platform I tried. Strategies that looked good in research died on contact with production.",
+        solution:
+          "Built simulation = live: one code path, same data, same features, same risk controls. Promotion is a config change, not a rewrite.",
+      },
+      {
+        problem:
+          "Regulatory infrastructure is expensive, slow, and bolted on. An 18–24 month FCA cycle for anyone who wants to operate.",
+        solution:
+          "FCA 975797 since January 2023. Same platform now hosts clients under our permissions \u2014 operational in weeks, not years.",
       },
     ],
     differentiators: [
-      "Cross-asset backtesting: decentralised finance, traditional finance, crypto, sports, prediction markets \u2014 one environment",
-      "Backtest to live with no rewrite \u2014 same data, same features, same risk controls",
-      "Same infrastructure for internal capital and external clients",
+      "Team ran trading desks at leading proprietary firms before Odum",
+      "Same infrastructure runs internal capital and external clients",
+      "Platform is already commercial \u2014 first paying DART and Regulatory Umbrella clients live",
     ],
-    conclusion: "The alternative is stitching together 80+ integrations. We built one system.",
+    conclusion:
+      "Odum is what I could not buy three years ago, built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
   },
 
-  // ── Slide 3: The Solution ─────────────────────────────────
+  // ══════════════════════════════════════════════════════════════
+  // ACT II \u2014 THE MARKET PROBLEM
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Slide 3: The Landscape Today ──────────────────────────
   {
     id: 3,
+    type: "moat",
+    title: "The Landscape Today",
+    subtitle:
+      "Every vendor in the trading infrastructure space covers a slice. Nobody covers the lifecycle across asset classes with an institutional discipline and sells it to you.",
+    gaps: [
+      {
+        competitor: "Bloomberg / Refinitiv",
+        users: "TradFi only",
+        gap: "$24K–$30K/user/year. Best-in-class TradFi data and terminal \u2014 but no crypto spot depth, no DeFi on-chain, no sports, no prediction. Data only. No research, no execution, no managed money.",
+        color: "cyan",
+      },
+      {
+        competitor: "QuantConnect",
+        users: "Retail → hedge fund quant",
+        gap: "Research and backtest across TradFi + crypto. Execution only against select venues. No alternative asset classes, no managed capital, no regulatory shell, no cross-domain unification.",
+        color: "violet",
+      },
+      {
+        competitor: "Deltix (EPAM) — QuantOffice + CryptoCortex",
+        users: "Institutional quant + sell-side",
+        gap: "Serious research-to-execution stack across TradFi + crypto (TimeBase, QuantOffice, TradeHub, CryptoCortex). 15 years of product, strong at what it does — several Odum suppliers use Deltix components. Separate research and execution environments, not one code path from backtest to live. No DeFi programmability, no sports, no prediction. Licensed software, not a regulated operating layer that hosts clients under an FCA permission.",
+        color: "emerald",
+      },
+      {
+        competitor: "Talos",
+        users: "Institutional digital-asset lifecycle",
+        gap: "Strong institutional crypto execution and operations lifecycle. Crypto-only. No TradFi, no DeFi on-chain programmability, no sports, no prediction. Execution-layer product, not a cross-domain research + execution + reporting operating system with managed capital.",
+        color: "emerald",
+      },
+      {
+        competitor: "Hummingbot / 3Commas / Cryptohopper",
+        users: "Crypto retail / prosumer",
+        gap: "Open-source market-making bots and strategy templates. Crypto-only. No TradFi, no DeFi programmability, no research pipeline, no compliance, no reporting fit for institutional capital.",
+        color: "amber",
+      },
+      {
+        competitor: "FalconX / Galaxy / Wintermute OTC",
+        users: "Crypto prime broker",
+        gap: "Execution and OTC, crypto only. No research stack, no DeFi programmability, no cross-asset unification, no research-to-live infrastructure.",
+        color: "emerald",
+      },
+      {
+        competitor: "FlexTrade / Eze / Aladdin",
+        users: "TradFi institutional OMS/EMS",
+        gap: "Venue connectivity for equities / futures / FX. No crypto, no DeFi, no sports, no prediction. No built-in research environment, no managed-capital layer.",
+        color: "cyan",
+      },
+      {
+        competitor: "Interactive Brokers",
+        users: "Retail + institutional broker",
+        gap: "Broad TradFi coverage and thin crypto. No research platform, no backtest-to-live, no DeFi, no sports, no prediction, no FCA-cover-as-a-service.",
+        color: "violet",
+      },
+      {
+        competitor: "Tardis / Kaiko / Amberdata",
+        users: "Crypto data providers",
+        gap: "High-quality crypto tick and L2 data. Data only. No TradFi parity, no DeFi protocol coverage, no sports, no prediction. Does not touch execution, research, or compliance.",
+        color: "amber",
+      },
+      {
+        competitor: "Citadel / Jane Street / Two Sigma",
+        users: "Internal only",
+        gap: "The reference architecture for cross-domain quant. Not for sale. Even they do not unify crypto + DeFi + sports + prediction + TradFi in one stack at scale \u2014 the combinatory surface is outside their mandate.",
+        color: "emerald",
+      },
+    ],
+    callout:
+      "Every vendor solves ~15% of the pipeline in one domain. Nobody unifies the full lifecycle across five asset classes under an operated regulated wrapper \u2014 which is what capital actually needs.",
+  },
+
+  // ── Slide 4: Why The Gap Persists ─────────────────────────
+  {
+    id: 4,
+    type: "doctrine",
+    title: "Why The Gap Persists",
+    subtitle:
+      "The gap exists because the skill combination required to close it is rare. Three forces keep vendors locked into slices.",
+    points: [
+      {
+        problem:
+          "Specialisation. TradFi vendors built in the 1990s for equities and futures \u2014 crypto/DeFi/sports would require a ground-up rebuild, which they will not do.",
+        solution:
+          "Odum started in 2022 with a cross-domain ontology. Every schema is canonical across five asset classes from day one.",
+      },
+      {
+        problem:
+          "Operator distance. Vendors who never ran a book sell tools. They do not know what a good fill looks like across venue microstructures at 3am.",
+        solution:
+          "Team personally traded options, delta one, high-frequency, and medium-frequency across TradFi, crypto, and sports \u2014 before Odum existed.",
+      },
+      {
+        problem:
+          "Regulatory cost. Retrofitting compliance onto an existing product is expensive, so most stay outside the perimeter and leave operators to solve it.",
+        solution:
+          "FCA 975797 since January 2023. Compliance infrastructure is the same one we use for our own capital and the one we sell.",
+      },
+      {
+        problem:
+          "Cross-domain thinking + institutional discipline + operator credibility is a rare combinatory skill set. The combination is what makes the problem interesting.",
+        solution:
+          "Odum exists precisely because the combination is rare. The platform is the artefact of three years of compounding decisions.",
+      },
+    ],
+    differentiators: [
+      "Contracts-first \u2014 one source of truth for every data schema",
+      "Config-hashed versioning \u2014 identical promotion from backtest to live",
+      "Shard-level failure isolation \u2014 one venue outage does not cascade",
+    ],
+    conclusion:
+      "The moat is not any single feature. It is the combination of cross-domain scope, institutional architectural discipline, and operator credibility \u2014 under a live FCA permission.",
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  // ACT III \u2014 THE ODUM SOLUTION
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Slide 5: One System, Five Connected Layers ────────────
+  {
+    id: 5,
     type: "lifecycle-new",
     title: "One System, Five Connected Layers",
     subtitle:
-      "From instrument discovery through execution to regulatory reporting \u2014 the same layers govern internal operations and client access.",
+      "From instrument discovery through execution to regulatory reporting. The same layers govern internal operations and client access \u2014 the only seam between research and live is whether a fill comes from a matching engine or a real venue.",
     stages: [
       { name: "Instruments & Data", desc: "Discover, normalise, validate" },
       { name: "Research & Modelling", desc: "Features, ML, simulate" },
@@ -116,55 +253,13 @@ export const slides = [
     ],
   },
 
-  // ── Slide 4: Why This Is Hard to Replicate ────────────────
+  // ── Slide 6: Breadth Without Fragmentation ────────────────
   {
-    id: 4,
-    type: "operations",
-    title: "Why This Is Structurally Hard to Copy",
-    columns: [
-      {
-        title: "One Shared Instrument Layer",
-        items: [
-          "12,000+ live instruments across 5 asset classes",
-          "28 decentralised finance protocols across 11 blockchains",
-          "40,000+ sports fixtures processed annually",
-          "One canonical schema across all domains",
-        ],
-      },
-      {
-        title: "Proven Commercially",
-        items: [
-          "$7.5M of our own capital through the same system \u2014 alignment is structural",
-          "First platform client at $125K, growing to $250K+ annual revenue",
-          "Each service now has live commercial traction",
-        ],
-      },
-      {
-        title: "One Operating Layer",
-        items: [
-          "Data, research, execution, monitoring, governance \u2014 not bolted together",
-          "New venue integration benefits every strategy automatically",
-          "New strategy benefits every client automatically",
-          "AI-assisted operations with human approval gates",
-        ],
-      },
-    ],
-    callout:
-      "We operate this with a small team. AI-assisted workflows handle routine operations, with human approval gates at critical decisions.",
-    metrics: [
-      { value: "5", label: "Asset Classes" },
-      { value: "24,500+", label: "Automated Tests" },
-      { value: "22", label: "Microservices" },
-      { value: "$7.5M", label: "Under Management" },
-    ],
-  },
-
-  // ── Slide 5: Breadth Without Fragmentation ────────────────
-  {
-    id: 5,
+    id: 6,
     type: "breadth-matrix",
     title: "Breadth Without Fragmentation",
-    subtitle: "Every cell is served by the same underlying system.",
+    subtitle:
+      "Every cell is served by the same underlying system. Adding a venue benefits every strategy. Adding a strategy benefits every client.",
     columns: [
       "Instruments",
       "Data",
@@ -177,10 +272,10 @@ export const slides = [
         asset: "Traditional Finance",
         color: "cyan",
         cells: [
-          "CME Group, ICE, CBOE, NASDAQ, NYSE",
+          "CME, ICE, CBOE, NASDAQ, NYSE",
           "Tick, orderbook, candles",
           "Futures, options, equities",
-          "Time-weighted, volume-weighted, smart routing, optimal execution",
+          "TWAP, VWAP, smart routing, Arrival-Price, IS",
           "Returns, risk, reconciliation",
         ],
       },
@@ -189,7 +284,7 @@ export const slides = [
         color: "green",
         cells: [
           "Binance, OKX, Bybit, Deribit +4",
-          "Tick, orderbook, liquidations, funding",
+          "Tick, L2, liquidations, funding",
           "Spot, perpetuals, options surface",
           "Same algo suite + venue routing",
           "Same monitoring layer",
@@ -202,7 +297,7 @@ export const slides = [
           "28 protocols, 11 chains",
           "Lending rates, pool data, gas fees",
           "Yield simulation, flash loans",
-          "Uniswap, Aave, Morpho, Curve, Lido, and more",
+          "Uniswap, Aave, Morpho, Curve, Lido",
           "On-chain position tracking",
         ],
       },
@@ -212,13 +307,13 @@ export const slides = [
         cells: [
           "102 leagues, 40K+ fixtures/yr",
           "Odds from 65+ sources",
-          "Machine learning prediction pipeline",
+          "ML prediction pipeline",
           "Cross-bookmaker routing",
           "Settlement reconciliation",
         ],
       },
       {
-        asset: "Predictions",
+        asset: "Prediction Markets",
         color: "rose",
         cells: [
           "Polymarket, Kalshi +3",
@@ -231,143 +326,28 @@ export const slides = [
     ],
   },
 
-  // ── Slide 6: Strategy Families ────────────────────────────
-  {
-    id: 6,
-    type: "strategies",
-    title: "Strategy Families \u2014 Risk, Return & Capacity",
-    subtitle: "Same infrastructure, configurable risk appetite.",
-    families: [
-      {
-        name: "Stable Yield",
-        returns: "3-12% annual",
-        drawdown: "<1%",
-        capacity: "$50M-$100M+",
-        character: "DeFi lending, stablecoin yield",
-        risk: "low",
-      },
-      {
-        name: "Relative Value",
-        returns: "10-30% annual",
-        drawdown: "5%",
-        capacity: "$5M-$20M",
-        character: "Delta-neutral basis trades, funding capture",
-        risk: "low",
-      },
-      {
-        name: "Leveraged Yield",
-        returns: "20-50% annual",
-        drawdown: "15%",
-        capacity: "$5M/pool",
-        character: "Recursive staking, liquidity provision",
-        risk: "medium",
-      },
-      {
-        name: "Crypto Long/Short",
-        returns: "30%+",
-        drawdown: "5-10%",
-        capacity: "$2M/pair",
-        character: "ML long/short, mean reversion, arbitrage",
-        risk: "medium",
-      },
-      {
-        name: "TradFi Quant",
-        returns: "12-18%",
-        drawdown: "8-10%",
-        capacity: "$5M/name",
-        character: "ML directional, options, volatility",
-        risk: "medium",
-      },
-      {
-        name: "Sports Strategies",
-        returns: "50%+",
-        drawdown: "20%",
-        capacity: "$100K-$1M",
-        character: "ML prediction, cross-bookmaker arbitrage",
-        risk: "high",
-      },
-    ],
-    callout:
-      "We deploy from $100K to $100M+ depending on the strategy. The infrastructure is the same \u2014 only the configuration changes.",
-  },
-
-  // ── Slide 7: What Is Live Today ───────────────────────────
+  // ── Slide 7: Four Commercial Paths, One System ────────────
   {
     id: 7,
-    type: "traction",
-    title: "What Is Real Today",
-    achieved: [
-      {
-        text: "Crypto mean reversion",
-        detail: "$4M under management, ~30%+ annualised, 1 year track record, $3.3M at high watermark",
-      },
-      {
-        text: "Bitcoin fund of funds",
-        detail: "$3.5M+ under management, 5 year track record",
-      },
-      {
-        text: "First regulatory coverage client onboarded",
-        detail: "FCA ref 975797",
-      },
-      {
-        text: "First trading platform sold \u2014 $125K contract revenue (75% received)",
-        detail: "Decentralised finance client \u2014 3 strategies (5-20% annual), growing to $250K+ annual revenue",
-      },
-      {
-        text: "Platform operational",
-        detail: "22 microservices, 24,500+ tests, all passing",
-      },
-    ],
-    inProgress: [
-      {
-        text: "3 additional regulatory coverage prospects",
-        detail: "in conversation, evaluating coverage",
-      },
-      {
-        text: "Memorandum of understanding for execution services",
-        detail: "institutional counterparty",
-      },
-      {
-        text: "Client funding development",
-        detail: "India Exchange \u2014 delta one + arbitrage",
-      },
-    ],
-    launchReady: [
-      {
-        text: "Broader platform deployments",
-        detail: "First sale complete, ready for additional clients across all 5 asset classes",
-      },
-      {
-        text: "Data provision",
-        detail: "Normalised feeds across all domains",
-      },
-      {
-        text: "Backtest to live",
-        detail: "Same code path, config change to promote",
-      },
-      {
-        text: "35 strategies, 5 families",
-        detail: "30 code-complete, covering full spectrum",
-      },
-      {
-        text: "9 execution algorithms",
-        detail: "Time-weighted, volume-weighted, smart routing, optimal execution + more",
-      },
-    ],
-    checkpoint:
-      "Across all three services, the remaining constraint is commercial focus and sequencing rather than core engineering build-out.",
-  },
-
-  // ── Slide 8: Three Services ───────────────────────────────
-  {
-    id: 8,
     type: "packaging",
-    title: "Three Commercial Wrappers, One System",
+    title: "Four Commercial Paths, One System",
     subtitle:
-      "Clients start where it fits. The system underneath is the same.",
+      "Clients start where it fits. The system underneath is the same. DART splits into two modes \u2014 Signals-In keeps client IP upstream; Full includes research + promote on Odum infrastructure.",
     services: [
       {
-        name: "Trading Platform as a Service",
+        name: "Investment Management",
+        stages: ["Decision", "Execution", "Governance"],
+        model: "Performance fee above high-water (no management fee)",
+        desc: "Allocate to Odum-managed strategies. Co-invest at identical terms as the firm principals. Full investor portal with 10-factor attribution.",
+      },
+      {
+        name: "DART \u2014 Signals-In",
+        stages: ["Execution", "Governance"],
+        model: "Fixed Tier-B access + per-signal or P&L share",
+        desc: "Client keeps strategy IP upstream. Sends instructions via the DART schema; Odum runs the pipe \u2014 execution, reporting, compliance. Zero exposure of signal logic.",
+      },
+      {
+        name: "DART \u2014 Full Pipeline",
         stages: [
           "Instruments & Data",
           "Research",
@@ -375,82 +355,288 @@ export const slides = [
           "Execution",
           "Governance",
         ],
-        model: "Subscription \u2014 scoped to client need. Signals-only DART: fixed Tier B block pricing. Full DART: fixed-access + per-backtest metered research + IP-power exclusivity tiers.",
-        desc: "Access the trading stack without building it. Enter at data, research, or execution \u2014 expand over time. Live in weeks, not years.",
+        model: "Fixed access + metered research compute + IP tiers",
+        desc: "End-to-end platform access \u2014 data, research, execution, reporting. Client builds and promotes strategies on Odum; commercial terms bespoke per engagement.",
       },
       {
-        name: "Investment Management",
-        stages: ["Decision", "Execution", "Governance"],
-        model: "30-35% performance-fee + platform-fee client-choice (+5% perf OR $500/mo flat). No management fee.",
-        desc: "Allocate to strategies we already run with our own capital. Co-invest at identical terms. Client picks their platform-fee preference; performance fee aligns us with outcomes.",
+        name: "Odum Signals",
+        stages: ["Research"],
+        model: "Monthly licence + per-signal or P&L share",
+        desc: "Odum generates signals; counterparty executes on its own infrastructure. HMAC-signed payloads, rate-limited, entitlement-scoped.",
       },
       {
         name: "Regulatory Umbrella",
         stages: ["Governance"],
         model: "Onboarding fee + monthly retainer",
-        desc: "Operate under FCA coverage without waiting for direct authorisation. Full permissions scope. Operational in weeks. 2 live, pipeline of 2-3 additional prospects.",
-      },
-      {
-        name: "Signal Leasing",
-        stages: ["Research"],
-        model: "Monthly licence + per-signal + optional P&L share (hybrid)",
-        desc: "Lease Odum strategy signals to institutional counterparties. They execute on their own infrastructure. 2 counterparties in active conversations.",
+        desc: "Operate regulated activity under FCA 975797. Dealing, arranging, advising, managing \u2014 scope-matched to the client's activity. Weeks, not months.",
       },
     ],
-    note: "Three distinct buyer outcomes \u2014 capability, exposure, or regulatory coverage \u2014 all on one shared system. A platform client buys infrastructure. An IM client buys returns. A regulatory client buys speed to market. Each deepens naturally into the others.",
+    note: "Four buyer outcomes \u2014 capability, exposure, regulatory coverage, alpha feed \u2014 all on one shared system. A platform client buys infrastructure. An IM client buys returns. A regulatory client buys speed to market. A signal client buys alpha without building the pipe.",
   },
 
-  // ── Slide 9: The Flywheel ─────────────────────────────────
+  // ══════════════════════════════════════════════════════════════
+  // ACT IV \u2014 PROOF
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Slide 8: IP Protection (DART Signals-In) ──────────────
+  {
+    id: 8,
+    type: "doctrine",
+    title: "Your Alpha Stays Yours",
+    subtitle:
+      "DART Signals-In is engineered so we cannot see your strategy logic. The boundary is structural, not policy. Here is what it looks like by layer.",
+    points: [
+      {
+        problem: "Will you see my signals on DART Signals-In?",
+        solution:
+          "No. We receive structured instructions \u2014 instrument, side, size, constraints. Signal generation stays upstream at your endpoint. We see the orders, not the reasoning behind them.",
+      },
+      {
+        problem: "Will you see my strategy on DART Full?",
+        solution:
+          "Yes \u2014 you are researching and promoting on our infrastructure, so the code is on the platform. But we do not trade the same strategy; we partition your tenant and we will never front-run you. Contractual and technical separation.",
+      },
+      {
+        problem: "Can Odum copy my edge through Signals-In?",
+        solution:
+          "The signal feed does not carry alpha \u2014 it carries instructions. To recover the underlying edge you would have to reverse-engineer it from fill history, which is the same problem any execution venue has. Odum has its own alpha; we are not optimising for yours.",
+      },
+      {
+        problem: "What if I leave?",
+        solution:
+          "On Signals-In your strategy was never with us. On Full, the bespoke logic is yours to take. The switching cost is operational familiarity, not contractual lock-in.",
+      },
+    ],
+    differentiators: [
+      "Tenant-level partitioning \u2014 no cross-tenant data access",
+      "Signed payload envelopes \u2014 counterparty-scoped entitlements",
+      "Explicit non-compete on bespoke strategy territory",
+    ],
+    conclusion:
+      "The infrastructure is shared. The alpha is not. That is the design, enforced at the contract and the code.",
+  },
+
+  // ── Slide 9: Strategy Families ────────────────────────────
   {
     id: 9,
+    type: "strategies",
+    title: "Strategy Families \u2014 Risk, Return, Capacity",
+    subtitle: "Same infrastructure, configurable risk appetite.",
+    families: [
+      {
+        name: "Stable Yield (DeFi)",
+        returns: "3–12%",
+        drawdown: "<1%",
+        capacity: "$50M–$100M+",
+        character: "Aave lending, stablecoin yield, multi-chain",
+        risk: "low",
+      },
+      {
+        name: "Relative Value",
+        returns: "10–30%",
+        drawdown: "5%",
+        capacity: "$5M–$20M",
+        character: "Basis trades, funding capture, cross-venue",
+        risk: "low",
+      },
+      {
+        name: "Leveraged Yield (DeFi)",
+        returns: "20–50%",
+        drawdown: "15%",
+        capacity: "$5M / pool",
+        character: "Recursive staking, liquidity provision",
+        risk: "medium",
+      },
+      {
+        name: "Crypto Long/Short",
+        returns: "30%+",
+        drawdown: "5–10%",
+        capacity: "$2M / pair",
+        character: "ML long/short, mean reversion, arb",
+        risk: "medium",
+      },
+      {
+        name: "TradFi Quant",
+        returns: "12–18%",
+        drawdown: "8–10%",
+        capacity: "$5M / name",
+        character: "ML directional, options, volatility",
+        risk: "medium",
+      },
+      {
+        name: "Sports",
+        returns: "50%+",
+        drawdown: "20%",
+        capacity: "$100K–$1M",
+        character: "ML prediction, cross-bookmaker arbitrage",
+        risk: "high",
+      },
+    ],
+    callout:
+      "$100K to $100M+ depending on the strategy. Infrastructure is identical \u2014 only the configuration changes.",
+  },
+
+  // ── Slide 10: What Is Real Today ──────────────────────────
+  {
+    id: 10,
+    type: "traction",
+    title: "What Is Real Today",
+    achieved: [
+      {
+        text: "Crypto mean reversion \u2014 $4M AUM",
+        detail: "30%+ annualised, 1-year track record, $3.3M at high watermark. Binance + OKX.",
+      },
+      {
+        text: "Bitcoin fund of funds \u2014 $3.5M+ AUM",
+        detail: "5-year track record. Running under Odum reporting and compliance.",
+      },
+      {
+        text: "Platform live \u2014 first paying DART client",
+        detail: "Elysium DeFi: $125K signed, growing to $250K+ annual. Three strategies at 5–20% yield.",
+      },
+      {
+        text: "First Regulatory Umbrella client onboarded",
+        detail: "Desmond \u2014 Reg Umbrella + DART Signals-In (perp-funding arb).",
+      },
+      {
+        text: "FCA authorised January 2023 \u2014 Ref 975797",
+        detail: "Dealing, arranging, advising, managing \u2014 scoped to Professional / ECP.",
+      },
+    ],
+    inProgress: [
+      {
+        text: "3 Regulatory Umbrella prospects in conversation",
+        detail: "Scope fit on 4-axis model, expected close inside H2 2026.",
+      },
+      {
+        text: "2 Odum Signals counterparties contracted",
+        detail: "Sept 2026 go-live, hybrid pricing model, ~$5K/mo combined starting point.",
+      },
+      {
+        text: "CME S&P co-invest (Sept 2026)",
+        detail: "$500K client + $50K Odum skin \u2014 asymmetric 70/10 terms.",
+      },
+      {
+        text: "India Options (Oct 2026)",
+        detail: "$100K onboarding + $5–10M IM allocation (NSE delta trading).",
+      },
+    ],
+    launchReady: [
+      {
+        text: "22 microservices, 24,500+ tests",
+        detail: "All passing. Production-grade. Shard-level failure isolation across venues.",
+      },
+      {
+        text: "35 strategies, 5 families",
+        detail: "30 code-complete. Ready for bespoke DART Full builds.",
+      },
+      {
+        text: "9 execution algorithms",
+        detail: "TWAP, VWAP, smart routing, Arrival-Price, IS, plus venue-specific.",
+      },
+      {
+        text: "Backtest = live",
+        detail: "Config change promotes from research to production. No rewrite.",
+      },
+      {
+        text: "12,000+ live instruments across 5 asset classes",
+        detail: "28 DeFi protocols on 11 chains. 102 sports leagues. 40K+ fixtures/yr.",
+      },
+    ],
+    checkpoint:
+      "Every service line now has live commercial traction. The remaining constraint is commercial focus and sequencing, not core engineering.",
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  // ACT V \u2014 FORWARD
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Slide 11: Why One Sale Leads To Others ────────────────
+  {
+    id: 11,
     type: "flywheel",
-    title: "Why One Sale Leads to Others",
+    title: "Why One Sale Leads To Others",
     subtitle:
-      "The relationship deepens naturally because every step uses the same system.",
+      "The relationship deepens naturally because every step uses the same system. A client enters at the path that fits and expands into the others over time.",
     funnel: [
       { name: "Data", sub: "entry point", active: true },
       { name: "Research", sub: "validate ideas", active: false },
       { name: "Live Trading", sub: "same code, live capital", active: false },
       { name: "Full Platform", sub: "complete operating layer", active: false },
-      { name: "Managed / Regulated", sub: "we run the capital or the compliance", active: true },
+      { name: "Managed / Regulated", sub: "Odum runs capital or compliance", active: true },
     ],
     examples: [
-      "Data subscriber discovers signal quality \u2192 starts backtesting",
-      "Backtester validates edge \u2192 promotes to live (config change)",
-      "Live trader scales \u2192 needs regulatory coverage",
-      "Platform user wants managed capital \u2192 becomes investment management client",
+      "Data subscriber discovers signal quality → starts backtesting",
+      "Backtester validates edge → promotes to live (config change)",
+      "Signals-In client scales → needs regulatory cover for counterparty onboarding",
+      "Platform user wants managed capital → becomes IM co-invest client",
+      "Umbrella client sees the research stack → wants DART Full for their next mandate",
     ],
   },
 
-  // ── Slide 10: The Ask ─────────────────────────────────────
+  // ── Slide 12: 2026 Cashflow Shape ─────────────────────────
   {
-    id: 10,
+    id: 12,
+    type: "trajectory",
+    title: "2026 Cashflow Shape \u2014 Self-Funded",
+    subtitle:
+      "Starts April at £240k. Minimum £198k (April). October flip to £333k. December £413k. No bridge capital required \u2014 the business self-funds through the $7.5M → $25M AUM transition.",
+    milestones: [
+      { date: "Apr", value: "£240k", detail: "Opening position. ~£34k steady-state burn.", active: true },
+      { date: "May", value: "£219k", detail: "Elysium onboarding + Desmond Reg Umbrella close. First DART revenue lands." },
+      { date: "Jun", value: "£238k", detail: "BTC ML IM go-live (10 × $500k). Sports ML IM live (2 clients)." },
+      { date: "Jul", value: "£260k", detail: "IM performance fees accrue. Elysium upsell (MEV + Solana + recursive staking)." },
+      { date: "Aug", value: "£277k", detail: "BTC ML perf fees compounding. Desmond DART baseline steady at £22k/mo." },
+      { date: "Sep", value: "£280k", detail: "CME S&P co-invest live. Odum Signals to 2 counterparties at ~$5k/mo combined." },
+      { date: "Oct", value: "£372k", detail: "India Options $100k onboarding. £92k single-month step-up. $5–10M IM to follow." },
+      { date: "Nov", value: "£392k", detail: "CME ramp. BTC ML, Sports ML, Elysium, Desmond, Signals all compounding." },
+      { date: "Dec", value: "£413k", detail: "~£636k annual revenue, ~£92k net profit. Self-funded entry into 2027.", active: true },
+    ],
+    callout:
+      "October 2026 is the key inflection: India Options onboarding delivers a £92k single-month step-up. Target for end-2027: 4–6 Odum Signals counterparties and $25M+ AUM.",
+  },
+
+  // ══════════════════════════════════════════════════════════════
+  // ACT VI \u2014 CLOSE
+  // ══════════════════════════════════════════════════════════════
+
+  // ── Slide 13: What Fits Your Network ──────────────────────
+  {
+    id: 13,
     type: "ask",
     title: "What Fits Your Network",
     subtitle:
-      "Everything we\u2019ve shown is shippable. The question is which service resonates with the people you work with \u2014 and what they\u2019d need to see to move.",
+      "Everything shown is shippable today. The question is which path resonates with the people you work with \u2014 and what they would need to see to move.",
     asks: [
       {
         title: "Investment Management",
         items: [
-          "Who allocates to alternative strategies \u2014 crypto, DeFi yield, quant?",
-          "Next step: mandate discussion and reporting pack review",
+          "Who allocates to alternatives \u2014 crypto, DeFi yield, quant, sports?",
+          "Next step: mandate discussion + reporting pack review",
           "What matters most \u2014 track record depth, fee structure, minimum ticket?",
         ],
       },
       {
-        title: "Trading Platform as a Service",
+        title: "DART (Platform)",
         items: [
-          "Who needs trading infrastructure but doesn\u2019t want to build it?",
-          "Next step: scoping call and limited trial on data + research layers",
-          "What would land \u2014 data-only entry, full demo, or specific asset class?",
+          "Who needs trading infrastructure but will not build it?",
+          "Next step: scoping call \u2014 Signals-In vs Full Pipeline fit",
+          "What would land \u2014 data-only entry, full demo, or a specific asset class?",
+        ],
+      },
+      {
+        title: "Odum Signals",
+        items: [
+          "Who runs execution in-house and wants alpha without building research?",
+          "Next step: payload schema review + counterparty onboarding",
+          "What would land \u2014 signal latency, cadence, or coverage specifics?",
         ],
       },
       {
         title: "Regulatory Umbrella",
         items: [
-          "Who is entering UK regulation or needs FCA coverage quickly?",
-          "Next step: eligibility assessment \u2014 we scope fit before any commitment",
+          "Who is entering UK regulation or needs FCA cover quickly?",
+          "Next step: eligibility assessment on the 4-axis model",
           "What matters most \u2014 onboarding speed, permissions scope, or pricing?",
         ],
       },
@@ -458,104 +644,24 @@ export const slides = [
     contact: "ikenna@odum-research.com",
   },
 
-  // ── Slide 11: 2026 Cashflow Shape ─────────────────────────
+  // ── Slide 14: Live Demo ──────────────────────────────────
   {
-    id: 11,
-    type: "trajectory",
-    title: "2026 Cashflow Shape \u2014 Self-Funded",
-    subtitle:
-      "Starts April at \u00a3240k. Minimum \u00a3198k (April). October flip to \u00a3333k. December \u00a3413k. No bridge capital required.",
-    milestones: [
-      { date: "Apr", value: "\u00a3240k", detail: "Opening position. ~\u00a334k steady-state burn.", active: true },
-      { date: "May", value: "\u00a3219k", detail: "Elysium onboarding + Desmond Reg Umbrella closes. First DART revenue lands." },
-      { date: "Jun", value: "\u00a3238k", detail: "BTC ML IM go-live (10 clients \u00d7 $500k). Sports ML IM live (2 clients)." },
-      { date: "Jul", value: "\u00a3260k", detail: "IM performance fees accrue. Elysium upsell path opens (MEV + Solana + recursive staking)." },
-      { date: "Aug", value: "\u00a3277k", detail: "BTC ML perf fees compounding. Desmond DART signals-only monthly baseline steady at \u00a322k/mo." },
-      { date: "Sep", value: "\u00a3280k", detail: "CME S&P co-invest goes live ($500k client + $50k Odum skin). Asymmetric 70/10. Signal leasing live to 2 institutional counterparties at ~$5k/mo combined." },
-      { date: "Oct", value: "\u00a3372k", detail: "India Options $100k onboarding lands. Cash steps up \u00a392k in one month. $5-10M IM allocation follows." },
-      { date: "Nov", value: "\u00a3392k", detail: "CME ramp accelerating. BTC ML, Sports ML, Elysium DART, Desmond, Signal leasing all compounding." },
-      { date: "Dec", value: "\u00a3413k", detail: "~\u00a3636k annual revenue, ~\u00a392k net profit. Self-funded entry into 2027. Target 4-6 signal-leasing counterparties by end-2027.", active: true },
-    ],
-    callout:
-      "October 2026 is the key inflection: India Options onboarding delivers a \u00a392k single-month step-up. No bridge capital required \u2014 the business self-funds through the $7.5M to $25M AUM transition.",
-  },
-
-  // ── Slide 12: FAQ ──────────────────────────────────────────
-  {
-    id: 12,
-    type: "faq",
-    title: "Questions We Get Asked",
-    subtitle: "Standardised answers to the most common questions from advisors and prospects.",
-    questions: [
-      {
-        q: "Why can\u2019t someone just build this with AI?",
-        a: "AI is a force multiplier, but it multiplies the judgement of the person directing it. Our team has personally traded options, delta one, high frequency, and medium frequency across traditional finance, crypto, and sports. If you have a significant drawdown, you need to be able to switch off the AI and debug the system yourself. That requires experience that transcends the tooling. We use AI heavily \u2014 but the critical decisions are made by experienced humans.",
-      },
-      {
-        q: "Why would someone share their alpha with you?",
-        a: "They don\u2019t have to. The platform is modular. You can use just data, just execution, just research, or just reporting \u2014 without us ever seeing your signals. Even on the full platform, we make bespoke deals. We don\u2019t trade the same strategy you\u2019re running. We don\u2019t need to \u2014 we have our own.",
-      },
-      {
-        q: "How do you handle conflicts between your own trading and client strategies?",
-        a: "We partition. Internal alpha stays internal \u2014 we don\u2019t share signal logic, feature weights, or parameters. Client strategies are bespoke and separate. We will never front-run a client or build strategies that overlap with theirs. We have enough strategy families to allocate some to investment management and still build for clients without conflict.",
-      },
-      {
-        q: "Why should I trust you with my infrastructure?",
-        a: "We built this for ourselves first. It runs our own capital \u2014 $7.5M across two mandates. We have clients for every service we offer. Nothing we deploy for a client goes through without the same vetting we apply to our own money. If we wouldn\u2019t trust it with our capital, it doesn\u2019t ship.",
-      },
-      {
-        q: "What happens if a client wants to leave?",
-        a: "They can. If we built a bespoke strategy for you, the logic is yours. The switching cost is operational \u2014 the accumulated validation, data history, and familiarity with the platform \u2014 not contractual lock-in.",
-      },
-    ],
-  },
-
-  // ── Slide 13: Live Demo ───────────────────────────────────
-  {
-    id: 13,
+    id: 14,
     type: "demo",
-    title: "Platform Demo",
+    title: "See It Live",
     subtitle:
-      "A walkthrough of the live system. Click any section to navigate directly.",
+      "Click any card to open the live platform in demo mode. Representative fills, positions, and P&L against a demo persona \u2014 never real client capital.",
     previewLink: "/dashboard",
     sections: [
-      {
-        name: "Dashboard",
-        desc: "Platform overview \u2014 positions, returns, risk, alerts",
-        link: "/dashboard",
-        image: "/screenshots/dashboard.png",
-      },
-      {
-        name: "Trading & Positions",
-        desc: "Live positions, orders, returns attribution",
-        link: "/services/trading/positions",
-        image: "/screenshots/positions.png",
-      },
-      {
-        name: "Instruments & Coverage",
-        desc: "12,000+ instruments across all asset classes",
-        link: "/services/data/instruments",
-        image: "/screenshots/instruments.png",
-      },
-      {
-        name: "Strategy Research",
-        desc: "Backtests, strategy comparison, machine learning analysis",
-        link: "/services/research/strategy/overview",
-        image: "/screenshots/strategy-overview.png",
-      },
-      {
-        name: "Client Reporting",
-        desc: "Executive dashboard, investment book of records, reconciliation",
-        link: "/services/reports/executive",
-        image: "/screenshots/executive.png",
-      },
-      {
-        name: "Risk & Scenarios",
-        desc: "Scenario analysis, stress testing, historical replay",
-        link: "/services/observe/scenarios",
-        image: "/screenshots/scenarios.png",
-      },
+      { name: "Homepage", desc: "Four commercial paths, one regulated operating system", link: "/" },
+      { name: "Our Story", desc: "Long-form founder narrative \u2014 why this exists", link: "/our-story" },
+      { name: "Briefings Hub", desc: "Six path-specific deep dives (code: odum-briefings-2026)", link: "/briefings" },
+      { name: "Platform Dashboard", desc: "Live demo \u2014 positions, returns, risk, alerts", link: "/dashboard" },
+      { name: "Trading & Positions", desc: "Demo persona \u2014 live positions and attribution", link: "/services/trading/positions" },
+      { name: "Strategy Research", desc: "Backtests, comparison, ML analysis", link: "/services/research/strategy/overview" },
+      { name: "Executive Reporting", desc: "IBOR, reconciliation, performance", link: "/services/reports/executive" },
+      { name: "Risk & Scenarios", desc: "Scenario analysis, stress testing", link: "/services/observe/scenarios" },
     ],
-    note: "All views use the same underlying system. Demo data is representative of production output.",
+    note: "Platform links require sign-in (investor@odum-research.co.uk / OdumIR2026!). Public-site links open in a new tab; no sign-in required.",
   },
 ];

@@ -1,1 +1,1 @@
-export const CALENDLY_URL = "/contact";
+export const CALENDLY_URL = "https://calendly.com/odum-ikenna";

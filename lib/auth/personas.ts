@@ -256,6 +256,31 @@ export const PERSONAS: readonly AuthPersona[] = [
     description:
       "Hybrid case — IM client operating under Odum's Regulatory Umbrella. Same Reports surface as other IM clients, plus Manage stage visibility for regulatory-reporting touch points.",
   },
+  // -------------------------------------------------------------------
+  // 2026-04-23 — Desmond-shape demo persona: Regulatory Umbrella + DART
+  // Signals-In for cross-exchange perp-funding arbitrage. Models the real
+  // first live umbrella+DART client. Entitlements mirror elysium-defi's
+  // shape — reporting + data + execution, scoped by strategy archetype
+  // so the client sees only CeFi+DeFi perp basis / price-dispersion arb.
+  // -------------------------------------------------------------------
+  {
+    id: "prospect-perp-funding",
+    email: "ops@desmond-capital.example",
+    password: "demo",
+    displayName: "Desmond Ops",
+    role: "client",
+    org: { id: "desmond-capital", name: "Desmond Capital" },
+    entitlements: [
+      "reporting",
+      "investor-regulatory",
+      "data-pro",
+      "execution-full",
+      { domain: "trading-defi", tier: "basic" },
+      { domain: "trading-common", tier: "basic" },
+    ],
+    description:
+      "Reg Umbrella + DART Signals-In prospect running cross-exchange perp-funding arbitrage (CeFi + DeFi). Reports unlocked (regulatory reporting). DART surface limited to trading + observe tabs, with strategy scope restricted to CARRY_BASIS_PERP + ARBITRAGE_PRICE_DISPERSION archetypes. Research / Promote hidden — client keeps signal generation upstream. Questionnaire path: service_family=combo or RegUmbrella, instrument_types includes perp, strategy_style includes arbitrage, categories includes CeFi+DeFi.",
+  },
 ] as const;
 
 export function getPersonaById(id: string): AuthPersona | undefined {

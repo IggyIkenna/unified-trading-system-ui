@@ -30,7 +30,9 @@ import {
   CheckCircle2,
   Building2,
   MessageSquare,
+  CalendarClock,
 } from "lucide-react";
+import { CALENDLY_URL } from "@/lib/marketing/calendly";
 
 /**
  * Commercial-path labels and pre-fill message templates for the five paths
@@ -196,11 +198,32 @@ function ContactPageContent() {
       <div className="container px-4 py-16 md:px-6">
         <div className="mx-auto max-w-4xl">
           {/* Header */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-4xl font-bold tracking-tight">Contact Us</h1>
             <p className="mt-4 text-lg text-muted-foreground">
               Get in touch with our team. We typically respond within 24 hours.
             </p>
+          </div>
+
+          {/* Calendly shortcut — skip the form if you'd rather book directly */}
+          <div className="mb-10 flex flex-col items-center justify-center gap-3 rounded-lg border border-border bg-card/40 px-4 py-5 text-center sm:flex-row sm:gap-4 sm:text-left">
+            <div className="flex-1">
+              <p className="text-sm font-medium text-foreground">
+                Prefer to skip the form?
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Book a 45-minute call directly — no email required.
+              </p>
+            </div>
+            <a
+              href={CALENDLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              <CalendarClock className="size-4" />
+              Book a 45-minute call
+            </a>
           </div>
 
           <div className="grid gap-8 lg:grid-cols-3">
@@ -425,7 +448,16 @@ function ContactPageContent() {
           </div>
 
           {/* Alternative Contact */}
-          <div className="mt-12 text-center">
+          <div className="mt-12 flex flex-col items-center gap-3 text-center">
+            <a
+              href={CALENDLY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground hover:bg-accent"
+            >
+              <CalendarClock className="size-4" />
+              Book a 45-minute call on Calendly
+            </a>
             <p className="text-sm text-muted-foreground">
               Prefer to email directly? Reach us at{" "}
               <a

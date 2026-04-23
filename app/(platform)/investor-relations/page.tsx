@@ -68,7 +68,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Board Presentation",
     subtitle: "One Unified Trading System",
     description:
-      "12-slide strategic advisor deck — the problem, the solution, breadth, strategies, traction, three services, flywheel, and the ask.",
+      "14-slide strategic advisor deck with a McKinsey-grade arc: how we got here → the landscape (named competitors) → the Odum solution → IP-protection proof → traction → trajectory → the ask → live demo.",
     href: "/investor-relations/board-presentation",
     icon: Presentation,
     color: "from-amber-500/20 to-amber-600/5",
@@ -86,7 +86,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Plan & Longevity",
     subtitle: "The Path to $100M",
     description:
-      "Strategy availability timelines, service readiness matrix, capital trajectory from $7.5M to $100M, and 30-month milestone roadmap.",
+      "12-slide capital-trajectory deck: $7.5M → $100M path, strategy availability matrix, service readiness, IP partitioning, and a 30-month milestone map. Self-funded trajectory with no bridge capital.",
     href: "/investor-relations/plan-presentation",
     icon: CalendarClock,
     color: "from-violet-500/20 to-violet-600/5",
@@ -122,7 +122,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Trading Platform as a Service",
     subtitle: "Trading Infrastructure Without the Build",
     description:
-      "Product deck for prospective platform clients — engagement levels, coverage breadth, backtest-to-live, alpha protection, pricing, and proof points.",
+      "14-slide DART product deck: named-competitor landscape (Bloomberg, QuantConnect, Hummingbot, FlexTrade, IBKR, FalconX, Citadel-internal), Signals-In vs Full mode split, alpha-protection boundary by layer, and how to start.",
     href: "/investor-relations/platform-presentation",
     icon: LayoutGrid,
     color: "from-emerald-500/20 to-emerald-600/5",
@@ -140,7 +140,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Investment Management",
     subtitle: "FCA-Authorised Discretionary Management",
     description:
-      "Live performance ($7.5M, 30%+ annualised), strategy spectrum, investor portal, fee structure, and co-investment terms.",
+      "10-slide allocator deck: the allocator landscape (BlackRock Alt, Galaxy, Pantera, Millennium LPs), live performance ($7.5M / 30%+ annualised), strategy families, investor portal, co-invest terms, and FAQ.",
     href: "/investor-relations/investment-presentation",
     icon: TrendingUp,
     color: "from-cyan-500/20 to-cyan-600/5",
@@ -158,7 +158,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Regulatory Umbrella",
     subtitle: "FCA Regulatory Coverage",
     description:
-      "Engagement options, authorised activities, client portal features, compliance support, and onboarding process.",
+      "10-slide coverage deck built on the four-axis flexibility model (structure × scope × counterparty-facing × activity). Five concrete engagement shapes, named umbrella competitors (G10, Sapia, Thornbridge, Duff & Phelps), and the client portal.",
     href: "/investor-relations/regulatory-presentation",
     icon: Landmark,
     color: "from-rose-500/20 to-rose-600/5",

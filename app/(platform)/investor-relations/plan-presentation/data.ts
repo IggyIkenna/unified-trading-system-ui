@@ -1,103 +1,96 @@
-// Plan & Longevity Presentation — slide data
+// Plan & Longevity Presentation \u2014 data for 13-slide capital-trajectory deck.
+// Last restructured: April 2026 \u2014 reframed around the $7.5M → $100M path,
+// strategy availability timelines, and why this compounds rather than scales.
 
 export const slides = [
+  // ── Slide 1: Cover ────────────────────────────────────────
   {
     id: 1,
     type: "cover",
-    title: "The Path to $100M",
+    title: "The Path To $100M",
     subtitle:
-      "Strategy availability, service readiness, and capital growth \u2014 the plan for the next 30 months.",
-    tagline: "FCA Authorised",
+      "Strategy availability, service readiness, and capital growth \u2014 the plan for the next 30 months. Not a plan from zero. A plan from $7.5M with demonstrated performance, live commercial traction across every service, and an FCA permission that has been authorised since January 2023.",
+    tagline: "Capital Trajectory Deck",
     stats: [
       { value: "$7.5M", label: "Today" },
       { value: "$10M+", label: "End 2026" },
       { value: "$25M+", label: "End 2027" },
       { value: "$100M", label: "End 2028" },
+      { value: "Self", label: "Funded" },
     ],
   },
+
+  // ── Slide 2: Why Breadth Exists ───────────────────────────
   {
     id: 2,
     type: "doctrine",
     title: "Why Breadth Exists",
     subtitle:
-      "We cannot build and scale every strategy ourselves. We do not have the manpower, the capital, or the distribution network. The breadth exists to power three things.",
+      "We cannot build and scale every strategy ourselves. We do not have the manpower, the capital, or the distribution network. The breadth exists to power four revenue lines that feed each other.",
     points: [
       {
-        problem: "We cannot trade everything ourselves",
-        solution:
-          "Breadth powers investment management \u2014 we pick strategies, trade our capital, and partition away our alpha",
+        problem: "We cannot trade everything ourselves \u2014 too many strategies, not enough capital.",
+        solution: "Breadth powers Investment Management \u2014 we pick the strategies we can run at scale, trade our own capital, and partition away our alpha. Co-investors join on identical terms.",
       },
       {
-        problem: "Clients want infrastructure, not just returns",
-        solution:
-          "Same breadth powers bespoke white-label \u2014 clients get access to the infrastructure we trade on",
+        problem: "Clients want infrastructure, not just returns \u2014 but building it themselves is 18\u201324 months.",
+        solution: "Same breadth powers DART \u2014 Signals-In for clients who keep IP upstream, Full Pipeline for clients who want research and promote on Odum.",
       },
       {
-        problem: "Track record takes time to build",
-        solution:
-          "Platform revenue (bespoke builds) funds the business while track records compound",
+        problem: "Research has value beyond our own trading \u2014 we produce more signal than we can deploy.",
+        solution: "Odum Signals \u2014 signal feeds to institutional counterparties who execute on their own infrastructure. Monetises research without sharing methodology.",
       },
       {
-        problem: "Our research has value beyond our own trading",
-        solution:
-          "Signal leasing \u2014 we send strategy signals to institutional counterparties without sharing any methodology or intellectual property",
-      },
-      {
-        problem: "Scaling requires distribution we do not have yet",
-        solution:
-          "Advisory network and partnerships provide distribution into institutional channels",
+        problem: "Regulated activity is a gate \u2014 firms stall 12\u201324 months waiting for direct FCA authorisation.",
+        solution: "Regulatory Umbrella \u2014 Odum's permissions cover client activity. Compliance infrastructure is the same one we operate ourselves.",
       },
     ],
     differentiators: [
-      "We built this for ourselves first \u2014 good enough for our capital, good enough for yours",
-      "We will never front-run a client or build strategies that overlap with theirs",
-      "Nothing goes through that we would not trust with our own money",
+      "All four revenue lines run on one codebase \u2014 adding breadth compounds across all of them",
+      "Client strategies built on Odum stay with the client \u2014 contractual non-compete on bespoke territory",
+      "Nothing ships that we would not trust with our own money",
     ],
-    conclusion:
-      "The investment management side grows through track record. The platform side grows through client deployments. Signal leasing monetises our research without sharing methodology. All three run on the same foundation.",
+    conclusion: "Investment management grows through track record. DART grows through platform deployments. Odum Signals monetises research without sharing methodology. Regulatory Umbrella unblocks the first three. All four compound on the same infrastructure.",
   },
+
+  // ── Slide 3: From $7.5M To $100M ──────────────────────────
   {
     id: 3,
     type: "trajectory",
-    title: "From $7.5M to $100M",
-    subtitle:
-      "Capital follows demonstrated performance. Each stage is unlocked by track record.",
+    title: "From $7.5M To $100M",
+    subtitle: "Capital follows demonstrated performance. Each stage is unlocked by track record, not by raise velocity.",
     milestones: [
       {
         date: "Now",
         value: "$7.5M",
-        detail:
-          "Crypto mean reversion (30%+ annualised, 1 year track record) + Bitcoin fund of funds (5 year track record)",
+        detail: "Crypto mean reversion (30%+, 1-yr TR) + BTC FoF (5-yr TR). First DART + Regulatory Umbrella clients live.",
         active: true,
       },
       {
         date: "End 2026",
         value: "$10M+",
-        detail:
-          "Elysium DeFi + upsells live (signals-only DART). BTC ML directional IM with 10 clients \u00d7 $500k. CME S&P co-invest Sept (asymmetric 70/10). India Options Oct ($100k onboarding, $5-10M allocation IM). Desmond Reg Umbrella + DART signals-only. 2 sports ML clients. Signal leasing to 2 institutional counterparties live Sept 2026 at ~$5k/mo combined. ~\u00a3636k annual revenue, ~\u00a3408k December cash.",
+        detail: "Elysium DeFi DART live. BTC ML IM (10 × $500K). CME S&P co-invest (Sept, $500K + $50K Odum skin). India Options (Oct, $100K onboarding + $5\u201310M IM). 2 Odum Signals counterparties.",
       },
       {
         date: "End 2027",
         value: "$25M+",
-        detail:
-          "CME S&P co-invest scaled to $5M. India Options $5-10M allocation live. 4 platform clients, 6 regulatory coverage clients, signal leasing to 4 institutional counterparties, institutional allocator conversations maturing on 18-month track records.",
+        detail: "CME S&P scaled to $5M. India Options $5\u201310M live. 4 DART clients, 6 Regulatory Umbrella clients, 4 Odum Signals counterparties. Institutional allocator conversations on 18-month TRs.",
       },
       {
         date: "End 2028",
         value: "$100M",
-        detail:
-          "9 platform clients, 11 regulatory coverage clients, signal leasing revenue stream established across 6+ institutional counterparties, BTC ML + sports ML + CME + India + DeFi strategies at full scale across IM and DART.",
+        detail: "9 DART clients, 11 Regulatory Umbrella clients, 6+ Odum Signals counterparties. BTC ML + sports ML + CME + India + DeFi strategies at full scale across IM and DART.",
       },
     ],
-    callout:
-      "The unlock at each stage is track record. Every month of live trading compounds our ability to raise.",
+    callout: "The unlock at each stage is track record. Every month of live trading compounds our ability to raise.",
   },
+
+  // ── Slide 4: When Each Strategy Becomes Available ─────────
   {
     id: 4,
     type: "timeline-matrix",
     title: "When Each Strategy Becomes Available",
-    subtitle:
-      "From internal testing through investment management to client deployment.",
+    subtitle: "From internal testing through investment management to client deployment. Green = live. Amber = testing. Blue = available for client deployment.",
     periods: ["Now", "May 2026", "Jun 2026", "Q3 2026", "Q4 2026", "Q2 2027"],
     strategies: [
       {
@@ -109,19 +102,19 @@ export const slides = [
         statuses: ["live", "live", "live", "live", "live", "live"],
       },
       {
-        name: "Decentralised finance yield",
+        name: "DeFi yield (stable + basis)",
         statuses: ["testing", "live", "live", "live", "live", "live"],
       },
       {
-        name: "Machine learning directional",
+        name: "ML directional (TradFi)",
         statuses: ["", "testing", "live", "live", "live", "live"],
       },
       {
-        name: "Sports prediction",
+        name: "Sports prediction ML",
         statuses: ["", "testing", "available", "available", "available", "available"],
       },
       {
-        name: "India Options (NSE delta trading)",
+        name: "India Options (NSE delta)",
         statuses: ["", "", "", "testing", "live", "live"],
       },
       {
@@ -129,27 +122,24 @@ export const slides = [
         statuses: ["", "", "testing", "live", "live", "live"],
       },
       {
-        name: "Perp-funding arb (client-signal DART)",
+        name: "Perp-funding arb (DART Signals-In)",
         statuses: ["", "testing", "live", "live", "live", "live"],
       },
       {
-        name: "High frequency / market making",
+        name: "High-frequency / market making",
         statuses: ["", "", "", "", "testing", "live"],
       },
     ],
   },
+
+  // ── Slide 5: Service Readiness Matrix ─────────────────────
   {
     id: 5,
     type: "breadth-matrix",
-    title: "What Is Available When, by Service",
+    title: "What Is Available When, By Service",
     subtitle:
-      "Data and research are always first. Internal testing next. Then investment management. Then bespoke builds.",
-    columns: [
-      "Internal Testing",
-      "Investment Management",
-      "Platform / Bespoke",
-      "Data & Research",
-    ],
+      "Data and research are always first. Internal testing next. Investment management after track record forms. DART / bespoke builds anchored to commercial conversations.",
+    columns: ["Internal Testing", "Investment Management", "DART / Bespoke", "Data & Research"],
     rows: [
       {
         asset: "Crypto mean reversion",
@@ -159,27 +149,22 @@ export const slides = [
       {
         asset: "Bitcoin fund of funds",
         color: "green",
-        cells: ["Done", "Live now", "N/A (fund structure)", "Available now"],
+        cells: ["Done", "Live now", "N/A (fund)", "Available now"],
       },
       {
-        asset: "Decentralised finance yield",
+        asset: "DeFi yield",
         color: "violet",
-        cells: [
-          "Now",
-          "May 2026",
-          "May 2026 (first client)",
-          "Available now",
-        ],
+        cells: ["Now", "May 2026", "May 2026 (Elysium live)", "Available now"],
       },
       {
-        asset: "Machine learning directional",
+        asset: "ML directional (TradFi)",
         color: "cyan",
-        cells: ["May 2026", "June 2026", "June 2026", "Available now"],
+        cells: ["May 2026", "Jun 2026", "Jun 2026", "Available now"],
       },
       {
         asset: "Sports prediction",
         color: "amber",
-        cells: ["May 2026", "June 2026", "Q3 2026", "Available now"],
+        cells: ["May 2026", "Jun 2026", "Q3 2026", "Available now"],
       },
       {
         asset: "Options / volatility",
@@ -187,49 +172,63 @@ export const slides = [
         cells: ["Q3 2026", "Q4 2026", "Q4 2026", "Q3 2026"],
       },
       {
-        asset: "High frequency / market making",
+        asset: "HFT / market making",
         color: "green",
         cells: ["Q4 2026", "Q2 2027", "Q2 2027", "Q4 2026"],
       },
     ],
   },
+
+  // ── Slide 6: What We Keep, What We Share ──────────────────
   {
     id: 6,
     type: "doctrine",
     title: "What We Keep, What We Share",
-    subtitle:
-      "We partition strategies into two categories. The infrastructure is shared. The alpha is not.",
+    subtitle: "We partition strategies into two categories. The infrastructure is shared. The alpha is not.",
     points: [
       {
-        problem: "Internal alpha",
-        solution:
-          "Strategies we run for our own investment management. Proprietary. Signal logic, feature weights, parameters never shared.",
+        problem: "Internal alpha \u2014 strategies we run for our own IM and co-invest.",
+        solution: "Proprietary. Signal logic, feature weights, parameters never shared. Never licensed. Client-facing teams do not see the source.",
       },
       {
-        problem: "Bespoke client strategies",
-        solution:
-          "Built on the same infrastructure, but to the client\u2019s requirements. We do not trade the client\u2019s strategy ourselves.",
+        problem: "Bespoke client strategies \u2014 DART Full engagements where a client builds or contracts a build.",
+        solution: "Built on shared infrastructure, to the client's requirements. We do not trade the same strategy ourselves. Contractual non-compete on bespoke territory. If they leave, bespoke logic goes with them.",
+      },
+      {
+        problem: "DART Signals-In clients \u2014 strategy IP stays upstream at the client.",
+        solution: "Odum never sees the signal logic. We receive structured instructions and execute. Technical boundary enforced by the DART schema.",
+      },
+      {
+        problem: "Odum Signals counterparties \u2014 we generate, they execute elsewhere.",
+        solution: "Counterparty receives structured payloads via HMAC-signed envelopes. They never see the underlying model; we never see their execution venue.",
       },
     ],
     differentiators: [
       "Enough strategy families to allocate some internally and still build for clients without conflict",
-      "Bespoke commercial terms \u2014 profit shares, retainers, subscriptions tailored to the engagement",
-      "Client strategies stay with the client \u2014 if they leave, they can take the logic",
+      "Bespoke commercial terms per engagement \u2014 profit shares, retainers, licences",
+      "Client strategies stay with the client \u2014 tenant-level partitioning + written non-compete",
     ],
     conclusion: "The infrastructure is shared. The alpha is not.",
   },
+
+  // ── Slide 7: You Do Not Have To Give Us Anything ──────────
   {
     id: 7,
     type: "packaging",
-    title: "You Do Not Have to Give Us Anything",
-    subtitle:
-      "The platform is modular. Engage at whatever level you are comfortable with.",
+    title: "You Do Not Have To Give Us Anything",
+    subtitle: "The platform is modular. Engage at the level you are comfortable with. Expand as trust compounds.",
     services: [
       {
         name: "Just Data",
         stages: ["Instruments & Data"],
         model: "Subscription",
-        desc: "Normalised feeds across all five asset classes. We never see your signals.",
+        desc: "Normalised feeds across five asset classes. We never see your signals.",
+      },
+      {
+        name: "Just Research",
+        stages: ["Research"],
+        model: "Compute credits",
+        desc: "Use our backtesting environment. Take your results and execute elsewhere.",
       },
       {
         name: "Just Execution",
@@ -238,42 +237,32 @@ export const slides = [
         desc: "Plug your own signals into our execution layer. We route and fill. We do not see the logic behind your orders.",
       },
       {
-        name: "Just Research",
-        stages: ["Research"],
-        model: "Compute credits",
-        desc: "Use our backtesting environment. Take your results and execute elsewhere if you want.",
-      },
-      {
         name: "Just Reporting",
         stages: ["Governance"],
         model: "Subscription",
         desc: "Client reporting and compliance tools. Your strategy stays entirely yours.",
       },
       {
-        name: "Full Platform",
-        stages: [
-          "Instruments & Data",
-          "Research",
-          "Decision",
-          "Execution",
-          "Governance",
-        ],
-        model: "Bespoke",
-        desc: "Run everything on our infrastructure. Even then, we do not trade your strategy. Commercial terms are bespoke.",
+        name: "Full Platform (DART Full)",
+        stages: ["Instruments & Data", "Research", "Decision", "Execution", "Governance"],
+        model: "Bespoke + non-compete",
+        desc: "Research and promote on Odum infrastructure. Even then, we do not trade your strategy. Bespoke commercial terms.",
       },
     ],
-    note: "The engagement is modular and the commercial terms are bespoke. We are not asking anyone to hand over their edge.",
+    note: "Modular engagement, bespoke commercial terms. We are not asking anyone to hand over their edge.",
   },
+
+  // ── Slide 8: Why Can't Someone Just Do This With AI? ──────
   {
     id: 8,
     type: "operations",
-    title: "Why Can\u2019t Someone Just Do This With AI?",
+    title: "Why Can't Someone Just Do This With AI?",
     columns: [
       {
-        title: "Decades of Trading Experience",
+        title: "Decades Of Trading Experience",
         items: [
-          "Team with decades of experience at large trading institutions \u2014 making money before Odum existed",
-          "Personally traded options, delta one, high frequency, medium frequency across all five asset classes",
+          "Team ran trading desks at leading proprietary firms \u2014 making money before Odum",
+          "Personally traded options, delta one, HFT, medium-frequency across five asset classes",
           "AI multiplies the judgement of the person directing it",
           "If you do not know what a good fill looks like, AI will not tell you",
         ],
@@ -282,7 +271,7 @@ export const slides = [
         title: "Accountability Under Pressure",
         items: [
           "Significant drawdown + system built entirely by AI = you cannot debug it",
-          "You want to be able to switch off AI and solve things yourself",
+          "You want to switch off AI and solve things yourself",
           "Requires a team that understands the code, the strategies, and the markets",
           "Not just the prompts",
         ],
@@ -290,15 +279,15 @@ export const slides = [
       {
         title: "Building vs Operating",
         items: [
-          "AI can help build software quickly",
-          "Operating live trading across five asset classes is different",
-          "Venue outages, position reconciliation across chains, regulatory reporting",
-          "Operational experience compounds over years \u2014 you cannot prompt-engineer it",
+          "AI helps build software quickly \u2014 we use it heavily",
+          "Operating live trading across five asset classes is a different problem",
+          "Venue outages, chain-bridge failures, regulatory reporting, 3am debugging",
+          "Operational experience compounds over years \u2014 cannot be prompt-engineered",
         ],
       },
     ],
     callout:
-      "We use AI heavily in development and operations \u2014 and believe anyone should. But the system works because there are experienced humans, with decades at large trading institutions, making the critical decisions.",
+      "We use AI heavily in development and operations \u2014 and believe anyone should. But the system works because experienced humans, with decades at leading trading firms, make the critical decisions.",
     metrics: [
       { value: "5", label: "Asset Classes Traded" },
       { value: "3", label: "Years Operating" },
@@ -306,108 +295,131 @@ export const slides = [
       { value: "24,500+", label: "Automated Tests" },
     ],
   },
+
+  // ── Slide 9: The Next 30 Months ───────────────────────────
   {
     id: 9,
     type: "traction",
     title: "The Next 30 Months",
     achieved: [
-      { text: "End of Q2 2026", detail: "(2 months)" },
+      { text: "End Q2 2026 (2 months out)", detail: "" },
       {
-        text: "Elysium DeFi go-live (signals-only DART)",
-        detail: "$125K onboarding, $75K upsell path (MEV + Solana + recursive staking)",
+        text: "Elysium DeFi go-live (DART Signals-In)",
+        detail: "$125K onboarding, $75K upsell path (MEV + Solana + recursive staking).",
       },
       {
-        text: "BTC ML directional live on own capital",
-        detail: "First IM clients onboarding June ($500k each, 10-client target)",
+        text: "BTC ML directional on own capital",
+        detail: "First IM clients June ($500K each, 10-client target).",
       },
       {
         text: "Sports ML live",
-        detail: "2 IM clients at $50-100k (capacity-bound)",
+        detail: "2 IM clients at $50\u2013100K (capacity-bound).",
       },
       {
-        text: "1-2 regulatory umbrella clients live",
-        detail: "Seed Reg Umbrella + Desmond (Reg Umbrella + DART signals-only, perp-funding arb)",
+        text: "Regulatory Umbrella: Seed + Desmond live",
+        detail: "Desmond combines Reg Umbrella with DART Signals-In (perp-funding arb).",
       },
-      { text: "Capital under management: $8\u201310M", detail: "" },
+      { text: "AUM: $8\u201310M", detail: "" },
     ],
     inProgress: [
-      { text: "End of 2026", detail: "(8 months)" },
+      { text: "End 2026 (8 months out)", detail: "" },
       {
         text: "CME S&P co-invest live (Sept)",
-        detail: "$500k client + $50k Odum skin-in-the-game, asymmetric 70% profits / 10% losses, ramp to $5M year-1",
+        detail: "$500K client + $50K Odum skin \u2014 asymmetric 70/10, ramping to $5M year-1.",
       },
       {
         text: "India Options live (Oct)",
-        detail: "$100k onboarding, $5-10M IM allocation via Odum-managed NSE delta trading",
+        detail: "$100K onboarding + $5\u201310M IM allocation (NSE delta).",
       },
       {
-        text: "Signal leasing to 2 institutional counterparties",
-        detail: "Sept 2026 go-live, both live simultaneously at ~\u00a34k/mo combined ($5k/mo) via hybrid pricing model",
+        text: "Odum Signals \u2014 2 institutional counterparties",
+        detail: "Sept 2026 go-live, ~$5K/mo combined via hybrid pricing.",
       },
       {
-        text: "6+ months track record on new strategy families",
-        detail: "BTC ML + sports ML + DeFi basis",
+        text: "6+ months TR on new strategy families",
+        detail: "BTC ML + sports ML + DeFi basis.",
       },
       {
-        text: "Annual revenue ~\u00a3636k, December cash ~\u00a3408k",
-        detail: "Self-funded \u2014 no bridge capital required",
+        text: "Annual revenue ~£636K, December cash ~£408K",
+        detail: "Self-funded \u2014 no bridge capital.",
       },
     ],
     launchReady: [
-      { text: "End of 2027 \u2192 2028", detail: "(20\u201330 months)" },
+      { text: "End 2027 → 2028 (20\u201330 months)", detail: "" },
       {
-        text: "Capital above $25M (2027)",
-        detail: "Institutional allocator threshold",
+        text: "AUM above $25M (2027)",
+        detail: "Institutional allocator threshold.",
       },
-      { text: "$100M target (2028)", detail: "18+ month track records" },
+      { text: "$100M target (2028)", detail: "18+ month TRs across strategy families." },
       {
-        text: "4 platform clients, 6 regulatory coverage clients",
-        detail: "Signal leasing to institutional counterparties",
+        text: "4 DART clients, 6 Regulatory Umbrella clients",
+        detail: "Odum Signals to institutional counterparties.",
       },
       {
-        text: "9 platform clients, 11 regulatory coverage clients (2028)",
-        detail: "Full service portfolio scaled across all three revenue lines",
+        text: "9 DART clients, 11 Regulatory Umbrella clients (2028)",
+        detail: "Full service portfolio scaled across all four revenue lines.",
       },
     ],
     checkpoint:
       "The path is: demonstrate performance, compound track record, open institutional channels. The system is built. The question is execution and time.",
   },
+
+  // ── Slide 10: Why This Plan Is Realistic ──────────────────
   {
     id: 10,
     type: "doctrine",
     title: "Why This Plan Is Realistic",
     subtitle:
-      "This is not a plan from zero. It is a plan from seven and a half million with demonstrated performance.",
+      "This is not a plan from zero. It is a plan from $7.5M with demonstrated performance and four live revenue lines.",
     points: [
       {
         problem: "Starting from zero?",
-        solution:
-          "No \u2014 $7.5M live, 30%+ returns with 1 year track record (mean reversion) and 5 years (Bitcoin fund of funds), first platform sold, first regulatory coverage client onboarded",
+        solution: "No. $7.5M live, 30%+ returns with 1-year TR (mean reversion) and 5-years (BTC FoF). First DART and Regulatory Umbrella clients onboarded.",
       },
       {
         problem: "Track record takes forever?",
-        solution:
-          "We already have a 1 year track record on mean reversion and 5 years on Bitcoin fund of funds. Every additional month and every additional strategy makes the next capital raise easier",
+        solution: "Every additional month and every additional strategy makes the next raise easier. We are not starting the clock \u2014 we are compounding an existing one.",
       },
       {
         problem: "Scaling costs scale linearly?",
-        solution:
-          "The same 22 microservices that run $7.5M can run $100M. Infrastructure costs scale sub-linearly",
+        solution: "The same 22 microservices that run $7.5M can run $100M. Infrastructure costs scale sub-linearly.",
       },
       {
-        problem: "Dependent on investment management fees alone?",
-        solution:
-          "Platform revenue ($125K contract, growing to $250K+ annual) funds the business while track records compound",
+        problem: "Dependent on IM fees alone?",
+        solution: "Four revenue lines: IM performance fees, DART platform revenue, Odum Signals licences, Regulatory Umbrella retainers. Each grows on its own driver.",
+      },
+      {
+        problem: "Needs bridge capital to get there?",
+        solution: "No. October 2026 flip to £372K cash. December 2026 £413K. Self-funded through $7.5M → $25M AUM transition.",
       },
     ],
-    conclusion:
-      "The path to a hundred million is: demonstrate performance, compound track record, open institutional channels.",
+    conclusion: "The path to $100M is: demonstrate performance, compound track record, open institutional channels. The system is built. The commercial model is proven. The scale lever is track record time.",
   },
+
+  // ── Slide 11: Explore The Public Site ─────────────────────
   {
     id: 11,
     type: "demo",
+    title: "Explore The Public Site",
+    subtitle:
+      "The trajectory narrative \u2014 in context. Forward these to advisors, LPs, and prospects who want the story before the numbers. Access code for the briefings hub is odum-briefings-2026.",
+    sections: [
+      { name: "Homepage", desc: "Four commercial paths, one regulated operating system", link: "/" },
+      { name: "Our Story", desc: "Long-form founder narrative \u2014 why this exists, how we got here", link: "/our-story" },
+      { name: "Timeline", desc: "Dated milestones from 2011 desks to FCA to the unified stack", link: "/story" },
+      { name: "IM Briefing", desc: "How IM feeds the trajectory \u2014 strategy families, fees, portal", link: "/briefings/investment-management" },
+      { name: "DART Briefing", desc: "Platform revenue that funds the business while track records compound", link: "/briefings/platform" },
+      { name: "FAQ", desc: "Common objections front-run", link: "/faq" },
+    ],
+    note: "Public-site links open in a new tab. Briefings hub is gated by the shared access code.",
+  },
+
+  // ── Slide 12: See It Live ─────────────────────────────────
+  {
+    id: 12,
+    type: "demo",
     title: "See It Live",
-    subtitle: "Walk through any part of the system.",
+    subtitle: "Walk through any part of the system in demo mode \u2014 representative positions and P&L against a demo persona, never real client capital.",
     sections: [
       {
         name: "Dashboard",
@@ -416,7 +428,7 @@ export const slides = [
       },
       {
         name: "Strategy Research",
-        desc: "Backtests, strategy comparison, machine learning analysis",
+        desc: "Backtests, comparison, ML analysis",
         link: "/services/research/strategy/overview",
       },
       {
@@ -429,7 +441,12 @@ export const slides = [
         desc: "Live positions, orders, returns attribution",
         link: "/services/trading/positions",
       },
+      {
+        name: "Executive Reporting",
+        desc: "IBOR, reconciliation, performance",
+        link: "/services/reports/executive",
+      },
     ],
-    note: "All views use the same infrastructure we use for our own capital.",
+    note: "Platform links require sign-in (investor@odum-research.co.uk / OdumIR2026!). Same infrastructure running our own capital.",
   },
 ];
