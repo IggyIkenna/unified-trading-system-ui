@@ -77,7 +77,7 @@ export default function MarketingSignalsPage() {
                   href="/briefings/signals-out"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Signals-Out briefing
+                  Odum Signals deep dive
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}
@@ -95,7 +95,7 @@ export default function MarketingSignalsPage() {
                 <span className="text-muted-foreground">
                   {" "}
                   &mdash; where Signals-In and Full DART sit alongside
-                  Signals-Out.
+                  Odum Signals.
                 </span>
               </li>
               <li>

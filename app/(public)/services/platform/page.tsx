@@ -125,9 +125,9 @@ export default function PlatformServicePage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <Card className="border-amber-500/10">
                 <CardContent className="pt-5">
-                  <div className="text-sm font-medium mb-1">Trading Terminal</div>
+                  <div className="text-sm font-medium mb-1">DART</div>
                   <p className="text-xs text-muted-foreground">
-                    Full trading terminal with candlestick charts, technical indicators
+                    Full DART trading terminal with candlestick charts, technical indicators
                     (Bollinger Bands, EMA, SMA), live order book, depth chart, and
                     manual execution panel. Trade any instrument from one screen.
                   </p>

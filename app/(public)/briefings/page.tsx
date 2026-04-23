@@ -17,7 +17,7 @@ export const metadata = {
  *  2. Investment Management — top-right, highest-value commercial path
  *  3. DART Full Pipeline — deepest DART path
  *  4. DART Signals-In — lighter DART path
- *  5. Odum Signals-Out — inverse direction
+ *  5. Odum Signals — inverse direction
  *  6. Regulatory Umbrella — narrowest audience
  */
 const DISPLAY_ORDER: readonly BriefingPillar["slug"][] = [
@@ -50,7 +50,7 @@ export default function BriefingsHubPage() {
 
       <BriefingHero
         title="Briefings"
-        tldr="How we invest, how we're regulated, and every path through our platform — from signals in, to signals out."
+        tldr="How we invest, how we're regulated, and every path through our platform — from signals in, to Odum Signals."
         cta={{ label: "Book 45-minute call", href: CALENDLY_URL }}
       />
 

@@ -120,7 +120,7 @@ const PATHS: ReadonlyArray<{
     who: "Asset managers, trading desks. You already have strategies; you want institutional-grade execution + TCA.",
     what: "Submit parent orders; we run execution algos, produce fills, and return TCA benchmarked against arrival / VWAP / IS.",
     entryService: { href: "/services/execution/overview", label: "Execution surface" },
-    entryBriefing: { href: "/briefings/signals-out", label: `${PRODUCT_LABELS.odumSignals} briefing` },
+    entryBriefing: { href: "/briefings/signals-out", label: `${PRODUCT_LABELS.odumSignals} deep dive` },
   },
 ];
 
