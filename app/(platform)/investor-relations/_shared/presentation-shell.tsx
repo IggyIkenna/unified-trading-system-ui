@@ -88,7 +88,7 @@ export function PresentationShell({ slides, footerLabel }: PresentationShellProp
       </header>
 
       {/* Slide Content */}
-      <WidgetScroll className="flex-1 min-h-0" viewportClassName="flex items-center justify-center p-6">
+      <WidgetScroll className="flex-1 min-h-0" viewportClassName="flex items-start justify-center p-6 pt-8">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id as number}

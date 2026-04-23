@@ -127,7 +127,7 @@ export function Breadcrumbs() {
           )}
         <PageHelp pathname={pathname} />
       </div>
-      <GlobalScopeFilters />
+      {!isInvestorRelations && <GlobalScopeFilters />}
     </nav>
   );
 }

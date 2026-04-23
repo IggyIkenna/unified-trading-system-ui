@@ -78,6 +78,12 @@ export const PERSONAS: readonly AuthPersona[] = [
       "investor-im",
       "investor-regulatory",
       "investor-archive",
+      // Platform entitlements so "See It Live" demo links in presentations are accessible
+      "data-pro",
+      "execution-full",
+      "ml-full",
+      "strategy-full",
+      "reporting",
     ],
     description: "Investor / board member. Sees all investor relations presentations and demos.",
   },
@@ -88,7 +94,17 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Strategic Advisor",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
-    entitlements: ["investor-relations", "investor-board", "investor-plan"],
+    entitlements: [
+      "investor-relations",
+      "investor-board",
+      "investor-plan",
+      // Platform entitlements so "See It Live" demo links in presentations are accessible
+      "data-pro",
+      "execution-full",
+      "ml-full",
+      "strategy-full",
+      "reporting",
+    ],
     description: "Strategic advisor. Sees board presentation and plan deck only.",
   },
   {
