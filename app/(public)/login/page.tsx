@@ -42,7 +42,7 @@ export default function LoginPage() {
     if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
       return "/investor-relations";
     }
-    if (user?.email === "investor@odum-research.co.uk") {
+    if (user?.email === "investor@odum-research.com" || user?.email === "advisor@odum-research.com") {
       return "/investor-relations";
     }
     return "/dashboard";
@@ -54,6 +54,7 @@ export default function LoginPage() {
   const [error, setError] = React.useState("");
   const [showForgotPassword, setShowForgotPassword] = React.useState(false);
   const [resetSent, setResetSent] = React.useState(false);
+  const [uatRedirecting, setUatRedirecting] = React.useState(false);
 
   async function handleForgotPassword() {
     if (!email) {
@@ -95,16 +96,20 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    // On the main production site, demo/advisor accounts (@odum-research.co.uk) are homed
-    // on the UAT demo environment. Redirect there so they authenticate once on UAT and get
-    // the full demo experience (sandbox banner, deck click-throughs, demo trading views).
+    // On the main production site, advisor/demo accounts (@odum-research.com) are homed
+    // on the UAT demo environment. Show a brief notice then redirect — they never auth
+    // against prod Firebase so they cannot access production internal services.
     if (
-      email.toLowerCase().endsWith("@odum-research.co.uk") &&
+      email.toLowerCase().endsWith("@odum-research.com") &&
       typeof window !== "undefined" &&
       window.location.hostname === "www.odum-research.com"
     ) {
+      setIsLoading(false);
+      setUatRedirecting(true);
       const target = encodeURIComponent(redirectTo || "/investor-relations");
-      window.location.href = `https://uat.odum-research.com/login?redirect=${target}`;
+      setTimeout(() => {
+        window.location.href = `https://uat.odum-research.com/login?redirect=${target}`;
+      }, 2800);
       return;
     }
 
@@ -201,12 +206,23 @@ export default function LoginPage() {
                     Password reset email sent to {email}.
                   </p>
                 )}
+                {uatRedirecting && (
+                  <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-3 text-sm text-amber-200">
+                    <p className="font-medium">Taking you to the demo environment&hellip;</p>
+                    <p className="mt-1 text-xs text-amber-300/80">
+                      This account is set up for our secure demo environment at{" "}
+                      <span className="font-mono">uat.odum-research.com</span>. You&rsquo;re being
+                      redirected there now. Once you&rsquo;re in, a banner at the top links back to
+                      the main site &mdash; though your sign-in won&rsquo;t transfer across.
+                    </p>
+                  </div>
+                )}
                 {(error || loginError) && (
                   <p className="text-sm text-destructive bg-destructive/10 rounded-md px-3 py-2">
                     {loginError || error}
                   </p>
                 )}
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full" disabled={isLoading || uatRedirecting}>
                   {isLoading ? "Signing in..." : "Sign In"}
                   <ArrowRight className="ml-2 size-4" />
                 </Button>
