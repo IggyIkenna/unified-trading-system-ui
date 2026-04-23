@@ -19,47 +19,50 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
       {slide.type === "moat" && (
         <div>
           <h2 className="text-3xl font-bold text-primary border-b border-border pb-2 mb-2">{slide.title}</h2>
-          <p className="text-muted-foreground mb-6">{slide.subtitle}</p>
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            {slide.gaps?.map(
-              (
-                gap: {
-                  title: string;
-                  desc: string;
-                  color?: string;
-                  competitor?: string;
-                  users?: string;
-                  gap?: string;
+          <p className="text-muted-foreground mb-3">{slide.subtitle}</p>
+          <div className="overflow-y-auto max-h-[52vh] pr-1 mb-3">
+            <div className="grid grid-cols-2 gap-3">
+              {slide.gaps?.map(
+                (
+                  gap: {
+                    title: string;
+                    desc: string;
+                    color?: string;
+                    competitor?: string;
+                    users?: string;
+                    gap?: string;
+                  },
+                  i: number,
+                ) => {
+                  const colors = {
+                    cyan: "border-cyan-400/30 bg-cyan-400/5",
+                    violet: "border-violet-400/30 bg-violet-400/5",
+                    amber: "border-amber-400/30 bg-amber-400/5",
+                    emerald: "border-emerald-400/30 bg-emerald-400/5",
+                    rose: "border-rose-400/30 bg-rose-400/5",
+                  };
+                  return (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 * i }}
+                      className={cn("p-3 rounded-lg border", colors[gap.color as keyof typeof colors])}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-sm">{gap.competitor}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {gap.users}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{gap.gap}</p>
+                    </motion.div>
+                  );
                 },
-                i: number,
-              ) => {
-                const colors = {
-                  cyan: "border-cyan-400/30 bg-cyan-400/5",
-                  violet: "border-violet-400/30 bg-violet-400/5",
-                  amber: "border-amber-400/30 bg-amber-400/5",
-                  emerald: "border-emerald-400/30 bg-emerald-400/5",
-                };
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * i }}
-                    className={cn("p-4 rounded-lg border", colors[gap.color as keyof typeof colors])}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-semibold">{gap.competitor}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {gap.users}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{gap.gap}</p>
-                  </motion.div>
-                );
-              },
-            )}
+              )}
+            </div>
           </div>
-          <div className="p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
+          <div className="p-3 rounded-lg border border-primary/30 bg-primary/5 text-center">
             <p className="text-sm font-medium text-primary">{slide.callout}</p>
           </div>
         </div>
