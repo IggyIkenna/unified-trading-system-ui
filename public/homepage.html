@@ -1170,27 +1170,70 @@
 
       /* --- EXPLORER MOBILE --- */
       @media (max-width: 640px) {
+        /* Single-column stacked layout; no forced height */
         .explorer-grid {
           grid-template-columns: 1fr !important;
-          overflow: hidden;
+          min-height: auto !important;
+          overflow: visible !important;
         }
 
         #explorerPanels {
           min-width: 0;
-          overflow: hidden;
+          overflow: visible;
         }
 
         .explorer-detail {
-          padding: 20px 16px;
-          overflow: hidden;
+          padding: 16px 14px;
+          overflow: visible;
         }
 
         .explorer-detail h3 {
-          font-size: 18px;
+          font-size: 16px;
+          margin-bottom: 4px;
+        }
+
+        .explorer-detail p {
+          font-size: 13px;
+          line-height: 1.55;
+          margin-bottom: 12px;
+        }
+
+        .explorer-detail .detail-sub {
+          margin-bottom: 10px;
+          gap: 6px;
+        }
+
+        .explorer-detail .detail-venues {
+          font-size: 10.5px;
+          margin-bottom: 12px;
+        }
+
+        /* Prevent long CTA text from overflowing narrow screens */
+        .explorer-detail .detail-cta {
+          white-space: normal;
+          word-break: break-word;
+          font-size: 12px;
+        }
+
+        .explorer-detail .detail-cta-stack {
+          width: 100%;
+        }
+
+        .explorer-detail .detail-cta-stack .detail-cta {
+          display: block;
+          max-width: 100%;
+        }
+
+        .explorer-detail .detail-ctas-split .detail-ctas-prefix {
+          font-size: 12px;
+        }
+
+        .explorer-preview {
+          margin: 12px 0;
         }
 
         .prev-row {
-          font-size: 12px;
+          font-size: 11px;
         }
 
         .explorer-sidebar {
@@ -1199,8 +1242,7 @@
           padding: 0 !important;
         }
 
-        /* Mobile: horizontally scrollable tab strip so long labels
-           ("Traditional Markets", "Regulatory Umbrella") never clip. */
+        /* Horizontally scrollable tab strip */
         .explorer-sidebar .explorer-nav {
           display: flex !important;
           flex-direction: row !important;
