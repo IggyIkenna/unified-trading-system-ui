@@ -16,6 +16,7 @@ export function RuntimeModeBadge() {
 
   return (
     <div
+      data-testid="runtime-mode-badge"
       className={`fixed bottom-3 left-3 z-50 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-lg border backdrop-blur-sm ${
         isMock
           ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
