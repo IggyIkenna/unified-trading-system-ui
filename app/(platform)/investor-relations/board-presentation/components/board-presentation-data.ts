@@ -115,13 +115,62 @@ export const slides = [
       "Odum is what we could not find in 2021 — built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
   },
 
+
+  // ── Slide 3: Four Commercial Paths, One System ────────────
+  {
+    id: 3,
+    type: "packaging",
+    title: "Four Commercial Paths, One Underlying System",
+    subtitle:
+      "Each path exists because buyers arrive with a different constraint. The split follows who controls the IP boundary, the infrastructure boundary, and the regulatory boundary.",
+    services: [
+      {
+        name: "Investment Management",
+        stages: ["Decision", "Execution", "Governance"],
+        model: "Performance fee above high-water mark (no management fee)",
+        desc: "The buyer wants returns, not tools. They allocate capital; we manage it at identical terms to the firm's own capital. No infrastructure to learn or operate. Full investor portal with attribution.",
+      },
+      {
+        name: "DART \u2014 Signals-In",
+        stages: ["Execution", "Governance"],
+        model: "Fixed access + per-signal or P&L share",
+        desc: "The buyer has strategy IP they will not expose. They send structured trade instructions \u2014 instrument, side, size \u2014 via the DART schema. Odum runs execution, reporting, and compliance. Signal logic never crosses the boundary. Structural separation, not just contractual.",
+      },
+      {
+        name: "DART \u2014 Full Pipeline",
+        stages: [
+          "Instruments & Data",
+          "Research",
+          "Decision",
+          "Execution",
+          "Governance",
+        ],
+        model: "Fixed access + metered research compute + IP tiers",
+        desc: "The buyer wants to research, build, and run strategies on institutional infrastructure without constructing it themselves. They build on Odum's platform; promotion to live is a config change, not a rewrite.",
+      },
+      {
+        name: "Odum Signals",
+        stages: ["Research"],
+        model: "Monthly licence + per-signal or P&L share",
+        desc: "Signal flow is inverted relative to DART Signals-In. Odum generates the signal; the counterparty executes on their own stack. The buyer gets alpha without building any infrastructure. HMAC-signed payloads delivered to authenticated counterparty endpoints.",
+      },
+      {
+        name: "Regulatory Umbrella",
+        stages: ["Governance"],
+        model: "Onboarding fee + monthly retainer",
+        desc: "Some buyers need FCA cover, not trading infrastructure. They operate regulated activity \u2014 dealing, arranging, advising, managing \u2014 under Odum's permission 975797. Scope-matched to their activity. Weeks to onboard, not an 18-month authorisation cycle.",
+      },
+    ],
+    note: "The split follows the IP and capital boundary: who generates the signal, who executes it, who holds the FCA permission. One system underneath \u2014 the commercial path is determined by where the client sits relative to those boundaries.",
+  },
+
   // ══════════════════════════════════════════════════════════════
   // ACT II \u2014 THE MARKET PROBLEM
   // ══════════════════════════════════════════════════════════════
 
-  // ── Slide 3: The Landscape Today ──────────────────────────
+  // ── Slide 4: The Landscape Today ──────────────────────────
   {
-    id: 3,
+    id: 4,
     type: "moat",
     title: "The Landscape Today",
     subtitle:
@@ -198,9 +247,9 @@ export const slides = [
       "Every vendor solves ~15% of the pipeline in one domain. Nobody unifies the full lifecycle across five asset classes under an operated regulated wrapper \u2014 which is what capital actually needs.",
   },
 
-  // ── Slide 4: Why The Gap Persists ─────────────────────────
+  // ── Slide 5: Why The Gap Persists ─────────────────────────
   {
-    id: 4,
+    id: 5,
     type: "doctrine",
     title: "Why The Gap Persists",
     subtitle:
@@ -244,9 +293,9 @@ export const slides = [
   // ACT III \u2014 THE ODUM SOLUTION
   // ══════════════════════════════════════════════════════════════
 
-  // ── Slide 5: One System, Five Connected Layers ────────────
+  // ── Slide 6: One System, Five Connected Layers ────────────
   {
-    id: 5,
+    id: 6,
     type: "lifecycle-new",
     title: "One System, Five Connected Layers",
     subtitle:
@@ -260,9 +309,9 @@ export const slides = [
     ],
   },
 
-  // ── Slide 6: Breadth Without Fragmentation ────────────────
+  // ── Slide 7: Breadth Without Fragmentation ────────────────
   {
-    id: 6,
+    id: 7,
     type: "breadth-matrix",
     title: "Breadth Without Fragmentation",
     subtitle:
@@ -315,7 +364,7 @@ export const slides = [
           "102 leagues, 40K+ fixtures/yr",
           "Odds from 65+ sources",
           "ML prediction pipeline",
-          "Cross-bookmaker routing",
+          "Cross-domain routing, unified wallet & treasury API",
           "Settlement reconciliation",
         ],
       },
@@ -331,54 +380,6 @@ export const slides = [
         ],
       },
     ],
-  },
-
-  // ── Slide 7: Four Commercial Paths, One System ────────────
-  {
-    id: 7,
-    type: "packaging",
-    title: "Four Commercial Paths, One System",
-    subtitle:
-      "Clients start where it fits. The system underneath is the same. DART splits into two modes \u2014 Signals-In keeps client IP upstream; Full includes research + promote on Odum infrastructure.",
-    services: [
-      {
-        name: "Investment Management",
-        stages: ["Decision", "Execution", "Governance"],
-        model: "Performance fee above high-water (no management fee)",
-        desc: "Allocate to Odum-managed strategies. Co-invest at identical terms as the firm principals. Full investor portal with 10-factor attribution.",
-      },
-      {
-        name: "DART \u2014 Signals-In",
-        stages: ["Execution", "Governance"],
-        model: "Fixed Tier-B access + per-signal or P&L share",
-        desc: "Client keeps strategy IP upstream. Sends instructions via the DART schema; Odum runs the pipe \u2014 execution, reporting, compliance. Zero exposure of signal logic.",
-      },
-      {
-        name: "DART \u2014 Full Pipeline",
-        stages: [
-          "Instruments & Data",
-          "Research",
-          "Decision",
-          "Execution",
-          "Governance",
-        ],
-        model: "Fixed access + metered research compute + IP tiers",
-        desc: "End-to-end platform access \u2014 data, research, execution, reporting. Client builds and promotes strategies on Odum; commercial terms bespoke per engagement.",
-      },
-      {
-        name: "Odum Signals",
-        stages: ["Research"],
-        model: "Monthly licence + per-signal or P&L share",
-        desc: "Odum generates signals; counterparty executes on its own infrastructure. HMAC-signed payloads, rate-limited, entitlement-scoped.",
-      },
-      {
-        name: "Regulatory Umbrella",
-        stages: ["Governance"],
-        model: "Onboarding fee + monthly retainer",
-        desc: "Operate regulated activity under FCA 975797. Dealing, arranging, advising, managing \u2014 scope-matched to the client's activity. Weeks, not months.",
-      },
-    ],
-    note: "Four buyer outcomes \u2014 capability, exposure, regulatory coverage, alpha feed \u2014 all on one shared system. A platform client buys infrastructure. An IM client buys returns. A regulatory client buys speed to market. A signal client buys alpha without building the pipe.",
   },
 
   // ══════════════════════════════════════════════════════════════
