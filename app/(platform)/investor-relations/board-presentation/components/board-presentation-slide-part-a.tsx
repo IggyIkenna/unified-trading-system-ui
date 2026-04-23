@@ -44,7 +44,7 @@ export function BoardSlidePartA({ slide }: { slide: Record<string, any> }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6"
+            className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6"
           >
             {slide.stats?.map((stat: { value: string; label: string }, i: number) => (
               <div key={i} className="text-center">
