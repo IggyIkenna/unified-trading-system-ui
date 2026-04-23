@@ -3,7 +3,7 @@
  * Audits widget certification coverage.
  *
  * Checks:
- *   NEW      — registered widget with no JSON file in docs/widget-certification/
+ *   NEW      — registered widget with no JSON file in docs/manifest/widget-certification/
  *   ORPHANED — JSON file exists but widget is no longer in any register.ts
  *   OK       — both exist (not printed unless --verbose)
  *
@@ -19,7 +19,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const CERT_DIR = join(ROOT, "docs/widget-certification");
+const CERT_DIR = join(ROOT, "docs/manifest/widget-certification");
 const WIDGETS_DIR = join(ROOT, "components/widgets");
 
 const verbose = process.argv.includes("--verbose");
@@ -75,7 +75,7 @@ function getRegisteredWidgets() {
   return registered;
 }
 
-// ─── 2. Collect all JSON files in docs/widget-certification/ ─────────────────
+// ─── 2. Collect all JSON files in docs/manifest/widget-certification/ ─────────────────
 
 function getCertifiedWidgets() {
   return new Set(
@@ -141,7 +141,7 @@ if (newWidgets.length === 0 && orphaned.length === 0) {
       if (scaffold) {
         const outPath = join(CERT_DIR, `${id}.json`);
         writeFileSync(outPath, JSON.stringify(scaffoldJson(id, meta), null, 2) + "\n");
-        console.log(`    → scaffolded docs/widget-certification/${id}.json`);
+        console.log(`    → scaffolded docs/manifest/widget-certification/${id}.json`);
       }
     }
     if (!scaffold) {
@@ -154,7 +154,7 @@ if (newWidgets.length === 0 && orphaned.length === 0) {
   if (orphaned.length > 0) {
     console.log(`ORPHANED — ${orphaned.length} JSON file(s) with no matching registered widget:`);
     for (const id of orphaned) {
-      console.log(`  - ${id}  (docs/widget-certification/${id}.json)`);
+      console.log(`  - ${id}  (docs/manifest/widget-certification/${id}.json)`);
     }
     console.log(`\n  These widgets may have been deleted or renamed.`);
     console.log(`  Review and delete the JSON files manually if no longer needed.\n`);

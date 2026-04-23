@@ -1,7 +1,7 @@
 /**
  * Mock values for the IBKR SPAN margin breakdown section in the
  * risk-margin widget. These remain static until the margin summary API
- * is wired through; tracked in docs/widget-certification/risk-margin.json
+ * is wired through; tracked in docs/manifest/widget-certification/risk-margin.json
  * (knownIssue: SPAN section hardcoded — waiting on /api/risk/margin/span).
  */
 export const MOCK_SPAN_MARGIN_IBKR = {

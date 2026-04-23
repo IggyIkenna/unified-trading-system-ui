@@ -190,7 +190,7 @@ File: [components/widgets/strategies/liquidation-monitor-widget.tsx](../../../co
 
 The single most archetype-relevant widget in the UI today. A cross-protocol at-risk-positions table with HF-coloured
 rows and liquidation-price proximity. **Already L0/L1/L2 certified** per
-[docs/widget-certification/liquidation-monitor.json](../../widget-certification/liquidation-monitor.json).
+[docs/manifest/widget-certification/liquidation-monitor.json](../../widget-certification/liquidation-monitor.json).
 
 - ✅ Cross-protocol rows: Aave V3, Morpho Blue, Compound V3, Kamino represented in fixture
   ([strategies-data-context.tsx:167-217](../../../components/widgets/strategies/strategies-data-context.tsx#L167-L217))

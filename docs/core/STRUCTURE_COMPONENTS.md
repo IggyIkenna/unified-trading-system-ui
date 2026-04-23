@@ -180,7 +180,7 @@ Reusable widgets and utilities consumed by domain folders. Includes data-table (
 
 ## widgets/ — Widget Registry (16 top-level files + 17 domain subfolders)
 
-Canonical widget implementations registered in the widget certification system (see `docs/widget-certification/`). Top-level: `all-widget-providers.tsx` (mounts all 17 cross-tab providers — see memory note on BP-6 lazy activation), `default-profile.ts`, `pairing-guide.md`, plus widget index + loader scaffolding.
+Canonical widget implementations registered in the widget certification system (see `docs/manifest/widget-certification/`). Top-level: `all-widget-providers.tsx` (mounts all 17 cross-tab providers — see memory note on BP-6 lazy activation), `default-profile.ts`, `pairing-guide.md`, plus widget index + loader scaffolding.
 
 Domain subfolders: `accounts/`, `alerts/`, `book/`, `bundles/`, `defi/`, `instructions/`, `markets/`, `options/`, `orders/`, `overview/`, `pnl/`, `positions/`, `predictions/`, `risk/`, `sports/`, `strategies/`, `terminal/`.
 

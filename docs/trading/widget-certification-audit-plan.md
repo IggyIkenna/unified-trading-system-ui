@@ -177,7 +177,7 @@ Write this doc _as I verify_, not after. Sections 1–2 (archetype summary + str
   - 8 files total: `yield-staking-simple.md`, `yield-rotation-lending.md`, `carry-basis-perp.md`, `carry-staked-basis.md`, `carry-recursive-staked.md`, `arbitrage-price-dispersion.md`, `liquidation-capture.md`, `carry-basis-dated.md`
 - **Central tracker (NEW):** `docs/trading/widget-certification-tracker.md` — one row per widget (cumulative updates list) + one section for new-widget candidates. Updated after every archetype audit lands. This is the rolling state-of-the-world doc.
 - **Phase-A context (already exists):** `docs/trading/widget-certification-context.md` — doc index + Phase-A1 scoping; its §A.4 becomes historical once the tracker is populated
-- **Widget certification JSON updates (BP-3):** `docs/widget-certification/*.json` — written only AFTER consolidation in §6 below
+- **Widget certification JSON updates (BP-3):** `docs/manifest/widget-certification/*.json` — written only AFTER consolidation in §6 below
 - **Codex doc updates (if any):** in-place edits under `unified-trading-pm/codex/09-strategy/`; tracked in each archetype audit §5
 
 ---
@@ -213,7 +213,7 @@ The three surface points (after §1–2, after §3, after §4–8) are small and
 2. De-duplicate missing-widget candidates (e.g. "inflight-bridge tracker" appears in rotation-lending + staked-basis — one candidate, multiple consumers).
 3. Merge widget-update items by widget (e.g. `defi-health-factor` may accumulate 4 updates across archetypes).
 4. Produce single authoritative list in [widget-certification-context.md §A.4](widget-certification-context.md) — replaces the Phase-A1 guesses.
-5. For each widget update, write a BP-3 patch to its `docs/widget-certification/<widget>.json` `coverage.gaps` field. Wrap as L3 plan.
+5. For each widget update, write a BP-3 patch to its `docs/manifest/widget-certification/<widget>.json` `coverage.gaps` field. Wrap as L3 plan.
 
 ---
 

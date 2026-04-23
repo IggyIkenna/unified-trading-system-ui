@@ -51,7 +51,7 @@ Single source of truth for API/endpoints the UI has **mocked today** and needs *
   ```
 - **Owning service:** execution-service (`unified-trading-services` / dedicated kill-switch endpoint)
 - **Status:** `pending`
-- **Blocking widget cert?** yes — `docs/widget-certification/alerts-kill-switch.json` flags handleConfirm as mock-only
+- **Blocking widget cert?** yes — `docs/manifest/widget-certification/alerts-kill-switch.json` flags handleConfirm as mock-only
 
 ### BFR-002 — Accounts transfer submission + status
 

@@ -24,7 +24,7 @@ interface BasisRow {
  * Display-only venue labels per asset. These are hardcoded because
  * BasisTradeMarketData currently has no per-asset venue routing field —
  * once the context exposes a per-asset spot/perp-venue map, replace these.
- * Tracked in docs/widget-certification/enhanced-basis.json.
+ * Tracked in docs/manifest/widget-certification/enhanced-basis.json.
  */
 const SPOT_VENUE_LABEL: Record<string, string> = {
   ETH: "Uniswap V3",

@@ -221,4 +221,4 @@ Grouped by theme so user can resolve batches together.
 1. **User reviews this tracker** — flag disagreements with matrix verdicts, new-widget priorities, or codex edits.
 2. **User reviews the 8 per-archetype audit docs** — each is `draft-awaiting-review`; user can change status to `reviewed` or annotate.
 3. **Open questions (§6) get resolved** in batches — each resolution likely collapses into a small codex edit or a prioritized widget ticket.
-4. **Then:** patch widget-certification coverage JSON (`docs/widget-certification/*.json`) with the new `coverage.gaps` entries per widget, and propose the first concrete implementation ticket (likely §3.1 hardcoded `strategy_id` fix since it's the lowest-cost highest-blast-radius change).
+4. **Then:** patch widget-certification coverage JSON (`docs/manifest/widget-certification/*.json`) with the new `coverage.gaps` entries per widget, and propose the first concrete implementation ticket (likely §3.1 hardcoded `strategy_id` fix since it's the lowest-cost highest-blast-radius change).

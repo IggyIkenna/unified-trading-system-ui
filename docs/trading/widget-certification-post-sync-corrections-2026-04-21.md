@@ -194,11 +194,11 @@ Coverage matrix §12 lists `Kamino (Solana)` as SUPPORTED. My LIQ schema consume
 ### 2.6 Widget-cert JSON `coverage.gaps` population
 
 Sync doc §6: widget-certification JSON coverage metadata should pull `notes/gap` column verbatim from coverage matrix
-§5-§18. Currently `docs/widget-certification/defi-*.json` files have no `coverage.gaps` field.
+§5-§18. Currently `docs/manifest/widget-certification/defi-*.json` files have no `coverage.gaps` field.
 
 **Acceptance criteria:**
 
-- `coverage.gaps` field on every DeFi widget JSON under `docs/widget-certification/`
+- `coverage.gaps` field on every DeFi widget JSON under `docs/manifest/widget-certification/`
 - Values quote coverage-matrix notes verbatim (not paraphrased) so a codex change propagates by grep
 - Structure: `{ status: "SUPPORTED" | "PARTIAL" | "BLOCKED" | "N/A", notes: string }[]`
 

@@ -278,7 +278,7 @@
       "description": "alerts-kpi-strip-widget.tsx:8,9 \u2014 placeholder constants AVG_RESOLUTION_DISPLAY and LAST_24H_DISPLAY defined inline in widget file (violates MOCK_* naming + no-inline-mocks workspace rule)",
       "severity": "low",
       "status": "fixed",
-      "fix": "Renamed to MOCK_AVG_RESOLUTION_DISPLAY / MOCK_LAST_24H_DISPLAY, relocated to lib/config/services/alerts.config.ts with JSDoc citing docs/widget-certification/alerts-kpi-strip.json knownIssue L1.7. Widget now imports the constants."
+      "fix": "Renamed to MOCK_AVG_RESOLUTION_DISPLAY / MOCK_LAST_24H_DISPLAY, relocated to lib/config/services/alerts.config.ts with JSDoc citing docs/manifest/widget-certification/alerts-kpi-strip.json knownIssue L1.7. Widget now imports the constants."
     }
   ],
   "updatedBy": "agent",

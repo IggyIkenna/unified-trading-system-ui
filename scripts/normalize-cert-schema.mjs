@@ -31,7 +31,7 @@ import { execSync } from "child_process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const CERT_DIR = join(ROOT, "docs/widget-certification");
+const CERT_DIR = join(ROOT, "docs/manifest/widget-certification");
 
 const dryRun = process.argv.includes("--dry-run");
 

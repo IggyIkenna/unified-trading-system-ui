@@ -12,7 +12,7 @@
 
 Each widget progresses through **9 certification levels** (L0–L8). Levels are sequential — a widget must pass L(n) before advancing to L(n+1). Each level has a checklist, an owner (agent or human), and clear pass/fail criteria.
 
-**Per-widget status** is tracked in `docs/audits/widget-certification-status.md` (level rollups) and `docs/widget-certification/<widget-id>.json` (full per-level truth + `findings[]` audit trail). Agents update both as they complete levels.
+**Per-widget status** is tracked in `docs/audits/widget-certification-status.md` (level rollups) and `docs/manifest/widget-certification/<widget-id>.json` (full per-level truth + `findings[]` audit trail). Agents update both as they complete levels.
 
 **Agent rule:** Agents execute L0–L2, L6, and L7 autonomously. L3–L5 and L8 require human walkthrough after agent prep.
 
@@ -163,7 +163,7 @@ _Widget has automated tests covering its certified behavior._
 
 ### L7 — Coding Standards (agent-automated, find→fix→verify)
 
-_Grep-able code-level hygiene against the modules in [`docs/audit-scripts/`](../audit-scripts/). Each check is a **find → log → fix → mark-done** cycle inside the same per-widget session. Every violation is recorded in the widget's own `docs/widget-certification/<widget-id>.json` under `findings[]` with `level: "l7"`. The JSON is the tracker — no separate doc._
+_Grep-able code-level hygiene against the modules in [`docs/audit-scripts/`](../audit-scripts/). Each check is a **find → log → fix → mark-done** cycle inside the same per-widget session. Every violation is recorded in the widget's own `docs/manifest/widget-certification/<widget-id>.json` under `findings[]` with `level: "l7"`. The JSON is the tracker — no separate doc._
 
 | #   | Check                                | Audit-script module | How to verify                                                                                                                                      | Fix action                                                                   |
 | --- | ------------------------------------ | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
@@ -257,7 +257,7 @@ A widget marked **STABLE + POLISHED** (L8 ✓) means: data is clean, entitlement
 
 ## Per-Widget SSOT Schema (JSON fields)
 
-Each widget's `docs/widget-certification/<widget-id>.json` carries the full truth for that widget. Three sections sit alongside `levels` to capture concerns that L0–L6 don't cover on their own. Added 2026-04-20.
+Each widget's `docs/manifest/widget-certification/<widget-id>.json` carries the full truth for that widget. Three sections sit alongside `levels` to capture concerns that L0–L6 don't cover on their own. Added 2026-04-20.
 
 ### `relationships` — how the widget couples to other widgets
 
@@ -425,12 +425,12 @@ This track does not block widget certification; L7/L8 will still pass widgets ag
 
 ## Relationship to Existing Artifacts
 
-| Artifact                               | Role                                                                    |
-| -------------------------------------- | ----------------------------------------------------------------------- |
-| `BP2-base-widget-migration-spec.md`    | Source of § 0 cross-cutting requirements (L0 base)                      |
-| `BP2-widget-foundation-audit.md`       | Initial audit — findings feed L0 verification                           |
-| `docs/audits/findings/*.md` (10 files) | Per-class audit findings from BP-2                                      |
-| `docs/audit-scripts/` (15 modules)     | Source of L7 (B, E, J, K, M, N, O) and L8 (A, C, D, H, I) grep patterns |
-| `widget-certification-status.md`       | Per-widget tracking table (level rollup)                                |
-| `docs/widget-certification/*.json`     | Per-widget cert JSON — full truth for `levels.l0`–`l8` and `findings[]` |
-| `boss_points.md`                       | Links to this spec from BP-3 onward                                     |
+| Artifact                                    | Role                                                                    |
+| ------------------------------------------- | ----------------------------------------------------------------------- |
+| `BP2-base-widget-migration-spec.md`         | Source of § 0 cross-cutting requirements (L0 base)                      |
+| `BP2-widget-foundation-audit.md`            | Initial audit — findings feed L0 verification                           |
+| `docs/audits/findings/*.md` (10 files)      | Per-class audit findings from BP-2                                      |
+| `docs/audit-scripts/` (15 modules)          | Source of L7 (B, E, J, K, M, N, O) and L8 (A, C, D, H, I) grep patterns |
+| `widget-certification-status.md`            | Per-widget tracking table (level rollup)                                |
+| `docs/manifest/widget-certification/*.json` | Per-widget cert JSON — full truth for `levels.l0`–`l8` and `findings[]` |
+| `boss_points.md`                            | Links to this spec from BP-3 onward                                     |
