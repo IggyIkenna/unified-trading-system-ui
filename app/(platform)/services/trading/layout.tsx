@@ -9,6 +9,7 @@ import { TradingVerticalNav } from "@/components/shell/trading-vertical-nav";
 import { Card, CardContent } from "@/components/ui/card";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import "@/components/widgets/register-all";
+import { AllWidgetProviders } from "@/components/widgets/all-widget-providers";
 import { WorkspaceToolbar } from "@/components/widgets/workspace-toolbar";
 import { useAlertsSummary } from "@/hooks/api/use-alerts";
 import { useNewsFeed, type NewsSeverity } from "@/hooks/api/use-news";
@@ -289,7 +290,9 @@ export default function TradingServiceLayout({ children }: { children: React.Rea
       {widgetTab && <WorkspaceToolbar tab={widgetTab} />}
       <WidgetScroll className="flex-1 min-h-0">
         <EntitlementGate entitlement={{ domain: "trading-common", tier: "basic" }} serviceName="Trading">
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <AllWidgetProviders>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </AllWidgetProviders>
         </EntitlementGate>
       </WidgetScroll>
       {quickViewCollapsed && (

@@ -10,8 +10,9 @@ import { cn } from "@/lib/utils";
 import type { ExportColumn } from "@/lib/utils/export";
 import { formatPercent } from "@/lib/utils/formatters";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowDownRight, ArrowUpRight, ExternalLink, Info } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Info, Receipt } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import type { AssetClassFilter } from "./positions-data-context";
 import { usePositionsData, type PositionRecord } from "./positions-data-context";
@@ -121,6 +122,7 @@ function PnlCell({ abs, pct }: { abs: number; pct: number }) {
 function buildColumns(
   getInstrumentRoute: (instrument: string, type: AssetClassFilter) => string,
   classifyInstrument: (instrument: string) => AssetClassFilter,
+  onViewTrades: (positionId: string) => void,
 ): ColumnDef<PositionRecord, unknown>[] {
   return [
     {
@@ -367,13 +369,14 @@ function buildColumns(
       enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end">
-          <Link
-            href={`/services/trading/positions/trades?position_id=${encodeURIComponent(row.original.id)}`}
+          <button
+            type="button"
+            onClick={() => onViewTrades(row.original.id)}
             className="inline-flex items-center gap-1 text-xs text-primary hover:underline font-medium"
           >
+            <Receipt className="size-3 shrink-0" />
             View trades
-            <ExternalLink className="size-3 shrink-0" />
-          </Link>
+          </button>
         </div>
       ),
     },
@@ -381,6 +384,15 @@ function buildColumns(
 }
 
 export function PositionsTableWidget(_props: WidgetComponentProps) {
+  const router = useRouter();
+
+  const onViewTrades = React.useCallback(
+    (positionId: string) => {
+      router.push(`/services/trading/positions?position_id=${encodeURIComponent(positionId)}`);
+    },
+    [router],
+  );
+
   const {
     filteredPositions,
     isLoading: positionsLoading,
@@ -414,8 +426,8 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
     ].filter(Boolean).length + instrumentTypeFilters.length;
 
   const columns = React.useMemo(
-    () => buildColumns(getInstrumentRoute, classifyInstrument),
-    [getInstrumentRoute, classifyInstrument],
+    () => buildColumns(getInstrumentRoute, classifyInstrument, onViewTrades),
+    [getInstrumentRoute, classifyInstrument, onViewTrades],
   );
 
   const filterConfig: TableFilterConfig = {

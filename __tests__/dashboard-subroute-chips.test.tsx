@@ -22,10 +22,7 @@ import {
   type DashboardTileId,
 } from "@/lib/auth/persona-dashboard-shape";
 
-function visibleChips(
-  tileId: DashboardTileId,
-  subRoutes: DashboardSubRouteVisibility,
-): string[] {
+function visibleChips(tileId: DashboardTileId, subRoutes: DashboardSubRouteVisibility): string[] {
   return Object.entries(subRoutes[tileId] ?? {})
     .filter(([, vis]) => vis === "visible")
     .map(([key]) => key);
@@ -62,12 +59,7 @@ describe("dashboard sub-route chips — per-persona", () => {
     const subs = personaDashboardSubRoutes(persona);
     const odumChips = visibleChips("odum-signals", subs);
     expect(odumChips).toEqual(
-      expect.arrayContaining([
-        "counterparties",
-        "payloads",
-        "emission-history",
-        "rate-limits",
-      ]),
+      expect.arrayContaining(["counterparties", "payloads", "emission-history", "rate-limits"]),
     );
   });
 
@@ -82,9 +74,7 @@ describe("dashboard sub-route chips — per-persona", () => {
 
     const subs = personaDashboardSubRoutes(persona);
     const irChips = visibleChips("investor-relations", subs);
-    expect(irChips).toEqual(
-      expect.arrayContaining(["board", "dr-playbook", "security", "ir-briefings"]),
-    );
+    expect(irChips).toEqual(expect.arrayContaining(["board", "dr-playbook", "security", "ir-briefings"]));
   });
 
   it("admin sees all 5 tiles with all sub-route chips unlocked", () => {
@@ -95,9 +85,7 @@ describe("dashboard sub-route chips — per-persona", () => {
     for (const tile of ["dart", "odum-signals", "reports", "investor-relations", "admin"] as const) {
       expect(tileShape[tile], `admin tile ${tile}`).toBe("visible");
       const chips = subs[tile] ?? {};
-      const hiddenOrLocked = Object.entries(chips).filter(
-        ([, vis]) => vis !== "visible",
-      );
+      const hiddenOrLocked = Object.entries(chips).filter(([, vis]) => vis !== "visible");
       expect(
         hiddenOrLocked,
         `admin should have every chip visible on tile ${tile}; ${hiddenOrLocked.length} are not`,
@@ -105,7 +93,7 @@ describe("dashboard sub-route chips — per-persona", () => {
     }
   });
 
-  it("client-data-only sees DART · Strategy Catalogue + Data; other DART chips hidden", () => {
+  it("client-data-only sees Strategy Catalogue + Data; other DART chips hidden", () => {
     const persona = { id: "client-data-only", role: "client" };
     const chips = visibleChips("dart", personaDashboardSubRoutes(persona));
     expect(chips).toContain("strategy-catalogue");
@@ -122,9 +110,7 @@ describe("dashboard sub-route chips — per-persona", () => {
     const adminChips = visibleChips("admin", subs);
     const irChips = visibleChips("investor-relations", subs);
 
-    expect(dartChips).toEqual(
-      expect.arrayContaining(["terminal", "observe", "strategy-catalogue"]),
-    );
+    expect(dartChips).toEqual(expect.arrayContaining(["terminal", "observe", "strategy-catalogue"]));
     expect(adminChips).toContain("deployments");
     expect(adminChips).toContain("audit-log");
     expect(irChips.length).toBeGreaterThan(0);
@@ -148,9 +134,8 @@ describe("dashboard sub-route chips — per-persona", () => {
     const lockedCount = dartChipEntries.filter(([, v]) => v === "locked").length;
     // At least one chip must be locked (not all hidden, not all visible — the
     // tempt-logic hinges on partial locking).
-    expect(
-      lockedCount,
-      "prospect-dart must have at least one DART chip in locked state (tempt-logic)",
-    ).toBeGreaterThan(0);
+    expect(lockedCount, "prospect-dart must have at least one DART chip in locked state (tempt-logic)").toBeGreaterThan(
+      0,
+    );
   });
 });

@@ -43,21 +43,11 @@ export function FinderColumn({ columnDef, items, selected, onSelect, search }: F
 
   return (
     <div className="flex flex-col h-full">
-      {/* Sticky header */}
-      <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30 shrink-0">
-        <p className={cn(finderText.meta, "font-semibold text-muted-foreground uppercase tracking-wider")}>
-          {columnDef.label} · {filtered.length.toLocaleString()}
-          {(search || internalSearch) && filtered.length !== items.length && (
-            <span> / {items.length.toLocaleString()}</span>
-          )}
-        </p>
-      </div>
-
-      {/* Optional internal search */}
-      {columnDef.showSearch && (
-        <div className="px-2 py-1.5 border-b border-border/30 shrink-0">
+      {/* Sticky header — search columns get an inline search input instead of label+count */}
+      {columnDef.showSearch ? (
+        <div className="px-2 py-1.5 border-b border-border/40 bg-muted/30 shrink-0">
           <div className="relative">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
             <Input
               placeholder={columnDef.searchPlaceholder ?? "Filter…"}
               value={internalSearch}
@@ -65,9 +55,27 @@ export function FinderColumn({ columnDef, items, selected, onSelect, search }: F
                 setInternalSearch(e.target.value);
                 setPage(0);
               }}
-              className={cn("pl-7 h-7 border-border/40", finderText.body)}
+              className={cn("pl-7 h-7 border-border/40 bg-transparent", finderText.body)}
             />
+            {internalSearch && filtered.length !== items.length && (
+              <span
+                className={cn(
+                  "absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none tabular-nums",
+                  finderText.meta,
+                  "text-muted-foreground/60",
+                )}
+              >
+                {filtered.length}/{items.length}
+              </span>
+            )}
           </div>
+        </div>
+      ) : (
+        <div className="px-3 py-1.5 border-b border-border/40 bg-muted/30 shrink-0">
+          <p className={cn(finderText.meta, "font-semibold text-muted-foreground uppercase tracking-wider")}>
+            {columnDef.label} · {filtered.length.toLocaleString()}
+            {search && filtered.length !== items.length && <span> / {items.length.toLocaleString()}</span>}
+          </p>
         </div>
       )}
 

@@ -36,6 +36,7 @@ import { SportsDataProvider } from "./sports/sports-data-context";
 import { StrategiesDataProvider } from "./strategies/strategies-data-context";
 import { TerminalDataProvider } from "./terminal/terminal-data-context";
 import { useTerminalPageData } from "./terminal/use-terminal-page-data";
+import { TradesDataProvider } from "./trades/trades-data-context";
 
 // ---------------------------------------------------------------------------
 // Self-fetching wrappers for providers that require a value prop.
@@ -59,38 +60,40 @@ function SelfFetchingOverviewProvider({ children }: { children: React.ReactNode 
 
 export function AllWidgetProviders({ children }: { children: React.ReactNode }) {
   return (
-    <PositionsDataProvider>
-      <OrdersDataProvider>
-        <AlertsDataProvider>
-          <StrategiesDataProvider>
-            <SportsDataProvider>
-              <InstructionsDataProvider>
-                <PnLDataProvider>
-                  <MarketsDataProvider>
-                    <DeFiDataProvider>
-                      <PredictionsDataProvider>
-                        <BookTradeDataProvider>
-                          <BundlesDataProvider>
-                            <AccountsDataProvider>
-                              <OptionsDataProvider>
-                                <SelfFetchingRiskProvider>
-                                  <SelfFetchingTerminalProvider>
-                                    <SelfFetchingOverviewProvider>{children}</SelfFetchingOverviewProvider>
-                                  </SelfFetchingTerminalProvider>
-                                </SelfFetchingRiskProvider>
-                              </OptionsDataProvider>
-                            </AccountsDataProvider>
-                          </BundlesDataProvider>
-                        </BookTradeDataProvider>
-                      </PredictionsDataProvider>
-                    </DeFiDataProvider>
-                  </MarketsDataProvider>
-                </PnLDataProvider>
-              </InstructionsDataProvider>
-            </SportsDataProvider>
-          </StrategiesDataProvider>
-        </AlertsDataProvider>
-      </OrdersDataProvider>
-    </PositionsDataProvider>
+    <TradesDataProvider>
+      <PositionsDataProvider>
+        <OrdersDataProvider>
+          <AlertsDataProvider>
+            <StrategiesDataProvider>
+              <SportsDataProvider>
+                <InstructionsDataProvider>
+                  <PnLDataProvider>
+                    <MarketsDataProvider>
+                      <DeFiDataProvider>
+                        <PredictionsDataProvider>
+                          <BookTradeDataProvider>
+                            <BundlesDataProvider>
+                              <AccountsDataProvider>
+                                <OptionsDataProvider>
+                                  <SelfFetchingRiskProvider>
+                                    <SelfFetchingTerminalProvider>
+                                      <SelfFetchingOverviewProvider>{children}</SelfFetchingOverviewProvider>
+                                    </SelfFetchingTerminalProvider>
+                                  </SelfFetchingRiskProvider>
+                                </OptionsDataProvider>
+                              </AccountsDataProvider>
+                            </BundlesDataProvider>
+                          </BookTradeDataProvider>
+                        </PredictionsDataProvider>
+                      </DeFiDataProvider>
+                    </MarketsDataProvider>
+                  </PnLDataProvider>
+                </InstructionsDataProvider>
+              </SportsDataProvider>
+            </StrategiesDataProvider>
+          </AlertsDataProvider>
+        </OrdersDataProvider>
+      </PositionsDataProvider>
+    </TradesDataProvider>
   );
 }

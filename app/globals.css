@@ -510,6 +510,14 @@
 /* ── react-grid-layout dark theme overrides ─────────────────────────────── */
 .react-grid-layout {
   position: relative;
+  transition: none;
+}
+
+/* Reduce the bundled 200ms ease to 50ms — snappy on tab switch while keeping
+   a subtle reflow cue. Drag and resize disable their own transition via RGL's
+   inline resizing/dragging classes so those still feel direct. */
+.react-grid-item {
+  transition-duration: 50ms !important;
 }
 
 /* Widget cells: inner wrapper must stretch to RGL row height or h-full chains collapse */

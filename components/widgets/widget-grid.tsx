@@ -4,7 +4,6 @@ import { useActiveLayouts, useWorkspaceStore } from "@/lib/stores/workspace-stor
 import * as React from "react";
 import type { Layout, LayoutItem, ResponsiveLayouts } from "react-grid-layout";
 import { ResponsiveGridLayout, useContainerWidth, verticalCompactor } from "react-grid-layout";
-import { AllWidgetProviders } from "./all-widget-providers";
 import { getActivePreset } from "./widget-chrome-presets";
 import { getWidget, type WidgetPlacement } from "./widget-registry";
 import { WidgetWrapper } from "./widget-wrapper";
@@ -110,7 +109,13 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
 
   return (
     <div ref={containerRef}>
-      <AllWidgetProviders>
+      {/* Guard against the zero-width initial render: useContainerWidth starts at 0 before
+          ResizeObserver fires (~1 frame). Without this guard, RGL lays out all items at
+          width=0, then animates them to their correct sizes via the bundled CSS transition
+          (transition: all 200ms ease), producing the visible "resize on navigate" effect.
+          AllWidgetProviders is hoisted to the trading layout so it stays mounted across
+          tab switches — no provider teardown/remount cost on navigation. */}
+      {containerWidth > 0 && (
         <ResponsiveGridLayout
           className="widget-grid"
           layouts={allBreakpointLayouts}
@@ -145,7 +150,7 @@ export function WidgetGrid({ tab }: WidgetGridProps) {
             );
           })}
         </ResponsiveGridLayout>
-      </AllWidgetProviders>
+      )}
     </div>
   );
 }

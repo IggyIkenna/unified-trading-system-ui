@@ -115,11 +115,11 @@ export function FinderBrowser({
     return selections[columns[idx - 1].id] !== null;
   });
 
-  // Check if the first column has no selection (for empty state)
-  const hasFirstSelection = columns.length > 0 && selections[columns[0].id] !== null;
+  // Show the empty-state area only when some columns are hidden (waiting for a selection upstream)
+  const hasHiddenColumns = visibleColumns.length < columns.length;
 
-  // Compute stats from current selections
-  const stats = contextStats(selections);
+  // Compute stats from current selections (only when provided)
+  const stats = contextStats ? contextStats(selections) : null;
 
   const columnStyle = React.useCallback(
     (col: FinderColumnDef): React.CSSProperties | undefined => {
@@ -145,70 +145,68 @@ export function FinderBrowser({
     (col: FinderColumnDef, index: number) => {
       if (!isResizableFinderColumn(col)) return false;
       if (index < visibleColumns.length - 1) return true;
-      return !hasFirstSelection;
+      return hasHiddenColumns;
     },
-    [visibleColumns.length, hasFirstSelection],
+    [visibleColumns.length, hasHiddenColumns],
   );
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-      {/* Context strip — always visible */}
-      <FinderContextStrip stats={stats} />
+      {/* Context strip — only rendered when contextStats is provided */}
+      {stats && <FinderContextStrip stats={stats} />}
 
       {/* Breadcrumb */}
       <FinderBreadcrumb columns={columns} selections={selections} onResetFrom={handleResetFrom} />
 
       {/* Column browser + detail panel */}
       <div className="flex flex-1 min-h-0 overflow-hidden border-t border-border/20">
-        {/* Left: columns */}
-        <WidgetScroll
-          axes="horizontal"
-          scrollbarSize="thin"
-          className="flex-1 min-w-0 min-h-0"
-          viewportClassName="flex"
-        >
-          {visibleColumns.map((col, visIndex) => {
-            const colIndex = columns.indexOf(col);
-            const items = col.getItems(selections);
-            const flex = isFlexFinderColumn(col.width);
+        {/* Left: columns — WidgetScroll handles horizontal overflow; the inner div
+            provides the flex row that Radix's inner table wrapper would otherwise break. */}
+        <WidgetScroll axes="horizontal" scrollbarSize="thin" className="flex-1 min-w-0 min-h-0">
+          <div className="flex h-full">
+            {visibleColumns.map((col, visIndex) => {
+              const colIndex = columns.indexOf(col);
+              const items = col.getItems(selections);
+              const flex = isFlexFinderColumn(col.width);
 
-            return (
-              <React.Fragment key={col.id}>
-                <div
-                  className={cn(
-                    "shrink-0 flex flex-col min-h-0 overflow-hidden border-r border-border/50",
-                    flex && "flex-1 min-w-0",
-                    !flex && !isResizableFinderColumn(col) && col.width,
+              return (
+                <React.Fragment key={col.id}>
+                  <div
+                    className={cn(
+                      "shrink-0 flex flex-col min-h-0 overflow-hidden border-r border-border/50",
+                      flex && "flex-1 min-w-0",
+                      !flex && !isResizableFinderColumn(col) && col.width,
+                    )}
+                    style={isResizableFinderColumn(col) || flex ? columnStyle(col) : undefined}
+                  >
+                    <FinderColumn
+                      columnDef={col}
+                      items={items}
+                      selected={selections[col.id]}
+                      onSelect={(item) => handleSelect(colIndex, item)}
+                      search={colIndex === 0 ? search : undefined}
+                    />
+                  </div>
+                  {showResizeAfter(col, visIndex) && (
+                    <FinderColumnResizeHandle onResizeDelta={(dx) => applyResize(col.id, dx)} />
                   )}
-                  style={isResizableFinderColumn(col) || flex ? columnStyle(col) : undefined}
-                >
-                  <FinderColumn
-                    columnDef={col}
-                    items={items}
-                    selected={selections[col.id]}
-                    onSelect={(item) => handleSelect(colIndex, item)}
-                    search={colIndex === 0 ? search : undefined}
-                  />
-                </div>
-                {showResizeAfter(col, visIndex) && (
-                  <FinderColumnResizeHandle onResizeDelta={(dx) => applyResize(col.id, dx)} />
-                )}
-              </React.Fragment>
-            );
-          })}
+                </React.Fragment>
+              );
+            })}
 
-          {/* Empty state — fills space when first column has no selection */}
-          {!hasFirstSelection && (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-muted-foreground min-w-0">
-              {emptyState ?? (
-                <>
-                  <Columns className="size-10 mb-2 opacity-20" />
-                  <p className={cn(finderText.title, "font-medium")}>Select an item</p>
-                  <p className={cn(finderText.sub, "opacity-60 mt-1")}>Drill down to browse details</p>
-                </>
-              )}
-            </div>
-          )}
+            {/* Empty state — fills space when some columns are hidden (waiting for upstream selection) */}
+            {hasHiddenColumns && (
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-muted-foreground min-w-0">
+                {emptyState ?? (
+                  <>
+                    <Columns className="size-10 mb-2 opacity-20" />
+                    <p className={cn(finderText.title, "font-medium")}>Select an item</p>
+                    <p className={cn(finderText.sub, "opacity-60 mt-1")}>Drill down to browse details</p>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </WidgetScroll>
 
         {/* Right: detail panel */}

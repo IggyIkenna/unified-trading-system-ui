@@ -39,7 +39,7 @@ export interface FinderColumnDef<T = unknown> {
 
 /** Context strip stats — each page computes from current selections */
 export interface FinderContextStats {
-  name: string;
+  name?: string;
   badges?: { label: string; variant: string; icon?: React.ReactNode }[];
   metrics?: {
     label: string;
@@ -53,7 +53,8 @@ export interface FinderContextStats {
 export interface FinderBrowserProps {
   columns: FinderColumnDef[];
   detailPanel: (selections: FinderSelections) => React.ReactNode;
-  contextStats: (selections: FinderSelections) => FinderContextStats;
+  /** Omit to hide the context strip entirely */
+  contextStats?: (selections: FinderSelections) => FinderContextStats;
   emptyState?: React.ReactNode;
   search?: string;
   detailPanelWidth?: string; // Default: "w-[420px]"

@@ -38,11 +38,17 @@ function buildWidgetItems(
   selections: FinderSelections,
   placedIds: Set<string>,
   checkAccess: (entitlements: (string | TradingEntitlement)[]) => boolean,
-): FinderItem<WidgetDefinition & { isPlaced: boolean; hasAccess: boolean }>[] {
+): FinderItem<WidgetDefinition & { isPlaced: boolean; hasAccess: boolean; showCategory: boolean }>[] {
   const categorySelection = selections["category"];
-  if (!categorySelection) return [];
+  // No category selected → show all widgets (global search mode)
+  const widgets = categorySelection
+    ? (categorySelection.data as CategoryData).widgets
+    : getAllWidgets()
+        .slice()
+        .sort((a, b) => a.label.localeCompare(b.label));
 
-  const { widgets } = categorySelection.data as CategoryData;
+  const showCategory = !categorySelection;
+
   return widgets.map((w) => ({
     id: w.id,
     label: w.label,
@@ -51,6 +57,7 @@ function buildWidgetItems(
       ...w,
       isPlaced: placedIds.has(w.id),
       hasAccess: checkAccess(w.requiredEntitlements),
+      showCategory,
     },
   }));
 }
@@ -68,20 +75,54 @@ export function buildCatalogColumns(
       minWidthPx: 160,
       maxWidthPx: 320,
       getItems: () => buildCategories(),
+      // Custom label renders placed/total count with colour coding:
+      // none placed → muted, some placed → primary, all placed → emerald
+      renderLabel: (item: FinderItem) => {
+        const data = item.data as CategoryData;
+        const total = data.widgets.length;
+        const placed = data.widgets.filter((w) => placedIds.has(w.id)).length;
+        const allPlaced = placed > 0 && placed === total;
+        const somePlaced = placed > 0 && !allPlaced;
+        return (
+          <span className={cn("flex-1 min-w-0 flex items-center justify-between gap-2", finderText.body)}>
+            <span className="font-medium truncate text-left">{item.label}</span>
+            <span
+              className={cn(
+                "text-[10px] tabular-nums font-mono shrink-0",
+                allPlaced ? "text-emerald-400" : somePlaced ? "text-[var(--chart-1)]" : "text-muted-foreground",
+              )}
+            >
+              {placed}/{total}
+            </span>
+          </span>
+        );
+      },
+      getCount: () => null,
     },
     {
       id: "widget",
       label: "Widget",
       width: "flex-1",
       showSearch: true,
-      searchPlaceholder: "Filter widgets…",
+      searchPlaceholder: "Search all widgets…",
+      // Always visible — shows all widgets when no category is selected (global search mode)
+      visibleWhen: () => true,
       getItems: (selections) => buildWidgetItems(selections, placedIds, checkAccess),
       renderLabel: (item: FinderItem) => {
-        const data = item.data as WidgetDefinition & { isPlaced: boolean; hasAccess: boolean };
+        const data = item.data as WidgetDefinition & {
+          isPlaced: boolean;
+          hasAccess: boolean;
+          showCategory: boolean;
+        };
         return (
           <span className={cn("flex-1 min-w-0 flex items-center gap-1.5", finderText.body)}>
             <data.icon className="size-3.5 shrink-0 text-muted-foreground" />
-            <span className="font-medium break-words text-left leading-snug">{item.label}</span>
+            <span className="min-w-0 flex-1">
+              <span className="font-medium break-words text-left leading-snug block">{item.label}</span>
+              {data.showCategory && (
+                <span className="text-[9px] text-muted-foreground/60 leading-none">{data.category}</span>
+              )}
+            </span>
             {data.singleton && data.isPlaced && (
               <Badge variant="secondary" className="text-[9px] h-3.5 px-1 shrink-0">
                 <Check className="size-2 mr-0.5" />
@@ -98,20 +139,12 @@ export function buildCatalogColumns(
 }
 
 export function getCatalogContextStats(
-  selections: FinderSelections,
+  _selections: FinderSelections,
   totalWidgets: number,
   totalCategories: number,
   lockedCount: number,
 ): FinderContextStats {
-  const selectedCategory = selections["category"];
-  const selectedWidget = selections["widget"];
-
   return {
-    name: selectedWidget
-      ? (selectedWidget.data as WidgetDefinition).label
-      : selectedCategory
-        ? selectedCategory.label
-        : "Widget Catalog",
     badges:
       lockedCount > 0 ? [{ label: `${lockedCount} locked`, variant: "border-amber-400/30 text-amber-400" }] : undefined,
     metrics: [

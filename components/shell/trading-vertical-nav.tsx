@@ -13,6 +13,7 @@
  * etc.) remain top-level.
  */
 
+import * as React from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +29,7 @@ import { useWorkspaceStore } from "@/lib/stores/workspace-store";
 import { cn } from "@/lib/utils";
 import { isPathActive, isServiceTabActive } from "@/lib/utils/nav-helpers";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
@@ -61,6 +63,30 @@ interface TradingVerticalNavProps {
   entitlements?: readonly (string | TradingEntitlement)[];
   /** Optional slot rendered at the bottom of the nav (e.g. Live/As-Of toggle) */
   bottomSlot?: React.ReactNode;
+}
+
+/** Tooltip content with all animations stripped so it appears instantly. */
+function NavTooltipContent({ children }: { children: React.ReactNode }) {
+  return (
+    <TooltipContent
+      side="right"
+      sideOffset={8}
+      className="animate-none data-[state=closed]:animate-none py-1 px-2 text-xs"
+    >
+      {children}
+    </TooltipContent>
+  );
+}
+
+/** Conditionally wraps children with a Tooltip — avoids adding Tooltip DOM nodes when not collapsed. */
+function ConditionalNavTooltip({ show, label, children }: { show: boolean; label: string; children: React.ReactNode }) {
+  if (!show) return <>{children}</>;
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <NavTooltipContent>{label}</NavTooltipContent>
+    </Tooltip>
+  );
 }
 
 export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVerticalNavProps) {
@@ -197,16 +223,19 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
     );
 
     const wrapperClass = cn("px-2", collapsed && "flex justify-center px-1");
-    const title = collapsed ? (isLocked ? `${tab.label} (locked)` : tab.label) : undefined;
+    const tooltipLabel = isLocked ? `${tab.label} (locked)` : tab.label;
+
+    const inner = isLocked || tab.navDisabled ? <span>{itemContent}</span> : <Link href={tab.href}>{itemContent}</Link>;
 
     return (
       <div key={tab.href} className={wrapperClass}>
-        {isLocked || tab.navDisabled ? (
-          <span title={title ?? tab.navDisabledTitle ?? `Upgrade to access ${tab.label}`}>{itemContent}</span>
+        {collapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>{inner}</TooltipTrigger>
+            <NavTooltipContent>{tooltipLabel}</NavTooltipContent>
+          </Tooltip>
         ) : (
-          <Link href={tab.href} title={title}>
-            {itemContent}
-          </Link>
+          inner
         )}
       </div>
     );
@@ -222,31 +251,32 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
     return (
       <div key={`family-${familyName}`}>
         {/* Family header */}
-        <button
-          onClick={() => toggleFamily(familyName)}
-          className={cn(
-            "w-full flex items-center gap-2 px-3 py-1.5 mt-1 transition-colors",
-            "text-muted-foreground hover:text-foreground",
-            collapsed && "justify-center px-1",
-          )}
-          title={collapsed ? familyName : undefined}
-        >
-          {FamilyIcon && !collapsed && <FamilyIcon className="size-3.5 shrink-0 text-foreground/40" />}
-          {FamilyIcon && collapsed && <FamilyIcon className="size-4 shrink-0 text-foreground/40" />}
-          {!collapsed && (
-            <>
-              <span className="text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap flex-1 text-left">
-                {familyName}
-              </span>
-              {locked && <Lock className="size-3 shrink-0 opacity-40" />}
-              {isExpanded ? (
-                <ChevronDown className="size-3 shrink-0 opacity-50" />
-              ) : (
-                <ChevronRight className="size-3 shrink-0 opacity-50" />
-              )}
-            </>
-          )}
-        </button>
+        <ConditionalNavTooltip show={collapsed} label={familyName}>
+          <button
+            onClick={() => toggleFamily(familyName)}
+            className={cn(
+              "w-full flex items-center gap-2 px-3 py-1.5 mt-1 transition-colors",
+              "text-muted-foreground hover:text-foreground",
+              collapsed && "justify-center px-1",
+            )}
+          >
+            {FamilyIcon && !collapsed && <FamilyIcon className="size-3.5 shrink-0 text-foreground/40" />}
+            {FamilyIcon && collapsed && <FamilyIcon className="size-4 shrink-0 text-foreground/40" />}
+            {!collapsed && (
+              <>
+                <span className="text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap flex-1 text-left">
+                  {familyName}
+                </span>
+                {locked && <Lock className="size-3 shrink-0 opacity-40" />}
+                {isExpanded ? (
+                  <ChevronDown className="size-3 shrink-0 opacity-50" />
+                ) : (
+                  <ChevronRight className="size-3 shrink-0 opacity-50" />
+                )}
+              </>
+            )}
+          </button>
+        </ConditionalNavTooltip>
 
         {/* Family tabs — collapsible. Respect per-family collapse state in both
             expanded and collapsed nav modes so the user's choice is preserved. */}
@@ -329,26 +359,28 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
 
               return (
                 <div key={panel.id} className={cn("px-2 group relative", collapsed && "flex justify-center px-1")}>
-                  <Link href={panelHref} title={collapsed ? panel.name : undefined}>
-                    <span
-                      className={cn(
-                        "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                        isActive
-                          ? "bg-primary/15 text-primary"
-                          : "text-muted-foreground hover:text-foreground hover:bg-accent",
-                        collapsed && "justify-center px-0",
-                      )}
-                    >
-                      <LayoutGrid
+                  <ConditionalNavTooltip show={collapsed} label={panel.name}>
+                    <Link href={panelHref}>
+                      <span
                         className={cn(
-                          "shrink-0",
-                          collapsed ? "size-5" : "size-[18px]",
-                          isActive ? "text-primary" : "text-foreground/60",
+                          "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                          isActive
+                            ? "bg-primary/15 text-primary"
+                            : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                          collapsed && "justify-center px-0",
                         )}
-                      />
-                      {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
-                    </span>
-                  </Link>
+                      >
+                        <LayoutGrid
+                          className={cn(
+                            "shrink-0",
+                            collapsed ? "size-5" : "size-[18px]",
+                            isActive ? "text-primary" : "text-foreground/60",
+                          )}
+                        />
+                        {!collapsed && <span className="truncate leading-none pr-6">{panel.name}</span>}
+                      </span>
+                    </Link>
+                  </ConditionalNavTooltip>
 
                   {!collapsed && (
                     <button
@@ -372,18 +404,19 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
             {/* New Panel button */}
             <div className={cn("px-2 mt-1", collapsed && "flex justify-center px-1")}>
               {!showNewPanel ? (
-                <button
-                  onClick={() => setShowNewPanel(true)}
-                  className={cn(
-                    "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
-                    "text-muted-foreground hover:text-foreground hover:bg-accent",
-                    collapsed && "justify-center px-0",
-                  )}
-                  title={collapsed ? "New Panel" : undefined}
-                >
-                  <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
-                  {!collapsed && <span className="truncate leading-none">New Panel</span>}
-                </button>
+                <ConditionalNavTooltip show={collapsed} label="New Panel">
+                  <button
+                    onClick={() => setShowNewPanel(true)}
+                    className={cn(
+                      "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
+                      "text-muted-foreground hover:text-foreground hover:bg-accent",
+                      collapsed && "justify-center px-0",
+                    )}
+                  >
+                    <Plus className={cn("shrink-0 text-foreground/60", collapsed ? "size-5" : "size-[18px]")} />
+                    {!collapsed && <span className="truncate leading-none">New Panel</span>}
+                  </button>
+                </ConditionalNavTooltip>
               ) : (
                 !collapsed && (
                   <div className="flex flex-col gap-0.5 px-1 min-w-0">
