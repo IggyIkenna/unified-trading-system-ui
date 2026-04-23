@@ -59,7 +59,7 @@ export const slides = [
   {
     id: 1,
     type: "cover",
-    title: "One Cross-Asset Unified Regulated Operating System Across the Full Trading Lifecycle",
+    title: "Unified Cross-Asset Trading System Across the Full Trading Lifecycle",
     subtitle:
       "Four commercial paths, five asset groups, one code path. Built by traders who ran desks at leading prop-trading firms. Running our own capital at $7.5M through the same infrastructure we sell.",
     tagline: "Strategic Advisor Deck",
@@ -79,7 +79,7 @@ export const slides = [
     type: "doctrine",
     title: "How Odum Came To Be",
     subtitle:
-      "Three years ago I was running high-frequency cross-exchange arbitrage in crypto. The edges compressed. The only way to stay competitive was to iterate on strategy faster than the market iterated on me. That shaped Odum.",
+      "Three years ago we were running high-frequency cross-exchange arbitrage in crypto. The edges compressed. The only way to stay competitive was to iterate on strategy faster than the market iterated on us. That shaped Odum.",
     points: [
       {
         problem:
@@ -91,11 +91,11 @@ export const slides = [
         problem:
           "Went looking for the stack instead of the strategy. Bloomberg, Tardis, QuantConnect, Hummingbot \u2014 each solved ~15% of the pipeline.",
         solution:
-          "Realised the stack I needed did not exist. Even Citadel, Jane Street, Two Sigma do not unify crypto + DeFi + sports + prediction + TradFi \u2014 and they do not sell it.",
+          "Realised the stack we needed did not exist. Even Citadel, Jane Street, Two Sigma do not unify crypto + DeFi + sports + prediction + TradFi \u2014 and they do not sell it.",
       },
       {
         problem:
-          "Backtest-to-live was a rewrite on every platform I tried. Strategies that looked good in research died on contact with production.",
+          "Backtest-to-live was a rewrite on every platform we tried. Strategies that looked good in research died on contact with production.",
         solution:
           "Built simulation = live: one code path, same data, same features, same risk controls. Promotion is a config change, not a rewrite.",
       },
@@ -112,7 +112,7 @@ export const slides = [
       "Platform is already commercial \u2014 first paying DART and Regulatory Umbrella clients live",
     ],
     conclusion:
-      "Odum is what I could not buy three years ago, built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
+      "Odum is what we could not buy three years ago, built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
   },
 
   // ══════════════════════════════════════════════════════════════
