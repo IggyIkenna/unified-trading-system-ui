@@ -1,23 +1,27 @@
 /**
  * POST /api/contact
  *
- * Receives contact form submissions and:
- *   1. Sends an email to info@odum-research.co.uk via Resend
- *   2. Returns 200 on success, 500 on failure
- *
+ * Receives contact form submissions and sends an email notification via Resend.
  * The client-side contact form also writes to Firestore `contact_submissions`
  * directly, so submissions are captured even if this route is unreachable.
  *
  * Email provider: Resend (resend.com) — set RESEND_API_KEY in env.
- * Sending domain must be verified in Resend dashboard (odum-research.co.uk).
+ *
+ * Sandbox mode (current): FROM onboarding@resend.dev, TO ikenna@odum-research.com.
+ * reply_to is set to the submitter's email so replies go directly to them.
+ *
+ * TODO: Once odum-research.com or odum-research.co.uk is verified in the Resend
+ * dashboard, switch FROM_ADDRESS to "website@odum-research.com" and TO_ADDRESS to
+ * "info@odum-research.co.uk" with BCC_ADDRESS restored.
  */
 
 import { NextResponse } from "next/server";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const TO_ADDRESS = "info@odum-research.co.uk";
-const FROM_ADDRESS = "website@odum-research.co.uk";
-const BCC_ADDRESS = "ikenna@odum-research.com";
+// Resend sandbox sender — works without domain verification.
+// Delivery is only possible to the Resend account email (ikenna@odum-research.com).
+const TO_ADDRESS = "ikenna@odum-research.com";
+const FROM_ADDRESS = "onboarding@resend.dev";
 
 export async function POST(request: Request) {
   let body: {
@@ -69,7 +73,6 @@ export async function POST(request: Request) {
     body: JSON.stringify({
       from: FROM_ADDRESS,
       to: [TO_ADDRESS],
-      bcc: [BCC_ADDRESS],
       reply_to: email,
       subject: `[odum-research.com] ${inquiry ?? "Contact form"} — ${name}`,
       html: emailHtml,

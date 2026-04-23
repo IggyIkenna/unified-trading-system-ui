@@ -1,13 +1,15 @@
 /**
  * POST /api/onboarding/confirm-email
  *
- * Sends a welcome confirmation email to a prospect who has just created
- * their Odum account via the sign-up wizard (investment management or
- * regulatory umbrella path).
+ * Sends a welcome confirmation email after a prospect creates their Odum account
+ * via the sign-up wizard (investment management or regulatory umbrella path).
  *
- * Sends to:  the prospect's email address
- * BCC:       ikenna@odum-research.com (operator copy)
- * From:      onboarding@odum-research.co.uk (requires domain verification in Resend)
+ * Sandbox mode (current): FROM onboarding@resend.dev, TO ikenna@odum-research.com.
+ * The email body includes the prospect's details so the operator can follow up.
+ *
+ * TODO: Once odum-research.com or odum-research.co.uk is verified in the Resend
+ * dashboard, switch FROM_ADDRESS to "onboarding@odum-research.com", send directly
+ * to the prospect's email, and restore BCC to "ikenna@odum-research.com".
  *
  * If RESEND_API_KEY is absent (local dev) the route returns 200 with
  * sent=false so the wizard's UX is unaffected — the account has already
@@ -17,8 +19,9 @@
 import { NextResponse } from "next/server";
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_ADDRESS = "onboarding@odum-research.co.uk";
-const BCC_ADDRESS = "ikenna@odum-research.com";
+// Resend sandbox sender — works without domain verification.
+const FROM_ADDRESS = "onboarding@resend.dev";
+const OPERATOR_ADDRESS = "ikenna@odum-research.com";
 const PLATFORM_URL = "https://app.odum-research.com";
 
 const SERVICE_NAMES: Record<string, string> = {
@@ -107,9 +110,9 @@ export async function POST(request: Request) {
     },
     body: JSON.stringify({
       from: FROM_ADDRESS,
-      to: [email],
-      bcc: [BCC_ADDRESS],
-      subject: `Your Odum account is confirmed — ${serviceName}`,
+      to: [OPERATOR_ADDRESS],
+      reply_to: email,
+      subject: `[Odum signup] ${serviceName} — ${displayName} <${email}>`,
       html: emailHtml,
     }),
   });
