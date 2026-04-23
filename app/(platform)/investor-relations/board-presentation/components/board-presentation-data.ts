@@ -59,7 +59,7 @@ export const slides = [
   {
     id: 1,
     type: "cover",
-    title: "One Regulated Operating System",
+    title: "One Cross-Asset Unified Regulated Operating System Across the Full Trading Lifecycle",
     subtitle:
       "Four commercial paths, five asset groups, one code path. Built by traders who ran desks at leading prop-trading firms. Running our own capital at $7.5M through the same infrastructure we sell.",
     tagline: "Strategic Advisor Deck",
