@@ -1,0 +1,182 @@
+{
+  "widgetId": "book-order-entry",
+  "label": "Book Order Entry",
+  "priority": 1,
+  "domain": "book",
+  "file": "components/widgets/book/book-order-entry-widget.tsx",
+  "class": "form",
+  "description": "Full trade booking workflow in one widget: execution mode toggle (live/record-only/DeFi), category tabs, instrument/venue/side/qty/price, collapsible algo config, collapsible record-only fields, inline preview/compliance panel, and submit. State machine: idle → preview → submitting → success/error.",
+  "levels": {
+    "l0": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "0.1": { "result": "pass", "note": "WidgetErrorBoundary in widget-wrapper.tsx." },
+        "0.2": { "result": "pass", "note": "requiredEntitlements: [{domain:'trading-common', tier:'basic'}]." },
+        "0.3": { "result": "pass", "note": "availableOn: ['book']." },
+        "0.4": { "result": "pass", "note": "No any types or @ts-ignore." },
+        "0.5": { "result": "pass", "note": "No lib/mocks imports." },
+        "0.6": { "result": "pass", "note": "isLoading guard with Spinner." },
+        "0.7": {
+          "result": "pass",
+          "note": "Idle state renders full form with all defaults. Category tabs and execution-mode toggle always visible."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "errorMessage from context renders inline error banner in preview/error states."
+        },
+        "0.9": { "result": "pass", "note": "No unused imports found." }
+      },
+      "notes": "All L0 checks pass. Merged from book-order-form + book-algo-config + book-record-details + book-preview-compliance (WU-1, 2026-04-22)."
+    },
+    "l1": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "1.1": { "result": "pass", "note": "All data from useBookTradeData()." },
+        "1.2": { "result": "pass", "note": "book-data-context.tsx calls useGlobalScope()." },
+        "1.3": { "result": "pass", "note": "orgId from scope gates canPreview / canExecute." },
+        "1.4": { "result": "pass", "note": "clientId from scope displayed in preview summary." },
+        "1.5": { "result": "pass", "note": "strategyId from scope gates execution mode label and compliance result." },
+        "1.6": { "result": "pass", "note": "Empty scope shows disabled state on submit." },
+        "1.7": {
+          "result": "pass",
+          "note": "BOOK_ALGO_OPTIONS and BOOK_VENUES_BY_CATEGORY from lib/config/services/trading.config. DEFI_* from lib/config/services/defi.config."
+        }
+      },
+      "notes": "L1 pass."
+    },
+    "l2": {
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-22",
+      "notes": "book-page.test.tsx passes post-merge (WU-1 commit 36382b7)."
+    },
+    "l3": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "3.1": { "result": "pass", "note": "Live mode: submit enabled when canExecute. Batch mode: submit disabled." },
+        "3.2": { "result": "pass", "note": "isBatchMode propagated from book-data-context." },
+        "3.5": {
+          "result": "pass",
+          "note": "Record-only executionMode shows counterparty/sourceReference/fee fields via CollapsibleSection."
+        },
+        "3.6": { "result": "pass", "note": "No WebSocket in widget itself." }
+      },
+      "notes": "Agent checks pass. Human checks 3.3/3.4 required."
+    },
+    "l4": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Preview button, Edit button, Confirm/Submit button, error Retry button — all wired. Algo-config and record-details collapsibles open/close. State machine transitions: idle → preview (handlePreview), preview → idle (setOrderState('idle')), preview → submitting (handleSubmit)."
+        },
+        "4.2": { "result": "pass", "note": "No navigation links." },
+        "4.5": { "result": "pass", "note": "No gated page links." },
+        "4.6": { "result": "pass", "note": "canPreview and canExecute from useMemo in context." }
+      },
+      "notes": "Agent checks pass. Human 4.3/4.4/4.7/4.8 required."
+    },
+    "l5": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Category tabs: Spot/Perp/Futures/Options/DeFi/Record-Only. Venues per category from BOOK_VENUES_BY_CATEGORY. DeFi path shows instruction-type + algo + slippage. Algo config shows all BOOK_ALGO_OPTIONS with dynamic param fields."
+        }
+      },
+      "notes": "5.1 complete. Human 5.2–5.6 required."
+    },
+    "l6": { "status": null, "by": null, "date": null, "notes": "Deferred — follows L5 human sign-off." },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "7.1": { "result": "pass", "note": "No hardcoded hex/rgb. CLEAN." },
+        "7.2": { "result": "pass", "note": "No lib/mocks imports. CLEAN." },
+        "7.3": {
+          "result": "pass",
+          "note": "716 lines — above 500-line soft limit but justified by merged workflow state machine. Single export function, no individual function exceeds 200 lines."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "BookOrderEntryWidget PascalCase, useBookTradeData hook useCamelCase, file kebab-case. CLEAN."
+        },
+        "7.5": { "result": "pass", "note": "English-only UI per product decision 2026-04-21." },
+        "7.6": { "result": "pass", "note": "No dangerouslySetInnerHTML, eval, new Function. CLEAN." },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in widget file. All derived state in context. CLEAN."
+        }
+      },
+      "notes": "L7 pass. Line count exceeds soft limit — expected for a merged 4-widget workflow."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "8.1": { "result": "pass", "note": "Uses text-micro/text-nano tokens, no arbitrary text-[Xpx]. CLEAN." },
+        "8.2": { "result": "pass", "note": "No arbitrary spacing. CLEAN." },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Input, Select, Tabs, Card, Badge, CollapsibleSection, Spinner, KpiStrip primitives. CLEAN."
+        },
+        "8.4": { "result": "partial", "note": "Labels present on all form fields. Human keyboard nav required." },
+        "8.5": { "result": null, "note": "Human check required — minW=12, minH=10." }
+      },
+      "notes": "8.1–8.3 clean. Human 8.4+8.5 required."
+    }
+  },
+  "relationships": {
+    "mode": "standalone",
+    "masterOf": [],
+    "detailOf": [],
+    "siblingOf": ["book-trade-history"],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "mergedFrom": ["book-order-form", "book-algo-config", "book-record-details", "book-preview-compliance"],
+    "keepSeparate": {
+      "rationale": "Merged host widget — the four previously fragmented booking workflow widgets are now consolidated here. book-trade-history and book-hierarchy-bar remain independent (separate data view and scope bar respectively)."
+    },
+    "notes": "Merged from 4 co-dependent widgets (WU-1, 2026-04-22). State machine: idle → preview → submitting → success/error keyed off orderState from book-data-context. book-hierarchy-bar is the scope driver; this widget is the sole execution surface on the book tab."
+  },
+  "dataContract": {
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "realtime",
+    "mockSource": "book-data-context.tsx (handleSubmit mock path)",
+    "backendOwner": "unified-trading-api (order management / compliance service)",
+    "notes": "Compliance check (complianceResult) is mock-simulated in context. Live path requires compliance service endpoint."
+  },
+  "coverage": {
+    "assetClasses": ["cefi", "defi"],
+    "strategies": ["all"],
+    "venues": ["all"],
+    "commonTabs": ["book"],
+    "verifiedOn": [],
+    "gaps": [
+      "Compliance service endpoint not wired (mock only)",
+      "Record-only fee field validation not enforced client-side"
+    ],
+    "notes": "Primary execution widget for the book tab. Covers all category tabs including DeFi instruction/algo path."
+  },
+  "knownIssues": [
+    "716 lines — above 500-line soft limit; acceptable for merged workflow",
+    "Compliance check is mock-simulated; live compliance service integration pending"
+  ],
+  "findings": [],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-22"
+}

@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/use-auth";
+import { personaLifecycleShape } from "@/lib/auth/persona-lifecycle-shape";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import {
   buildLifecycleNav,
@@ -27,7 +28,6 @@ import {
   type LifecycleStage,
   lifecycleStages,
 } from "@/lib/lifecycle-mapping";
-import { personaLifecycleShape } from "@/lib/auth/persona-lifecycle-shape";
 import { type Phase } from "@/lib/phase/types";
 import { phaseForPath, usePhaseFromRoute } from "@/lib/phase/use-phase-from-route";
 import { cn } from "@/lib/utils";
@@ -219,8 +219,8 @@ export function LifecycleNav({
                         aria-disabled
                       >
                         <Icon className="size-3.5 shrink-0" />
-                        <span className="hidden lg:inline">{nav.label}</span>
-                        <Lock className="size-3 opacity-40 hidden sm:block" />
+                        <span className="hidden sm:inline">{nav.label}</span>
+                        <Lock className="size-3 opacity-40" />
                       </span>
                     ) : (
                       <Link
@@ -231,23 +231,23 @@ export function LifecycleNav({
                         )}
                       >
                         <Icon className="size-3.5 shrink-0" />
-                        <span className="hidden lg:inline">{nav.label}</span>
+                        <span className="hidden sm:inline">{nav.label}</span>
                       </Link>
                     )}
                     <DropdownMenuTrigger asChild>
                       <button
                         type="button"
                         className={cn(
-                          "flex items-center pr-2 py-1.5 rounded-r-md text-xs shrink-0",
+                          "flex items-center px-1.5 py-1.5 rounded-r-md text-xs shrink-0",
                           allLocked ? "cursor-not-allowed opacity-40" : "hover:bg-muted/80",
                         )}
                         aria-label={`${nav.label} destinations`}
                         disabled={allLocked}
                       >
                         {allLocked ? (
-                          <Lock className="size-3 opacity-40 hidden sm:block" />
+                          <Lock className="size-3 opacity-40" />
                         ) : (
-                          <ChevronDown className="size-3 opacity-50 hidden sm:block" />
+                          <ChevronDown className="size-3 opacity-50" />
                         )}
                       </button>
                     </DropdownMenuTrigger>
@@ -327,46 +327,46 @@ export function LifecycleNav({
           irrelevant on /dashboard and non-DART services (Manage / Reports)
           where no trading is happening. */}
       {(pathname.startsWith("/services/trading") || pathname.startsWith("/services/dart")) && (
-      <div className="hidden sm:flex flex-1 items-center justify-center">
-        <div className="flex items-center rounded-full border border-border/60 bg-muted/30 p-0.5">
-          <button
-            onClick={() => setMode("live")}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
-              execMode === "live"
-                ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]"
-                : "text-muted-foreground/60 hover:text-muted-foreground",
-            )}
-          >
-            {execMode === "live" && <Radio className="size-3 animate-pulse" />}
-            Live
-          </button>
-          <button
-            onClick={() => setMode("paper")}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
-              execMode === "paper"
-                ? "border border-amber-500/40 bg-amber-500/15 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.15)]"
-                : "text-muted-foreground/60 hover:text-muted-foreground",
-            )}
-          >
-            {execMode === "paper" && <Radio className="size-3 animate-pulse" />}
-            Paper
-          </button>
-          <button
-            onClick={() => setMode("batch")}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
-              execMode === "batch"
-                ? "border border-blue-500/40 bg-blue-500/15 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.15)]"
-                : "text-muted-foreground/60 hover:text-muted-foreground",
-            )}
-          >
-            {execMode === "batch" && <Radio className="size-3 animate-pulse" />}
-            Batch
-          </button>
+        <div className="hidden sm:flex flex-1 items-center justify-center">
+          <div className="flex items-center rounded-full border border-border/60 bg-muted/30 p-0.5">
+            <button
+              onClick={() => setMode("live")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
+                execMode === "live"
+                  ? "border border-emerald-500/40 bg-emerald-500/15 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.15)]"
+                  : "text-muted-foreground/60 hover:text-muted-foreground",
+              )}
+            >
+              {execMode === "live" && <Radio className="size-3 animate-pulse" />}
+              Live
+            </button>
+            <button
+              onClick={() => setMode("paper")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
+                execMode === "paper"
+                  ? "border border-amber-500/40 bg-amber-500/15 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.15)]"
+                  : "text-muted-foreground/60 hover:text-muted-foreground",
+              )}
+            >
+              {execMode === "paper" && <Radio className="size-3 animate-pulse" />}
+              Paper
+            </button>
+            <button
+              onClick={() => setMode("batch")}
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-all",
+                execMode === "batch"
+                  ? "border border-blue-500/40 bg-blue-500/15 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.15)]"
+                  : "text-muted-foreground/60 hover:text-muted-foreground",
+              )}
+            >
+              {execMode === "batch" && <Radio className="size-3 animate-pulse" />}
+              Batch
+            </button>
+          </div>
         </div>
-      </div>
       )}
       {/* Spacer when the mode selector is hidden, so left + right nav blocks
           stay balanced on dashboard / non-DART routes. */}

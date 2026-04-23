@@ -1,0 +1,191 @@
+{
+  "widgetId": "bundle-builder",
+  "label": "Bundle Builder",
+  "priority": 1,
+  "domain": "bundles",
+  "file": "components/widgets/bundles/bundle-builder-widget.tsx",
+  "class": "form",
+  "description": "Multi-leg bundle workflow in one widget: template gallery (collapsible drawer), draggable step editor with per-row operation/venue/instrument/price/qty, real-time P&L KPI strip (buy notional, sell notional, gas est., net P&L), and simulate/execute actions.",
+  "levels": {
+    "l0": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "0.1": { "result": "pass", "note": "WidgetErrorBoundary in widget-wrapper.tsx." },
+        "0.2": { "result": "pass", "note": "requiredEntitlements: [{domain:'trading-common', tier:'basic'}]." },
+        "0.3": { "result": "pass", "note": "availableOn: ['bundles']." },
+        "0.4": { "result": "pass", "note": "No any types or @ts-ignore." },
+        "0.5": { "result": "pass", "note": "No lib/mocks imports." },
+        "0.6": {
+          "result": "pass",
+          "note": "readOnly guard disables edit controls; empty-steps state renders empty scaffold."
+        },
+        "0.7": { "result": "pass", "note": "Empty steps shows 'No steps yet' empty state with Add Step CTA." },
+        "0.8": { "result": "pass", "note": "toast.error used for execution error feedback." },
+        "0.9": { "result": "pass", "note": "No unused imports." }
+      },
+      "notes": "All L0 checks pass. Merged from bundle-templates + bundle-steps + bundle-pnl + bundle-actions (WU-2, 2026-04-22)."
+    },
+    "l1": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "1.1": { "result": "pass", "note": "All data from useBundlesData()." },
+        "1.2": {
+          "result": "pass",
+          "note": "bundles-data-context.tsx reads useGlobalScope() for org/client/strategy filtering."
+        },
+        "1.3": { "result": "pass", "note": "Org scope gates bundle execution via readOnly flag from context." },
+        "1.4": { "result": "pass", "note": "Client scope gates bundle execution." },
+        "1.5": { "result": "pass", "note": "Strategy scope gates template availability." },
+        "1.6": { "result": "pass", "note": "No scope = readOnly mode, all edit actions disabled." },
+        "1.7": { "result": "pass", "note": "operationTypes and venues from context (derived from mock fixture data)." }
+      },
+      "notes": "L1 pass."
+    },
+    "l2": {
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-22",
+      "notes": "Build passes post-merge (WU-2 commit 2ff874e). Vitest suite passes."
+    },
+    "l3": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "readOnly=false (live): all edit controls enabled. readOnly=true: controls disabled."
+        },
+        "3.2": {
+          "result": "pass",
+          "note": "readOnly propagated from bundles-data-context based on scope completeness."
+        },
+        "3.5": {
+          "result": "pass",
+          "note": "Template drawer toggled by showTemplates flag; loadTemplate mutates steps array."
+        },
+        "3.6": { "result": "pass", "note": "No WebSocket in widget itself." }
+      },
+      "notes": "Agent checks pass. Human 3.3/3.4 required."
+    },
+    "l4": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "Add/Remove/Duplicate/Move step buttons all wired. Load Template, Clear, Simulate, Execute all wired to context handlers. Drag handles present (GripVertical icon) — actual DnD via moveStep."
+        },
+        "4.2": { "result": "pass", "note": "No navigation links." },
+        "4.5": { "result": "pass", "note": "No gated page links." },
+        "4.6": { "result": "pass", "note": "P&L metrics derived in context via useMemo." }
+      },
+      "notes": "Agent checks pass. Human 4.3/4.4/4.7/4.8 required."
+    },
+    "l5": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Supports all operationTypes (BUY/SELL/SWAP/BRIDGE/STAKE). Per-step venue + instrument selects driven by context arrays. Template gallery shows strategy-tagged templates. KPI strip updates live as steps change."
+        }
+      },
+      "notes": "5.1 complete. Human 5.2–5.6 required."
+    },
+    "l6": { "status": null, "by": null, "date": null, "notes": "Deferred — follows L5 human sign-off." },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "7.1": {
+          "result": "pass",
+          "note": "No hardcoded hex/rgb. getOperationColor/getOperationBadgeClass from lib/utils/bundles. CLEAN."
+        },
+        "7.2": { "result": "pass", "note": "No lib/mocks imports. CLEAN." },
+        "7.3": {
+          "result": "pass",
+          "note": "521 lines — above 500-line soft limit but justified by merged 4-widget workflow."
+        },
+        "7.4": {
+          "result": "pass",
+          "note": "BundleBuilderWidget PascalCase, useBundlesData useCamelCase, file kebab-case. CLEAN."
+        },
+        "7.5": { "result": "pass", "note": "English-only UI per product decision 2026-04-21." },
+        "7.6": { "result": "pass", "note": "No dangerouslySetInnerHTML, eval, new Function. CLEAN." },
+        "7.7": {
+          "result": "pass",
+          "note": "No useEffect/useMemo/useCallback in widget file. All state in context. CLEAN."
+        }
+      },
+      "notes": "L7 pass."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "8.1": { "result": "pass", "note": "No arbitrary text-[Xpx]. Uses text-xs/text-sm standard tokens. CLEAN." },
+        "8.2": { "result": "pass", "note": "No arbitrary spacing. CLEAN." },
+        "8.3": {
+          "result": "pass",
+          "note": "Uses Button, Input, Select, Badge, Separator, CollapsibleSection, KpiStrip, WidgetScroll. CLEAN."
+        },
+        "8.4": {
+          "result": "partial",
+          "note": "Labels present on step-row controls. Human keyboard nav check required."
+        },
+        "8.5": { "result": null, "note": "Human check required — minW=12, minH=8." }
+      },
+      "notes": "8.1–8.3 clean. Human 8.4+8.5 required."
+    }
+  },
+  "relationships": {
+    "mode": "standalone",
+    "masterOf": [],
+    "detailOf": [],
+    "siblingOf": ["defi-atomic-bundle"],
+    "selectionKey": null,
+    "mergeCandidate": null,
+    "mergedFrom": ["bundle-templates", "bundle-steps", "bundle-pnl", "bundle-actions"],
+    "keepSeparate": {
+      "rationale": "Merged host widget. defi-atomic-bundle stays independent — it covers the atomic on-chain DeFi execution path which is structurally different from the multi-step CeFi/cross-venue bundle workflow."
+    },
+    "notes": "Merged from 4 co-dependent widgets (WU-2, 2026-04-22). Template gallery, step editor, P&L strip, and execute actions are all internal sections of this widget rather than separate mounted components."
+  },
+  "dataContract": {
+    "channels": ["rest"],
+    "primary": "rest",
+    "cadence": "on-demand",
+    "staleness": "realtime",
+    "mockSource": "bundles-data-context.tsx (mock fixture bundles + templates)",
+    "backendOwner": "unified-trading-api (bundle execution service)",
+    "notes": "Execute action is mock in dev mode. Live path requires bundle execution API endpoint."
+  },
+  "coverage": {
+    "assetClasses": ["cefi", "defi", "cross-venue"],
+    "strategies": ["all"],
+    "venues": ["all"],
+    "commonTabs": ["bundles"],
+    "verifiedOn": [],
+    "gaps": [
+      "Drag-and-drop reorder uses moveStep (index swap) — no HTML5 DnD or dnd-kit; visual drag feedback absent",
+      "Simulate action is a stub (no backend simulation endpoint wired)"
+    ],
+    "notes": "Primary execution surface for multi-leg bundles."
+  },
+  "knownIssues": [
+    "521 lines — above 500-line soft limit; acceptable for merged workflow",
+    "Simulate action stub — backend simulation endpoint not yet wired"
+  ],
+  "findings": [],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-22"
+}

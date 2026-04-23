@@ -1,0 +1,184 @@
+{
+  "widgetId": "terminal-watchlist",
+  "label": "Watchlist",
+  "priority": 1,
+  "domain": "terminal",
+  "file": "components/widgets/terminal/terminal-watchlist-widget.tsx",
+  "class": "inline-table",
+  "description": "Instrument watchlist for the terminal tab. Thin adapter over the shared WatchlistPanel component — maps useTerminalData().instrumentsByCategory into WatchlistDefinition lists and drives selectedInstrument for the whole tab.",
+  "levels": {
+    "l0": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "0.1": { "result": "pass", "note": "WidgetErrorBoundary in widget-wrapper.tsx." },
+        "0.2": { "result": "pass", "note": "requiredEntitlements: [{domain:'trading-common', tier:'basic'}]." },
+        "0.3": { "result": "pass", "note": "availableOn: ['terminal']." },
+        "0.4": { "result": "pass", "note": "No any types or @ts-ignore." },
+        "0.5": { "result": "pass", "note": "No lib/mocks imports." },
+        "0.6": { "result": "pass", "note": "WatchlistPanel renders its own loading/empty state internally." },
+        "0.7": {
+          "result": "pass",
+          "note": "WatchlistPanel renders 'No instruments' empty state when category lists are empty."
+        },
+        "0.8": {
+          "result": "pass",
+          "note": "No error surface in widget — errors from context propagated via WatchlistPanel empty state."
+        },
+        "0.9": { "result": "pass", "note": "No unused imports." }
+      },
+      "notes": "All L0 checks pass. Replaces archived instrument-bar-widget.tsx (WU-4, 2026-04-22)."
+    },
+    "l1": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "1.1": { "result": "pass", "note": "All data from useTerminalData()." },
+        "1.2": { "result": "pass", "note": "terminal-data-context.tsx reads useGlobalScope()." },
+        "1.3": { "result": "pass", "note": "orgId scope filters instrumentsByCategory in context." },
+        "1.4": { "result": "pass", "note": "clientId scope filters available instruments." },
+        "1.5": { "result": "pass", "note": "strategyIds scope filters instruments to linked strategy instruments." },
+        "1.6": { "result": "pass", "note": "Empty scope shows all instruments (no hard gate on watchlist display)." },
+        "1.7": {
+          "result": "pass",
+          "note": "instrumentsByCategory derived in use-terminal-page-data.ts from mock instrument data."
+        }
+      },
+      "notes": "L1 pass. This widget is the instrument selection driver for the entire terminal tab."
+    },
+    "l2": {
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-22",
+      "notes": "Mock build passes post-WU-4 (commit dd2ec4b). tsc clean on terminal/ directory."
+    },
+    "l3": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "3.1": {
+          "result": "pass",
+          "note": "Read-only widget — no live/batch mode distinction; selection always enabled."
+        },
+        "3.2": { "result": "pass", "note": "N/A — watchlist does not submit orders." },
+        "3.5": { "result": "pass", "note": "N/A — no execution path." },
+        "3.6": {
+          "result": "pass",
+          "note": "No WebSocket or interval in widget. WS connection is in terminal-data-context."
+        }
+      },
+      "notes": "Agent checks pass. Human 3.3(verify instrument selection drives order-book/price-chart/order-entry)/3.4(N/A) required."
+    },
+    "l4": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "4.1": {
+          "result": "pass",
+          "note": "onSelectSymbol wired to setSelectedInstrument on terminal context. Tab (list) switching via setActiveListId with useEffect sync to selectedInstrument.category."
+        },
+        "4.2": { "result": "pass", "note": "No navigation links." },
+        "4.5": { "result": "pass", "note": "No gated page links." },
+        "4.6": { "result": "pass", "note": "watchlists derived via useMemo over instrumentsByCategory." }
+      },
+      "notes": "Agent checks pass. Human 4.3/4.4/4.7/4.8 required."
+    },
+    "l5": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "5.1": {
+          "result": "pass",
+          "note": "Supports all asset classes present in instrumentsByCategory (crypto, equities, fx, etc.). One tab per category. Symbol rows show symbol, name, price, 24h change."
+        }
+      },
+      "notes": "5.1 complete. Human 5.2–5.6 required."
+    },
+    "l6": { "status": null, "by": null, "date": null, "notes": "Deferred — follows L5 human sign-off." },
+    "l7": {
+      "status": "pass",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "7.1": { "result": "pass", "note": "No hardcoded colours. CLEAN." },
+        "7.2": { "result": "pass", "note": "No lib/mocks imports. CLEAN." },
+        "7.3": { "result": "pass", "note": "56 lines — well within limit. CLEAN." },
+        "7.4": {
+          "result": "pass",
+          "note": "TerminalWatchlistWidget PascalCase, useTerminalData useCamelCase, file kebab-case. CLEAN."
+        },
+        "7.5": { "result": "pass", "note": "English-only UI per product decision 2026-04-21." },
+        "7.6": { "result": "pass", "note": "No dangerouslySetInnerHTML, eval, new Function. CLEAN." },
+        "7.7": {
+          "result": "pass",
+          "note": "useMemo and useCallback used correctly with stable deps. useEffect syncs activeListId to category on external navigation. CLEAN."
+        }
+      },
+      "notes": "L7 pass. Minimal widget — all display logic in shared WatchlistPanel."
+    },
+    "l8": {
+      "status": "partial",
+      "by": "agent",
+      "date": "2026-04-22",
+      "checks": {
+        "8.1": {
+          "result": "pass",
+          "note": "No arbitrary text sizes in widget file. Typography in WatchlistPanel component. CLEAN."
+        },
+        "8.2": { "result": "pass", "note": "No arbitrary spacing. CLEAN." },
+        "8.3": { "result": "pass", "note": "Delegates entirely to shared WatchlistPanel. CLEAN." },
+        "8.4": {
+          "result": "partial",
+          "note": "WatchlistPanel renders button elements for symbol rows. Human keyboard nav check required."
+        },
+        "8.5": { "result": null, "note": "Human check required — minW=2, minH=4, default 3×12." }
+      },
+      "notes": "8.1–8.3 clean. Human 8.4+8.5 required."
+    }
+  },
+  "relationships": {
+    "mode": "master",
+    "masterOf": ["order-book", "price-chart", "order-entry", "market-trades", "terminal-options"],
+    "detailOf": [],
+    "siblingOf": [],
+    "selectionKey": "instrumentId",
+    "mergeCandidate": null,
+    "keepSeparate": {
+      "rationale": "Scope selector widget that drives 5 consumers on the terminal tab. Kept separate per the Type B rule — folding a widget that drives 2+ consumers into one consumer would burn the shared scope."
+    },
+    "notes": "Replaces archived instrument-bar-widget.tsx (WU-4, 2026-04-22). Reuses shared components/trading/watchlist-panel.tsx. options-watchlist-widget.tsx uses the same panel for the options tab. Per-asset filter-chip config (discriminated union) is a future enhancement — out of scope for Phase 1."
+  },
+  "dataContract": {
+    "channels": ["websocket"],
+    "primary": "websocket",
+    "cadence": "streaming",
+    "staleness": "realtime",
+    "mockSource": "use-terminal-page-data.ts (DEFAULT_INSTRUMENTS + mock price updates)",
+    "backendOwner": "unified-trading-api (market data / instrument service)",
+    "notes": "instrumentsByCategory populated from WS market-data feed via terminal-data-context. Prices update in real-time; mock path uses static DEFAULT_INSTRUMENTS with simulated price ticks."
+  },
+  "coverage": {
+    "assetClasses": ["cefi", "defi", "crypto", "equities", "fx", "futures", "options"],
+    "strategies": ["all"],
+    "venues": ["all"],
+    "commonTabs": ["terminal"],
+    "verifiedOn": [],
+    "gaps": [
+      "Per-asset filter chips (strike/DTE/IV for options, sector for equities) not yet implemented — Phase 2",
+      "Pin/unpin instrument support not wired to terminal context"
+    ],
+    "notes": "Instrument selection master for the terminal tab. Phase 2: adopt shared WatchlistPanel on sports/defi/predictions tabs with per-asset WatchlistFilterConfig discriminated union."
+  },
+  "knownIssues": [
+    "Pin/unpin (editable prop) not passed — terminal-watchlist does not support pinning yet",
+    "activeListId syncs only on category change, not on programmatic instrument selection from another widget"
+  ],
+  "findings": [],
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-22"
+}
