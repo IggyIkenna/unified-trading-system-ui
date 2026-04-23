@@ -72,7 +72,7 @@ export const slides = [
       {
         competitor: "Bloomberg / Refinitiv",
         users: "TradFi desks",
-        gap: "World-class TradFi data at $24K\u2013$30K/user/year. Data only. No crypto depth, no DeFi, no sports, no prediction. No research environment, no execution, no managed money, no compliance wrapper.",
+        gap: "TradFi data at $24K\u2013$30K/user/year. Data only. No crypto depth, no DeFi, no sports, no prediction. No research environment, no execution, no managed money, no compliance wrapper.",
         color: "cyan",
       },
       {

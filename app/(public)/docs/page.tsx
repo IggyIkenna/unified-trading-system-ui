@@ -117,10 +117,10 @@ const PATHS: ReadonlyArray<{
   {
     label: "Path C — Execution only",
     slug: "execution-only",
-    who: "Asset managers, trading desks. You already have strategies; you want institutional-grade execution + TCA.",
+    who: "Asset managers, trading desks. You already have strategies; you want execution + TCA.",
     what: "Submit parent orders; we run execution algos, produce fills, and return TCA benchmarked against arrival / VWAP / IS.",
     entryService: { href: "/services/execution/overview", label: "Execution surface" },
-    entryBriefing: { href: "/briefings/signals-out", label: `${PRODUCT_LABELS.odumSignals} deep dive` },
+    entryBriefing: { href: "/briefings/signals-out", label: `${PRODUCT_LABELS.odumSignals} briefing` },
   },
 ];
 

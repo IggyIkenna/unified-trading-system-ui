@@ -46,7 +46,7 @@ export default function MarketingFaqPage() {
                   href="/briefings"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Deep Dive hub
+                  Briefings hub
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}

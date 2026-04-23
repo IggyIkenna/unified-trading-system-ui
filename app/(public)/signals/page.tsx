@@ -77,7 +77,7 @@ export default function MarketingSignalsPage() {
                   href="/briefings/signals-out"
                   className="font-medium text-foreground underline-offset-4 hover:underline"
                 >
-                  Odum Signals deep dive
+                  Odum Signals briefing
                 </Link>
                 <span className="text-muted-foreground">
                   {" "}

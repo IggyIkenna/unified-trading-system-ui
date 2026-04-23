@@ -1,6 +1,6 @@
 // Board Presentation \u2014 data for 14-slide strategic advisor deck.
 // Last restructured: April 2026 \u2014 reframed around four commercial paths,
-// named-competitor landscape, founder narrative, and McKinsey-grade arc.
+// named-competitor landscape, founder narrative, and structured context-to-ask progression.
 
 export const VENUE_LIST = [
   // Traditional Finance - cyan
@@ -129,7 +129,7 @@ export const slides = [
       {
         competitor: "Bloomberg / Refinitiv",
         users: "TradFi only",
-        gap: "$24K–$30K/user/year. Best-in-class TradFi data and terminal \u2014 but no crypto spot depth, no DeFi on-chain, no sports, no prediction. Data only. No research, no execution, no managed money.",
+        gap: "$24K–$30K/user/year. Deep TradFi data and terminal \u2014 but no crypto spot depth, no DeFi on-chain, no sports, no prediction. Data only. No research, no execution, no managed money.",
         color: "cyan",
       },
       {
@@ -655,7 +655,7 @@ export const slides = [
     sections: [
       { name: "Homepage", desc: "Four commercial paths, one regulated operating system", link: "/" },
       { name: "Our Story", desc: "Long-form founder narrative \u2014 why this exists", link: "/our-story" },
-      { name: "Briefings Hub", desc: "Six path-specific deep dives (code: odum-briefings-2026)", link: "/briefings" },
+      { name: "Briefings Hub", desc: "Six path-specific briefings (code: odum-briefings-2026)", link: "/briefings" },
       { name: "Platform Dashboard", desc: "Live demo \u2014 positions, returns, risk, alerts", link: "/dashboard" },
       { name: "Trading & Positions", desc: "Demo persona \u2014 live positions and attribution", link: "/services/trading/positions" },
       { name: "Strategy Research", desc: "Backtests, comparison, ML analysis", link: "/services/research/strategy/overview" },

@@ -68,7 +68,7 @@ const PRESENTATIONS: readonly IrDeckPresentation[] = [
     title: "Board Presentation",
     subtitle: "One Unified Trading System",
     description:
-      "14-slide strategic advisor deck with a McKinsey-grade arc: how we got here → the landscape (named competitors) → the Odum solution → IP-protection proof → traction → trajectory → the ask → live demo.",
+      "14-slide strategic advisor deck: how we got here → the landscape (named competitors) → the Odum solution → IP-protection proof → traction → trajectory → the ask → live demo.",
     href: "/investor-relations/board-presentation",
     icon: Presentation,
     color: "from-amber-500/20 to-amber-600/5",
