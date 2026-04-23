@@ -15,9 +15,15 @@ export interface SendResult {
 
 function getMailDomain(): string {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  if (siteUrl.includes("www.odum-research.com")) return "mail.odum-research.com";
-  if (siteUrl.includes("uat.odum-research.com") || siteUrl.includes("odumresearch.co.uk")) {
-    return "staging-mail.odum-research.com";
+  // Prod: odumresearch.com or odum-research.com (any subdomain)
+  if (siteUrl.includes("odumresearch.com") || siteUrl.match(/(?:^|\.)odum-research\.com/)) {
+    // Staging/UAT variants stay on the UAT mail domain
+    if (siteUrl.includes("uat.") || siteUrl.includes("staging.")) return "mail.uat.odum-research.com";
+    return "mail.odum-research.com";
+  }
+  // UK domain preview env
+  if (siteUrl.includes("odumresearch.co.uk") || siteUrl.includes("odum-research.co.uk")) {
+    return "mail.uat.odum-research.com";
   }
   return "resend.dev";
 }
