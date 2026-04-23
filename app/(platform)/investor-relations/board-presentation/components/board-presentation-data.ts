@@ -95,9 +95,9 @@ export const slides = [
       },
       {
         problem:
-          "Backtest-to-live was a rewrite on every platform we tried. Strategies that looked good in research died on contact with production.",
+          "On most platforms, backtest-to-live is a rewrite. Strategies that look good in research die on contact with production — or pass clean-history replay but fail the moment market structure breaks.",
         solution:
-          "Built simulation = live: one code path, same data, same features, same risk controls. Promotion is a config change, not a rewrite.",
+          "One code path from simulation to live — promotion is a config change, not a rewrite. Simulation injects synthetic stress: execution delays, order failures, gap moves, data outages, forced liquidations. Risk is tested against adversarial conditions, not just favourable history.",
       },
       {
         problem:
