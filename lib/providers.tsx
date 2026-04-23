@@ -47,12 +47,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
   if (!mockFetchReady) {
     return (
       <div
-        className="flex min-h-[100dvh] items-center justify-center bg-background text-muted-foreground text-sm"
+        className="flex min-h-[100dvh] items-center justify-center bg-background"
         aria-busy="true"
         aria-live="polite"
-      >
-        Preparing demo…
-      </div>
+      />
     );
   }
 

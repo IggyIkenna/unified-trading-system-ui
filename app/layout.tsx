@@ -1,4 +1,3 @@
-import { RuntimeModeBadge } from "@/components/runtime-mode-badge";
 import { SandboxBanner } from "@/components/sandbox-banner";
 import { StagingGate } from "@/components/staging-gate";
 import { ProtocolIndicator } from "@/components/ui/protocol-indicator";
@@ -82,7 +81,6 @@ export default function RootLayout({
               <ExecutionModeProvider>{children}</ExecutionModeProvider>
             </Providers>
           </StagingGate>
-          <RuntimeModeBadge />
           <ProtocolIndicator />
           <Toaster />
         </ThemeProvider>
