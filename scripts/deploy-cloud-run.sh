@@ -1,19 +1,28 @@
 #!/usr/bin/env bash
 # Build and deploy unified-trading-system-ui to Cloud Run (europe-west4).
 #
-# Default target: **staging** → service `odum-portal-staging` (Firebase Hosting /
-# odum-research.co.uk rewrites — see `firebase.json`). Production **odum-portal**
-# is unchanged unless you pass `--production`. Staging and production images use
-# different tags (`:staging` / `:production`) and different `config/docker-build.env.*` SSOT files.
+# SSOT for the build+deploy contract: docs/core/DEPLOYMENT.md.
 #
-# Artifact image tags: odum-portal:staging (demo + mock baked in) and odum-portal:production (Firebase).
+# STAGING AND PRODUCTION ARE INDEPENDENT DEPLOYS.
+#   - Different Cloud Run services (odum-portal-staging vs odum-portal).
+#   - Different image tags (:staging vs :production).
+#   - Different BUILD_ENV_FILE (config/docker-build.env.staging vs .production) →
+#     different NEXT_PUBLIC_* baked in → different auth provider + Firebase project.
+#   - Never deploy both in one operation; stage → verify → promote to prod.
+#
+# NEXT_PUBLIC_* are inlined at Docker build time; Cloud Run runtime env vars do
+# not retro-rewrite the client bundle. Change env → rebuild → redeploy.
 #
 # Usage:
-#   bash scripts/deploy-cloud-run.sh                    # local Docker build → staging
-#   bash scripts/deploy-cloud-run.sh --cloud             # Cloud Build → staging
-#   bash scripts/deploy-cloud-run.sh --cloud --production  # Cloud Build → production odum-portal
+#   bash scripts/deploy-cloud-run.sh                       # local Docker build → STAGING
+#   bash scripts/deploy-cloud-run.sh --cloud               # Cloud Build       → STAGING
+#   bash scripts/deploy-cloud-run.sh --cloud --production  # Cloud Build       → PRODUCTION
 #   bash scripts/deploy-cloud-run.sh --build-env-file=config/docker-build.env.staging.firebase.local
 #       # optional: override BUILD_ENV_FILE (repo-relative path). Works with --cloud / --production.
+#
+# Build speed: cloudbuild-odum-portal.yaml pulls the previous image tag and
+# passes --cache-from. Code-only changes reuse the deps stage layer; dep changes
+# trigger a cold deps-install.
 set -euo pipefail
 
 PROJECT_ID="central-element-323112"

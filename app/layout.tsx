@@ -22,14 +22,14 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Odum Research - Unified Trading Infrastructure",
+  title: "Odum Research — FCA-Regulated Investment Manager & Trading Platform",
   description:
-    "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
+    "Four commercial paths on one regulated operating system: Investment Management, DART, Odum Signals, and Regulatory Umbrella. FCA 975797.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://odumresearch.com"),
   openGraph: {
     title: "Odum Research",
     description:
-      "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
+      "Four commercial paths on one regulated operating system: Investment Management, DART, Odum Signals, and Regulatory Umbrella. FCA 975797.",
     siteName: "Odum Research",
     type: "website",
   },
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Odum Research",
     description:
-      "Institutional-grade trading command center with real-time P&L, risk attribution, and strategy analytics",
+      "Four commercial paths on one regulated operating system: Investment Management, DART, Odum Signals, and Regulatory Umbrella. FCA 975797.",
   },
   icons: {
     icon: [

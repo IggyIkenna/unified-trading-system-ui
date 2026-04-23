@@ -1,5 +1,12 @@
 {
   "version": 1,
-  "generated_at": "2026-04-21T20:59:18.565Z",
-  "orphans": []
+  "generated_at": "2026-04-23T01:09:53.552Z",
+  "orphans": [
+    "/demo/preview",
+    "/internal/data-etl",
+    "/services/data/logs",
+    "/services/data/markets/pnl",
+    "/services/data/missing",
+    "/services/manage/users/request"
+  ]
 }

@@ -1,15 +1,45 @@
-# Minimal Cloud Build for odum-portal images: passes BUILD_ENV_FILE into Docker so
-# NEXT_PUBLIC_* matches the target (staging demo vs production Firebase).
+# Cloud Build for odum-portal images.
+#
+# - Passes BUILD_ENV_FILE to Docker so NEXT_PUBLIC_* matches the target
+#   (staging demo+mock vs production Firebase).
+# - Pulls the previous :staging or :production tag as a cache source so a
+#   code-only change (no pnpm-lock.yaml / package.json delta) reuses the
+#   already-built `deps` stage. First deploy of a new tag will miss; every
+#   deploy after that reuses dependency install + node_modules layer.
+#
+# Substitutions:
+#   _IMAGE           — full tagged image ref (e.g. .../odum-portal:staging)
+#   _BUILD_ENV_FILE  — repo-relative env SSOT (config/docker-build.env.*)
+
 steps:
+  # Warm the Docker cache. Failure is non-fatal — a missing prior image (first
+  # deploy of this tag, or after registry cleanup) simply means a cold build.
   - name: "gcr.io/cloud-builders/docker"
+    id: "pull-cache"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - "docker pull ${_IMAGE} || echo 'No prior image for ${_IMAGE} — cold build.'"
+
+  - name: "gcr.io/cloud-builders/docker"
+    id: "build"
     args:
       - "build"
+      - "--cache-from"
+      - "${_IMAGE}"
+      - "--build-arg"
+      - "BUILDKIT_INLINE_CACHE=1"
       - "--build-arg"
       - "BUILD_ENV_FILE=${_BUILD_ENV_FILE}"
       - "-t"
       - "${_IMAGE}"
       - "."
+    waitFor: ["pull-cache"]
+
 images:
   - "${_IMAGE}"
+
 options:
   logging: CLOUD_LOGGING_ONLY
+  env:
+    - "DOCKER_BUILDKIT=1"

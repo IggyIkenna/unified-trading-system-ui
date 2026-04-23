@@ -3,5 +3,18 @@
     "default": "central-element-323112",
     "prod": "central-element-323112",
     "staging": "odum-staging"
-  }
+  },
+  "targets": {
+    "central-element-323112": {
+      "hosting": {
+        "prod": [
+          "central-element-323112"
+        ],
+        "staging": [
+          "odum-portal-staging-site"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

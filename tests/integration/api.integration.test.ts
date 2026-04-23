@@ -33,11 +33,15 @@ async function fetchApi(
 }
 
 async function isApiReachable(): Promise<boolean> {
+  // Probe the same `${API}/health` endpoint the actual tests hit — not `${BASE}/health`.
+  // Without this, a sibling process on localhost:8030 that answers `/health` but not
+  // `/api/health` (e.g. a different service listening on the same port) makes the tests
+  // think the API is up and then fail the 404 → assertion.
   try {
-    const res = await fetch(`${BASE}/health`, {
+    const res = await fetch(`${API}/health`, {
       signal: AbortSignal.timeout(2000),
     });
-    return res.ok;
+    return res.ok || res.status === 401;
   } catch {
     return false;
   }
