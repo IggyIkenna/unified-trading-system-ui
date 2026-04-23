@@ -79,7 +79,7 @@ export const slides = [
     type: "doctrine",
     title: "How Odum Came To Be",
     subtitle:
-      "Three years ago we were running high-frequency cross-exchange arbitrage in crypto. The edges compressed. The only way to stay competitive was to iterate on strategy faster than the market iterated on us. That shaped Odum.",
+      "In 2021 we were running high-frequency cross-exchange arbitrage in crypto. The edges compressed. The only way to stay competitive was to iterate on strategy faster than the market iterated on us. That shaped Odum.",
     points: [
       {
         problem:
@@ -112,7 +112,7 @@ export const slides = [
       "Platform is already commercial \u2014 first paying DART and Regulatory Umbrella clients live",
     ],
     conclusion:
-      "Odum is what we could not buy three years ago, built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
+      "Odum is what we could not find in 2021 — built properly, with the architectural discipline of a top-tier firm applied to the full cross-domain spread.",
   },
 
   // ══════════════════════════════════════════════════════════════
@@ -210,7 +210,7 @@ export const slides = [
         problem:
           "Specialisation. TradFi vendors built in the 1990s for equities and futures \u2014 crypto/DeFi/sports would require a ground-up rebuild, which they will not do.",
         solution:
-          "Odum started in 2022 with a cross-domain ontology. Every schema is canonical across five asset classes from day one.",
+          "Odum started in 2021 doing high-frequency trading — and learned first-hand why iterating fast enough was impossible without a unified foundation. Since 2024 we have been building the cross-domain ontology on that experience. Every schema is canonical across five asset classes.",
       },
       {
         problem:
@@ -228,7 +228,7 @@ export const slides = [
         problem:
           "Cross-domain thinking + institutional discipline + operator credibility is a rare combinatory skill set. The combination is what makes the problem interesting.",
         solution:
-          "Odum exists precisely because the combination is rare. The platform is the artefact of three years of compounding decisions.",
+          "Odum exists precisely because the combination is rare. The platform is the artefact of over four years of compounding decisions — trying it the old way first, strategy-first, and then building the unified stack on the back of having traded most asset classes across our collective history.",
       },
     ],
     differentiators: [
