@@ -361,7 +361,7 @@ export function BoardSlidePartB({ slide }: { slide: Record<string, any> }) {
                 <div className="size-3 rounded-full bg-emerald-400" />
               </div>
               <div className="flex-1 bg-background rounded px-3 py-1 text-xs font-mono text-muted-foreground">
-                https://app.odum-research.co.uk/strategies
+                https://uat.odum-research.com/services/research/strategy/overview
               </div>
             </div>
             <div className="p-8 text-center space-y-6">

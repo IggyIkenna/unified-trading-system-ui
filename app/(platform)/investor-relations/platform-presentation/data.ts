@@ -554,6 +554,6 @@ export const slides = [
       { name: "Trading & Positions", desc: "Live positions, orders, attribution", link: "/services/trading/positions" },
       { name: "Executive Reporting", desc: "IBOR, reconciliation, performance", link: "/services/reports/executive" },
     ],
-    note: "Platform links require sign-in (investor@odum-research.co.uk / OdumIR2026!). Public-site links open in a new tab; no sign-in required.",
+    note: "Platform links require sign-in (investor@odum-research.com / OdumIR2026!). Public-site links open in a new tab; no sign-in required.",
   },
 ];

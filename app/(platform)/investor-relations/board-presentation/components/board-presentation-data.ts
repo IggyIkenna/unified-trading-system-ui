@@ -662,6 +662,6 @@ export const slides = [
       { name: "Executive Reporting", desc: "IBOR, reconciliation, performance", link: "/services/reports/executive" },
       { name: "Risk & Scenarios", desc: "Scenario analysis, stress testing", link: "/services/observe/scenarios" },
     ],
-    note: "Platform links require sign-in (investor@odum-research.co.uk / OdumIR2026!). Public-site links open in a new tab; no sign-in required.",
+    note: "Platform links require sign-in (investor@odum-research.com / OdumIR2026!). Public-site links open in a new tab; no sign-in required.",
   },
 ];

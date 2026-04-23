@@ -334,6 +334,6 @@ export const slides = [
         link: "/services/trading/positions",
       },
     ],
-    note: "Platform links require sign-in (investor@odum-research.co.uk / OdumIR2026!). Demo persona \u2014 never real client capital.",
+    note: "Platform links require sign-in (investor@odum-research.com / OdumIR2026!). Demo persona \u2014 never real client capital.",
   },
 ];

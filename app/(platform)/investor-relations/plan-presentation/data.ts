@@ -16,7 +16,6 @@ export const slides = [
       { value: "$10M+", label: "End 2026" },
       { value: "$25M+", label: "End 2027" },
       { value: "$100M", label: "End 2028" },
-      { value: "Self", label: "Funded" },
     ],
   },
 
@@ -82,7 +81,7 @@ export const slides = [
         detail: "9 DART clients, 11 Regulatory Umbrella clients, 6+ Odum Signals counterparties. BTC ML + sports ML + CME + India + DeFi strategies at full scale across IM and DART.",
       },
     ],
-    callout: "The unlock at each stage is track record. Every month of live trading compounds our ability to raise.",
+    callout: "The unlock at each stage is track record. Every month of live trading compounds the evidence — and with four revenue lines funding operations, we are not racing against a runway clock.",
   },
 
   // ── Slide 4: When Each Strategy Becomes Available ─────────
@@ -341,7 +340,7 @@ export const slides = [
       },
       {
         text: "Annual revenue ~£636K, December cash ~£408K",
-        detail: "Self-funded \u2014 no bridge capital.",
+        detail: "Revenue-funded \u2014 no bridge capital needed. The £3M raised in 2021 built the stack; the next phase grows from four live revenue lines.",
       },
     ],
     launchReady: [
@@ -390,7 +389,7 @@ export const slides = [
       },
       {
         problem: "Needs bridge capital to get there?",
-        solution: "No. October 2026 flip to £372K cash. December 2026 £413K. Self-funded through $7.5M → $25M AUM transition.",
+        solution: "No. October 2026 flip to £372K cash. December 2026 £413K. The £3M raised in 2021 funded the infrastructure build. The $7.5M → $25M transition is funded by four live revenue lines — no further external capital is being sought.",
       },
     ],
     conclusion: "The path to $100M is: demonstrate performance, compound track record, open institutional channels. The system is built. The commercial model is proven. The scale lever is track record time.",
@@ -447,6 +446,6 @@ export const slides = [
         link: "/services/reports/executive",
       },
     ],
-    note: "Platform links require sign-in (investor@odum-research.co.uk / OdumIR2026!). Same infrastructure running our own capital.",
+    note: "Platform links require sign-in (investor@odum-research.com / OdumIR2026!). Same infrastructure running our own capital.",
   },
 ];
