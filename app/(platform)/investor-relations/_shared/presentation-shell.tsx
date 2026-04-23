@@ -38,6 +38,10 @@ export function PresentationShell({ slides, footerLabel }: PresentationShellProp
   };
 
   React.useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
+  }, [currentSlide]);
+
+  React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === " ") nextSlide();
       if (e.key === "ArrowLeft") prevSlide();
@@ -89,7 +93,7 @@ export function PresentationShell({ slides, footerLabel }: PresentationShellProp
       </header>
 
       {/* Slide Content */}
-      <WidgetScroll className="flex-1 min-h-0" viewportClassName="flex items-start justify-center p-6 pt-8">
+      <WidgetScroll className="flex-1 min-h-0" viewportClassName="flex items-start justify-center p-6 pt-8" viewportRef={scrollRef}>
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id as number}
