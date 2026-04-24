@@ -10,7 +10,6 @@ import * as React from "react";
 
 import { BoardSlidePartA } from "../board-presentation/components/board-presentation-slide-part-a";
 import { BoardSlidePartB } from "../board-presentation/components/board-presentation-slide-part-b";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
 
 interface PresentationShellProps {
   slides: Array<Record<string, unknown>>;
@@ -93,21 +92,23 @@ export function PresentationShell({ slides, footerLabel }: PresentationShellProp
       </header>
 
       {/* Slide Content */}
-      <WidgetScroll className="flex-1 min-h-0" viewportClassName="flex items-start justify-center p-6 pt-8" viewportRef={scrollRef}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={slide.id as number}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
-            className="w-full platform-page-width"
-          >
-            <BoardSlidePartA slide={slide} />
-            <BoardSlidePartB slide={slide} />
-          </motion.div>
-        </AnimatePresence>
-      </WidgetScroll>
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto">
+        <div className="flex items-start justify-center p-6 pt-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={slide.id as number}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.3 }}
+              className="w-full platform-page-width"
+            >
+              <BoardSlidePartA slide={slide} />
+              <BoardSlidePartB slide={slide} />
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
 
       {/* Navigation */}
       <footer className="flex items-center justify-between px-6 py-2 border-t border-border bg-card/50 shrink-0">
