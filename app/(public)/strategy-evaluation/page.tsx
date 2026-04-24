@@ -40,12 +40,17 @@ interface FormState {
   historicalWindow: string;
   dataGaps: string;
   triggerMethodology: string;
+  triggerMethodologyOther: string;
   decisionRule: string;
   positionLogic: string;
-  orderTypes: string;
+  positionLogicOther: string;
+  orderTypes: Set<string>;
+  orderTypesOther: string;
   fillModel: string;
+  fillModelOther: string;
   capacityModel: string;
-  feesAndCosts: string;
+  feesAndCosts: Set<string>;
+  feesAndCostsOther: string;
   latencyAssumptions: string;
   avgTradesPerDay: string;
   instrumentsVenuesLeverage: string;
@@ -100,6 +105,8 @@ type SerializedFormState = Omit<
   | "commercialPathTertiary"
   | "fundraisingChannels"
   | "dataGranularities"
+  | "orderTypes"
+  | "feesAndCosts"
 > & {
   assetGroups: string[];
   instrumentTypes: string[];
@@ -108,6 +115,8 @@ type SerializedFormState = Omit<
   commercialPathTertiary: string[];
   fundraisingChannels: string[];
   dataGranularities: string[];
+  orderTypes: string[];
+  feesAndCosts: string[];
 };
 
 const INITIAL_STATE: FormState = {
@@ -142,12 +151,17 @@ const INITIAL_STATE: FormState = {
   historicalWindow: "",
   dataGaps: "",
   triggerMethodology: "",
+  triggerMethodologyOther: "",
   decisionRule: "",
   positionLogic: "",
-  orderTypes: "",
+  positionLogicOther: "",
+  orderTypes: new Set(),
+  orderTypesOther: "",
   fillModel: "",
+  fillModelOther: "",
   capacityModel: "",
-  feesAndCosts: "",
+  feesAndCosts: new Set(),
+  feesAndCostsOther: "",
   latencyAssumptions: "",
   avgTradesPerDay: "",
   instrumentsVenuesLeverage: "",
@@ -205,6 +219,8 @@ function serializeState(state: FormState): SerializedFormState {
     commercialPathTertiary: [...state.commercialPathTertiary],
     fundraisingChannels: [...state.fundraisingChannels],
     dataGranularities: [...state.dataGranularities],
+    orderTypes: [...state.orderTypes],
+    feesAndCosts: [...state.feesAndCosts],
   };
 }
 
@@ -218,6 +234,9 @@ function deserializeState(raw: SerializedFormState): FormState {
     commercialPathTertiary: new Set(raw.commercialPathTertiary ?? []),
     fundraisingChannels: new Set(raw.fundraisingChannels ?? []),
     dataGranularities: new Set(raw.dataGranularities ?? []),
+    // Legacy drafts may still have strings where arrays are expected — guard.
+    orderTypes: new Set(Array.isArray(raw.orderTypes) ? raw.orderTypes : []),
+    feesAndCosts: new Set(Array.isArray(raw.feesAndCosts) ? raw.feesAndCosts : []),
   };
 }
 
@@ -342,7 +361,9 @@ export default function StrategyEvaluationPage() {
       | "commercialPathSecondary"
       | "commercialPathTertiary"
       | "fundraisingChannels"
-      | "dataGranularities",
+      | "dataGranularities"
+      | "orderTypes"
+      | "feesAndCosts",
     item: string,
   ) {
     setForm((prev) => {
@@ -1124,11 +1145,40 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Trigger methodology</Label>
-            <Input
-              placeholder="Time-based, event-based, hybrid"
-              value={form.triggerMethodology}
-              onChange={(e) => setField("triggerMethodology", e.target.value)}
-            />
+            <p className="text-xs text-muted-foreground">What prompts a decision to evaluate or trade?</p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "time_based", label: "Time-based", hint: "Periodic / scheduled evaluation (e.g. every minute, every bar close)" },
+                  { value: "event_based", label: "Event-based", hint: "Reacts to specific market events (fills, regime shifts, news, on-chain events)" },
+                  { value: "hybrid", label: "Hybrid", hint: "Mixes periodic cadence with event triggers" },
+                  { value: "other", label: "Other (describe below)" },
+                ] as { value: string; label: string; hint?: string }[]
+              ).map(({ value, label, hint }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="triggerMethodology"
+                    value={value}
+                    checked={form.triggerMethodology === value}
+                    onChange={() => setField("triggerMethodology", value)}
+                    className="mt-0.5"
+                  />
+                  <span>
+                    {label}
+                    {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {form.triggerMethodology === "other" && (
+              <Input
+                className="mt-2"
+                placeholder="Describe the trigger mechanism"
+                value={form.triggerMethodologyOther}
+                onChange={(e) => setField("triggerMethodologyOther", e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-1">
@@ -1142,29 +1192,126 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Position logic</Label>
-            <Input
-              placeholder="Position-dependent or position-independent"
-              value={form.positionLogic}
-              onChange={(e) => setField("positionLogic", e.target.value)}
-            />
+            <p className="text-xs text-muted-foreground">
+              Does each decision depend on current inventory, or does it stand alone?
+            </p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "dependent", label: "Position-dependent", hint: "Each decision considers existing position, leverage, unrealised P&L" },
+                  { value: "independent", label: "Position-independent", hint: "Each decision stands alone regardless of inventory (stateless signals)" },
+                  { value: "hybrid", label: "Hybrid", hint: "Some decisions stateless, others depend on state (e.g. sizing)" },
+                  { value: "other", label: "Other (describe below)" },
+                ] as { value: string; label: string; hint?: string }[]
+              ).map(({ value, label, hint }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="positionLogic"
+                    value={value}
+                    checked={form.positionLogic === value}
+                    onChange={() => setField("positionLogic", value)}
+                    className="mt-0.5"
+                  />
+                  <span>
+                    {label}
+                    {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {form.positionLogic === "other" && (
+              <Input
+                className="mt-2"
+                placeholder="Describe the position logic"
+                value={form.positionLogicOther}
+                onChange={(e) => setField("positionLogicOther", e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Order types assumed</Label>
-            <Input
-              placeholder="Market, limit, passive, aggressive, hybrid"
-              value={form.orderTypes}
-              onChange={(e) => setField("orderTypes", e.target.value)}
-            />
+            <p className="text-xs text-muted-foreground">Select all order types the backtest simulates.</p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "market", label: "Market orders", hint: "Cross the spread immediately" },
+                  { value: "limit_passive", label: "Limit — passive (post on book)", hint: "Join the queue; earn maker fees / spread" },
+                  { value: "limit_aggressive", label: "Limit — aggressive (crossing)", hint: "Cross through the book at a limit price" },
+                  { value: "ioc_fok", label: "IOC / FOK", hint: "Immediate-or-Cancel / Fill-or-Kill" },
+                  { value: "stop", label: "Stop / stop-limit", hint: "Triggered on price breach" },
+                  { value: "post_only", label: "Post-only", hint: "Reject if would cross the spread" },
+                  { value: "iceberg", label: "Iceberg / hidden", hint: "Size concealed from book" },
+                  { value: "algo", label: "Algorithmic (TWAP / VWAP / POV)", hint: "Slicing + pacing algorithms" },
+                  { value: "other", label: "Other (describe below)" },
+                ] as { value: string; label: string; hint?: string }[]
+              ).map(({ value, label, hint }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.orderTypes.has(value)}
+                    onChange={() => toggleSetItem("orderTypes", value)}
+                    className="mt-0.5"
+                  />
+                  <span>
+                    {label}
+                    {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {form.orderTypes.has("other") && (
+              <Input
+                className="mt-2"
+                placeholder="Describe the additional order types"
+                value={form.orderTypesOther}
+                onChange={(e) => setField("orderTypesOther", e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Fill model</Label>
-            <Input
-              placeholder="Spread crossing, book matching, queue assumptions"
-              value={form.fillModel}
-              onChange={(e) => setField("fillModel", e.target.value)}
-            />
+            <p className="text-xs text-muted-foreground">
+              How does the backtest decide when and at what price an order fills?
+            </p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "always_fill", label: "Always-fill at signal price", hint: "Zero execution alpha baseline — fills at the price requested" },
+                  { value: "spread_crossing", label: "Spread crossing", hint: "Pay the full bid-ask spread on every fill" },
+                  { value: "book_matching", label: "Book matching (L2 depth walk)", hint: "Walk L2 depth; larger orders pay worse prices" },
+                  { value: "queue_model", label: "Queue-position model", hint: "Simulates FIFO queue; maker fills depend on queue position at time of arrival" },
+                  { value: "participation", label: "Participation (% of volume)", hint: "Fill rate capped as a fraction of observed venue volume" },
+                  { value: "probabilistic", label: "Probabilistic / venue-historical", hint: "Fills drawn from a statistical model fitted to historical venue liquidity" },
+                  { value: "other", label: "Other (describe below)" },
+                ] as { value: string; label: string; hint?: string }[]
+              ).map(({ value, label, hint }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="fillModel"
+                    value={value}
+                    checked={form.fillModel === value}
+                    onChange={() => setField("fillModel", value)}
+                    className="mt-0.5"
+                  />
+                  <span>
+                    {label}
+                    {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {form.fillModel === "other" && (
+              <Input
+                className="mt-2"
+                placeholder="Describe the fill model"
+                value={form.fillModelOther}
+                onChange={(e) => setField("fillModelOther", e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-1">
@@ -1178,11 +1325,43 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Fees and execution costs</Label>
-            <Input
-              placeholder="Maker/taker, funding, borrow, gas, commissions"
-              value={form.feesAndCosts}
-              onChange={(e) => setField("feesAndCosts", e.target.value)}
-            />
+            <p className="text-xs text-muted-foreground">Select every cost component the backtest models.</p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "maker_taker", label: "Maker / taker fees", hint: "Venue fee schedule; may include tier-based rebates" },
+                  { value: "funding", label: "Funding rates (perpetuals)", hint: "Periodic funding paid / received on perpetual positions" },
+                  { value: "borrow", label: "Borrow / financing costs", hint: "Short borrow fees, margin financing, leverage costs" },
+                  { value: "gas", label: "Gas / network fees (on-chain)", hint: "EVM gas, priority fees, bridge costs" },
+                  { value: "commissions", label: "Commissions", hint: "TradFi broker / prime commission schedules" },
+                  { value: "slippage", label: "Slippage model", hint: "Explicit slippage charge per trade (separate from fill model)" },
+                  { value: "spread", label: "Spread cost", hint: "Half-spread charged on every fill, regardless of order type" },
+                  { value: "settlement", label: "Settlement / clearing", hint: "Exchange clearing, DvP settlement, T+N financing" },
+                  { value: "other", label: "Other (describe below)" },
+                ] as { value: string; label: string; hint?: string }[]
+              ).map(({ value, label, hint }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.feesAndCosts.has(value)}
+                    onChange={() => toggleSetItem("feesAndCosts", value)}
+                    className="mt-0.5"
+                  />
+                  <span>
+                    {label}
+                    {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                  </span>
+                </label>
+              ))}
+            </div>
+            {form.feesAndCosts.has("other") && (
+              <Input
+                className="mt-2"
+                placeholder="Describe the additional costs"
+                value={form.feesAndCostsOther}
+                onChange={(e) => setField("feesAndCostsOther", e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-1">
