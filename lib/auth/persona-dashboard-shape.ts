@@ -17,14 +17,12 @@ import type { StageVisibility } from "./persona-lifecycle-shape";
 import type { DashboardTileId } from "@/lib/config/services";
 
 export type { StageVisibility } from "./persona-lifecycle-shape";
+export type { DashboardTileId } from "@/lib/config/services";
 
 export type DashboardTileVisibility = Record<DashboardTileId, StageVisibility>;
 
 /** Sub-route-level visibility, keyed by tile id → sub-route key. */
-export type DashboardSubRouteVisibility = Record<
-  DashboardTileId,
-  Record<string, StageVisibility>
->;
+export type DashboardSubRouteVisibility = Record<DashboardTileId, Record<string, StageVisibility>>;
 
 const DEFAULT_TILE_SHAPE: DashboardTileVisibility = {
   dart: "locked",
@@ -74,9 +72,7 @@ const DEFAULT_SUBROUTE_SHAPE: DashboardSubRouteVisibility = {
   },
 };
 
-function tileOverride(
-  overrides: Partial<DashboardTileVisibility>,
-): DashboardTileVisibility {
+function tileOverride(overrides: Partial<DashboardTileVisibility>): DashboardTileVisibility {
   return { ...DEFAULT_TILE_SHAPE, ...overrides };
 }
 

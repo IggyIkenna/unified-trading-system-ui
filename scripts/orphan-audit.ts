@@ -32,7 +32,7 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "
 import { join, relative, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { filePathToRoute, resolveTemplate, routeToMatcher } from "./orphan-audit-lib.ts";
+import { filePathToRoute, resolveTemplate, routeToMatcher } from "./orphan-audit-lib";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -94,9 +94,7 @@ function walk(dir: string, acc: string[]): string[] {
 }
 
 const routeFiles = existsSync(APP_DIR) ? walk(APP_DIR, []) : [];
-const declaredRoutes = [
-  ...new Set(routeFiles.map((p) => filePathToRoute(p, APP_DIR))),
-].sort();
+const declaredRoutes = [...new Set(routeFiles.map((p) => filePathToRoute(p, APP_DIR)))].sort();
 
 // ─── Collect reachable hrefs ─────────────────────────────────────────────────
 // Walk source tree (app/, components/, hooks/, lib/) looking for every:
@@ -326,9 +324,7 @@ if (MODE === "blocking") {
   printReport();
   if (newOrphans.length > 0) {
     console.log("");
-    console.log(
-      `[orphan-audit] ❌ ${newOrphans.length} NEW orphan(s) introduced since baseline:`,
-    );
+    console.log(`[orphan-audit] ❌ ${newOrphans.length} NEW orphan(s) introduced since baseline:`);
     for (const o of newOrphans) console.log(`  - ${o}`);
     console.log("");
     console.log("Fix options:");
