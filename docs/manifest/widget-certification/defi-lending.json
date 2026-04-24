@@ -155,10 +155,10 @@
       "notes": "5.2-5.6: Human walkthrough required for execution flow verification."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests to be written after L5 human sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 17 tests covering render, operation toggle, amount input + reactive expected-output, health factor preview, execute-button enable/disable + executeDeFiOrder payload, protocol switching, empty-protocols AlertTriangle path. See tests/widgets/defi/defi-lending-widget.test.tsx. Pattern pilot for rollout per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md."
     },
     "l7": {
       "status": "pass",
