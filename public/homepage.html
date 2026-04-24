@@ -1175,6 +1175,8 @@
           grid-template-columns: 1fr !important;
           min-height: auto !important;
           overflow: visible !important;
+          min-width: 0;
+          width: 100%;
         }
 
         #explorerPanels {
@@ -1230,6 +1232,9 @@
 
         .explorer-preview {
           margin: 12px 0;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          max-width: 100%;
         }
 
         .prev-row {
@@ -1240,6 +1245,10 @@
           border-right: none !important;
           border-bottom: 1px solid rgba(255, 255, 255, 0.06);
           padding: 0 !important;
+          /* Grid default min-width:auto expands to tab content; lock to viewport so overflow-x scrolls on the nav */
+          min-width: 0;
+          max-width: 100%;
+          width: 100%;
         }
 
         /* Horizontally scrollable tab strip */
@@ -1248,10 +1257,14 @@
           flex-direction: row !important;
           flex-wrap: nowrap !important;
           gap: 0;
-          padding: 0;
+          padding: 0 4px;
           overflow-x: auto;
+          overflow-y: hidden;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
+          max-width: 100%;
+          width: 100%;
+          scroll-snap-type: x proximity;
         }
 
         .explorer-sidebar .explorer-nav::-webkit-scrollbar {
@@ -1264,6 +1277,7 @@
           border-bottom: 2px solid transparent;
           background: none !important;
           text-align: center;
+          scroll-snap-align: start;
         }
 
         .explorer-nav li.active {
@@ -1383,9 +1397,8 @@
             <path d="M3 12h18M12 3c2.5 3.5 4 7.2 4 9s-1.5 5.5-4 9c-2.5-3.5-4-7.2-4-9s1.5-5.5 4-9z" />
           </svg>
           <span>TradFi</span><span class="sep" aria-hidden="true">·</span><span>Crypto</span
-          ><span class="sep" aria-hidden="true">·</span><span>DeFi</span
-          ><span class="sep" aria-hidden="true">·</span><span>Sports</span
-          ><span class="sep" aria-hidden="true">·</span><span>Prediction Markets</span>
+          ><span class="sep" aria-hidden="true">·</span><span>DeFi</span><span class="sep" aria-hidden="true">·</span
+          ><span>Sports</span><span class="sep" aria-hidden="true">·</span><span>Prediction Markets</span>
         </div>
         <h1>Unified Trading Infrastructure</h1>
         <p class="subtitle">
@@ -1478,11 +1491,7 @@
           </a>
         </nav>
         <div class="hero-ctas">
-          <a
-            href="https://calendly.com/odum-ikenna"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-primary"
+          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-primary"
             >Discuss a Mandate</a
           >
           <a href="platform.html" class="btn btn-outline">Explore the Platform</a>
@@ -1555,7 +1564,6 @@
     <!-- Section-2 stats-strip removed 2026-04-22 — stats now live once, inside the hero (.hero-stats). -->
     <!-- The "Four commercial paths vs five service lines" caption is no longer rendered as a thin band; -->
     <!-- the in-hero service row + stat label "Service Lines" carry the same info inline. -->
-
 
     <!-- Galaxy visual + venue marquee -->
     <section class="galaxy-section section-pad">
@@ -1808,7 +1816,7 @@
             <span class="venue-pill venue-pill-violet">Uniswap V3</span>
             <span class="venue-pill venue-pill-violet">Morpho</span>
             <span class="venue-pill venue-pill-amber">Betfair</span>
-            
+
             <span class="venue-pill venue-pill-rose">Polymarket</span>
             <span class="venue-pill venue-pill-rose">Kalshi</span>
             <span class="venue-pill venue-pill-cyan">CME</span>
@@ -1821,7 +1829,7 @@
             <span class="venue-pill venue-pill-violet">Uniswap V3</span>
             <span class="venue-pill venue-pill-violet">Morpho</span>
             <span class="venue-pill venue-pill-amber">Betfair</span>
-            
+
             <span class="venue-pill venue-pill-rose">Polymarket</span>
             <span class="venue-pill venue-pill-rose">Kalshi</span>
           </div>
@@ -2685,18 +2693,16 @@
           <article class="feature">
             <h3 style="color: var(--amber)">Same platform, same infrastructure &mdash; your strategy, better</h3>
             <p>
-              The exact stack Odum uses to run its own book. Your strategy stays yours, exclusive to your
-              engagement, and inherits every layer of the platform beneath it. Not a watered-down client
-              version.
+              The exact stack Odum uses to run its own book. Your strategy stays yours, exclusive to your engagement,
+              and inherits every layer of the platform beneath it. Not a watered-down client version.
             </p>
           </article>
           <article class="feature">
             <h3 style="color: var(--primary)">Full lifecycle. Full universe.</h3>
             <p>
-              Six lifecycle stages &mdash; research, promote, run, post-trade, reporting, regulatory &mdash;
-              across all <strong>five asset categories</strong> (crypto, DeFi, TradFi, sports, prediction).
-              Not point tools stitched together; one operating system that carries a strategy from idea
-              through reconciliation.
+              Six lifecycle stages &mdash; research, promote, run, post-trade, reporting, regulatory &mdash; across all
+              <strong>five asset categories</strong> (crypto, DeFi, TradFi, sports, prediction). Not point tools
+              stitched together; one operating system that carries a strategy from idea through reconciliation.
             </p>
           </article>
           <article class="feature">
@@ -2720,29 +2726,27 @@
     <!-- ============ 5.5 ABOUT THE FIRM — identity + story split ============ -->
     <section class="section-pad">
       <div class="container">
-        <div class="section-header" style="max-width: 640px; margin: 0 auto 32px; text-align: center;">
+        <div class="section-header" style="max-width: 640px; margin: 0 auto 32px; text-align: center">
           <p class="eyebrow">About the firm</p>
           <h2>Who we are, and how we got here.</h2>
-          <p>
-            Two short reads &mdash; the firm as it stands today, and the dated timeline of how it came to be.
-          </p>
+          <p>Two short reads &mdash; the firm as it stands today, and the dated timeline of how it came to be.</p>
         </div>
-        <div class="card-grid card-grid-2" style="max-width: 860px; margin: 0 auto;">
-          <article class="card" style="text-align: center;">
+        <div class="card-grid card-grid-2" style="max-width: 860px; margin: 0 auto">
+          <article class="card" style="text-align: center">
             <h3>Who we are</h3>
             <p>
               The firm, the team, the regulatory posture, and what&rsquo;s live today. FCA 975797, London, professional
               and eligible counterparty clients.
             </p>
-            <a href="who-we-are.html" class="btn btn-outline" style="margin-top: 16px;">Read Who We Are &rarr;</a>
+            <a href="who-we-are.html" class="btn btn-outline" style="margin-top: 16px">Read Who We Are &rarr;</a>
           </article>
-          <article class="card" style="text-align: center;">
+          <article class="card" style="text-align: center">
             <h3>Our story</h3>
             <p>
               A timeline of how Odum came to be &mdash; trading desks from 2011, the HFT arb origin, FCA authorisation,
               and the commercial launch.
             </p>
-            <a href="/story" class="btn btn-outline" style="margin-top: 16px;">Read the timeline &rarr;</a>
+            <a href="/story" class="btn btn-outline" style="margin-top: 16px">Read the timeline &rarr;</a>
           </article>
         </div>
       </div>
