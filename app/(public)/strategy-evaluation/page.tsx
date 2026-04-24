@@ -36,7 +36,7 @@ interface FormState {
   strategyFamily: string;
   archetypeMarkers: Set<string>;
   pathwayDescription: string;
-  dataGranularity: string;
+  dataGranularities: Set<string>;
   historicalWindow: string;
   dataGaps: string;
   triggerMethodology: string;
@@ -99,6 +99,7 @@ type SerializedFormState = Omit<
   | "commercialPathSecondary"
   | "commercialPathTertiary"
   | "fundraisingChannels"
+  | "dataGranularities"
 > & {
   assetGroups: string[];
   instrumentTypes: string[];
@@ -106,6 +107,7 @@ type SerializedFormState = Omit<
   commercialPathSecondary: string[];
   commercialPathTertiary: string[];
   fundraisingChannels: string[];
+  dataGranularities: string[];
 };
 
 const INITIAL_STATE: FormState = {
@@ -136,7 +138,7 @@ const INITIAL_STATE: FormState = {
   strategyFamily: "",
   archetypeMarkers: new Set(),
   pathwayDescription: "",
-  dataGranularity: "",
+  dataGranularities: new Set(),
   historicalWindow: "",
   dataGaps: "",
   triggerMethodology: "",
@@ -202,6 +204,7 @@ function serializeState(state: FormState): SerializedFormState {
     commercialPathSecondary: [...state.commercialPathSecondary],
     commercialPathTertiary: [...state.commercialPathTertiary],
     fundraisingChannels: [...state.fundraisingChannels],
+    dataGranularities: [...state.dataGranularities],
   };
 }
 
@@ -214,6 +217,7 @@ function deserializeState(raw: SerializedFormState): FormState {
     commercialPathSecondary: new Set(raw.commercialPathSecondary ?? []),
     commercialPathTertiary: new Set(raw.commercialPathTertiary ?? []),
     fundraisingChannels: new Set(raw.fundraisingChannels ?? []),
+    dataGranularities: new Set(raw.dataGranularities ?? []),
   };
 }
 
@@ -337,7 +341,8 @@ export default function StrategyEvaluationPage() {
       | "archetypeMarkers"
       | "commercialPathSecondary"
       | "commercialPathTertiary"
-      | "fundraisingChannels",
+      | "fundraisingChannels"
+      | "dataGranularities",
     item: string,
   ) {
     setForm((prev) => {
@@ -1049,11 +1054,54 @@ export default function StrategyEvaluationPage() {
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Data granularity</Label>
-            <Input
-              placeholder="Tick / L2 / OHLCV / other"
-              value={form.dataGranularity}
-              onChange={(e) => setField("dataGranularity", e.target.value)}
-            />
+            <p className="text-xs text-muted-foreground">
+              Select every granularity the backtest relies on. Strategies often use L2 for signal generation
+              and trades for fill simulation — pick all that apply.
+            </p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  {
+                    value: "ohlcv",
+                    label: "OHLCV bars",
+                    hint: "Aggregated open/high/low/close/volume bars (1m / 5m / 1h / 1d etc.)",
+                  },
+                  {
+                    value: "trades",
+                    label: "Trades only (prints, no quotes)",
+                    hint: "Executed-print stream only — common for VWAP/TWAP algos and bar-generating systems",
+                  },
+                  {
+                    value: "l1",
+                    label: "L1 / top of book (BBO + trades)",
+                    hint: "Best bid + best ask + last trade, streaming",
+                  },
+                  {
+                    value: "l2",
+                    label: "L2 (aggregated depth + trades)",
+                    hint: "Multiple price levels per side, total size at each level, plus trade stream",
+                  },
+                  {
+                    value: "l3",
+                    label: "L3 (order-by-order, or per-block for on-chain)",
+                    hint: "Full order-level book (CeFi) or per-block state reconstruction (DeFi)",
+                  },
+                ] as { value: string; label: string; hint: string }[]
+              ).map(({ value, label, hint }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.dataGranularities.has(value)}
+                    onChange={() => toggleSetItem("dataGranularities", value)}
+                    className="mt-0.5"
+                  />
+                  <span>
+                    {label}
+                    <span className="block text-xs text-muted-foreground">{hint}</span>
+                  </span>
+                </label>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-1">
