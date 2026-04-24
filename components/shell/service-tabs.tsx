@@ -586,6 +586,12 @@ export const ADMIN_TABS: ServiceTab[] = [
     requiredEntitlement: "admin",
   },
   {
+    label: "Strategy Evaluations",
+    href: "/admin/strategy-evaluations",
+    matchPrefix: "/admin/strategy-evaluations",
+    requiredEntitlement: "admin",
+  },
+  {
     label: "Notifications",
     href: "/admin/notifications",
     matchPrefix: "/admin/notifications",

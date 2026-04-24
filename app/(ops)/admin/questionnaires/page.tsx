@@ -66,7 +66,7 @@ function toResolverInput(d: QuestionnaireDoc): QuestionnaireResponse {
     venue_scope: d.venue_scope ?? "all",
     strategy_style: (d.strategy_style ?? []) as QuestionnaireResponse["strategy_style"],
     service_family: (d.service_family ?? "DART") as QuestionnaireResponse["service_family"],
-    fund_structure: (d.fund_structure ?? "NA") as QuestionnaireResponse["fund_structure"],
+    fund_structure: (Array.isArray(d.fund_structure) ? d.fund_structure : d.fund_structure ? [d.fund_structure] : []) as QuestionnaireResponse["fund_structure"],
   };
 }
 

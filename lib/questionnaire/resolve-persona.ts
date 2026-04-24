@@ -25,6 +25,11 @@
  */
 
 import type { QuestionnaireResponse } from "@/lib/questionnaire/types";
+import type {
+  CoverageStatus,
+  StrategyCatalogueFilter,
+} from "@/lib/architecture-v2/catalogue-filter";
+import type { ShareClass, StrategyFamily, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
 
 export type ResolvedPersonaId =
   | "prospect-dart"
@@ -127,8 +132,8 @@ export function resolvePersonaFromQuestionnaire(
 
   switch (response.service_family) {
     case "IM": {
-      if (response.fund_structure === "SMA") return "prospect-im-sma";
-      // Pooled + NA default to pooled shape — commercial SSOT treats NA as
+      if ((response.fund_structure ?? []).includes("SMA")) return "prospect-im-sma";
+      // Pooled + NA + prop default to pooled shape — commercial SSOT treats NA/prop as
       // pooled for filter purposes.
       return "prospect-im-pooled";
     }
@@ -190,4 +195,96 @@ export function clearResolvedPersona(): void {
   } catch {
     // nothing to do
   }
+}
+
+const CATEGORY_TO_VENUE: Record<string, VenueCategoryV2> = {
+  CeFi: "CEFI",
+  DeFi: "DEFI",
+  TradFi: "TRADFI",
+  Sports: "SPORTS",
+  Prediction: "PREDICTION",
+};
+
+const STYLE_TO_FAMILY: Record<string, StrategyFamily> = {
+  ml_directional: "ML_DIRECTIONAL",
+  rules_directional: "RULES_DIRECTIONAL",
+  carry: "CARRY_AND_YIELD",
+  arbitrage: "ARBITRAGE_STRUCTURAL",
+  market_making: "MARKET_MAKING",
+  event_driven: "EVENT_DRIVEN",
+  vol_trading: "VOL_TRADING",
+  stat_arb: "STAT_ARB_PAIRS",
+};
+
+const SHARE_CLASS_MAP: Record<string, readonly ShareClass[]> = {
+  usd_only: ["USDT", "USDC", "USD", "GBP", "EUR"],
+  btc_neutral: ["BTC"],
+  eth_neutral: ["ETH"],
+};
+
+/**
+ * Map a `QuestionnaireResponse` to a pre-seeded `StrategyCatalogueFilter`
+ * for the FOMO/Explore tab. Rules-based expansion layer: carry + neutral
+ * also surfaces `ARBITRAGE_STRUCTURAL` (structural arb is market-neutral
+ * by construction and closely related to carry strategies).
+ */
+export function seedFiltersFromQuestionnaire(
+  r: QuestionnaireResponse,
+): StrategyCatalogueFilter {
+  const filter: {
+    families?: readonly StrategyFamily[];
+    venueCategories?: readonly VenueCategoryV2[];
+    shareClasses?: readonly ShareClass[];
+    coverageStatuses?: readonly CoverageStatus[];
+  } = {};
+
+  // categories → venue_category
+  if (r.categories?.length) {
+    const mapped = r.categories
+      .map((c) => CATEGORY_TO_VENUE[c])
+      .filter((v): v is VenueCategoryV2 => v !== undefined);
+    if (mapped.length) filter.venueCategories = mapped;
+  }
+
+  // strategy_style → families
+  let families: StrategyFamily[] = [];
+  if (r.strategy_style?.length) {
+    families = r.strategy_style
+      .map((s) => STYLE_TO_FAMILY[s])
+      .filter((f): f is StrategyFamily => f !== undefined);
+  }
+
+  // market_neutral expansion — if no styles chosen, derive from neutrality
+  if (r.market_neutral === "neutral") {
+    // Include ARBITRAGE_STRUCTURAL alongside CARRY_AND_YIELD (structural arb is neutral)
+    if (families.length > 0) {
+      if (families.includes("CARRY_AND_YIELD") && !families.includes("ARBITRAGE_STRUCTURAL")) {
+        families = [...families, "ARBITRAGE_STRUCTURAL"];
+      }
+    } else {
+      families = ["CARRY_AND_YIELD", "ARBITRAGE_STRUCTURAL", "MARKET_MAKING", "STAT_ARB_PAIRS"];
+    }
+  } else if (r.market_neutral === "directional" && families.length === 0) {
+    families = ["ML_DIRECTIONAL", "RULES_DIRECTIONAL", "EVENT_DRIVEN"];
+  }
+
+  if (families.length) filter.families = families;
+
+  // risk_profile → coverage_status preference
+  if (r.risk_profile === "low") {
+    filter.coverageStatuses = ["SUPPORTED"];
+  } else if (r.risk_profile === "high") {
+    filter.coverageStatuses = ["SUPPORTED", "PARTIAL"];
+  }
+
+  // share_class_preferences → shareClasses (union all selected, empty = no filter)
+  if (r.share_class_preferences && r.share_class_preferences.length > 0) {
+    const allClasses = r.share_class_preferences.flatMap(
+      (p) => SHARE_CLASS_MAP[p] ?? [],
+    );
+    const unique = [...new Set(allClasses)] as ShareClass[];
+    if (unique.length) filter.shareClasses = unique;
+  }
+
+  return filter;
 }

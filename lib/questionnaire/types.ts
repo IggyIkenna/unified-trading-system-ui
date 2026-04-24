@@ -83,11 +83,12 @@ export const QUESTIONNAIRE_SERVICE_FAMILIES: readonly QuestionnaireServiceFamily
   "combo",
 ] as const;
 
-export type QuestionnaireFundStructure = "SMA" | "Pooled" | "NA";
+export type QuestionnaireFundStructure = "SMA" | "Pooled" | "prop" | "NA";
 
 export const QUESTIONNAIRE_FUND_STRUCTURES: readonly QuestionnaireFundStructure[] = [
   "SMA",
   "Pooled",
+  "prop",
   "NA",
 ] as const;
 
@@ -114,12 +115,57 @@ export const QUESTIONNAIRE_LICENCE_REGIONS: readonly QuestionnaireLicenceRegion[
 ] as const;
 
 /**
+ * Market exposure preference axis (2026-04-24).
+ * Drives FOMO catalogue filter seeding in `seedFiltersFromQuestionnaire()`.
+ */
+export type QuestionnaireMarketNeutrality = "neutral" | "directional" | "both";
+
+export const QUESTIONNAIRE_MARKET_NEUTRALITIES: readonly QuestionnaireMarketNeutrality[] = [
+  "neutral",
+  "directional",
+  "both",
+] as const;
+
+/** Base currency / hedging preference axis (2026-04-24). */
+export type QuestionnaireShareClassPreference = "btc_neutral" | "eth_neutral" | "usd_only" | "any";
+
+export const QUESTIONNAIRE_SHARE_CLASS_PREFERENCES: readonly QuestionnaireShareClassPreference[] = [
+  "usd_only",
+  "btc_neutral",
+  "eth_neutral",
+  "any",
+] as const;
+
+/** Risk appetite axis (2026-04-24). */
+export type QuestionnaireRiskProfile = "low" | "medium" | "high";
+
+export const QUESTIONNAIRE_RISK_PROFILES: readonly QuestionnaireRiskProfile[] = [
+  "low",
+  "medium",
+  "high",
+] as const;
+
+/** Leverage tolerance axis (2026-04-24). */
+export type QuestionnaireLeveragePreference = "none" | "low" | "medium" | "any";
+
+export const QUESTIONNAIRE_LEVERAGE_PREFERENCES: readonly QuestionnaireLeveragePreference[] = [
+  "none",
+  "low",
+  "medium",
+  "any",
+] as const;
+
+/**
  * The response shape. The 6 base axes are always required; empty tuples
  * are allowed (vague response → base profile fallback in UAC overlay
  * logic). The 7 Reg-Umbrella axes (2026-04-21) are optional — collected
  * by the UI only when `service_family ∈ {RegUmbrella, combo}` and ignored
  * by persona-resolution + tile-lock overlay today. They surface in the
  * admin org detail view.
+ *
+ * The 5 strategy-preference axes (2026-04-24) are optional for all
+ * service families. They feed `seedFiltersFromQuestionnaire()` in the
+ * FOMO/Explore tab and the admin org detail view.
  */
 export interface QuestionnaireResponse {
   // ── Base 6 axes (required) ──────────────────────────────────────────
@@ -128,7 +174,7 @@ export interface QuestionnaireResponse {
   readonly venue_scope: readonly string[] | "all";
   readonly strategy_style: readonly QuestionnaireStrategyStyle[];
   readonly service_family: QuestionnaireServiceFamily;
-  readonly fund_structure: QuestionnaireFundStructure;
+  readonly fund_structure: readonly QuestionnaireFundStructure[];
 
   // ── Reg-Umbrella axes (optional) ────────────────────────────────────
   readonly licence_region?: QuestionnaireLicenceRegion | null;
@@ -138,6 +184,13 @@ export interface QuestionnaireResponse {
   readonly own_mlro?: boolean | null;
   readonly entity_jurisdiction?: string | null;
   readonly supported_currencies?: readonly string[];
+
+  // ── Strategy-preference axes (optional; 2026-04-24) ─────────────────
+  readonly market_neutral?: QuestionnaireMarketNeutrality | null;
+  readonly share_class_preferences?: readonly QuestionnaireShareClassPreference[];
+  readonly risk_profile?: QuestionnaireRiskProfile | null;
+  readonly target_sharpe_min?: number | null;
+  readonly leverage_preference?: QuestionnaireLeveragePreference | null;
 }
 
 /**

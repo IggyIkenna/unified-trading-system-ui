@@ -155,13 +155,15 @@ export function readLocalSubmission(): QuestionnaireResponse | null {
     // Strip helper fields before returning the pure response.
     const { categories, instrument_types, venue_scope, strategy_style, service_family, fund_structure } =
       parsed;
+    // fund_structure was stored as a string in older records; normalise to array.
+    const normFundStructure = Array.isArray(fund_structure) ? fund_structure : (fund_structure ? [fund_structure] : []);
     return {
       categories,
       instrument_types,
       venue_scope,
       strategy_style,
       service_family,
-      fund_structure,
+      fund_structure: normFundStructure,
     };
   } catch {
     return null;

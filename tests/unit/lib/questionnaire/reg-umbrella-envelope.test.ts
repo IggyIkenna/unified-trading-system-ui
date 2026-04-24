@@ -29,7 +29,7 @@ const BASE_RESPONSE: QuestionnaireResponse = {
   venue_scope: "all",
   strategy_style: ["carry"],
   service_family: "RegUmbrella",
-  fund_structure: "SMA",
+  fund_structure: ["SMA"],
 };
 
 const REG_ENVELOPE: QuestionnaireEnvelope = {

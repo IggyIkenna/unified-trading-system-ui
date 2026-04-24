@@ -228,7 +228,18 @@ export const PERSONAS: readonly AuthPersona[] = [
     org: { id: "elysium", name: "Elysium" },
     entitlements: ["data-pro", "execution-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
     description:
-      "DeFi client demo. DeFi trading tab + general terminal. Strategy families LOCKED. Sports/Predictions/Options LOCKED.",
+      "DeFi client demo (base tier). Execution + reporting only. Strategy catalogue locked — use elysium-defi-full toggle to preview upgrade.",
+  },
+  {
+    id: "elysium-defi-full",
+    email: "patrick@bankelysium.com",
+    password: "demo",
+    displayName: "Patrick",
+    role: "client",
+    org: { id: "elysium", name: "Elysium" },
+    entitlements: ["data-pro", "execution-full", "strategy-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
+    description:
+      "DeFi client demo (upgrade preview). Adds strategy-full — shows CARRY_BASIS_PERP + CARRY_STAKED_BASIS catalogue, recursive staked locked as next tier.",
   },
   {
     id: "prospect-dart",
@@ -320,6 +331,49 @@ export const PERSONAS: readonly AuthPersona[] = [
     ],
     description:
       "Reg Umbrella + DART Signals-In prospect running cross-exchange perp-funding arbitrage (CeFi + DeFi).",
+  },
+
+  // ── Desmond H-W — real-email staging demo (2026-04-24) ───────────────────
+  // Two personas sharing the same email: getPersonaByEmail() returns the first
+  // match (dart-full) on login. The DemoPlanToggle switches tiers via
+  // getPersonaById("desmond-signals-in") directly. Pre-seeded questionnaire:
+  // CeFi+DeFi, perp, carry+arb+stat_arb, neutral, low risk, low leverage.
+  {
+    id: "desmond-dart-full",
+    email: "desmondhw@gmail.com",
+    password: "odum-demo-2026",
+    displayName: "Desmond H-W",
+    role: "client",
+    org: { id: "desmond-capital", name: "Desmond Capital" },
+    entitlements: [
+      "investor-relations",
+      "investor-platform",
+      "data-pro",
+      "execution-full",
+      "ml-full",
+      "strategy-full",
+      "reporting",
+    ],
+    description:
+      "Desmond (DART Full) — funding rate arb, stable yield, market-neutral, CeFi+DeFi, perp-only. Full Research/Promote access.",
+  },
+  {
+    id: "desmond-signals-in",
+    email: "desmondhw@gmail.com",
+    password: "odum-demo-2026",
+    displayName: "Desmond H-W",
+    role: "client",
+    org: { id: "desmond-capital", name: "Desmond Capital" },
+    entitlements: [
+      "investor-relations",
+      "investor-platform",
+      "data-pro",
+      "execution-full",
+      "reporting",
+      // no strategy-full / ml-full → Research + Promote sub-routes are gated
+    ],
+    description:
+      "Desmond (Signals-In) — same universe as DART Full; Research/Promote locked. Toggle from desmond-dart-full to compare tiers.",
   },
 ] as const;
 

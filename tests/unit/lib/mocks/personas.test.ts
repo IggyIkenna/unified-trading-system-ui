@@ -70,9 +70,18 @@ describe("PERSONAS", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("all personas have unique emails", () => {
-    const emails = PERSONAS.map((p) => p.email);
-    expect(new Set(emails).size).toBe(emails.length);
+  it("all personas have unique emails except known demo-toggle pairs", () => {
+    // desmondhw@gmail.com is intentionally shared between desmond-dart-full and
+    // desmond-signals-in — the DemoPlanToggle switches tiers via persona ID directly.
+    const knownSharedEmails = new Set(["desmondhw@gmail.com", "patrick@bankelysium.com"]);
+    const emailCount = new Map<string, number>();
+    for (const email of PERSONAS.map((p) => p.email)) {
+      emailCount.set(email, (emailCount.get(email) ?? 0) + 1);
+    }
+    const unexpectedDuplicates = [...emailCount.entries()].filter(
+      ([email, count]) => count > 1 && !knownSharedEmails.has(email),
+    );
+    expect(unexpectedDuplicates).toHaveLength(0);
   });
 });
 

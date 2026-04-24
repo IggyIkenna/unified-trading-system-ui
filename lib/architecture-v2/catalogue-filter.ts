@@ -19,6 +19,7 @@ import type {
   ShareClass,
   StrategyArchetype,
   StrategyFamily,
+  VenueCategoryV2,
 } from "./enums";
 
 export type AllocationStatus =
@@ -27,14 +28,24 @@ export type AllocationStatus =
   | "coming_soon"
   | "not_routed";
 
+export type CoverageStatus = "SUPPORTED" | "PARTIAL" | "BLOCKED";
+
 export interface StrategyCatalogueFilter {
   readonly family?: StrategyFamily;
+  /** Multi-family filter — used by questionnaire seeding. Superset of `family`. */
+  readonly families?: readonly StrategyFamily[];
   readonly archetype?: StrategyArchetype;
   readonly venueSetVariant?: VenueSetVariantId;
   readonly shareClass?: ShareClass;
+  /** Multi-share-class filter from questionnaire share_class_preference. */
+  readonly shareClasses?: readonly ShareClass[];
   readonly maturityPhase?: StrategyMaturityPhase;
   readonly productRouting?: ProductRouting;
   readonly allocationStatus?: AllocationStatus;
+  /** Venue category filter — from questionnaire categories axis. */
+  readonly venueCategories?: readonly VenueCategoryV2[];
+  /** Coverage status filter — from questionnaire risk_profile axis. */
+  readonly coverageStatuses?: readonly CoverageStatus[];
 }
 
 export const EMPTY_CATALOGUE_FILTER: StrategyCatalogueFilter = {};
@@ -48,12 +59,16 @@ export function serialiseCatalogueFilter(
 ): Record<string, string> {
   const out: Record<string, string> = {};
   if (filter.family) out.family = filter.family;
+  if (filter.families?.length) out.families = filter.families.join(",");
   if (filter.archetype) out.archetype = filter.archetype;
   if (filter.venueSetVariant) out.venue_set = filter.venueSetVariant;
   if (filter.shareClass) out.share_class = filter.shareClass;
+  if (filter.shareClasses?.length) out.share_classes = filter.shareClasses.join(",");
   if (filter.maturityPhase) out.maturity = filter.maturityPhase;
   if (filter.productRouting) out.routing = filter.productRouting;
   if (filter.allocationStatus) out.allocation = filter.allocationStatus;
+  if (filter.venueCategories?.length) out.venue_categories = filter.venueCategories.join(",");
+  if (filter.coverageStatuses?.length) out.coverage_statuses = filter.coverageStatuses.join(",");
   return out;
 }
 
@@ -74,16 +89,23 @@ export function parseCatalogueFilter(
 
   const out: {
     family?: StrategyFamily;
+    families?: readonly StrategyFamily[];
     archetype?: StrategyArchetype;
     venueSetVariant?: VenueSetVariantId;
     shareClass?: ShareClass;
+    shareClasses?: readonly ShareClass[];
     maturityPhase?: StrategyMaturityPhase;
     productRouting?: ProductRouting;
     allocationStatus?: AllocationStatus;
+    venueCategories?: readonly VenueCategoryV2[];
+    coverageStatuses?: readonly CoverageStatus[];
   } = {};
 
   const family = get("family");
   if (family) out.family = family as StrategyFamily;
+
+  const familiesRaw = get("families");
+  if (familiesRaw) out.families = familiesRaw.split(",").filter(Boolean) as StrategyFamily[];
 
   const archetype = get("archetype");
   if (archetype) out.archetype = archetype as StrategyArchetype;
@@ -91,14 +113,17 @@ export function parseCatalogueFilter(
   const venueSet = get("venue_set");
   if (venueSet) out.venueSetVariant = venueSet;
 
+  const VALID_SHARE_CLASSES = ["USDT", "USDC", "FDUSD", "USD", "GBP", "EUR", "ETH", "BTC", "SOL"] as const;
+
   const shareClass = get("share_class");
-  if (
-    shareClass &&
-    ["USDT", "USDC", "FDUSD", "USD", "GBP", "EUR", "ETH", "BTC", "SOL"].includes(
-      shareClass,
-    )
-  ) {
+  if (shareClass && (VALID_SHARE_CLASSES as readonly string[]).includes(shareClass)) {
     out.shareClass = shareClass as ShareClass;
+  }
+
+  const shareClassesRaw = get("share_classes");
+  if (shareClassesRaw) {
+    const parsed = shareClassesRaw.split(",").filter((s) => (VALID_SHARE_CLASSES as readonly string[]).includes(s));
+    if (parsed.length) out.shareClasses = parsed as ShareClass[];
   }
 
   const maturity = get("maturity");
@@ -115,6 +140,20 @@ export function parseCatalogueFilter(
     ["subscribed", "available", "coming_soon", "not_routed"].includes(allocation)
   ) {
     out.allocationStatus = allocation as AllocationStatus;
+  }
+
+  const venueCatsRaw = get("venue_categories");
+  if (venueCatsRaw) {
+    const valid: string[] = ["CEFI", "DEFI", "SPORTS", "TRADFI", "PREDICTION"];
+    const parsed = venueCatsRaw.split(",").filter((c) => valid.includes(c));
+    if (parsed.length) out.venueCategories = parsed as VenueCategoryV2[];
+  }
+
+  const coverageRaw = get("coverage_statuses");
+  if (coverageRaw) {
+    const valid: string[] = ["SUPPORTED", "PARTIAL", "BLOCKED"];
+    const parsed = coverageRaw.split(",").filter((c) => valid.includes(c));
+    if (parsed.length) out.coverageStatuses = parsed as CoverageStatus[];
   }
 
   return out;
@@ -134,9 +173,12 @@ export function matchesFilter(
     readonly maturityPhase?: StrategyMaturityPhase;
     readonly productRouting?: ProductRouting;
     readonly allocationStatus?: AllocationStatus;
+    readonly venueCategory?: VenueCategoryV2 | null;
+    readonly coverageStatus?: CoverageStatus | null;
   },
 ): boolean {
   if (filter.family && instance.family !== filter.family) return false;
+  if (filter.families?.length && !filter.families.includes(instance.family)) return false;
   if (filter.archetype && instance.archetype !== filter.archetype) return false;
   if (
     filter.venueSetVariant &&
@@ -145,6 +187,13 @@ export function matchesFilter(
     return false;
   }
   if (filter.shareClass && instance.shareClass !== filter.shareClass) return false;
+  if (
+    filter.shareClasses?.length &&
+    instance.shareClass &&
+    !filter.shareClasses.includes(instance.shareClass)
+  ) {
+    return false;
+  }
   if (filter.maturityPhase && instance.maturityPhase !== filter.maturityPhase) {
     return false;
   }
@@ -154,6 +203,20 @@ export function matchesFilter(
   if (
     filter.allocationStatus &&
     instance.allocationStatus !== filter.allocationStatus
+  ) {
+    return false;
+  }
+  if (
+    filter.venueCategories?.length &&
+    instance.venueCategory &&
+    !filter.venueCategories.includes(instance.venueCategory)
+  ) {
+    return false;
+  }
+  if (
+    filter.coverageStatuses?.length &&
+    instance.coverageStatus &&
+    !filter.coverageStatuses.includes(instance.coverageStatus)
   ) {
     return false;
   }

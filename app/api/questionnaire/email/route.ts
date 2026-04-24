@@ -27,7 +27,13 @@ export async function POST(request: Request) {
     serviceFamily?: string;
     submissionId?: string;
     categories?: string[];
-    fundStructure?: string;
+    fundStructure?: string[];
+    strategyStyle?: string[];
+    marketNeutral?: string;
+    shareClassPreferences?: string[];
+    riskProfile?: string;
+    targetSharpeMin?: string;
+    leveragePreference?: string;
   };
 
   try {
@@ -36,7 +42,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { email, firmName, serviceFamily, submissionId, categories, fundStructure } = body;
+  const {
+    email, firmName, serviceFamily, submissionId, categories, fundStructure,
+    strategyStyle, marketNeutral, shareClassPreferences, riskProfile,
+    targetSharpeMin, leveragePreference,
+  } = body;
   const serviceName =
     SERVICE_FAMILY_LABELS[serviceFamily ?? ""] ?? serviceFamily ?? "Odum Platform";
   const displayName = firmName || email || "prospect";
@@ -80,7 +90,13 @@ export async function POST(request: Request) {
     ["Email", email || "—"],
     ["Service family", serviceName],
     ["Categories", (categories ?? []).join(", ") || "—"],
-    ["Fund structure", fundStructure || "—"],
+    ["Strategy styles", (strategyStyle ?? []).join(", ") || "—"],
+    ["Fund structure", (fundStructure ?? []).join(", ") || "—"],
+    ["Market exposure", marketNeutral || "—"],
+    ["Risk profile", riskProfile || "—"],
+    ["Leverage preference", leveragePreference || "—"],
+    ["Share class preference", (shareClassPreferences ?? []).join(", ") || "—"],
+    ["Target Sharpe min", targetSharpeMin || "—"],
     ["Submission ID", submissionId || "—"],
   ]
     .map(

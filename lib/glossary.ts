@@ -254,13 +254,169 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     id: "regulatory-umbrella",
     label: "Regulatory Umbrella",
     definition:
-      "Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage).",
+      "Odum's FCA-regulated wrapper allowing clients to operate regulated activity under Odum's permissions (AIFM, AR, MiFID II coverage). Cross-cutting — can overlay any engagement shape regardless of who holds the exchange API keys.",
   },
   "investment-management": {
     id: "im",
     label: "Investment Management",
     definition:
       "Investment Management — Odum allocates client capital to its own systematic strategies under Odum's FCA permissions, reporting on the shared operating surface.",
+  },
+  "prediction-markets": {
+    id: "prediction-markets",
+    label: "prediction markets",
+    definition:
+      "Markets where participants buy and sell contracts that pay out based on real-world event outcomes — elections, economic data, sports results. Includes crypto-native platforms (e.g. Polymarket) and regulated exchanges (e.g. Kalshi). Odum covers both event-settled and continuous prediction market instruments.",
+  },
+  prop: {
+    id: "prop",
+    label: "prop desk",
+    definition:
+      "Proprietary trading — the manager trades the firm's own capital, or a principal's capital, rather than managing a pooled fund or separately managed account.",
+  },
+  archetype: {
+    id: "archetype",
+    label: "archetype",
+    definition:
+      "Odum's taxonomy of strategy execution patterns — e.g. ML directional (continuous), carry basis (perp or dated), market making, stat-arb pairs. Archetypes map to DART execution workflows and reporting views.",
+  },
+  "market-making": {
+    id: "market-making",
+    label: "market making",
+    definition:
+      "A strategy that continuously quotes two-sided markets, earning the bid-ask spread. Requires low latency, inventory management, and adverse-selection controls.",
+  },
+  "treasury-management": {
+    id: "treasury-management",
+    label: "treasury management",
+    definition:
+      "Active management of idle capital across venues, chains, or currencies — sweep accounts, stablecoin yield, collateral optimisation, and inter-venue transfer flows.",
+  },
+  "execution-alpha": {
+    id: "execution-alpha",
+    label: "execution alpha",
+    definition:
+      "The P&L improvement from superior execution — slippage reduction, queue priority, latency optimisation, smart order routing, and post-trade analysis. Separate from strategy (signal) alpha.",
+  },
+
+  // ── Instrument types ─────────────────────────────────────────────────────
+  spot: {
+    id: "spot",
+    label: "spot",
+    definition:
+      "Immediate delivery instruments traded at the current market price. No expiry, no leverage embedded — P&L is simply the price change on the position held.",
+  },
+  "dated-future": {
+    id: "dated-future",
+    label: "dated future",
+    definition:
+      "A standardised contract to buy or sell an asset at a fixed price on a specified future date. Unlike perpetuals, dated futures converge to spot at expiry and carry no funding rate.",
+  },
+  options: {
+    id: "options",
+    label: "options",
+    definition:
+      "Contracts giving the holder the right — but not the obligation — to buy (call) or sell (put) an asset at a strike price before or at expiry. Pricing depends on implied volatility, time to expiry, and delta.",
+  },
+  lending: {
+    id: "lending",
+    label: "lending",
+    definition:
+      "Earning yield by lending assets to borrowers via CeFi platforms (e.g. margin lending) or DeFi protocols (e.g. Aave, Compound). Return is the interest rate minus counterparty and smart-contract risk.",
+  },
+  staking: {
+    id: "staking",
+    label: "staking",
+    definition:
+      "Locking proof-of-stake tokens to participate in network validation and earn staking rewards. Includes native staking, liquid staking (e.g. stETH), and recursive/leveraged staking strategies.",
+  },
+  lp: {
+    id: "lp",
+    label: "LP / liquidity provision",
+    definition:
+      "Depositing two-sided assets into an AMM pool (e.g. Uniswap, Curve) to earn trading fees. Carries impermanent loss risk when asset prices diverge relative to the pool's price when liquidity was added.",
+  },
+  "event-settled": {
+    id: "event-settled",
+    label: "event-settled markets",
+    definition:
+      "Instruments whose settlement is determined by a discrete real-world event rather than continuous price — sports match outcomes, election results, economic data releases. Payoff is binary or bracket-based.",
+  },
+
+  // ── Strategy families ────────────────────────────────────────────────────
+  "ml-directional": {
+    id: "ml-directional",
+    label: "ML Directional",
+    definition:
+      "Strategies that use machine-learning models (gradient boosting, neural nets, transformers, etc.) to predict the direction of price movement. Signal is a probability or score output by the model.",
+  },
+  "rules-directional": {
+    id: "rules-directional",
+    label: "Rules Directional",
+    definition:
+      "Strategies based on deterministic logic — technical indicators, statistical thresholds, or heuristics — to generate buy/sell signals. No ML training loop; logic is explicit and auditable.",
+  },
+  "carry-yield": {
+    id: "carry-yield",
+    label: "Carry & Yield",
+    definition:
+      "Strategies that earn a premium from holding an asset or position over time — funding rates on perpetuals, basis between spot and futures, staking rewards, or lending yield. Return comes from the carry, not price direction.",
+  },
+  arbitrage: {
+    id: "arbitrage",
+    label: "Arbitrage / Structural Edge",
+    definition:
+      "Strategies that exploit price discrepancies across venues, time, or related instruments — cross-exchange arb, liquidation capture, funding arb, or index rebalancing front-running. Edge is structural rather than predictive.",
+  },
+  "event-driven": {
+    id: "event-driven",
+    label: "Event-Driven",
+    definition:
+      "Strategies that trade around scheduled or unscheduled events — earnings, data releases, token unlocks, governance votes, sports fixtures. Alpha comes from predicting or reacting to the event outcome.",
+  },
+  "vol-trading": {
+    id: "vol-trading",
+    label: "Vol Trading",
+    definition:
+      "Strategies that trade implied vs realised volatility, volatility surface shape (skew, term structure), or volatility regime. Typically use options or variance products; alpha comes from volatility mispricing.",
+  },
+
+  // ── Archetypes ───────────────────────────────────────────────────────────
+  "carry-basis-perp": {
+    id: "carry-basis-perp",
+    label: "carry basis (perp or dated)",
+    definition:
+      "Long spot / short perpetual (or dated future) to earn the funding rate or basis. Market-neutral on direction; P&L is the spread between spot and derivative. Risk is basis blowout and execution cost.",
+  },
+  "staked-basis": {
+    id: "staked-basis",
+    label: "staked basis / recursive staking",
+    definition:
+      "Using liquid staking tokens (e.g. stETH) as collateral to borrow, buy more staking tokens, and repeat — capturing the spread between staking yield and borrow rate. Risk is liquidation if collateral value drops sharply.",
+  },
+  "yield-rotation": {
+    id: "yield-rotation",
+    label: "yield rotation / staking simple",
+    definition:
+      "Rotating capital between staking protocols, lending pools, or yield sources as rates change. Simple version: single-asset staking; advanced version: active rebalancing across multiple yield venues.",
+  },
+  "arb-price-dispersion": {
+    id: "arb-price-dispersion",
+    label: "arbitrage price dispersion / liquidation capture",
+    definition:
+      "Captures price gaps across venues (cross-exchange arb) or profits from forced liquidations at distressed prices. Requires fast execution and precise cost modelling to net positive after fees and slippage.",
+  },
+  "vol-trading-archetype": {
+    id: "vol-trading-archetype",
+    label: "vol trading (options / surface / skew)",
+    definition:
+      "Trading implied volatility directly via options — selling expensive vol, buying cheap vol, trading skew steepening/flattening, or exploiting surface dislocations between strikes and expiries.",
+  },
+  "stat-arb-pairs": {
+    id: "stat-arb-pairs",
+    label: "stat-arb pairs / cross-sectional",
+    definition:
+      "Pairs stat-arb trades correlated instruments when they diverge beyond a z-score threshold, expecting mean reversion. Cross-sectional stat-arb ranks a basket by a factor (momentum, value) and goes long/short the spread.",
   },
 };
 

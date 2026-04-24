@@ -19,7 +19,7 @@ function build(
     venue_scope: "all",
     strategy_style: [],
     service_family: "DART",
-    fund_structure: "NA",
+    fund_structure: [],
     ...overrides,
   };
 }
@@ -47,17 +47,27 @@ describe("resolvePersonaFromQuestionnaire", () => {
   });
 
   it("IM + SMA -> prospect-im-sma", () => {
-    const res = build({ service_family: "IM", fund_structure: "SMA" });
+    const res = build({ service_family: "IM", fund_structure: ["SMA"] });
+    expect(resolvePersonaFromQuestionnaire(res)).toBe("prospect-im-sma");
+  });
+
+  it("IM + SMA + prop (multi) -> prospect-im-sma (SMA wins)", () => {
+    const res = build({ service_family: "IM", fund_structure: ["SMA", "prop"] });
     expect(resolvePersonaFromQuestionnaire(res)).toBe("prospect-im-sma");
   });
 
   it("IM + Pooled -> prospect-im-pooled", () => {
-    const res = build({ service_family: "IM", fund_structure: "Pooled" });
+    const res = build({ service_family: "IM", fund_structure: ["Pooled"] });
     expect(resolvePersonaFromQuestionnaire(res)).toBe("prospect-im-pooled");
   });
 
-  it("IM + NA -> prospect-im-pooled (pooled default)", () => {
-    const res = build({ service_family: "IM", fund_structure: "NA" });
+  it("IM + prop -> prospect-im-pooled (prop maps to pooled shape)", () => {
+    const res = build({ service_family: "IM", fund_structure: ["prop"] });
+    expect(resolvePersonaFromQuestionnaire(res)).toBe("prospect-im-pooled");
+  });
+
+  it("IM + empty fund_structure -> prospect-im-pooled (default)", () => {
+    const res = build({ service_family: "IM", fund_structure: [] });
     expect(resolvePersonaFromQuestionnaire(res)).toBe("prospect-im-pooled");
   });
 

@@ -91,6 +91,64 @@ export class DemoAuthProvider implements AuthProvider {
     this.token = `demo-token-${persona.id}`;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.user));
     localStorage.setItem(TOKEN_KEY, this.token);
+    const QUESTIONNAIRE_PRESEEDS: Record<string, object> = {
+      "desmond-signals-in": {
+        categories: ["CeFi", "DeFi"],
+        instrument_types: ["perp"],
+        venue_scope: "all",
+        strategy_style: ["carry", "arbitrage", "stat_arb"],
+        service_family: "DART",
+        fund_structure: ["prop"],
+        market_neutral: "neutral",
+        share_class_preferences: [],
+        risk_profile: "low",
+        leverage_preference: "low",
+        target_sharpe_min: null,
+      },
+      "desmond-dart-full": {
+        categories: ["CeFi", "DeFi"],
+        instrument_types: ["perp"],
+        venue_scope: "all",
+        strategy_style: ["carry", "arbitrage", "stat_arb"],
+        service_family: "DART",
+        fund_structure: ["prop"],
+        market_neutral: "neutral",
+        share_class_preferences: [],
+        risk_profile: "low",
+        leverage_preference: "low",
+        target_sharpe_min: null,
+      },
+      "elysium-defi": {
+        categories: ["CeFi", "DeFi"],
+        instrument_types: ["perp", "staking"],
+        venue_scope: "all",
+        strategy_style: ["carry"],
+        service_family: "DART",
+        fund_structure: ["prop"],
+        market_neutral: "neutral",
+        share_class_preferences: [],
+        risk_profile: "low",
+        leverage_preference: "low",
+        target_sharpe_min: null,
+      },
+      "elysium-defi-full": {
+        categories: ["CeFi", "DeFi"],
+        instrument_types: ["perp", "staking"],
+        venue_scope: "all",
+        strategy_style: ["carry"],
+        service_family: "DART",
+        fund_structure: ["prop"],
+        market_neutral: "neutral",
+        share_class_preferences: [],
+        risk_profile: "low",
+        leverage_preference: "low",
+        target_sharpe_min: null,
+      },
+    };
+    const preseed = QUESTIONNAIRE_PRESEEDS[persona.id];
+    if (preseed) {
+      localStorage.setItem("questionnaire-response-v1", JSON.stringify(preseed));
+    }
     return this.user;
   }
 

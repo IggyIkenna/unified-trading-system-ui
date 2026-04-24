@@ -178,7 +178,7 @@ function QuestionnaireAxes({ doc }: { doc: StoredQuestionnaire }) {
 
       <SectionHeading>Service</SectionHeading>
       <DefEntry label="Service family" value={doc.service_family ?? "—"} />
-      <DefEntry label="Fund structure" value={doc.fund_structure ?? "—"} />
+      <DefEntry label="Fund structure" value={Array.isArray(doc.fund_structure) ? (doc.fund_structure as string[]).join(", ") || "—" : (doc.fund_structure ?? "—")} />
 
       <SectionHeading>Coverage</SectionHeading>
       <DefEntry label="Categories" value={listOrDash(doc.categories)} />

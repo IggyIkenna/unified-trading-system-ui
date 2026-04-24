@@ -31,14 +31,17 @@ import type {
   QuestionnaireEnvelope,
   QuestionnaireFundStructure,
   QuestionnaireInstrumentType,
+  QuestionnaireLeveragePreference,
   QuestionnaireLicenceRegion,
+  QuestionnaireMarketNeutrality,
   QuestionnaireResponse,
+  QuestionnaireRiskProfile,
   QuestionnaireServiceFamily,
+  QuestionnaireShareClassPreference,
   QuestionnaireStrategyStyle,
 } from "@/lib/questionnaire/types";
 import {
   QUESTIONNAIRE_CATEGORIES,
-  QUESTIONNAIRE_FUND_STRUCTURES,
   QUESTIONNAIRE_INSTRUMENT_TYPES,
   QUESTIONNAIRE_LICENCE_REGIONS,
   QUESTIONNAIRE_SERVICE_FAMILIES,
@@ -52,7 +55,9 @@ import {
 import {
   persistResolvedPersona,
   resolvePersonaFromQuestionnaire,
+  seedFiltersFromQuestionnaire,
 } from "@/lib/questionnaire/resolve-persona";
+import { serialiseCatalogueFilter } from "@/lib/architecture-v2/catalogue-filter";
 
 /** Canonical 4217 short-list offered as checkboxes before "Other" fallback. */
 const COMMON_CURRENCIES: readonly string[] = [
@@ -76,7 +81,14 @@ interface FormState {
   venue_scope_csv: string;
   strategy_style: Set<QuestionnaireStrategyStyle>;
   service_family: QuestionnaireServiceFamily;
-  fund_structure: QuestionnaireFundStructure;
+  fund_structure: Set<QuestionnaireFundStructure>;
+
+  // Strategy-preference axes (optional for all service families)
+  market_neutral: QuestionnaireMarketNeutrality | null;
+  share_class_preferences: Set<QuestionnaireShareClassPreference>;
+  risk_profile: QuestionnaireRiskProfile | null;
+  target_sharpe_min_str: string;
+  leverage_preference: QuestionnaireLeveragePreference | null;
 
   // Reg-Umbrella axes
   licence_region: QuestionnaireLicenceRegion | null;
@@ -116,13 +128,26 @@ function buildResponse(state: FormState): QuestionnaireResponse {
           .map((v) => v.trim())
           .filter((v) => v.length > 0);
 
+  const sharpeVal = parseFloat(state.target_sharpe_min_str);
+  const strategyPrefs: Pick<
+    QuestionnaireResponse,
+    "market_neutral" | "share_class_preferences" | "risk_profile" | "target_sharpe_min" | "leverage_preference"
+  > = {
+    market_neutral: state.market_neutral,
+    share_class_preferences: [...state.share_class_preferences],
+    risk_profile: state.risk_profile,
+    target_sharpe_min: isNaN(sharpeVal) ? null : sharpeVal,
+    leverage_preference: state.leverage_preference,
+  };
+
   const base: QuestionnaireResponse = {
     categories: [...state.categories],
     instrument_types: [...state.instrument_types],
     venue_scope,
     strategy_style: [...state.strategy_style],
     service_family: state.service_family,
-    fund_structure: state.fund_structure,
+    fund_structure: [...state.fund_structure],
+    ...strategyPrefs,
   };
 
   if (!isRegUmbrellaPath(state.service_family)) {
@@ -164,7 +189,7 @@ export default function QuestionnairePage() {
   );
 }
 
-export function QuestionnaireForm() {
+function QuestionnaireForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [state, setState] = useState<FormState>({
@@ -174,7 +199,12 @@ export function QuestionnaireForm() {
     venue_scope_csv: "",
     strategy_style: new Set<QuestionnaireStrategyStyle>(),
     service_family: "DART",
-    fund_structure: "NA",
+    fund_structure: new Set<QuestionnaireFundStructure>(),
+    market_neutral: null,
+    share_class_preferences: new Set<QuestionnaireShareClassPreference>(),
+    risk_profile: null,
+    target_sharpe_min_str: "",
+    leverage_preference: null,
     licence_region: null,
     targets_3mo: "",
     targets_1yr: "",
@@ -236,14 +266,23 @@ export function QuestionnaireForm() {
           serviceFamily: state.service_family,
           submissionId: outcome.submissionId,
           categories: [...state.categories],
-          fundStructure: state.fund_structure,
+          fundStructure: [...state.fund_structure],
+          strategyStyle: [...state.strategy_style],
+          marketNeutral: state.market_neutral,
+          shareClassPreferences: [...state.share_class_preferences],
+          riskProfile: state.risk_profile,
+          targetSharpeMin: state.target_sharpe_min_str || undefined,
+          leveragePreference: state.leverage_preference,
         }),
       }).catch(() => {/* non-critical */});
     }
     setResult(outcome);
     setSubmitting(false);
     if (outcome.success) {
-      setTimeout(() => router.push("/services"), 1200);
+      const filter = seedFiltersFromQuestionnaire(response);
+      const filterQs = new URLSearchParams(serialiseCatalogueFilter(filter)).toString();
+      const target = `/services/strategy-catalogue?tab=explore&from=questionnaire${filterQs ? `&${filterQs}` : ""}`;
+      setTimeout(() => router.push(target), 1200);
     }
   };
 
@@ -391,22 +430,173 @@ export function QuestionnaireForm() {
         {/* 6. Fund structure */}
         <fieldset data-testid="axis-fund-structure">
           <legend className="font-medium">6. Fund structure</legend>
-          <div className="mt-2 space-y-1">
-            {QUESTIONNAIRE_FUND_STRUCTURES.map((fs) => (
-              <label key={fs} className="flex items-center gap-2">
+          <p className="mt-1 text-xs text-muted-foreground">Select all that apply.</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(
+              [
+                { value: "SMA" as const, label: "SMA — Separately Managed Account" },
+                { value: "Pooled" as const, label: "Pooled fund" },
+                { value: "prop" as const, label: "Prop — trading own capital" },
+                { value: "NA" as const, label: "Not yet decided / Other" },
+              ] as const
+            ).map(({ value, label }) => (
+              <label key={value} className="inline-flex items-center gap-2 rounded border px-3 py-1">
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="fund_structure"
-                  value={fs}
-                  data-testid={`fund-structure-${fs}`}
-                  checked={state.fund_structure === fs}
-                  onChange={() => setState((s) => ({ ...s, fund_structure: fs }))}
+                  value={value}
+                  data-testid={`fund-structure-${value}`}
+                  checked={state.fund_structure.has(value)}
+                  onChange={() =>
+                    setState((s) => ({ ...s, fund_structure: toggleInSet(s.fund_structure, value) }))
+                  }
                 />
-                <span>{fs}</span>
+                <span>{label}</span>
               </label>
             ))}
           </div>
         </fieldset>
+
+        {/* ─── Strategy preferences (optional, all service families) ──── */}
+        <section
+          data-testid="strategy-preferences-section"
+          className="rounded-lg border border-border/40 bg-card/20 p-5 space-y-6"
+        >
+          <header>
+            <h2 className="text-lg font-semibold">Strategy preferences <span className="text-sm font-normal text-muted-foreground">(optional)</span></h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              These shape the strategy universe we show you. Skip any you&apos;re unsure of.
+            </p>
+          </header>
+
+          {/* Market neutrality */}
+          <fieldset data-testid="axis-market-neutral">
+            <legend className="font-medium">7. Market exposure</legend>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Are you looking for market-neutral strategies, or comfortable with directional exposure?
+            </p>
+            <div className="mt-2 space-y-1">
+              {(
+                [
+                  { value: "neutral", label: "Market neutral — carry, arb, stat arb (delta-hedged)" },
+                  { value: "directional", label: "Directional — ML signals, trend, event-driven" },
+                  { value: "both", label: "Both / No preference" },
+                ] as const
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="market_neutral"
+                    value={value}
+                    data-testid={`market-neutral-${value}`}
+                    checked={state.market_neutral === value}
+                    onChange={() => setState((s) => ({ ...s, market_neutral: value as QuestionnaireMarketNeutrality }))}
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          {/* Risk profile */}
+          <fieldset data-testid="axis-risk-profile">
+            <legend className="font-medium">8. Risk appetite</legend>
+            <div className="mt-2 space-y-1">
+              {(
+                [
+                  { value: "low", label: "Low — capital preservation, stable yield (SUPPORTED strategies only)" },
+                  { value: "medium", label: "Medium — balanced growth and protection" },
+                  { value: "high", label: "High — growth-focused, higher volatility acceptable" },
+                ] as const
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="risk_profile"
+                    value={value}
+                    data-testid={`risk-profile-${value}`}
+                    checked={state.risk_profile === value}
+                    onChange={() => setState((s) => ({ ...s, risk_profile: value as QuestionnaireRiskProfile }))}
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          {/* Leverage preference */}
+          <fieldset data-testid="axis-leverage-preference">
+            <legend className="font-medium">9. Leverage preference</legend>
+            <div className="mt-2 space-y-1">
+              {(
+                [
+                  { value: "none", label: "None / Spot only (1x, no margin)" },
+                  { value: "low", label: "Low (2–3x max)" },
+                  { value: "medium", label: "Medium (~5x max)" },
+                  { value: "any", label: "Any (unconstrained)" },
+                ] as const
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="leverage_preference"
+                    value={value}
+                    data-testid={`leverage-${value}`}
+                    checked={state.leverage_preference === value}
+                    onChange={() => setState((s) => ({ ...s, leverage_preference: value as QuestionnaireLeveragePreference }))}
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          {/* Share class preference */}
+          <fieldset data-testid="axis-share-class">
+            <legend className="font-medium">10. Base currency preference</legend>
+            <p className="mt-1 text-xs text-muted-foreground">Preferred denomination for strategy P&amp;L. Select all that apply — leave blank for no preference.</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {(
+                [
+                  { value: "usd_only" as const, label: "USD / Stablecoin (USDT, USDC, GBP, EUR)" },
+                  { value: "btc_neutral" as const, label: "BTC-neutral" },
+                  { value: "eth_neutral" as const, label: "ETH-neutral" },
+                ] as const
+              ).map(({ value, label }) => (
+                <label key={value} className="inline-flex items-center gap-2 rounded border px-3 py-1">
+                  <input
+                    type="checkbox"
+                    name="share_class_preferences"
+                    value={value}
+                    data-testid={`share-class-${value}`}
+                    checked={state.share_class_preferences.has(value)}
+                    onChange={() =>
+                      setState((s) => ({ ...s, share_class_preferences: toggleInSet(s.share_class_preferences, value) }))
+                    }
+                  />
+                  <span>{label}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          {/* Target Sharpe (optional free text) */}
+          <fieldset data-testid="axis-target-sharpe">
+            <legend className="font-medium">11. Minimum Sharpe target <span className="font-normal text-muted-foreground text-sm">(optional)</span></legend>
+            <input
+              type="number"
+              name="target_sharpe_min"
+              data-testid="target-sharpe-min"
+              step="0.1"
+              min="0"
+              className="mt-2 w-40 rounded border px-3 py-2"
+              placeholder="e.g. 1.5"
+              value={state.target_sharpe_min_str}
+              onChange={(e) => setState((s) => ({ ...s, target_sharpe_min_str: e.target.value }))}
+            />
+            <p className="mt-1 text-xs text-muted-foreground">Used for display annotation and ranking — not a hard filter.</p>
+          </fieldset>
+        </section>
 
         {/* ─── Regulatory Umbrella branch ─────────────────────────────── */}
         {regUmbrellaVisible && (
@@ -630,6 +820,23 @@ export function QuestionnaireForm() {
           )}
         </div>
       </form>
+
+      {/* Strategy Evaluation DDQ */}
+      <div className="mt-12 rounded-lg border border-border bg-card/50 p-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Optional</p>
+        <h2 className="mt-1 text-lg font-semibold">Strategy Evaluation Pack</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          If you have an existing strategy to submit for evaluation — incubation, signal integration,
+          or regulatory coverage — the full DDQ covers backtest methodology, performance evidence,
+          path-specific questions, and deployment readiness.
+        </p>
+        <a
+          href="/strategy-evaluation"
+          className="mt-4 inline-flex items-center gap-2 rounded border border-slate-900 px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-900 hover:text-white transition-colors dark:border-border dark:text-foreground dark:hover:bg-muted"
+        >
+          Open Strategy Evaluation Pack →
+        </a>
+      </div>
     </main>
   );
 }
