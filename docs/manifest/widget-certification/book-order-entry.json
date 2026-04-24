@@ -96,7 +96,12 @@
       },
       "notes": "5.1 complete. Human 5.2–5.6 required."
     },
-    "l6": { "status": null, "by": null, "date": null, "notes": "Deferred — follows L5 human sign-off." },
+    "l6": {
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 13 tests covering idle render (heading, mode tabs, category tabs, form inputs), Instrument + side setter wiring, Preview gating (canPreview + canExecute + access banner), handlePreview invocation, preview state (Confirm button + handleSubmit invocation, Record Trade label in record_only mode), and error-state Retry path. See tests/widgets/book/book-order-entry.test.tsx"
+    },
     "l7": {
       "status": "pass",
       "by": "agent",
@@ -176,7 +181,15 @@
     "716 lines — above 500-line soft limit; acceptable for merged workflow",
     "Compliance check is mock-simulated; live compliance service integration pending"
   ],
-  "findings": [],
+  "findings": [
+    {
+      "level": "l6",
+      "check": "harness-anchoring",
+      "description": "book-order-entry-widget.tsx has no root data-testid on its outermost div (unlike siblings book-hierarchy-bar-widget and book-trade-history-widget). L1.5 harness tests anchor on the 'Book Trade' heading and input placeholders instead. Low-severity; tests still pass.",
+      "status": "open",
+      "proposedFix": "Add data-testid=\"book-order-entry-widget\" to the outer <div className=\"p-2 space-y-3 h-full overflow-auto\"> for parity with sibling book widgets and alignment with the widget-registry id convention."
+    }
+  ],
   "updatedBy": "agent",
   "updatedAt": "2026-04-22"
 }

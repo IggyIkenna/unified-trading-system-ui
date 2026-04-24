@@ -184,10 +184,10 @@
       "notes": "Pure scoping widget \u2014 not strategy-specific. Human walkthrough 5.2-5.6 deferred."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering render (testid mount, labels, loading branch, error branch, empty-org branch), Client input wiring to setClientId, and bound clientId reflection. See tests/widgets/book/book-hierarchy-bar.test.tsx"
     },
     "l7": {
       "status": "pass",

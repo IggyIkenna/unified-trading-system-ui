@@ -184,10 +184,10 @@
       "notes": "Strategy documentation complete. Human walkthrough (5.2-5.6) needed for execution flow verification."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 phase \u2014 tests not yet written."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering TableWidget testid mount, per-row rendering for instruments + tradeType badges, empty-trades branch (empty-search copy), search filter (instrument match, case-insensitive venue match, no-match empty state). See tests/widgets/book/book-trade-history.test.tsx"
     },
     "l7": {
       "status": "pass",
