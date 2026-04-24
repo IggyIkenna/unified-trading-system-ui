@@ -31,5 +31,9 @@ export function AlertsKpiStripWidget(_props: WidgetComponentProps) {
     },
   ];
 
-  return <KpiSummaryWidget metrics={metrics} storageKey="uts-alerts-kpi-layout" />;
+  return (
+    <div data-testid="alerts-kpi-strip-widget" className="h-full">
+      <KpiSummaryWidget metrics={metrics} storageKey="uts-alerts-kpi-layout" />
+    </div>
+  );
 }

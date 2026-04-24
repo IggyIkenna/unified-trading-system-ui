@@ -490,6 +490,7 @@ export function PositionsTableWidget(_props: WidgetComponentProps) {
 
   return (
     <TableWidget
+      data-testid="positions-table-widget"
       columns={columns}
       data={filteredPositions}
       filterConfig={filterConfig}

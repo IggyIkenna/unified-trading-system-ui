@@ -453,6 +453,7 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
 
   return (
     <TableWidget
+      data-testid="alerts-table-widget"
       columns={alertColumns}
       data={filteredAlerts}
       filterConfig={filterConfig}

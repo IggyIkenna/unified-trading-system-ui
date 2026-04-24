@@ -55,5 +55,9 @@ export function PositionsKpiWidget(_props: WidgetComponentProps) {
     );
   }
 
-  return <KpiSummaryWidget metrics={metrics} storageKey="uts-positions-kpi-layout" />;
+  return (
+    <div data-testid="positions-kpi-widget" className="h-full">
+      <KpiSummaryWidget metrics={metrics} storageKey="uts-positions-kpi-layout" />
+    </div>
+  );
 }
