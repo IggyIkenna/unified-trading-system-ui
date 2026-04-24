@@ -179,10 +179,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 not in scope for this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering loading/error/empty states, service name and stage count rendering, View/Data mode controls, Clear selection button, and 'Live vs batch' badge. See tests/widgets/markets/markets-latency-summary.test.tsx"
     },
     "l7": {
       "status": "pass",
