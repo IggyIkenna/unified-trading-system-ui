@@ -38,6 +38,9 @@ interface FormState {
   strategyFamily: string;
   archetypeMarkers: Set<string>;
   pathwayDescription: string;
+  hasBacktest: string;
+  hasPaperTraded: string;
+  hasLiveTraded: string;
   dataGranularities: Set<string>;
   historicalWindow: string;
   dataGaps: string;
@@ -150,6 +153,9 @@ const INITIAL_STATE: FormState = {
   strategyFamily: "",
   archetypeMarkers: new Set(),
   pathwayDescription: "",
+  hasBacktest: "",
+  hasPaperTraded: "",
+  hasLiveTraded: "",
   dataGranularities: new Set(),
   historicalWindow: "",
   dataGaps: "",
@@ -1114,6 +1120,39 @@ export default function StrategyEvaluationPage() {
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="E" title="Backtest methodology" />
 
+          <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
+            <Label className="text-sm font-medium">Has this strategy been backtested?</Label>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(
+                [
+                  { value: "yes", label: "Yes — full backtest completed" },
+                  { value: "partial", label: "Partial — early prototype / in progress" },
+                  { value: "no", label: "Not yet backtested" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hasBacktest"
+                    value={value}
+                    checked={form.hasBacktest === value}
+                    onChange={() => setField("hasBacktest", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {form.hasBacktest === "no" && (
+              <p className="text-xs text-muted-foreground italic">
+                That&rsquo;s fine — skip the backtest-methodology, evidence, and performance sections.
+                For DART Full, Odum rebuilds the strategy including the backtest.
+              </p>
+            )}
+          </div>
+
+          {form.hasBacktest !== "no" && form.hasBacktest !== "" && (
+          <>
+
           <div className="space-y-1">
             <Label className="text-sm font-medium">Data granularity</Label>
             <p className="text-xs text-muted-foreground">
@@ -1430,9 +1469,13 @@ export default function StrategyEvaluationPage() {
               onChange={(e) => setField("instrumentsVenuesLeverage", e.target.value)}
             />
           </div>
+
+          </>
+          )}
         </section>
 
-        {/* Section F */}
+        {/* Section F — gated on backtest existing */}
+        {form.hasBacktest !== "no" && form.hasBacktest !== "" && (
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="F" title="Tear sheet and evidence" />
           <p className="text-xs text-muted-foreground -mt-2">
@@ -1504,8 +1547,10 @@ export default function StrategyEvaluationPage() {
             />
           </div>
         </section>
+        )}
 
-        {/* Section G */}
+        {/* Section G — gated on backtest existing */}
+        {form.hasBacktest !== "no" && form.hasBacktest !== "" && (
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="G" title="Key performance metrics" />
 
@@ -1538,6 +1583,7 @@ export default function StrategyEvaluationPage() {
             />
           </div>
         </section>
+        )}
 
         {/* Section H */}
         <section className="space-y-4 pt-8 border-t border-border/40">
@@ -1884,84 +1930,150 @@ export default function StrategyEvaluationPage() {
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="N" title="Paper trading validation" />
 
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.paperTradedAtLeast7Days}
-                onChange={(e) => setField("paperTradedAtLeast7Days", e.target.checked)}
-              />
-              Paper traded continuously for at least 7 days
-            </label>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.paperUsesRealApis}
-                onChange={(e) => setField("paperUsesRealApis", e.target.checked)}
-              />
-              Uses real APIs / testnet interaction
-            </label>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.paperShadowFillsOnly}
-                onChange={(e) => setField("paperShadowFillsOnly", e.target.checked)}
-              />
-              Shadow or assumed fills only
-            </label>
+          <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
+            <Label className="text-sm font-medium">Has this strategy been paper traded?</Label>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(
+                [
+                  { value: "yes", label: "Yes — ran in a paper / shadow environment" },
+                  { value: "no", label: "Not paper traded" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hasPaperTraded"
+                    value={value}
+                    checked={form.hasPaperTraded === value}
+                    onChange={() => setField("hasPaperTraded", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {form.hasPaperTraded === "no" && (
+              <p className="text-xs text-muted-foreground italic">
+                Fine to skip — paper trading is validation, not a prerequisite. If you&rsquo;re going
+                DART Full, Odum runs the paper phase during incubation.
+              </p>
+            )}
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-sm font-medium">Paper trading methodology and market-session coverage</Label>
-            <Textarea
-              rows={3}
-              value={form.paperTradingMethodology}
-              onChange={(e) => setField("paperTradingMethodology", e.target.value)}
-            />
-          </div>
+          {form.hasPaperTraded === "yes" && (
+            <>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.paperTradedAtLeast7Days}
+                    onChange={(e) => setField("paperTradedAtLeast7Days", e.target.checked)}
+                  />
+                  Paper traded continuously for at least 7 days
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.paperUsesRealApis}
+                    onChange={(e) => setField("paperUsesRealApis", e.target.checked)}
+                  />
+                  Uses real APIs / testnet interaction
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.paperShadowFillsOnly}
+                    onChange={(e) => setField("paperShadowFillsOnly", e.target.checked)}
+                  />
+                  Shadow or assumed fills only
+                </label>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Paper trading methodology and market-session coverage</Label>
+                <Textarea
+                  rows={3}
+                  value={form.paperTradingMethodology}
+                  onChange={(e) => setField("paperTradingMethodology", e.target.value)}
+                />
+              </div>
+            </>
+          )}
         </section>
 
         {/* Section O */}
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="O" title="Live trading validation" />
 
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.liveTradedAtLeastOneWeek}
-                onChange={(e) => setField("liveTradedAtLeastOneWeek", e.target.checked)}
-              />
-              Live traded for at least 1 week
-            </label>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.liveFullMarketDay}
-                onChange={(e) => setField("liveFullMarketDay", e.target.checked)}
-              />
-              Trades the full market day/session
-            </label>
-            <label className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={form.livePartialDay}
-                onChange={(e) => setField("livePartialDay", e.target.checked)}
-              />
-              Trades only part of the day/session
-            </label>
+          <div className="space-y-2 rounded-md border border-border/60 bg-card/40 px-4 py-3">
+            <Label className="text-sm font-medium">Has this strategy been live traded?</Label>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(
+                [
+                  { value: "yes", label: "Yes — traded with real capital" },
+                  { value: "no", label: "Not live traded" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="hasLiveTraded"
+                    value={value}
+                    checked={form.hasLiveTraded === value}
+                    onChange={() => setField("hasLiveTraded", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {form.hasLiveTraded === "no" && (
+              <p className="text-xs text-muted-foreground italic">
+                No live track record yet — that&rsquo;s expected for many submissions. DART Full includes
+                the live-tiny to live-allocated progression as part of incubation.
+              </p>
+            )}
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-sm font-medium">
-              How opens, closes, illiquid periods, and retrospective backtest-vs-live comparison are handled
-            </Label>
-            <Textarea
-              rows={3}
-              value={form.liveValidationNotes}
-              onChange={(e) => setField("liveValidationNotes", e.target.value)}
-            />
-          </div>
+          {form.hasLiveTraded === "yes" && (
+            <>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.liveTradedAtLeastOneWeek}
+                    onChange={(e) => setField("liveTradedAtLeastOneWeek", e.target.checked)}
+                  />
+                  Live traded for at least 1 week
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.liveFullMarketDay}
+                    onChange={(e) => setField("liveFullMarketDay", e.target.checked)}
+                  />
+                  Trades the full market day/session
+                </label>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={form.livePartialDay}
+                    onChange={(e) => setField("livePartialDay", e.target.checked)}
+                  />
+                  Trades only part of the day/session
+                </label>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">
+                  How opens, closes, illiquid periods, and retrospective backtest-vs-live comparison are handled
+                </Label>
+                <Textarea
+                  rows={3}
+                  value={form.liveValidationNotes}
+                  onChange={(e) => setField("liveValidationNotes", e.target.value)}
+                />
+              </div>
+            </>
+          )}
         </section>
 
         {/* Section P */}
