@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (real-time service health from API), batch \u2713 (historical health state if API supports it), paper \u2713 (platform health is mode-agnostic). Widget is display-only."
+          "note": "Mode relevance: live ✓ (real-time service health from API), batch ✓ (historical health state if API supports it), paper ✓ (platform health is mode-agnostic). Widget is display-only."
         },
         "3.2": {
           "result": "pass",
@@ -116,7 +116,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: widget renders service health regardless of mode \u2014 platform services run independently of trading mode."
+          "note": "Paper mode: widget renders service health regardless of mode — platform services run independently of trading mode."
         },
         "3.6": {
           "result": "pass",
@@ -136,7 +136,7 @@
         },
         "4.2": {
           "result": "pass",
-          "note": "href='/services/observe/health' \u2014 route confirmed at app/(platform)/services/observe/health/."
+          "note": "href='/services/observe/health' — route confirmed at app/(platform)/services/observe/health/."
         },
         "4.3": {
           "result": "n/a",
@@ -160,7 +160,7 @@
         },
         "4.8": {
           "result": "n/a",
-          "note": "Human check: overflow-auto on root div; 6-service slice fits in 3\u00d73 grid."
+          "note": "Human check: overflow-auto on root div; 6-service slice fits in 3×3 grid."
         }
       },
       "notes": "Agent checks 4.1/4.2/4.5/4.6 pass. 4.3/4.4/4.7/4.8 require human walkthrough."
@@ -172,16 +172,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: N/A \u2014 health-grid shows platform infrastructure health (service registry), not strategy-specific data. Applicable across all trading modes as operational support widget."
+          "note": "Target strategies: N/A — health-grid shows platform infrastructure health (service registry), not strategy-specific data. Applicable across all trading modes as operational support widget."
         }
       },
-      "notes": "5.1 agent-prep done. Health-grid is infrastructure-monitoring, not strategy-specific. 5.2\u20135.6 N/A or require human walkthrough."
+      "notes": "5.1 agent-prep done. Health-grid is infrastructure-monitoring, not strategy-specific. 5.2–5.6 N/A or require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering service rows, 6-row cap, loading, empty-state, view-all link, null-context fallback. See tests/widgets/overview/health-grid.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches in HealthGridWidget section."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches in HealthGridWidget section."
         },
         "7.2": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -257,7 +257,7 @@
     "keepSeparate": {
       "rationale": "Infrastructure health is mode- and scope-independent; it stands alone as a global platform status view."
     },
-    "notes": "Infrastructure-level health \u2014 not coupled to trading scope or strategy selection. Links to full observability page."
+    "notes": "Infrastructure-level health — not coupled to trading scope or strategy selection. Links to full observability page."
   },
   "dataContract": {
     "channels": ["rest"],
@@ -285,25 +285,25 @@
     {
       "level": "l0",
       "check": "0.6",
-      "description": "bottom-widgets.tsx HealthGridWidget \u2014 no loading guard",
+      "description": "bottom-widgets.tsx HealthGridWidget — no loading guard",
       "status": "fixed",
       "fix": "Added coreLoading Spinner guard before HealthStatusGrid render"
     },
     {
       "level": "l0",
       "check": "0.7",
-      "description": "bottom-widgets.tsx HealthGridWidget \u2014 no empty state",
+      "description": "bottom-widgets.tsx HealthGridWidget — no empty state",
       "status": "fixed",
       "fix": "Added 'No services reported' guard on allMockServices.length===0"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "HealthGridWidget \u2014 ~3 user-visible strings not i18n wrapped",
+      "description": "HealthGridWidget — ~3 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

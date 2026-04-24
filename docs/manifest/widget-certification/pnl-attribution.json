@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (shows current attribution), batch \u2713 (shows batch-period attribution), paper \u2713 (display-only, reads from context). Widget is read-only attribution panel."
+          "note": "Mode relevance: live ✓ (shows current attribution), batch ✓ (shows batch-period attribution), paper ✓ (display-only, reads from context). Widget is read-only attribution panel."
         },
         "3.2": {
           "result": "pass",
@@ -112,11 +112,11 @@
         },
         "3.4": {
           "result": "n/a",
-          "note": "Human check: no explicit mode indicator in this widget \u2014 relies on scope-summary."
+          "note": "Human check: no explicit mode indicator in this widget — relies on scope-summary."
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: widget renders pnlComponents from context regardless of mode \u2014 will show paper attribution correctly once paper data flows."
+          "note": "Paper mode: widget renders pnlComponents from context regardless of mode — will show paper attribution correctly once paper data flows."
         },
         "3.6": {
           "result": "pass",
@@ -132,11 +132,11 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "'View All' Button wrapped in Link to /services/trading/pnl \u2014 navigates correctly."
+          "note": "'View All' Button wrapped in Link to /services/trading/pnl — navigates correctly."
         },
         "4.2": {
           "result": "pass",
-          "note": "href='/services/trading/pnl' \u2014 route confirmed at app/(platform)/services/trading/pnl/."
+          "note": "href='/services/trading/pnl' — route confirmed at app/(platform)/services/trading/pnl/."
         },
         "4.3": {
           "result": "n/a",
@@ -175,13 +175,13 @@
           "note": "Target strategies: DeFi basis-trade (funding, basis_spread, trading_pnl components), staked-basis (staking_yield, lending_yield, borrow_cost, funding, rewards), and all strategies producing PnLComponent breakdown data."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering component rows, NET total, loading, empty-state, view-all link, null-context fallback. See tests/widgets/overview/pnl-attribution.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches in PnLAttributionWidget section."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches in PnLAttributionWidget section."
         },
         "7.2": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -255,7 +255,7 @@
     "selectionKey": "scope (organizationIds, clientIds, strategyIds)",
     "mergeCandidate": null,
     "keepSeparate": {
-      "rationale": "P&L attribution is a distinct analytical view; its 3\u00d73 grid slot is its correct footprint."
+      "rationale": "P&L attribution is a distinct analytical view; its 3×3 grid slot is its correct footprint."
     },
     "notes": "Attribution derived from aggregated scope P&L. Links to /services/trading/pnl full page."
   },
@@ -265,7 +265,7 @@
     "cadence": "on-demand",
     "staleness": "seconds",
     "mockSource": "lib/mocks/fixtures/mock-data-index.ts (getAggregatedPnlForScope via use-overview-page-data.ts)",
-    "backendOwner": "trading-api (pnl/attribution endpoint \u2014 unknown exact path)",
+    "backendOwner": "trading-api (pnl/attribution endpoint — unknown exact path)",
     "notes": "pnlComponents computed from aggregatedPnL in context producer. No direct API call in widget."
   },
   "coverage": {
@@ -285,25 +285,25 @@
     {
       "level": "l0",
       "check": "0.6",
-      "description": "bottom-widgets.tsx PnLAttributionWidget \u2014 no loading guard",
+      "description": "bottom-widgets.tsx PnLAttributionWidget — no loading guard",
       "status": "fixed",
       "fix": "Added coreLoading Spinner guard before PnLAttributionPanel render"
     },
     {
       "level": "l0",
       "check": "0.7",
-      "description": "bottom-widgets.tsx PnLAttributionWidget \u2014 no empty state",
+      "description": "bottom-widgets.tsx PnLAttributionWidget — no empty state",
       "status": "fixed",
       "fix": "Added 'No P&L attribution data' guard on pnlComponents.length===0"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "PnLAttributionWidget \u2014 ~3 user-visible strings not i18n wrapped",
+      "description": "PnLAttributionWidget — ~3 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

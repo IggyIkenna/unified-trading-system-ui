@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data via useOverviewDataSafe() hook only \u2014 no inline fetch."
+          "note": "Data via useOverviewDataSafe() hook only — no inline fetch."
         },
         "1.2": {
           "result": "pass",
@@ -78,7 +78,7 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope arrays \u2192 getStrategiesForScope returns all strategies (unfiltered)."
+          "note": "Empty scope arrays → getStrategiesForScope returns all strategies (unfiltered)."
         },
         "1.7": {
           "result": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (shows 'P&L (Today)'), batch \u2713 (shows 'P&L (As-Of)'), paper \u2713. Title dynamically switches on context.mode."
+          "note": "Mode relevance: live ✓ (shows 'P&L (Today)'), batch ✓ (shows 'P&L (As-Of)'), paper ✓. Title dynamically switches on context.mode."
         },
         "3.2": {
           "result": "pass",
@@ -116,7 +116,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: if context.mode === 'paper', KPICard title will show 'P&L (As-Of)' (same as batch fallback) \u2014 acceptable until paper mode fully specified."
+          "note": "Paper mode: if context.mode === 'paper', KPICard title will show 'P&L (As-Of)' (same as batch fallback) — acceptable until paper mode fully specified."
         },
         "3.6": {
           "result": "pass",
@@ -132,7 +132,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "No interactive buttons in kpi-strip-widget.tsx \u2014 display-only KPI cards."
+          "note": "No interactive buttons in kpi-strip-widget.tsx — display-only KPI cards."
         },
         "4.2": {
           "result": "pass",
@@ -175,13 +175,13 @@
           "note": "Target strategies: all strategies that produce P&L, exposure, NAV, and alert data. kpi-strip is strategy-agnostic; aggregates across scope."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering 5 KPI cards, live/batch title switch, loading skeletons, empty-state, margin-used computation, alert-subtitle, null-context fallback. See tests/widgets/overview/kpi-strip.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches. CSS vars (var(--pnl-positive) etc.) are not hardcoded colors."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches. CSS vars (var(--pnl-positive) etc.) are not hardcoded colors."
         },
         "7.2": {
           "result": "pass",
@@ -198,7 +198,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "77 lines \u2014 well under 500-line limit."
+          "note": "77 lines — well under 500-line limit."
         },
         "7.4": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -226,7 +226,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "grep 'text-\\[|fontSize' \u2192 zero matches in kpi-strip-widget.tsx."
+          "note": "grep 'text-\\[|fontSize' → zero matches in kpi-strip-widget.tsx."
         },
         "8.2": {
           "result": "pass",
@@ -281,38 +281,38 @@
     "notes": "Strategy-agnostic aggregation widget."
   },
   "knownIssues": [
-    "KPICard accentColor prop accepted in interface but not applied in component body (kpi-card.tsx) \u2014 not in widget scope"
+    "KPICard accentColor prop accepted in interface but not applied in component body (kpi-card.tsx) — not in widget scope"
   ],
   "findings": [
     {
       "level": "l0",
       "check": "0.5",
-      "description": "kpi-strip-widget.tsx \u2014 had MOCK_PORTFOLIO_DELTA + STRATEGY_RISK_PROFILES imports and mock-backed useHasDefiStrategies",
+      "description": "kpi-strip-widget.tsx — had MOCK_PORTFOLIO_DELTA + STRATEGY_RISK_PROFILES imports and mock-backed useHasDefiStrategies",
       "status": "fixed",
       "fix": "Removed mock imports and mock-backed DeFi Delta KPI card; widget now uses only context data"
     },
     {
       "level": "l0",
       "check": "0.6",
-      "description": "kpi-strip-widget.tsx \u2014 no loading skeleton",
+      "description": "kpi-strip-widget.tsx — no loading skeleton",
       "status": "fixed",
       "fix": "Added Skeleton loading state with grid layout guarded by coreLoading"
     },
     {
       "level": "l0",
       "check": "0.7",
-      "description": "kpi-strip-widget.tsx \u2014 no empty state",
+      "description": "kpi-strip-widget.tsx — no empty state",
       "status": "fixed",
       "fix": "Added hasData guard with 'No portfolio data available' empty state message"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "kpi-strip-widget.tsx \u2014 ~4 user-visible strings not i18n wrapped",
+      "description": "kpi-strip-widget.tsx — ~4 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

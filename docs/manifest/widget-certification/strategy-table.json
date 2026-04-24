@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (real-time P&L via realtimePnl map), batch \u2713 (uses batch P&L from ctx.strategyPerformance), paper \u2713 (no order entry). Widget is read-only."
+          "note": "Mode relevance: live ✓ (real-time P&L via realtimePnl map), batch ✓ (uses batch P&L from ctx.strategyPerformance), paper ✓ (no order entry). Widget is read-only."
         },
         "3.2": {
           "result": "pass",
@@ -112,7 +112,7 @@
         },
         "3.4": {
           "result": "n/a",
-          "note": "Human check: no explicit batch indicator in this widget \u2014 relies on scope-summary for mode display."
+          "note": "Human check: no explicit batch indicator in this widget — relies on scope-summary for mode display."
         },
         "3.5": {
           "result": "pass",
@@ -172,16 +172,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all registered strategy types \u2014 DeFi basis-trade, staked-basis, yield, arbitrage, market-making, CeFi directional, etc. Table renders any strategy with id/name/assetClass/status/pnl fields from filteredSortedStrategies."
+          "note": "Target strategies: all registered strategy types — DeFi basis-trade, staked-basis, yield, arbitrage, market-making, CeFi directional, etc. Table renders any strategy with id/name/assetClass/status/pnl fields from filteredSortedStrategies."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering search/select filters, asset-class groups, row count, filter-reset, show-all toggle, empty-state, null-context fallback. See tests/widgets/overview/strategy-table.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches. LATENCY_COLORS uses Tailwind palette classes (not raw hex). text-[var(--pnl-positive)] uses CSS var."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches. LATENCY_COLORS uses Tailwind palette classes (not raw hex). text-[var(--pnl-positive)] uses CSS var."
         },
         "7.2": {
           "result": "pass",
@@ -198,7 +198,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "~413 lines (after fix) \u2014 under 500-line limit. StrategyTableWidget function ~350 lines \u2014 borderline; no single sub-function > 200 lines."
+          "note": "~413 lines (after fix) — under 500-line limit. StrategyTableWidget function ~350 lines — borderline; no single sub-function > 200 lines."
         },
         "7.4": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -275,15 +275,15 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "Pause/Resume action not wired to real API \u2014 navigates to detail page as interim",
-      "LATENCY_COLORS uses hardcoded Tailwind palette (bg-blue-500/10 etc) \u2014 no semantic latency token in globals.css",
-      "Asset class filter options derived from data, not from a registry \u2014 may miss valid classes with no active strategies"
+      "Pause/Resume action not wired to real API — navigates to detail page as interim",
+      "LATENCY_COLORS uses hardcoded Tailwind palette (bg-blue-500/10 etc) — no semantic latency token in globals.css",
+      "Asset class filter options derived from data, not from a registry — may miss valid classes with no active strategies"
     ],
     "notes": "Covers all strategy types via generic Record<string,unknown> row model. groupBy assetClass is data-driven."
   },
   "knownIssues": [
-    "OverviewData interface has no error field \u2014 L0.8 relies on WidgetErrorBoundary for render errors.",
-    "overview-data-context.tsx imports types from lib/mocks/fixtures \u2014 type-only; should migrate to lib/types/ in future pass.",
+    "OverviewData interface has no error field — L0.8 relies on WidgetErrorBoundary for render errors.",
+    "overview-data-context.tsx imports types from lib/mocks/fixtures — type-only; should migrate to lib/types/ in future pass.",
     "Pause/Resume buttons now navigate to strategy detail; real API wiring (pause/resume endpoint) is a separate task."
   ],
   "findings": [
@@ -297,25 +297,25 @@
     {
       "level": "l4",
       "check": "4.1",
-      "description": "strategy-table-widget.tsx:380 \u2014 Pause/Resume button had only onClick={(e) => e.stopPropagation()} with no action handler",
+      "description": "strategy-table-widget.tsx:380 — Pause/Resume button had only onClick={(e) => e.stopPropagation()} with no action handler",
       "status": "fixed",
       "fix": "Wrapped Button in Link to /services/trading/strategies/:id so click navigates to strategy detail; stopPropagation preserved on Link onClick to prevent row group toggle"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "strategy-table-widget.tsx \u2014 ~13 user-visible strings not i18n wrapped",
+      "description": "strategy-table-widget.tsx — ~13 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "strategy-table-widget.tsx \u2014 text-[9px] at lines 49, 297 and text-[10px] at lines 54, 355, 361, 375 for Badge micro-labels",
+      "description": "strategy-table-widget.tsx — text-[9px] at lines 49, 297 and text-[10px] at lines 54, 355, 361, 375 for Badge micro-labels",
       "status": "fixed",
       "fix": "Replaced text-[9px] with text-nano and text-[10px] with text-micro at all 6 sites. Tokens are defined in globals.css @theme inline block (--text-micro 0.625rem/10px, --text-nano 0.5625rem/9px)."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

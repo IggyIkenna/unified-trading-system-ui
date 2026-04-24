@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (WebSocket P&L stream), batch \u2713 (shows liveBatchData comparison + batch date picker), paper \u2713 (reads mode badge). Widget renders mode badge using context.mode."
+          "note": "Mode relevance: live ✓ (WebSocket P&L stream), batch ✓ (shows liveBatchData comparison + batch date picker), paper ✓ (reads mode badge). Widget renders mode badge using context.mode."
         },
         "3.2": {
           "result": "pass",
@@ -172,16 +172,16 @@
       "checks": {
         "5.1": {
           "result": "pass",
-          "note": "Target strategies: all strategies with P&L data \u2014 primarily DeFi basis-trade, staked-basis, yield strategies producing liveTimeSeries and batchTimeSeries data. Widget is strategy-agnostic at render level."
+          "note": "Target strategies: all strategies with P&L data — primarily DeFi basis-trade, staked-basis, yield strategies producing liveTimeSeries and batchTimeSeries data. Widget is strategy-agnostic at render level."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering P&L/NAV/Exposure tabs, live/batch mode badge, time-series toggle, loading, empty-state, null-context fallback. See tests/widgets/overview/pnl-chart.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches. text-[var(--status-live)] is a CSS var reference, not a hardcoded color."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches. text-[var(--status-live)] is a CSS var reference, not a hardcoded color."
         },
         "7.2": {
           "result": "pass",
@@ -198,7 +198,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "155 lines \u2014 under 500-line limit. No single function > 200 lines."
+          "note": "155 lines — under 500-line limit. No single function > 200 lines."
         },
         "7.4": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -226,7 +226,7 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "pnl-chart-widget.tsx:65 \u2014 text-[10px] replaced with text-micro (token already exists in globals.css: --text-micro 0.625rem / 10px). Zero arbitrary text-[Npx] classes remain."
+          "note": "pnl-chart-widget.tsx:65 — text-[10px] replaced with text-micro (token already exists in globals.css: --text-micro 0.625rem / 10px). Zero arbitrary text-[Npx] classes remain."
         },
         "8.2": {
           "result": "pass",
@@ -301,25 +301,25 @@
     {
       "level": "l0",
       "check": "0.7",
-      "description": "pnl-chart-widget.tsx \u2014 empty state was missing for when all time series arrays are empty",
+      "description": "pnl-chart-widget.tsx — empty state was missing for when all time series arrays are empty",
       "status": "fixed",
       "fix": "Added no-data guard that triggers when all liveTimeSeries/batchTimeSeries/realtimePnlPoints arrays are empty and loading is complete"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "pnl-chart-widget.tsx \u2014 ~6 user-visible strings not i18n wrapped",
+      "description": "pnl-chart-widget.tsx — ~6 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "pnl-chart-widget.tsx:65 \u2014 text-[10px] on mode Badge chip",
+      "description": "pnl-chart-widget.tsx:65 — text-[10px] on mode Badge chip",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro utility (token --text-micro: 0.625rem already exists in globals.css)."
     }
   ],
-  "updatedBy": "agent-overview-audit",
-  "updatedAt": "2026-04-21"
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-24"
 }

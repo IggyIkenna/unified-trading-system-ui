@@ -78,7 +78,7 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "No scope filtering applied \u2014 full orders dataset returned."
+          "note": "No scope filtering applied — full orders dataset returned."
         },
         "1.7": {
           "result": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (shows recent fills from live trading), batch \u2713 (shows historical fills for asOfDatetime period), paper \u2713 (display-only, reads from context)."
+          "note": "Mode relevance: live ✓ (shows recent fills from live trading), batch ✓ (shows historical fills for asOfDatetime period), paper ✓ (display-only, reads from context)."
         },
         "3.2": {
           "result": "pass",
@@ -136,7 +136,7 @@
         },
         "4.2": {
           "result": "pass",
-          "note": "href='/services/trading/orders' \u2014 route confirmed at app/(platform)/services/trading/orders/."
+          "note": "href='/services/trading/orders' — route confirmed at app/(platform)/services/trading/orders/."
         },
         "4.3": {
           "result": "n/a",
@@ -175,13 +175,13 @@
           "note": "Target strategies: all order-generating strategies. Relevant to any DeFi, CeFi, TradFi strategy that produces execution fills (basis-trade, staked-basis, market-making, directional, etc.)."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering BUY/SELL badges, 5-row cap, array and {orders:[]} shapes, loading, empty-state, view-all link. See tests/widgets/overview/recent-fills.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches in RecentFillsWidget section. text-emerald-400, text-rose-400, text-amber-400 are Tailwind classes, not raw hex."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches in RecentFillsWidget section. text-emerald-400, text-rose-400, text-amber-400 are Tailwind classes, not raw hex."
         },
         "7.2": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -264,7 +264,7 @@
     "primary": "rest",
     "cadence": "on-demand",
     "staleness": "seconds",
-    "mockSource": "unknown \u2014 ordersData is typed as unknown in OverviewData; populated via useOrders() hook in use-overview-page-data.ts",
+    "mockSource": "unknown — ordersData is typed as unknown in OverviewData; populated via useOrders() hook in use-overview-page-data.ts",
     "backendOwner": "trading-api (orders endpoint)",
     "notes": "ordersData parsed defensively (Array.isArray guard + nested .orders fallback). Scope filtering not applied at orders API layer."
   },
@@ -278,31 +278,31 @@
     "notes": "Shows any order type that produces a FILLED status. Coverage limited to REST polling cadence."
   },
   "knownIssues": [
-    "Orders data is not filtered by org/client/strategy scope \u2014 the useOrders() hook does not accept scope parameters. Widget shows all fills for the authenticated user regardless of scope selection. Future work: wire scope into useOrders() or filter ordersData in context."
+    "Orders data is not filtered by org/client/strategy scope — the useOrders() hook does not accept scope parameters. Widget shows all fills for the authenticated user regardless of scope selection. Future work: wire scope into useOrders() or filter ordersData in context."
   ],
   "findings": [
     {
       "level": "l0",
       "check": "0.4",
-      "description": "recent-fills \u2014 had redundant 'as unknown' intermediate cast for ordersData",
+      "description": "recent-fills — had redundant 'as unknown' intermediate cast for ordersData",
       "status": "fixed",
       "fix": "Replaced with direct Array.isArray guard on ordersData typed as unknown from context"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "RecentFillsWidget \u2014 ~3 user-visible strings not i18n wrapped",
+      "description": "RecentFillsWidget — ~3 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "bottom-widgets.tsx:138 \u2014 text-[9px] on Badge BUY/SELL chip in RecentFillsWidget",
+      "description": "bottom-widgets.tsx:138 — text-[9px] on Badge BUY/SELL chip in RecentFillsWidget",
       "status": "fixed",
       "fix": "Replaced text-[9px] with text-nano utility (token --text-nano 0.5625rem already exists in globals.css; no new token request needed)."
     }
   ],
-  "updatedBy": "agent-overview-audit",
-  "updatedAt": "2026-04-21"
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-24"
 }

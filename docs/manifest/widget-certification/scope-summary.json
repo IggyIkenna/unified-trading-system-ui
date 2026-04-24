@@ -14,7 +14,7 @@
       "checks": {
         "0.1": {
           "result": "pass",
-          "note": "WidgetErrorBoundary \u2014 global in widget-wrapper.tsx line 89, covers all widgets."
+          "note": "WidgetErrorBoundary — global in widget-wrapper.tsx line 89, covers all widgets."
         },
         "0.2": {
           "result": "pass",
@@ -26,7 +26,7 @@
         },
         "0.4": {
           "result": "pass",
-          "note": "No any/ts-ignore \u2014 Record<string,unknown> used correctly."
+          "note": "No any/ts-ignore — Record<string,unknown> used correctly."
         },
         "0.5": {
           "result": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "Data via useOverviewDataSafe() hook only \u2014 no inline fetch or direct import."
+          "note": "Data via useOverviewDataSafe() hook only — no inline fetch or direct import."
         },
         "1.2": {
           "result": "pass",
@@ -78,11 +78,11 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope = all data \u2014 each filter block guarded by .length > 0 check."
+          "note": "Empty scope = all data — each filter block guarded by .length > 0 check."
         },
         "1.7": {
           "result": "partial",
-          "note": "overview-data-context.tsx imports types PnLBreakdown and TimeSeriesPoint from lib/mocks/fixtures/trading-data \u2014 type-only imports; acceptable for now but should migrate to lib/types/ in future pass."
+          "note": "overview-data-context.tsx imports types PnLBreakdown and TimeSeriesPoint from lib/mocks/fixtures/trading-data — type-only imports; acceptable for now but should migrate to lib/types/ in future pass."
         }
       },
       "notes": "All checks pass. 1.7 is type-only import in context layer (not widget), acceptable."
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713, paper \u2713 (renders mode badge), batch \u2713 (renders asOfDatetime). ScopeSummary receives mode + asOfDatetime props and displays them."
+          "note": "Mode relevance: live ✓, paper ✓ (renders mode badge), batch ✓ (renders asOfDatetime). ScopeSummary receives mode + asOfDatetime props and displays them."
         },
         "3.2": {
           "result": "pass",
@@ -108,7 +108,7 @@
         },
         "3.3": {
           "result": "n/a",
-          "note": "Human check: scope-summary has no order entry \u2014 InterventionControls are non-submission controls (pause/resume scope). Verify batch disables intervention buttons."
+          "note": "Human check: scope-summary has no order entry — InterventionControls are non-submission controls (pause/resume scope). Verify batch disables intervention buttons."
         },
         "3.4": {
           "result": "n/a",
@@ -116,7 +116,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: widget reads context.mode; ScopeSummary already renders mode badge. Paper mode would show 'paper' badge \u2014 no additional wiring needed at widget layer."
+          "note": "Paper mode: widget reads context.mode; ScopeSummary already renders mode badge. Paper mode would show 'paper' badge — no additional wiring needed at widget layer."
         },
         "3.6": {
           "result": "pass",
@@ -175,13 +175,13 @@
           "note": "Target strategies: all strategies in scope (scope-summary is strategy-agnostic; it selects scope for all strategies). Applicable to all strategy types in lib/strategy-registry.ts."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering scope/intervention stubs, Open Trading Terminal link, loading, scope-filter counts, All/Filtered label switch, null-context fallback. See tests/widgets/overview/scope-summary.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches."
         },
         "7.2": {
           "result": "pass",
@@ -198,7 +198,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "87 lines \u2014 well under 500-line limit. No single function > 200 lines."
+          "note": "87 lines — well under 500-line limit. No single function > 200 lines."
         },
         "7.4": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -226,11 +226,11 @@
       "checks": {
         "8.1": {
           "result": "pass",
-          "note": "grep 'text-\\[|fontSize' \u2192 zero matches in scope-summary-widget.tsx."
+          "note": "grep 'text-\\[|fontSize' → zero matches in scope-summary-widget.tsx."
         },
         "8.2": {
           "result": "pass",
-          "note": "grep spacing arbitrary \u2192 zero matches."
+          "note": "grep spacing arbitrary → zero matches."
         },
         "8.3": {
           "result": "pass",
@@ -245,7 +245,7 @@
           "note": "Human check: responsive at minW=4 / defaultW=12."
         }
       },
-      "notes": "8.1\u20138.3 pass (agent). 8.4 partial (human walk needed). 8.5 human-only."
+      "notes": "8.1–8.3 pass (agent). 8.4 partial (human walk needed). 8.5 human-only."
     }
   },
   "relationships": {
@@ -289,20 +289,20 @@
     "notes": "Scope-summary is strategy- and venue-agnostic; it applies to all asset classes equally."
   },
   "knownIssues": [
-    "overview-data-context.tsx imports PnLBreakdown and TimeSeriesPoint types from lib/mocks/fixtures/trading-data \u2014 type-only imports but should migrate to lib/types/ in future pass"
+    "overview-data-context.tsx imports PnLBreakdown and TimeSeriesPoint types from lib/mocks/fixtures/trading-data — type-only imports but should migrate to lib/types/ in future pass"
   ],
   "findings": [
     {
       "level": "l0",
       "check": "0.6",
-      "description": "scope-summary-widget.tsx \u2014 no loading skeleton; widget showed blank during coreLoading",
+      "description": "scope-summary-widget.tsx — no loading skeleton; widget showed blank during coreLoading",
       "status": "fixed",
       "fix": "Added Skeleton loading state with h-6 placeholders guarded by ctx.coreLoading"
     },
     {
       "level": "l0",
       "check": "0.9",
-      "description": "scope-summary-widget.tsx \u2014 dead alias const kpiStrategies = filteredSortedStrategies",
+      "description": "scope-summary-widget.tsx — dead alias const kpiStrategies = filteredSortedStrategies",
       "status": "fixed",
       "fix": "Removed alias; filteredSortedStrategies used directly at all three callsites"
     },
@@ -316,11 +316,11 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "scope-summary-widget.tsx \u2014 ~3 user-visible strings not wrapped for i18n",
+      "description": "scope-summary-widget.tsx — ~3 user-visible strings not wrapped for i18n",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

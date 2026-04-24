@@ -49,7 +49,7 @@
           "note": "No dead code found."
         }
       },
-      "notes": "All 9 checks pass on first inspection \u2014 no fixes required."
+      "notes": "All 9 checks pass on first inspection — no fixes required."
     },
     "l1": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live \u2713 (real-time alerts), batch \u2713 (historical alerts for asOfDatetime), paper \u2713 (display-only). Widget is read-only alert preview."
+          "note": "Mode relevance: live ✓ (real-time alerts), batch ✓ (historical alerts for asOfDatetime), paper ✓ (display-only). Widget is read-only alert preview."
         },
         "3.2": {
           "result": "pass",
@@ -116,7 +116,7 @@
         },
         "3.5": {
           "result": "pass",
-          "note": "Paper mode: widget renders alerts from context regardless of mode \u2014 display-only."
+          "note": "Paper mode: widget renders alerts from context regardless of mode — display-only."
         },
         "3.6": {
           "result": "pass",
@@ -136,7 +136,7 @@
         },
         "4.2": {
           "result": "pass",
-          "note": "href='/services/trading/alerts' \u2014 route confirmed at app/(platform)/services/trading/alerts/."
+          "note": "href='/services/trading/alerts' — route confirmed at app/(platform)/services/trading/alerts/."
         },
         "4.3": {
           "result": "n/a",
@@ -175,13 +175,13 @@
           "note": "Target strategies: all strategies that generate alerts. Widget shows critical/high/medium alerts from any strategy type. Relevant to risk-monitoring for all DeFi, CeFi, TradFi strategies."
         }
       },
-      "notes": "5.1 agent-prep done. 5.2\u20135.6 require human walkthrough."
+      "notes": "5.1 agent-prep done. 5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Not started \u2014 L6 (tests) deferred to subsequent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering severity badges, 4-row cap, loading, empty-state, per-row link routing. See tests/widgets/overview/alerts-preview.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -190,7 +190,7 @@
       "checks": {
         "7.1": {
           "result": "pass",
-          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' \u2192 zero matches in AlertsPreviewWidget section. text-rose-400, text-amber-400, text-sky-400 are Tailwind classes, not raw hex."
+          "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches in AlertsPreviewWidget section. text-rose-400, text-amber-400, text-sky-400 are Tailwind classes, not raw hex."
         },
         "7.2": {
           "result": "pass",
@@ -206,7 +206,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -285,18 +285,18 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "AlertsPreviewWidget \u2014 ~3 user-visible strings not i18n wrapped",
+      "description": "AlertsPreviewWidget — ~3 user-visible strings not i18n wrapped",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "bottom-widgets.tsx:79 \u2014 text-[9px] on Badge severity chip in AlertsPreviewWidget",
+      "description": "bottom-widgets.tsx:79 — text-[9px] on Badge severity chip in AlertsPreviewWidget",
       "status": "fixed",
       "fix": "Replaced text-[9px] with text-nano utility (token --text-nano 0.5625rem already exists in globals.css; no new token request needed)."
     }
   ],
-  "updatedBy": "agent-overview-audit",
-  "updatedAt": "2026-04-21"
+  "updatedBy": "agent",
+  "updatedAt": "2026-04-24"
 }
