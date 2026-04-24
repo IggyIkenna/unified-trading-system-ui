@@ -179,10 +179,10 @@
       "notes": "5.1 documented. Real AMM venue feed not yet wired. 5.2\u20135.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 not in scope for this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering AMM pool rows render + fee tier + APR/volume filters + empty state. See tests/widgets/markets/markets-defi-amm.test.tsx"
     },
     "l7": {
       "status": "pass",

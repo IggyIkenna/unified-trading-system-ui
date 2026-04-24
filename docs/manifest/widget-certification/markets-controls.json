@@ -179,10 +179,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 not in scope for this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 14 tests covering controls panel (venue chips, side toggle, price/qty inputs) render + interactive state. See tests/widgets/markets/markets-controls.test.tsx"
     },
     "l7": {
       "status": "pass",
