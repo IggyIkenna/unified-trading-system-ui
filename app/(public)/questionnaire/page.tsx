@@ -103,6 +103,8 @@ interface FormState {
   // Envelope (captured when access-gate is live)
   email: string;
   firm_name: string;
+  firm_location: string;
+  firm_location_notes: string;
 }
 
 function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
@@ -215,6 +217,8 @@ function QuestionnaireForm() {
     supported_currencies_other: "",
     email: "",
     firm_name: "",
+    firm_location: "",
+    firm_location_notes: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -797,6 +801,54 @@ function QuestionnaireForm() {
               onChange={(e) => setState((s) => ({ ...s, firm_name: e.target.value }))}
             />
           </label>
+          <div className="mt-3 text-sm">
+            <p className="font-medium">Where is the firm based (or planned to be)?</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              If the entity doesn&rsquo;t exist yet, pick the intended jurisdiction.
+            </p>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+              {(
+                [
+                  { value: "uk", label: "UK" },
+                  { value: "eu", label: "EU" },
+                  { value: "us", label: "US" },
+                  { value: "cayman", label: "Cayman" },
+                  { value: "bvi", label: "BVI" },
+                  { value: "singapore", label: "Singapore" },
+                  { value: "hong_kong", label: "Hong Kong" },
+                  { value: "switzerland", label: "Switzerland" },
+                  { value: "uae", label: "UAE" },
+                  { value: "other", label: "Other" },
+                  { value: "exploring", label: "Exploring" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="firm_location"
+                    value={value}
+                    data-testid={`firm-location-${value}`}
+                    checked={state.firm_location === value}
+                    onChange={() => setState((s) => ({ ...s, firm_location: value }))}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {(state.firm_location === "eu" ||
+              state.firm_location === "us" ||
+              state.firm_location === "other" ||
+              state.firm_location === "exploring") && (
+              <input
+                type="text"
+                name="firm_location_notes"
+                className="mt-2 w-full rounded border px-3 py-2"
+                placeholder="e.g. Luxembourg / Delaware / planning UK FCA Q3"
+                value={state.firm_location_notes}
+                onChange={(e) => setState((s) => ({ ...s, firm_location_notes: e.target.value }))}
+              />
+            )}
+          </div>
         </fieldset>
 
         <div className="flex items-center gap-4">

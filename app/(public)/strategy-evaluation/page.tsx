@@ -17,6 +17,8 @@ interface FormState {
   phone: string;
   entityStructure: string;
   fundJurisdiction: string;
+  entityLocation: string;
+  entityLocationNotes: string;
   trackRecordTiming: string;
   planToRaiseExternalCapital: string;
   fundraisingChannels: Set<string>;
@@ -132,6 +134,8 @@ const INITIAL_STATE: FormState = {
   phone: "",
   entityStructure: "",
   fundJurisdiction: "",
+  entityLocation: "",
+  entityLocationNotes: "",
   trackRecordTiming: "",
   planToRaiseExternalCapital: "",
   fundraisingChannels: new Set(),
@@ -660,6 +664,54 @@ export default function StrategyEvaluationPage() {
                 </label>
               ))}
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">
+              Where is the management entity based (or planned to be)?
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              The firm / operating entity itself, not the fund vehicle. If the entity doesn&rsquo;t
+              exist yet, select the intended jurisdiction.
+            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-2">
+              {(
+                [
+                  { value: "uk", label: "UK" },
+                  { value: "eu", label: "EU (specify below)" },
+                  { value: "us", label: "US (specify state below)" },
+                  { value: "cayman", label: "Cayman" },
+                  { value: "bvi", label: "BVI" },
+                  { value: "singapore", label: "Singapore" },
+                  { value: "hong_kong", label: "Hong Kong" },
+                  { value: "switzerland", label: "Switzerland" },
+                  { value: "uae", label: "UAE (DIFC / ADGM)" },
+                  { value: "other", label: "Other (specify below)" },
+                  { value: "exploring", label: "Not yet incorporated — exploring" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="entityLocation"
+                    value={value}
+                    checked={form.entityLocation === value}
+                    onChange={() => setField("entityLocation", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {(form.entityLocation === "eu" ||
+              form.entityLocation === "us" ||
+              form.entityLocation === "other" ||
+              form.entityLocation === "exploring") && (
+              <Input
+                placeholder="e.g. Luxembourg, Delaware, or 'planning UK with FCA application Q3'"
+                value={form.entityLocationNotes}
+                onChange={(e) => setField("entityLocationNotes", e.target.value)}
+              />
+            )}
           </div>
 
           {form.entityStructure === "fund" && (
