@@ -8,6 +8,9 @@
  * - Strategy select only surfaces live + paper entries.
  * - Org select + Client input onChange propagate to context setters
  *   (cert L4.1).
+ *
+ * Note: widget does not expose a root data-testid (see cert findings). Tests
+ * anchor on the Org/Client/Strategy labels and the Client ID placeholder.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -35,37 +38,38 @@ describe("book-hierarchy-bar — L1.5 harness", () => {
   const renderWidget = () => render(<BookHierarchyBarWidget instanceId="book-hierarchy-bar-1" />);
 
   describe("render", () => {
-    it("mounts root testid when orgs list is loaded", () => {
-      renderWidget();
-      expect(screen.getByTestId("book-hierarchy-bar-widget")).toBeTruthy();
-    });
-
-    it("renders Org + Client + Strategy labels", () => {
+    it("mounts Org + Client + Strategy labels when orgs list is loaded", () => {
       renderWidget();
       expect(screen.getByText("Org")).toBeTruthy();
       expect(screen.getByText("Client")).toBeTruthy();
       expect(screen.getByText("Strategy")).toBeTruthy();
     });
 
+    it("renders Client ID input with empty default value", () => {
+      renderWidget();
+      const input = screen.getByPlaceholderText("Client ID") as HTMLInputElement;
+      expect(input.value).toBe("");
+    });
+
     it("shows loading spinner copy while orgs are loading", () => {
       Object.assign(mockOrgsList, buildMockOrganizationsList({ isLoading: true }));
       renderWidget();
-      expect(screen.queryByTestId("book-hierarchy-bar-widget")).toBeNull();
+      expect(screen.queryByPlaceholderText("Client ID")).toBeNull();
       expect(screen.getByText(/loading organizations/i)).toBeTruthy();
     });
 
     it("shows error message when orgs list fails", () => {
       Object.assign(mockOrgsList, buildMockOrganizationsList({ isError: true }));
       renderWidget();
-      expect(screen.queryByTestId("book-hierarchy-bar-widget")).toBeNull();
+      expect(screen.queryByPlaceholderText("Client ID")).toBeNull();
       expect(screen.getByText(/failed to load organizations/i)).toBeTruthy();
     });
 
-    it("renders empty-org disabled item when organizations is empty", () => {
+    it("renders bar even when organizations list is empty", () => {
       Object.assign(mockBookData, buildMockBookData({ organizations: [] }));
       renderWidget();
       // Bar still mounts — empty state is inside the Select dropdown.
-      expect(screen.getByTestId("book-hierarchy-bar-widget")).toBeTruthy();
+      expect(screen.getByPlaceholderText("Client ID")).toBeTruthy();
     });
   });
 

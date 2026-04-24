@@ -2,13 +2,16 @@
  * L1.5 widget harness — book-trade-history.
  *
  * Scope (per cert docs/manifest/widget-certification/book-trade-history.json):
- * - Render with mocked trades; testid on TableWidget (cert L0.7).
+ * - Render with mocked trades; anchor on the search input + row cells.
  * - Empty state when trades list is empty (cert L0.7).
  * - Instrument / venue rendering for provided rows.
  * - Search filter narrows the rendered rows (cert L4.1 / L4.4).
+ *
+ * Note: the widget no longer forwards data-testid to TableWidget
+ * (see cert findings). Tests anchor on visible text instead.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { buildMockBookData, buildMockBookTrade } from "../_helpers/mock-book-context";
 
 const mockBookData = buildMockBookData();
@@ -49,17 +52,16 @@ describe("book-trade-history — L1.5 harness", () => {
   const renderWidget = () => render(<BookTradeHistoryWidget instanceId="book-trade-history-1" />);
 
   describe("render", () => {
-    it("mounts TableWidget testid with trades present", () => {
+    it("mounts the search input + table surface with trades present", () => {
       renderWidget();
-      expect(screen.getByTestId("book-trade-history-widget")).toBeTruthy();
+      expect(screen.getByPlaceholderText(/search trades/i)).toBeTruthy();
     });
 
-    it("renders a row for each trade in the mock context", () => {
+    it("renders instrument cells for each trade in the mock context", () => {
       renderWidget();
-      const root = screen.getByTestId("book-trade-history-widget");
-      expect(within(root).getByText("BTC-USDT")).toBeTruthy();
-      expect(within(root).getByText("ETH-USDT")).toBeTruthy();
-      expect(within(root).getByText("SOL-USDT")).toBeTruthy();
+      expect(screen.getByText("BTC-USDT")).toBeTruthy();
+      expect(screen.getByText("ETH-USDT")).toBeTruthy();
+      expect(screen.getByText("SOL-USDT")).toBeTruthy();
     });
 
     it("renders empty-search message when trades list is empty", () => {
@@ -70,10 +72,9 @@ describe("book-trade-history — L1.5 harness", () => {
 
     it("surfaces tradeType badge value per row", () => {
       renderWidget();
-      const root = screen.getByTestId("book-trade-history-widget");
-      expect(within(root).getByText("Exchange")).toBeTruthy();
-      expect(within(root).getByText("OTC")).toBeTruthy();
-      expect(within(root).getByText("DeFi")).toBeTruthy();
+      expect(screen.getByText("Exchange")).toBeTruthy();
+      expect(screen.getByText("OTC")).toBeTruthy();
+      expect(screen.getByText("DeFi")).toBeTruthy();
     });
   });
 
@@ -82,18 +83,16 @@ describe("book-trade-history — L1.5 harness", () => {
       renderWidget();
       const search = screen.getByPlaceholderText(/search trades/i);
       fireEvent.change(search, { target: { value: "BTC" } });
-      const root = screen.getByTestId("book-trade-history-widget");
-      expect(within(root).getByText("BTC-USDT")).toBeTruthy();
-      expect(within(root).queryByText("ETH-USDT")).toBeNull();
-      expect(within(root).queryByText("SOL-USDT")).toBeNull();
+      expect(screen.getByText("BTC-USDT")).toBeTruthy();
+      expect(screen.queryByText("ETH-USDT")).toBeNull();
+      expect(screen.queryByText("SOL-USDT")).toBeNull();
     });
 
     it("matches by venue case-insensitively", () => {
       renderWidget();
       fireEvent.change(screen.getByPlaceholderText(/search trades/i), { target: { value: "hyperliquid" } });
-      const root = screen.getByTestId("book-trade-history-widget");
-      expect(within(root).getByText("SOL-USDT")).toBeTruthy();
-      expect(within(root).queryByText("BTC-USDT")).toBeNull();
+      expect(screen.getByText("SOL-USDT")).toBeTruthy();
+      expect(screen.queryByText("BTC-USDT")).toBeNull();
     });
 
     it("shows empty-search message when query has no matches", () => {

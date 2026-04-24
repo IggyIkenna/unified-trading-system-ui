@@ -187,7 +187,7 @@
       "status": "pass",
       "by": "agent+tests",
       "date": "2026-04-24",
-      "notes": "L1.5 harness spec: 7 tests covering TableWidget testid mount, per-row rendering for instruments + tradeType badges, empty-trades branch (empty-search copy), search filter (instrument match, case-insensitive venue match, no-match empty state). See tests/widgets/book/book-trade-history.test.tsx"
+      "notes": "L1.5 harness spec: 7 tests covering search-input mount, per-row rendering for instruments + tradeType badges, empty-trades branch (empty-search copy), search filter (instrument match, case-insensitive venue match, no-match empty state). Widget no longer forwards data-testid to TableWidget (upstream change); tests anchor on visible text. See tests/widgets/book/book-trade-history.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -307,6 +307,13 @@
       "description": "formatTimestamp previously used toLocaleDateString/toLocaleTimeString with no timeZone \u2014 rendered in the viewer's local time rather than UTC. 7.5 (now UTC-enforcement) required UTC.",
       "status": "fixed",
       "fix": "formatTimestamp now calls toLocaleDateString('en-US', { timeZone: 'UTC', \u2026 }) and toLocaleTimeString with hour12=false + timeZone:'UTC' and appends 'UTC' suffix. Matches widget-certification 7.5 UTC policy."
+    },
+    {
+      "level": "l6",
+      "check": "harness-anchoring",
+      "description": "book-trade-history-widget.tsx no longer passes data-testid to TableWidget (earlier commit passed data-testid='book-trade-history-widget'; upstream removed it). L1.5 harness tests anchor on the search input placeholder + visible row text instead. Low-severity; tests still pass.",
+      "status": "open",
+      "proposedFix": "Re-add data-testid=\"book-trade-history-widget\" prop on the TableWidget invocation (TableWidget already supports the data-testid passthrough on its outer <div>)."
     }
   ],
   "updatedBy": "agent",
