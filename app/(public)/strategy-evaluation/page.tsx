@@ -6,13 +6,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Term } from "@/components/marketing/term";
 
 interface FormState {
   strategyName: string;
   leadResearcher: string;
   email: string;
   phone: string;
+  entityStructure: string;
+  planToRaiseExternalCapital: string;
+  performanceFee: string;
+  managementFee: string;
   commercialPath: "A" | "B" | "C" | "";
+  commercialPathSecondary: Set<string>;
+  commercialPathTertiary: Set<string>;
   understandFit: boolean;
   understandIncubation: boolean;
   understandSignals: boolean;
@@ -53,10 +60,15 @@ interface FormState {
   featureSetLogic: string;
   knownWeaknesses: string;
   riskManagement: string;
+  executionRiskControls: string;
+  feeSensitivity: string;
+  depositWithdrawal: string;
+  treasuryManagement: string;
   pathAReproduce: string;
   pathADartBenefit: string;
   pathBSignalMapping: string;
   pathBExecutionWorkflow: string;
+  pathCApiKeyOwnership: string;
   pathCApiAccess: string;
   pathCReportingViews: string;
   deploymentContinuity: string;
@@ -73,11 +85,13 @@ interface FormState {
 
 type SerializedFormState = Omit<
   FormState,
-  "assetGroups" | "instrumentTypes" | "archetypeMarkers"
+  "assetGroups" | "instrumentTypes" | "archetypeMarkers" | "commercialPathSecondary" | "commercialPathTertiary"
 > & {
   assetGroups: string[];
   instrumentTypes: string[];
   archetypeMarkers: string[];
+  commercialPathSecondary: string[];
+  commercialPathTertiary: string[];
 };
 
 const INITIAL_STATE: FormState = {
@@ -85,7 +99,13 @@ const INITIAL_STATE: FormState = {
   leadResearcher: "",
   email: "",
   phone: "",
+  entityStructure: "",
+  planToRaiseExternalCapital: "",
+  performanceFee: "",
+  managementFee: "",
   commercialPath: "",
+  commercialPathSecondary: new Set(),
+  commercialPathTertiary: new Set(),
   understandFit: false,
   understandIncubation: false,
   understandSignals: false,
@@ -126,10 +146,15 @@ const INITIAL_STATE: FormState = {
   featureSetLogic: "",
   knownWeaknesses: "",
   riskManagement: "",
+  executionRiskControls: "",
+  feeSensitivity: "",
+  depositWithdrawal: "",
+  treasuryManagement: "",
   pathAReproduce: "",
   pathADartBenefit: "",
   pathBSignalMapping: "",
   pathBExecutionWorkflow: "",
+  pathCApiKeyOwnership: "",
   pathCApiAccess: "",
   pathCReportingViews: "",
   deploymentContinuity: "",
@@ -152,6 +177,8 @@ function serializeState(state: FormState): SerializedFormState {
     assetGroups: [...state.assetGroups],
     instrumentTypes: [...state.instrumentTypes],
     archetypeMarkers: [...state.archetypeMarkers],
+    commercialPathSecondary: [...state.commercialPathSecondary],
+    commercialPathTertiary: [...state.commercialPathTertiary],
   };
 }
 
@@ -161,6 +188,8 @@ function deserializeState(raw: SerializedFormState): FormState {
     assetGroups: new Set(raw.assetGroups),
     instrumentTypes: new Set(raw.instrumentTypes),
     archetypeMarkers: new Set(raw.archetypeMarkers),
+    commercialPathSecondary: new Set(raw.commercialPathSecondary ?? []),
+    commercialPathTertiary: new Set(raw.commercialPathTertiary ?? []),
   };
 }
 
@@ -277,7 +306,10 @@ export default function StrategyEvaluationPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function toggleSetItem(key: "assetGroups" | "instrumentTypes" | "archetypeMarkers", item: string) {
+  function toggleSetItem(
+    key: "assetGroups" | "instrumentTypes" | "archetypeMarkers" | "commercialPathSecondary" | "commercialPathTertiary",
+    item: string,
+  ) {
     setForm((prev) => {
       const next = new Set(prev[key]);
       if (next.has(item)) next.delete(item);
@@ -436,11 +468,91 @@ export default function StrategyEvaluationPage() {
               onChange={(e) => setField("phone", e.target.value)}
             />
           </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Preferred capital structure</Label>
+            <p className="text-xs text-muted-foreground">
+              What structure are you targeting or open to? Select the closest match.
+            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-1">
+              {(
+                [
+                  { value: "prop", label: "Proprietary / principal capital" },
+                  { value: "sma", label: "Separately Managed Account (SMA)" },
+                  { value: "fund", label: "Pooled fund / AIF" },
+                  { value: "other", label: "Open to options / not yet decided" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="entityStructure"
+                    value={value}
+                    checked={form.entityStructure === value}
+                    onChange={() => setField("entityStructure", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {form.entityStructure && form.entityStructure !== "prop" && (
+            <>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Do you plan to raise external capital yourself?</Label>
+                <div className="flex flex-wrap gap-x-4 gap-y-2">
+                  {(
+                    [
+                      { value: "yes", label: "Yes — we'll fundraise independently" },
+                      { value: "no", label: "No — capital is already committed" },
+                      { value: "exploring", label: "Exploring — no decision yet" },
+                    ] as { value: string; label: string }[]
+                  ).map(({ value, label }) => (
+                    <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="planToRaiseExternalCapital"
+                        value={value}
+                        checked={form.planToRaiseExternalCapital === value}
+                        onChange={() => setField("planToRaiseExternalCapital", value)}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Target gross performance fee</Label>
+                  <Input
+                    placeholder="e.g. 20%"
+                    value={form.performanceFee}
+                    onChange={(e) => setField("performanceFee", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Target management fee</Label>
+                  <Input
+                    placeholder="e.g. 2% p.a."
+                    value={form.managementFee}
+                    onChange={(e) => setField("managementFee", e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </section>
 
         {/* Section B */}
         <section className="space-y-4 pt-8 border-t border-border/40">
-          <SectionHeading letter="B" title="Primary commercial path" />
+          <SectionHeading letter="B" title="Commercial paths" />
+          <p className="text-xs text-muted-foreground -mt-2">
+            Select your <span className="font-medium text-foreground">primary</span> interest first,
+            then mark any secondary or tertiary interest. This helps us design the right demo and
+            understand where there may be additional fit.
+          </p>
           {getError("commercialPath") && <FieldError message={getError("commercialPath")!} />}
 
           <div id="commercialPath" className="space-y-3">
@@ -450,41 +562,113 @@ export default function StrategyEvaluationPage() {
                   value: "A" as const,
                   label: "DART Full — incubation and rebuild within Odum",
                   description:
-                    "Odum reconstructs the strategy inside the DART stack. We preserve the alpha thesis and operational methodology, then rebuild for production deployment within our regulated infrastructure. IP remains with the originating researcher.",
+                    "Odum reconstructs the strategy inside the DART stack. We preserve the alpha thesis and operational methodology, then rebuild for production deployment within our regulated infrastructure. Strategy IP remains with the originating researcher, protected by NDA and an exclusivity agreement that prevents Odum from sharing any sensitive strategy information or running any trading operations — on its own capital or client capital — that conflict with the submitted strategy design. Full access to DART research, ML, strategy promotion, execution, analytics, and reporting surfaces.",
                 },
                 {
                   value: "B" as const,
-                  label: "DART Signals-In — client signals, Odum execution and post-trade",
+                  label: "DART Signals-In — client signals, Odum execution and analytics",
                   description:
-                    "The researcher delivers signals via an agreed payload schema. Odum handles execution, position management, risk oversight, and post-trade reporting. The signal-generation IP stays entirely with the client.",
+                    "The researcher delivers signals via an agreed payload schema. Odum handles execution, position management, risk oversight, treasury management, and the full post-trade suite. This is not a standard OMS: DART provides advanced execution alpha through smart routing, latency optimisation, TCA, TWAP/VWAP algorithms, and real-time P&L analytics. Signal-generation IP stays entirely with the client.",
                 },
                 {
                   value: "C" as const,
-                  label: "Regulatory Umbrella — read-only API integration",
+                  label: "Regulatory Umbrella — FCA coverage and oversight",
                   description:
-                    "Odum provides regulatory coverage, reporting, and oversight via API integration. The client retains full operational control. Odum acts as the appointed representative or regulatory anchor.",
+                    "Cross-cutting: Odum provides FCA regulatory coverage, reporting, and oversight. Compatible with any engagement shape — whether the client holds their own API keys and faces exchanges directly, or Odum operates the keys. The client retains full operational control; Odum acts as the appointed representative or regulatory anchor.",
                 },
               ] as { value: "A" | "B" | "C"; label: string; description: string }[]
-            ).map(({ value, label, description }) => (
-              <label
-                key={value}
-                className="flex items-start gap-3 cursor-pointer rounded-lg border border-border/60 p-4 hover:border-border transition-colors"
-              >
-                <input
-                  type="radio"
-                  name="commercialPath"
-                  value={value}
-                  checked={form.commercialPath === value}
-                  onChange={() => setField("commercialPath", value)}
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="text-sm font-medium">{label}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{description}</p>
+            ).map(({ value, label, description }) => {
+              const isPrimary = form.commercialPath === value;
+              const isSecondary = !isPrimary && form.commercialPathSecondary.has(value);
+              const isTertiary =
+                !isPrimary && !isSecondary && form.commercialPathTertiary.has(value);
+              const borderClass = isPrimary
+                ? "border-foreground"
+                : isSecondary || isTertiary
+                  ? "border-border"
+                  : "border-border/60";
+              return (
+                <div key={value} className={`rounded-lg border ${borderClass} p-4 transition-colors`}>
+                  <div className="flex items-start gap-3">
+                    <div className="flex flex-col gap-1 mt-0.5 min-w-[100px]">
+                      <label className="flex items-center gap-1.5 text-[11px] font-medium cursor-pointer">
+                        <input
+                          type="radio"
+                          name="commercialPath"
+                          value={value}
+                          checked={isPrimary}
+                          onChange={() => {
+                            setField("commercialPath", value);
+                            setForm((prev) => {
+                              const sec = new Set(prev.commercialPathSecondary);
+                              const ter = new Set(prev.commercialPathTertiary);
+                              sec.delete(value);
+                              ter.delete(value);
+                              return { ...prev, commercialPathSecondary: sec, commercialPathTertiary: ter };
+                            });
+                          }}
+                        />
+                        Primary
+                      </label>
+                      {!isPrimary && (
+                        <>
+                          <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isSecondary}
+                              onChange={() => {
+                                if (isTertiary) toggleSetItem("commercialPathTertiary", value);
+                                toggleSetItem("commercialPathSecondary", value);
+                              }}
+                            />
+                            Secondary
+                          </label>
+                          <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={isTertiary}
+                              onChange={() => {
+                                if (isSecondary) toggleSetItem("commercialPathSecondary", value);
+                                toggleSetItem("commercialPathTertiary", value);
+                              }}
+                            />
+                            Tertiary
+                          </label>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-medium">{label}</p>
+                        {isPrimary && (
+                          <span className="text-[10px] font-semibold uppercase tracking-wide bg-foreground text-background rounded px-1.5 py-0.5">
+                            Primary
+                          </span>
+                        )}
+                        {isSecondary && (
+                          <span className="text-[10px] font-medium text-muted-foreground border border-border rounded px-1.5 py-0.5">
+                            Secondary
+                          </span>
+                        )}
+                        {isTertiary && (
+                          <span className="text-[10px] font-medium text-muted-foreground/80 border border-border/60 rounded px-1.5 py-0.5">
+                            Tertiary
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                    </div>
+                  </div>
                 </div>
-              </label>
-            ))}
+              );
+            })}
           </div>
+
+          <p className="text-xs text-muted-foreground border-l-2 border-border pl-3 py-1 mt-2">
+            <span className="font-medium text-foreground">Distribution assistance:</span>{" "}
+            If requested by the manager, Odum may engage in distribution assistance to help with fundraising,
+            but not under contract and with no standing expectation unless separately agreed.
+          </p>
         </section>
 
         {/* Section C */}
@@ -536,7 +720,9 @@ export default function StrategyEvaluationPage() {
                   aria-invalid={!!getError("understandSignals")}
                 />
                 <span>
-                  I understand that Odum may route or execute signals if they map into the agreed payload schema.
+                  I understand that, under <Term id="dart-signals-in">DART Signals-In</Term>, Odum may route or
+                  execute signals that map into the agreed payload schema, and display those signals and their
+                  analytics solely so that the client can use Odum&rsquo;s execution and post-trade software.
                   <RequiredMarker />
                 </span>
               </label>
@@ -548,78 +734,139 @@ export default function StrategyEvaluationPage() {
         {/* Section D */}
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="D" title="Architecture fit and taxonomy" />
+          <p className="text-xs text-muted-foreground -mt-2">
+            Odum will conduct its own technical taxonomy mapping. Your selections here help us pre-route
+            the evaluation to the right team and design the demo to your use case. Hover any term for a
+            definition.
+          </p>
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">Asset groups</Label>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {ASSET_GROUPS.map((group) => (
-                <label key={group} className="flex items-center gap-2 text-sm cursor-pointer">
+              {(
+                [
+                  { label: "Traditional Finance", termId: "tradfi" },
+                  { label: "Crypto CeFi", termId: "cefi" },
+                  { label: "Sports", termId: null },
+                  { label: "Prediction Markets", termId: "prediction-markets" },
+                  { label: "DeFi", termId: "defi" },
+                ] as { label: string; termId: string | null }[]
+              ).map(({ label, termId }) => (
+                <label key={label} className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={form.assetGroups.has(group)}
-                    onChange={() => toggleSetItem("assetGroups", group)}
+                    checked={form.assetGroups.has(label)}
+                    onChange={() => toggleSetItem("assetGroups", label)}
                   />
-                  {group}
+                  {termId ? <Term id={termId}>{label}</Term> : label}
                 </label>
               ))}
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-sm font-medium">Instrument types</Label>
+            <Label className="text-sm font-medium">
+              <Term id="spot">Instrument</Term> types
+            </Label>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {INSTRUMENT_TYPES.map((type) => (
-                <label key={type} className="flex items-center gap-2 text-sm cursor-pointer">
+              {(
+                [
+                  { label: "Spot", termId: "spot" },
+                  { label: "Perpetuals", termId: "perpetual" },
+                  { label: "Dated futures", termId: "dated-future" },
+                  { label: "Options", termId: "options" },
+                  { label: "Lending", termId: "lending" },
+                  { label: "Staking", termId: "staking" },
+                  { label: "LP/liquidity provision", termId: "lp" },
+                  { label: "Event-settled markets", termId: "event-settled" },
+                ] as { label: string; termId: string }[]
+              ).map(({ label, termId }) => (
+                <label key={label} className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={form.instrumentTypes.has(type)}
-                    onChange={() => toggleSetItem("instrumentTypes", type)}
+                    checked={form.instrumentTypes.has(label)}
+                    onChange={() => toggleSetItem("instrumentTypes", label)}
                   />
-                  {type}
+                  <Term id={termId}>{label}</Term>
                 </label>
               ))}
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-sm font-medium">Primary strategy family</Label>
+            <Label className="text-sm font-medium">
+              Primary <Term id="ml-directional">strategy family</Term>
+            </Label>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {STRATEGY_FAMILIES.map((family) => (
-                <label key={family} className="flex items-center gap-2 text-sm cursor-pointer">
+              {(
+                [
+                  { label: "ML Directional", termId: "ml-directional" },
+                  { label: "Rules Directional", termId: "rules-directional" },
+                  { label: "Carry & Yield", termId: "carry-yield" },
+                  { label: "Arbitrage/Structural Edge", termId: "arbitrage" },
+                  { label: "Market Making", termId: "market-making" },
+                  { label: "Event-Driven", termId: "event-driven" },
+                  { label: "Vol Trading", termId: "vol-trading" },
+                  { label: "Stat Arb/Pairs", termId: "stat-arb" },
+                ] as { label: string; termId: string }[]
+              ).map(({ label, termId }) => (
+                <label key={label} className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="radio"
                     name="strategyFamily"
-                    value={family}
-                    checked={form.strategyFamily === family}
-                    onChange={() => setField("strategyFamily", family)}
+                    value={label}
+                    checked={form.strategyFamily === label}
+                    onChange={() => setField("strategyFamily", label)}
                   />
-                  {family}
+                  <Term id={termId}>{label}</Term>
                 </label>
               ))}
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-sm font-medium">Archetype / style markers</Label>
+            <Label className="text-sm font-medium">
+              <Term id="archetype">Archetype</Term> / style markers{" "}
+              <span className="text-muted-foreground font-normal text-xs">(select all that apply)</span>
+            </Label>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
-              {ARCHETYPE_MARKERS.map((marker) => (
-                <label key={marker} className="flex items-center gap-2 text-sm cursor-pointer">
+              {(
+                [
+                  { label: "ML directional (continuous)", termId: "ml-directional" },
+                  { label: "ML directional (event-settled)", termId: "ml-directional" },
+                  { label: "Rules directional (continuous)", termId: "rules-directional" },
+                  { label: "Rules directional (event-settled)", termId: "rules-directional" },
+                  { label: "Carry basis (perp or dated)", termId: "carry-basis-perp" },
+                  { label: "Staked basis/recursive staking", termId: "staked-basis" },
+                  { label: "Yield rotation/staking simple", termId: "yield-rotation" },
+                  { label: "Arbitrage price dispersion/liquidation capture", termId: "arb-price-dispersion" },
+                  { label: "Market making (continuous or event-settled)", termId: "market-making" },
+                  { label: "Vol trading (options/surface/skew)", termId: "vol-trading-archetype" },
+                  { label: "Stat arb pairs/cross-sectional", termId: "stat-arb-pairs" },
+                  { label: "Event-driven", termId: "event-driven" },
+                ] as { label: string; termId: string }[]
+              ).map(({ label, termId }) => (
+                <label key={label} className="flex items-center gap-2 text-sm cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={form.archetypeMarkers.has(marker)}
-                    onChange={() => toggleSetItem("archetypeMarkers", marker)}
+                    checked={form.archetypeMarkers.has(label)}
+                    onChange={() => toggleSetItem("archetypeMarkers", label)}
                   />
-                  {marker}
+                  <Term id={termId}>{label}</Term>
                 </label>
               ))}
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label className="text-sm font-medium">Pathway description</Label>
+            <Label className="text-sm font-medium">How do you see this fitting into our system?</Label>
+            <p className="text-xs text-muted-foreground">
+              Optional — share any context on your current tech stack, how standalone the strategy is,
+              or what level of integration you&rsquo;re expecting. Odum will map the taxonomy formally.
+            </p>
             <Textarea
               rows={3}
-              placeholder="Describe whether this looks like a clean rebuild, a partial integration, or a bespoke pathway."
+              placeholder="e.g. fully standalone Python strategy, outputs a signals CSV daily; or embedded in existing execution infra and needs API bridging only."
               value={form.pathwayDescription}
               onChange={(e) => setField("pathwayDescription", e.target.value)}
             />
@@ -859,13 +1106,79 @@ export default function StrategyEvaluationPage() {
           <SectionHeading letter="I" title="Risk management" />
 
           <div className="space-y-1">
-            <Label className="text-sm font-medium">
-              Position sizing, concentration, stops, drawdown controls, leverage, and kill-switch logic
-            </Label>
+            <Label className="text-sm font-medium">Strategy-level controls</Label>
+            <p className="text-xs text-muted-foreground">
+              Position sizing, concentration limits, drawdown controls, signal filters, leverage caps, and kill-switch logic
+              built into the strategy decision layer.
+            </p>
             <Textarea
               rows={4}
               value={form.riskManagement}
               onChange={(e) => setField("riskManagement", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Execution-level controls</Label>
+            <p className="text-xs text-muted-foreground">
+              Order-level guardrails: fat-finger checks, max-order-size limits, pre-trade risk checks,
+              venue-level exposure caps, or circuit breakers applied at the execution layer
+              (separate from the strategy&rsquo;s own logic).
+            </p>
+            <Textarea
+              rows={4}
+              placeholder="e.g. max single-order size = 1% NAV, venue exposure cap $200k, hard stop if open P&L < -3% in a session."
+              value={form.executionRiskControls}
+              onChange={(e) => setField("executionRiskControls", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Fee sensitivity</Label>
+            <p className="text-xs text-muted-foreground">
+              How sensitive is the strategy to trading costs? Does it require maker rebates, or can it absorb taker fees?
+              Any constraints on commissions, funding rates, or gas costs.
+            </p>
+            <Textarea
+              rows={3}
+              placeholder="e.g. strategy breaks even below 3bps per side; requires maker-only fills; funding cost must not exceed 0.01% per 8h."
+              value={form.feeSensitivity}
+              onChange={(e) => setField("feeSensitivity", e.target.value)}
+            />
+          </div>
+        </section>
+
+        {/* Section I² — Treasury and operational flows */}
+        <section className="space-y-4 pt-8 border-t border-border/40">
+          <SectionHeading letter="I²" title="Treasury and operational flows" />
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">
+              <Term id="treasury-management">Treasury management</Term> requirements
+            </Label>
+            <p className="text-xs text-muted-foreground">
+              Does the strategy require active management of idle capital across venues or chains?
+              Stablecoin sweeps, collateral optimisation, cross-venue transfer flows?
+            </p>
+            <Textarea
+              rows={3}
+              placeholder="e.g. idle USDC swept to yield protocol daily; collateral rebalanced across three perp venues weekly."
+              value={form.treasuryManagement}
+              onChange={(e) => setField("treasuryManagement", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Deposit / withdrawal timing</Label>
+            <p className="text-xs text-muted-foreground">
+              Are instant or same-day deposits and withdrawals required? Any constraints on settlement timing,
+              lock-up periods, or liquidity buffers?
+            </p>
+            <Textarea
+              rows={3}
+              placeholder="e.g. weekly redemption window with 48h notice; or no lock-up, instant withdrawal required at all times."
+              value={form.depositWithdrawal}
+              onChange={(e) => setField("depositWithdrawal", e.target.value)}
             />
           </div>
         </section>
@@ -904,10 +1217,47 @@ export default function StrategyEvaluationPage() {
           <section className="space-y-4 pt-8 border-t border-border/40">
             <SectionHeading letter="K" title="Path B — DART Signals-In specific" />
 
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm space-y-2 text-muted-foreground">
+              <p>
+                <span className="font-medium text-foreground">
+                  <Term id="dart-signals-in">DART Signals-In</Term>
+                </span>{" "}
+                is not a standard OMS. Beyond receiving and executing your signals, DART provides:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-xs">
+                <li>
+                  <Term id="execution-alpha">Execution alpha</Term> — smart order routing, latency
+                  optimisation, passive/aggressive fill selection
+                </li>
+                <li>
+                  Full <Term id="tca">TCA</Term> suite — slippage analysis, fill quality benchmarking,
+                  venue comparison
+                </li>
+                <li>
+                  <Term id="twap">TWAP</Term> / <Term id="vwap">VWAP</Term> and custom execution algorithms
+                </li>
+                <li>
+                  <Term id="treasury-management">Treasury management</Term> — idle capital sweeps,
+                  cross-venue collateral optimisation
+                </li>
+                <li>
+                  Real-time and end-of-day <Term id="pnl">P&amp;L</Term>, position, and order-ledger views
+                </li>
+                <li>Post-trade analytics — regime attribution, drawdown decomposition, fee breakdown</li>
+              </ul>
+              <p className="text-xs">
+                The questions below help us understand how your signals arrive and what execution and
+                analytics surfaces will be most relevant to your use case.
+              </p>
+            </div>
+
             <div className="space-y-1">
-              <Label className="text-sm font-medium">
-                Can signals map cleanly into the agreed payload schema and related execution workflow?
-              </Label>
+              <Label className="text-sm font-medium">Signal format and delivery</Label>
+              <p className="text-xs text-muted-foreground">
+                Can signals map into the agreed payload schema? Describe how signals are generated and
+                delivered — batch file, webhook push, REST pull, or other — and the expected latency
+                from decision to delivery.
+              </p>
               <Textarea
                 rows={4}
                 value={form.pathBSignalMapping}
@@ -916,9 +1266,12 @@ export default function StrategyEvaluationPage() {
             </div>
 
             <div className="space-y-1">
-              <Label className="text-sm font-medium">
-                Describe the expected execution, fills, and post-trade analytics workflow.
-              </Label>
+              <Label className="text-sm font-medium">Expected execution and analytics workflow</Label>
+              <p className="text-xs text-muted-foreground">
+                Which DART surfaces are most important? Describe the expected execution style
+                (passive/aggressive, algorithmic, venue routing), and which post-trade or analytics
+                views you need most.
+              </p>
               <Textarea
                 rows={4}
                 value={form.pathBExecutionWorkflow}
@@ -933,10 +1286,46 @@ export default function StrategyEvaluationPage() {
           <section className="space-y-4 pt-8 border-t border-border/40">
             <SectionHeading letter="L" title="Path C — Regulatory Umbrella specific" />
 
+            <p className="text-sm text-muted-foreground">
+              The <Term id="regulatory-umbrella">Regulatory Umbrella</Term> is cross-cutting and does
+              not prescribe a specific API key or entity setup. The questions below help us understand
+              the operational arrangement so we can configure oversight and reporting appropriately.
+            </p>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Who holds the API keys / faces the exchange?</Label>
+              <p className="text-xs text-muted-foreground">
+                This does not affect eligibility for regulatory coverage — it just determines the oversight model.
+              </p>
+              <div className="flex flex-col gap-2">
+                {(
+                  [
+                    { value: "client", label: "Client — we hold our own API keys and face the exchange directly" },
+                    { value: "odum", label: "Odum — we prefer Odum to operate the keys and face the exchange" },
+                    { value: "mixed", label: "Mixed / not yet decided" },
+                  ] as { value: string; label: string }[]
+                ).map(({ value, label }) => (
+                  <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                    <input
+                      type="radio"
+                      name="pathCApiKeyOwnership"
+                      value={value}
+                      checked={form.pathCApiKeyOwnership === value}
+                      onChange={() => setField("pathCApiKeyOwnership", value)}
+                      className="mt-0.5"
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
             <div className="space-y-1">
-              <Label className="text-sm font-medium">
-                What API keys, permissions, or data access are expected to be provided?
-              </Label>
+              <Label className="text-sm font-medium">Data access and integration scope</Label>
+              <p className="text-xs text-muted-foreground">
+                What data — positions, orders, trades, balances — does Odum need read access to in order to
+                fulfil the regulatory and reporting obligations?
+              </p>
               <Textarea
                 rows={4}
                 value={form.pathCApiAccess}
@@ -945,9 +1334,11 @@ export default function StrategyEvaluationPage() {
             </div>
 
             <div className="space-y-1">
-              <Label className="text-sm font-medium">
-                Which reporting, position, P&amp;L, order-ledger, trade-ledger, or oversight views are required?
-              </Label>
+              <Label className="text-sm font-medium">Reporting and oversight views required</Label>
+              <p className="text-xs text-muted-foreground">
+                Which reporting, position, P&amp;L, order-ledger, trade-ledger, or regulatory oversight views
+                are required from Odum&rsquo;s side?
+              </p>
               <Textarea
                 rows={4}
                 value={form.pathCReportingViews}
