@@ -125,9 +125,40 @@ This is a **follow-up**, not a prerequisite for content deploys. See `docs/FIREB
 
 ---
 
-## Firebase Auth accounts (prod)
+## Firebase Auth accounts
 
-The `investor@odum-research.co.uk` account (password rotates; current `OdumIR2026!`) is stored in Firebase Auth on `central-element-323112`. It **cannot be created from source** — it's a runtime record. If the account is missing or the password is wrong, the `/login` flow on `.com` will fail; fix it in the Firebase Console (Authentication → Users) before deploying, not after.
+### Architecture
+
+| Env  | Auth provider              | Who authenticates                                       |
+|------|----------------------------|---------------------------------------------------------|
+| prod | Firebase (`central-element-323112`) | Real users only. Demo/advisor emails → redirected to UAT before Firebase fires. |
+| uat  | Demo (client-side PERSONAS) | All personas from `lib/auth/personas.ts`, no Firebase needed. |
+
+The redirect is based on `NEXT_PUBLIC_SITE_URL` (baked at build time): if it contains `www.odum-research.com`, any `@odum-research.co.uk` or `@odum-research.com` login attempt redirects to `uat.odum-research.com` without touching Firebase.
+
+### Seeding prod Firebase
+
+Run once (requires ADC pointed at `central-element-323112`):
+
+```bash
+# Ensure the account exists in Firebase Console first (Authentication → Users → Add user)
+node scripts/admin/seed-firebase-users.mjs --env=prod
+```
+
+This sets `{ role: "admin", entitlements: ["*"] }` as custom claims on `ikenna@odum-research.com`.
+The `firebase-provider.ts` reads these claims on login and bypasses all backend calls.
+
+### Seeding staging Firebase (when separate project is created)
+
+```bash
+FIREBASE_STAGING_PROJECT=your-staging-project-id \
+  node scripts/admin/seed-firebase-users.mjs --env=staging
+```
+
+Creates all 22 demo personas from `lib/auth/personas.ts` with their entitlements as custom claims.
+Passwords match the persona definitions (e.g. `OdumIR2026!` for IR accounts, `demo` for others).
+When `staging` is seeded, update `config/docker-build.env.uat` to set `NEXT_PUBLIC_AUTH_PROVIDER=firebase`
+and point the Firebase config vars at the staging project.
 
 ---
 
