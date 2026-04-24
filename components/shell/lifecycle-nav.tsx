@@ -57,6 +57,7 @@ import { usePathname } from "next/navigation";
 import * as React from "react";
 import { ApiStatusIndicator } from "./api-status-indicator";
 import { NotificationBell } from "./notification-bell";
+import { DemoPlanToggle } from "@/components/demo/DemoPlanToggle";
 
 // Icon mapping for lifecycle stages
 const stageIcons: Record<LifecycleStage, React.ComponentType<{ className?: string }>> = {
@@ -392,6 +393,9 @@ export function LifecycleNav({
 
         {/* Notifications — real alert count + dropdown */}
         <NotificationBell />
+
+        {/* Demo plan tier toggle — only visible in demo mode for paired personas */}
+        <DemoPlanToggle />
 
         {/* Org display */}
         <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs pointer-events-none hidden sm:flex">

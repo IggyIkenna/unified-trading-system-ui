@@ -55,6 +55,8 @@ export interface ServiceTab {
   exact?: boolean;
   /** Entitlement required to access this tab (undefined = always accessible) */
   requiredEntitlement?: string | TradingEntitlement;
+  /** When locked, navigate here instead of showing a cursor-not-allowed span */
+  lockedRedirectTo?: string;
   /** When true, tab is visible but not navigable (e.g. promote lifecycle gating) */
   navDisabled?: boolean;
   navDisabledTitle?: string;
@@ -173,17 +175,30 @@ export function ServiceTabs({
                 : !(entitlements as readonly string[] | undefined)?.includes(tab.requiredEntitlement as string));
 
             if (isLocked) {
+              const lockedInner = (
+                <>
+                  <TabLabel tab={tab} spread={tabsSpread} />
+                  <Lock className="size-3 shrink-0" />
+                </>
+              );
               return (
                 <TabRow key={tab.href} tab={tab} isActive={false} tabItemClass={tabItemClass}>
-                  <span
-                    className={cn(
-                      "flex min-w-0 flex-1 items-center gap-1 text-sm font-medium cursor-not-allowed text-muted-foreground/40",
-                    )}
-                    title={`Upgrade to access ${tab.label}`}
-                  >
-                    <TabLabel tab={tab} spread={tabsSpread} />
-                    <Lock className="size-3 shrink-0" />
-                  </span>
+                  {tab.lockedRedirectTo ? (
+                    <Link
+                      href={tab.lockedRedirectTo}
+                      className="flex min-w-0 flex-1 items-center gap-1 text-sm font-medium text-muted-foreground/40 hover:text-muted-foreground/60"
+                      title={`Upgrade to access ${tab.label}`}
+                    >
+                      {lockedInner}
+                    </Link>
+                  ) : (
+                    <span
+                      className="flex min-w-0 flex-1 items-center gap-1 text-sm font-medium cursor-not-allowed text-muted-foreground/40"
+                      title={`Upgrade to access ${tab.label}`}
+                    >
+                      {lockedInner}
+                    </span>
+                  )}
                 </TabRow>
               );
             }
@@ -402,6 +417,7 @@ export const TRADING_TABS: ServiceTab[] = [
     label: "Strategy Config",
     href: "/services/trading/strategy-config",
     requiredEntitlement: "strategy-full",
+    lockedRedirectTo: "/services/dart/locked?from=research",
   },
   // Signal Intake — inbound signal webhooks for Signals-In + admin cross-client view
   { label: "Signal Intake", href: "/services/signals/dashboard" },
@@ -412,6 +428,7 @@ export const TRADING_TABS: ServiceTab[] = [
     label: "Deployment",
     href: "/services/trading/deployment",
     requiredEntitlement: "strategy-full",
+    lockedRedirectTo: "/services/dart/locked?from=promote",
   },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
