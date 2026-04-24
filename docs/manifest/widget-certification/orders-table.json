@@ -178,10 +178,10 @@
       "notes": "5.2-5.6 require human walkthrough covering: cancel flow, amend flow, filter cascade, cross-asset-class order rendering."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 test authoring not in scope for this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 12 tests covering row rendering, search/reset/refresh filter surfaces, Cancel/Amend row actions on OPEN rows and hidden actions on FILLED rows (cert L4.1), loading/empty/error branches (cert L0.6/L0.7/L0.8). See tests/widgets/orders/orders-table.test.tsx"
     },
     "l7": {
       "status": "pass",
