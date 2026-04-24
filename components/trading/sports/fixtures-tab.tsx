@@ -96,16 +96,18 @@ export function FixtureSection({
   return (
     <div className="flex flex-col gap-2">
       <SectionHeader title={title} count={fixtures.length} />
-      {fixtures.map((f) => (
-        <FixturesMatchCard
-          key={f.id}
-          fixture={f}
-          selected={selectedId === f.id}
-          onSelect={onSelect}
-          onViewArb={onViewArb}
-          onOpenDetail={onOpenDetail}
-        />
-      ))}
+      <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-2">
+        {fixtures.map((f) => (
+          <FixturesMatchCard
+            key={f.id}
+            fixture={f}
+            selected={selectedId === f.id}
+            onSelect={onSelect}
+            onViewArb={onViewArb}
+            onOpenDetail={onOpenDetail}
+          />
+        ))}
+      </div>
     </div>
   );
 }

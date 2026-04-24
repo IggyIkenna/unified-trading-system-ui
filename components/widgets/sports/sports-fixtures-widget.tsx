@@ -184,7 +184,7 @@ export function SportsFixturesWidget(_props: WidgetComponentProps) {
         {totalCount === 0 ? (
           <EmptyState variant="inline" title="No fixtures match the current filters" />
         ) : (
-          <div className="flex flex-col gap-3 max-w-4xl">
+          <div className="flex flex-col gap-3">
             <FixtureSection
               title="Suspended"
               fixtures={groups.suspended}

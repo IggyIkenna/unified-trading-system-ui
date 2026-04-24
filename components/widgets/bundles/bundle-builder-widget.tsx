@@ -79,11 +79,17 @@ export function BundleBuilderWidget(_props: WidgetComponentProps) {
   ];
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div data-testid="bundle-builder-widget" className="flex flex-col h-full min-h-0">
       <div className="px-2 pt-2 pb-1 flex items-center justify-between gap-2">
         <h3 className="text-sm font-medium">Bundle Builder</h3>
         <div className="flex items-center gap-1">
-          <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setShowTemplates(!showTemplates)}>
+          <Button
+            data-testid="template-toggle"
+            variant="outline"
+            size="sm"
+            className="text-xs h-7"
+            onClick={() => setShowTemplates(!showTemplates)}
+          >
             <FileText className="size-3 mr-1.5" />
             {showTemplates ? "Hide templates" : "Load template"}
           </Button>
@@ -117,7 +123,14 @@ export function BundleBuilderWidget(_props: WidgetComponentProps) {
               <Layers className="size-8 opacity-30" />
               <p className="text-sm text-center">No legs in this bundle yet</p>
               <div className="flex flex-wrap gap-2 justify-center">
-                <Button variant="outline" size="sm" className="text-xs" onClick={addStep} disabled={readOnly}>
+                <Button
+                  data-testid="add-leg-button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                  onClick={addStep}
+                  disabled={readOnly}
+                >
                   <Plus className="size-3 mr-1.5" />
                   Add leg
                 </Button>
@@ -190,6 +203,7 @@ export function BundleBuilderWidget(_props: WidgetComponentProps) {
               Simulate (dry run)
             </Button>
             <Button
+              data-testid="submit-bundle-button"
               className="text-xs h-9 flex-1"
               type="button"
               disabled={readOnly}
@@ -226,7 +240,7 @@ function TemplateGallery({ templates, loadTemplate, readOnly }: TemplateGalleryP
   return (
     <div className="rounded-md border p-2 space-y-2">
       <p className="text-micro text-muted-foreground uppercase tracking-wider">Pick a starting point</p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-1.5">
         {templates.map((template) => (
           <button
             key={template.name}
