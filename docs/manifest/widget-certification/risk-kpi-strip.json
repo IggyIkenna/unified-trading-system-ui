@@ -46,7 +46,7 @@
         },
         "0.9": {
           "result": "pass",
-          "note": "Hardcoded stub values replaced with '\u2014' for unmapped KPIs."
+          "note": "Hardcoded stub values replaced with '—' for unmapped KPIs."
         }
       },
       "notes": "All L0 checks pass."
@@ -66,11 +66,11 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "scope.organizationIds \u2192 scopeReductionFactor applied to VaR/ES."
+          "note": "scope.organizationIds → scopeReductionFactor applied to VaR/ES."
         },
         "1.4": {
           "result": "pass",
-          "note": "scope.clientIds via getStrategyIdsForScope \u2192 scopeReductionFactor."
+          "note": "scope.clientIds via getStrategyIdsForScope → scopeReductionFactor."
         },
         "1.5": {
           "result": "pass",
@@ -78,7 +78,7 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "Empty scope \u2192 scopeReductionFactor=1.0 (full values)."
+          "note": "Empty scope → scopeReductionFactor=1.0 (full values)."
         },
         "1.7": {
           "result": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Applies to: live \u2713 (real-time VaR/ES/alerts), paper \u2713 (same metrics, paper P&L), batch \u2713 (as-of values). No mode-specific exclusions."
+          "note": "Applies to: live ✓ (real-time VaR/ES/alerts), paper ✓ (same metrics, paper P&L), batch ✓ (as-of values). No mode-specific exclusions."
         },
         "3.2": {
           "result": "pass",
@@ -115,7 +115,7 @@
           "note": "No WebSocket/interval in widget. Data driven by SWR hooks in use-risk-page-data.ts; batch mode uses same hook with historical data."
         }
       },
-      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. Human must verify 3.3 (no order entry \u2014 N/A for KPI widget) and 3.4 (batch indicator visible) in browser."
+      "notes": "Agent checks 3.1/3.2/3.5/3.6 pass. Human must verify 3.3 (no order entry — N/A for KPI widget) and 3.4 (batch indicator visible) in browser."
     },
     "l4": {
       "status": "partial",
@@ -139,7 +139,7 @@
           "note": "Entitlement checks not in widget render path; handled by widget-wrapper at registration level."
         }
       },
-      "notes": "Agent checks pass. Human must verify 4.3 (no form fields \u2014 N/A), 4.4 (toggle updates view), 4.7 (CollapsibleSection toggles), 4.8 (WidgetScroll contains content)."
+      "notes": "Agent checks pass. Human must verify 4.3 (no form fields — N/A), 4.4 (toggle updates view), 4.7 (CollapsibleSection toggles), 4.8 (WidgetScroll contains content)."
     },
     "l5": {
       "status": "partial",
@@ -154,10 +154,10 @@
       "notes": "Strategy list documented. Human walkthrough required for 5.2-5.6."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 15 tests covering base KPI labels (6), KPI values (3), DeFi section (5), error state (1). See tests/widgets/risk/risk-kpi-strip.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "365 lines \u2014 within 500 limit. DeFiRiskTimeSeriesChart sub-component extracted; largest function ~80 lines."
+          "note": "365 lines — within 500 limit. DeFiRiskTimeSeriesChart sub-component extracted; largest function ~80 lines."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -258,66 +258,66 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "Firm P&L, Net Exposure, Margin Used KPIs have no context source \u2014 rendered as '\u2014'",
+      "Firm P&L, Net Exposure, Margin Used KPIs have no context source — rendered as '—'",
       "DeFi risk profiles mocked, not API-sourced"
     ],
     "notes": "Widget aggregates all asset classes. Per-class verification pending."
   },
   "knownIssues": [
     "1.7: defiRiskProfiles (STRATEGY_RISK_PROFILES) and defiDeltaComposite base (MOCK_PORTFOLIO_DELTA) flow from lib/mocks/fixtures/defi-risk through use-risk-page-data.ts into context. Should be API-sourced or moved to lib/constants/defi.",
-    "Firm P&L, Net Exposure, Margin Used KPIs have no context source \u2014 rendered as '\u2014' pending context wiring."
+    "Firm P&L, Net Exposure, Margin Used KPIs have no context source — rendered as '—' pending context wiring."
   ],
   "findings": [
     {
       "level": "l0",
       "check": "0.8",
-      "description": "risk-kpi-strip-widget.tsx \u2014 missing hasError early-return block",
+      "description": "risk-kpi-strip-widget.tsx — missing hasError early-return block",
       "status": "fixed",
       "fix": "Added hasError early-return rendering 'Failed to load risk KPIs' message"
     },
     {
       "level": "l0",
       "check": "0.9",
-      "description": "risk-kpi-strip-widget.tsx \u2014 hardcoded stub values '+$1.04M', '$5.2M', '47%' for Firm P&L / Net Exposure / Margin Used",
+      "description": "risk-kpi-strip-widget.tsx — hardcoded stub values '+$1.04M', '$5.2M', '47%' for Firm P&L / Net Exposure / Margin Used",
       "status": "fixed",
-      "fix": "Replaced with '\u2014' (context does not yet expose these fields)"
+      "fix": "Replaced with '—' (context does not yet expose these fields)"
     },
     {
       "level": "l7",
       "check": "7.1",
-      "description": "risk-kpi-strip-widget.tsx:33-35 \u2014 RISK_CHART_COLORS used hardcoded hex: #10b981, #3b82f6, #f59e0b; line:68 \u2014 #ef4444 for liquidation threshold",
+      "description": "risk-kpi-strip-widget.tsx:33-35 — RISK_CHART_COLORS used hardcoded hex: #10b981, #3b82f6, #f59e0b; line:68 — #ef4444 for liquidation threshold",
       "status": "fixed",
       "fix": "Replaced with var(--chart-2), var(--chart-3), var(--chart-5), var(--destructive) respectively"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "risk-kpi-strip-widget.tsx \u2014 ~35 user-visible strings (KPI labels, DeFi section headings, table headers)",
+      "description": "risk-kpi-strip-widget.tsx — ~35 user-visible strings (KPI labels, DeFi section headings, table headers)",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "risk-kpi-strip-widget.tsx \u2014 text-[9px], text-[10px], text-[11px] used for dense widget label sizing",
+      "description": "risk-kpi-strip-widget.tsx — text-[9px], text-[10px], text-[11px] used for dense widget label sizing",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
     },
     {
       "level": "l1",
       "check": "1.3",
-      "description": "risk-kpi-strip DeFi sub-section visibility (hasDefiStrategies) is driven by STRATEGY_RISK_PROFILES.length > 0 (always truthy in mock) or getFilledDefiOrders().length > 0. Does NOT respect global scope \u2014 DeFi panel shows even when user filters to a non-DeFi strategy. Should cross-reference scopeStrategyIds and the selected strategies' asset class.",
+      "description": "risk-kpi-strip DeFi sub-section visibility (hasDefiStrategies) is driven by STRATEGY_RISK_PROFILES.length > 0 (always truthy in mock) or getFilledDefiOrders().length > 0. Does NOT respect global scope — DeFi panel shows even when user filters to a non-DeFi strategy. Should cross-reference scopeStrategyIds and the selected strategies' asset class.",
       "status": "deferred",
-      "deferReason": "Scope-aware gating requires wiring strategy \u2192 asset-class map into use-risk-page-data. Logged for BP-5."
+      "deferReason": "Scope-aware gating requires wiring strategy → asset-class map into use-risk-page-data. Logged for BP-5."
     },
     {
       "level": "l4",
       "check": "4.4",
-      "description": "risk-kpi-strip-widget.tsx:192-194 \u2014 three base KPI metrics (Firm P&L, Net Exposure, Margin Used) render fixed em-dash '\u2014' as placeholder. No data source wired. User sees 3 of 9 tiles as dashes regardless of state.",
+      "description": "risk-kpi-strip-widget.tsx:192-194 — three base KPI metrics (Firm P&L, Net Exposure, Margin Used) render fixed em-dash '—' as placeholder. No data source wired. User sees 3 of 9 tiles as dashes regardless of state.",
       "status": "deferred",
-      "deferReason": "Missing data \u2014 pnl summary + positions summary are available via hooks/api but not yet wired into risk-data-context. Logged for BP-5."
+      "deferReason": "Missing data — pnl summary + positions summary are available via hooks/api but not yet wired into risk-data-context. Logged for BP-5."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

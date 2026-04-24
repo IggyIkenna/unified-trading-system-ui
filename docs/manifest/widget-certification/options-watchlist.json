@@ -154,10 +154,10 @@
       "notes": "5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred pending L5 sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering watchlist render (activeListId, selectedSymbolId, watchlist count, editable prop), onListChange and onSelectSymbol callback wiring. See tests/widgets/options/options-watchlist.test.tsx"
     },
     "l7": {
       "status": "pass",

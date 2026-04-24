@@ -154,10 +154,10 @@
       "notes": "5.2\u20135.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred pending L5 sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 6 tests covering crypto/TradFi surface panel switching, asset prop propagation (BTC/ETH/SOL/QQQ). SVG/canvas skipped per task spec (3D chart). See tests/widgets/options/options-greek-surface.test.tsx"
     },
     "l7": {
       "status": "pass",

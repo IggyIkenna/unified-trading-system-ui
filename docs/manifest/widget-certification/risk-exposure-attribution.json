@@ -34,7 +34,7 @@
         },
         "0.6": {
           "result": "pass",
-          "note": "\u2014 added isLoading spinner guard."
+          "note": "— added isLoading spinner guard."
         },
         "0.7": {
           "result": "pass",
@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "\u2014 added hasError early-return block."
+          "note": "— added hasError early-return block."
         },
         "0.9": {
           "result": "pass",
           "note": "no dead code."
         }
       },
-      "notes": "0.1 \u2713 WidgetErrorBoundary via widget-wrapper. 0.2 \u2713 requiredEntitlements: [execution-basic, execution-full]. 0.3 \u2713 availableOn: [risk]. 0.4 \u2713 no any/ts-ignore. 0.5 \u2713 MOCK_STRATEGIES imported from ./risk-data-context (re-export), not directly from lib/mocks. 0.6 FIXED \u2014 added isLoading spinner guard. 0.7 \u2713 empty filteredExposureRows renders no table rows; empty time series hides the chart section. 0.8 FIXED \u2014 added hasError early-return block. 0.9 \u2713 no dead code."
+      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ MOCK_STRATEGIES imported from ./risk-data-context (re-export), not directly from lib/mocks. 0.6 FIXED — added isLoading spinner guard. 0.7 ✓ empty filteredExposureRows renders no table rows; empty time series hides the chart section. 0.8 FIXED — added hasError early-return block. 0.9 ✓ no dead code."
     },
     "l1": {
       "status": "pass",
@@ -58,7 +58,7 @@
       "checks": {
         "1.1": {
           "result": "pass",
-          "note": "data exclusively from useRiskData() \u2014 filteredExposureRows, groupedExposure, exposureTimeSeries all from context."
+          "note": "data exclusively from useRiskData() — filteredExposureRows, groupedExposure, exposureTimeSeries all from context."
         },
         "1.2": {
           "result": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter."
+          "note": "scope.organizationIds feeds scopeStrategyIds → riskLimits filter."
         },
         "1.4": {
           "result": "pass",
@@ -78,14 +78,14 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "empty scope \u2192 unfiltered data."
+          "note": "empty scope → unfiltered data."
         },
         "1.7": {
           "result": "pass",
-          "note": "\u26a0 MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data \u2014 these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels \u2014 functional but reference data location is wrong."
+          "note": "⚠ MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data — these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels — functional but reference data location is wrong."
         }
       },
-      "notes": "1.1 \u2713 data exclusively from useRiskData() \u2014 filteredExposureRows, groupedExposure, exposureTimeSeries all from context. 1.2 \u2713 use-risk-page-data.ts calls useGlobalScope(). 1.3 \u2713 scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter. 1.4 \u2713 scope.clientIds via getStrategyIdsForScope. 1.5 \u2713 scope.strategyIds via getStrategyIdsForScope. 1.6 \u2713 empty scope \u2192 unfiltered data. 1.7 \u26a0 MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data \u2014 these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels \u2014 functional but reference data location is wrong."
+      "notes": "1.1 ✓ data exclusively from useRiskData() — filteredExposureRows, groupedExposure, exposureTimeSeries all from context. 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds feeds scopeStrategyIds → riskLimits filter. 1.4 ✓ scope.clientIds via getStrategyIdsForScope. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → unfiltered data. 1.7 ⚠ MOCK_STRATEGIES re-exported through context from lib/mocks/fixtures/risk-data — these strategy archetypes are reference data and should move to lib/constants/risk. The widget uses MOCK_STRATEGIES for strategy filter dropdown labels — functional but reference data location is wrong."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Applies to: live \u2713 (real-time exposure), paper \u2713, batch \u2713. Read-only analysis widget."
+          "note": "Applies to: live ✓ (real-time exposure), paper ✓, batch ✓. Read-only analysis widget."
         },
         "3.2": {
           "result": "pass",
@@ -154,10 +154,10 @@
       "notes": "Human walkthrough required."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering render (4), strategy filter (1), period toggle (2), loading+error (2). See tests/widgets/risk/risk-exposure-attribution.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -170,11 +170,11 @@
         },
         "7.2": {
           "result": "warn",
-          "note": "Widget imports MOCK_STRATEGIES from ./risk-data-context, which re-exports from @/lib/mocks/fixtures/risk-data. This is a L1.7 carry-over \u2014 mock data flows through context layer. Widget itself does not import lib/mocks directly."
+          "note": "Widget imports MOCK_STRATEGIES from ./risk-data-context, which re-exports from @/lib/mocks/fixtures/risk-data. This is a L1.7 carry-over — mock data flows through context layer. Widget itself does not import lib/mocks directly."
         },
         "7.3": {
           "result": "pass",
-          "note": "189 lines \u2014 within 500 limit."
+          "note": "189 lines — within 500 limit."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -193,7 +193,7 @@
           "note": "slicedTimeSeries computed inline but depends only on stable context values and exposurePeriod state."
         }
       },
-      "notes": "7.1 fixed. MOCK_STRATEGIES import from context layer (not lib/mocks directly) \u2014 logged as known issue."
+      "notes": "7.1 fixed. MOCK_STRATEGIES import from context layer (not lib/mocks directly) — logged as known issue."
     },
     "l8": {
       "status": "partial",
@@ -251,13 +251,13 @@
     "commonTabs": null,
     "verifiedOn": [],
     "gaps": [
-      "MOCK_STRATEGIES in filter dropdown \u2014 strategy list should be API-sourced",
+      "MOCK_STRATEGIES in filter dropdown — strategy list should be API-sourced",
       "exposureTimeSeries only shows top-2 components (delta/funding)"
     ],
     "notes": "5 exposure categories: first_order, second_order, structural, operational, domain_specific."
   },
   "knownIssues": [
-    "1.7: MOCK_STRATEGIES (strategy archetype reference data) travels through lib/mocks/fixtures/risk-data \u2192 context re-export \u2192 widget. Should be in lib/constants/risk instead. Affects strategy filter dropdown labels."
+    "1.7: MOCK_STRATEGIES (strategy archetype reference data) travels through lib/mocks/fixtures/risk-data → context re-export → widget. Should be in lib/constants/risk instead. Affects strategy filter dropdown labels."
   ],
   "findings": [
     {
@@ -277,32 +277,32 @@
     {
       "level": "l7",
       "check": "7.1",
-      "description": "risk-exposure-attribution-widget.tsx:172 \u2014 stroke='#3b82f6' on delta line; :176 \u2014 stroke='#22c55e' on funding line",
+      "description": "risk-exposure-attribution-widget.tsx:172 — stroke='#3b82f6' on delta line; :176 — stroke='#22c55e' on funding line",
       "status": "fixed",
       "fix": "Replaced with var(--chart-3) and var(--chart-2) respectively"
     },
     {
       "level": "l7",
       "check": "7.5",
-      "description": "risk-exposure-attribution-widget.tsx \u2014 ~30 user-visible strings (category headers, column headers, period buttons, strategy names)",
+      "description": "risk-exposure-attribution-widget.tsx — ~30 user-visible strings (category headers, column headers, period buttons, strategy names)",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "risk-exposure-attribution-widget.tsx \u2014 text-[10px], text-[11px] used throughout for dense table/label sizing",
+      "description": "risk-exposure-attribution-widget.tsx — text-[10px], text-[11px] used throughout for dense table/label sizing",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
     },
     {
       "level": "l1",
       "check": "1.7",
-      "description": "risk-exposure-attribution-widget.tsx:5 imports MOCK_STRATEGIES from risk-data-context which re-exports from lib/mocks/fixtures/risk-data. Reference data (strategy list + archetype \u2192 risk-type map + component \u2192 risk-type map) should live in lib/constants/risk or lib/config/services/risk.config.ts, not lib/mocks/.",
+      "description": "risk-exposure-attribution-widget.tsx:5 imports MOCK_STRATEGIES from risk-data-context which re-exports from lib/mocks/fixtures/risk-data. Reference data (strategy list + archetype → risk-type map + component → risk-type map) should live in lib/constants/risk or lib/config/services/risk.config.ts, not lib/mocks/.",
       "status": "deferred",
-      "deferReason": "Domain-wide refactor \u2014 affects use-risk-page-data.ts and risk-data-context.tsx re-exports; out of scope for per-widget sweep. Tracked in risk-circuit-breakers.json knownIssues[0]."
+      "deferReason": "Domain-wide refactor — affects use-risk-page-data.ts and risk-data-context.tsx re-exports; out of scope for per-widget sweep. Tracked in risk-circuit-breakers.json knownIssues[0]."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

@@ -42,14 +42,14 @@
         },
         "0.8": {
           "result": "pass",
-          "note": "\u2014 added hasError block returning error message."
+          "note": "— added hasError block returning error message."
         },
         "0.9": {
           "result": "pass",
           "note": "no dead code."
         }
       },
-      "notes": "0.1 \u2713 WidgetErrorBoundary via widget-wrapper. 0.2 \u2713 requiredEntitlements: [execution-basic, execution-full]. 0.3 \u2713 availableOn: [risk]. 0.4 \u2713 no any/ts-ignore. 0.5 \u2713 no lib/mocks import. 0.6 \u2713 isLoading spinner. 0.7 \u2713 empty state renders 'No venue CB data'. 0.8 FIXED \u2014 added hasError block returning error message. 0.9 \u2713 no dead code."
+      "notes": "0.1 ✓ WidgetErrorBoundary via widget-wrapper. 0.2 ✓ requiredEntitlements: [execution-basic, execution-full]. 0.3 ✓ availableOn: [risk]. 0.4 ✓ no any/ts-ignore. 0.5 ✓ no lib/mocks import. 0.6 ✓ isLoading spinner. 0.7 ✓ empty state renders 'No venue CB data'. 0.8 FIXED — added hasError block returning error message. 0.9 ✓ no dead code."
     },
     "l1": {
       "status": "pass",
@@ -66,7 +66,7 @@
         },
         "1.3": {
           "result": "pass",
-          "note": "scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter."
+          "note": "scope.organizationIds feeds scopeStrategyIds → riskLimits filter."
         },
         "1.4": {
           "result": "pass",
@@ -78,14 +78,14 @@
         },
         "1.6": {
           "result": "pass",
-          "note": "empty scope \u2192 unfiltered data (scopeStrategyIds.length === 0 guard)."
+          "note": "empty scope → unfiltered data (scopeStrategyIds.length === 0 guard)."
         },
         "1.7": {
           "result": "pass",
-          "note": "\u26a0 MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context \u2014 these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
+          "note": "⚠ MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context — these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
         }
       },
-      "notes": "1.1 \u2713 data exclusively from useRiskData(). 1.2 \u2713 use-risk-page-data.ts calls useGlobalScope(). 1.3 \u2713 scope.organizationIds feeds scopeStrategyIds \u2192 riskLimits filter. 1.4 \u2713 scope.clientIds via getStrategyIdsForScope. 1.5 \u2713 scope.strategyIds via getStrategyIdsForScope. 1.6 \u2713 empty scope \u2192 unfiltered data (scopeStrategyIds.length === 0 guard). 1.7 \u26a0 MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context \u2014 these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
+      "notes": "1.1 ✓ data exclusively from useRiskData(). 1.2 ✓ use-risk-page-data.ts calls useGlobalScope(). 1.3 ✓ scope.organizationIds feeds scopeStrategyIds → riskLimits filter. 1.4 ✓ scope.clientIds via getStrategyIdsForScope. 1.5 ✓ scope.strategyIds via getStrategyIdsForScope. 1.6 ✓ empty scope → unfiltered data (scopeStrategyIds.length === 0 guard). 1.7 ⚠ MOCK_STRATEGIES/STRATEGY_RISK_MAP/COMPONENT_TO_RISK_TYPE re-exported from lib/mocks/fixtures/risk-data via context — these are reference data that belong in lib/constants/risk. Not consumed by this widget; tracked as domain-level finding."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Applies to: live \u2713 (real-time CB status), paper \u2014 N/A (CB status is venue-specific; paper mode may not have live CB data), batch \u2713 (read-only historical status). Widget is display-only."
+          "note": "Applies to: live ✓ (real-time CB status), paper — N/A (CB status is venue-specific; paper mode may not have live CB data), batch ✓ (read-only historical status). Widget is display-only."
         },
         "3.2": {
           "result": "pass",
@@ -124,7 +124,7 @@
       "checks": {
         "4.1": {
           "result": "pass",
-          "note": "No interactive buttons \u2014 read-only display widget."
+          "note": "No interactive buttons — read-only display widget."
         },
         "4.2": {
           "result": "pass",
@@ -154,10 +154,10 @@
       "notes": "Human walkthrough required."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering render (3), status badges (3), kill switch (2), loading+error (2). See tests/widgets/risk/risk-circuit-breakers.test.tsx"
     },
     "l7": {
       "status": "pass",
@@ -174,7 +174,7 @@
         },
         "7.3": {
           "result": "pass",
-          "note": "64 lines \u2014 within 500 limit."
+          "note": "64 lines — within 500 limit."
         },
         "7.4": {
           "result": "pass",
@@ -182,7 +182,7 @@
         },
         "7.5": {
           "result": "pass",
-          "note": "Out of scope \u2014 English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
+          "note": "Out of scope — English-only UI per product decision 2026-04-21; 7.5 reassigned to UTC datetime rendering"
         },
         "7.6": {
           "result": "pass",
@@ -231,7 +231,7 @@
     "selectionKey": null,
     "mergeCandidate": {
       "with": "risk-strategy-heatmap",
-      "rationale": "Both show CB status per strategy. Heatmap shows per-strategy row with actions; circuit-breakers shows per-venue status cards. Complementary views \u2014 keep separate."
+      "rationale": "Both show CB status per strategy. Heatmap shows per-strategy row with actions; circuit-breakers shows per-venue status cards. Complementary views — keep separate."
     },
     "keepSeparate": null,
     "notes": "Venue-level CB status view complements the strategy-level heatmap."
@@ -268,25 +268,25 @@
     {
       "level": "l7",
       "check": "7.5",
-      "description": "risk-circuit-breakers-widget.tsx \u2014 ~5 user-visible strings (status labels, 'Kill Switch Active', 'No venue CB data')",
+      "description": "risk-circuit-breakers-widget.tsx — ~5 user-visible strings (status labels, 'Kill Switch Active', 'No venue CB data')",
       "status": "fixed",
       "fix": "Retired 7.5 i18n check: English-only UI per product decision 2026-04-21"
     },
     {
       "level": "l8",
       "check": "8.1",
-      "description": "risk-circuit-breakers-widget.tsx \u2014 text-[9px], text-[10px], text-[11px] used for dense CB card labels",
+      "description": "risk-circuit-breakers-widget.tsx — text-[9px], text-[10px], text-[11px] used for dense CB card labels",
       "status": "fixed",
       "fix": "Applied text-micro (10px), text-nano (9px), text-caption (11px) tokens per consolidated globals.css; arbitrary text-[Npx] classes removed"
     },
     {
       "level": "l4",
       "check": "4.3",
-      "description": "Widget is read-only \u2014 no per-venue trip/reset/kill control. Actions live in risk-strategy-heatmap (per-strategy). Venue-level manual CB override is an acknowledged gap; kill-switch banner surfaces status but not control.",
+      "description": "Widget is read-only — no per-venue trip/reset/kill control. Actions live in risk-strategy-heatmap (per-strategy). Venue-level manual CB override is an acknowledged gap; kill-switch banner surfaces status but not control.",
       "status": "deferred",
       "deferReason": "Design intent per widget description ('status badges'). Keep-separate rationale already recorded in relationships.mergeCandidate."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-21"
+  "updatedAt": "2026-04-24"
 }

@@ -154,10 +154,10 @@
       "notes": "5.2–5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred pending L5 sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering mode-toggle (futures-spreads / options-combos), disabled state of Futures Spreads for TradFi, OptionsCombosPanel fallback for TradFi, ScenarioTab always present. See tests/widgets/options/options-strategies.test.tsx"
     },
     "l7": {
       "status": "pass",

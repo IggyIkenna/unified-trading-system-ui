@@ -154,10 +154,10 @@
       "notes": "5.1 complete. Human checks 5.2–5.6 required."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred — L6 follows L5 human sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 12 tests covering render (loading/error/empty-candle/chart mounts), chart type toggle (Candles/Line → setChartType), timeframe buttons (all 6 render, 4H fires setTimeframe), indicator buttons (SMA 20/50/EMA 12/BB render, toggleIndicator called). SVG internals skipped per plan. See tests/widgets/terminal/price-chart.test.tsx"
     },
     "l7": {
       "status": "pass",

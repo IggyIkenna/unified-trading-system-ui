@@ -154,10 +154,10 @@
       "notes": "5.1 complete. Human checks 5.2–5.6 required. Known L4 note: OptionsChain UNDERLYINGS constant may not match all selectedInstrument.symbol values — verify symbol passthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred — L6 follows L5 human sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering render (no crash, container layout class), instrument propagation (BTC-USDT and ETH-USDT symbol passthrough), context reads (no throw), and a documented finding test for the known UNDERLYINGS gap (cert knownIssues[0]). Dynamic sub-components mocked (happy-dom cannot render canvas/SSR components). See tests/widgets/terminal/terminal-options.test.tsx"
     },
     "l7": {
       "status": "pass",
