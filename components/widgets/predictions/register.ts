@@ -48,10 +48,13 @@ registerPresets("predictions", [
     tab: "predictions",
     isPreset: true,
     layouts: [
+      // Arb stream + closed (same height)
       { widgetId: "pred-arb-stream", instanceId: "pred-arb-stream-1", x: 0, y: 0, w: 12, h: 6 },
-      { widgetId: "pred-arb-closed", instanceId: "pred-arb-closed-1", x: 12, y: 0, w: 12, h: 4 },
+      { widgetId: "pred-arb-closed", instanceId: "pred-arb-closed-1", x: 12, y: 0, w: 12, h: 6 },
+      // ODUM focus full width
       { widgetId: "pred-odum-focus", instanceId: "pred-odum-focus-1", x: 0, y: 6, w: 24, h: 6 },
-      { widgetId: "pred-recent-fills", instanceId: "pred-recent-fills-1", x: 12, y: 4, w: 12, h: 2 },
+      // Recent fills full width
+      { widgetId: "pred-recent-fills", instanceId: "pred-recent-fills-1", x: 0, y: 12, w: 24, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -62,17 +65,24 @@ registerPresets("predictions", [
     tab: "predictions",
     isPreset: true,
     layouts: [
+      // KPIs
       { widgetId: "pred-portfolio-kpis", instanceId: "pred-portfolio-kpis-full", x: 0, y: 0, w: 24, h: 2 },
+      // Markets grid + detail + trade panel row-ish (grid h:7, detail h:7, trade-panel stacked below detail)
       { widgetId: "pred-markets-grid", instanceId: "pred-markets-grid-full", x: 0, y: 2, w: 16, h: 7 },
       { widgetId: "pred-market-detail", instanceId: "pred-market-detail-full", x: 16, y: 2, w: 8, h: 7 },
+      // Positions
       { widgetId: "pred-open-positions", instanceId: "pred-open-positions-full", x: 0, y: 9, w: 24, h: 4 },
       { widgetId: "pred-settled-positions", instanceId: "pred-settled-positions-full", x: 0, y: 13, w: 24, h: 3 },
+      // Top markets + recent fills (same height)
       { widgetId: "pred-top-markets", instanceId: "pred-top-markets-full", x: 0, y: 16, w: 12, h: 4 },
       { widgetId: "pred-recent-fills", instanceId: "pred-recent-fills-full", x: 12, y: 16, w: 12, h: 4 },
+      // ODUM focus full width
       { widgetId: "pred-odum-focus", instanceId: "pred-odum-focus-full", x: 0, y: 20, w: 24, h: 6 },
+      // Arb group: stream + closed (same height)
       { widgetId: "pred-arb-stream", instanceId: "pred-arb-stream-full", x: 0, y: 26, w: 12, h: 6 },
-      { widgetId: "pred-arb-closed", instanceId: "pred-arb-closed-full", x: 12, y: 26, w: 12, h: 4 },
-      { widgetId: "pred-trade-panel", instanceId: "pred-trade-panel-full", x: 0, y: 32, w: 12, h: 7 },
+      { widgetId: "pred-arb-closed", instanceId: "pred-arb-closed-full", x: 12, y: 26, w: 12, h: 6 },
+      // Trade panel full width at bottom
+      { widgetId: "pred-trade-panel", instanceId: "pred-trade-panel-full", x: 0, y: 32, w: 24, h: 7 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

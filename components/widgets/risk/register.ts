@@ -39,20 +39,27 @@ registerPresets("risk", [
     tab: "risk",
     isPreset: true,
     layouts: [
+      // Top: KPIs + strategy heatmap (situational awareness)
       { widgetId: "risk-kpi-strip", instanceId: "risk-kpi-1", x: 0, y: 0, w: 24, h: 2 },
       { widgetId: "risk-strategy-heatmap", instanceId: "risk-heatmap-1", x: 0, y: 2, w: 24, h: 4 },
-      { widgetId: "risk-utilization", instanceId: "risk-util-1", x: 0, y: 6, w: 12, h: 3 },
-      { widgetId: "risk-var-chart", instanceId: "risk-var-1", x: 12, y: 6, w: 12, h: 3 },
-      { widgetId: "risk-stress-table", instanceId: "risk-stress-1", x: 0, y: 9, w: 24, h: 4 },
-      { widgetId: "risk-exposure-attribution", instanceId: "risk-exposure-1", x: 0, y: 13, w: 24, h: 5 },
-      { widgetId: "risk-greeks-summary", instanceId: "risk-greeks-1", x: 0, y: 18, w: 24, h: 5 },
-      { widgetId: "risk-margin", instanceId: "risk-margin-1", x: 0, y: 23, w: 12, h: 5 },
-      { widgetId: "risk-term-structure", instanceId: "risk-term-1", x: 12, y: 23, w: 12, h: 4 },
-      { widgetId: "risk-what-if-slider", instanceId: "risk-whatif-1", x: 0, y: 28, w: 24, h: 2 },
-      { widgetId: "risk-circuit-breakers", instanceId: "risk-cb-1", x: 0, y: 30, w: 12, h: 3 },
-      { widgetId: "risk-correlation-heatmap", instanceId: "risk-corr-1", x: 12, y: 30, w: 12, h: 4 },
-      { widgetId: "risk-limits-hierarchy", instanceId: "risk-limits-1", x: 0, y: 34, w: 24, h: 5 },
-      { widgetId: "risk-live-alert-feed", instanceId: "risk-alert-feed-1", x: 0, y: 39, w: 24, h: 4 },
+      // Utilization + VaR row (same height)
+      { widgetId: "risk-utilization", instanceId: "risk-util-1", x: 0, y: 6, w: 12, h: 4 },
+      { widgetId: "risk-var-chart", instanceId: "risk-var-1", x: 12, y: 6, w: 12, h: 4 },
+      // Scenario analysis group
+      { widgetId: "risk-stress-table", instanceId: "risk-stress-1", x: 0, y: 10, w: 24, h: 4 },
+      { widgetId: "risk-exposure-attribution", instanceId: "risk-exposure-1", x: 0, y: 14, w: 24, h: 5 },
+      { widgetId: "risk-greeks-summary", instanceId: "risk-greeks-1", x: 0, y: 19, w: 24, h: 5 },
+      // Margin + term structure row (same height)
+      { widgetId: "risk-margin", instanceId: "risk-margin-1", x: 0, y: 24, w: 12, h: 5 },
+      { widgetId: "risk-term-structure", instanceId: "risk-term-1", x: 12, y: 24, w: 12, h: 5 },
+      // Control row: what-if full width
+      { widgetId: "risk-what-if-slider", instanceId: "risk-whatif-1", x: 0, y: 29, w: 24, h: 2 },
+      // Circuit breakers + correlation row (same height)
+      { widgetId: "risk-circuit-breakers", instanceId: "risk-cb-1", x: 0, y: 31, w: 12, h: 4 },
+      { widgetId: "risk-correlation-heatmap", instanceId: "risk-corr-1", x: 12, y: 31, w: 12, h: 4 },
+      // Detail tables
+      { widgetId: "risk-limits-hierarchy", instanceId: "risk-limits-1", x: 0, y: 35, w: 24, h: 5 },
+      { widgetId: "risk-live-alert-feed", instanceId: "risk-alert-feed-1", x: 0, y: 40, w: 24, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -78,20 +85,28 @@ registerPresets("risk", [
     tab: "risk",
     isPreset: true,
     layouts: [
+      // Top: KPIs + strategy heatmap
       { widgetId: "risk-kpi-strip", instanceId: "risk-kpi-strip-full", x: 0, y: 0, w: 24, h: 2 },
       { widgetId: "risk-strategy-heatmap", instanceId: "risk-strategy-heatmap-full", x: 0, y: 2, w: 24, h: 4 },
-      { widgetId: "risk-utilization", instanceId: "risk-utilization-full", x: 0, y: 6, w: 12, h: 3 },
+      // Utilization + VaR (same height)
+      { widgetId: "risk-utilization", instanceId: "risk-utilization-full", x: 0, y: 6, w: 12, h: 4 },
       { widgetId: "risk-var-chart", instanceId: "risk-var-chart-full", x: 12, y: 6, w: 12, h: 4 },
+      // Scenario + exposure full width
       { widgetId: "risk-stress-table", instanceId: "risk-stress-table-full", x: 0, y: 10, w: 24, h: 4 },
       { widgetId: "risk-exposure-attribution", instanceId: "risk-exposure-attribution-full", x: 0, y: 14, w: 24, h: 5 },
+      // Greeks + margin row (same height)
       { widgetId: "risk-greeks-summary", instanceId: "risk-greeks-summary-full", x: 0, y: 19, w: 12, h: 5 },
       { widgetId: "risk-margin", instanceId: "risk-margin-full", x: 12, y: 19, w: 12, h: 5 },
-      { widgetId: "risk-term-structure", instanceId: "risk-term-structure-full", x: 0, y: 24, w: 12, h: 4 },
+      // Term structure + limits hierarchy (same height)
+      { widgetId: "risk-term-structure", instanceId: "risk-term-structure-full", x: 0, y: 24, w: 12, h: 5 },
       { widgetId: "risk-limits-hierarchy", instanceId: "risk-limits-hierarchy-full", x: 12, y: 24, w: 12, h: 5 },
+      // Controls
       { widgetId: "risk-what-if-slider", instanceId: "risk-what-if-slider-full", x: 0, y: 29, w: 24, h: 2 },
-      { widgetId: "risk-circuit-breakers", instanceId: "risk-circuit-breakers-full", x: 0, y: 31, w: 24, h: 3 },
-      { widgetId: "risk-correlation-heatmap", instanceId: "risk-correlation-heatmap-full", x: 0, y: 34, w: 24, h: 4 },
-      { widgetId: "risk-live-alert-feed", instanceId: "risk-live-alert-feed-full", x: 0, y: 38, w: 24, h: 4 },
+      // Circuit breakers + correlation row (same height)
+      { widgetId: "risk-circuit-breakers", instanceId: "risk-circuit-breakers-full", x: 0, y: 31, w: 12, h: 4 },
+      { widgetId: "risk-correlation-heatmap", instanceId: "risk-correlation-heatmap-full", x: 12, y: 31, w: 12, h: 4 },
+      // Live alert feed at bottom
+      { widgetId: "risk-live-alert-feed", instanceId: "risk-live-alert-feed-full", x: 0, y: 35, w: 24, h: 4 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

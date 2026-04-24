@@ -35,8 +35,9 @@ registerPresets("bundles", [
     tab: "bundles",
     isPreset: true,
     layouts: [
-      { widgetId: "bundle-builder", instanceId: "bundle-builder-full", x: 0, y: 0, w: 16, h: 16 },
-      { widgetId: "defi-atomic-bundle", instanceId: "defi-atomic-bundle-full", x: 16, y: 0, w: 8, h: 16 },
+      // Stacked full-width: bundle builder then defi atomic (same full width)
+      { widgetId: "bundle-builder", instanceId: "bundle-builder-full", x: 0, y: 0, w: 24, h: 14 },
+      { widgetId: "defi-atomic-bundle", instanceId: "defi-atomic-bundle-full", x: 0, y: 14, w: 24, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

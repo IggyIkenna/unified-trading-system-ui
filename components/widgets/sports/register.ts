@@ -45,15 +45,20 @@ registerPresets("sports", [
     tab: "sports",
     isPreset: true,
     layouts: [
+      // Ticker strip
       { widgetId: "sports-live-scores", instanceId: "sports-live-scores-full", x: 0, y: 0, w: 24, h: 1 },
+      // Fixtures + detail row (same height)
       { widgetId: "sports-fixtures", instanceId: "sports-fixtures-full", x: 0, y: 1, w: 16, h: 10 },
-      { widgetId: "sports-fixture-detail", instanceId: "sports-fixture-detail-full", x: 16, y: 1, w: 8, h: 8 },
-      { widgetId: "sports-standings", instanceId: "sports-standings-full", x: 16, y: 9, w: 8, h: 6 },
-      { widgetId: "sports-predictions", instanceId: "sports-predictions-full", x: 16, y: 15, w: 8, h: 8 },
-      { widgetId: "sports-arb", instanceId: "sports-arb-full", x: 0, y: 11, w: 16, h: 6 },
-      { widgetId: "sports-clv", instanceId: "sports-clv-full", x: 0, y: 17, w: 16, h: 4 },
-      { widgetId: "sports-ml-status", instanceId: "sports-ml-status-full", x: 0, y: 23, w: 24, h: 6 },
-      { widgetId: "sports-my-bets", instanceId: "sports-my-bets-full", x: 0, y: 29, w: 24, h: 5 },
+      { widgetId: "sports-fixture-detail", instanceId: "sports-fixture-detail-full", x: 16, y: 1, w: 8, h: 10 },
+      // Arb scanner + standings row (same height)
+      { widgetId: "sports-arb", instanceId: "sports-arb-full", x: 0, y: 11, w: 16, h: 7 },
+      { widgetId: "sports-standings", instanceId: "sports-standings-full", x: 16, y: 11, w: 8, h: 7 },
+      // CLV + model predictions row (same height)
+      { widgetId: "sports-clv", instanceId: "sports-clv-full", x: 0, y: 18, w: 16, h: 6 },
+      { widgetId: "sports-predictions", instanceId: "sports-predictions-full", x: 16, y: 18, w: 8, h: 6 },
+      // ML pipeline + my bets at bottom
+      { widgetId: "sports-ml-status", instanceId: "sports-ml-status-full", x: 0, y: 24, w: 24, h: 6 },
+      { widgetId: "sports-my-bets", instanceId: "sports-my-bets-full", x: 0, y: 30, w: 24, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
