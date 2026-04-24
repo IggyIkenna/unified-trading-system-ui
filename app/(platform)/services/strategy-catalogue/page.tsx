@@ -17,6 +17,8 @@
  */
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,6 +28,7 @@ import {
 } from "@/components/strategy-catalogue/StrategyCatalogueSurface";
 import {
   EMPTY_CATALOGUE_FILTER,
+  parseCatalogueFilter,
   type StrategyCatalogueFilter,
 } from "@/lib/architecture-v2/catalogue-filter";
 import { loadStrategyCatalogue } from "@/lib/architecture-v2/lifecycle";
@@ -49,6 +52,10 @@ function subscribedInstanceIdsFor(role: string | undefined): readonly string[] {
 
 export default function StrategyCataloguePage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const fromParam = searchParams?.get("from") ?? null;
+  const tabParam = searchParams?.get("tab") ?? null;
+
   const subscribedInstanceIds = useMemo(
     () => subscribedInstanceIdsFor(user?.role),
     [user?.role],
@@ -56,12 +63,23 @@ export default function StrategyCataloguePage() {
 
   const hasSubscriptions = subscribedInstanceIds.length > 0;
 
-  const [tab, setTab] = useState<CatalogueTab>(
-    hasSubscriptions ? "reality" : "explore",
-  );
-  const [filter, setFilter] = useState<StrategyCatalogueFilter>(
-    EMPTY_CATALOGUE_FILTER,
-  );
+  // Initialise tab from URL ?tab= param, falling back to subscription-aware default.
+  const [tab, setTab] = useState<CatalogueTab>(() => {
+    if (tabParam === "explore") return "explore";
+    if (tabParam === "reality") return "reality";
+    return hasSubscriptions ? "reality" : "explore";
+  });
+
+  // Hydrate filter from URL params when arriving from questionnaire redirect.
+  const [filter, setFilter] = useState<StrategyCatalogueFilter>(() => {
+    if (!searchParams) return EMPTY_CATALOGUE_FILTER;
+    const parsed = parseCatalogueFilter(new URLSearchParams(searchParams.toString()));
+    // Only use parsed filter if it has at least one axis set.
+    const hasFilter = Object.keys(parsed).some((k) => parsed[k as keyof StrategyCatalogueFilter] !== undefined);
+    return hasFilter ? parsed : EMPTY_CATALOGUE_FILTER;
+  });
+
+  const fromQuestionnaire = fromParam === "questionnaire";
 
   const viewModeFor = (t: CatalogueTab): StrategyCatalogueViewMode =>
     t === "reality" ? "client-reality" : "client-fomo";
@@ -86,6 +104,20 @@ export default function StrategyCataloguePage() {
             decay and slippage realism before allocating.
           </p>
         </header>
+
+        {fromQuestionnaire && (
+          <div className="flex items-center justify-between gap-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <span>
+              Showing strategies that match your questionnaire profile.{" "}
+              <Link href="/services/strategy-catalogue" className="underline underline-offset-2 hover:text-emerald-900">
+                View all
+              </Link>
+            </span>
+            <Link href="/questionnaire" className="text-xs text-emerald-700 hover:text-emerald-900 underline underline-offset-2 shrink-0">
+              Edit preferences
+            </Link>
+          </div>
+        )}
 
         <Tabs
           value={tab}
