@@ -66,13 +66,19 @@ export function buildFullLayoutsForTab(tab: string): WidgetPlacement[] {
   return placements;
 }
 
-/** Preset profile: every tab shows every widget available on that page (demo / completeness). */
+/** Preset profile: every tab shows every widget available on that page (demo / completeness).
+ *
+ * Prefer the tab's hand-crafted preset named "Full" (from `components/widgets/<tab>/register.ts`)
+ * so layout grouping, row heights, and semantic placement match per-tab intent. Fall back to
+ * id-sorted auto-packing only when a tab has no Full preset registered. */
 export function buildFullProfile(): WorkspaceProfile {
   const tabs: Record<string, Workspace> = {};
   const now = new Date().toISOString();
 
   for (const tab of ALL_WIDGET_TABS) {
-    const layouts = buildFullLayoutsForTab(tab);
+    const presets = getPresetsForTab(tab);
+    const fullPreset = presets.find((p) => p.name === "Full");
+    const layouts = fullPreset?.layouts ?? buildFullLayoutsForTab(tab);
     tabs[tab] = {
       id: `full-profile-${tab}`,
       name: "Full",
