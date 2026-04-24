@@ -42,7 +42,7 @@ export default function LoginPage() {
     if (hasEntitlement("investor-board") || hasEntitlement("investor-archive")) {
       return "/investor-relations";
     }
-    if (user?.email === "investor@odum-research.com" || user?.email === "advisor@odum-research.com") {
+    if (user?.email === "investor@odum-research.co.uk" || user?.email === "advisor@odum-research.co.uk") {
       return "/investor-relations";
     }
     return "/dashboard";

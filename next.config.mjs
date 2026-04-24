@@ -78,6 +78,15 @@ const nextConfig = {
   },
 
   async redirects() {
+    // Block legacy static HTML presentations — SSOT is /investor-relations
+    const presentationRedirects = [
+      {
+        source: "/presentations/:path*",
+        destination: "/login?redirect=/investor-relations",
+        permanent: false,
+      },
+    ];
+
     // Execution folded into Trading Terminal
     const executionRedirects = [
       {
@@ -98,6 +107,7 @@ const nextConfig = {
       },
     ];
     return [
+      ...presentationRedirects,
       ...executionRedirects,
       // Legacy flat marketing HTML → App Router (public shell + auth)
       { source: "/index.html", destination: "/", permanent: false },

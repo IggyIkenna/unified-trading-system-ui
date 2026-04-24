@@ -8,10 +8,9 @@ import type { AuthPersona } from "@/lib/config/auth";
  * to enable instant demo login. In production, auth would use OAuth/OIDC
  * with server-side session management — never client-side password storage.
  *
- * External-facing advisor accounts use @odum-research.com so the domain
- * matches the main website. They authenticate on the UAT demo environment
- * only — prod login intercepts these emails and redirects before Firebase
- * auth fires. AUTH_PROVIDER=demo on UAT validates them client-side here.
+ * External-facing advisor accounts use @odum-research.co.uk to distinguish
+ * them from internal @odum.internal accounts. AUTH_PROVIDER=demo on prod
+ * validates them client-side against PERSONAS — no separate UAT redirect needed.
  *
  * Internal personas (@odum.internal, @alphacapital.com, etc.) are for
  * in-house demo use and are not shared externally.
@@ -50,12 +49,12 @@ export const PERSONAS: readonly AuthPersona[] = [
       "IM desk operator — locks/unlocks strategies via the catalogue admin toggle + sees reporting for cross-client observation.",
   },
 
-  // ── External-facing advisor / investor accounts (@odum-research.com) ─
+  // ── External-facing advisor / investor accounts (@odum-research.co.uk) ─
   // These are shared with advisors and prospects via the IR email.
-  // Auth happens on UAT (demo auth); prod login redirects here before Firebase fires.
+  // Auth happens on prod via AUTH_PROVIDER=demo — validated client-side against PERSONAS.
   {
     id: "admin-odum",
-    email: "admin@odum-research.com",
+    email: "admin@odum-research.co.uk",
     password: "OdumIR2026!",
     displayName: "Admin",
     role: "admin",
@@ -65,7 +64,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   },
   {
     id: "investor",
-    email: "investor@odum-research.com",
+    email: "investor@odum-research.co.uk",
     password: "OdumIR2026!",
     displayName: "Investor",
     role: "client",
@@ -89,7 +88,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   },
   {
     id: "advisor",
-    email: "advisor@odum-research.com",
+    email: "advisor@odum-research.co.uk",
     password: "OdumIR2026!",
     displayName: "Strategic Advisor",
     role: "client",
