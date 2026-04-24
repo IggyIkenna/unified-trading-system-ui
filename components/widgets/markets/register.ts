@@ -67,14 +67,20 @@ registerPresets("markets", [
     tab: "markets",
     isPreset: true,
     layouts: [
+      // Controls (always full width)
       { widgetId: "markets-controls", instanceId: "markets-controls-full", x: 0, y: 0, w: 24, h: 1 },
+      // Order flow table (wide, keep full width)
       { widgetId: "markets-order-flow", instanceId: "markets-order-flow-full", x: 0, y: 1, w: 24, h: 7 },
+      // Live book (needs width — minW=16)
       { widgetId: "markets-live-book", instanceId: "markets-live-book-full", x: 0, y: 8, w: 24, h: 7 },
-      { widgetId: "markets-my-orders", instanceId: "markets-my-orders-full", x: 0, y: 15, w: 24, h: 5 },
-      { widgetId: "markets-recon", instanceId: "markets-recon-full", x: 0, y: 20, w: 24, h: 4 },
-      { widgetId: "markets-latency-summary", instanceId: "markets-latency-summary-full", x: 0, y: 24, w: 24, h: 5 },
-      { widgetId: "markets-latency-detail", instanceId: "markets-latency-detail-full", x: 0, y: 29, w: 24, h: 6 },
-      { widgetId: "markets-defi-amm", instanceId: "markets-defi-amm-full", x: 0, y: 35, w: 24, h: 5 },
+      // Row: my orders + recon side by side, same h=5
+      { widgetId: "markets-my-orders", instanceId: "markets-my-orders-full", x: 0, y: 15, w: 12, h: 5 },
+      { widgetId: "markets-recon", instanceId: "markets-recon-full", x: 12, y: 15, w: 12, h: 5 },
+      // Row: latency summary + latency detail, same h=6
+      { widgetId: "markets-latency-summary", instanceId: "markets-latency-summary-full", x: 0, y: 20, w: 10, h: 6 },
+      { widgetId: "markets-latency-detail", instanceId: "markets-latency-detail-full", x: 10, y: 20, w: 14, h: 6 },
+      // DeFi AMM activity (full width)
+      { widgetId: "markets-defi-amm", instanceId: "markets-defi-amm-full", x: 0, y: 26, w: 24, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

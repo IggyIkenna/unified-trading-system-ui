@@ -16,10 +16,12 @@ registerPresets("options", [
     isPreset: true,
     layouts: [
       { widgetId: "options-control-bar", instanceId: "options-control-bar-1", x: 0, y: 0, w: 24, h: 1 },
-      { widgetId: "options-watchlist", instanceId: "options-watchlist-1", x: 0, y: 1, w: 6, h: 10 },
+      // Row 1 (y=1, h=8): watchlist | chain | greek surface — all same height, no gap
+      { widgetId: "options-watchlist", instanceId: "options-watchlist-1", x: 0, y: 1, w: 6, h: 8 },
       { widgetId: "options-chain", instanceId: "options-chain-1", x: 6, y: 1, w: 12, h: 8 },
-      { widgetId: "options-greek-surface", instanceId: "options-greek-surface-1", x: 18, y: 1, w: 6, h: 4 },
-      { widgetId: "futures-table", instanceId: "futures-table-1", x: 6, y: 9, w: 18, h: 4 },
+      { widgetId: "options-greek-surface", instanceId: "options-greek-surface-1", x: 18, y: 1, w: 6, h: 8 },
+      // Row 2 (y=9): futures table full width
+      { widgetId: "futures-table", instanceId: "futures-table-1", x: 0, y: 9, w: 24, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -44,11 +46,15 @@ registerPresets("options", [
     isPreset: true,
     layouts: [
       { widgetId: "options-control-bar", instanceId: "options-control-bar-full", x: 0, y: 0, w: 24, h: 1 },
+      // Row 1 (y=1, h=10): watchlist | chain — same height, no bottom gap
       { widgetId: "options-watchlist", instanceId: "options-watchlist-full", x: 0, y: 1, w: 6, h: 10 },
-      { widgetId: "options-chain", instanceId: "options-chain-full", x: 6, y: 1, w: 18, h: 8 },
+      { widgetId: "options-chain", instanceId: "options-chain-full", x: 6, y: 1, w: 18, h: 10 },
+      // Row 2: futures full width
       { widgetId: "futures-table", instanceId: "futures-table-full", x: 0, y: 11, w: 24, h: 6 },
+      // Row 3: strategies builder (form) full width, minH respected
       { widgetId: "options-strategies", instanceId: "options-strategies-full", x: 0, y: 17, w: 24, h: 7 },
-      { widgetId: "options-greek-surface", instanceId: "options-greek-surface-full", x: 0, y: 24, w: 12, h: 4 },
+      // Row 4: greek surface full width — no dead side strip
+      { widgetId: "options-greek-surface", instanceId: "options-greek-surface-full", x: 0, y: 24, w: 24, h: 5 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -142,7 +148,7 @@ registerWidget({
   label: "Greek / vol surface",
   description: "Crypto greek surface; TradFi shows skew-aware vol grid.",
   icon: BarChart3,
-  minW: 8,
+  minW: 6,
   minH: 3,
   defaultW: 12,
   defaultH: 4,

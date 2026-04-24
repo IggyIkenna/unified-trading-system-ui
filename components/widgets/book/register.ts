@@ -12,9 +12,10 @@ registerPresets("book", [
     tab: "book",
     isPreset: true,
     layouts: [
-      { widgetId: "book-trade-history", instanceId: "book-trade-history-1", x: 0, y: 0, w: 24, h: 8 },
-      { widgetId: "book-hierarchy-bar", instanceId: "book-hierarchy-bar-1", x: 0, y: 8, w: 24, h: 1 },
-      { widgetId: "book-order-entry", instanceId: "book-order-entry-1", x: 0, y: 9, w: 24, h: 14 },
+      // Hierarchy selector up top, then primary form, then history — form-first read order
+      { widgetId: "book-hierarchy-bar", instanceId: "book-hierarchy-bar-1", x: 0, y: 0, w: 24, h: 1 },
+      { widgetId: "book-order-entry", instanceId: "book-order-entry-1", x: 0, y: 1, w: 24, h: 14 },
+      { widgetId: "book-trade-history", instanceId: "book-trade-history-1", x: 0, y: 15, w: 24, h: 8 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",

@@ -15,23 +15,28 @@ registerPresets("accounts", [
     tab: "accounts",
     isPreset: true,
     layouts: [
+      // Row 1: KPI strip (full width)
       { widgetId: "accounts-kpi-strip", instanceId: "accounts-kpi-strip-1", x: 0, y: 0, w: 24, h: 2 },
-      { widgetId: "accounts-balance-table", instanceId: "accounts-balance-table-1", x: 0, y: 2, w: 16, h: 5 },
+      // Row 2: Balances table + transfer form side-by-side, same h=7 (form needs full visibility)
+      { widgetId: "accounts-balance-table", instanceId: "accounts-balance-table-1", x: 0, y: 2, w: 16, h: 7 },
       { widgetId: "accounts-transfer", instanceId: "accounts-transfer-1", x: 16, y: 2, w: 8, h: 7 },
-      { widgetId: "accounts-margin-util", instanceId: "accounts-margin-util-1", x: 0, y: 7, w: 16, h: 4 },
+      // Row 3: Margin utilization (full width)
+      { widgetId: "accounts-margin-util", instanceId: "accounts-margin-util-1", x: 0, y: 9, w: 24, h: 4 },
+      // Row 4: Transfer history (full width)
       {
         widgetId: "accounts-transfer-history",
         instanceId: "accounts-transfer-history-1",
         x: 0,
-        y: 11,
+        y: 13,
         w: 24,
         h: 4,
       },
+      // Row 5: SAFT portfolio (full width)
       {
         widgetId: "saft-portfolio",
         instanceId: "saft-portfolio-1",
         x: 0,
-        y: 15,
+        y: 17,
         w: 24,
         h: 16,
       },
@@ -48,8 +53,9 @@ registerPresets("accounts", [
       { widgetId: "accounts-kpi-strip", instanceId: "accounts-kpi-strip-full", x: 0, y: 0, w: 24, h: 2 },
       { widgetId: "accounts-balance-table", instanceId: "accounts-balance-table-full", x: 0, y: 2, w: 24, h: 5 },
       { widgetId: "accounts-margin-util", instanceId: "accounts-margin-util-full", x: 0, y: 7, w: 24, h: 4 },
+      // Transfer form + history share a row with equal h=7 — no gap
       { widgetId: "accounts-transfer", instanceId: "accounts-transfer-full", x: 0, y: 11, w: 8, h: 7 },
-      { widgetId: "accounts-transfer-history", instanceId: "accounts-transfer-history-full", x: 8, y: 11, w: 16, h: 4 },
+      { widgetId: "accounts-transfer-history", instanceId: "accounts-transfer-history-full", x: 8, y: 11, w: 16, h: 7 },
       { widgetId: "saft-portfolio", instanceId: "saft-portfolio-full", x: 0, y: 18, w: 24, h: 20 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
