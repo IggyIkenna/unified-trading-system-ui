@@ -154,10 +154,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 N/A \u2014 display-only widget with no execution parameters."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests not written this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 6 tests covering three-KPI render + value flow-through, loading/empty/error branches, zero-total formatting. See tests/widgets/accounts/accounts-kpi-strip.test.tsx"
     },
     "l7": {
       "status": "pass",

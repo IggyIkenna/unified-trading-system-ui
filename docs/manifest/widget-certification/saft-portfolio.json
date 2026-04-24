@@ -154,10 +154,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 require human walkthrough \u2014 form completeness for Add SAFT dialog."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests not written this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering summary render, four KPI cards, table column headers, SAFT-row flow-through, empty/loading/error branches, Add-SAFT dialog open, Save-SAFT sonner toast emit. See tests/widgets/accounts/saft-portfolio.test.tsx"
     },
     "l7": {
       "status": "pass",

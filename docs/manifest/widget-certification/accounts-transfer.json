@@ -155,10 +155,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 require human walkthrough (form completeness for each transfer type)."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests not written this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering four transfer-type pills, type-switch flow, submit enable/disable, useSubmitTransfer.mutate cross_venue payload shape + idempotency_key, addTransferEntry history wiring, batch-mode guard, paper-mode '(Paper)' annotation, empty-balance state. See tests/widgets/accounts/accounts-transfer.test.tsx"
     },
     "l7": {
       "status": "pass",

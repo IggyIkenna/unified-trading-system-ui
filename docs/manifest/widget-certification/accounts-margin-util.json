@@ -154,10 +154,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 N/A \u2014 display-only widget."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests not written this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 6 tests covering MarginUtilization card render, venueLabel flow-through, venue-count badge, loading/empty/error branches. See tests/widgets/accounts/accounts-margin-util.test.tsx"
     },
     "l7": {
       "status": "pass",

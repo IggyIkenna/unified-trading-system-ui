@@ -154,10 +154,10 @@
       "notes": "5.1 documented. 5.2\u20135.6 N/A \u2014 display-only table."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests not written this pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 6 tests covering column-header render, transfer-row flow-through, empty-message 'No transfers yet', transferHistoryError banner, loading branch, status-badge rendering for all three statuses. See tests/widgets/accounts/accounts-transfer-history.test.tsx"
     },
     "l7": {
       "status": "pass",
