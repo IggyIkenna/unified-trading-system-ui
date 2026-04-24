@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { firebaseDb } from "@/lib/admin/firebase";
+import { formatFileSize, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
 
 const PATH_LABELS: Record<string, string> = {
   A: "Path A — DART Full",
@@ -54,6 +55,12 @@ interface EvalDoc {
   readonly executionRiskControls?: string;
   readonly strategyOverview?: string;
   readonly alphaTesis?: string;
+  readonly backtestMethodologyDoc?: UploadedFileRef | null;
+  readonly assumptionsDoc?: UploadedFileRef | null;
+  readonly tearSheet?: UploadedFileRef | null;
+  readonly tradeLogCsv?: UploadedFileRef | null;
+  readonly equityCurveCsv?: UploadedFileRef | null;
+  readonly pipelineSample?: string;
   readonly paperTradedAtLeast7Days?: boolean;
   readonly liveTradedAtLeastOneWeek?: boolean;
   readonly pathBSignalMapping?: string;
@@ -83,6 +90,42 @@ function DetailRow({ label, value }: { label: string; value: string | undefined 
     <div className="py-1.5 grid grid-cols-[160px_1fr] gap-4 text-xs border-b border-border/40 last:border-0">
       <span className="text-muted-foreground font-medium">{label}</span>
       <span className="text-foreground whitespace-pre-wrap">{value}</span>
+    </div>
+  );
+}
+
+function DetailFile({
+  label,
+  file,
+}: {
+  label: string;
+  file: UploadedFileRef | null | undefined;
+}) {
+  if (!file) return null;
+  return (
+    <div className="py-1.5 grid grid-cols-[160px_1fr] gap-4 text-xs border-b border-border/40 last:border-0">
+      <span className="text-muted-foreground font-medium">{label}</span>
+      <span className="flex flex-wrap items-center gap-2">
+        <span className="font-medium">{file.filename}</span>
+        <span className="text-muted-foreground">
+          {formatFileSize(file.size)}
+          {file.contentType && ` · ${file.contentType}`}
+        </span>
+        {file.url ? (
+          <a
+            href={file.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline hover:text-blue-800"
+          >
+            Download
+          </a>
+        ) : (
+          <span className="rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+            mock — not stored
+          </span>
+        )}
+      </span>
     </div>
   );
 }
@@ -241,6 +284,25 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
           </h3>
           <DetailRow label="Overview" value={row.strategyOverview} />
           <DetailRow label="Alpha thesis" value={row.alphaTesis} />
+        </section>
+
+        <section className="space-y-0 mb-6">
+          <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+            Evidence attachments
+          </h3>
+          <DetailFile label="Methodology doc" file={row.backtestMethodologyDoc} />
+          <DetailFile label="Assumptions doc" file={row.assumptionsDoc} />
+          <DetailFile label="Tear sheet" file={row.tearSheet} />
+          <DetailFile label="Trade log CSV" file={row.tradeLogCsv} />
+          <DetailFile label="Equity curve CSV" file={row.equityCurveCsv} />
+          <DetailRow label="Pipeline sample" value={row.pipelineSample} />
+          {!row.backtestMethodologyDoc &&
+            !row.assumptionsDoc &&
+            !row.tearSheet &&
+            !row.tradeLogCsv &&
+            !row.equityCurveCsv && (
+              <p className="text-xs text-muted-foreground italic">No files attached.</p>
+            )}
         </section>
 
         <section className="space-y-0 mb-6">

@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Term } from "@/components/marketing/term";
+import { FileUploadField } from "@/components/strategy-evaluation/file-upload-field";
+import { isUploadedFileRef, type UploadedFileRef } from "@/lib/strategy-evaluation/upload";
 
 interface FormState {
   strategyName: string;
@@ -54,11 +56,12 @@ interface FormState {
   latencyAssumptions: string;
   avgTradesPerDay: string;
   instrumentsVenuesLeverage: string;
-  backtestMethodologyDoc: string;
-  assumptionsDoc: string;
-  tearSheet: string;
-  tradeLogCsv: string;
-  equityCurveCsv: string;
+  draftSubmissionId: string;
+  backtestMethodologyDoc: UploadedFileRef | null;
+  assumptionsDoc: UploadedFileRef | null;
+  tearSheet: UploadedFileRef | null;
+  tradeLogCsv: UploadedFileRef | null;
+  equityCurveCsv: UploadedFileRef | null;
   pipelineSample: string;
   sharpeRatio: string;
   calmarRatio: string;
@@ -165,11 +168,12 @@ const INITIAL_STATE: FormState = {
   latencyAssumptions: "",
   avgTradesPerDay: "",
   instrumentsVenuesLeverage: "",
-  backtestMethodologyDoc: "",
-  assumptionsDoc: "",
-  tearSheet: "",
-  tradeLogCsv: "",
-  equityCurveCsv: "",
+  draftSubmissionId: "",
+  backtestMethodologyDoc: null,
+  assumptionsDoc: null,
+  tearSheet: null,
+  tradeLogCsv: null,
+  equityCurveCsv: null,
   pipelineSample: "",
   sharpeRatio: "",
   calmarRatio: "",
@@ -237,6 +241,13 @@ function deserializeState(raw: SerializedFormState): FormState {
     // Legacy drafts may still have strings where arrays are expected — guard.
     orderTypes: new Set(Array.isArray(raw.orderTypes) ? raw.orderTypes : []),
     feesAndCosts: new Set(Array.isArray(raw.feesAndCosts) ? raw.feesAndCosts : []),
+    // Evidence upload fields: legacy drafts had strings here. Drop strings.
+    backtestMethodologyDoc: isUploadedFileRef(raw.backtestMethodologyDoc) ? raw.backtestMethodologyDoc : null,
+    assumptionsDoc: isUploadedFileRef(raw.assumptionsDoc) ? raw.assumptionsDoc : null,
+    tearSheet: isUploadedFileRef(raw.tearSheet) ? raw.tearSheet : null,
+    tradeLogCsv: isUploadedFileRef(raw.tradeLogCsv) ? raw.tradeLogCsv : null,
+    equityCurveCsv: isUploadedFileRef(raw.equityCurveCsv) ? raw.equityCurveCsv : null,
+    draftSubmissionId: typeof raw.draftSubmissionId === "string" ? raw.draftSubmissionId : "",
   };
 }
 
@@ -328,7 +339,18 @@ export default function StrategyEvaluationPage() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as SerializedFormState;
-        setForm(deserializeState(parsed));
+        const restored = deserializeState(parsed);
+        // Ensure a stable draft submission ID exists so file uploads land
+        // under a predictable path even before the form is submitted.
+        if (!restored.draftSubmissionId) {
+          restored.draftSubmissionId = `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        }
+        setForm(restored);
+      } else {
+        setForm((prev) => ({
+          ...prev,
+          draftSubmissionId: `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+        }));
       }
     } catch {
       // ignore corrupt storage
@@ -1403,27 +1425,68 @@ export default function StrategyEvaluationPage() {
         {/* Section F */}
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="F" title="Tear sheet and evidence" />
+          <p className="text-xs text-muted-foreground -mt-2">
+            Attach the supporting documents. Files upload to Odum&rsquo;s regulated storage and
+            become downloadable from your submission. On localhost the upload is mocked — filename
+            and size are recorded but the file itself is not persisted.
+          </p>
 
           {(
             [
-              { key: "backtestMethodologyDoc" as const, label: "Backtest methodology document (URL or file reference)" },
-              { key: "assumptionsDoc" as const, label: "Assumptions document" },
-              { key: "tearSheet" as const, label: "Performance tear sheet (PDF/charts)" },
-              { key: "tradeLogCsv" as const, label: "Trade log CSV" },
-              { key: "equityCurveCsv" as const, label: "Equity curve CSV" },
-            ] as { key: keyof Pick<FormState, "backtestMethodologyDoc" | "assumptionsDoc" | "tearSheet" | "tradeLogCsv" | "equityCurveCsv">; label: string }[]
-          ).map(({ key, label }) => (
-            <div key={key} className="space-y-1">
-              <Label className="text-sm font-medium">{label}</Label>
-              <Input
-                value={form[key] as string}
-                onChange={(e) => setField(key, e.target.value)}
-              />
-            </div>
+              {
+                key: "backtestMethodologyDoc" as const,
+                label: "Backtest methodology document",
+                hint: "PDF, Word, or Markdown — describes how the backtest was run",
+                accept: ".pdf,.doc,.docx,.md,.txt",
+              },
+              {
+                key: "assumptionsDoc" as const,
+                label: "Assumptions document",
+                hint: "Signal-to-order delays, fill assumptions, cost model, data caveats",
+                accept: ".pdf,.doc,.docx,.md,.txt",
+              },
+              {
+                key: "tearSheet" as const,
+                label: "Performance tear sheet",
+                hint: "PDF / image bundle with the core return, risk, and drawdown charts",
+                accept: ".pdf,.png,.jpg,.jpeg",
+              },
+              {
+                key: "tradeLogCsv" as const,
+                label: "Trade log CSV",
+                hint: "One row per trade or fill — at minimum timestamp, side, instrument, size, price",
+                accept: ".csv,.tsv,.parquet",
+              },
+              {
+                key: "equityCurveCsv" as const,
+                label: "Equity curve CSV",
+                hint: "Timestamp + cumulative equity / NAV",
+                accept: ".csv,.tsv,.parquet",
+              },
+            ] as {
+              key: "backtestMethodologyDoc" | "assumptionsDoc" | "tearSheet" | "tradeLogCsv" | "equityCurveCsv";
+              label: string;
+              hint: string;
+              accept: string;
+            }[]
+          ).map(({ key, label, hint, accept }) => (
+            <FileUploadField
+              key={key}
+              label={label}
+              hint={hint}
+              accept={accept}
+              submissionId={form.draftSubmissionId || "unassigned"}
+              fieldKey={key}
+              value={form[key]}
+              onChange={(ref) => setField(key, ref)}
+            />
           ))}
 
           <div className="space-y-1">
             <Label className="text-sm font-medium">One-day pipeline sample description</Label>
+            <p className="text-xs text-muted-foreground">
+              Narrative — how a single trading day flows end-to-end through the pipeline.
+            </p>
             <Textarea
               rows={3}
               value={form.pipelineSample}
