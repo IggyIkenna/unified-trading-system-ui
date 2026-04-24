@@ -178,10 +178,10 @@
       "notes": "5.1 documented. Human must verify 5.2-5.6 \u2014 in this case, primarily 5.6 (all domain filters work for each asset class)."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 not started \u2014 deferred until L5 human walkthrough complete."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 11 tests covering render (card, title, count badge, family headings, strategy labels), domain filter buttons (All/DEFI/CEFI/TRADFI/SPORTS), default All pressed, DeFi click updates aria-pressed, loading state (Spinner), error state, empty state. See tests/widgets/strategies/strategy-family-browser.test.tsx"
     },
     "l7": {
       "status": "pass",

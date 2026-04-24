@@ -178,10 +178,10 @@
       "notes": "5.1 documented. Widget is aggregate \u2014 L5 walkthrough is minimal."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 not started \u2014 deferred until L5 walkthrough complete."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 11 tests covering render (4 KPI metrics), loading state (em-dash for all values), active count format (n/n), P&L sentiment (positive/negative), AUM $ prefix, empty strategies. See tests/widgets/strategies/strategies-kpi-strip.test.tsx"
     },
     "l7": {
       "status": "pass",

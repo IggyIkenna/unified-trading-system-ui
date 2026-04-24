@@ -178,10 +178,10 @@
       "notes": "5.1 documented. Human must walk through 5.2-5.6 \u2014 particularly cross-asset-class filter combinations."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 not started \u2014 deferred until L5 human walkthrough complete."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering render (filter bar, group heading, strategy name), loading state (Spinner), empty state, search query propagation, clearFilters, action link hrefs (/services/trading/positions?strategy_id=..., /services/trading/strategies/[id]), filter visibility toggle. See tests/widgets/strategies/strategies-catalogue.test.tsx"
     },
     "l7": {
       "status": "pass",

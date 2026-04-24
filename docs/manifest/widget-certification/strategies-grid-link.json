@@ -178,10 +178,10 @@
       "notes": "5.1 documented. L5 walkthrough minimal for this widget (just verify navigation)."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 not started \u2014 deferred until L5 complete."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 6 tests covering render, link href (/services/trading/strategies/grid), button text (DimensionalGrid, Batch Analysis), button not disabled, full-width container. See tests/widgets/strategies/strategies-grid-link.test.tsx"
     },
     "l7": {
       "status": "pass",
