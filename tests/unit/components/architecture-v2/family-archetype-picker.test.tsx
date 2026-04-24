@@ -65,15 +65,15 @@ describe("FamilyArchetypePicker", () => {
     const familyTrigger = screen.getByTestId("family-select");
     await user.click(familyTrigger);
 
-    // Expect all 8 family labels in the listbox.
+    // Expect all 8 family labels in the listbox (formatted via formatFamily).
     expect(await screen.findByText("ML Directional")).toBeInTheDocument();
     expect(screen.getByText("Rules Directional")).toBeInTheDocument();
     expect(screen.getByText("Carry & Yield")).toBeInTheDocument();
-    expect(screen.getByText("Arbitrage / Structural")).toBeInTheDocument();
+    expect(screen.getByText("Structural Arbitrage")).toBeInTheDocument();
     expect(screen.getByText("Market Making")).toBeInTheDocument();
-    expect(screen.getByText("Event-Driven")).toBeInTheDocument();
-    expect(screen.getByText("Vol Trading")).toBeInTheDocument();
-    expect(screen.getByText("Stat Arb / Pairs")).toBeInTheDocument();
+    expect(screen.getByText("Event Driven")).toBeInTheDocument();
+    expect(screen.getByText("Volatility Trading")).toBeInTheDocument();
+    expect(screen.getByText("Statistical Arbitrage")).toBeInTheDocument();
   });
 
   it("filters archetypes by family selection", async () => {
@@ -81,15 +81,15 @@ describe("FamilyArchetypePicker", () => {
     renderPicker({ family: "CARRY_AND_YIELD" });
     const archetypeTrigger = screen.getByTestId("archetype-select");
     await user.click(archetypeTrigger);
-    // CARRY_AND_YIELD contains 6 archetypes per ARCHETYPE_TO_FAMILY.
-    expect(await screen.findByText("CARRY_BASIS_DATED")).toBeInTheDocument();
-    expect(screen.getByText("CARRY_BASIS_PERP")).toBeInTheDocument();
-    expect(screen.getByText("CARRY_STAKED_BASIS")).toBeInTheDocument();
-    expect(screen.getByText("CARRY_RECURSIVE_STAKED")).toBeInTheDocument();
-    expect(screen.getByText("YIELD_ROTATION_LENDING")).toBeInTheDocument();
-    expect(screen.getByText("YIELD_STAKING_SIMPLE")).toBeInTheDocument();
+    // CARRY_AND_YIELD contains 6 archetypes per ARCHETYPE_TO_FAMILY (formatted via formatArchetype).
+    expect(await screen.findByText("Basis Carry — Dated Futures")).toBeInTheDocument();
+    expect(screen.getByText("Basis Carry — Funding Rate (Perp)")).toBeInTheDocument();
+    expect(screen.getByText("Staked Basis Carry")).toBeInTheDocument();
+    expect(screen.getByText("Recursive Staked Carry")).toBeInTheDocument();
+    expect(screen.getByText("Lending Yield Rotation")).toBeInTheDocument();
+    expect(screen.getByText("Simple Staking Yield")).toBeInTheDocument();
     // A non-matching archetype should NOT appear.
-    expect(screen.queryByText("ML_DIRECTIONAL_CONTINUOUS")).toBeNull();
+    expect(screen.queryByText("ML Directional — Continuous")).toBeNull();
   });
 
   it("emits onChange({family}) when a family is picked", async () => {
@@ -104,7 +104,8 @@ describe("FamilyArchetypePicker", () => {
     const user = userEvent.setup();
     const { onChange } = renderPicker({ family: "STAT_ARB_PAIRS" });
     await user.click(screen.getByTestId("archetype-select"));
-    await user.click(await screen.findByText("STAT_ARB_PAIRS_FIXED"));
+    // Picker renders formatArchetype() labels; value emitted is still the raw archetype id.
+    await user.click(await screen.findByText("Statistical Arbitrage — Fixed Pairs"));
     expect(onChange).toHaveBeenCalledWith({
       family: "STAT_ARB_PAIRS",
       archetype: "STAT_ARB_PAIRS_FIXED",
@@ -133,7 +134,7 @@ describe("FamilyArchetypePicker", () => {
     // Defaults (PUBLIC + LIVE_ALLOCATED) mean every family with representative
     // slots remains visible to non-admin audiences under the default registry.
     expect(await screen.findByText("ML Directional")).toBeInTheDocument();
-    expect(screen.getByText("Stat Arb / Pairs")).toBeInTheDocument();
+    expect(screen.getByText("Statistical Arbitrage")).toBeInTheDocument();
   });
 
   it("shows all archetypes when availabilityFilter='all' regardless of audience", async () => {
@@ -143,7 +144,7 @@ describe("FamilyArchetypePicker", () => {
     const user = userEvent.setup();
     renderPicker({}, { availabilityFilter: "all" });
     await user.click(screen.getByTestId("family-select"));
-    expect(await screen.findByText("Vol Trading")).toBeInTheDocument();
+    expect(await screen.findByText("Volatility Trading")).toBeInTheDocument();
   });
 
   it("handles the (All families) sentinel to clear selection", async () => {
