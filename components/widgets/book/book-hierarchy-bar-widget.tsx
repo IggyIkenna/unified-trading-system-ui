@@ -32,7 +32,7 @@ export function BookHierarchyBarWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="px-2 py-2 flex items-center gap-4 flex-wrap">
+    <div data-testid="book-hierarchy-bar-widget" className="px-2 py-2 flex items-center gap-4 flex-wrap">
       <div className="flex items-center gap-2">
         <label className="text-xs text-muted-foreground whitespace-nowrap">Org</label>
         <Select

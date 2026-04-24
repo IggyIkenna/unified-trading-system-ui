@@ -158,6 +158,58 @@ This question has to be resolved before we can fix the hardcoded literals cleanl
 - **Two reasons the UI exists:** (a) prove end-to-end wiring, (b) support the 0.01% of trades where a human intervenes — reconcile broken state, seize a one-off opportunity, or override automation. When (b) happens, the operator must pin the manual trade to the right org + client + strategy + account so it rolls up correctly.
 - **Every trade must tie to multi-entity attribution:** organisation, client, strategy instance, account/wallet, venue, time, user. All monitor widgets (positions, orders, history) must be groupable / filterable by any of these.
 
+### Q8.3a Corrected picture after UI context resync (2026-04-24)
+
+**Finding:** the original Q8.3 table below was based on a UI `context/` snapshot
+that was 20 days behind UAC/UIC masters. After resyncing (commit `f6ba0c5`),
+several "missing" fields turned out to already exist upstream. Corrected picture:
+
+**Master state of execution schemas (post-resync):**
+
+| Schema                              | `client_id`  | `strategy_id` |                 `account_id`                 | Notes                                                              |
+| ----------------------------------- | :----------: | :-----------: | :------------------------------------------: | ------------------------------------------------------------------ |
+| `CanonicalOrder`                    |   optional   |   optional    | **optional, composite `client:venue:label`** | `account_id` already encodes `(client, venue, label)` in one field |
+| `CanonicalFill`                     |   optional   |   optional    |          optional (same composite)           | same pattern                                                       |
+| `FillEventMessage` (UIC pub/sub)    |   optional   |   optional    |                  ❌ missing                  | real gap                                                           |
+| `OrderRequestMessage` (UIC pub/sub) | **required** | **required**  |    — (derived via venue_account_registry)    | clean                                                              |
+| `ManualInstruction` (UIC)           |   present    |    present    |                 **required**                 | fully tagged for manual trades                                     |
+
+**Reframed minimal primary key (per user alignment):**
+
+The audit landed on this simpler framing for what a trade/order/position
+record actually needs:
+
+```
+(strategy_id, client_id)                # always required
+(account_id)                            # only if client has >1 account on the venue embedded in strategy_id
+```
+
+Because `strategy_id` (the slot label `ARCHETYPE@venue-asset-instrument-period-quote-env`)
+**encodes venue, asset, instrument, timeframe, share_class, env**, most
+derivation happens via lookups rather than redundant fields:
+
+| Want to know                          | How to derive                                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------------- |
+| venue, share_class, archetype, family | Parse from `strategy_id` (slot-label grammar)                                     |
+| config_hash, config_version           | `ConfigRegistry.get(strategy_id, client_id, at=timestamp)`                        |
+| organisation, entity, paper-vs-live   | `CLIENT_REGISTRY.get(client_id).entity` / `.account_type`                         |
+| venue_account                         | `venue_account_registry.get(client_id, venue)`, or explicit `account_id` if multi |
+| user (operator)                       | `ManualInstruction.submitted_by` (OAuth sub) — only on manual trades              |
+
+**Implication for Q8a:** we do **not** need `organisation_id` as a separate
+field on execution records. Organisation is metadata _about_ a client, held
+in auth-api for UI display. UI auth session resolves user → org → client
+once; every API call just passes `client_id`. This simplifies the schema
+ask to backend.
+
+**What's actually still missing (unchanged from Q8):**
+
+- `FillEventMessage.account_id` (real gap in UIC pub/sub)
+- `client_id` / `strategy_id` / `account_id` are **optional** (not required)
+  on `CanonicalOrder`/`CanonicalFill` — user's call: keep optional for now
+- `POST /execution/orders` mock-data generator doesn't persist `client_id` /
+  `account_id` onto created records (route bug, fixable independently)
+
 ### Q8.3 Current state (found in the repo)
 
 #### Backend-derived schema types
@@ -382,3 +434,38 @@ These surfaced during the per-archetype widget audits. Mostly minor edits to `ar
 When a question is resolved, summarize the decision here with date + decider. Keep the discussion above intact as historical record.
 
 No decisions logged yet.
+
+---
+
+## Backend handoff — `unified-trading-api` gaps (audit 2026-04-24)
+
+These came out of the client/account/strategy tagging audit ([full audit doc](../../../unified-trading-pm/plans/ai/audit_client_account_strategy_tagging_2026_04_24.md)) after the UI `context/` was resynced. They are **not widget-specific** — fixes the backend team owns on `unified-trading-api` + UAC/UIC. No UI-side work depends on them; they're here so the handoff is in one place.
+
+Per user direction: do **not** implement these from the UI side. Pass to backend team for scheduling.
+
+### High-priority (primary-key / tagging hygiene)
+
+- **B1** — `FillEventMessage` missing `account_id`. Location: `unified-internal-contracts/unified_internal_contracts/pubsub.py`. Fix: add optional `account_id: str | None` (composite `client:venue:label`, matches `CanonicalFill`) so pub/sub subscribers can attribute fills without re-joining orders.
+- **B2** — `POST /execution/orders` doesn't persist `client_id` / `account_id` on created order/fill/position records. Location: `unified-trading-api/routes/execution.py`. Fix: when body contains these, write them onto the generated records so `GET /orders?client_id=X` returns what was just created.
+- **B3** — `GET /execution/orders` and `GET /execution/fills` missing `strategy_id` filter. Location: `unified-trading-api/routes/execution.py`. Fix: add `strategy_id` query param alongside existing `client_id` / `account_id` / `category` / `strategy_family`. `GET /positions/active` already has it.
+
+### Medium-priority (query ergonomics / typing)
+
+- **B4** — `/analytics/strategies` missing `client_id`, `family`, `archetype` filters. Location: `unified-trading-api/routes/trading_analytics.py`. Fix: add these so UI can show "strategies for client X" or "all ML_DIRECTIONAL archetypes" without client-side filtering.
+- **B5** — `/analytics/strategy-configs` has no query params. Location: same route file. Fix: add `strategy_id`, `client_id`, `at` (timestamp for historical config).
+- **B6** — All `/analytics/*` response schemas are `additionalProperties: true` (untyped). Location: unified-trading-api response models. Fix: add typed Pydantic response models so UI can type-bind.
+
+### Low-priority (versioning / audit completeness — keep optional)
+
+- **B7** — `ClientInstruction` doesn't carry full event tag (`archetype_build_version`, `config_hash`, `config_version`, `slot_version`) as separate fields. Location: `unified-api-contracts/unified_api_contracts/internal/validation/instruction.py`. Fix: add as optional fields so every instruction is self-describing for audit.
+- **B8** — `StrategyConfigDict.config_hash` not a first-class field. Location: `strategy-service/strategy_service/types.py`. Fix: compute SHA-256 at config load, store, log, use for audit correlation (per `codex/06-coding-standards/strategy-identity-versioning.md`).
+
+### Deliberately out of scope
+
+- `organisation_id` as a field on execution records — **not needed**. Organisation is metadata about a client (held in auth-api), not on trades. `client_id` alone is sufficient primary key.
+- `user_id` / `wallet_id` as required on all orders — only `ManualInstruction` needs `submitted_by` (OAuth sub), already present. Non-manual orders are emitted by strategy-service, not a user.
+- Making `client_id` / `strategy_id` required on `CanonicalOrder`/`CanonicalFill` — user's call: keep optional now; tighten when historical records are migrated.
+
+### Infra — sync script lives in PM repo
+
+The audit re-frame was triggered by finding `unified-trading-system-ui/context/` had drifted 20 days behind UAC/UIC masters. A manual sync script is being added at `unified-trading-pm/scripts/sync-ui-context.sh` — infra-ready, not auto-triggered; run when UI needs fresh schemas.

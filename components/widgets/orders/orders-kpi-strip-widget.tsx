@@ -36,5 +36,9 @@ export function OrdersKpiStripWidget(_props: WidgetComponentProps) {
     },
   ];
 
-  return <KpiSummaryWidget metrics={metrics} storageKey="uts-orders-kpi-layout" />;
+  return (
+    <div data-testid="orders-kpi-strip-widget" className="h-full">
+      <KpiSummaryWidget metrics={metrics} storageKey="uts-orders-kpi-layout" />
+    </div>
+  );
 }

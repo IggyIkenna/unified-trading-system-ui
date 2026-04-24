@@ -1,6 +1,6 @@
 import { Term } from "@/components/marketing/term";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { ARCHETYPE_COVERAGE } from "@/lib/architecture-v2/coverage";
+import { cn } from "@/lib/utils";
 import type { ArchetypeCoverage, CoverageCell, CoverageStatus } from "@/lib/architecture-v2/coverage";
 import type { StrategyArchetype, VenueCategoryV2 } from "@/lib/architecture-v2/enums";
 
@@ -113,22 +113,33 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
   const rows: readonly StrategyArchetype[] =
     archetypes && archetypes.length > 0 ? archetypes : (Object.keys(ARCHETYPE_COVERAGE) as StrategyArchetype[]);
 
+  const stickyCornerTh =
+    "sticky left-0 top-0 z-30 border-b border-r border-border/60 bg-card px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_8px_-4px_rgba(0,0,0,0.35)]";
+  const stickyTopTh =
+    "sticky top-0 z-20 border-b border-border/60 bg-card px-3 py-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground";
+  const stickyFirstTd =
+    "sticky left-0 z-10 border-b border-r border-border/40 bg-background px-3 py-2 text-left text-foreground/85 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_8px_-4px_rgba(0,0,0,0.3)]";
+
   return (
     <div className="space-y-3">
-      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="rounded-md border border-border/60">
-        <table className="w-full text-sm">
+      <div
+        className={cn(
+          "max-h-[min(72vh,36rem)] overflow-auto overscroll-contain rounded-md border border-border/60 md:max-h-[min(80vh,44rem)]",
+          "[scrollbar-width:thin] [-webkit-overflow-scrolling:touch]",
+        )}
+      >
+        <table className="min-w-max w-full border-separate border-spacing-0 text-sm">
           <thead>
-            <tr className="border-b border-border/60 bg-muted/30">
-              <th className="sticky left-0 z-20 bg-muted/30 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <tr>
+              <th
+                className={cn(stickyCornerTh, "min-w-[10.5rem] max-w-[min(42vw,14rem)] sm:max-w-none sm:min-w-[12rem]")}
+              >
                 Strategy family
               </th>
               {CATEGORIES.map((c) => {
                 const glossaryId = CATEGORY_GLOSSARY_ID[c];
                 return (
-                  <th
-                    key={c}
-                    className="px-3 py-2 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                  >
+                  <th key={c} className={cn(stickyTopTh, "whitespace-nowrap")}>
                     {glossaryId ? <Term id={glossaryId}>{CATEGORY_LABELS[c]}</Term> : CATEGORY_LABELS[c]}
                   </th>
                 );
@@ -136,25 +147,35 @@ export function StrategyCoverageMatrix({ archetypes }: StrategyCoverageMatrixPro
             </tr>
           </thead>
           <tbody>
-            {rows.map((archetype) => (
-              <tr key={archetype} className="border-b border-border/40 last:border-b-0">
-                <td className="sticky left-0 z-10 bg-background px-3 py-2 text-foreground/85">
-                  {ARCHETYPE_LABELS[archetype]}
-                </td>
-                {CATEGORIES.map((category) => {
-                  const status = bestStatusForCell(archetype, category);
-                  const glyph = statusGlyph(status);
-                  return (
-                    <td key={category} className="px-3 py-2 text-center" title={glyph.title}>
-                      <span className={`font-mono ${glyph.className}`}>{glyph.symbol}</span>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+            {rows.map((archetype, rowIdx) => {
+              const isLastRow = rowIdx === rows.length - 1;
+              const rowBorder = !isLastRow ? "border-b border-border/40" : "";
+              return (
+                <tr key={archetype}>
+                  <td
+                    className={cn(
+                      stickyFirstTd,
+                      "min-w-[10.5rem] max-w-[min(42vw,14rem)] sm:max-w-none sm:min-w-[12rem]",
+                      isLastRow && "!border-b-0",
+                    )}
+                  >
+                    {ARCHETYPE_LABELS[archetype]}
+                  </td>
+                  {CATEGORIES.map((category) => {
+                    const status = bestStatusForCell(archetype, category);
+                    const glyph = statusGlyph(status);
+                    return (
+                      <td key={category} className={cn("px-3 py-2 text-center", rowBorder)} title={glyph.title}>
+                        <span className={`font-mono ${glyph.className}`}>{glyph.symbol}</span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-      </WidgetScroll>
+      </div>
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span>
           <span className="font-mono text-emerald-500">●</span> Supported

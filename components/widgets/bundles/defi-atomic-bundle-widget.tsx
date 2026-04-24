@@ -113,7 +113,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
   // ---------------------------------------------------------------------------
 
   return (
-    <div className="p-2 space-y-3">
+    <div data-testid="defi-atomic-bundle-widget" className="p-2 space-y-3">
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -300,6 +300,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
           {/* Add operation button */}
           <div className="flex flex-wrap gap-2">
             <Button
+              data-testid="add-operation-button"
               variant="outline"
               size="sm"
               className="text-xs flex-1 min-w-[120px]"
@@ -389,6 +390,7 @@ export function DefiAtomicBundleWidget(_props: WidgetComponentProps) {
                 Simulate on Tenderly
               </Button>
               <Button
+                data-testid="execute-bundle-button"
                 size="sm"
                 className="text-xs flex-1 gap-1.5 bg-emerald-600 hover:bg-emerald-700"
                 disabled={readOnly}

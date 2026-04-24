@@ -20,7 +20,7 @@ const TRADING_NAV_PATH_LABELS: { path: string; label: string }[] = [
   { path: "/services/trading/options", label: "Options" },
   { path: "/services/trading/sports", label: "Sports" },
   { path: "/services/trading/defi", label: "DeFi" },
-  { path: "/services/trading/bundles", label: "Bundles" },
+  { path: "/services/trading/defi/bundles", label: "Bundles" },
   { path: "/services/trading/instructions", label: "Instructions" },
   { path: "/services/trading/markets", label: "Markets" },
   { path: "/services/trading/risk", label: "Risk" },

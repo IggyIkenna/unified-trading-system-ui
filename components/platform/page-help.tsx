@@ -97,7 +97,7 @@ const PAGE_DESCRIPTIONS: Record<string, { title: string; description: string; in
     description:
       "Connected trading accounts — venue credentials, balances, margin status, and connectivity. Link new venue accounts here.",
   },
-  "/services/trading/bundles": {
+  "/services/trading/defi/bundles": {
     title: "Bundles",
     description:
       "Group multiple orders into atomic packages (e.g., simultaneous buy/sell across venues). Bundles execute all-or-nothing.",

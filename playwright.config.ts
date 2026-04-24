@@ -23,6 +23,7 @@ export default defineConfig({
   },
   projects: [
     {
+      // Default CI project — runs everything including widget validation specs.
       name: "chromium",
       use: {
         ...devices["Desktop Chrome"],
@@ -31,7 +32,21 @@ export default defineConfig({
       },
     },
     {
+      // Widget validation only — headless, fast, no trader workflow noise.
+      // Run with: npx playwright test --project=widgets
+      name: "widgets",
+      testMatch: "**/e2e/widgets/**/*.spec.ts",
+      use: {
+        ...devices["Desktop Chrome"],
+        headless: true,
+        launchOptions: { slowMo: 0 },
+      },
+    },
+    {
+      // Human demo — trader workflow only, headed, slow-mo, no widget specs.
+      // Run with: npx playwright test --project=human tests/e2e/strategies/
       name: "human",
+      testIgnore: "**/e2e/widgets/**",
       use: {
         ...devices["Desktop Chrome"],
         headless: E2E_CONFIG.human.headless,

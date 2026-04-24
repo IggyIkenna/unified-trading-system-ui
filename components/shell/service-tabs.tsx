@@ -350,7 +350,11 @@ export const STRATEGY_CATALOGUE_SUB_TABS: ServiceTab[] = [
 
 export const STRATEGY_SUB_TABS: ServiceTab[] = [
   { label: "Overview", href: "/services/research/strategy/overview" },
-  { label: "Families", href: "/services/research/strategy/families", matchPrefix: "/services/research/strategy/families" },
+  {
+    label: "Families",
+    href: "/services/research/strategy/families",
+    matchPrefix: "/services/research/strategy/families",
+  },
   { label: "Catalog", href: "/services/research/strategy/catalog", matchPrefix: "/services/research/strategy/catalog" },
   { label: "Allocator", href: "/services/research/strategy/allocator" },
   { label: "Unity", href: "/services/research/strategy/unity" },
@@ -422,7 +426,7 @@ export const TRADING_TABS: ServiceTab[] = [
   },
   {
     label: "Bundles",
-    href: "/services/trading/bundles",
+    href: "/services/trading/defi/bundles",
     icon: GitFork,
     group: "DeFi",
     familyGroup: "DeFi",
@@ -568,17 +572,43 @@ export const ADMIN_TABS: ServiceTab[] = [
   { label: "Catalogue", href: "/admin/users/catalogue", requiredEntitlement: "admin" },
   { label: "Onboard", href: "/admin/onboard", matchPrefix: "/admin/onboard" },
   { label: "Templates", href: "/admin/templates", matchPrefix: "/admin/templates", requiredEntitlement: "admin" },
-  { label: "Firebase Users", href: "/admin/firebase-users", matchPrefix: "/admin/firebase-users", requiredEntitlement: "admin" },
+  {
+    label: "Firebase Users",
+    href: "/admin/firebase-users",
+    matchPrefix: "/admin/firebase-users",
+    requiredEntitlement: "admin",
+  },
   { label: "Groups", href: "/admin/groups", matchPrefix: "/admin/groups", requiredEntitlement: "admin" },
-  { label: "Questionnaires", href: "/admin/questionnaires", matchPrefix: "/admin/questionnaires", requiredEntitlement: "admin" },
-  { label: "Notifications", href: "/admin/notifications", matchPrefix: "/admin/notifications", requiredEntitlement: "admin" },
+  {
+    label: "Questionnaires",
+    href: "/admin/questionnaires",
+    matchPrefix: "/admin/questionnaires",
+    requiredEntitlement: "admin",
+  },
+  {
+    label: "Notifications",
+    href: "/admin/notifications",
+    matchPrefix: "/admin/notifications",
+    requiredEntitlement: "admin",
+  },
   { label: "Organisations", href: "/admin/organizations", matchPrefix: "/admin/organizations" },
   // ── Apps & Integrations ─────────────────────────────────────────────────
   { label: "Apps", href: "/admin/apps", matchPrefix: "/admin/apps", group: "Apps", requiredEntitlement: "admin" },
   { label: "GitHub", href: "/admin/github", matchPrefix: "/admin/github", requiredEntitlement: "admin" },
   // ── Audit & Compliance ──────────────────────────────────────────────────
-  { label: "Audit Log", href: "/admin/audit-log", matchPrefix: "/admin/audit-log", group: "Audit", requiredEntitlement: "admin" },
-  { label: "Health Checks", href: "/admin/health-checks", matchPrefix: "/admin/health-checks", requiredEntitlement: "admin" },
+  {
+    label: "Audit Log",
+    href: "/admin/audit-log",
+    matchPrefix: "/admin/audit-log",
+    group: "Audit",
+    requiredEntitlement: "admin",
+  },
+  {
+    label: "Health Checks",
+    href: "/admin/health-checks",
+    matchPrefix: "/admin/health-checks",
+    requiredEntitlement: "admin",
+  },
   // ── Operations ──────────────────────────────────────────────────────────
   { label: "Services", href: "/ops/services", group: "System" },
   { label: "Jobs", href: "/ops/jobs" },

@@ -117,7 +117,7 @@ export const HELP_TREE: HelpNode[] = [
             id: "workspace-create",
             question: "How do I create a new workspace?",
             answer:
-              'Click the workspace dropdown → **Save As** → enter a name. The current widget layout is saved as a new workspace. You can also **Duplicate** an existing workspace to use as a starting point.',
+              "Click the workspace dropdown → **Save As** → enter a name. The current widget layout is saved as a new workspace. You can also **Duplicate** an existing workspace to use as a starting point.",
           },
           {
             id: "workspace-export",
@@ -740,7 +740,7 @@ export const HELP_TREE: HelpNode[] = [
         question: "What are trade bundles?",
         answer:
           "**Trading > Bundles** lets you group multiple orders into a single atomic package — e.g., buy BTC on Binance and sell on Hyperliquid simultaneously. Bundles execute all-or-nothing.",
-        link: { href: "/services/trading/bundles", label: "Open Bundles" },
+        link: { href: "/services/trading/defi/bundles", label: "Open Bundles" },
       },
       {
         id: "exec-instructions",

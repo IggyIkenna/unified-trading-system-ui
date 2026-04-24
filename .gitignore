@@ -18,6 +18,7 @@ config/docker-build.env.staging.firebase.local
 node_modules/
 .next/
 .DS_Store
+*.pyc
 
 # Playwright / test runner outputs
 test-results/

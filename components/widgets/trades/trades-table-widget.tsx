@@ -301,6 +301,7 @@ export function TradesTableWidget(_props: WidgetComponentProps) {
 
   return (
     <TableWidget
+      data-testid="trades-table-widget"
       columns={COLUMNS}
       data={filteredTrades}
       filterConfig={filterConfig}

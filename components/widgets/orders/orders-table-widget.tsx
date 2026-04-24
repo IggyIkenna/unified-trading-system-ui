@@ -435,6 +435,7 @@ export function OrdersTableWidget(_props: WidgetComponentProps) {
 
   return (
     <TableWidget
+      data-testid="orders-table-widget"
       columns={columns}
       data={filteredOrders}
       filterConfig={filterConfig}

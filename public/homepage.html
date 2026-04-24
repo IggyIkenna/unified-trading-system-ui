@@ -467,7 +467,6 @@
         align-items: center;
         justify-content: center;
         gap: 6px 4px;
-        list-style: none;
         margin: 14px auto 0;
         padding: 0;
         font-family: var(--font-mono);
@@ -478,26 +477,32 @@
         color: var(--text-dim);
       }
 
-      .hero-lifecycle-strip li {
+      .hero-lifecycle-pill {
         display: inline-flex;
         align-items: center;
-        padding: 3px 10px;
+        line-height: 1;
+        padding: 4px 10px 3px;
         border-radius: 9999px;
         background: rgba(34, 211, 238, 0.04);
         border: 1px solid rgba(34, 211, 238, 0.14);
         color: #c4c4cc;
       }
 
-      .hero-lifecycle-strip li + li::before {
-        content: "→";
-        margin-right: 8px;
-        margin-left: -2px;
-        padding-right: 4px;
+      .hero-lifecycle-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
         color: var(--primary);
-        opacity: 0.55;
-        font-family: var(--font-sans);
-        font-size: 12px;
-        letter-spacing: 0;
+        opacity: 0.62;
+        line-height: 0;
+        user-select: none;
+      }
+
+      .hero-lifecycle-arrow svg {
+        display: block;
+        width: 14px;
+        height: 9px;
       }
 
       @media (max-width: 640px) {
@@ -505,12 +510,12 @@
           font-size: 10px;
           gap: 4px 3px;
         }
-        .hero-lifecycle-strip li {
-          padding: 2px 8px;
+        .hero-lifecycle-pill {
+          padding: 3px 8px 2px;
         }
-        .hero-lifecycle-strip li + li::before {
-          margin-right: 4px;
-          padding-right: 2px;
+        .hero-lifecycle-arrow svg {
+          width: 12px;
+          height: 8px;
         }
       }
 
@@ -1405,14 +1410,64 @@
           The same end-to-end system we use to run our own capital &mdash; from research through post-trade &mdash;
           available to institutional clients at any entry point.
         </p>
-        <ol class="hero-lifecycle-strip" aria-label="Trading lifecycle covered end-to-end">
-          <li>Research</li>
-          <li>Promote</li>
-          <li>Run</li>
-          <li>Post-trade</li>
-          <li>Reporting</li>
-          <li>Regulatory</li>
-        </ol>
+        <div class="hero-lifecycle-strip" role="group" aria-label="Trading lifecycle covered end-to-end">
+          <span class="hero-lifecycle-pill">Research</span>
+          <span class="hero-lifecycle-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M1 5h8.25M6.75 1.5 12 5 6.75 8.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>
+          <span class="hero-lifecycle-pill">Promote</span>
+          <span class="hero-lifecycle-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M1 5h8.25M6.75 1.5 12 5 6.75 8.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>
+          <span class="hero-lifecycle-pill">Run</span>
+          <span class="hero-lifecycle-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M1 5h8.25M6.75 1.5 12 5 6.75 8.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>
+          <span class="hero-lifecycle-pill">Post-trade</span>
+          <span class="hero-lifecycle-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M1 5h8.25M6.75 1.5 12 5 6.75 8.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>
+          <span class="hero-lifecycle-pill">Reporting</span>
+          <span class="hero-lifecycle-arrow" aria-hidden="true"
+            ><svg viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path
+                d="M1 5h8.25M6.75 1.5 12 5 6.75 8.5"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              /></svg
+          ></span>
+          <span class="hero-lifecycle-pill">Regulatory</span>
+        </div>
         <nav class="hero-service-row" aria-label="Four commercial paths">
           <a
             class="hero-service-tile lab-invest"

@@ -172,6 +172,7 @@ export function BookTradeHistoryWidget(_props: WidgetComponentProps) {
 
   return (
     <TableWidget
+      data-testid="book-trade-history-widget"
       columns={columns}
       data={filtered}
       filterConfig={filterConfig}
