@@ -154,10 +154,10 @@
       "notes": "Human walkthrough required."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 13 tests covering render, empty state, error state, scenario rows, regime multiplier slider, scenario selector, stress test results panel (loading/null/populated), regime badge. See tests/widgets/risk/risk-stress-table.test.tsx"
     },
     "l7": {
       "status": "pass",

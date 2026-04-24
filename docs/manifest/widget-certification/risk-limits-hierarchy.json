@@ -154,10 +154,10 @@
       "notes": "Human walkthrough required."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering render, loading state, error state, hierarchy levels, node selection, clear button, empty state. See tests/widgets/risk/risk-limits-hierarchy.test.tsx"
     },
     "l7": {
       "status": "pass",
