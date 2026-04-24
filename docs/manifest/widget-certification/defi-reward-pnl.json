@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering root testid mount, per-factor labels + total header, error guard (null rewardPnl), loading guard (empty list), empty state (all zero amounts), and waterfall bar formatting for positive/negative factors. See tests/widgets/defi/defi-reward-pnl-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

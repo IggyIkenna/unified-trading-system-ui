@@ -154,10 +154,10 @@
       "notes": "Display-only. L5 execution flow verification by human \u2014 confirm trades appear after executing in other widgets."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering parent-row rendering, instruction_type/venue surfaces, empty state, header summary, child-fill distinction (trade-history-child testid), and row-expansion click behaviour for rows with execution_chain. See tests/widgets/defi/defi-trade-history-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

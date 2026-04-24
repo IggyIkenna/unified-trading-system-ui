@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering root testid mount, dashboard title, per-asset row rendering, venue label lookup maps (Uniswap V3 / Raydium / Drift), best-opportunity banner showing highest annualised yield, empty state when no assets map to market data, and basis bps badge per row. See tests/widgets/defi/enhanced-basis-dashboard-widget.test.tsx"
     },
     "l7": {
       "status": "pass",
