@@ -105,6 +105,49 @@ function AppliesToBadge({ value }: { value: BriefingAppliesTo }) {
  */
 const MATRIX_SLUGS = new Set<string>(["investment-management", "platform", "dart-full"]);
 
+function DartTierComparisonTable() {
+  const rows: { feature: string; signalsIn: boolean; full: boolean }[] = [
+    { feature: "P&L dashboard & reporting",   signalsIn: true,  full: true  },
+    { feature: "Positions & terminal",         signalsIn: true,  full: true  },
+    { feature: "Strategy observe / alerts",    signalsIn: true,  full: true  },
+    { feature: "Signal intake webhook",        signalsIn: true,  full: false },
+    { feature: "ML backtesting",               signalsIn: false, full: true  },
+    { feature: "Strategy customisation",       signalsIn: false, full: true  },
+    { feature: "Promote to live workflow",     signalsIn: false, full: true  },
+    { feature: "Feature engineering pipeline", signalsIn: false, full: true  },
+  ];
+  return (
+    <div className="overflow-x-auto rounded-lg border border-border/60">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-border bg-muted/30">
+            <th className="px-4 py-2.5 text-left font-medium text-muted-foreground">Feature</th>
+            <th className="px-4 py-2.5 text-center font-medium text-sky-600">Signals-In</th>
+            <th className="px-4 py-2.5 text-center font-medium text-emerald-600">DART Full</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={row.feature} className={i % 2 === 1 ? "bg-muted/20" : ""}>
+              <td className="px-4 py-2.5 text-foreground/85">{row.feature}</td>
+              <td className="px-4 py-2.5 text-center">
+                {row.signalsIn
+                  ? <span className="font-semibold text-emerald-600">✓</span>
+                  : <span className="text-muted-foreground/40">—</span>}
+              </td>
+              <td className="px-4 py-2.5 text-center">
+                {row.full
+                  ? <span className="font-semibold text-emerald-600">✓</span>
+                  : <span className="text-muted-foreground/40">—</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -242,11 +285,13 @@ export default async function BriefingPillarPage({ params }: PageProps) {
 
   const showCoverageMatrix = MATRIX_SLUGS.has(pillar.slug);
   const showFamilyCatalogue = pillar.slug === "dart-full";
+  const showTierComparison = pillar.slug === "dart-signals-in";
 
   // Build the TOC dynamically so it reflects what this pillar actually renders.
   const tocSections: DocsNavSection[] = [
     { id: "overview", label: "Overview" },
     ...pillar.sections.map((s) => ({ id: slugifyId(s.title), label: s.title })),
+    ...(showTierComparison ? [{ id: "tier-comparison", label: "Signals-In vs Full" }] : []),
     ...(showCoverageMatrix ? [{ id: "coverage-matrix", label: "Coverage matrix" }] : []),
     ...(showFamilyCatalogue ? [{ id: "full-catalogue", label: "Full catalogue" }] : []),
     { id: "key-messages", label: "Key messages" },
@@ -312,6 +357,21 @@ export default async function BriefingPillarPage({ params }: PageProps) {
           {pillar.sections.map((s) => (
             <Section key={s.title} id={slugifyId(s.title)} section={s} />
           ))}
+
+          {showTierComparison && (
+            <section id="tier-comparison" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
+              <div className="space-y-2 max-w-2xl">
+                <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                  Signals-In vs DART Full — feature matrix
+                </h2>
+                <p className="text-sm text-foreground/80 leading-relaxed">
+                  Both paths share the same execution infrastructure. The boundary is research and promote — those
+                  surfaces are excluded from Signals-In by design, not by omission.
+                </p>
+              </div>
+              <DartTierComparisonTable />
+            </section>
+          )}
 
           {showCoverageMatrix && (
             <section id="coverage-matrix" className="scroll-mt-24 space-y-4 border-t border-border/40 pt-8">
