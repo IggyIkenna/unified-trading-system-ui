@@ -1,0 +1,14 @@
+# Exclude workspace context dirs — Python packages here cause buildpack to
+# mis-detect the project as Python instead of Node.js / Dockerfile-based.
+context/
+
+# Standard excludes
+.git/
+node_modules/
+.next/
+.env.local
+.env.*.local
+.claude/
+
+# Workspace symlink targets (resolved locally, not needed in build)
+# scripts/quickmerge.sh is a symlink → ../unified-trading-pm/scripts/quickmerge.sh

@@ -3,13 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Mail, Lock, KeyRound } from "lucide-react";
@@ -96,14 +90,13 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    // On the main production site, advisor/demo accounts (@odum-research.com) are homed
-    // on the UAT demo environment. Show a brief notice then redirect — they never auth
-    // against prod Firebase so they cannot access production internal services.
-    if (
-      email.toLowerCase().endsWith("@odum-research.com") &&
-      typeof window !== "undefined" &&
-      window.location.hostname === "www.odum-research.com"
-    ) {
+    // On the main production site, advisor/demo accounts (@odum-research.co.uk and
+    // @odum-research.com) are homed on the UAT demo environment. Show a brief notice
+    // then redirect — they never auth against prod Firebase.
+    const isAdvisorOrDemoEmail =
+      email.toLowerCase().endsWith("@odum-research.co.uk") || email.toLowerCase().endsWith("@odum-research.com");
+    const isProdSite = process.env.NEXT_PUBLIC_SITE_URL?.includes("www.odum-research.com") ?? false;
+    if (isAdvisorOrDemoEmail && isProdSite) {
       setIsLoading(false);
       setUatRedirecting(true);
       const target = encodeURIComponent(redirectTo || "/investor-relations");
@@ -125,7 +118,9 @@ export default function LoginPage() {
             setIsLoading(false);
             return;
           }
-        } catch { /* ignore */ }
+        } catch {
+          /* ignore */
+        }
       }
       // Check mock provisioning state for pending users
       try {
@@ -138,7 +133,9 @@ export default function LoginPage() {
             return;
           }
         }
-      } catch { /* no backend, continue */ }
+      } catch {
+        /* no backend, continue */
+      }
       router.push(redirectTo || defaultLanding());
     } else if (!loginError) {
       setError("Invalid credentials. Check your email and password.");
@@ -153,9 +150,7 @@ export default function LoginPage() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome back</CardTitle>
-              <CardDescription>
-                Sign in to access your dashboard
-              </CardDescription>
+              <CardDescription>Sign in to access your dashboard</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
@@ -194,7 +189,10 @@ export default function LoginPage() {
                 <div className="flex justify-end">
                   <button
                     type="button"
-                    onClick={() => { setShowForgotPassword(true); handleForgotPassword(); }}
+                    onClick={() => {
+                      setShowForgotPassword(true);
+                      handleForgotPassword();
+                    }}
                     className="text-xs text-muted-foreground hover:text-primary transition-colors"
                   >
                     <KeyRound className="size-3 inline mr-1" />
@@ -211,9 +209,9 @@ export default function LoginPage() {
                     <p className="font-medium">Taking you to the demo environment&hellip;</p>
                     <p className="mt-1 text-xs text-amber-300/80">
                       This account is set up for our secure demo environment at{" "}
-                      <span className="font-mono">uat.odum-research.com</span>. You&rsquo;re being
-                      redirected there now. Once you&rsquo;re in, a banner at the top links back to
-                      the main site &mdash; though your sign-in won&rsquo;t transfer across.
+                      <span className="font-mono">uat.odum-research.com</span>. You&rsquo;re being redirected there now.
+                      Once you&rsquo;re in, a banner at the top links back to the main site &mdash; though your sign-in
+                      won&rsquo;t transfer across.
                     </p>
                   </div>
                 )}

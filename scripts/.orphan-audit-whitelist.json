@@ -73,6 +73,10 @@
     {
       "path": "/auth/reset-password",
       "reason": "UNAUTHENTICATED-FUNNEL — Firebase custom action handler; reached via emailed password-reset link, not a declared nav tile."
+    },
+    {
+      "path": "/api/strategy-evaluation/email",
+      "reason": "API-HANDLER — Next.js route.ts called after strategy evaluation form submit to send confirmation email via Resend; not a page."
     }
   ]
 }
