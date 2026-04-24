@@ -154,10 +154,10 @@
       "notes": "5.2-5.6: Human walkthrough required for bridge route verification."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering render + no-wallet branch, send-mode to-address/amount/balance-exceeded gating, mode toggle delegates to setTransferMode, send payload (DIRECT) and bridge payload (SOR_CROSS_CHAIN) shapes. See tests/widgets/defi/defi-transfer-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred \u2014 tests after L5 sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 12 tests covering root mount, HF status buckets (Healthy/Warning/Critical), collateral oracle/market labels, spread block, monitoring interval, emergency-exit dialog (open + cost + numbered steps), and live-vs-batch scope.mode guard on Confirm Exit. See tests/widgets/defi/defi-health-factor-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

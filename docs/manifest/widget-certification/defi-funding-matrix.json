@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering root mount, empty branch ({} fundingRates), coin rows from matrix keys, all five FUNDING_RATE_VENUES column headers, null-rate '--' placeholder, numeric-rate formatting with trailing %, avg footer row, and header legend referencing the 2.5% floor. See tests/widgets/defi/defi-funding-matrix-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

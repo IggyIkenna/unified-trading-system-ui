@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering root mount, per-token reward card + frequency badge, summary strip totals, empty branch ([]), error branch (rewardPnl null), Claim button -> claimReward(token), Claim & Sell -> claimAndSellReward(token), hiding claim buttons when accrued_amount===0, and reward P&L attribution totals. See tests/widgets/defi/defi-staking-rewards-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

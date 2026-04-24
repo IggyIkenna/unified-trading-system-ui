@@ -154,10 +154,10 @@
       "notes": "Display-only \u2014 no execution flow. L5 agent checks complete."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering rows derived from lendingProtocols + stakingProtocols + liquidityPools, best-supply/best-borrow asset detail, TVL formatting ($25.0B / $500M buckets), LP token pair rendering, KPI strip row count + max-APY, and all-empty branch (0 rows + 0.0% max APY). See tests/widgets/defi/defi-rates-overview-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

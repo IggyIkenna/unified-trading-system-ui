@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering loading\u2192loaded transition, mode badge, client restrictions + risk indicators panels, Save/Deploy/Promote button wiring to store + toast, persisted-config merge on mount (SchemaForm stubbed). See tests/widgets/defi/defi-strategy-config-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

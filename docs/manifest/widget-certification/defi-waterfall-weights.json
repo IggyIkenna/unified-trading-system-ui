@@ -154,10 +154,10 @@
       }
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "L6 deferred."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 10 tests covering root mount, Pillar 1 coin labels + percentages, empty-coin-weights branch, Pillar 2 default copy, coin click reveals venue weights, toggle-off on reclick, restricted-venues banner rendering + omission, and per-row Restricted badge. See tests/widgets/defi/defi-waterfall-weights-widget.test.tsx"
     },
     "l7": {
       "status": "pass",
