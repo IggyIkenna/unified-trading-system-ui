@@ -449,7 +449,16 @@ export default function StrategyEvaluationPage() {
           for signal-based integration into our execution stack, or for regulatory-umbrella coverage.
           This is not a request for unrestricted IP transfer.
         </p>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <div className="mt-4 rounded-md border border-border/60 bg-card/40 px-4 py-3">
+          <p className="text-sm font-medium">No strategy yet? Fill it in anyway.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            If you&rsquo;re exploring rather than submitting a specific strategy, answer each section
+            in terms of the <em>kind</em> of strategy you&rsquo;d want to build or allocate to — asset
+            groups, archetypes, typical performance you&rsquo;d target, operational shape. We&rsquo;ll
+            use it to tailor the demo and surface the right capabilities.
+          </p>
+        </div>
+        <p className="mt-4 text-sm text-muted-foreground">
           Fields marked <span className="text-destructive">*</span> are required.
         </p>
       </div>
