@@ -7,7 +7,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/shared/page-header";
-import { ArrowLeft, Edit, UserMinus, RefreshCw, CheckCircle2, XCircle, Clock, Mail, Github, Eye, UserCog } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  UserMinus,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Mail,
+  Github,
+  Eye,
+  UserCog,
+} from "lucide-react";
 import {
   useProvisionedUser,
   useUserWorkflows,
@@ -41,10 +53,10 @@ const ENTITLEMENT_LABELS: Record<string, string> = {
 };
 
 /** Group user's product_slugs by catalogue domain for organized display */
-function useGroupedPermissions(productSlugs: string[]) {
+function useGroupedPermissions(productSlugs: string[] | undefined) {
   const { data: catalogueData } = usePermissionCatalogue();
   return React.useMemo(() => {
-    if (!catalogueData?.domains || productSlugs.length === 0) return [];
+    if (!catalogueData?.domains || !productSlugs || productSlugs.length === 0) return [];
     const slugSet = new Set(productSlugs);
     return catalogueData.domains
       .map((domain) => {
@@ -54,7 +66,11 @@ function useGroupedPermissions(productSlugs: string[]) {
         if (matchedPerms.length === 0) return null;
         return { domain: domain.label, icon: domain.icon, permissions: matchedPerms };
       })
-      .filter(Boolean) as { domain: string; icon: string; permissions: { key: string; label: string; category: string }[] }[];
+      .filter(Boolean) as {
+      domain: string;
+      icon: string;
+      permissions: { key: string; label: string; category: string }[];
+    }[];
   }, [catalogueData, productSlugs]);
 }
 
@@ -73,6 +89,8 @@ export default function UserDetailPage() {
   const reprovision = useReprovisionUser();
   const allRequests = useAccessRequests();
   const review = useReviewRequest();
+  const user = data?.user;
+  const groupedPermissions = useGroupedPermissions(user?.product_slugs);
 
   if (isLoading) {
     return (
@@ -90,7 +108,6 @@ export default function UserDetailPage() {
     );
   }
 
-  const user = data?.user;
   if (!user) {
     return (
       <div className="p-6">
@@ -102,7 +119,6 @@ export default function UserDetailPage() {
   const isInternal = ["admin", "collaborator", "operations", "accounting"].includes(user.role);
   const userRequests = (allRequests.data?.requests ?? []).filter((r) => r.requester_email === user.email);
   const pendingRequests = userRequests.filter((r) => r.status === "pending");
-  const groupedPermissions = useGroupedPermissions(user.product_slugs);
 
   return (
     <div className="px-6 py-6 space-y-6 max-w-4xl">
