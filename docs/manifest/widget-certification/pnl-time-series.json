@@ -178,10 +178,10 @@
       "notes": "5.1 documented. 5.2-5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering overlay toggle buttons render, loading skeleton branch, empty-state copy, cumulative-net KPI visibility, overlay toggle (Factor Lines <-> Backtest vs Live), all 10 factor chip labels present, and chip opacity toggle on click. Recharts LineChart SVG not asserted — 0x0 in happy-dom. See tests/widgets/pnl/pnl-time-series-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

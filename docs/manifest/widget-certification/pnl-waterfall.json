@@ -178,10 +178,10 @@
       "notes": "5.1 documented. 5.2-5.6 require human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering render (controls, loading skeleton, empty state, residual alert banner), mode toggle (setDataMode live/batch), group-by selector (setGroupBy), factor-view toggle (bars/histogram/pie aria-pressed), factor bar selection (setSelectedFactor), and report-button toast side-effect. Recharts histogram/pie subviews not asserted — chart SVG 0x0 in happy-dom. See tests/widgets/pnl/pnl-waterfall-widget.test.tsx"
     },
     "l7": {
       "status": "pass",
