@@ -480,8 +480,18 @@ export default function StrategyEvaluationPage() {
             use it to tailor the demo and surface the right capabilities.
           </p>
         </div>
+        <div className="mt-3 rounded-md border border-border/60 bg-card/40 px-4 py-3">
+          <p className="text-sm font-medium">Going DART Full? Leave details light if you prefer.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            If your primary interest is DART Full — where Odum rebuilds the strategy inside our stack —
+            you can answer the deep-detail sections with high-level preferences or options rather than
+            finalised specifics. We&rsquo;ll shape the rebuild together.
+          </p>
+        </div>
         <p className="mt-4 text-sm text-muted-foreground">
-          Fields marked <span className="text-destructive">*</span> are required.
+          Fields marked <span className="text-destructive">*</span> are required. For anything else
+          that doesn&rsquo;t apply to your strategy, write <strong>N/A</strong> or leave it blank —
+          don&rsquo;t force-fit an answer.
         </p>
       </div>
 
