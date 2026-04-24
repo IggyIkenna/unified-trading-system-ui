@@ -14,9 +14,17 @@ interface FormState {
   email: string;
   phone: string;
   entityStructure: string;
+  fundJurisdiction: string;
+  trackRecordTiming: string;
   planToRaiseExternalCapital: string;
+  fundraisingChannels: Set<string>;
+  fundraisingNotes: string;
+  investorClassification: string;
+  minSubscription: string;
   performanceFee: string;
   managementFee: string;
+  rebalancingModel: string;
+  rebalancingNotes: string;
   commercialPath: "A" | "B" | "C" | "";
   commercialPathSecondary: Set<string>;
   commercialPathTertiary: Set<string>;
@@ -85,13 +93,19 @@ interface FormState {
 
 type SerializedFormState = Omit<
   FormState,
-  "assetGroups" | "instrumentTypes" | "archetypeMarkers" | "commercialPathSecondary" | "commercialPathTertiary"
+  | "assetGroups"
+  | "instrumentTypes"
+  | "archetypeMarkers"
+  | "commercialPathSecondary"
+  | "commercialPathTertiary"
+  | "fundraisingChannels"
 > & {
   assetGroups: string[];
   instrumentTypes: string[];
   archetypeMarkers: string[];
   commercialPathSecondary: string[];
   commercialPathTertiary: string[];
+  fundraisingChannels: string[];
 };
 
 const INITIAL_STATE: FormState = {
@@ -100,9 +114,17 @@ const INITIAL_STATE: FormState = {
   email: "",
   phone: "",
   entityStructure: "",
+  fundJurisdiction: "",
+  trackRecordTiming: "",
   planToRaiseExternalCapital: "",
+  fundraisingChannels: new Set(),
+  fundraisingNotes: "",
+  investorClassification: "",
+  minSubscription: "",
   performanceFee: "",
   managementFee: "",
+  rebalancingModel: "",
+  rebalancingNotes: "",
   commercialPath: "",
   commercialPathSecondary: new Set(),
   commercialPathTertiary: new Set(),
@@ -179,6 +201,7 @@ function serializeState(state: FormState): SerializedFormState {
     archetypeMarkers: [...state.archetypeMarkers],
     commercialPathSecondary: [...state.commercialPathSecondary],
     commercialPathTertiary: [...state.commercialPathTertiary],
+    fundraisingChannels: [...state.fundraisingChannels],
   };
 }
 
@@ -190,6 +213,7 @@ function deserializeState(raw: SerializedFormState): FormState {
     archetypeMarkers: new Set(raw.archetypeMarkers),
     commercialPathSecondary: new Set(raw.commercialPathSecondary ?? []),
     commercialPathTertiary: new Set(raw.commercialPathTertiary ?? []),
+    fundraisingChannels: new Set(raw.fundraisingChannels ?? []),
   };
 }
 
@@ -307,7 +331,13 @@ export default function StrategyEvaluationPage() {
   }
 
   function toggleSetItem(
-    key: "assetGroups" | "instrumentTypes" | "archetypeMarkers" | "commercialPathSecondary" | "commercialPathTertiary",
+    key:
+      | "assetGroups"
+      | "instrumentTypes"
+      | "archetypeMarkers"
+      | "commercialPathSecondary"
+      | "commercialPathTertiary"
+      | "fundraisingChannels",
     item: string,
   ) {
     setForm((prev) => {
@@ -497,8 +527,68 @@ export default function StrategyEvaluationPage() {
             </div>
           </div>
 
+          {form.entityStructure === "fund" && (
+            <div className="space-y-2 rounded-md border border-border/60 bg-card/30 p-4">
+              <Label className="text-sm font-medium">Fund jurisdiction preference</Label>
+              <p className="text-xs text-muted-foreground">
+                For pooled funds, Odum&rsquo;s most cost-effective setup runs through our affiliate in an
+                offshore jurisdiction. If you have a preference or constraint, indicate it here.
+              </p>
+              <div className="flex flex-col gap-2">
+                {(
+                  [
+                    { value: "uk", label: "UK-domiciled" },
+                    { value: "cayman", label: "Cayman Islands" },
+                    { value: "bvi", label: "BVI" },
+                    { value: "other", label: "Other / specify in notes" },
+                    { value: "open", label: "Open to Odum&rsquo;s recommendation" },
+                  ] as { value: string; label: string }[]
+                ).map(({ value, label }) => (
+                  <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="radio"
+                      name="fundJurisdiction"
+                      value={value}
+                      checked={form.fundJurisdiction === value}
+                      onChange={() => setField("fundJurisdiction", value)}
+                    />
+                    <span dangerouslySetInnerHTML={{ __html: label }} />
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
           {form.entityStructure && form.entityStructure !== "prop" && (
             <>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Track-record timing</Label>
+                <p className="text-xs text-muted-foreground">
+                  When do you want to stand the external capital structure up relative to proving the strategy?
+                </p>
+                <div className="flex flex-col gap-2">
+                  {(
+                    [
+                      { value: "build_first", label: "Build a live track record first (typically 12+ months), then stand up the fund / SMA mandate" },
+                      { value: "launch_now", label: "Launch the capital-raising structure immediately alongside live trading" },
+                      { value: "already_have", label: "Already have a live track record" },
+                    ] as { value: string; label: string }[]
+                  ).map(({ value, label }) => (
+                    <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="trackRecordTiming"
+                        value={value}
+                        checked={form.trackRecordTiming === value}
+                        onChange={() => setField("trackRecordTiming", value)}
+                        className="mt-0.5"
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <Label className="text-sm font-medium">Do you plan to raise external capital yourself?</Label>
                 <div className="flex flex-wrap gap-x-4 gap-y-2">
@@ -521,6 +611,86 @@ export default function StrategyEvaluationPage() {
                     </label>
                   ))}
                 </div>
+              </div>
+
+              {(form.planToRaiseExternalCapital === "yes" ||
+                form.planToRaiseExternalCapital === "exploring") && (
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">Primary fundraising channels</Label>
+                  <p className="text-xs text-muted-foreground">
+                    How do you plan to reach LPs? Select all that apply.
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {(
+                      [
+                        "Own network / direct LP relationships",
+                        "Placement agents",
+                        "Fund administrator / prime broker introductions",
+                        "Family office / wealth manager network",
+                        "Open to Odum distribution assistance (cross-cutting; see Section B)",
+                        "Not yet determined",
+                      ] as string[]
+                    ).map((label) => (
+                      <label key={label} className="flex items-start gap-2 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={form.fundraisingChannels.has(label)}
+                          onChange={() => toggleSetItem("fundraisingChannels", label)}
+                          className="mt-0.5"
+                        />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                  <Textarea
+                    rows={2}
+                    placeholder="Optional notes on LP targets, existing soft-circled capital, timing, etc."
+                    value={form.fundraisingNotes}
+                    onChange={(e) => setField("fundraisingNotes", e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Investor classification</Label>
+                <p className="text-xs text-muted-foreground">
+                  Odum does not take retail investors. Which classifications do your target LPs fall under?
+                </p>
+                <div className="flex flex-col gap-2">
+                  {(
+                    [
+                      { value: "hnwi", label: "HNWI / sophisticated investors only" },
+                      { value: "institutional", label: "Institutional only (pension funds, endowments, FoFs)" },
+                      { value: "mixed", label: "Mix of HNWI and institutional" },
+                      { value: "tbd", label: "Not yet determined" },
+                    ] as { value: string; label: string }[]
+                  ).map(({ value, label }) => (
+                    <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="investorClassification"
+                        value={value}
+                        checked={form.investorClassification === value}
+                        onChange={() => setField("investorClassification", value)}
+                        className="mt-0.5"
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Minimum subscription expectations</Label>
+                <p className="text-xs text-muted-foreground">
+                  Target minimum ticket size and any flexibility notes. Odum does not impose a fixed minimum —
+                  this is a commercial conversation based on your LP mix.
+                </p>
+                <Input
+                  placeholder="e.g. $500k standard min, willing to take $250k for strategic LPs; or TBD"
+                  value={form.minSubscription}
+                  onChange={(e) => setField("minSubscription", e.target.value)}
+                />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1179,6 +1349,43 @@ export default function StrategyEvaluationPage() {
               placeholder="e.g. weekly redemption window with 48h notice; or no lock-up, instant withdrawal required at all times."
               value={form.depositWithdrawal}
               onChange={(e) => setField("depositWithdrawal", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Inter-venue rebalancing model</Label>
+            <p className="text-xs text-muted-foreground">
+              When capital moves between exchanges or chains for rebalancing, what controls apply?
+              This shapes the custody and operational-approval flow.
+            </p>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "whitelist", label: "Whitelisted addresses / destinations only" },
+                  { value: "approval_required", label: "Operational approval required before each transfer" },
+                  { value: "automated_limits", label: "Automated within pre-agreed size / frequency limits" },
+                  { value: "na", label: "N/A — no cross-venue rebalancing expected" },
+                  { value: "other", label: "Other / needs discussion (note below)" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="rebalancingModel"
+                    value={value}
+                    checked={form.rebalancingModel === value}
+                    onChange={() => setField("rebalancingModel", value)}
+                    className="mt-0.5"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            <Textarea
+              rows={2}
+              placeholder="Optional notes — e.g. withdrawal destinations, cold-wallet anchor, approver list, typical rebalance cadence."
+              value={form.rebalancingNotes}
+              onChange={(e) => setField("rebalancingNotes", e.target.value)}
             />
           </div>
         </section>

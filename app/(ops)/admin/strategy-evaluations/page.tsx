@@ -24,9 +24,17 @@ interface EvalDoc {
   readonly email?: string;
   readonly phone?: string;
   readonly entityStructure?: string;
+  readonly fundJurisdiction?: string;
+  readonly trackRecordTiming?: string;
   readonly planToRaiseExternalCapital?: string;
+  readonly fundraisingChannels?: readonly string[];
+  readonly fundraisingNotes?: string;
+  readonly investorClassification?: string;
+  readonly minSubscription?: string;
   readonly performanceFee?: string;
   readonly managementFee?: string;
+  readonly rebalancingModel?: string;
+  readonly rebalancingNotes?: string;
   readonly commercialPath?: string;
   readonly commercialPathSecondary?: readonly string[];
   readonly commercialPathTertiary?: readonly string[];
@@ -190,7 +198,13 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
           <DetailRow label="Email" value={row.email} />
           <DetailRow label="Phone / Telegram" value={row.phone} />
           <DetailRow label="Capital structure" value={ENTITY_LABELS[row.entityStructure ?? ""] ?? row.entityStructure} />
+          <DetailRow label="Fund jurisdiction" value={row.fundJurisdiction} />
+          <DetailRow label="Track-record timing" value={row.trackRecordTiming} />
           <DetailRow label="Plans to raise" value={row.planToRaiseExternalCapital} />
+          <DetailRow label="Fundraising channels" value={(row.fundraisingChannels ?? []).join(", ") || undefined} />
+          <DetailRow label="Fundraising notes" value={row.fundraisingNotes} />
+          <DetailRow label="Investor classification" value={row.investorClassification} />
+          <DetailRow label="Min subscription" value={row.minSubscription} />
           <DetailRow label="Performance fee" value={row.performanceFee} />
           <DetailRow label="Management fee" value={row.managementFee} />
           <DetailRow label="Primary path" value={pathLabel} />
@@ -244,6 +258,8 @@ function DetailPanel({ row, onClose }: { row: EvalDoc; onClose: () => void }) {
           </h3>
           <DetailRow label="Treasury management" value={row.treasuryManagement} />
           <DetailRow label="Deposit / withdrawal" value={row.depositWithdrawal} />
+          <DetailRow label="Rebalancing model" value={row.rebalancingModel} />
+          <DetailRow label="Rebalancing notes" value={row.rebalancingNotes} />
         </section>
 
         <section className="space-y-0 mb-6">
