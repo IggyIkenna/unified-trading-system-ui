@@ -332,13 +332,32 @@ function FieldError({ message }: { message: string }) {
   return <p className="text-destructive text-xs mt-1">{message}</p>;
 }
 
+type FileFieldKey =
+  | "backtestMethodologyDoc"
+  | "assumptionsDoc"
+  | "tearSheet"
+  | "tradeLogCsv"
+  | "equityCurveCsv";
+
 export default function StrategyEvaluationPage() {
   const [form, setForm] = React.useState<FormState>(INITIAL_STATE);
   const [errors, setErrors] = React.useState<FieldError[]>([]);
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
   const [submitError, setSubmitError] = React.useState(false);
+  const [uploadStatus, setUploadStatus] = React.useState<string>("");
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Files cached in-memory between pick and submit. Not serialised to
+  // localStorage — abandoning a draft never produces orphan uploads.
+  const pendingFilesRef = React.useRef<Map<FileFieldKey, File>>(new Map());
+
+  const handleFileChange = React.useCallback(
+    (fieldKey: FileFieldKey, file: File | null) => {
+      if (file) pendingFilesRef.current.set(fieldKey, file);
+      else pendingFilesRef.current.delete(fieldKey);
+    },
+    [],
+  );
 
   React.useEffect(() => {
     try {
@@ -346,11 +365,21 @@ export default function StrategyEvaluationPage() {
       if (raw) {
         const parsed = JSON.parse(raw) as SerializedFormState;
         const restored = deserializeState(parsed);
-        // Ensure a stable draft submission ID exists so file uploads land
-        // under a predictable path even before the form is submitted.
         if (!restored.draftSubmissionId) {
           restored.draftSubmissionId = `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
         }
+        // Blob URLs are scoped to the session that created them — anything
+        // rehydrated with url starting blob: is dead. Mark as stale so the
+        // FileUploadField prompts re-selection instead of silently lying.
+        const stalify = (r: UploadedFileRef | null): UploadedFileRef | null => {
+          if (r && r.url.startsWith("blob:")) return { ...r, path: "stale" };
+          return r;
+        };
+        restored.backtestMethodologyDoc = stalify(restored.backtestMethodologyDoc);
+        restored.assumptionsDoc = stalify(restored.assumptionsDoc);
+        restored.tearSheet = stalify(restored.tearSheet);
+        restored.tradeLogCsv = stalify(restored.tradeLogCsv);
+        restored.equityCurveCsv = stalify(restored.equityCurveCsv);
         setForm(restored);
       } else {
         setForm((prev) => ({
@@ -431,7 +460,38 @@ export default function StrategyEvaluationPage() {
     setSubmitting(true);
     setSubmitError(false);
     try {
-      const payload = serializeState(form);
+      // 1. Upload any in-memory Files to Firebase Storage (or record mock
+      //    refs in local dev). We can't mutate `form` in place because
+      //    setState is async — build a fresh snapshot.
+      const { uploadStrategyEvalFile } = await import("@/lib/strategy-evaluation/upload");
+      const uploadedRefs = new Map<FileFieldKey, UploadedFileRef>();
+      const pending = Array.from(pendingFilesRef.current.entries());
+      for (const [fieldKey, file] of pending) {
+        setUploadStatus(`Uploading ${file.name}…`);
+        const ref = await uploadStrategyEvalFile(file, form.draftSubmissionId, fieldKey);
+        uploadedRefs.set(fieldKey, ref);
+      }
+      setUploadStatus("");
+
+      const finalForm: FormState = { ...form };
+      for (const [fieldKey, ref] of uploadedRefs.entries()) {
+        // Release the prior blob URL before overwriting
+        const prev = finalForm[fieldKey];
+        if (prev?.url.startsWith("blob:")) URL.revokeObjectURL(prev.url);
+        finalForm[fieldKey] = ref;
+      }
+      // Strip any remaining blob: URLs in fields that never uploaded (e.g.
+      // user in mock mode with no Firebase Storage) — don't send a useless
+      // URL to the backend.
+      (Object.keys(finalForm) as (keyof FormState)[]).forEach((k) => {
+        const v = finalForm[k];
+        if (v && typeof v === "object" && "url" in v && typeof v.url === "string" && v.url.startsWith("blob:")) {
+          (finalForm[k] as UploadedFileRef | null) = { ...(v as UploadedFileRef), url: "" };
+        }
+      });
+      setForm(finalForm);
+
+      const payload = serializeState(finalForm);
       const res = await fetch("/api/strategy-evaluation/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -439,9 +499,11 @@ export default function StrategyEvaluationPage() {
       });
       if (!res.ok) throw new Error("Non-OK response");
       localStorage.removeItem(STORAGE_KEY);
+      pendingFilesRef.current.clear();
       setSubmitted(true);
     } catch {
       setSubmitError(true);
+      setUploadStatus("");
     } finally {
       setSubmitting(false);
     }
@@ -1479,9 +1541,10 @@ export default function StrategyEvaluationPage() {
         <section className="space-y-4 pt-8 border-t border-border/40">
           <SectionHeading letter="F" title="Tear sheet and evidence" />
           <p className="text-xs text-muted-foreground -mt-2">
-            Attach the supporting documents. Files upload to Odum&rsquo;s regulated storage and
-            become downloadable from your submission. On localhost the upload is mocked — filename
-            and size are recorded but the file itself is not persisted.
+            Attach the supporting documents. Files cache in your browser until you submit —
+            you can view / download them immediately to verify they&rsquo;re correct. Upload to
+            Odum&rsquo;s regulated storage happens when you press <strong>Submit evaluation</strong>.
+            On localhost nothing is uploaded; filename and size are recorded as a draft only.
           </p>
 
           {(
@@ -1528,10 +1591,9 @@ export default function StrategyEvaluationPage() {
               label={label}
               hint={hint}
               accept={accept}
-              submissionId={form.draftSubmissionId || "unassigned"}
-              fieldKey={key}
               value={form[key]}
               onChange={(ref) => setField(key, ref)}
+              onFileChange={(file) => handleFileChange(key, file)}
             />
           ))}
 
@@ -2102,6 +2164,9 @@ export default function StrategyEvaluationPage() {
           <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
             {submitting ? "Submitting..." : "Submit evaluation"}
           </Button>
+          {uploadStatus && (
+            <p className="text-xs text-muted-foreground mt-2">{uploadStatus}</p>
+          )}
           <p className="text-xs text-muted-foreground text-center mt-4">
             This form is confidential. Odum Capital Ltd — FCA authorised · FRN 975797
           </p>
