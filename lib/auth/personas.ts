@@ -353,6 +353,10 @@ export const PERSONAS: readonly AuthPersona[] = [
       "ml-full",
       "strategy-full",
       "reporting",
+      // TradingEntitlement tiles — required for the trading umbrella shell.
+      // Desmond runs cross-exchange perp-funding arb (CeFi + DeFi).
+      { domain: "trading-common", tier: "basic" },
+      { domain: "trading-defi", tier: "basic" },
     ],
     description:
       "Desmond (DART Full) — funding rate arb, stable yield, market-neutral, CeFi+DeFi, perp-only. Full Research/Promote access.",
@@ -371,6 +375,8 @@ export const PERSONAS: readonly AuthPersona[] = [
       "execution-full",
       "reporting",
       // no strategy-full / ml-full → Research + Promote sub-routes are gated
+      { domain: "trading-common", tier: "basic" },
+      { domain: "trading-defi", tier: "basic" },
     ],
     description:
       "Desmond (Signals-In) — same universe as DART Full; Research/Promote locked. Toggle from desmond-dart-full to compare tiers.",

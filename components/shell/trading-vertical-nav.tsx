@@ -197,12 +197,17 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
 
     const Icon = tab.icon;
 
+    // Locked tabs with lockedRedirectTo still render as navigable Link (softened styling);
+    // locked tabs without it and navDisabled tabs render as non-interactive span.
+    const lockedLinkable = isLocked && !tab.navDisabled && tab.lockedRedirectTo;
+
     const itemContent = (
       <span
         className={cn(
           "flex items-center gap-2.5 px-2 py-1.5 rounded-md text-sm font-medium transition-colors w-full",
           isActive ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-accent",
-          (isLocked || tab.navDisabled) && "opacity-35 cursor-not-allowed pointer-events-none",
+          (isLocked || tab.navDisabled) && !lockedLinkable && "opacity-35 cursor-not-allowed pointer-events-none",
+          lockedLinkable && "opacity-60",
           collapsed && "justify-center px-0",
         )}
       >
@@ -225,7 +230,11 @@ export function TradingVerticalNav({ tabs, entitlements, bottomSlot }: TradingVe
     const wrapperClass = cn("px-2", collapsed && "flex justify-center px-1");
     const tooltipLabel = isLocked ? `${tab.label} (locked)` : tab.label;
 
-    const inner = isLocked || tab.navDisabled ? <span>{itemContent}</span> : <Link href={tab.href}>{itemContent}</Link>;
+    const inner = lockedLinkable
+      ? <Link href={tab.lockedRedirectTo as string}>{itemContent}</Link>
+      : isLocked || tab.navDisabled
+        ? <span>{itemContent}</span>
+        : <Link href={tab.href}>{itemContent}</Link>;
 
     return (
       <div key={tab.href} className={wrapperClass}>
