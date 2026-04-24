@@ -20,11 +20,14 @@
  */
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 import { FamilyArchetypePicker } from "@/components/architecture-v2/family-archetype-picker";
 import type { FamilyArchetypeSelection } from "@/components/architecture-v2/family-archetype-picker";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/use-auth";
+import { getArchetypePlanTier } from "@/lib/strategy-display";
 import {
   EMPTY_CATALOGUE_FILTER,
   matchesFilter,
@@ -147,6 +150,14 @@ export function StrategyCatalogueSurface({
   onRequestAllocation,
   showHeading = false,
 }: StrategyCatalogueSurfaceProps) {
+  const { user } = useAuth();
+  const entitlements = user?.entitlements as readonly string[] | undefined;
+  const isSignalsInMode =
+    viewMode === "client-fomo" &&
+    entitlements !== undefined &&
+    !entitlements.includes("*") &&
+    !entitlements.includes("strategy-full");
+
   const [localFilter, setLocalFilter] = useState<StrategyCatalogueFilter>(
     filter ?? EMPTY_CATALOGUE_FILTER,
   );
@@ -246,11 +257,33 @@ export function StrategyCatalogueSurface({
       ) : null}
 
       {viewMode === "client-fomo" ? (
-        <FomoGrid
-          instances={visible}
-          onInstanceSelect={onInstanceSelect}
-          onRequestAllocation={onRequestAllocation}
-        />
+        <>
+          {isSignalsInMode ? (() => {
+            const fullOnlyCount = visible.filter((i) => getArchetypePlanTier(i.archetype) === "full-only").length;
+            const availableCount = visible.length - fullOnlyCount;
+            return fullOnlyCount > 0 ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <span>
+                  Viewing as <strong>Signals-In</strong> — {availableCount}/{visible.length} strategies available.
+                  {" "}{fullOnlyCount} more unlock with DART Full.
+                </span>
+                <div className="flex shrink-0 gap-2">
+                  <Link
+                    href="/contact?service=dart-full&action=upgrade"
+                    className="inline-flex items-center rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700 transition-colors"
+                  >
+                    Upgrade to DART Full
+                  </Link>
+                </div>
+              </div>
+            ) : null;
+          })() : null}
+          <FomoGrid
+            instances={visible}
+            onInstanceSelect={onInstanceSelect}
+            onRequestAllocation={onRequestAllocation}
+          />
+        </>
       ) : null}
     </div>
   );
