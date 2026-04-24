@@ -99,7 +99,12 @@
       },
       "notes": "5.1 complete. Human 5.2–5.6 required."
     },
-    "l6": { "status": null, "by": null, "date": null, "notes": "Deferred — follows L5 human sign-off." },
+    "l6": {
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 25 tests covering root testid, empty state, Add leg, template gallery toggle, step navigation (move up/down), remove/duplicate step, submit bundle enable/disable, submit toast payload, KPI strip labels. See tests/widgets/bundles/bundle-builder.test.tsx"
+    },
     "l7": {
       "status": "pass",
       "by": "agent",

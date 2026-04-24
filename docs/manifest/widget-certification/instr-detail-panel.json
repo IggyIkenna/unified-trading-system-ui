@@ -198,10 +198,10 @@
       "notes": "5.1 documented from strategy registry. All other checks deferred to human walkthrough."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 pass after L5 human sign-off."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering empty state, filled/pending instruction detail, signal direction, venue display, Discrepancy section. See tests/widgets/instructions/instr-detail-panel.test.tsx"
     },
     "l7": {
       "status": "pass",
