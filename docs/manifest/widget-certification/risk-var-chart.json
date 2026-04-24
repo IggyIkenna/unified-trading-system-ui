@@ -154,10 +154,10 @@
       "notes": "Human walkthrough required."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred to L6 testing phase."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: tests/widgets/risk/risk-var-chart.test.tsx — 12 tests covering loading/error/empty states, all four VaR method toggle buttons, setVarMethod call propagation, and asset-class legend. Per ui_widget_test_rollout_2026_04_24.plan.md Phase 5."
     },
     "l7": {
       "status": "pass",
