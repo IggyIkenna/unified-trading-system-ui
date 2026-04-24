@@ -165,10 +165,10 @@
       "notes": "5.1 + 5.3 (frontend) complete. Human checks 5.2/5.4/5.5/5.6 pending live backend endpoint."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 (tests) not in scope for this agent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 9 tests covering render (radios + Confirm, rationale a11y), action-selection aria-checked, safety-critical confirm gating (no-action toast, empty-rationale toast, valid-payload mutate with idempotency_key), and batch-mode disable guard. See tests/widgets/alerts/alerts-kill-switch-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

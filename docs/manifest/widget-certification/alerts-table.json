@@ -154,10 +154,10 @@
       "notes": "5.1 complete. Human checks 5.2-5.6 pending. 5.3: Ack/Escalate/Resolve flow through mutation API. 5.4: empty state message shown when filteredAlerts=[]. 5.5: downstream impact on kpi-strip counts. 5.6: venue-agnostic."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 (tests) not in scope for this agent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 8 tests covering render + row render, empty-state message, isError branch, critical/high count badges, Ack mutation (acknowledgeAlert(id)), Escalate disabled on critical severity, and batch-mode disable + 'Batch \u2014 actions disabled' indicator. See tests/widgets/alerts/alerts-table-widget.test.tsx"
     },
     "l7": {
       "status": "pass",

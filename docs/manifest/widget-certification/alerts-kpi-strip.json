@@ -154,10 +154,10 @@
       "notes": "5.1 complete. Human checks 5.2-5.6 pending \u2014 this is a read-only aggregate widget, not strategy-execution-specific. 5.2-5.5 largely N/A (no params to set, no submit action). 5.6: venue-agnostic."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
-      "notes": "Deferred \u2014 L6 (tests) not in scope for this agent pass."
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
+      "notes": "L1.5 harness spec: 7 tests covering root testid, metric labels, loading em-dash, activeCount/criticalCount from context, zero-state, and MOCK_AVG_RESOLUTION_DISPLAY / MOCK_LAST_24H_DISPLAY surfacing from alerts.config. See tests/widgets/alerts/alerts-kpi-strip-widget.test.tsx"
     },
     "l7": {
       "status": "pass",
