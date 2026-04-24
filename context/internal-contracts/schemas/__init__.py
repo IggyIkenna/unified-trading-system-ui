@@ -3,8 +3,8 @@
 NO cloud SDKs (google-cloud-*, boto3, redis). Pure Pydantic schemas only.
 """
 
-from unified_api_contracts.internal.alerting import AlertEvent
-from unified_api_contracts.internal.connectivity import (
+from unified_internal_contracts.alerting import AlertEvent, DefiAlert
+from unified_internal_contracts.connectivity import (
     WebSocketConnectEvent,
     WebSocketDisconnectEvent,
     WebSocketErrorEvent,
@@ -13,7 +13,7 @@ from unified_api_contracts.internal.connectivity import (
     WebSocketReconnectEvent,
     WebSocketSubscribeAckEvent,
 )
-from unified_api_contracts.internal.deployment import (
+from unified_internal_contracts.deployment import (
     VM_INFRASTRUCTURE_EVENTS,
     ComputeType,
     DeploymentState,
@@ -21,28 +21,28 @@ from unified_api_contracts.internal.deployment import (
     ShardEvent,
     VMEventType,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     CorrelationRegime as CorrelationRegime,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     CorrelationRegimeChange as CorrelationRegimeChange,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     CrossAssetCorrelationMatrix as CrossAssetCorrelationMatrix,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     FactorAttributionModel as FactorAttributionModel,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     FactorAttributionRecord as FactorAttributionRecord,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     FactorExposure as FactorExposure,
 )
-from unified_api_contracts.internal.domain.analytics import (
+from unified_internal_contracts.domain.analytics import (
     FactorType as FactorType,
 )
-from unified_api_contracts.internal.domain.cefi_accounts.schemas import (
+from unified_internal_contracts.domain.cefi_accounts.schemas import (
     DepositAddress,
     DepositRecord,
     ExchangeFeeSchedule,
@@ -51,14 +51,14 @@ from unified_api_contracts.internal.domain.cefi_accounts.schemas import (
     SubAccount,
     WithdrawalRecord,
 )
-from unified_api_contracts.internal.domain.data_quality.venue_freshness_slas import (
+from unified_internal_contracts.domain.data_quality.venue_freshness_slas import (
     VenueCategory,
     VenueFreshnessSLA,
 )
-from unified_api_contracts.internal.domain.defi import (
+from unified_internal_contracts.domain.defi import (
     AaveBorrowParams as AaveBorrowParams,
 )
-from unified_api_contracts.internal.domain.defi import (
+from unified_internal_contracts.domain.defi import (
     AaveDepositParams,
     AaveFlashLoanParams,
     AaveRepayParams,
@@ -103,26 +103,26 @@ from unified_api_contracts.internal.domain.defi import (
     UniswapV3QuoteResponse,
     UniswapV3SwapTxReceipt,
 )
-from unified_api_contracts.internal.domain.defi import (
+from unified_internal_contracts.domain.defi import (
     CurveDepositParams as CurveDepositParams,
 )
-from unified_api_contracts.internal.domain.defi import (
+from unified_internal_contracts.domain.defi import (
     Erc20TransferCalldata as Erc20TransferCalldata,
 )
-from unified_api_contracts.internal.domain.defi import (
+from unified_internal_contracts.domain.defi import (
     EthSendRawTransactionRequest as EthSendRawTransactionRequest,
 )
-from unified_api_contracts.internal.domain.derivatives.options import (
+from unified_internal_contracts.domain.derivatives.options import (
     OptionContract,
     OptionGreeks,
     OptionsChain,
     SettlementPrice,
 )
-from unified_api_contracts.internal.domain.events_service.lifecycle import (
+from unified_internal_contracts.domain.events_service.lifecycle import (
     RestartDetectedDetails,
     RestartDetectedEvent,
 )
-from unified_api_contracts.internal.domain.execution_service.cex_withdrawals import (
+from unified_internal_contracts.domain.execution_service.cex_withdrawals import (
     BinanceWithdrawRequest,
     BinanceWithdrawResponse,
     BybitWithdrawRequest,
@@ -134,12 +134,21 @@ from unified_api_contracts.internal.domain.execution_service.cex_withdrawals imp
     UpbitWithdrawRequest,
     UpbitWithdrawResponse,
 )
-from unified_api_contracts.internal.domain.execution_service.execution_preferences import (
+from unified_internal_contracts.domain.execution_service.execution_preferences import (
     ExecutionMode,
     ExecutionPreferencesConfig,
     UrgencyLevel,
 )
-from unified_api_contracts.internal.domain.execution_service.multi_leg import (
+from unified_internal_contracts.domain.execution_service.execution_result import (
+    ExecutionResult as ServiceExecutionResult,
+)
+from unified_internal_contracts.domain.execution_service.execution_result import (
+    SignalExecutionResult as ServiceSignalExecutionResult,
+)
+from unified_internal_contracts.domain.execution_service.execution_status import (
+    ServiceExecutionStatus,
+)
+from unified_internal_contracts.domain.execution_service.multi_leg import (
     LegExecutionResult,
     LegInstruction,
     LegStatus,
@@ -147,69 +156,105 @@ from unified_api_contracts.internal.domain.execution_service.multi_leg import (
     MultiLegExecutionResult,
     MultiLegInstruction,
 )
-from unified_api_contracts.internal.domain.execution_service.sports import (
+from unified_internal_contracts.domain.execution_service.results import (
+    CeFiOpenOrder,
+    CeFiOrderFill,
+    CeFiOrderStatus,
+    CeFiVenueOrderData,
+    CeFiVenuePosition,
+    DeFiConnectorStateDict,
+    DeFiPoolStateResult,
+    DeFiSwapQuoteResult,
+    DeFiSwapResult,
+    DeFiTxResult,
+)
+from unified_internal_contracts.domain.execution_service.sports import (
     SportsBetResult,
     SportsVenueScore,
     SportsVenueSelection,
 )
-from unified_api_contracts.internal.domain.features_commodity import (
+from unified_internal_contracts.domain.execution_service.types import (
+    BenchmarkType,
+    ExecutionInstruction,
+    InstructionType,
+    OperationType,
+)
+from unified_internal_contracts.domain.execution_service.types import (
+    OrderType as ExecutionOrderType,
+)
+from unified_internal_contracts.domain.execution_service.types import (
+    PositionSide as ExecutionPositionSide,
+)
+from unified_internal_contracts.domain.execution_service.types import (
+    PositionType as ExecutionPositionType,
+)
+from unified_internal_contracts.domain.features_commodity import (
     CommodityFeatureRequest as CommodityFeatureRequest,
 )
-from unified_api_contracts.internal.domain.features_commodity import (
+from unified_internal_contracts.domain.features_commodity import (
     CommoditySignal as CommoditySignal,
 )
-from unified_api_contracts.internal.domain.features_commodity import (
+from unified_internal_contracts.domain.features_commodity import (
     FactorValue as FactorValue,
 )
-from unified_api_contracts.internal.domain.features_commodity import (
+from unified_internal_contracts.domain.features_commodity import (
     RegimeState as RegimeState,
 )
-from unified_api_contracts.internal.domain.features_delta_one import (
+from unified_internal_contracts.domain.features_delta_one import (
     FEATURES_SCHEMA,
     validate_feature_columns_not_null,
 )
-from unified_api_contracts.internal.domain.health.service_health import ServiceHealthResponse
-from unified_api_contracts.internal.domain.market_data_api import OrderBookSnapshot
-from unified_api_contracts.internal.domain.market_data_processing.adapter_models import (
+from unified_internal_contracts.domain.features_sports import (
+    SportsFeatureVector,
+)
+from unified_internal_contracts.domain.health.service_health import ServiceHealthResponse
+from unified_internal_contracts.domain.market_data_api import OrderBookSnapshot
+from unified_internal_contracts.domain.market_data_processing.adapter_models import (
     CandleOutput,
     InstrumentInfo,
     InstrumentMetadata,
 )
-from unified_api_contracts.internal.domain.market_data_processing.candle_schema import (
+from unified_internal_contracts.domain.market_data_processing.candle_schema import (
     DataType,
     MarketState,
 )
-from unified_api_contracts.internal.domain.market_tick_data import (
+from unified_internal_contracts.domain.market_tick_data import (
     SportsBookUpdate,
     SportsOddsTick,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     BookType as BookType,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     FeeResult as FeeResult,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     MatchingFeeType as MatchingFeeType,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     MatchResult as MatchResult,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     OrderRecord as OrderRecord,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     OrderType as OrderType,
 )
-from unified_api_contracts.internal.domain.matching_engine import (
+from unified_internal_contracts.domain.matching_engine import (
     SwapResult,
 )
-from unified_api_contracts.internal.domain.ml_inference_service import (
+from unified_internal_contracts.domain.ml.schemas import (
+    BacktestExperimentConfig,
+    BacktestFixedConfig,
+    GridDimensions,
+    TargetTypeParams,
+)
+from unified_internal_contracts.domain.ml_inference_service import (
     CascadeConfig,
     CascadePredictionEvent,
     PredictionSnapshot,
 )
-from unified_api_contracts.internal.domain.prediction_market.prediction_market_arb import (
+from unified_internal_contracts.domain.prediction_market.prediction_market_arb import (
     BucketMarket,
     CrossVenueArbLeg,
     CrossVenueArbSignal,
@@ -219,11 +264,11 @@ from unified_api_contracts.internal.domain.prediction_market.prediction_market_a
     ProbabilityBucket,
     SportsbookLink,
 )
-from unified_api_contracts.internal.domain.risk_service.risk import (
+from unified_internal_contracts.domain.risk_service.risk import (
     MultiAssetMarginCalculation,
     SpanMarginLeg,
 )
-from unified_api_contracts.internal.domain.sports.execution import (
+from unified_internal_contracts.domain.sports.execution import (
     BetCancelledEvent,
     BetFilledEvent,
     BetPlacedEvent,
@@ -232,7 +277,10 @@ from unified_api_contracts.internal.domain.sports.execution import (
     CanonicalSportsOrder,
     SportsBetEvent,
 )
-from unified_api_contracts.internal.domain.strategy_service.domain_events import (
+from unified_internal_contracts.domain.strategy_service import (
+    StrategyModeParams,
+)
+from unified_internal_contracts.domain.strategy_service.domain_events import (
     ExposureSnapshot,
     OrderEvent,
     PnLCalculation,
@@ -240,7 +288,7 @@ from unified_api_contracts.internal.domain.strategy_service.domain_events import
     RiskAssessment,
     StrategyDecision,
 )
-from unified_api_contracts.internal.domain.strategy_service.monitoring import (
+from unified_internal_contracts.domain.strategy_service.monitoring import (
     ExposureData,
     OrderData,
     PnLData,
@@ -248,25 +296,25 @@ from unified_api_contracts.internal.domain.strategy_service.monitoring import (
     RiskData,
     StrategyDecisionData,
 )
-from unified_api_contracts.internal.domain.strategy_service.order import Order
-from unified_api_contracts.internal.domain.strategy_service.signal_vector import (
+from unified_internal_contracts.domain.strategy_service.order import Order
+from unified_internal_contracts.domain.strategy_service.signal_vector import (
     MetaSignalRecord,
     RegimeStateRecord,
     SignalVectorRecord,
 )
-from unified_api_contracts.internal.domain.strategy_service.trigger_subscription import (
+from unified_internal_contracts.domain.strategy_service.trigger_subscription import (
     TriggerEvent,
     TriggerEventType,
     TriggerSubscription,
 )
-from unified_api_contracts.internal.domain.websocket.lifecycle import (
+from unified_internal_contracts.domain.websocket.lifecycle import (
     HealthPingResponse,
     UnsubscribeRequest,
     WebSocketConnectionClosed,
     WebSocketConnectionOpened,
 )
-from unified_api_contracts.internal.env_canon import EnvVars
-from unified_api_contracts.internal.events import (
+from unified_internal_contracts.env_canon import EnvVars
+from unified_internal_contracts.events import (
     AgentEventDetails,
     AuthFailureDetails,
     AuthFailureEvent,
@@ -301,8 +349,12 @@ from unified_api_contracts.internal.events import (
     ValidationStartedDetails,
     VersionBumpDetails,
 )
-from unified_api_contracts.internal.execution import ManualInstruction, SettlementType
-from unified_api_contracts.internal.features import (
+from unified_internal_contracts.execution import (
+    ManualExecutionMode,
+    ManualInstruction,
+    SettlementType,
+)
+from unified_internal_contracts.features import (
     CrossInstrumentFeatures,
     CrossTimeframeFeatures,
     DeltaOneFeatureRecord,
@@ -315,8 +367,8 @@ from unified_api_contracts.internal.features import (
     PairSpreadFeatureRecord,
     VolSurfaceTermStructureRecord,
 )
-from unified_api_contracts.internal.market_category import MarketCategory
-from unified_api_contracts.internal.market_data import (
+from unified_internal_contracts.market_category import MarketCategory
+from unified_internal_contracts.market_data import (
     BookUpdateLevel,
     CanonicalBondData,
     CanonicalBookUpdate,
@@ -336,48 +388,65 @@ from unified_api_contracts.internal.market_data import (
     OHLCVSource,
     YieldCurveTenor,
 )
-from unified_api_contracts.internal.messaging import MessagingScope, MessagingTopic
-from unified_api_contracts.internal.ml import (
+from unified_internal_contracts.messaging import MessagingScope, MessagingTopic
+from unified_internal_contracts.ml import (
+    AnyHyperparameterConfig,
+    BackfillSpec,
+    CatBoostHyperparams,
     CrossValidationResult,
+    EnsembleConfig,
+    EnsembleMember,
+    HuberHyperparams,
     HyperparameterConfig,
     InferenceRequest,
     InferenceResult,
+    LightGBMHyperparams,
     MLConfigDict,
+    MLModelScorecard,
+    MLPrediction,
     ModelDegradationAlert,
     ModelMetadata,
     ModelType,
     ModelVariantConfig,
+    PoissonGLMHyperparams,
+    RidgeHyperparams,
     TargetType,
     TrainingJobRequest,
     TrainingJobResult,
     TrainingPeriod,
+    TrainingPhase,
+    TrainingPipelineConfig,
+    XGBoostHyperparams,
 )
-from unified_api_contracts.internal.modes import (
+from unified_internal_contracts.modes import (
     CloudProvider,
     DataMode,
+    EnvironmentMode,
     LogLevel,
     MockScenario,
+    OperationalMode,
     PhaseMode,
     RuntimeMode,
     TestingStage,
     TestingStageConfig,
+    TestnetMode,
 )
-from unified_api_contracts.internal.position_protocol import (
+from unified_internal_contracts.position_protocol import (
     CrossAssetPortfolioAggregator,
     PositionQuantityProtocol,
 )
-from unified_api_contracts.internal.position_types import (
+from unified_internal_contracts.position_types import (
     aggregate_notional,
     aggregate_positions,
 )
-from unified_api_contracts.internal.positions import (
+from unified_internal_contracts.positions import (
     CeFiPosition,
     DeFiLendingPosition,
     DeFiLPPosition,
     DeFiStakingPosition,
     LendingEntry,
 )
-from unified_api_contracts.internal.pubsub import (
+from unified_internal_contracts.pubsub import (
     AggregatedPositionMessage,
     CircuitBreakerEventMessage,
     DerivativeTickerMessage,
@@ -397,7 +466,18 @@ from unified_api_contracts.internal.pubsub import (
     StrategySignalMessage,
     VenuePositionBreakdownMessage,
 )
-from unified_api_contracts.internal.reference import (
+from unified_internal_contracts.reconciliation import (
+    AutoReconcileReason,
+    BalanceReconciliationSnapshot,
+    BalanceReconciliationStatus,
+    DeviationState,
+    DeviationStatus,
+    DeviationType,
+    PnLReconciliationSnapshot,
+    ReconciliationAction,
+    ReconciliationResolution,
+)
+from unified_internal_contracts.reference import (
     ALL_FRESHNESS_CONTRACTS,
     FEATURE_FRESHNESS,
     MARKET_TICK_FRESHNESS,
@@ -407,7 +487,6 @@ from unified_api_contracts.internal.reference import (
     ClientFeeSchedule,
     ClientPrimeBrokerLink,
     DataFreshnessContract,
-    DataSourceConstraint,
     DataStalenessError,
     FeeScheduleEntry,
     FeeType,
@@ -423,8 +502,8 @@ from unified_api_contracts.internal.reference import (
     UniverseSnapshot,
     VenueCircuitBreakerConfig,
 )
-from unified_api_contracts.internal.reporting import ClientConfig, CredentialsRegistry, FeeStructure
-from unified_api_contracts.internal.risk import (
+from unified_internal_contracts.reporting import ClientConfig, CredentialsRegistry, FeeStructure
+from unified_internal_contracts.risk import (
     AccountState,
     AlertContextData,
     AlertMessage,
@@ -469,32 +548,35 @@ from unified_api_contracts.internal.risk import (
     VaRRequest,
     VaRResult,
 )
-from unified_api_contracts.internal.schema_definition import (
+from unified_internal_contracts.schema_definition import (
     ColumnSchema,
     SchemaDefinition,
     SchemaValidationError,
     SchemaValidationResult,
 )
-from unified_api_contracts.internal.schemas import (
+from unified_internal_contracts.schemas import (
     DeadLetterRecord,
     EnhancedError,
     ErrorCategory,
     ErrorContext,
     ErrorRecoveryStrategy,
     ErrorSeverity,
+    StartupValidationError,
+    StrategySpec,
+    StrategyType,
 )
-from unified_api_contracts.internal.schemas.audit import (
+from unified_internal_contracts.schemas.audit import (
     EXECUTION_AUDIT,
     STRATEGY_AUDIT,
     AuditRequirement,
     AuditRetention,
 )
-from unified_api_contracts.internal.schemas.rbac import (
+from unified_internal_contracts.schemas.rbac import (
     Permission,
     UserProfile,
     UserRole,
 )
-from unified_api_contracts.internal.sports import (
+from unified_internal_contracts.sports import (
     CoachRecord,
     FixtureEventsRecord,
     FixtureLineupsRecord,
@@ -510,20 +592,23 @@ from unified_api_contracts.internal.sports import (
     TeamRecord,
     VenueRecord,
 )
-from unified_api_contracts.internal.testing.scenario_config import (
+from unified_internal_contracts.testing.scenario_config import (
     FaultConfig,
+    InstrumentFaultRule,
+    InstrumentOverride,
+    InstrumentOverrideAction,
     ScenarioConfig,
 )
-from unified_api_contracts.internal.testing.seed_validator import (
+from unified_internal_contracts.testing.seed_validator import (
     FileReport,
     ValidationReport,
 )
-from unified_api_contracts.internal.testing.synthetic import (
+from unified_internal_contracts.testing.synthetic import (
     SeedDataWriter,
     SyntheticDataGenerator,
 )
-from unified_api_contracts.internal.testing.tick_replay import TickReplayEngine
-from unified_api_contracts.internal.timeframes import TIMEFRAME_TO_SECONDS, Timeframe
+from unified_internal_contracts.testing.tick_replay import TickReplayEngine
+from unified_internal_contracts.timeframes import TIMEFRAME_TO_SECONDS, Timeframe
 
 __all__ = [
     "ALL_FRESHNESS_CONTRACTS",
@@ -549,12 +634,20 @@ __all__ = [
     "AlertEvent",
     "AlertMessage",
     "AlertType",
+    "AnyHyperparameterConfig",
     "AssetClass",
     "AuditRequirement",
     "AuditRetention",
     "AuthFailureDetails",
     "AuthFailureEvent",
+    "AutoReconcileReason",
+    "BackfillSpec",
+    "BacktestExperimentConfig",
+    "BacktestFixedConfig",
     "Balance",
+    "BalanceReconciliationSnapshot",
+    "BalanceReconciliationStatus",
+    "BenchmarkType",
     "BetCancelledEvent",
     "BetFilledEvent",
     "BetPlacedEvent",
@@ -585,8 +678,14 @@ __all__ = [
     "CascadeConfig",
     "CascadeDispatchDetails",
     "CascadePredictionEvent",
+    "CatBoostHyperparams",
     "CategorizedErrorDetails",
+    "CeFiOpenOrder",
+    "CeFiOrderFill",
+    "CeFiOrderStatus",
     "CeFiPosition",
+    "CeFiVenueOrderData",
+    "CeFiVenuePosition",
     "CircuitBreakerConfigRegistry",
     "CircuitBreakerEvent",
     "CircuitBreakerEventMessage",
@@ -628,13 +727,18 @@ __all__ = [
     "DataIngestionCompletedDetails",
     "DataIngestionDetails",
     "DataMode",
-    "DataSourceConstraint",
     "DataStalenessError",
     "DataType",
+    "DeFiConnectorStateDict",
     "DeFiLPPosition",
     "DeFiLendingPosition",
+    "DeFiPoolStateResult",
     "DeFiStakingPosition",
+    "DeFiSwapQuoteResult",
+    "DeFiSwapResult",
+    "DeFiTxResult",
     "DeadLetterRecord",
+    "DefiAlert",
     "DeltaOneFeatureRecord",
     "DeploymentDetails",
     "DeploymentState",
@@ -642,13 +746,19 @@ __all__ = [
     "DepositAddress",
     "DepositRecord",
     "DerivativeTickerMessage",
+    "DeviationState",
+    "DeviationStatus",
+    "DeviationType",
     "DurationBucket",
     "EODSettlementTrigger",
     "EmergencyExitPlaybook",
     "EmergencyExitStep",
     "EmergencyExitType",
     "EnhancedError",
+    "EnsembleConfig",
+    "EnsembleMember",
     "EnvVars",
+    "EnvironmentMode",
     "Erc20TransferCalldata",
     "Erc20TransferFromCalldata",
     "ErrorCategory",
@@ -669,7 +779,11 @@ __all__ = [
     "EventMetadata",
     "EventSeverity",
     "ExchangeFeeSchedule",
+    "ExecutionInstruction",
     "ExecutionMode",
+    "ExecutionOrderType",
+    "ExecutionPositionSide",
+    "ExecutionPositionType",
     "ExecutionPreferencesConfig",
     "ExecutionResultMessage",
     "ExposureData",
@@ -703,16 +817,22 @@ __all__ = [
     "GasCostAction",
     "GasCostEstimate",
     "GreeksExposure",
+    "GridDimensions",
     "HealthAlertMessage",
     "HealthPingResponse",
+    "HuberHyperparams",
     "HyperparameterConfig",
     "InferenceRequest",
     "InferenceResult",
     "InjuryRecord",
+    "InstructionType",
     "InstrumentDefinition",
+    "InstrumentFaultRule",
     "InstrumentInfo",
     "InstrumentKey",
     "InstrumentMetadata",
+    "InstrumentOverride",
+    "InstrumentOverrideAction",
     "InstrumentRecord",
     "InstrumentStatus",
     "InstrumentType",
@@ -733,6 +853,7 @@ __all__ = [
     "LidoWstEthWrapResponse",
     "LifecycleEventEnvelope",
     "LifecycleEventType",
+    "LightGBMHyperparams",
     "LimitCheckResult",
     "LiquidationBandEntry",
     "LiquidationBandPredictionSnapshot",
@@ -740,7 +861,10 @@ __all__ = [
     "LiquidityPool",
     "LogLevel",
     "MLConfigDict",
+    "MLModelScorecard",
+    "MLPrediction",
     "MLPredictionMessage",
+    "ManualExecutionMode",
     "ManualInstruction",
     "MarginHealthSnapshot",
     "MarginState",
@@ -771,6 +895,8 @@ __all__ = [
     "OKXWithdrawResponse",
     "OnchainDataFreshnessConfig",
     "OnchainFeatureRecord",
+    "OperationType",
+    "OperationalMode",
     "OptionContract",
     "OptionGreeks",
     "OptionType",
@@ -792,6 +918,8 @@ __all__ = [
     "PnLBreakdown",
     "PnLCalculation",
     "PnLData",
+    "PnLReconciliationSnapshot",
+    "PoissonGLMHyperparams",
     "PortfolioMarginAccount",
     "PositionData",
     "PositionQuantityProtocol",
@@ -811,12 +939,15 @@ __all__ = [
     "PubSubMessageEnvelope",
     "QualityGateDetails",
     "RealTimePnLRecord",
+    "ReconciliationAction",
+    "ReconciliationResolution",
     "RefereeRecord",
     "RegimeState",
     "RegimeStateRecord",
     "ResourceMetricsSnapshot",
     "RestartDetectedDetails",
     "RestartDetectedEvent",
+    "RidgeHyperparams",
     "RiskAggregationLevel",
     "RiskAlertMessage",
     "RiskAssessment",
@@ -835,9 +966,12 @@ __all__ = [
     "SecretAccessedDetails",
     "SecretAccessedEvent",
     "SeedDataWriter",
+    "ServiceExecutionResult",
+    "ServiceExecutionStatus",
     "ServiceHealthResponse",
     "ServiceLifecycleEventMessage",
     "ServiceMode",
+    "ServiceSignalExecutionResult",
     "SettlementPrice",
     "SettlementType",
     "ShardEvent",
@@ -846,6 +980,7 @@ __all__ = [
     "SportsBetEvent",
     "SportsBetResult",
     "SportsBookUpdate",
+    "SportsFeatureVector",
     "SportsOddsTick",
     "SportsVenueScore",
     "SportsVenueSelection",
@@ -854,11 +989,15 @@ __all__ = [
     "StandingsRecord",
     "StartedDetails",
     "StartedEvent",
+    "StartupValidationError",
     "StoppedDetails",
     "StrategyDecision",
     "StrategyDecisionData",
+    "StrategyModeParams",
     "StrategyRiskProfile",
     "StrategySignalMessage",
+    "StrategySpec",
+    "StrategyType",
     "StressScenario",
     "StressScenarioType",
     "StressTestResult",
@@ -866,15 +1005,19 @@ __all__ = [
     "SwapResult",
     "SyntheticDataGenerator",
     "TargetType",
+    "TargetTypeParams",
     "TeamRecord",
     "TermStructureExposure",
     "TestingStage",
     "TestingStageConfig",
+    "TestnetMode",
     "TickReplayEngine",
     "Timeframe",
     "TrainingJobRequest",
     "TrainingJobResult",
     "TrainingPeriod",
+    "TrainingPhase",
+    "TrainingPipelineConfig",
     "TriggerEvent",
     "TriggerEventType",
     "TriggerSubscription",
@@ -912,6 +1055,7 @@ __all__ = [
     "WebSocketReconnectEvent",
     "WebSocketSubscribeAckEvent",
     "WithdrawalRecord",
+    "XGBoostHyperparams",
     "YieldCurveTenor",
     "aggregate_notional",
     "aggregate_positions",

@@ -7,7 +7,7 @@ Cross-service contract SSOT: this module.
 
 Both ml-inference-service and strategy-service must import CascadeConfig,
 CascadePredictionEvent, and PredictionSnapshot from this module's package
-(unified_api_contracts.internal.domain.ml_inference_service).
+(unified_internal_contracts.domain.ml_inference_service).
 """
 
 from __future__ import annotations

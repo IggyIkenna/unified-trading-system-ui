@@ -177,7 +177,9 @@ class FeatureSnapshotRequest(BaseModel):
 
     instrument_id: str
     timestamp: datetime
-    lookback_window: int = Field(description="Number of bars to include")
+    swing_lookback_window: int = Field(
+        description="Horizon selector into swing_outcome_N columns (NOT forward shift)"
+    )
     feature_groups: list[str] = Field(default_factory=list, description="Empty = all groups")
     timeframe: str = "1h"
 
@@ -304,8 +306,9 @@ class CrossInstrumentFeatures(BaseModel):
     regime_volatility: str | None = Field(default=None, description="high, medium, low")
 
     # Metadata
-    lookback_window: int | None = Field(
-        default=None, description="Number of bars used for computation"
+    swing_lookback_window: int | None = Field(
+        default=None,
+        description="Horizon selector into swing_outcome_N columns (NOT forward shift)",
     )
     timeframe: str | None = Field(default=None, description="e.g., 1h, 4h, 1d")
 

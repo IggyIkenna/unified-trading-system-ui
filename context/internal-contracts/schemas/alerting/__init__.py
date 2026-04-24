@@ -7,6 +7,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from unified_internal_contracts.alerting.alerts import DefiAlert
+
 
 class AlertEvent(BaseModel):
     """A fired alert event emitted by the alerting service."""
@@ -24,3 +26,9 @@ class AlertEvent(BaseModel):
         default=None, description="Strategy that triggered the alert, if applicable"
     )
     venue: str | None = Field(default=None, description="Trading venue, if applicable")
+
+
+__all__ = [
+    "AlertEvent",
+    "DefiAlert",
+]

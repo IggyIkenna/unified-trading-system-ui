@@ -44,8 +44,56 @@ class CanonicalProgressiveStats(BaseModel):
     # Other
     substitutions: int | None = None
 
-    # Dominance
+    # Dominance (legacy flat field)
     dominance_pct: float | None = None
+
+    # --- Enhanced fields (SFI nested data) ---
+
+    # xG per team (SFI provides per-team xG at each interval)
+    xg_home: float | None = None
+    xg_away: float | None = None
+
+    # Dominance index + rolling average per team
+    dominance_index_home: float | None = None
+    dominance_index_away: float | None = None
+    dominance_avg_home: float | None = None
+    dominance_avg_away: float | None = None
+
+    # Attacks split (normal vs dangerous) — home
+    attacks_normal: int | None = None
+    attacks_dangerous: int | None = None
+    # Attacks split — away
+    attacks_normal_away: int | None = None
+    attacks_dangerous_away: int | None = None
+
+    # Shots breakdown
+    shoots_total: int | None = None
+    shoots_on_target: int | None = None
+    shoots_off_target: int | None = None
+
+    # In-play odds — 1X2
+    odds_1x2_home: float | None = None
+    odds_1x2_draw: float | None = None
+    odds_1x2_away: float | None = None
+
+    # In-play odds — Over/Under
+    odds_ou_over: float | None = None
+    odds_ou_under: float | None = None
+    odds_ou_line: float | None = None
+
+    # In-play odds — Asian Handicap
+    odds_ah_home: float | None = None
+    odds_ah_away: float | None = None
+    odds_ah_line: float | None = None
+
+    # In-play odds — Asian Corner
+    odds_asian_corner_over: float | None = None
+    odds_asian_corner_under: float | None = None
+    odds_asian_corner_line: float | None = None
+
+    # Halftime detection (seconds — derived from stats freeze detection)
+    ht_start_timer: int | None = None
+    ht_end_timer: int | None = None
 
     @classmethod
     def from_raw(cls, data: dict[str, str | int | float | bool | None]) -> Self:

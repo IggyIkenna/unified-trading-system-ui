@@ -1,0 +1,14 @@
+name: error_storm
+seed: 48
+vol_multiplier: 1.0
+volume_multiplier: 1.0
+missing_data_rate: 0.0
+delay_ms: 0
+fast_forward_factor: 1.0
+fault:
+  latency_ms: 0
+  error_rate: 1.0
+  timeout_rate: 0.2
+  rate_limit_rate: 0.3
+  error_burst_duration_s: 30
+description: Error storm scenario — every adapter returns errors for 30s bursts. Tests circuit breaker activation and error classification routing.

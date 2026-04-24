@@ -13,3 +13,4 @@ class MarketCategory(StrEnum):
     TRADFI = "TRADFI"
     DEFI = "DEFI"
     SPORTS = "SPORTS"
+    PREDICTION = "PREDICTION"

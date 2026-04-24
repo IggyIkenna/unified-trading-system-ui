@@ -13,7 +13,7 @@ Features computed by features-sports-service calculators:
                     (pred_home_win, pred_draw, pred_away_win, goals, over_2.5).
 
 The storage-layer TypedDicts (LeagueRecord, TeamRecord, FixtureRecord, etc.) are in
-``unified_api_contracts.internal.sports`` — those are flat GCS parquet shapes.
+``unified_internal_contracts.sports`` — those are flat GCS parquet shapes.
 
 These Pydantic models are the runtime feature contracts passed between services via
 PubSub events and ML inference APIs.
@@ -25,6 +25,34 @@ from datetime import datetime
 from typing import Literal
 
 from pydantic import BaseModel, Field
+
+from ._features_league_halftime_goals import (
+    GoalTimingFeaturesMixin,
+    HalftimeFeaturesMixin,
+    LeagueFeaturesMixin,
+    SeasonContextFeaturesMixin,
+)
+from ._features_promoted_synthetic_schedule import (
+    PromotedTeamFeaturesMixin,
+    ScheduleFatigueFeaturesMixin,
+    SyntheticXGFeaturesMixin,
+)
+from ._features_team_h2h import H2HFeaturesMixin, TeamFeaturesMixin
+from ._features_venue_referee_player_odds import (
+    OddsFeaturesMixin,
+    PlayerLineupFeaturesMixin,
+    RefereeFeaturesMixin,
+    VenueContextFeaturesMixin,
+)
+from ._features_xg_advanced_market import (
+    AdvancedStatsFeaturesMixin,
+    ManagerFeaturesMixin,
+    MarketEfficiencyFeaturesMixin,
+    TeamStyleFeaturesMixin,
+    WeatherFeaturesMixin,
+    XGFeaturesMixin,
+)
+from .feature_vector import SportsFeatureVector
 
 
 class HalfTimeFeatureRecord(BaseModel):
@@ -262,9 +290,29 @@ class SportsMLPredictionRecord(BaseModel):
 
 
 __all__ = [
+    "AdvancedStatsFeaturesMixin",
+    "GoalTimingFeaturesMixin",
+    "H2HFeaturesMixin",
     "HalfTimeFeatureRecord",
+    "HalftimeFeaturesMixin",
+    "LeagueFeaturesMixin",
+    "ManagerFeaturesMixin",
+    "MarketEfficiencyFeaturesMixin",
+    "OddsFeaturesMixin",
+    "PlayerLineupFeaturesMixin",
+    "PromotedTeamFeaturesMixin",
     "RefereeFeatureRecord",
+    "RefereeFeaturesMixin",
+    "ScheduleFatigueFeaturesMixin",
     "SeasonContextFeatureRecord",
+    "SeasonContextFeaturesMixin",
+    "SportsFeatureVector",
     "SportsMLPredictionRecord",
+    "SyntheticXGFeaturesMixin",
+    "TeamFeaturesMixin",
+    "TeamStyleFeaturesMixin",
     "VenueContextFeatureRecord",
+    "VenueContextFeaturesMixin",
+    "WeatherFeaturesMixin",
+    "XGFeaturesMixin",
 ]

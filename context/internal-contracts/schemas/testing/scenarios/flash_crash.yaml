@@ -1,0 +1,19 @@
+name: flash_crash
+seed: 49
+vol_multiplier: 20.0
+volume_multiplier: 50.0
+missing_data_rate: 0.05
+delay_ms: 0
+fast_forward_factor: 1.0
+fault:
+  latency_ms: 0
+  error_rate: 0.1
+  timeout_rate: 0.05
+  rate_limit_rate: 0.0
+  price_drop_pct: 0.5
+  recovery_minutes: 5
+instrument_overrides:
+  - action: expire
+    pattern: "DERIBIT:OPTION:BTC-*"
+    available_to: "now"
+description: Flash crash scenario — 50% price drop in 5 minutes then recovery. Extreme vol/volume, partial errors. Expires all BTC options mid-session. Tests risk alerts and liquidation warnings.

@@ -6,15 +6,20 @@ by the deployment system and read by UnifiedCloudConfig in unified-config-interf
 All services and libraries receive these modes at startup via env var injection.
 They NEVER read environment variables directly — they receive the mode from UnifiedCloudConfig.
 
-ENV VAR          | Enum          | Default    | Meaning
------------------|---------------|------------|----------------------------------
-DATA_MODE        | DataMode      | real       | Use mock generators or real data sources
-RUNTIME_MODE     | RuntimeMode   | live       | Live stream or batch processing
-CLOUD_PROVIDER   | CloudProvider | gcp        | GCP, AWS, or local emulator stack
-PHASE_MODE       | PhaseMode     | phase3     | System capability phase (data availability)
-TESTING_STAGE    | TestingStage  | MOCK       | Strategy testing progression stage
+ENV VAR          | Enum            | Default    | Meaning
+-----------------|-----------------|------------|----------------------------------
+ENVIRONMENT      | EnvironmentMode | dev        | Deployment environment (dev/staging/prod)
+DATA_MODE        | DataMode        | real       | Use mock generators or real data sources
+RUNTIME_MODE     | RuntimeMode     | live       | Live stream or batch processing
+CLOUD_PROVIDER   | CloudProvider   | gcp        | GCP, AWS, or local emulator stack
+TESTNET_MODE     | TestnetMode     | mainnet    | Testnet vs mainnet endpoint selection
+PHASE_MODE       | PhaseMode       | phase3     | System capability phase (data availability)
+TESTING_STAGE    | TestingStage    | MOCK       | Strategy testing progression stage
 
 NO cloud SDKs (google-cloud-*, boto3). Pure StrEnum + Pydantic config only.
+
+Human-readable matrix (composition, legacy env vars, SIT):
+unified-trading-codex/09-strategy/cross-cutting/operational-modes-matrix.md
 """
 
 from __future__ import annotations
@@ -22,6 +27,32 @@ from __future__ import annotations
 from enum import StrEnum
 
 from pydantic import BaseModel
+
+
+class EnvironmentMode(StrEnum):
+    """Deployment environment — controls config resolution, auth, and endpoints.
+
+    Injected as ENVIRONMENT env var. Determines which config bucket, which
+    secret versions, and which monitoring dashboards apply.
+    """
+
+    DEV = "dev"
+    DEVELOPMENT = "development"
+    STAGING = "staging"
+    PROD = "prod"
+    PRODUCTION = "production"
+
+
+class TestnetMode(StrEnum):
+    """Testnet vs mainnet selection — venue-agnostic.
+
+    Injected as TESTNET_MODE env var. When TESTNET, UAC resolves testnet
+    endpoints per venue (CeFi, TradFi, DeFi, Prediction all have testnets).
+    The actual testnet URL/chain is owned by UAC capability_declarations.
+    """
+
+    MAINNET = "mainnet"
+    TESTNET = "testnet"
 
 
 class DataMode(StrEnum):
@@ -94,12 +125,15 @@ class MockScenario(StrEnum):
     """Named, deterministic mock scenario for testing and local dev.
 
     Each scenario has a canonical YAML config in
-    unified_api_contracts.internal/testing/scenarios/<name>.yaml
+    unified_internal_contracts/testing/scenarios/<name>.yaml
     specifying the RNG seed, volatility multipliers, fault injection, etc.
 
     Same seed = same output — scenarios are fully reproducible.
     """
 
+    DEFAULT = "default"
+    STRESS = "stress"
+    EMPTY = "empty"
     NORMAL = "normal"
     HEAVY = "heavy"
     LIGHT = "light"
@@ -108,6 +142,10 @@ class MockScenario(StrEnum):
     NO_SYSTEM_OVERLOAD = "no_system_overload"
     MISSING_DATA = "missing_data"
     DELAYED_DATA = "delayed_data"
+    BAD_SCHEMA = "bad_schema"
+    ERROR_STORM = "error_storm"
+    FLASH_CRASH = "flash_crash"
+    HIGH_LATENCY = "high_latency"
 
 
 class TestingStage(StrEnum):
@@ -140,13 +178,34 @@ class TestingStageConfig(BaseModel):
     stage_gate_override: bool = False  # Human override to skip gates
 
 
+class OperationalMode(StrEnum):
+    """Per-service operational mode — validated at startup via UnifiedCloudConfig.
+
+    Injected as OPERATIONAL_MODE env var. Determines how the service processes
+    instructions and what API surface is exposed.
+
+    LIVE: Automated strategy execution (strategy-service -> execution-service)
+    MANUAL: Operator-entered instructions via API (manual trading panel)
+    BACKTEST: Historical replay (batch mode, no live execution)
+    PAPER: Live market data, simulated execution (no real fills)
+    """
+
+    LIVE = "live"
+    MANUAL = "manual"
+    BACKTEST = "backtest"
+    PAPER = "paper"
+
+
 __all__ = [
     "CloudProvider",
     "DataMode",
+    "EnvironmentMode",
     "LogLevel",
     "MockScenario",
+    "OperationalMode",
     "PhaseMode",
     "RuntimeMode",
     "TestingStage",
     "TestingStageConfig",
+    "TestnetMode",
 ]

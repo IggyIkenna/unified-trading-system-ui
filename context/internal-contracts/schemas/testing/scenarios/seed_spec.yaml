@@ -1,0 +1,274 @@
+date_range:
+  start: "2024-01-01"
+  end: "2025-01-01" # 1 year
+
+instruments:
+  crypto_cefi:
+    - { symbol: "BTC/USDT", venue: binance, interval: 1m }
+    - { symbol: "ETH/USDT", venue: binance, interval: 1m }
+    - { symbol: "SOL/USDT", venue: binance, interval: 1m }
+    - { symbol: "BTC-PERP", venue: deribit, interval: 1m }
+    - { symbol: "ETH-PERP", venue: deribit, interval: 1m }
+  crypto_defi:
+    - { protocol: uniswap_v3, pair: "ETH/USDC", interval: 5m, chain: ethereum }
+    - { protocol: aave_v3, asset: USDC, interval: 1h, chain: ethereum }
+    - { protocol: curve, pool: 3pool, interval: 1h, chain: ethereum }
+    - { protocol: lido, asset: stETH, interval: 1h, chain: ethereum }
+  tradfi:
+    - { symbol: SPY, venue: databento, interval: 1d }
+    - { symbol: QQQ, venue: databento, interval: 1d }
+    - { symbol: AAPL, venue: databento, interval: 1d }
+    - { symbol: TSLA, venue: databento, interval: 1d }
+    - { symbol: GLD, venue: databento, interval: 1d }
+  sports:
+    - { league: premier_league, venue: pinnacle, type: match_odds }
+    - { league: nba, venue: odds_api, type: moneyline }
+
+instruments_total: 100 # across all asset classes
+
+# GBM parameters per asset class: (annualised_vol, annualised_drift, base_price)
+gbm_params:
+  BTC/USDT: { vol: 0.80, drift: 0.0, base_price: 42000.0 }
+  ETH/USDT: { vol: 0.75, drift: 0.0, base_price: 2500.0 }
+  SOL/USDT: { vol: 0.90, drift: 0.05, base_price: 100.0 }
+  BTC-PERP: { vol: 0.80, drift: 0.0, base_price: 42000.0 }
+  ETH-PERP: { vol: 0.75, drift: 0.0, base_price: 2500.0 }
+  ETH/USDC: { vol: 0.75, drift: 0.0, base_price: 2500.0 }
+  SPY: { vol: 0.18, drift: 0.12, base_price: 470.0 }
+  QQQ: { vol: 0.22, drift: 0.15, base_price: 400.0 }
+  AAPL: { vol: 0.25, drift: 0.10, base_price: 185.0 }
+  TSLA: { vol: 0.55, drift: 0.05, base_price: 230.0 }
+  GLD: { vol: 0.14, drift: 0.08, base_price: 190.0 }
+
+# Cross-asset correlations for correlated GBM
+correlations:
+  rho_btc_eth: 0.85
+  rho_btc_sol: 0.75
+  rho_btc_ethperp: 0.98
+  rho_eth_ethusdc: 0.99
+
+# DeFi yield mean-reversion parameters (Ornstein-Uhlenbeck)
+defi_yield_params:
+  aave_v3_USDC: { mean: 0.045, kappa: 2.0, sigma: 0.01, base_apy: 0.045 }
+  curve_3pool: { mean: 0.035, kappa: 1.5, sigma: 0.008, base_apy: 0.035 }
+  lido_stETH: { mean: 0.042, kappa: 3.0, sigma: 0.003, base_apy: 0.042 }
+  uniswap_v3_ETH_USDC: { mean: 0.15, kappa: 1.0, sigma: 0.05, base_apy: 0.15 }
+
+# ETH staking / LST rate parameters (Ornstein-Uhlenbeck mean reversion)
+staking_params:
+  lido: { mean: 0.040, kappa: 3.0, sigma: 0.003, base_apy: 0.040 }
+  etherfi: { mean: 0.045, kappa: 2.5, sigma: 0.004, base_apy: 0.045 }
+  rocket_pool: { mean: 0.042, kappa: 2.8, sigma: 0.0035, base_apy: 0.042 }
+  native_eth: { mean: 0.035, kappa: 4.0, sigma: 0.002, base_apy: 0.035 }
+
+# L2 orderbook snapshot parameters per venue
+orderbook_params:
+  binance:
+    levels: 20
+    spread_bps: 3.0
+    snapshots: 500
+  deribit:
+    levels: 10
+    spread_bps: 8.0
+    snapshots: 500
+  coinbase:
+    levels: 15
+    spread_bps: 4.0
+    snapshots: 500
+  bybit:
+    levels: 10
+    spread_bps: 5.0
+    snapshots: 500
+  hyperliquid:
+    levels: 5
+    spread_bps: 10.0
+    snapshots: 200
+  databento:
+    levels: 10
+    spread_bps: 1.0
+    snapshots: 200
+
+modes:
+  quick: # fast dev start (1 month, 5 symbols)
+    date_range_override: "2024-12-01 to 2025-01-01"
+    symbols_override:
+      - BTC/USDT
+      - ETH/USDT
+      - SPY
+      - ETH/USDC
+      - premier_league
+  full: # complete (1 year, all symbols above)
+    date_range_override: null
+    symbols_override: null
+
+# Output format
+output:
+  format: parquet
+  partition_template: "{symbol}/{year}/{month}/{day}/"
+  compression: snappy
+  timestamp_col: timestamp
+  timezone: UTC
+
+# ---------------------------------------------------------------------------
+# Strategy definitions — all strategy types the mock should generate data for
+# ---------------------------------------------------------------------------
+strategies:
+  # CeFi directional
+  - id: CEFI_BTC_MOMENTUM_HUF_5M_V1
+    type: MOMENTUM
+    category: CEFI
+    instruments: [BTC/USDT, ETH/USDT]
+    venues: [binance, deribit]
+    timeframe: 5m
+
+  - id: CEFI_ETH_BASIS_TRADE_1H_V1
+    type: BASIS_TRADE
+    category: CEFI
+    instruments: [ETH/USDT, ETH-PERP]
+    venues: [binance, deribit]
+    timeframe: 1h
+
+  # TradFi
+  - id: TRADFI_SPY_QQQ_PAIRS_15M_V1
+    type: STAT_ARB
+    category: TRADFI
+    instruments: [SPY, QQQ]
+    venues: [databento]
+    timeframe: 15m
+
+  # Market making
+  - id: CEFI_BTC_MM_1M_V1
+    type: MARKET_MAKING
+    category: CEFI
+    instruments: [BTC/USDT]
+    venues: [binance, bybit]
+    timeframe: 1m
+    params:
+      spread_target_bps: 5
+      inventory_limit: 10.0
+      skew_factor: 0.5
+
+  # Cross-venue arb
+  - id: CEFI_BTC_CROSS_VENUE_ARB_V1
+    type: CROSS_VENUE_ARB
+    category: CEFI
+    instruments: [BTC/USDT]
+    venues: [binance, bybit, okx, coinbase]
+    timeframe: 1m
+    params:
+      min_spread_bps: 3
+      max_position: 5.0
+
+  # DeFi strategies
+  - id: DEFI_ETH_LEVERAGED_STAKING_1H_V1
+    type: YIELD_OPTIMIZATION
+    category: DEFI
+    instruments: [ETH/USDC]
+    venues: [aave_v3, lido]
+    timeframe: 1h
+
+  - id: DEFI_USDC_LENDING_ARB_1H_V1
+    type: YIELD_OPTIMIZATION
+    category: DEFI
+    instruments: [USDC]
+    venues: [aave_v3, morpho, compound]
+    timeframe: 1h
+
+  - id: DEFI_ETH_DEX_ARB_V1
+    type: DEX_ARB
+    category: DEFI
+    instruments: [ETH/USDC]
+    venues: [uniswap_v3, curve, sushiswap]
+    timeframe: 1m
+    params:
+      min_profit_bps: 5
+      gas_budget_gwei: 50
+
+  - id: DEFI_FLASH_LOAN_ARB_V1
+    type: FLASH_LOAN_ARB
+    category: DEFI
+    instruments: [ETH/USDC, USDC]
+    venues: [aave_v3, uniswap_v3]
+    timeframe: 1m
+    params:
+      flash_provider: aave_v3
+      min_profit_usd: 50
+
+  # Sports
+  - id: SPORTS_EPL_VALUE_BET_V1
+    type: SPORTS_VALUE_BET
+    category: SPORTS
+    instruments: [premier_league]
+    venues: [pinnacle]
+    timeframe: 1d
+    params:
+      min_edge_pct: 3.0
+      kelly_fraction: 0.25
+
+  - id: SPORTS_EPL_ML_V1
+    type: SPORTS_ML
+    category: SPORTS
+    instruments: [premier_league]
+    venues: [pinnacle, bet365]
+    timeframe: 1d
+    params:
+      model_type: gradient_boosting
+      features: [h2h, form, referee, standings, odds_movement]
+
+  - id: SPORTS_CROSS_BOOK_ARB_V1
+    type: SPORTS_ARB
+    category: SPORTS
+    instruments: [premier_league, nba]
+    venues: [pinnacle, bet365, odds_api]
+    timeframe: 1m
+    params:
+      min_arb_pct: 1.0
+
+  # Prediction markets
+  - id: PREDICTION_POLYMARKET_ARB_V1
+    type: PREDICTION_ARB
+    category: PREDICTION
+    instruments: [polymarket]
+    venues: [polymarket]
+    timeframe: 5m
+
+# ---------------------------------------------------------------------------
+# ML model scoring config
+# ---------------------------------------------------------------------------
+ml_models:
+  training_grid:
+    instruments: [BTC/USDT, ETH/USDT, SOL/USDT, SPY, QQQ]
+    timeframes: [1h, 4h]
+    target_types: [swing_high, swing_low, direction]
+    model_types: [lightgbm]
+
+  sports_ml:
+    instruments: [premier_league, nba]
+    features: [odds, h2h, form, referee, standings]
+    target: match_result  # home_win, draw, away_win
+    model_types: [gradient_boosting, random_forest]
+
+  scoring:
+    min_accuracy: 0.55
+    min_auc: 0.60
+    min_walk_forward_sharpe: 0.3
+
+# ---------------------------------------------------------------------------
+# Backfill spec — min/recommended days per service
+# ---------------------------------------------------------------------------
+backfill:
+  instruments-service: { min_days: 0, recommended_days: 0, cold_start: true }
+  market-tick-data-service: { min_days: 1, recommended_days: 7, cold_start: false }
+  features-delta-one-service: { min_days: 30, recommended_days: 90, cold_start: false }
+  features-calendar-service: { min_days: 0, recommended_days: 365, cold_start: true }
+  ml-training-service: { min_days: 180, recommended_days: 365, cold_start: false }
+  ml-inference-service: { min_days: 0, recommended_days: 0, cold_start: true, requires: [ml-training-service] }
+  strategy-service: { min_days: 1, recommended_days: 30, cold_start: false }
+  execution-service: { min_days: 0, recommended_days: 0, cold_start: true }
+
+# GCS paths (used by seed-dev-project.sh)
+gcs:
+  project: unified-trading-dev
+  bucket_tick: gs://unified-trading-dev-tick-data
+  bucket_models: gs://unified-trading-dev-models
+  model_version: "1"

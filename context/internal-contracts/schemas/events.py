@@ -8,7 +8,7 @@ from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field
 
-from unified_api_contracts.internal.modes import LogLevel
+from unified_internal_contracts.modes import LogLevel
 
 REQUIRED_EVENT_FIELDS: dict[str, list[str]] = {
     "ALL": ["correlation_id", "service_version", "local_timestamp"],
@@ -55,6 +55,15 @@ class LifecycleEventType(StrEnum):
     SIT_STARTED = "SIT_STARTED"
     SIT_PASSED = "SIT_PASSED"
     SIT_FAILED = "SIT_FAILED"
+    # Structured error events — emitted by classify_and_emit_error() in UTL
+    SERVICE_ERROR = "SERVICE_ERROR"
+    ADAPTER_FETCH_FAILED = "ADAPTER_FETCH_FAILED"
+    # Circuit breaker — emitted by alerting-service
+    CIRCUIT_OPEN = "CIRCUIT_OPEN"
+    CIRCUIT_HALF_OPEN = "CIRCUIT_HALF_OPEN"
+    CIRCUIT_CLOSED = "CIRCUIT_CLOSED"
+    # Dead letter — exhausted retries
+    DEAD_LETTERED = "DEAD_LETTERED"
     # Agent lifecycle
     AGENT_INVESTIGATION_TRIGGERED = "AGENT_INVESTIGATION_TRIGGERED"
     AGENT_INVESTIGATION_COMPLETED = "AGENT_INVESTIGATION_COMPLETED"

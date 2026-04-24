@@ -7,7 +7,7 @@ UIC may import from UAC — this is the correct direction per TIER-ARCHITECTURE.
 (UAC = T0 pure leaf; UIC = T0-with-UAC-dependency, builds after UAC).
 """
 
-from unified_api_contracts.internal.domain.market_tick_data.sports import (
+from unified_internal_contracts.domain.market_tick_data.sports import (
     SportsBookUpdate,
     SportsOddsTick,
 )

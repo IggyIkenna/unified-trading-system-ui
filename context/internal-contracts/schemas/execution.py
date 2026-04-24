@@ -34,16 +34,27 @@ class SettlementType(StrEnum):
     FLASH_LOAN_FEE = "flash_loan_fee"
 
 
+class ManualExecutionMode(StrEnum):
+    """How a manual instruction should be processed by the execution service."""
+
+    EXECUTE = "execute"
+    """Route to venue via orchestrator (normal flow — same path as automated strategies)."""
+
+    RECORD_ONLY = "record_only"
+    """Skip venue execution, record fill directly (OTC, missed trades, simulation)."""
+
+
 class ManualInstruction(BaseModel):
     """An operator-submitted manual execution instruction for audit and routing.
 
     Created by the manual-trading API endpoint and persisted to the audit log
-    before being forwarded to the live orchestrator.
+    before being forwarded to the live orchestrator (EXECUTE mode) or recorded
+    directly as a fill (RECORD_ONLY mode).
 
     Attributes:
         instruction_id: Unique UUID for idempotency and audit tracing.
-        submitted_by: Identity of the operator (OAuth sub claim or client_id).
-        venue: Target venue slug (e.g. "binance", "deribit").
+        submitted_by: Identity of the operator (OAuth sub claim).
+        venue: Target venue slug (e.g. "binance", "deribit", or counterparty for OTC).
         account_id: Account identifier at the venue.
         instrument_key: Canonical instrument key (VENUE:TYPE:SYMBOL).
         side: "BUY" or "SELL".
@@ -52,6 +63,13 @@ class ManualInstruction(BaseModel):
         price: Limit price; None for market orders.
         reason: Human-readable reason for the manual trade (audit log).
         submitted_at: UTC wall-clock time of submission.
+        execution_mode: EXECUTE (route to venue) or RECORD_ONLY (direct fill recording).
+        client_id: Org hierarchy — client identifier.
+        strategy_id: Org hierarchy — strategy identifier.
+        portfolio_id: Org hierarchy — portfolio/book identifier.
+        category: Instrument category (e.g. "cefi", "defi", "sports", "prediction").
+        counterparty: OTC counterparty identifier.
+        source_reference: External trade ID (exchange reference, broker confirmation).
     """
 
     instruction_id: str
@@ -65,6 +83,13 @@ class ManualInstruction(BaseModel):
     submitted_at: datetime
     price: Decimal | None = None
     reason: str = Field(default="manual_trade")
+    execution_mode: ManualExecutionMode = ManualExecutionMode.EXECUTE
+    client_id: str = ""
+    strategy_id: str = ""
+    portfolio_id: str = ""
+    category: str = ""
+    counterparty: str = ""
+    source_reference: str = ""
 
 
-__all__ = ["ManualInstruction", "SettlementType"]
+__all__ = ["ManualExecutionMode", "ManualInstruction", "SettlementType"]

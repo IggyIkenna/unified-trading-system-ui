@@ -1,6 +1,6 @@
 """Analytics domain contracts — factor attribution, exposure, and correlation."""
 
-from unified_api_contracts.internal.domain.analytics.factor_exposure import (
+from unified_internal_contracts.domain.analytics.factor_exposure import (
     CorrelationRegime,
     CorrelationRegimeChange,
     CrossAssetCorrelationMatrix,

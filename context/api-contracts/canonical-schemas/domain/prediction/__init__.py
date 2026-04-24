@@ -6,4 +6,5 @@ from .prediction_mapping import CanonicalPredictionMarket as CanonicalPrediction
 from .prediction_mapping import MappingRule as MappingRule
 from .prediction_mapping import OrphanDetector as OrphanDetector
 from .prediction_mapping import PredictionMarketCategory as PredictionMarketCategory
+from .prediction_mapping import PredictionMarketCrossVenueMapping as PredictionMarketCrossVenueMapping
 from .prediction_mapping import PredictionMarketMapper as PredictionMarketMapper

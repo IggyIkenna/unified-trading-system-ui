@@ -1,7 +1,7 @@
 """Canonical environment variable names — SINGLE SOURCE OF TRUTH.
 
 All repos MUST use these constants instead of raw getenv calls with literal strings.
-Import EnvVars from unified_api_contracts.internal for validation_alias and env reads.
+Import EnvVars from unified_internal_contracts for validation_alias and env reads.
 """
 
 # Module-level constants (convenience aliases)
@@ -9,6 +9,10 @@ RUNTIME_MODE = "RUNTIME_MODE"
 DATA_MODE = "DATA_MODE"
 CLOUD_PROVIDER = "CLOUD_PROVIDER"
 PHASE_MODE = "PHASE_MODE"
+TESTNET_MODE = "TESTNET_MODE"
+OPERATIONAL_MODE = "OPERATIONAL_MODE"
+TESTING_STAGE = "TESTING_STAGE"
+CLOUD_MOCK_MODE = "CLOUD_MOCK_MODE"
 GCP_PROJECT_ID = "GCP_PROJECT_ID"
 AWS_ACCOUNT_ID = "AWS_ACCOUNT_ID"
 RUNTIME_TOPOLOGY_PATH = "RUNTIME_TOPOLOGY_PATH"
@@ -49,7 +53,13 @@ class EnvVars:
     PROTOCOL_ANALYTICS_BACKEND = "PROTOCOL_ANALYTICS_BACKEND"
 
     # Service / factory
-    SERVICE_MODE = "SERVICE_MODE"
+    SERVICE_MODE = "SERVICE_MODE"  # LEGACY — use RUNTIME_MODE instead
+
+    # Control surface (service protocol resolution)
+    TESTNET_MODE = "TESTNET_MODE"  # mainnet | testnet
+    OPERATIONAL_MODE = "OPERATIONAL_MODE"  # live | manual | backtest | paper
+    TESTING_STAGE = "TESTING_STAGE"  # strategy progression (see modes.TestingStage)
+    CLOUD_MOCK_MODE = "CLOUD_MOCK_MODE"  # true | false (maps to DataMode)
 
     # Logging (bootstrap, read before config is loaded)
     LOG_LEVEL = "LOG_LEVEL"  # DEBUG | INFO | WARNING | ERROR | CRITICAL
@@ -102,6 +112,10 @@ class EnvVars:
             cls.PROTOCOL_ANALYTICS_DATASET,
             cls.PROTOCOL_ANALYTICS_BACKEND,
             cls.SERVICE_MODE,
+            cls.TESTNET_MODE,
+            cls.OPERATIONAL_MODE,
+            cls.TESTING_STAGE,
+            cls.CLOUD_MOCK_MODE,
             cls.AWS_REGION,
             cls.AWS_PROFILE,
             cls.ATHENA_OUTPUT_BUCKET,

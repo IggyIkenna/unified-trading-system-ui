@@ -47,6 +47,34 @@ class CanonicalPredictionMarket(BaseModel):
     mapped_instrument_id: str | None = None  # link to canonical financial instrument
 
 
+class PredictionMarketCrossVenueMapping(BaseModel):
+    """Cross-venue mapping for the same real-world event across prediction markets + traditional venues.
+
+    Links Polymarket condition_ids, Kalshi tickers, and Odds API event IDs
+    for the same underlying event (football match, BTC price level, S&P close).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    canonical_event_id: str  # e.g. "EPL:ARS-v-CHE:20260322" or "BTC:ABOVE:95000:20260321T1400Z"
+    category: PredictionMarketCategory
+    sub_category: str  # "epl", "bundesliga", "btc_price", "spx_close"
+    underlying: str | None = None  # "BTC", "SPX", None for sports
+
+    # Per-venue IDs
+    odds_api_event_id: str | None = None  # Only for sports
+    api_football_fixture_id: int | None = None  # Only for sports
+    polymarket_condition_id: str | None = None
+    polymarket_neg_risk_market_id: str | None = None
+    kalshi_event_ticker: str | None = None
+    kalshi_market_ticker: str | None = None
+
+    # Timeframe (for crypto/macro binary markets)
+    timeframe: str | None = None  # "5m", "15m", "1h", "4h", "1d", None for sports
+    strike: float | None = None  # 95000.0 (BTC), 5800.0 (SPX), None for sports
+    expiry_utc: datetime | None = None
+
+
 class MappingRule(BaseModel):
     """Rule for keyword-based categorization of prediction markets."""
 
@@ -88,11 +116,25 @@ _DEFAULT_RULES: tuple[MappingRule, ...] = (
             "gdp",
             "inflation",
             "s&p",
+            "s&p 500",
+            "spx",
             "nasdaq",
             "dow jones",
+            "djia",
+            "dax",
+            "hang seng",
+            "russell 2000",
             "treasury",
             "yield curve",
             "recession",
+            "crude oil",
+            "gold",
+            "silver",
+            "forex",
+            "eur/usd",
+            "gbp/usd",
+            "usd/jpy",
+            "usd/krw",
         ),
         category=PredictionMarketCategory.FINANCIAL,
         priority=9,
@@ -111,6 +153,16 @@ _DEFAULT_RULES: tuple[MappingRule, ...] = (
             "league",
             "goal",
             "touchdown",
+            "premier league",
+            "bundesliga",
+            "la liga",
+            "serie a",
+            "ligue 1",
+            "champions league",
+            "copa del rey",
+            "spread:",
+            "moneyline",
+            "both teams to score",
         ),
         category=PredictionMarketCategory.SPORTS,
         priority=8,
@@ -129,6 +181,12 @@ _DEFAULT_RULES: tuple[MappingRule, ...] = (
             "altcoin",
             "staking",
             "eth",
+            "btc",
+            "xrp",
+            "dogecoin",
+            "doge",
+            "bnb",
+            "hyperliquid",
         ),
         category=PredictionMarketCategory.CRYPTO,
         priority=7,

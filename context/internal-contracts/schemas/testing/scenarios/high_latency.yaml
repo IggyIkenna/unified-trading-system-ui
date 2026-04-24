@@ -1,0 +1,13 @@
+name: high_latency
+seed: 50
+vol_multiplier: 1.0
+volume_multiplier: 1.0
+missing_data_rate: 0.0
+delay_ms: 3500
+fast_forward_factor: 1.0
+fault:
+  latency_ms: 3500
+  error_rate: 0.0
+  timeout_rate: 0.0
+  rate_limit_rate: 0.0
+description: High latency scenario — 2-5s artificial delay on all responses (avg 3.5s). Tests timeout handling and performance degradation paths.

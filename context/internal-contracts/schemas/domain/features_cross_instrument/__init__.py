@@ -10,7 +10,7 @@ This module exposes the runtime data contracts consumed by downstream services
 (strategy-service, ML services, etc.).
 """
 
-from unified_api_contracts.internal.features import CrossInstrumentFeatures, PairSpreadFeatureRecord
+from unified_internal_contracts.features import CrossInstrumentFeatures, PairSpreadFeatureRecord
 
 __all__ = [
     "CrossInstrumentFeatures",

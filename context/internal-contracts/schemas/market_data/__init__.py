@@ -7,7 +7,7 @@ CanonicalTicker, and CanonicalTrade are defined in
 ``unified-api-contracts/unified_api_contracts/canonical/domain/market_data/`` (UAC).
 
 They are re-exported here as a convenience layer so that internal services
-can import from ``unified_api_contracts.internal.market_data`` without taking a
+can import from ``unified_internal_contracts.market_data`` without taking a
 direct UAC dependency.
 
 Import direction: UIC → UAC canonical layer is PERMITTED.
@@ -21,25 +21,25 @@ from unified_api_contracts.canonical import (
     CanonicalTrade,
 )
 
-from unified_api_contracts.internal.market_data.book_update import (
+from unified_internal_contracts.market_data.book_update import (
     BookUpdateLevel,
     CanonicalBookUpdate,
 )
-from unified_api_contracts.internal.market_data.defi import (
+from unified_internal_contracts.market_data.defi import (
     CanonicalLendingRate,
     CanonicalLiquidityPool,
     CanonicalOraclePrice,
     CanonicalStakingRate,
     CanonicalSwap,
 )
-from unified_api_contracts.internal.market_data.fixed_income import (
+from unified_internal_contracts.market_data.fixed_income import (
     CanonicalBondData,
     CanonicalYieldCurve,
     YieldCurveTenor,
 )
-from unified_api_contracts.internal.market_data.ohlcv import CanonicalOHLCV, OHLCVSource
-from unified_api_contracts.internal.market_data.option_quote import CanonicalOptionQuote
-from unified_api_contracts.internal.market_data.options_chain import InternalOptionsChainSnapshot
+from unified_internal_contracts.market_data.ohlcv import CanonicalOHLCV, OHLCVSource
+from unified_internal_contracts.market_data.option_quote import CanonicalOptionQuote
+from unified_internal_contracts.market_data.options_chain import InternalOptionsChainSnapshot
 
 __all__ = [
     "BookUpdateLevel",

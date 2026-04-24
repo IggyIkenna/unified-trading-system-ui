@@ -40,6 +40,17 @@ class LeagueDefinition:
             non-football or unmapped leagues.
         tier: 1 = top division, 2 = second tier, etc. 0 = cup/non-football.
         classification: ``Prediction``, ``Features``, ``Reference``, or ``Other``.
+        supports_live_stats: Whether API Football provides live in-play statistics
+            (possession, shots, corners) for this league. Tier 0 (cups/continental)
+            and Tier 1 (top national divisions) generally do. Lower tiers only get
+            live score + events (goals/cards/subs) but not detailed stats.
+        expected_team_count_per_season: Optional mapping of ``season_year ->
+            expected_team_count`` used by reference-data adapters (Transfermarkt,
+            API-Football) to drift-check the size of a fetched team roster vs the
+            league's known size for that season. ``None`` means the league-level
+            override is absent; lookups fall back to the module-level seed dict
+            in ``league_data.LEAGUE_EXPECTED_TEAM_COUNTS`` (see
+            ``get_expected_team_count_for_league``).
     """
 
     league_id: str
@@ -52,6 +63,8 @@ class LeagueDefinition:
     api_football_id: int | None
     tier: int
     classification: str
+    supports_live_stats: bool = False
+    expected_team_count_per_season: dict[int, int] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +80,7 @@ def _sources(*names: str) -> frozenset[str]:
 # Prediction leagues with all 7 sources
 PRED_FULL: frozenset[str] = _sources(
     "api_football",
-    "soccerfootball_info",
+    "soccer_football_info",
     "footystats",
     "transfermarkt",
     "understat",
@@ -78,7 +91,7 @@ PRED_FULL: frozenset[str] = _sources(
 # Prediction leagues — all sources except Understat
 PRED_NO_UNDERSTAT: frozenset[str] = _sources(
     "api_football",
-    "soccerfootball_info",
+    "soccer_football_info",
     "footystats",
     "transfermarkt",
     "odds_api",
@@ -88,7 +101,7 @@ PRED_NO_UNDERSTAT: frozenset[str] = _sources(
 # Prediction leagues — no FootyStats (subscription limit)
 PRED_NO_FOOTYSTATS: frozenset[str] = _sources(
     "api_football",
-    "soccerfootball_info",
+    "soccer_football_info",
     "transfermarkt",
     "odds_api",
     "open_meteo",

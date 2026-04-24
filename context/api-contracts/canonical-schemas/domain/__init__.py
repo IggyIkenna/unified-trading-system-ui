@@ -26,14 +26,9 @@ from ..crosscutting.connectivity import (
     WebSocketEvent,
 )
 from ..crosscutting.latency import (
-    CoLocationPerformanceMetric,
-    LatencyBenchmarkReport,
     LatencyComponent,
-    LatencyPercentile,
     NetworkJitterMetric,
     OrderLatencyRecord,
-    SubMillisecondLatencyRecord,
-    TickToTradeMetric,
 )
 from ..crosscutting.rate_limits import (
     HttpRateLimitHeaders,
@@ -43,6 +38,10 @@ from ..crosscutting.risk_taxonomy import (
     RISK_TYPE_CATEGORIES,
     RiskCategory,
     RiskType,
+)
+from ..crosscutting.share_class import (
+    SHARE_CLASS_BASE_ASSETS,
+    ShareClass,
 )
 from ._base import CanonicalBase
 from .derivatives import (
@@ -104,18 +103,9 @@ from .features import (
     FeatureMetadata,
 )
 from .infrastructure import (
-    INFRA_CANONICAL_TO_PROVIDER,
-    CanonicalCloudStorage,
-    CanonicalComputeJob,
     CanonicalComputeService,
-    CanonicalContainerRegistry,
-    CanonicalMessageQueue,
-    CanonicalOLAPTable,
     CanonicalPullRequest,
     CanonicalRepository,
-    CanonicalScheduledJob,
-    CanonicalSecretStore,
-    CanonicalVirtualMachine,
     CanonicalWorkflowRun,
     CloudProvider,
     ComputeTarget,
@@ -198,10 +188,12 @@ from .prediction import (
     PredictionMarketMapper,
 )
 from .reference import (
+    AssetClass,
     CanonicalInstrument,
     InstructionType,
     InstrumentType,
     InstrumentWarehouseRow,
+    MarginType,
     OptionType,
     Sport,
 )
@@ -245,35 +237,6 @@ from .sports import (
     VenueCategory,
     VenueExecutionProfile,
 )
-from .sports._features_league_halftime_goals import (
-    GoalTimingFeaturesMixin,
-    HalftimeFeaturesMixin,
-    LeagueFeaturesMixin,
-    SeasonContextFeaturesMixin,
-)
-from .sports._features_promoted_synthetic_schedule import (
-    PromotedTeamFeaturesMixin,
-    ScheduleFatigueFeaturesMixin,
-    SyntheticXGFeaturesMixin,
-)
-from .sports._features_team_h2h import (
-    H2HFeaturesMixin,
-    TeamFeaturesMixin,
-)
-from .sports._features_venue_referee_player_odds import (
-    OddsFeaturesMixin,
-    PlayerLineupFeaturesMixin,
-    RefereeFeaturesMixin,
-    VenueContextFeaturesMixin,
-)
-from .sports._features_xg_advanced_market import (
-    AdvancedStatsFeaturesMixin,
-    ManagerFeaturesMixin,
-    MarketEfficiencyFeaturesMixin,
-    TeamStyleFeaturesMixin,
-    WeatherFeaturesMixin,
-    XGFeaturesMixin,
-)
 from .sports.arbitrage import (
     ArbitrageMarket,
     ArbitrageOpportunity,
@@ -287,6 +250,7 @@ from .sports.betting import (
 from .sports.bookmaker_registry import (
     BOOKMAKER_REGISTRY,
     BookmakerRegistry,
+    get_expected_bookmakers,
 )
 from .sports.errors import (
     BetRejectedError,
@@ -298,7 +262,6 @@ from .sports.errors import (
     SportsError,
 )
 from .sports.events import CanonicalFixtureEvent
-from .sports.features import SportsFeatureVector
 from .sports.fixture_stats import CanonicalFixtureStatsDetail
 from .sports.injury import CanonicalInjury
 from .sports.lineup import (
@@ -320,13 +283,12 @@ from .sports.progressive import (
 
 __all__ = [
     "BOOKMAKER_REGISTRY",
-    "INFRA_CANONICAL_TO_PROVIDER",
     "ODDS_API_KEY_TO_VENUE",
     "ODDS_API_KEY_TO_VENUE_CATEGORY",
     "RISK_TYPE_CATEGORIES",
+    "SHARE_CLASS_BASE_ASSETS",
     "VENUE_EXECUTION_REGISTRY",
     "AccountVerificationLevel",
-    "AdvancedStatsFeaturesMixin",
     "AggregatedPosition",
     "AlternativeDataSignal",
     "AlternativeDataType",
@@ -334,6 +296,7 @@ __all__ = [
     "ArbitrageMarket",
     "ArbitrageOpportunity",
     "ArbitrageStatus",
+    "AssetClass",
     "BenchmarkType",
     "BetExecution",
     "BetOrder",
@@ -360,12 +323,9 @@ __all__ = [
     "CanonicalBondData",
     "CanonicalBookmakerMarket",
     "CanonicalCdsSpread",
-    "CanonicalCloudStorage",
     "CanonicalComboBet",
     "CanonicalComboLeg",
-    "CanonicalComputeJob",
     "CanonicalComputeService",
-    "CanonicalContainerRegistry",
     "CanonicalDerivativeTicker",
     "CanonicalFeatureRecord",
     "CanonicalFee",
@@ -382,8 +342,6 @@ __all__ = [
     "CanonicalLiquidationCluster",
     "CanonicalMarginState",
     "CanonicalMarketStateEvent",
-    "CanonicalMessageQueue",
-    "CanonicalOLAPTable",
     "CanonicalOdds",
     "CanonicalOhlcvBar",
     "CanonicalOnChainMetric",
@@ -401,20 +359,16 @@ __all__ = [
     "CanonicalPullRequest",
     "CanonicalReferee",
     "CanonicalRepository",
-    "CanonicalScheduledJob",
-    "CanonicalSecretStore",
     "CanonicalSettlement",
     "CanonicalSpread",
     "CanonicalTeam",
     "CanonicalTicker",
     "CanonicalTrade",
     "CanonicalVenue",
-    "CanonicalVirtualMachine",
     "CanonicalWebSocketLifecycle",
     "CanonicalWorkflowRun",
     "CanonicalYieldCurvePoint",
     "CloudProvider",
-    "CoLocationPerformanceMetric",
     "CoinbaseWithdrawRequest",
     "CoinbaseWithdrawResponse",
     "CollateralAsset",
@@ -450,9 +404,6 @@ __all__ = [
     "FixtureMapping",
     "FixtureNotFoundError",
     "FundingRateHistory",
-    "GoalTimingFeaturesMixin",
-    "H2HFeaturesMixin",
-    "HalftimeFeaturesMixin",
     "HealthPingResponse",
     "HttpRateLimitHeaders",
     "InstructionType",
@@ -461,18 +412,14 @@ __all__ = [
     "InsuranceFundState",
     "InternalTransfer",
     "LPProtocolBreakdown",
-    "LatencyBenchmarkReport",
     "LatencyComponent",
-    "LatencyPercentile",
-    "LeagueFeaturesMixin",
     "LineupPlayer",
     "LiveMatchState",
     "LiveOddsUpdate",
     "LongShortRatio",
-    "ManagerFeaturesMixin",
     "MappingRule",
+    "MarginType",
     "MarketClosedError",
-    "MarketEfficiencyFeaturesMixin",
     "MarketState",
     "MarketStatus",
     "MarketTrade",
@@ -484,7 +431,6 @@ __all__ = [
     "OKXWithdrawRequest",
     "OKXWithdrawResponse",
     "OddsChangedError",
-    "OddsFeaturesMixin",
     "OddsFormat",
     "OddsType",
     "OpenInterestHistory",
@@ -499,7 +445,6 @@ __all__ = [
     "OrderType",
     "OrphanDetector",
     "OutcomeType",
-    "PlayerLineupFeaturesMixin",
     "PlayerMapping",
     "PortfolioGreeksSnapshot",
     "PortfolioMarginAccount",
@@ -515,42 +460,32 @@ __all__ = [
     "PrimeBrokerPosition",
     "PrimeBrokerProvider",
     "ProcessedOddsOutput",
-    "PromotedTeamFeaturesMixin",
     "ProtocolHealthBreakdown",
-    "RefereeFeaturesMixin",
     "RiskCategory",
     "RiskGroupSummary",
     "RiskType",
     "SatelliteObservation",
     "ScalingMode",
-    "ScheduleFatigueFeaturesMixin",
     "ScraperError",
     "ScraperVersionMeta",
-    "SeasonContextFeaturesMixin",
     "SentimentScore",
     "SettlementEvent",
+    "ShareClass",
     "SignalSource",
     "SourceControlProvider",
     "Sport",
     "SportsArbLeg",
     "SportsArbPosition",
     "SportsError",
-    "SportsFeatureVector",
     "SpreadLeg",
     "StakingProtocolBreakdown",
     "SubAccount",
-    "SubMillisecondLatencyRecord",
-    "SyntheticXGFeaturesMixin",
-    "TeamFeaturesMixin",
     "TeamMapping",
-    "TeamStyleFeaturesMixin",
-    "TickToTradeMetric",
     "TimeInForce",
     "UnderlyingGreeksBreakdown",
     "UpbitWithdrawRequest",
     "UpbitWithdrawResponse",
     "VenueCategory",
-    "VenueContextFeaturesMixin",
     "VenueExecutionProfile",
     "VenuePositionBreakdown",
     "VenueRateLimitSpec",
@@ -559,10 +494,9 @@ __all__ = [
     "VolSurface",
     "VolSurfaceSlice",
     "VolTermStructure",
-    "WeatherFeaturesMixin",
     "WebSocketConnectionClosed",
     "WebSocketConnectionOpened",
     "WebSocketEvent",
     "WithdrawalRecord",
-    "XGFeaturesMixin",
+    "get_expected_bookmakers",
 ]

@@ -16,7 +16,7 @@ from typing import cast
 
 from pydantic import BaseModel, Field
 
-from unified_api_contracts.internal.modes import CloudProvider, PhaseMode, RuntimeMode
+from unified_internal_contracts.modes import CloudProvider, PhaseMode, RuntimeMode
 
 
 class DeploymentStatus(StrEnum):
@@ -186,11 +186,55 @@ class DeploymentState(BaseModel):
         return round(self.completed_shards / self.total_shards * 100, 1)
 
 
+class DeploymentCluster(StrEnum):
+    """Named deployment clusters — each maps to a service pipeline and category filter.
+
+    Cluster configs live in deployment-service/configs/clusters/{name}.yaml.
+    This enum is the SSOT for valid cluster names — the YAML filenames must match.
+    The UI consumes these values via the schema sync pipeline (ui-reference-data.json).
+    """
+
+    CEFI = "cefi"
+    TRADFI = "tradfi"
+    DEFI = "defi"
+    SPORTS = "sports"
+    PREDICTION = "prediction"
+    FULL = "full"
+
+
+class DeploymentTier(StrEnum):
+    """Runtime topology tiers — determines what processes are in the call graph.
+
+    T0-T2 are local tiers (developer machine). T3-T6 are cloud tiers.
+    Mock mode is orthogonal to tier — any tier can run mock or real.
+    """
+
+    T0_UI_ONLY = "t0_ui_only"
+    T1_UI_API = "t1_ui_api"
+    T2_FULL_FLEET = "t2_full_fleet"
+    T3_UI_CLOUD = "t3_ui_cloud"
+    T4_UI_API_CLOUD = "t4_ui_api_cloud"
+    T5_FULL_CLOUD_MOCK = "t5_full_cloud_mock"
+    T6_FULL_CLOUD_REAL = "t6_full_cloud_real"
+
+
+class DeploymentOperationMode(StrEnum):
+    """Operational modes for deployment orchestration."""
+
+    THERMAL_BATCH = "thermal_batch"
+    SCHEDULED_BATCH = "scheduled_batch"
+    LIVE_FLEET = "live_fleet"
+    CLUSTER_BOOTSTRAP = "cluster_bootstrap"
+
+
 __all__ = [
     "VM_INFRASTRUCTURE_EVENTS",
     "ComputeType",
+    "DeploymentCluster",
+    "DeploymentOperationMode",
     "DeploymentState",
     "DeploymentStatus",
+    "DeploymentTier",
     "ShardEvent",
     "VMEventType",
 ]

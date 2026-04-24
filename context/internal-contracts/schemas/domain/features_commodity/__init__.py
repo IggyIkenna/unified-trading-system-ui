@@ -23,19 +23,19 @@ feature rows stored to GCS.
 
 from __future__ import annotations
 
-from unified_api_contracts.internal.domain.features_commodity.commodity_feature_request import (
+from unified_internal_contracts.domain.features_commodity.commodity_feature_request import (
     CommodityFeatureRequest as CommodityFeatureRequest,
 )
-from unified_api_contracts.internal.domain.features_commodity.commodity_signal import (
+from unified_internal_contracts.domain.features_commodity.commodity_signal import (
     CommoditySignal as CommoditySignal,
 )
-from unified_api_contracts.internal.domain.features_commodity.commodity_signal import (
+from unified_internal_contracts.domain.features_commodity.commodity_signal import (
     FactorValue as FactorValue,
 )
-from unified_api_contracts.internal.domain.features_commodity.commodity_signal import (
+from unified_internal_contracts.domain.features_commodity.commodity_signal import (
     RegimeState as RegimeState,
 )
-from unified_api_contracts.internal.schema_definition import ColumnSchema, SchemaDefinition
+from unified_internal_contracts.schema_definition import ColumnSchema, SchemaDefinition
 
 # ==============================================================================
 # COMMODITY FEATURES OUTPUT SCHEMA

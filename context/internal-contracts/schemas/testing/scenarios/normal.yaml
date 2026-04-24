@@ -1,0 +1,10 @@
+name: normal
+seed: 42
+vol_multiplier: 1.0
+volume_multiplier: 1.0
+missing_data_rate: 0.0
+delay_ms: 0
+fast_forward_factor: 1.0
+fault: null
+instrument_overrides: []
+description: Baseline scenario — typical market conditions with no faults.

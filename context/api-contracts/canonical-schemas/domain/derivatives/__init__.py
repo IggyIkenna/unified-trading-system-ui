@@ -188,15 +188,43 @@ class VolSurface(_DerivativesBase):
 
 
 class ComboStrategyType(StrEnum):
+    """Multi-leg/combo strategy classification.
+
+    Covers every common exchange-listed or OTC combo shape. String values are
+    the canonical on-disk tokens used in ``build_instrument_id`` and the
+    ``strategy=`` partition level.
+    """
+
+    # Simple 2-leg spreads
     CALENDAR_SPREAD = "calendar_spread"
+    CALENDAR = "calendar"  # alias for non-option calendar (futures roll)
+    DIAGONAL = "diagonal"
+    VERTICAL = "vertical"
+    SPREAD = "spread"  # generic 2-leg price spread (inter-commodity, etc.)
     RISK_REVERSAL = "risk_reversal"
-    STRADDLE = "straddle"
-    STRANGLE = "strangle"
-    BUTTERFLY = "butterfly"
-    CONDOR = "condor"
     BULL_CALL_SPREAD = "bull_call_spread"
     BEAR_PUT_SPREAD = "bear_put_spread"
+    COLLAR = "collar"
+    COVERED_CALL = "covered_call"
+    PROTECTIVE_PUT = "protective_put"
+    RATIO_SPREAD = "ratio_spread"
+    # Straddles / strangles (2-leg same expiry)
+    STRADDLE = "straddle"
+    STRANGLE = "strangle"
+    # Butterflies (3-leg)
+    BUTTERFLY = "butterfly"
+    CALL_BUTTERFLY = "call_butterfly"
+    PUT_BUTTERFLY = "put_butterfly"
+    IRON_BUTTERFLY = "iron_butterfly"
+    # Condors (4-leg)
+    CONDOR = "condor"
+    IRON_CONDOR = "iron_condor"
+    # Fixed-income / funding
+    BOX = "box"
+    JELLY_ROLL = "jelly_roll"
+    # Cash-vs-future
     EFP = "efp"
+    # Fallback
     CUSTOM = "custom"
 
 

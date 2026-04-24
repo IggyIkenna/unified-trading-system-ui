@@ -11,7 +11,7 @@ class CanonicalOnChainMetric(CanonicalBase):
     """Normalized on-chain analytics data point."""
 
     timestamp: AwareDatetime
-    venue: str = Field(description="Data provider: glassnode | arkham | defillama")
+    venue: str = Field(description="Data provider: glassnode | defillama")
     metric_type: str = Field(description="Metric identifier e.g. mvrv, nvt, sopr, protocol_tvl")
     asset: str | None = Field(default=None, description="Asset the metric applies to e.g. BTC")
     value: Decimal | None = Field(default=None, description="Primary metric value")

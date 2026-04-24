@@ -29,45 +29,6 @@ class CloudProvider(StrEnum):
     AWS = "aws"
 
 
-class CanonicalCloudStorage(_InfraBase):
-    provider: CloudProvider
-    bucket: str
-    region: str | None = None
-
-
-class CanonicalOLAPTable(_InfraBase):
-    provider: CloudProvider
-    dataset: str
-    table: str
-    project: str | None = None
-
-
-class CanonicalSecretStore(_InfraBase):
-    provider: CloudProvider
-    project: str
-    secret_id: str
-    version: str = "latest"
-
-
-class CanonicalMessageQueue(_InfraBase):
-    provider: CloudProvider
-    topic: str
-    subscription: str | None = None
-
-
-class CanonicalContainerRegistry(_InfraBase):
-    provider: CloudProvider
-    repository: str
-    region: str | None = None
-
-
-class CanonicalScheduledJob(_InfraBase):
-    provider: CloudProvider
-    job_id: str
-    schedule: str = Field(description="Cron expression")
-    target: str | None = None
-
-
 class ComputeTarget(StrEnum):
     """Cloud-agnostic compute deployment target.
 
@@ -110,55 +71,7 @@ class CanonicalComputeService(_InfraBase):
     memory: str | None = Field(default=None, description="Memory allocation, e.g. '4Gi'")
 
 
-class CanonicalComputeJob(_InfraBase):
-    """Ephemeral job — Cloud Run Job, AWS Batch.
-
-    Scale-to-zero workloads: instruments refresh, calendar features,
-    reconciliation runs.
-    """
-
-    provider: CloudProvider
-    job_name: str
-    region: str | None = None
-    schedule: str | None = Field(default=None, description="Cron expression if scheduled")
-    timeout_seconds: int | None = None
-    cpu: str | None = Field(default=None, description="vCPU allocation")
-    memory: str | None = Field(default=None, description="Memory allocation")
-
-
-class CanonicalVirtualMachine(_InfraBase):
-    """Dedicated VM — GCE, EC2.
-
-    For co-located services (market-tick-data + execution on same VM)
-    or heavy compute (ml-training long GPU jobs).
-    """
-
-    provider: CloudProvider
-    instance_name: str
-    machine_type: str = Field(description="e.g. 'c2-standard-8', 'c5.2xlarge'")
-    region: str | None = None
-    zone: str | None = None
-    disk_size_gb: int | None = None
-    co_located_services: list[str] = Field(default_factory=list)
-
-
 INFRA_CANONICAL_TO_PROVIDER: dict[tuple[str, str], str] = {
-    ("CloudStorage", "gcp"): "gcs",
-    ("CloudStorage", "aws"): "s3",
-    ("OLAPTable", "gcp"): "bigquery",
-    ("OLAPTable", "aws"): "redshift",
-    ("SecretStore", "gcp"): "secret_manager",
-    ("SecretStore", "aws"): "secrets_manager",
-    ("MessageQueue", "gcp"): "pubsub",
-    ("MessageQueue", "aws"): "sqs",
-    ("ContainerRegistry", "gcp"): "artifact_registry",
-    ("ContainerRegistry", "aws"): "ecr",
-    ("ScheduledJob", "gcp"): "cloud_scheduler",
-    ("ScheduledJob", "aws"): "eventbridge",
     ("ComputeService", "gcp"): "cloud_run",
     ("ComputeService", "aws"): "ecs",
-    ("ComputeJob", "gcp"): "cloud_run_job",
-    ("ComputeJob", "aws"): "batch",
-    ("VirtualMachine", "gcp"): "compute_engine",
-    ("VirtualMachine", "aws"): "ec2",
 }

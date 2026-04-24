@@ -7,7 +7,7 @@ arb detection pipelines.
 
 from __future__ import annotations
 
-from unified_api_contracts.internal.domain.prediction_market.prediction_market_arb import (
+from unified_internal_contracts.domain.prediction_market.prediction_market_arb import (
     BucketMarket,
     CrossVenueArbLeg,
     CrossVenueArbSignal,

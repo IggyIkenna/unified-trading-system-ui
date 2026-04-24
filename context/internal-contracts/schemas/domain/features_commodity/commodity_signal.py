@@ -4,7 +4,7 @@ These schemas define the contract for commodity signal events published to the
 event bus by signal-generation services and consumed by trading-agent-service.
 
 Cross-service contract SSOT: this module. Both features-commodity-service and
-trading-agent-service must import from unified_api_contracts.internal.domain.features_commodity.
+trading-agent-service must import from unified_internal_contracts.domain.features_commodity.
 """
 
 from __future__ import annotations

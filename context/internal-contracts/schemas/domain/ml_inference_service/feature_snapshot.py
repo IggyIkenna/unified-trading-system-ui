@@ -12,7 +12,9 @@ class FeatureSnapshotRequest(BaseModel):
 
     instrument_id: str
     timestamp: datetime
-    lookback_window: int = Field(description="Number of bars to include")
+    swing_lookback_window: int = Field(
+        description="Horizon selector into swing_outcome_N columns (NOT forward shift)"
+    )
     feature_groups: list[str] = Field(default_factory=list, description="Empty = all groups")
     timeframe: str = "1h"
 

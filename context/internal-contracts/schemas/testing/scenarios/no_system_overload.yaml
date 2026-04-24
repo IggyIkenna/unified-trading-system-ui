@@ -1,0 +1,13 @@
+name: no_system_overload
+seed: 47
+vol_multiplier: 0.8
+volume_multiplier: 0.5
+missing_data_rate: 0.0
+delay_ms: 5
+fast_forward_factor: 1.0
+fault:
+  latency_ms: 0
+  error_rate: 0.0
+  timeout_rate: 0.0
+  rate_limit_rate: 0.1
+description: Rate-limited upstream with 5ms tick delay — validates back-pressure handling.

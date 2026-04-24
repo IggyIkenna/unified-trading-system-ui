@@ -1,45 +1,21 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from enum import StrEnum
 
 from pydantic import AwareDatetime, Field
 
+# Re-export from cycle-free SSOT module at package root.
+# Direct import avoids the circular dependency chain:
+#   canonical → internal.__init__ → alerting → top-level → canonical.
+from unified_api_contracts._instrument_enums import (
+    AssetClass,
+    InstrumentType,
+    MarginType,
+    OptionType,
+)
+
 from .._base import CanonicalBase
-
-
-class InstrumentType(StrEnum):
-    SPOT_PAIR = "SPOT_PAIR"
-    PERPETUAL = "PERPETUAL"
-    PERP = "PERP"  # Legacy alias — prefer PERPETUAL. Required by UCI parity.
-    FUTURE = "FUTURE"
-    OPTION = "OPTION"
-    LST = "LST"
-    A_TOKEN = "A_TOKEN"
-    INDEX = "INDEX"
-    # TradFi
-    BOND = "BOND"
-    EQUITY = "EQUITY"
-    ETF = "ETF"
-    COMMODITY = "COMMODITY"
-    CURRENCY = "CURRENCY"
-    CDS = "CDS"
-    # UCI parity
-    SPOT_ASSET = "SPOT_ASSET"
-    YIELD_BEARING = "YIELD_BEARING"
-    DEBT_TOKEN = "DEBT_TOKEN"
-    POOL = "POOL"
-    LENDING = "LENDING"
-    STAKING = "STAKING"
-    # Sports / Prediction Markets
-    PREDICTION_MARKET = "PREDICTION_MARKET"
-    EXCHANGE_ODDS = "EXCHANGE_ODDS"
-    FIXED_ODDS = "FIXED_ODDS"
-    PROP = "PROP"
-
-
-class OptionType(StrEnum):
-    CALL = "call"
-    PUT = "put"
 
 
 class InstructionType(StrEnum):
@@ -92,8 +68,7 @@ class CanonicalInstrument(CanonicalBase):
     instruction_type: InstructionType | None = None
     venue_type: str | None = None
     data_provider: str | None = None
-    asset_class: str | None = None
-    data_types: list[str] | None = None
+    asset_class: AssetClass | None = None
     available_to_datetime: AwareDatetime | None = None
     base_asset: str | None = None
     quote_asset: str | None = None
@@ -104,11 +79,11 @@ class CanonicalInstrument(CanonicalBase):
     tardis_symbol: str | None = None
     ccxt_symbol: str | None = None
     ccxt_exchange: str | None = None
-    inverse: bool | None = None
-    tick_size: float | None = None
-    min_size: float | None = None
-    contract_size: float | None = None
-    strike: float | None = None
+    margin_type: MarginType | None = None
+    tick_size: Decimal | None = None
+    min_size: Decimal | None = None
+    contract_size: Decimal | None = None
+    strike: Decimal | None = None
     option_type: OptionType | None = None
     expiry: AwareDatetime | None = None
     underlying: str | None = None
@@ -134,7 +109,11 @@ class CanonicalInstrument(CanonicalBase):
     auction_open_utc: str | None = None
     auction_close_utc: str | None = None
     early_close_utc: str | None = None
+    pre_market_open_utc: str | None = None
+    post_market_close_utc: str | None = None
+    timezone: str | None = None
     session_date_tag: str | None = None
+    market_category: str | None = None
 
 
 InstrumentWarehouseRow = CanonicalInstrument

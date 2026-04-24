@@ -1,0 +1,9 @@
+name: light
+seed: 44
+vol_multiplier: 0.5
+volume_multiplier: 0.2
+missing_data_rate: 0.0
+delay_ms: 0
+fast_forward_factor: 1.0
+fault: null
+description: Low-volume low-volatility market — tests sparse-data handling.

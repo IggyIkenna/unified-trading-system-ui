@@ -1,0 +1,9 @@
+name: missing_data
+seed: 48
+vol_multiplier: 1.0
+volume_multiplier: 1.0
+missing_data_rate: 0.4
+delay_ms: 0
+fast_forward_factor: 1.0
+fault: null
+description: 40% of bars dropped — tests gap-filling, interpolation, and stale-data guards.

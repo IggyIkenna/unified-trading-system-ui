@@ -1,0 +1,9 @@
+name: big_ranges
+seed: 45
+vol_multiplier: 4.0
+volume_multiplier: 2.0
+missing_data_rate: 0.0
+delay_ms: 0
+fast_forward_factor: 1.0
+fault: null
+description: Extreme intraday price ranges — validates OHLCV boundary conditions.

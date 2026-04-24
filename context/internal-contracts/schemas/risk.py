@@ -30,6 +30,7 @@ class PositionSide(StrEnum):
     LONG = "LONG"
     SHORT = "SHORT"
     FLAT = "FLAT"
+    NEUTRAL = "NEUTRAL"  # Non-directional (lending, staking, LP)
 
 
 class RiskPosition(BaseModel):

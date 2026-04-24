@@ -1,6 +1,6 @@
 """Derivatives domain contracts — options chain, greeks, settlement."""
 
-from unified_api_contracts.internal.domain.derivatives.options import (
+from unified_internal_contracts.domain.derivatives.options import (
     OptionContract,
     OptionGreeks,
     OptionsChain,

@@ -1,0 +1,18 @@
+name: bad_schema
+seed: 47
+vol_multiplier: 1.0
+volume_multiplier: 1.0
+missing_data_rate: 0.0
+delay_ms: 0
+fast_forward_factor: 1.0
+fault:
+  latency_ms: 0
+  error_rate: 0.0
+  timeout_rate: 0.0
+  rate_limit_rate: 0.0
+  corrupt_schema_rate: 0.1
+instrument_overrides:
+  - action: inject
+    instrument_key: "UNKNOWN:SPOT:FAKE-USD"
+    missing_fields: [base_asset, quote_asset]
+description: Schema corruption scenario — 10% of records have corrupted/missing fields. Injects a malformed instrument. Tests downstream validation and error handling.

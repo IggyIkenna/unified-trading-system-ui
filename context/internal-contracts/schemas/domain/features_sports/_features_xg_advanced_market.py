@@ -1,4 +1,4 @@
-"""xG, advanced stats, weather, team-style, manager and market feature groups for SportsFeatureVector."""
+"""xG, advanced stats, weather, team-style, manager and market features."""
 
 from __future__ import annotations
 

@@ -26,7 +26,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": True,
@@ -43,7 +43,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": True,
@@ -60,7 +60,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": True,
@@ -77,7 +77,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": True,
@@ -94,7 +94,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": True,
@@ -114,7 +114,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -131,7 +131,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -148,7 +148,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -165,7 +165,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -182,7 +182,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -199,7 +199,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -216,7 +216,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -233,7 +233,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -250,7 +250,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -267,7 +267,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -284,7 +284,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -301,7 +301,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -321,7 +321,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -338,7 +338,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": False,
             "transfermarkt": True,
             "understat": False,
@@ -355,7 +355,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -372,7 +372,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -389,7 +389,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": False,
             "transfermarkt": True,
             "understat": False,
@@ -406,7 +406,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": False,
             "transfermarkt": True,
             "understat": False,
@@ -423,7 +423,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": False,
             "transfermarkt": True,
             "understat": False,
@@ -440,7 +440,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 1,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": False,
             "transfermarkt": True,
             "understat": False,
@@ -460,7 +460,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -477,7 +477,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -494,7 +494,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -511,7 +511,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -528,7 +528,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -548,7 +548,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 3,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -565,7 +565,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 3,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -585,7 +585,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 4,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": True,
+            "soccer_football_info": True,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -605,7 +605,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -622,7 +622,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -639,7 +639,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -656,7 +656,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -673,7 +673,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -690,7 +690,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -707,7 +707,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -724,7 +724,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -741,7 +741,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -758,7 +758,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -775,7 +775,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -792,7 +792,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -809,7 +809,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,
@@ -829,7 +829,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": False,
             "transfermarkt": True,
             "understat": False,
@@ -846,7 +846,7 @@ LEAGUE_CLASSIFICATION_DATA_A: dict[int, dict[str, str | int | bool | dict[str, b
         "tier": 2,
         "data_sources": {
             "api_football": True,
-            "soccerfootball_info": False,
+            "soccer_football_info": False,
             "footystats": True,
             "transfermarkt": True,
             "understat": False,

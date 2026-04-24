@@ -1,6 +1,6 @@
 """Connectivity lifecycle schemas — WebSocket connect/disconnect/error/subscription events."""
 
-from unified_api_contracts.internal.connectivity.websocket_lifecycle import (
+from unified_internal_contracts.connectivity.websocket_lifecycle import (
     WebSocketConnectEvent,
     WebSocketDisconnectEvent,
     WebSocketErrorEvent,

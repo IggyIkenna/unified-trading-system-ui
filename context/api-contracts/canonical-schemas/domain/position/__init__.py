@@ -107,6 +107,12 @@ class AggregatedPosition(CanonicalBase):
     mark_price: Decimal = Decimal("0")
     timestamp: AwareDatetime | None = None
     client_id: str | None = Field(default=None, json_schema_extra={"pii": True})
+    # Shard dimensions — resolved at write time by RecordEnricher
+    strategy_name: str | None = Field(default=None, description="Display name from StrategyRegistry")
+    client_name: str | None = Field(default=None, description="Display name from ClientRegistry")
+    category: str | None = Field(default=None, description="CEFI, DEFI, TRADFI, SPORTS, PREDICTION")
+    strategy_family: str | None = Field(default=None, description="Strategy family from registry")
+    account_id: str | None = Field(default=None, description="Composite account key (client:venue:label)")
 
     @property
     def quantity(self) -> Decimal:

@@ -1,5 +1,5 @@
 """
-unified_api_contracts.internal.domain
+unified_internal_contracts.domain
 ==================================
 Service domain data schemas — SSOT for all cross-repo data contracts that describe
 the primary output shape of a service.
@@ -7,7 +7,7 @@ the primary output shape of a service.
 Layout rule (from schema_contracts_full_audit.plan.md + SCHEMA_CONTRACTS_AUDIT.md):
   Each service that publishes a canonical domain schema gets its own subdirectory:
 
-    unified_api_contracts.internal/domain/<service-name>/__init__.py
+    unified_internal_contracts/domain/<service-name>/__init__.py
 
   Services NEVER define their own Pydantic/TypedDict/dataclass schemas. They
   import from this package (via unified-trading-library or unified-domain-client).
@@ -27,7 +27,12 @@ as each service migrates its domain schemas per the remediation priority order i
 SCHEMA_CONTRACTS_AUDIT.md Section 6.
 """
 
-from unified_api_contracts.internal.domain.data_quality import (
+from unified_internal_contracts.domain.client_reporting import (
+    DocumentCategory,
+    DocumentMetadata,
+    DocumentStatus,
+)
+from unified_internal_contracts.domain.data_quality import (
     VENUE_FRESHNESS_SLAS,
     VenueCategory,
     VenueFreshnessSLA,
@@ -37,6 +42,9 @@ from unified_api_contracts.internal.domain.data_quality import (
 
 __all__ = [
     "VENUE_FRESHNESS_SLAS",
+    "DocumentCategory",
+    "DocumentMetadata",
+    "DocumentStatus",
     "VenueCategory",
     "VenueFreshnessSLA",
     "get_sla_for_venue",

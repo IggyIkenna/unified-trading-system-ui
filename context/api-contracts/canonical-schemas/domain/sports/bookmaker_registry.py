@@ -865,3 +865,5 @@ BOOKMAKER_REGISTRY: dict[str, BookmakerInfo] = {
 }
 
 BookmakerRegistry = BOOKMAKER_REGISTRY
+# get_expected_bookmakers lives in bookmaker_accessors.py (900-line QG ceiling)
+from .bookmaker_accessors import get_expected_bookmakers  # noqa: E402, F401

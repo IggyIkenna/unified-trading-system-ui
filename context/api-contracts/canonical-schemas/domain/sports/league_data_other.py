@@ -481,6 +481,18 @@ REFERENCE_LEAGUES: dict[str, LeagueDefinition] = {
         tier=0,
         classification="Reference",
     ),
+    "SCOTTISH_LEAGUE_CUP_185": LeagueDefinition(
+        league_id="SCOTTISH_LEAGUE_CUP_185",
+        display_name="Scotland League Cup",
+        sport="FOOTBALL",
+        country="GB",
+        season_months=(7, 12),
+        has_playoffs=True,
+        data_sources=REF_API_ONLY,
+        api_football_id=185,
+        tier=0,
+        classification="Reference",
+    ),
     "AUSTRIAN_CUP": LeagueDefinition(
         league_id="AUSTRIAN_CUP",
         display_name="Austrian Cup",

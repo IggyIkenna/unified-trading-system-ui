@@ -56,7 +56,7 @@ class CrossInstrumentFeatures(BaseModel):
 
     regime_correlation: str | None = None
     regime_volatility: str | None = None
-    lookback_window: int | None = None
+    swing_lookback_window: int | None = None
     timeframe: str | None = None
 
 
