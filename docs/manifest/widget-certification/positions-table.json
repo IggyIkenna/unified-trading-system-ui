@@ -155,11 +155,11 @@
       "notes": "Agent check 5.1 complete. Human checks 5.2-5.6 pending. Widget is a universal position viewer \u2014 no execution flow, but human should verify row rendering, drill-down links, and filter accuracy for each asset class."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
       "checks": {},
-      "notes": "Deferred \u2014 tests not written in this pass."
+      "notes": "L1.5 harness spec: 10 tests covering render + column headers, row data (strategy names, LONG/SHORT badges), loading/error/empty branches, refresh + search toolbar wiring, and DeFi health_factor column rendering. See tests/widgets/positions/positions-table.test.tsx"
     },
     "l7": {
       "status": "pass",

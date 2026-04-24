@@ -155,11 +155,11 @@
       "notes": "Agent check 5.1 complete. Human checks 5.2-5.6 pending. Widget is purely read-only KPI aggregation \u2014 no execution flow, but needs human confirmation that KPI values update correctly for each asset class."
     },
     "l6": {
-      "status": null,
-      "by": null,
-      "date": null,
+      "status": "pass",
+      "by": "agent+tests",
+      "date": "2026-04-24",
       "checks": {},
-      "notes": "Deferred \u2014 tests not written in this pass."
+      "notes": "L1.5 harness spec: 8 tests covering render + six KPI labels, formatCurrency M/K suffix formatting, signed unrealized P&L prefix, isLoading em-dash fallback, and positionsError fallback branch. See tests/widgets/positions/positions-kpi-strip.test.tsx"
     },
     "l7": {
       "status": "pass",
