@@ -28,9 +28,9 @@ registerPresets("strategies", [
     tab: "strategies",
     isPreset: true,
     layouts: [
-      { widgetId: "strategies-kpi-strip", instanceId: "strategies-kpi-strip-1", x: 0, y: 0, w: 24, h: 2 },
-      { widgetId: "strategies-catalogue", instanceId: "strategies-catalogue-1", x: 0, y: 2, w: 24, h: 9 },
-      { widgetId: "strategies-grid-link", instanceId: "strategies-grid-link-1", x: 0, y: 11, w: 24, h: 1 },
+      { widgetId: "strategies-kpi-strip", instanceId: "strategies-kpi-strip-1", x: 0, y: 0, w: 24, h: 1 },
+      { widgetId: "strategies-catalogue", instanceId: "strategies-catalogue-1", x: 0, y: 1, w: 24, h: 9 },
+      { widgetId: "strategies-grid-link", instanceId: "strategies-grid-link-1", x: 0, y: 10, w: 24, h: 1 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -41,14 +41,21 @@ registerPresets("strategies", [
     tab: "strategies",
     isPreset: true,
     layouts: [
-      { widgetId: "strategies-kpi-strip", instanceId: "strategies-kpi-strip-full", x: 0, y: 0, w: 24, h: 2 },
-      { widgetId: "strategies-catalogue", instanceId: "strategies-catalogue-full", x: 0, y: 2, w: 16, h: 9 },
-      { widgetId: "cefi-strategy-config", instanceId: "cefi-strategy-config-full", x: 16, y: 2, w: 8, h: 9 },
-      { widgetId: "strategy-family-browser", instanceId: "strategy-family-browser-full", x: 0, y: 11, w: 24, h: 8 },
-      { widgetId: "lending-arb-dashboard", instanceId: "lending-arb-dashboard-full", x: 0, y: 19, w: 12, h: 6 },
-      { widgetId: "liquidation-monitor", instanceId: "liquidation-monitor-full", x: 12, y: 19, w: 12, h: 6 },
-      { widgetId: "commodity-regime", instanceId: "commodity-regime-full", x: 0, y: 25, w: 12, h: 6 },
-      { widgetId: "strategies-grid-link", instanceId: "strategies-grid-link-full", x: 0, y: 31, w: 24, h: 1 },
+      // Row 1: KPI strip (full width)
+      { widgetId: "strategies-kpi-strip", instanceId: "strategies-kpi-strip-full", x: 0, y: 0, w: 24, h: 1 },
+      // Row 2: Strategy list + config form, same height
+      { widgetId: "strategies-catalogue", instanceId: "strategies-catalogue-full", x: 0, y: 1, w: 16, h: 9 },
+      { widgetId: "cefi-strategy-config", instanceId: "cefi-strategy-config-full", x: 16, y: 1, w: 8, h: 9 },
+      // Row 3: Family browser (full width)
+      { widgetId: "strategy-family-browser", instanceId: "strategy-family-browser-full", x: 0, y: 10, w: 24, h: 8 },
+      // Row 4: Two DeFi dashboards, same height
+      { widgetId: "lending-arb-dashboard", instanceId: "lending-arb-dashboard-full", x: 0, y: 18, w: 12, h: 6 },
+      { widgetId: "liquidation-monitor", instanceId: "liquidation-monitor-full", x: 12, y: 18, w: 12, h: 6 },
+      // Row 5: LP dashboard + commodity regime, same height (pair to sum to 24)
+      { widgetId: "active-lp-dashboard", instanceId: "active-lp-dashboard-full", x: 0, y: 24, w: 12, h: 6 },
+      { widgetId: "commodity-regime", instanceId: "commodity-regime-full", x: 12, y: 24, w: 12, h: 6 },
+      // Row 6: Grid link CTA (full width)
+      { widgetId: "strategies-grid-link", instanceId: "strategies-grid-link-full", x: 0, y: 30, w: 24, h: 1 },
     ],
     createdAt: "2026-01-01T00:00:00Z",
     updatedAt: "2026-01-01T00:00:00Z",
@@ -63,7 +70,7 @@ registerWidget({
   minW: 8,
   minH: 1,
   defaultW: 24,
-  defaultH: 2,
+  defaultH: 1,
   requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
   category: "Strategies",
   availableOn: ["strategies"],
@@ -110,9 +117,9 @@ registerWidget({
     "Configure CeFi, TradFi, Options, and Prediction strategies — momentum, mean-rev, ML, stat-arb, cross-exchange, market-making, commodity regime, event macro.",
   icon: Settings,
   minW: 6,
-  minH: 4,
+  minH: 7,
   defaultW: 8,
-  defaultH: 6,
+  defaultH: 9,
   requiredEntitlements: [{ domain: "trading-common", tier: "basic" }],
   category: "Strategies",
   availableOn: ["strategies"],
