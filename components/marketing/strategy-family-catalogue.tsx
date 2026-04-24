@@ -1,24 +1,21 @@
+import type { ReactElement } from "react";
+
 import { LockStateBadge } from "@/components/architecture-v2";
-import { Badge } from "@/components/ui/badge";
-import { WidgetScroll } from "@/components/shared/widget-scroll";
 import { ARCHETYPE_COVERAGE } from "@/lib/architecture-v2/coverage";
 import type { ArchetypeCoverage, CoverageCell, CoverageStatus, InstrumentTypeV2 } from "@/lib/architecture-v2/coverage";
 import type { LockState, StrategyArchetype, StrategyFamily, VenueCategoryV2 } from "@/lib/architecture-v2";
-import { listFamiliesOrdered } from "@/lib/architecture-v2/families";
+import { listFamiliesOrdered, type FamilyMetadata } from "@/lib/architecture-v2/families";
+import { cn } from "@/lib/utils";
 
 /**
  * Strategy-family × archetype × (category × instrument-type) catalogue.
  *
- * Source: codex/09-strategy/architecture-v2/category-instrument-coverage.md
- * Coverage SSOT: lib/architecture-v2/coverage.ts (auto-generated from UAC
- * archetype_capability_manifest.json). Lock state is derived per the
- * path-to-$100M lock matrix: only STAT_ARB_PAIRS_FIXED × CEFI × (spot|perp)
- * is PUBLIC; every other SUPPORTED/PARTIAL cell is INVESTMENT_MANAGEMENT_RESERVED
- * by default. BLOCKED cells route to the block-list; cells with no coverage
- * entry at all render as NEEDS_BUILD.
+ * Grid: rows = archetypes (grouped by family band), columns = instrument types only.
+ * Each cell aggregates all asset classes (CeFi, DeFi, …): marker color = asset class,
+ * marker shape = supported (●) vs partial (▲). Blocked combinations are omitted; empty
+ * cells = nothing to show. Public vs IM-reserved: public markers get a thin ring.
  *
- * Renders inside the `/briefings/dart-full` pillar, already gated by
- * BriefingAccessGate at the briefings layout level.
+ * Renders inside `/briefings/dart-full`; gated by BriefingAccessGate on the layout.
  */
 
 type CellLockState = LockState | "NEEDS_BUILD";
@@ -31,6 +28,18 @@ const CATEGORY_LABELS: Readonly<Record<VenueCategoryV2, string>> = {
   TRADFI: "Traditional",
   SPORTS: "Sports",
   PREDICTION: "Prediction",
+};
+
+/**
+ * Marker colour per asset class — same hex tokens as `public/homepage.html` explorer
+ * nav dots (:root --emerald, --violet, --cyan, --amber, --rose).
+ */
+const CATEGORY_GLYPH_CLASS: Readonly<Record<VenueCategoryV2, string>> = {
+  CEFI: "text-[#4ade80]",
+  DEFI: "text-[#a78bfa]",
+  TRADFI: "text-[#22d3ee]",
+  SPORTS: "text-[#fbbf24]",
+  PREDICTION: "text-[#fb7185]",
 };
 
 const INSTRUMENT_TYPES: readonly InstrumentTypeV2[] = [
@@ -76,15 +85,9 @@ const ARCHETYPE_LABELS: Readonly<Record<StrategyArchetype, string>> = {
   STAT_ARB_CROSS_SECTIONAL: "Cross-sectional stat-arb",
 };
 
-/**
- * Path-to-$100M lock matrix (codex-private pricing notebook): the only cells
- * carved out as PUBLIC are STAT_ARB_PAIRS_FIXED × CEFI × spot|perp — mean-
- * reversion commodity access. Everything else on a SUPPORTED/PARTIAL coverage
- * cell defaults to INVESTMENT_MANAGEMENT_RESERVED.
- */
 function deriveLockState(cell: CoverageCell | null, status: CoverageStatus | "NONE"): CellLockState {
   if (status === "NONE") return "NEEDS_BUILD";
-  if (status === "BLOCKED") return "RETIRED"; // re-used for visual: blocked cells render a distinct chip below
+  if (status === "BLOCKED") return "RETIRED";
   if (!cell) return "NEEDS_BUILD";
   const publicTriple =
     cell.archetype === "STAT_ARB_PAIRS_FIXED" &&
@@ -92,6 +95,13 @@ function deriveLockState(cell: CoverageCell | null, status: CoverageStatus | "NO
     (cell.instrumentType === "spot" || cell.instrumentType === "perp");
   if (publicTriple && (status === "SUPPORTED" || status === "PARTIAL")) return "PUBLIC";
   return "INVESTMENT_MANAGEMENT_RESERVED";
+}
+
+function lockSummary(lock: CellLockState, status: CoverageStatus | "NONE"): string | null {
+  if (status !== "SUPPORTED" && status !== "PARTIAL") return null;
+  if (lock === "PUBLIC") return "Public slot.";
+  if (lock === "INVESTMENT_MANAGEMENT_RESERVED") return "IM-reserved by default.";
+  return null;
 }
 
 function getCell(
@@ -108,89 +118,148 @@ function cellStatus(cell: CoverageCell | null): CoverageStatus | "NONE" {
   return cell.status;
 }
 
-function cellGlyph(status: CoverageStatus | "NONE"): {
-  symbol: string;
-  className: string;
-  title: string;
-} {
+/** Supported / partial only — blocked omitted from the grid */
+function shapeForStatus(status: CoverageStatus): { symbol: string; label: string } | null {
   if (status === "SUPPORTED") {
-    return {
-      symbol: "●",
-      className: "text-emerald-500",
-      title: "Supported — strategies run live in this cell.",
-    };
+    return { symbol: "\u25CF", label: "Supported — live in this cell." };
   }
   if (status === "PARTIAL") {
-    return {
-      symbol: "◐",
-      className: "text-amber-500",
-      title: "Partial — adapter or config gap; not every instrument live.",
-    };
+    return { symbol: "\u25B2", label: "Partial — adapter or config gap." };
   }
-  if (status === "BLOCKED") {
-    return {
-      symbol: "×",
-      className: "text-rose-500",
-      title: "Blocked — a structural reason prevents this cell (named in the codex block-list).",
-    };
-  }
-  return {
-    symbol: "·",
-    className: "text-muted-foreground/30",
-    title: "Not built yet.",
-  };
+  return null;
 }
 
-interface CellChipProps {
-  cell: CoverageCell | null;
-  status: CoverageStatus | "NONE";
-}
+/**
+ * Catalogue marker visuals — change these only; cells and legend compose from the same tokens.
+ *
+ * - `CATALOGUE_MARKER_GLYPH`: typography for ● / ▲ (add category colour or `text-foreground`).
+ * - `CATALOGUE_PUBLIC_MARKER_RING`: public-slot outline; ring/box size lives here only.
+ * - `CATALOGUE_MARKER_LINK`: focus/hover wrapper for linked markers in the grid.
+ */
+const CATALOGUE_MARKER_GLYPH = "font-mono text-sm font-semibold leading-none";
 
-function CellChip({ cell, status }: CellChipProps) {
-  const glyph = cellGlyph(status);
-  const lock = deriveLockState(cell, status);
-  const href =
-    cell && cell.representativeSlotLabels.length > 0
-      ? `/services/strategy-catalogue/strategies/${cell.archetype}/${encodeURIComponent(cell.representativeSlotLabels[0])}`
-      : null;
+const CATALOGUE_PUBLIC_MARKER_RING =
+  "inline-flex aspect-square h-[1.06em] w-[1.06em] shrink-0 items-center justify-center rounded-full text-sm ring-1 ring-primary/65 ring-offset-0";
 
+const CATALOGUE_MARKER_LINK =
+  "inline-flex min-h-4 min-w-4 items-center justify-center rounded-sm hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary";
+
+const CATALOGUE_MARKER_PLAIN_WRAP = "inline-flex items-center justify-center";
+
+/** Single implementation for matrix dots + public ring — cells and legend must use this only. */
+function CatalogueMatrixMarker({
+  category,
+  symbol,
+  variant,
+}: {
+  category: VenueCategoryV2;
+  symbol: string;
+  variant: "public" | "im_reserved";
+}) {
   const inner = (
-    <span className="inline-flex items-center gap-1" title={glyph.title}>
-      <span className={`font-mono ${glyph.className}`} aria-hidden>
-        {glyph.symbol}
-      </span>
-      {status === "BLOCKED" && (
-        <Badge
-          variant="outline"
-          className="border-transparent bg-rose-500/15 text-rose-600 dark:text-rose-400 px-1.5 py-0 text-[10px]"
-        >
-          Blocked
-        </Badge>
-      )}
-      {status === "NONE" && (
-        <Badge variant="outline" className="border-transparent bg-muted text-muted-foreground px-1.5 py-0 text-[10px]">
-          Needs build
-        </Badge>
-      )}
-      {lock === "PUBLIC" && <LockStateBadge state="PUBLIC" className="px-1.5 py-0 text-[10px]" />}
-      {lock === "INVESTMENT_MANAGEMENT_RESERVED" && (
-        <LockStateBadge state="INVESTMENT_MANAGEMENT_RESERVED" className="px-1.5 py-0 text-[10px]" />
-      )}
+    <span className={cn(CATALOGUE_MARKER_GLYPH, CATEGORY_GLYPH_CLASS[category])} aria-hidden>
+      {symbol}
     </span>
   );
-
-  if (href) {
+  if (variant === "public") {
     return (
-      <a
-        href={href}
-        className="hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary rounded-sm"
-      >
+      <span className={CATALOGUE_PUBLIC_MARKER_RING} aria-hidden>
         {inner}
-      </a>
+      </span>
     );
   }
-  return inner;
+  return <span className={CATALOGUE_MARKER_PLAIN_WRAP}>{inner}</span>;
 }
+
+interface InstrumentAggregateCellProps {
+  archetype: StrategyArchetype;
+  instrumentType: InstrumentTypeV2;
+}
+
+function InstrumentAggregateCell({ archetype, instrumentType }: InstrumentAggregateCellProps) {
+  const markers: ReactElement[] = [];
+  const tipParts: string[] = [];
+
+  for (const category of CATEGORIES) {
+    const cell = getCell(archetype, category, instrumentType);
+    const status = cellStatus(cell);
+    if (status === "BLOCKED" || status === "NONE") continue;
+
+    const shape = shapeForStatus(status);
+    if (!shape) continue;
+
+    const lock = deriveLockState(cell, status);
+    const href =
+      cell && cell.representativeSlotLabels.length > 0
+        ? `/services/strategy-catalogue/strategies/${cell.archetype}/${encodeURIComponent(cell.representativeSlotLabels[0])}`
+        : null;
+
+    const lockLine = lockSummary(lock, status);
+    const markerTitle = [
+      `${CATEGORY_LABELS[category]} · ${INSTRUMENT_TYPE_LABELS[instrumentType]}`,
+      shape.label,
+      lockLine,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    tipParts.push(markerTitle);
+
+    const glyph = (
+      <CatalogueMatrixMarker
+        category={category}
+        symbol={shape.symbol}
+        variant={lock === "PUBLIC" ? "public" : "im_reserved"}
+      />
+    );
+
+    const body = href ? (
+      <a key={category} href={href} title={markerTitle} className={CATALOGUE_MARKER_LINK}>
+        {glyph}
+      </a>
+    ) : (
+      <span key={category} title={markerTitle} className={CATALOGUE_MARKER_PLAIN_WRAP}>
+        {glyph}
+      </span>
+    );
+
+    markers.push(body);
+  }
+
+  const tdClass = cn(
+    "min-h-[1.5rem] min-w-[3rem] max-w-[7rem] border-b border-border/40 px-1 py-1 align-middle",
+    "bg-background/90",
+  );
+
+  const emptyTitle = `No shown coverage for ${INSTRUMENT_TYPE_LABELS[instrumentType]} (blocked / not built / N/A are hidden).`;
+
+  return (
+    <td className={tdClass} title={markers.length > 0 ? tipParts.join("\n") : emptyTitle}>
+      {markers.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-center gap-x-0.5 gap-y-0.5">{markers}</div>
+      ) : null}
+    </td>
+  );
+}
+
+const catalogueScrollClass =
+  "max-h-[min(72vh,36rem)] overflow-auto overscroll-contain rounded-md border border-border/60 md:max-h-[min(80vh,44rem)] [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]";
+
+/** Keeps first data column aligned with sticky header + band rows (horizontal scroll). */
+const stickyFirstColWidth = "min-w-[9rem] max-w-[min(36vw,14rem)]";
+
+const stickyArchetypeTh =
+  "sticky left-0 z-[12] border-b border-r border-border/40 bg-background px-2 py-1.5 text-left text-xs font-medium text-foreground/90 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_8px_-4px_rgba(0,0,0,0.3)]";
+
+/** Family band label: must be its own first-column cell — a single colspan row cannot stick on the left. */
+const stickyFamilyBandTh =
+  "sticky left-0 z-[12] border-b border-r border-border/50 px-2 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wide shadow-[4px_0_8px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_8px_-4px_rgba(0,0,0,0.3)]";
+
+const stickyCornerTh =
+  "sticky left-0 top-0 z-30 border-b border-r border-border/60 bg-card px-2 py-2 text-left text-[10px] font-semibold uppercase tracking-wide text-muted-foreground shadow-[4px_0_8px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_8px_-4px_rgba(0,0,0,0.35)]";
+
+const stickyInstrumentTh =
+  "sticky top-0 z-20 border-b border-border/50 bg-card px-1 py-1.5 text-center text-[10px] font-semibold uppercase tracking-wide text-muted-foreground";
 
 interface ArchetypeRowProps {
   archetype: StrategyArchetype;
@@ -198,24 +267,13 @@ interface ArchetypeRowProps {
 
 function ArchetypeRow({ archetype }: ArchetypeRowProps) {
   return (
-    <tr className="border-b border-border/40 last:border-b-0">
-      <th
-        scope="row"
-        className="sticky left-0 z-10 bg-background px-3 py-2 text-left text-sm font-medium text-foreground/90"
-      >
+    <tr>
+      <th scope="row" className={cn(stickyArchetypeTh, stickyFirstColWidth)}>
         {ARCHETYPE_LABELS[archetype]}
       </th>
-      {CATEGORIES.flatMap((category) =>
-        INSTRUMENT_TYPES.map((instrumentType) => {
-          const cell = getCell(archetype, category, instrumentType);
-          const status = cellStatus(cell);
-          return (
-            <td key={`${category}-${instrumentType}`} className="px-2 py-2 text-center align-middle">
-              <CellChip cell={cell} status={status} />
-            </td>
-          );
-        }),
-      )}
+      {INSTRUMENT_TYPES.map((instrumentType) => (
+        <InstrumentAggregateCell key={instrumentType} archetype={archetype} instrumentType={instrumentType} />
+      ))}
     </tr>
   );
 }
@@ -231,13 +289,14 @@ function FamilyGroup({ family, label, archetypes, accentClass }: FamilyGroupProp
   return (
     <tbody data-family={family}>
       <tr>
-        <th
-          scope="rowgroup"
-          colSpan={CATEGORIES.length * INSTRUMENT_TYPES.length + 1}
-          className={`px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide ${accentClass}`}
-        >
+        <th scope="rowgroup" className={cn(stickyFamilyBandTh, stickyFirstColWidth, accentClass)}>
           {label}
         </th>
+        <td
+          colSpan={INSTRUMENT_TYPES.length}
+          className={cn("border-b border-border/50 px-2 py-1.5", accentClass)}
+          aria-hidden
+        />
       </tr>
       {archetypes.map((archetype) => (
         <ArchetypeRow key={archetype} archetype={archetype} />
@@ -246,19 +305,56 @@ function FamilyGroup({ family, label, archetypes, accentClass }: FamilyGroupProp
   );
 }
 
-/**
- * Static catalogue matrix — 18 archetypes × 5 categories × 8 instrument types.
- *
- * Mounted inside `/briefings/dart-full`; gating comes from the
- * `BriefingAccessGate` wrapping the briefings layout.
- */
+interface CatalogueBandTablesProps {
+  readonly byFamily: Record<string, FamilyMetadata>;
+  readonly BANDS: readonly { label: string; families: readonly StrategyFamily[] }[];
+}
+
+function CatalogueTable({ byFamily, BANDS }: CatalogueBandTablesProps) {
+  return (
+    <div className={catalogueScrollClass}>
+      <table className="min-w-max w-full border-separate border-spacing-0 text-sm">
+        <caption className="sr-only">
+          Archetype rows by instrument type. Each cell lists one marker per asset class with live or partial coverage;
+          marker colour is asset class, shape is coverage level; blocked states are not shown.
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col" className={cn(stickyCornerTh, stickyFirstColWidth, "align-bottom")}>
+              Archetype
+            </th>
+            {INSTRUMENT_TYPES.map((instrumentType) => (
+              <th key={instrumentType} scope="col" className={stickyInstrumentTh}>
+                {INSTRUMENT_TYPE_LABELS[instrumentType]}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {BANDS.flatMap((band) =>
+          band.families
+            .map((familyKey) => {
+              const meta = byFamily[familyKey];
+              if (!meta) return null;
+              return (
+                <FamilyGroup
+                  key={familyKey}
+                  family={familyKey}
+                  label={`${band.label} — ${meta.label}`}
+                  archetypes={meta.archetypes}
+                  accentClass={meta.accentClass}
+                />
+              );
+            })
+            .filter((x): x is ReactElement => x !== null),
+        )}
+      </table>
+    </div>
+  );
+}
+
 export function StrategyFamilyCatalogue() {
-  // Three-band family grouping (codex architecture-v2 narrative):
-  //   Directional  : ML_DIRECTIONAL, RULES_DIRECTIONAL
-  //   Relative-Value: CARRY_AND_YIELD, ARBITRAGE_STRUCTURAL, STAT_ARB_PAIRS, MARKET_MAKING
-  //   Event-Driven : EVENT_DRIVEN, VOL_TRADING
   const families = listFamiliesOrdered();
-  const byFamily: Record<string, (typeof families)[number]> = {};
+  const byFamily: Record<string, FamilyMetadata> = {};
   for (const f of families) byFamily[f.family] = f;
 
   const BANDS: readonly {
@@ -280,92 +376,57 @@ export function StrategyFamilyCatalogue() {
       role="region"
       aria-label="Strategy family and archetype catalogue"
     >
-      <WidgetScroll axes="horizontal" scrollbarSize="thin" className="rounded-md border border-border/60">
-        <table className="w-full border-collapse text-sm">
-          <caption className="sr-only">
-            Strategy archetype × category × instrument-type coverage matrix, grouped by strategy family band. Each cell
-            shows coverage status and lock state.
-          </caption>
-          <thead>
-            <tr className="border-b border-border/60 bg-muted/30">
-              <th
-                scope="col"
-                rowSpan={2}
-                className="sticky left-0 z-20 bg-muted/30 px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-              >
-                Archetype
-              </th>
-              {CATEGORIES.map((category) => (
-                <th
-                  key={category}
-                  scope="colgroup"
-                  colSpan={INSTRUMENT_TYPES.length}
-                  className="border-l border-border/40 px-2 py-1 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                >
-                  {CATEGORY_LABELS[category]}
-                </th>
-              ))}
-            </tr>
-            <tr className="border-b border-border/40 bg-muted/20">
-              {CATEGORIES.flatMap((category) =>
-                INSTRUMENT_TYPES.map((instrumentType) => (
-                  <th
-                    key={`${category}-${instrumentType}`}
-                    scope="col"
-                    className="px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground/80"
-                  >
-                    {INSTRUMENT_TYPE_LABELS[instrumentType]}
-                  </th>
-                )),
-              )}
-            </tr>
-          </thead>
-          {BANDS.flatMap((band) =>
-            band.families
-              .map((familyKey) => {
-                const meta = byFamily[familyKey];
-                if (!meta) return null;
-                return (
-                  <FamilyGroup
-                    key={familyKey}
-                    family={familyKey}
-                    label={`${band.label} — ${meta.label}`}
-                    archetypes={meta.archetypes}
-                    accentClass={meta.accentClass}
-                  />
-                );
-              })
-              .filter((x): x is React.JSX.Element => x !== null),
-          )}
-        </table>
-      </WidgetScroll>
+      <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
+        Columns are instrument types (Spot, Perp, …). Each cell stacks up to one marker per asset class: colour = Crypto
+        / DeFi / Traditional / Sports / Prediction; ● = supported, ▲ = partial. Blocked cells are omitted. Blank cells
+        mean nothing to show. How public vs IM-reserved slots are encoded is spelled out under Lock below.
+      </p>
 
-      <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
-        <span className="inline-flex items-center gap-1.5">
-          <span className="font-mono text-emerald-500">●</span> Supported
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="font-mono text-amber-500">◐</span> Partial
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="font-mono text-rose-500">×</span> Blocked (see codex block-list)
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <span className="font-mono text-muted-foreground/30">·</span> Needs build
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <LockStateBadge state="PUBLIC" className="px-1.5 py-0 text-[10px]" /> Public slot
-        </span>
-        <span className="inline-flex items-center gap-1.5">
-          <LockStateBadge state="INVESTMENT_MANAGEMENT_RESERVED" className="px-1.5 py-0 text-[10px]" /> IM-reserved by
-          default
-        </span>
+      <CatalogueTable byFamily={byFamily} BANDS={BANDS} />
+
+      <div className="space-y-3">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Shapes (coverage)</p>
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span className={cn(CATALOGUE_MARKER_GLYPH, "text-foreground")}>{"\u25CF"}</span> Supported
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className={cn(CATALOGUE_MARKER_GLYPH, "text-foreground")}>{"\u25B2"}</span> Partial
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-muted-foreground/85">Empty — nothing to show</span>
+        </div>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Marker colours</p>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground">
+          {CATEGORIES.map((c) => (
+            <span key={c} className="inline-flex items-center gap-2">
+              <span className={cn(CATALOGUE_MARKER_GLYPH, CATEGORY_GLYPH_CLASS[c])}>{"\u25CF"}</span>
+              {CATEGORY_LABELS[c]}
+            </span>
+          ))}
+        </div>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Lock</p>
+        <div className="space-y-2 text-xs text-muted-foreground">
+          <p className="max-w-3xl leading-relaxed">
+            Ringed dot = public slot; plain dot (same asset-class colour) = IM-reserved. The same two states appear as
+            lock badges elsewhere:
+          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="inline-flex items-center gap-2" aria-hidden>
+              <CatalogueMatrixMarker category="CEFI" symbol={"\u25CF"} variant="public" />
+              <CatalogueMatrixMarker category="CEFI" symbol={"\u25CF"} variant="im_reserved" />
+            </span>
+            <span className="text-muted-foreground/60" aria-hidden>
+              ·
+            </span>
+            <LockStateBadge state="PUBLIC" className="px-1.5 py-0 text-[10px]" />
+            <LockStateBadge state="INVESTMENT_MANAGEMENT_RESERVED" className="px-1.5 py-0 text-[10px]" />
+          </div>
+        </div>
       </div>
 
       <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
-        Rows link to the per-strategy detail page in the platform catalogue for allocators and admins with access;
-        prospects without a platform seat see the row but cannot deep-link. Lock state is the default posture —
-        client-exclusive carve-outs are negotiated per mandate and surfaced on the per-strategy page, not here.
+        Rows link to the per-strategy detail page when a slot exists; hover a marker for detail. Client-exclusive
+        carve-outs are negotiated per mandate and surfaced on the per-strategy page, not here.
       </p>
     </div>
   );
