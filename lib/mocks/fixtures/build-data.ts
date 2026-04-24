@@ -718,7 +718,7 @@ export const FEATURE_CATALOGUE: FeatureCatalogueEntry[] = [
     symbols: ["EPL/*", "LA_LIGA/*", "NBA/*"],
     last_computed: new Date(Date.now() - 3600000).toISOString(),
     description: "1-hour price movement in betting odds — sharp money indicator",
-    parameters: { window_minutes: 60, exchanges: ["betfair", "betdaq"] },
+    parameters: { window_minutes: 60, exchanges: ["betfair"] },
     dependencies: [],
     consumed_by_models: [],
     tags: ["sports", "odds", "betting", "sharp-money"],

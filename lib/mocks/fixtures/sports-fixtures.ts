@@ -3,7 +3,7 @@ import type { Bookmaker, FootballLeague, OddsMarket } from "@/components/trading
 export const FOOTBALL_LEAGUES: FootballLeague[] = ["EPL", "La Liga", "Bundesliga", "Serie A", "Ligue 1", "UCL", "UEL"];
 
 export const BOOKMAKERS: Bookmaker[] = [
-  "betfair_exchange", "smarkets", "matchbook", "pinnacle", "polymarket",
+  "betfair_exchange", "matchbook", "pinnacle", "polymarket",
   "bet365", "unibet", "marathon", "williamhill", "paddypower", "ladbrokes",
   "coral", "skybet", "betway", "sport888", "betvictor", "boylesports",
   "draftkings", "fanduel", "betmgm", "betrivers", "espnbet",
@@ -11,7 +11,7 @@ export const BOOKMAKERS: Bookmaker[] = [
 ];
 
 export const SUBSCRIBED_BOOKMAKERS: Bookmaker[] = [
-  "betfair_exchange", "pinnacle", "bet365", "unibet", "smarkets",
+  "betfair_exchange", "pinnacle", "bet365", "unibet",
   "draftkings", "fanduel",
 ];
 

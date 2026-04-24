@@ -7,7 +7,6 @@ export const VENUES = [
   "Bybit",
   "Uniswap",
   "Aave",
-  "Smarkets",
   "Betfair",
   "Polymarket",
   "Kalshi",

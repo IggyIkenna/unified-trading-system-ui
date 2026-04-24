@@ -39,7 +39,7 @@ export const BOOK_VENUES_BY_CATEGORY: Record<BookCategoryTab, string[]> = {
   cefi_derivatives: ["Deribit", "OKX", "Bybit", "Binance", "BitMEX"],
   defi: ["Uniswap", "Aave", "Hyperliquid", "SushiSwap", "Curve"],
   tradfi: ["NYSE", "NASDAQ", "LSE", "CME", "ICE", "Eurex"],
-  sports: ["Betfair", "Smarkets", "Pinnacle"],
+  sports: ["Betfair", "Pinnacle"],
   prediction: ["Polymarket", "Kalshi"],
   otc: ["OTC Desk", "Jane Street", "Jump Trading", "Wintermute", "DRW", "Cumberland", "Galaxy Digital"],
 };

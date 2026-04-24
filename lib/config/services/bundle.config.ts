@@ -45,7 +45,6 @@ export const BUNDLE_VENUES = [
   "Betfair",
   "Pinnacle",
   "Bet365",
-  "Smarkets",
   "Polymarket",
   "Kalshi",
 ] as const;

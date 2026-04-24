@@ -38,9 +38,7 @@ export type Bookmaker =
   | "betfair_ex_uk"
   | "betfair_ex_eu"
   | "betfair_ex_au"
-  | "smarkets"
   | "matchbook"
-  | "betdaq"
   | "kalshi"
   | "polymarket"
   | "novig"
@@ -101,7 +99,7 @@ export type Bookmaker =
 
 /** Bookmakers that can execute bets (not just odds) */
 export const EXECUTION_CAPABLE_BOOKMAKERS: Bookmaker[] = [
-  "betfair_exchange", "betfair_ex_uk", "betfair_ex_eu", "smarkets", "matchbook", "betdaq",
+  "betfair_exchange", "betfair_ex_uk", "betfair_ex_eu", "matchbook",
   "kalshi", "polymarket", "pinnacle", "onexbet",
   "bet365", "williamhill", "paddypower", "ladbrokes", "coral", "skybet", "betway",
   "betfred", "betvictor", "boylesports", "sport888",
@@ -113,9 +111,7 @@ export const BOOKMAKER_DISPLAY_NAMES: Record<Bookmaker, string> = {
   betfair_ex_uk: "Betfair Exchange UK",
   betfair_ex_eu: "Betfair Exchange EU",
   betfair_ex_au: "Betfair Exchange AU",
-  smarkets: "Smarkets",
   matchbook: "Matchbook",
-  betdaq: "Betdaq",
   kalshi: "Kalshi",
   polymarket: "Polymarket",
   novig: "Novig",

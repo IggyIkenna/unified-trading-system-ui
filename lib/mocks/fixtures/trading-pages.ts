@@ -446,11 +446,6 @@ export const MOCK_FIXTURES_WITH_ODDS: FixtureWithOdds[] = [
         { label: "Draw", odds: 3.4 },
         { label: "Away", odds: 3.25 },
       ]),
-      makeOdds("smarkets", "FT Result", [
-        { label: "Home", odds: 2.2 },
-        { label: "Draw", odds: 3.55 },
-        { label: "Away", odds: 3.28 },
-      ]),
       makeOdds("bet365", "Over/Under 2.5", [
         { label: "Over 2.5", odds: 1.72 },
         { label: "Under 2.5", odds: 2.1 },
