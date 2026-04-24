@@ -24,6 +24,7 @@ import type {
   StrategyArchetype,
   StrategyFamily,
 } from "@/lib/architecture-v2";
+import { formatArchetype, formatFamily } from "@/lib/strategy-display";
 
 import { PerformanceOverlay } from "./PerformanceOverlay";
 import type { PerformanceSeriesResponse } from "@/lib/api/performance-overlay";
@@ -77,8 +78,8 @@ export function RealityPositionCard({
       <CardHeader className="gap-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex flex-col gap-0.5">
-            <p className="text-xs font-mono text-muted-foreground">
-              {instance.family} / {instance.archetype}
+            <p className="text-xs text-muted-foreground">
+              {formatFamily(instance.family)} / {formatArchetype(instance.archetype)}
             </p>
             <p className="text-sm font-medium">{instance.venueSetLabel}</p>
           </div>

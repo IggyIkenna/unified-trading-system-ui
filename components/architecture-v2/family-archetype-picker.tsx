@@ -46,6 +46,7 @@ import type {
 } from "@/lib/architecture-v2";
 import { audienceForPersonaId } from "@/lib/auth/audience-from-persona";
 import { useAuth } from "@/hooks/use-auth";
+import { formatArchetype, formatFamily, formatSlotLabel } from "@/lib/strategy-display";
 
 export interface FamilyArchetypeSelection {
   readonly family?: StrategyFamily;
@@ -220,7 +221,7 @@ export function FamilyArchetypePicker({
           ) : null}
           {visibleFamilies.map((family) => (
             <SelectItem key={family} value={family}>
-              {FAMILY_METADATA[family]?.label ?? family}
+              {formatFamily(family)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -249,7 +250,7 @@ export function FamilyArchetypePicker({
           ) : null}
           {archetypesForFamily.map((archetype) => (
             <SelectItem key={archetype} value={archetype}>
-              {archetype}
+              {formatArchetype(archetype)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -280,8 +281,8 @@ export function FamilyArchetypePicker({
               </SelectItem>
             ) : null}
             {strategyIds.map((slot) => (
-              <SelectItem key={slot} value={slot} className="font-mono text-xs">
-                {slot}
+              <SelectItem key={slot} value={slot} className="text-xs" title={slot}>
+                {formatSlotLabel(slot)}
               </SelectItem>
             ))}
           </SelectContent>
