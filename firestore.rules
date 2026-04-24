@@ -34,6 +34,21 @@ service cloud.firestore {
     }
 
     // ------------------------------------------------------------------
+    // Strategy Evaluation DDQ submissions.
+    // Anonymous writes from /strategy-evaluation; reads gated to
+    // admin / IM desk. Mirrors the /questionnaires pattern.
+    // ------------------------------------------------------------------
+    match /strategy_evaluations/{doc} {
+      allow create: if true;
+      allow read: if request.auth != null && (
+        request.auth.token.admin == true ||
+        request.auth.token.im_desk == true
+      );
+      allow update, delete: if request.auth != null
+                            && request.auth.token.admin == true;
+    }
+
+    // ------------------------------------------------------------------
     // G2.x — Client contracts (ClientContract schema).
     // Paying clients read their own org; IM desk reads all; admin full.
     // Writes admin-only — contract lifecycle goes through user-management-ui.

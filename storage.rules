@@ -1,0 +1,49 @@
+// Firebase Storage security rules.
+// Deployed via:
+//   firebase --project odum-staging deploy --only storage
+//   firebase --project central-element-323112 deploy --only storage
+//
+// SSOT mirrors firestore.rules for the same-audience collections — any
+// prospect who can anonymously submit a Firestore document can also
+// upload the corresponding evidence files, and the same admin / IM-desk
+// custom claims that read the Firestore doc can read the blobs.
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // --------------------------------------------------------------
+    // Strategy Evaluation DDQ attachments.
+    // Public /strategy-evaluation form uploads evidence (methodology
+    // doc, tear sheet, trade log CSV, etc.) at:
+    //   strategy-evaluations/{draftSubmissionId}/{fieldKey}/{timestamp-filename}
+    // Anonymous create only — no overwrites, no deletes from the public
+    // surface. Reads gated to admin / IM desk custom claims.
+    // 50MB per-file cap + basic content-type allow-list to reduce abuse.
+    // --------------------------------------------------------------
+    match /strategy-evaluations/{draftId}/{fieldKey}/{filename} {
+      allow read: if request.auth != null && (
+        request.auth.token.admin == true ||
+        request.auth.token.im_desk == true
+      );
+      allow create: if request.resource.size < 50 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('application/pdf')
+          || request.resource.contentType.matches('text/.*')
+          || request.resource.contentType.matches('image/(png|jpeg|jpg)')
+          || request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.*')
+          || request.resource.contentType.matches('application/msword')
+          || request.resource.contentType.matches('application/octet-stream')
+          || request.resource.contentType.matches('application/vnd.apache.parquet')
+        );
+      allow update, delete: if request.auth != null
+                            && request.auth.token.admin == true;
+    }
+
+    // Default deny everything else.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
