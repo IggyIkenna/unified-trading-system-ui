@@ -44,6 +44,10 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Exposed as a path literal so orphan-audit GENERIC_PATH_STRING_RE can track
+// /services/dart/locked — the lockedRedirectTo values include query strings which break the scanner.
+const DART_FULL_LOCKED_PAGE = "/services/dart/locked";
+
 export interface ServiceTab {
   label: string;
   href: string;
@@ -417,7 +421,7 @@ export const TRADING_TABS: ServiceTab[] = [
     label: "Strategy Config",
     href: "/services/trading/strategy-config",
     requiredEntitlement: "strategy-full",
-    lockedRedirectTo: "/services/dart/locked?from=research",
+    lockedRedirectTo: `${DART_FULL_LOCKED_PAGE}?from=research`,
   },
   // Signal Intake — inbound signal webhooks for Signals-In + admin cross-client view
   { label: "Signal Intake", href: "/services/signals/dashboard" },
@@ -428,7 +432,7 @@ export const TRADING_TABS: ServiceTab[] = [
     label: "Deployment",
     href: "/services/trading/deployment",
     requiredEntitlement: "strategy-full",
-    lockedRedirectTo: "/services/dart/locked?from=promote",
+    lockedRedirectTo: `${DART_FULL_LOCKED_PAGE}?from=promote`,
   },
   // ── DeFi family ───────────────────────────────────────────────────────────
   {
