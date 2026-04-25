@@ -127,77 +127,71 @@ This is a **follow-up**, not a prerequisite for content deploys. See `docs/FIREB
 
 ---
 
-## Firebase Auth accounts
+## Firebase Auth + GCP IAM topology
 
-### Architecture
+### Two isolated Firebase projects (provisioned 2026-04-25)
 
-| Env  | Auth provider                       | Who authenticates                                                               |
-| ---- | ----------------------------------- | ------------------------------------------------------------------------------- |
-| prod | Firebase (`central-element-323112`) | Real users only. Demo/advisor emails → redirected to UAT before Firebase fires. |
-| uat  | Demo (client-side PERSONAS)         | All personas from `lib/auth/personas.ts`, no Firebase needed.                   |
+| Env  | GCP / Firebase project   | Auth pool                                | Firestore                              | Storage default bucket               |
+| ---- | ------------------------ | ---------------------------------------- | -------------------------------------- | ------------------------------------ |
+| prod | `central-element-323112` | Real users only                          | `(default)` in `eur3`                  | `central-element-323112.appspot.com` |
+| uat  | `odum-staging`           | Demo personas + internal team for testing | `(default)` in `eur3`                  | `odum-staging.firebasestorage.app`   |
 
-The redirect is based on `NEXT_PUBLIC_SITE_URL` (baked at build time): if it contains `www.odum-research.com`, any `@odum-research.co.uk` or `@odum-research.com` login attempt redirects to `uat.odum-research.com` without touching Firebase.
+UAT and prod have **fully isolated** Auth pools, Firestore data, Storage buckets, and IAM. Anyone admin'ing UAT cannot affect prod. Keys for `odum-staging` are baked into `config/docker-build.env.uat`.
 
-### Seeding prod Firebase
+### Per-env admins (target IAM state)
 
-Run once (requires ADC pointed at `central-element-323112`):
+| Project                  | Project owners (`roles/owner`)                                 | Firebase admin (`roles/firebase.admin`)            |
+| ------------------------ | -------------------------------------------------------------- | -------------------------------------------------- |
+| `central-element-323112` | `ikenna@odum-research.com`, `femi@odum-research.com`           | (not granted directly — owners have it implicitly) |
+| `odum-staging`           | `ikenna@odum-research.com` (project creator)                   | `femi@odum-research.com`, `harshkantariya@odum-research.com` |
 
-```bash
-# Ensure the account exists in Firebase Console first (Authentication → Users → Add user)
-node scripts/admin/seed-firebase-users.mjs --env=prod
-```
+`harshkantariya@odum-research.com` is staging-only — never grant `firebase.admin` on prod. The script that mirrors his prod operational roles from the legacy Gmail (`harshkantariya.work@gmail.com`) is at `scripts/admin/grant-harsh-iam.sh` and explicitly excludes `firebase.admin` on prod.
 
-This sets `{ role: "admin", entitlements: ["*"] }` as custom claims on `ikenna@odum-research.com`.
-The `firebase-provider.ts` reads these claims on login and bypasses all backend calls.
-
-### Seeding staging Firebase (when separate project is created)
+### Seeding staging Firebase
 
 ```bash
-FIREBASE_STAGING_PROJECT=your-staging-project-id \
+FIREBASE_STAGING_PROJECT=odum-staging \
   node scripts/admin/seed-firebase-users.mjs --env=staging
 ```
 
-Creates all 22 demo personas from `lib/auth/personas.ts` with their entitlements as custom claims.
-Passwords match the persona definitions (e.g. `OdumIR2026!` for IR accounts, `demo` for others).
-When `staging` is seeded, update `config/docker-build.env.uat` to set `NEXT_PUBLIC_AUTH_PROVIDER=firebase`
-and point the Firebase config vars at the staging project.
+Creates all 22 demo personas from `lib/auth/personas.ts` as Firebase Auth users in `odum-staging`, with their entitlements as custom claims. Passwords are bumped to ≥6 chars (Firebase minimum) — `demo` → `demo123`; `OdumIR2026!` accounts unchanged.
+
+### Seeding prod Firebase
+
+```bash
+# Ensure the admin account exists in Firebase Console first (admin.google.com → Users)
+node scripts/admin/seed-firebase-users.mjs --env=prod
+```
+
+This sets `{ role: "admin", entitlements: ["*"] }` as custom claims on `ikenna@odum-research.com`. `firebase-provider.ts` reads these claims on login and bypasses all backend calls.
+
+### Login routing on prod
+
+Demo/advisor emails (`@odum-research.co.uk`, `@odum-research.com` non-staff) on `www.odum-research.com` get redirected to `uat.odum-research.com/login` before Firebase Auth fires. Detection is via `NEXT_PUBLIC_SITE_URL` (baked at build), not `window.location.hostname`, so this also works when accessing prod via the Cloud Run URL.
 
 ---
 
 ## Public form submissions (questionnaire / strategy-evaluation)
 
 Both forms write to Firestore + send confirmation email via Resend. The persistence
-target is keyed off `NEXT_PUBLIC_FIREBASE_*` baked at build time:
+target is the env-specific Firebase project (now fully isolated since 2026-04-25):
 
-| Env  | Firestore project                                                               | Email sender (Resend)                                                                                  |
-| ---- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| prod | `central-element-323112`                                                        | `hello@mail.odum-research.com`                                                                         |
-| uat  | Same as prod by default; override via the staging-firebase template (see below) | `hello@mail.uat.odum-research.com`                                                                     |
-| dev  | None (writes silently no-op)                                                    | `onboarding@resend.dev` — Resend's test domain; only delivers to the email tied to your Resend account |
+| Env  | Firestore project        | Email sender (Resend)                                                                                  |
+| ---- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| prod | `central-element-323112` | `hello@mail.odum-research.com`                                                                         |
+| uat  | `odum-staging`           | `hello@mail.uat.odum-research.com`                                                                     |
+| dev  | None (writes silently no-op) | `onboarding@resend.dev` — Resend's test domain; only delivers to the email tied to your Resend account |
 
-### Pointing UAT at a separate Firebase project
+API routes use the **Admin SDK** (`firebase-admin`) on the server — runs as the Cloud Run service account. Works regardless of `NEXT_PUBLIC_FIREBASE_*` bake-state. The Cloud Run service account `1060025368044-compute@developer.gserviceaccount.com` (prod's compute SA) has cross-project `datastore.user` + `storage.admin` + `firebaseauth.admin` on `odum-staging` so the same UAT image can hit the staging project from server-side routes.
 
-To make UAT submissions land in their own Firestore (so prod and UAT can be tested
-independently without polluting each other):
+### Storage rules
 
-1. Create a new Firebase project in the console (e.g. `odum-staging`).
-2. Add a Web app, copy the config values.
-3. Copy the template:
-   ```bash
-   cp config/docker-build.env.staging.firebase.example \
-      config/docker-build.env.uat.firebase.local
-   ```
-   Fill in the `NEXT_PUBLIC_FIREBASE_*` values from the new project. Set
-   `NEXT_PUBLIC_SITE_URL=https://uat.odum-research.com` and keep `NEXT_PUBLIC_MOCK_API=true`.
-4. Deploy UAT with the override:
-   ```bash
-   bash scripts/deploy-cloud-run.sh --env=uat --cloud \
-     --build-env-file=config/docker-build.env.uat.firebase.local
-   ```
-5. Add to the staging-project's Storage and Firestore rules — the same files that
-   live in `storage.rules` and `firestore.rules` apply (anonymous create on
-   `strategy-evaluations/*` + `questionnaires/*`, admin-only read).
-6. Optionally seed staging personas (see "Seeding staging Firebase" above).
+Both projects use `storage.rules` from the repo. Public-write paths (`strategy-evaluations/{draftId}/{fieldKey}/{filename}`) are gated by **size cap (500 MB) only** — no content-type allow-list (browser MIMEs vary too much for `.md`, exotic CSVs, etc.). Read access stays admin / im_desk-claim-gated. Deploy with:
+
+```bash
+firebase deploy --only storage --project central-element-323112  # prod
+firebase deploy --only storage --project odum-staging            # uat
+```
 
 ### Local dev — testing the full email flow
 
