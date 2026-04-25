@@ -282,7 +282,7 @@ export function useLifecycleEditor(
             .join(" · "),
           duration: 10_000,
         });
-        // eslint-disable-next-line no-console
+         
         console.error("bulkApply failures", failed);
       }
       return { succeeded, failed };

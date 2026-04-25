@@ -152,7 +152,7 @@ todos:
     content: |
       - [x] [AGENT] P1. Centralize FEATURE_GROUP_LOOKBACK in UAC or UTL
       Move from features-delta-one (2 files) to canonical location.
-      Also move INSTRUMENT_TYPE_TO_ASSET_CLASS, TRADFI_DATA_TYPE_FALLBACKS.
+      Also move INSTRUMENT_TYPE_TO_asset_group, TRADFI_DATA_TYPE_FALLBACKS.
     status: done
     note: "Consolidated to service-local constants.py (CORRECT-LOCAL). Commit 75a279a."
 
@@ -276,7 +276,7 @@ todos:
   - id: p2-mdps
     content: |
       - [x] [AGENT] P1. Fix market-data-processing-service (1 violation)
-      1. Replace local _ASSET_CLASS_MAP with import from UAC INSTRUMENT_TYPE_FOLDER_MAP
+      1. Replace local _asset_group_MAP with import from UAC INSTRUMENT_TYPE_FOLDER_MAP
     status: done
     note: ""
 

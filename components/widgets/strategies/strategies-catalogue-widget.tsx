@@ -1,9 +1,11 @@
 "use client";
 
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { Spinner } from "@/components/shared/spinner";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { EntityLink } from "@/components/trading/entity-link";
 import { SparklineCell } from "@/components/trading/kpi-card";
 import { PnLValue } from "@/components/trading/pnl-value";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -16,17 +18,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/shared/spinner";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { ARCHETYPES, ASSET_CLASS_COLORS, STATUSES } from "@/lib/config/services/strategies.config";
+import { ARCHETYPES, asset_group_COLORS, STATUSES } from "@/lib/config/services/strategies.config";
 import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { BarChart2, ChevronDown, Filter, Play, Search, Settings, X } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 import { useStrategiesData } from "./strategies-data-context";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 function executionModeShort(s: Strategy): { code: string; title: string } {
   const m = s.dataArchitecture.executionMode;
@@ -120,14 +120,14 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
               <DropdownMenuContent align="start" className="w-48">
                 <DropdownMenuLabel className="text-xs">Asset Classes</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {Object.keys(ASSET_CLASS_COLORS).map((ac) => (
+                {Object.keys(asset_group_COLORS).map((ac) => (
                   <DropdownMenuCheckboxItem
                     key={ac}
                     checked={selectedAssetClasses.includes(ac)}
                     onCheckedChange={() => toggleAssetClass(ac)}
                   >
                     <span className="flex items-center gap-2">
-                      <span className="size-2 rounded-full" style={{ backgroundColor: ASSET_CLASS_COLORS[ac] }} />
+                      <span className="size-2 rounded-full" style={{ backgroundColor: asset_group_COLORS[ac] }} />
                       {ac}
                     </span>
                   </DropdownMenuCheckboxItem>
@@ -205,9 +205,9 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
                 key={ac}
                 variant="secondary"
                 className="h-6 gap-1 pl-2 pr-1"
-                style={{ borderColor: ASSET_CLASS_COLORS[ac], borderWidth: 1 }}
+                style={{ borderColor: asset_group_COLORS[ac], borderWidth: 1 }}
               >
-                <span className="size-1.5 rounded-full" style={{ backgroundColor: ASSET_CLASS_COLORS[ac] }} />
+                <span className="size-1.5 rounded-full" style={{ backgroundColor: asset_group_COLORS[ac] }} />
                 {ac}
                 <button
                   type="button"
@@ -257,7 +257,7 @@ export function StrategiesCatalogueWidget(_props: WidgetComponentProps) {
           <div
             key={assetClass}
             className="rounded-md border border-border/60 pl-2"
-            style={{ borderLeftWidth: 3, borderLeftColor: ASSET_CLASS_COLORS[assetClass] ?? "var(--border)" }}
+            style={{ borderLeftWidth: 3, borderLeftColor: asset_group_COLORS[assetClass] ?? "var(--border)" }}
           >
             <CollapsibleSection title={assetClass} defaultOpen count={strategies.length} className="space-y-2">
               {Object.entries(byArchetype).map(([arch, archStrategies]) => (

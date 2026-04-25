@@ -13,8 +13,8 @@
  * - P&L preview reflects flashPnl fields.
  * - Execute button calls executeDeFiOrder with FLASH_BORROW payload + is_atomic=true.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 interface MockFlashStep {
@@ -148,7 +148,7 @@ describe("defi-flash-loans-widget — L1.5 harness", () => {
         instruction_type: "FLASH_BORROW",
         algo_type: "FLASH_LOAN_AAVE",
         venue: "AAVEV3-ETHEREUM",
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
         is_atomic: true,
       });

@@ -280,7 +280,7 @@ function parseFeaturesServiceBaseUrls(
     }
     return Object.keys(result).length > 0 ? result : undefined;
   } catch {
-    // eslint-disable-next-line no-console
+     
     console.warn(
       "CatalogueTruthinessAdapter: NEXT_PUBLIC_FEATURES_SERVICE_URLS is not valid JSON — falling back to mock features.",
     );
@@ -557,7 +557,7 @@ export class CatalogueTruthinessAdapter {
       } catch (err) {
         // Per-service failure should not block other services — shard-level
         // isolation. Surface as a warning in the snapshot.
-        // eslint-disable-next-line no-console
+         
         console.warn(
           `CatalogueTruthinessAdapter: features fetch failed for ${serviceKey}`,
           err,
@@ -608,7 +608,7 @@ export class CatalogueTruthinessAdapter {
           err instanceof Error ? err.message : String(err),
         );
       }
-      // eslint-disable-next-line no-console
+       
       console.warn(
         "CatalogueTruthinessAdapter: live fetch failed, falling back to mock data.",
         err,

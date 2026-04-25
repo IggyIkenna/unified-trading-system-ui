@@ -1,7 +1,7 @@
 # TradFi Options Market Making
 
 > **Asset class:** TradFi / CeFi (options available on Deribit, CME, IBKR) **Strategy type:** Options Market Making
-> (multi-strike quoting, delta hedging) **Strategy ID pattern:** `{ASSET_CLASS}_{UNDERLYING}_MM_OPT_{VENUE}_EVT_SUB1S`
+> (multi-strike quoting, delta hedging) **Strategy ID pattern:** `{asset_group}_{UNDERLYING}_MM_OPT_{VENUE}_EVT_SUB1S`
 
 ## Overview
 

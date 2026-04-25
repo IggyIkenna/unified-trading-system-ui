@@ -573,7 +573,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
         order_type: body.order_type ?? "market",
         quantity: body.quantity ?? 1,
         price: body.price ?? 0,
-        asset_class: body.asset_class ?? "CeFi",
+        asset_group: body.asset_group ?? "CeFi",
         lane: body.lane ?? "book",
         algo_type: body.algo ?? null,
       });
@@ -586,7 +586,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
           quantity: result.filled_quantity,
           price: result.average_fill_price,
           strategy_id: result.strategy_id,
-          asset_class: result.asset_class,
+          asset_group: result.asset_group,
         });
       }
       return json({ order: result });
@@ -820,7 +820,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       quantity: betStake,
       price: betOdds,
       strategy_id: (body.strategy_id ?? null) as string | null,
-      asset_class: "Sports",
+      asset_group: "Sports",
     });
     return json({
       data: {
@@ -892,7 +892,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       quantity: defiAmount,
       price: defiPrice,
       strategy_id: (body.strategy_id ?? null) as string | null,
-      asset_class: "DeFi",
+      asset_group: "DeFi",
     });
     return json({
       data: {
@@ -5858,9 +5858,9 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
     const updated = updateUser(uid, { status: "offboarded" });
     return updated
       ? json({
-          user: updated,
-          revocation_steps: [{ service: "portal", status: "revoked" }],
-        })
+        user: updated,
+        revocation_steps: [{ service: "portal", status: "revoked" }],
+      })
       : json({ error: "not found" });
   }
   if (route.match(/^\/api\/auth\/provisioning\/users\/[^/]+\/reprovision$/)) {

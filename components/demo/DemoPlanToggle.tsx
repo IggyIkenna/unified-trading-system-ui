@@ -1,61 +1,53 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  getCurrentTier,
+  getPairedTier,
+  getTierBundleForEmail,
+  setTierOverride,
+} from "@/lib/auth/tier-override";
 import { cn } from "@/lib/utils";
 
-// Map each demo persona to its paired tier counterpart.
-const TOGGLE_MAP: Record<string, string> = {
-  "desmond-dart-full": "desmond-signals-in",
-  "desmond-signals-in": "desmond-dart-full",
-  "elysium-defi": "elysium-defi-full",
-  "elysium-defi-full": "elysium-defi",
-};
-
-// Personas where the named ID represents the full/upgraded tier.
-const FULL_TIER_IDS = new Set([
-  "desmond-dart-full",
-  "elysium-defi-full",
-]);
-
-function tierLabel(personaId: string): string {
-  if (personaId.endsWith("-dart-full")) return "DART Full";
-  if (personaId.endsWith("-signals-in")) return "Signals-In";
-  if (personaId.endsWith("-defi-full")) return "DeFi Full";
-  if (personaId === "elysium-defi") return "DeFi Base";
-  return "Demo";
-}
-
-function nextTierLabel(personaId: string): string {
-  const paired = TOGGLE_MAP[personaId];
-  return paired ? tierLabel(paired) : "";
-}
-
+/**
+ * DemoPlanToggle — flips the active client-side tier override for paired-
+ * persona demos (Desmond Full ⇄ Signals-In, Patrick DeFi Full ⇄ DeFi Base).
+ *
+ * Decoupled from auth provider: works in demo-mode AND real Firebase. The
+ * toggle writes to localStorage via `setTierOverride`; `useAuth()` reapplies
+ * the override automatically (listening for the TIER_OVERRIDE_EVENT).
+ *
+ * No re-login, no signOut — the user object stays stable, only entitlements
+ * flip. See `lib/auth/tier-override.ts` for the bundle definitions and
+ * `codex/14-playbooks/demo-ops/staging-demo-setup.md` for the operator-side
+ * checklist.
+ */
 export function DemoPlanToggle() {
-  const isDemoMode = process.env.NEXT_PUBLIC_AUTH_PROVIDER === "demo";
-  const { user, loginByEmail } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const [switching, setSwitching] = React.useState(false);
 
-  if (!isDemoMode || !user) return null;
+  // Render only when the signed-in user's email is in a TierBundle. Works
+  // for both demo personas and real Firebase users — the bundle is the
+  // single source of truth.
+  const bundle = getTierBundleForEmail(user?.email);
+  if (!user || !bundle) return null;
 
-  const pairedId = TOGGLE_MAP[user.id];
-  if (!pairedId) return null;
+  const current = getCurrentTier(user.email);
+  const paired = getPairedTier(user.email);
+  if (!current || !paired) return null;
 
-  const isFullTier = FULL_TIER_IDS.has(user.id);
-  const currentLabel = tierLabel(user.id);
-  const nextLabel = nextTierLabel(user.id);
+  const isFullTier = current.tone === "emerald";
 
-  const handleSwitch = async () => {
+  const handleSwitch = () => {
     setSwitching(true);
     try {
-      // DemoAuthProvider.login() accepts persona ID directly; no password needed.
-      await loginByEmail(pairedId, "");
-      router.refresh();
+      setTierOverride(user.email, paired.key);
     } finally {
-      setSwitching(false);
+      // Re-render flush is event-driven via useAuth's listener; clearing the
+      // local switching state on the next tick keeps the click feedback brief.
+      setTimeout(() => setSwitching(false), 150);
     }
   };
 
@@ -69,10 +61,11 @@ export function DemoPlanToggle() {
           ? "border-emerald-300 text-emerald-700 hover:bg-emerald-50"
           : "border-amber-300 text-amber-700 hover:bg-amber-50",
       )}
-      onClick={() => void handleSwitch()}
+      onClick={handleSwitch}
       disabled={switching}
-      title={`Switch demo to ${nextLabel}`}
+      title={`Switch demo to ${paired.label}`}
       data-testid="demo-plan-toggle"
+      data-tier={current.key}
     >
       <span
         className={cn(
@@ -81,7 +74,7 @@ export function DemoPlanToggle() {
         )}
         aria-hidden
       />
-      {switching ? "Switching…" : currentLabel}
+      {switching ? "Switching…" : current.label}
     </Button>
   );
 }

@@ -438,11 +438,11 @@ infrastructure). They are documented here to confirm they are NOT orphans but de
 | `GET /analytics/predictions/quality`      | trading-analytics | ML prediction accuracy monitoring                   | ML Platform            | `/models` (model detail: accuracy, loss, prediction quality over time)                               | Batch      |
 | `GET /predictions/recent`                 | ml-inference      | Recent ML predictions for live strategies           | Trading Command Center | `/` (strategy table — strategies using ML show prediction confidence as a column)                    | Live       |
 | `GET /stream/predictions` (SSE)           | trading-analytics | Live prediction stream                              | Trading Command Center | `/` (live feed powering ML strategy status badges and prediction confidence)                         | Live       |
-| `GET /sports/pnl`                         | client-reporting  | Sports P&L breakdown by venue/strategy              | Market Intelligence    | `/pnl` with FilterBar dimension `asset_class=Sports`                                                 | Batch      |
+| `GET /sports/pnl`                         | client-reporting  | Sports P&L breakdown by venue/strategy              | Market Intelligence    | `/pnl` with FilterBar dimension `asset_group=Sports`                                                 | Batch      |
 | `GET /sports/clv`                         | client-reporting  | Closing Line Value analysis (sports signal quality) | Strategy Analytics     | `/strategies/:id` Results tab for sports strategies (CLV is the sports equivalent of alpha/slippage) | Batch      |
 | `GET /sports/venue-performance`           | client-reporting  | Per-venue ROI and limiting status                   | Market Intelligence    | `/pnl/venue/:id` with sports filter                                                                  | Batch      |
-| `GET /sports/positions`                   | client-reporting  | Open sports positions                               | Trading Command Center | `/positions` with FilterBar dimension `asset_class=Sports`                                           | Live       |
-| `GET /sports/risk`                        | client-reporting  | Sports risk exposure (liability, correlation)       | Trading Command Center | `/risk` with FilterBar dimension `asset_class=Sports`                                                | Live       |
+| `GET /sports/positions`                   | client-reporting  | Open sports positions                               | Trading Command Center | `/positions` with FilterBar dimension `asset_group=Sports`                                           | Live       |
+| `GET /sports/risk`                        | client-reporting  | Sports risk exposure (liability, correlation)       | Trading Command Center | `/risk` with FilterBar dimension `asset_group=Sports`                                                | Live       |
 | `GET /prime-brokers`, `POST`, `PUT /fees` | trading-analytics | Prime broker management and fee schedules           | Config & Onboarding    | `/prime-brokers` (new route — PB entity CRUD + fee schedule management)                              | Batch      |
 | `GET /instruments/corporate-actions`      | trading-analytics | Corporate actions (dividends, splits, earnings)     | Strategy Analytics     | `/instruments` sub-tab "Corporate Actions"                                                           | Batch      |
 | `POST /models/{id}/undeploy`              | ml-inference      | Model undeploy action                               | ML Platform            | `/models` (paired with deploy action as a toggle)                                                    | Batch      |
@@ -455,7 +455,7 @@ infrastructure). They are documented here to confirm they are NOT orphans but de
 
 The FilterBar across Trading Command Center, Strategy Analytics, and Market Intelligence must include an **asset class
 dimension**: `[All | DeFi | CeFi | TradFi | Sports]`. This single dimension eliminates 5 sports-specific orphans without
-creating a new surface. Sports strategies are not special — they are strategies with `asset_class=Sports`, viewable
+creating a new surface. Sports strategies are not special — they are strategies with `asset_group=Sports`, viewable
 through the same P&L waterfall, position table, and risk matrix as any other strategy.
 
 ### Config & Onboarding — new route for prime brokers

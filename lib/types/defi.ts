@@ -564,7 +564,7 @@ export interface DeFiOrderParams {
   max_slippage_bps: number;
   expected_output: number;
   benchmark_price: number;
-  asset_class: "DeFi";
+  asset_group: "DeFi";
   lane: "defi";
   is_atomic?: boolean;
 }

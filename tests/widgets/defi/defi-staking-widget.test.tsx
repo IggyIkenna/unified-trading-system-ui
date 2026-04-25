@@ -13,8 +13,8 @@
  * - Amount input + annual yield reactive output.
  * - Execute button enable/disable + executeDeFiOrder payload shape for STAKE/UNSTAKE.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 interface MockStakingProtocol {
@@ -145,7 +145,7 @@ describe("defi-staking-widget — L1.5 harness", () => {
         venue: "LIDO-ETHEREUM",
         side: "buy",
         quantity: 2.5,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
       });
     });

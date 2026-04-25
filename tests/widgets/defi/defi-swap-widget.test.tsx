@@ -14,8 +14,8 @@
  * - Gas-insufficient branch when selected chain portfolio gasTokenBalance < threshold.
  * - Execute button enable/disable + executeDeFiOrder payload shape.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 interface MockSwapRoute {
@@ -218,7 +218,7 @@ describe("defi-swap-widget — L1.5 harness", () => {
         client_id: "internal-trader",
         instruction_type: "SWAP",
         quantity: 3,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
         order_type: "market",
         side: "buy",

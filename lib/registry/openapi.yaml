@@ -5226,7 +5226,7 @@ paths:
       security:
       - APIKeyHeader: []
       parameters:
-      - name: asset_class
+      - name: asset_group
         in: query
         required: false
         schema:
@@ -5377,7 +5377,7 @@ paths:
       security:
       - APIKeyHeader: []
       parameters:
-      - name: asset_class
+      - name: asset_group
         in: query
         required: false
         schema:
@@ -7960,7 +7960,7 @@ paths:
         schema:
           type: string
           title: Venue
-      - name: asset_class
+      - name: asset_group
         in: query
         required: false
         schema:
@@ -19807,7 +19807,7 @@ components:
           type: string
           title: Quote Asset
           default: USD
-        asset_class:
+        asset_group:
           type: string
           title: Asset Class
           default: ''
@@ -21436,7 +21436,7 @@ components:
           - $ref: '#/components/schemas/TradeActivitySummary'
           - type: 'null'
           description: Trade activity since last snapshot
-        asset_class_exposures_usd:
+        asset_group_exposures_usd:
           additionalProperties:
             type: string
             pattern: ^(?!^[-+.]*$)[+-]?0*\d*\.?\d*$

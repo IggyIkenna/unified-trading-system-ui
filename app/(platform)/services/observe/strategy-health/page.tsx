@@ -1,34 +1,34 @@
 "use client";
 
-import * as React from "react";
-import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import {
-  HeartPulse,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Radio,
-  AlertTriangle,
-  Clock,
-  Zap,
-  ArrowUpDown,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  useStrategyHealth,
-  type StrategyHealth,
-  type PnlDrift,
-  type SignalFreshness,
-  type ExecutionQuality,
-} from "@/hooks/api/use-strategies";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 import { ApiError } from "@/components/shared/api-error";
 import { EmptyState } from "@/components/shared/empty-state";
+import { PageHeader } from "@/components/shared/page-header";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  useStrategyHealth,
+  type ExecutionQuality,
+  type PnlDrift,
+  type SignalFreshness,
+  type StrategyHealth,
+} from "@/hooks/api/use-strategies";
+import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import {
+  AlertTriangle,
+  ArrowUpDown,
+  Clock,
+  HeartPulse,
+  Minus,
+  Radio,
+  TrendingDown,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
+import * as React from "react";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -133,7 +133,7 @@ function formatPnl(value: number): string {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const ASSET_CLASSES = ["All", "Crypto", "DeFi", "Equities", "FX", "Fixed Income", "Commodities", "Sports"] as const;
+const asset_groupES = ["All", "Crypto", "DeFi", "Equities", "FX", "Fixed Income", "Commodities", "Sports"] as const;
 const HEALTH_STATUSES = ["All", "Healthy", "Warning", "Critical"] as const;
 const SORT_OPTIONS = [
   { value: "health-desc", label: "Health (High to Low)" },
@@ -286,7 +286,7 @@ export default function StrategyHealthPage() {
               <SelectValue placeholder="Asset Class" />
             </SelectTrigger>
             <SelectContent>
-              {ASSET_CLASSES.map((ac) => (
+              {asset_groupES.map((ac) => (
                 <SelectItem key={ac} value={ac}>
                   {ac === "All" ? "All Classes" : ac}
                 </SelectItem>

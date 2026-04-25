@@ -1,21 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { ArrowDown, TrendingUp } from "lucide-react";
-import { toast } from "sonner";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
-import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import type { BasisTradeHistoryEntry } from "@/lib/types/defi";
-import { useDeFiData } from "./defi-data-context";
+import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { TrendingUp } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+import { useDeFiData } from "./defi-data-context";
 
 export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
   const {
@@ -101,7 +101,7 @@ export function DeFiBasisTradeWidget(_props: WidgetComponentProps) {
       max_slippage_bps: slippageBps,
       expected_output: expectedOutput,
       benchmark_price: marketData?.spotPrice ?? 0,
-      asset_class: "DeFi",
+      asset_group: "DeFi",
       lane: "defi",
     });
 

@@ -124,7 +124,7 @@ market-tick-data-service
   writes → market-data-tick-{cat}-{proj}/
              raw_tick_data/by_date/day={date}/
                data_type={data_type}/
-               instrument_type={asset_class}/
+               instrument_type={asset_group}/
                venue={venue}/
                {instrument}.parquet
 
@@ -203,7 +203,7 @@ market-data-processing-service
              processed_candles/by_date/day={date}/
                timeframe={timeframe}/
                data_type={data_type}/
-               {asset_class}/
+               {asset_group}/
                {instrument}.parquet
 
 Sharding: category × venue × date

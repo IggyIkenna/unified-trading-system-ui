@@ -1,20 +1,20 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Zap, Clock, TrendingDown, Info } from "lucide-react";
-import type { PredictionArbOpportunity, PredictionArbMarketType, ArbVenue } from "./types";
-import { MOCK_PREDICTION_ARBS } from "@/lib/mocks/fixtures/predictions-data";
-import { ARB_THRESHOLD_OPTIONS } from "@/lib/mocks/fixtures/sports-fixtures";
-import { fmtRelativeTime, calcArbStakes } from "./helpers";
-import { VenueChip } from "./shared";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { MOCK_PREDICTION_ARBS } from "@/lib/mocks/fixtures/predictions-data";
+import { ARB_THRESHOLD_OPTIONS } from "@/lib/mocks/fixtures/sports-fixtures";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { Clock, Info, TrendingDown, Zap } from "lucide-react";
+import * as React from "react";
+import { calcArbStakes, fmtRelativeTime } from "./helpers";
+import { VenueChip } from "./shared";
+import type { ArbVenue, PredictionArbMarketType, PredictionArbOpportunity } from "./types";
 
 // ─── Decay Bar ────────────────────────────────────────────────────────────────
 
@@ -91,7 +91,7 @@ function ActiveArbCard({ arb, isNew }: { arb: PredictionArbOpportunity; isNew?: 
         order_type: "limit",
         quantity: i === 0 ? s1 : s2,
         price: leg.odds,
-        asset_class: "Prediction",
+        asset_group: "Prediction",
         lane: "predictions",
       });
     });

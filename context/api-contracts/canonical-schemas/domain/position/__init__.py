@@ -88,7 +88,7 @@ class AggregatedPosition(CanonicalBase):
     """
 
     instrument_id: str
-    asset_class: str | None = None
+    asset_group: str | None = None
     instrument_type: str | None = None
     strategy_id: str | None = None
     margin_type: str | None = None
@@ -169,7 +169,7 @@ class PortfolioPnLAttribution(CanonicalBase):
     fx_pnl: Decimal = Decimal("0")
     residual_pnl: Decimal = Decimal("0")
     total_pnl: Decimal = Decimal("0")
-    by_asset_class: dict[str, Decimal] = Field(default_factory=dict)
+    by_asset_group: dict[str, Decimal] = Field(default_factory=dict)
     by_strategy: dict[str, Decimal] = Field(default_factory=dict)
     timestamp: AwareDatetime | None = None
 
@@ -179,7 +179,7 @@ class RiskGroupSummary(CanonicalBase):
 
     risk_group_id: str
     underlying: str
-    asset_class: str
+    asset_group: str
     net_delta: Decimal = Decimal("0")
     net_gamma: Decimal = Decimal("0")
     net_theta: Decimal = Decimal("0")
@@ -209,7 +209,7 @@ class PortfolioView(CanonicalBase):
     venue_count: int = 0
     instrument_count: int = 0
 
-    asset_class_exposures: dict[str, Decimal] = Field(default_factory=dict)
+    asset_group_exposures: dict[str, Decimal] = Field(default_factory=dict)
     strategy_exposures: dict[str, Decimal] = Field(default_factory=dict)
 
     portfolio_greeks: PortfolioGreeksSnapshot | None = None

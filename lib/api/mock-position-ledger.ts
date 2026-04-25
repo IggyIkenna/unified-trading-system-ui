@@ -17,7 +17,7 @@ export interface MockPosition {
   unrealized_pnl: number;
   realized_pnl: number;
   strategy_id: string | null;
-  asset_class: string;
+  asset_group: string;
   updated_at: string;
 }
 
@@ -66,7 +66,7 @@ export function applyFilledOrder(order: {
   quantity: number;
   price: number;
   strategy_id: string | null;
-  asset_class: string;
+  asset_group: string;
 }): MockPosition {
   const state = load();
   const positionSide: "long" | "short" = order.side === "buy" ? "long" : "short";
@@ -140,7 +140,7 @@ export function applyFilledOrder(order: {
     unrealized_pnl: 0,
     realized_pnl: 0,
     strategy_id: order.strategy_id,
-    asset_class: order.asset_class,
+    asset_group: order.asset_group,
     updated_at: new Date().toISOString(),
   };
   state.positions.push(newPos);

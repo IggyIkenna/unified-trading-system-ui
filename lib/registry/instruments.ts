@@ -24,7 +24,7 @@ export interface Instrument {
   status?: string;
   available_from_datetime?: string;
   available_to_datetime?: string;
-  asset_class?: string;
+  asset_group?: string;
   settle_asset?: string;
   tick_size?: number;
   min_size?: number;

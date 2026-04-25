@@ -13,7 +13,7 @@ for the three connectivity paths and the trade-offs (especially login/scrape).
 | **Exchanges** (Betfair, Smarkets, Matchbook, Betdaq) | REST/stream API → Pub/Sub    | No (API keys only) | 5–30s configurable             |
 | **Scrapers** (SkyBet, Coral, etc.)                   | Browser automation → Pub/Sub | Yes (login + geo)  | 60s+; high maintenance         |
 
-**Live “beef”:** `market-data-processing-service` (with `asset_class=SPORTS`, Batch B) is the producer: it polls these
+**Live “beef”:** `market-data-processing-service` (with `asset_group=SPORTS`, Batch B) is the producer: it polls these
 adapters on a schedule and writes snapshots to GCS + publishes deltas to Pub/Sub. `features-sports-service` consumes via
 **Pub/Sub** (live seam). So “connecting live” = that service calling USEI adapters on an interval and pushing to
 Pub/Sub.
@@ -32,9 +32,9 @@ Pub/Sub.
   - Pre-match: 60s (featured markets), 5 min (outrights).
   - In-play: 40s (featured), 60s (additional).
   - Exchanges (when requested via Odds API): 30s pre-match, 20s in-play.
-- **How we connect live:** A job in `market-data-processing-service` (asset_class=SPORTS) polls the Odds API at or just
+- **How we connect live:** A job in `market-data-processing-service` (asset_group=SPORTS) polls the Odds API at or just
   above their interval (e.g. every 45–60s). Each response is written to GCS (snapshots) and/or published to Pub/Sub
-  (`market-data-updated` with asset_class=SPORTS). No login, no browser; just REST + API key (Secret Manager).
+  (`market-data-updated` with asset_group=SPORTS). No login, no browser; just REST + API key (Secret Manager).
 - **Bookmakers covered:** All keys in our `ODDS_API_KEY_MAP` (UK/EU/US/AU). One REST call can return many bookmakers; we
   map their keys to our canonical registry and emit `CanonicalOdds` per bookmaker.
 
@@ -46,7 +46,7 @@ Pub/Sub.
 - **Live mechanism:** Each has a **REST API** (and some have streaming). We call `get_odds(fixture_id, markets)` (and
   optionally `get_fixtures_with_odds`) on a schedule. No browser, no login UI; credentials are API keys / client certs
   in Secret Manager.
-- **How we connect live:** `market-data-processing-service` (asset_class=SPORTS) runs a loop (e.g. every 5s for
+- **How we connect live:** `market-data-processing-service` (asset_group=SPORTS) runs a loop (e.g. every 5s for
   exchanges) and calls each exchange adapter; results are written to GCS and published to Pub/Sub. Concurrency: asyncio
   gather across exchanges; rate limits per exchange (Betfair, Smarkets, etc.) are respected in each adapter.
 - **Latency:** Typically 5–30s poll interval; sub-second if an exchange offers streaming and we add a stream client
@@ -82,11 +82,11 @@ Pub/Sub.
 
 ## Where the “live beef” lives
 
-- **Producer:** `market-data-processing-service` (asset_class=SPORTS, Batch B). It holds the list of adapters (Odds API,
+- **Producer:** `market-data-processing-service` (asset_group=SPORTS, Batch B). It holds the list of adapters (Odds API,
   exchanges, scrapers), runs `run_live_polling()` (or equivalent), and for each cycle:
   - Calls each adapter’s `get_odds` (and optionally `get_fixtures_with_odds`).
   - Writes snapshots to GCS.
-  - Publishes delta events to Pub/Sub topic `market-data-updated` (with asset_class=SPORTS attribute).
+  - Publishes delta events to Pub/Sub topic `market-data-updated` (with asset_group=SPORTS attribute).
   - Performs arbitrage detection and normalization inline (previously in separate `sports-odds-processing-service`).
 - **Consumers:**
   - `features-sports-service` in live mode uses `LiveDataSource` (Pub/Sub subscription) to receive records (fixture +
@@ -96,7 +96,7 @@ Pub/Sub.
   publishes to the topic the downstream services subscribe to.
 
 > **Note (2026-03-01):** The previous architecture had a separate `sports-odds-processing-service` consuming from
-> `sports-odds-data-service`. Both are now consolidated into `market-data-processing-service` with `asset_class=SPORTS`.
+> `sports-odds-data-service`. Both are now consolidated into `market-data-processing-service` with `asset_group=SPORTS`.
 > Arbitrage detection and odds normalization happen within the same service.
 
 ---

@@ -1,6 +1,6 @@
 /** Strategies trading page — filters and presentation tokens */
 
-export const ASSET_CLASS_COLORS: Record<string, string> = {
+export const asset_group_COLORS: Record<string, string> = {
   DeFi: "#4ade80",
   CeFi: "#60a5fa",
   TradFi: "#a78bfa",

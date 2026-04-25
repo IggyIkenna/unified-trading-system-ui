@@ -1,13 +1,13 @@
 "use client";
 
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
+import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
-import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { Coins, TrendingUp } from "lucide-react";
 import * as React from "react";
 import { toast } from "sonner";
@@ -146,7 +146,7 @@ export function DeFiStakingWidget(_props: WidgetComponentProps) {
               max_slippage_bps: 50,
               expected_output: amountNum,
               benchmark_price: selected.apy,
-              asset_class: "DeFi",
+              asset_group: "DeFi",
               lane: "defi",
             });
             setAmount("");

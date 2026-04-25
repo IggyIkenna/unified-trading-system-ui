@@ -3,24 +3,20 @@
 // Realistic seeded data for institutional strategy research workspace
 // =============================================================================
 
-import {
-  StrategyTemplate,
-  StrategyConfig,
-  BacktestRun,
-  BacktestMetrics,
-  ResultSlice,
-  BatchLiveComparison,
-  StrategyCandidate,
-  StrategyAlert,
-  StrategyArchetype,
-  AssetClass,
-  TestingStage,
-  StrategySignal,
-  SignalQualityMetrics,
-  SignalOverlapMetrics,
-} from "@/lib/types/strategy-platform";
 import { generateBacktestAnalytics } from "@/lib/mocks/fixtures/backtest-analytics";
 import type { BacktestAnalytics } from "@/lib/types/backtest-analytics";
+import {
+  BacktestMetrics,
+  BacktestRun,
+  SignalOverlapMetrics,
+  SignalQualityMetrics,
+  StrategyAlert,
+  StrategyArchetype,
+  StrategyCandidate,
+  StrategyConfig,
+  StrategySignal,
+  StrategyTemplate
+} from "@/lib/types/strategy-platform";
 
 // =============================================================================
 // Strategy Templates
@@ -631,7 +627,7 @@ export const ARCHETYPE_OPTIONS = [
   { value: "OPTIONS", label: "Options", count: 1 },
 ];
 
-export const ASSET_CLASS_OPTIONS = [
+export const asset_group_OPTIONS = [
   { value: "CeFi", label: "CeFi", count: 8 },
   { value: "DeFi", label: "DeFi", count: 3 },
   { value: "TradFi", label: "TradFi", count: 2 },
@@ -803,23 +799,23 @@ export function computeSignalOverlap(
     confluence_zones:
       overlapCount > 0
         ? [
-            {
-              start: new Date(Date.now() - 86400000 * 45).toISOString(),
-              end: new Date(Date.now() - 86400000 * 35).toISOString(),
-              direction: "LONG",
-            },
-          ]
+          {
+            start: new Date(Date.now() - 86400000 * 45).toISOString(),
+            end: new Date(Date.now() - 86400000 * 35).toISOString(),
+            direction: "LONG",
+          },
+        ]
         : [],
     divergence_zones:
       overlapPct < 40
         ? [
-            {
-              start: new Date(Date.now() - 86400000 * 20).toISOString(),
-              end: new Date(Date.now() - 86400000 * 14).toISOString(),
-              a_direction: "LONG",
-              b_direction: "SHORT",
-            },
-          ]
+          {
+            start: new Date(Date.now() - 86400000 * 20).toISOString(),
+            end: new Date(Date.now() - 86400000 * 14).toISOString(),
+            a_direction: "LONG",
+            b_direction: "SHORT",
+          },
+        ]
         : [],
   };
 }

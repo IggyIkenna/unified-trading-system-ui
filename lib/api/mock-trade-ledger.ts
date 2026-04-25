@@ -19,7 +19,7 @@ export interface MockOrder {
   status: "pending" | "open" | "partially_filled" | "filled" | "cancelled" | "rejected";
   filled_quantity: number;
   average_fill_price: number | null;
-  asset_class: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
+  asset_group: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
   lane: "book" | "sports" | "defi" | "options" | "predictions";
   algo_type: string | null;
   /**
@@ -54,7 +54,7 @@ function defaultState(): MockTradeLedgerState {
         status: "filled",
         filled_quantity: 0.5,
         average_fill_price: 68418.5,
-        asset_class: "CeFi",
+        asset_group: "CeFi",
         lane: "book",
         algo_type: "TWAP",
         correlation_id: "corr-ord-1710000001",
@@ -75,7 +75,7 @@ function defaultState(): MockTradeLedgerState {
         status: "filled",
         filled_quantity: 10.0,
         average_fill_price: 3812.55,
-        asset_class: "CeFi",
+        asset_group: "CeFi",
         lane: "book",
         algo_type: "VWAP",
         correlation_id: "corr-ord-1710000002",
@@ -96,7 +96,7 @@ function defaultState(): MockTradeLedgerState {
         status: "filled",
         filled_quantity: 1.0,
         average_fill_price: 3800.0,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
         algo_type: null,
         correlation_id: "corr-ord-1710000003",
@@ -117,7 +117,7 @@ function defaultState(): MockTradeLedgerState {
         status: "filled",
         filled_quantity: 100.0,
         average_fill_price: 1.85,
-        asset_class: "Sports",
+        asset_group: "Sports",
         lane: "sports",
         algo_type: null,
         correlation_id: "corr-ord-1710000004",
@@ -138,7 +138,7 @@ function defaultState(): MockTradeLedgerState {
         status: "filled",
         filled_quantity: 50.0,
         average_fill_price: 0.62,
-        asset_class: "Prediction",
+        asset_group: "Prediction",
         lane: "predictions",
         algo_type: null,
         correlation_id: "corr-ord-1710000005",
@@ -159,7 +159,7 @@ function defaultState(): MockTradeLedgerState {
         status: "filled",
         filled_quantity: 5.0,
         average_fill_price: 210.45,
-        asset_class: "CeFi",
+        asset_group: "CeFi",
         lane: "options",
         algo_type: "market",
         correlation_id: "corr-ord-1710000006",
@@ -180,7 +180,7 @@ function defaultState(): MockTradeLedgerState {
         status: "open",
         filled_quantity: 0,
         average_fill_price: null,
-        asset_class: "CeFi",
+        asset_group: "CeFi",
         lane: "book",
         algo_type: "TWAP",
         correlation_id: "corr-ord-1710000007",
@@ -201,7 +201,7 @@ function defaultState(): MockTradeLedgerState {
         status: "pending",
         filled_quantity: 0,
         average_fill_price: null,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
         algo_type: null,
         correlation_id: "corr-ord-1710000008",
@@ -261,7 +261,7 @@ export interface PlaceOrderParams {
   order_type: "market" | "limit";
   quantity: number;
   price: number;
-  asset_class: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
+  asset_group: "CeFi" | "DeFi" | "TradFi" | "Sports" | "Prediction";
   lane: "book" | "sports" | "defi" | "options" | "predictions";
   algo_type?: string | null;
   /** Semantic instruction kind (LEND / WITHDRAW / SWAP …). */
@@ -289,7 +289,7 @@ export function placeMockOrder(params: PlaceOrderParams): MockOrder {
     status: "pending",
     filled_quantity: 0,
     average_fill_price: null,
-    asset_class: params.asset_class,
+    asset_group: params.asset_group,
     lane: params.lane,
     algo_type: params.algo_type ?? null,
     instruction_type: params.instruction_type ?? null,
@@ -371,7 +371,7 @@ export function resetMockOrders(): void {
  */
 export function getFilledDefiOrders(strategyId?: string): MockOrder[] {
   return getState().orders.filter(
-    (o) => o.asset_class === "DeFi" && o.status === "filled" && (!strategyId || o.strategy_id === strategyId),
+    (o) => o.asset_group === "DeFi" && o.status === "filled" && (!strategyId || o.strategy_id === strategyId),
   );
 }
 
@@ -385,7 +385,7 @@ export function computeDefiLedgerPnL(): {
   totalNetCost: number;
   byStrategy: Record<string, { orderCount: number; totalCost: number; gasEstimate: number }>;
 } {
-  const filled = getState().orders.filter((o) => o.asset_class === "DeFi" && o.status === "filled");
+  const filled = getState().orders.filter((o) => o.asset_group === "DeFi" && o.status === "filled");
 
   const byStrategy: Record<string, { orderCount: number; totalCost: number; gasEstimate: number }> = {};
   let totalGasCost = 0;
@@ -422,7 +422,7 @@ export function computeCeFiLedgerPnL(): {
   totalNotional: number;
   orderCount: number;
 } {
-  const filled = getState().orders.filter((o) => o.asset_class === "CeFi" && o.status === "filled");
+  const filled = getState().orders.filter((o) => o.asset_group === "CeFi" && o.status === "filled");
 
   let totalCommission = 0;
   let totalSlippage = 0;

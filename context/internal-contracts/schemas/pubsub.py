@@ -154,7 +154,7 @@ class AggregatedPositionMessage(BaseModel):
 
     client_id: str | None = Field(default=None, json_schema_extra={"pii": True})
     instrument_id: str
-    asset_class: str | None = None
+    asset_group: str | None = None
     instrument_type: str | None = None
     strategy_id: str | None = None
     underlying: str | None = None

@@ -1,9 +1,20 @@
 "use client";
 
-import * as React from "react";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { WatchlistSymbol } from "@/components/trading/watchlist-panel";
+import { toast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { useExecutionMode } from "@/lib/execution-mode-context";
+import {
+  ASSETS,
+  DEFAULT_WATCHLISTS,
+  SPOT_PRICES,
+  TRADFI_ASSETS,
+  TRADFI_SPOT_PRICES,
+  generateFuturesData,
+  generateOptionChain,
+  generateTradFiOptionChain,
+} from "@/lib/mocks/fixtures/options-futures-mock";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type {
   Asset,
   AssetClass,
@@ -22,19 +33,8 @@ import type {
   TradFiMarket,
   TradeDirection,
 } from "@/lib/types/options";
-import {
-  ASSETS,
-  DEFAULT_WATCHLISTS,
-  TRADFI_ASSETS,
-  generateFuturesData,
-  generateOptionChain,
-  generateTradFiOptionChain,
-  SPOT_PRICES,
-  TRADFI_SPOT_PRICES,
-} from "@/lib/mocks/fixtures/options-futures-mock";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import { toast } from "@/hooks/use-toast";
 import { formatNumber } from "@/lib/utils/formatters";
+import * as React from "react";
 
 export interface OptionsDataContextValue {
   assetClass: AssetClass;
@@ -262,7 +262,7 @@ export function OptionsDataProvider({ children }: { children: React.ReactNode })
       order_type: orderType === "market" ? "market" : "limit",
       quantity: qty,
       price,
-      asset_class: "CeFi",
+      asset_group: "CeFi",
       lane: "options",
     });
     toast({ title: "Order submitted", description: `${selectedInstrument.name} (${order.id})` });

@@ -1,14 +1,13 @@
 "use client";
 
-import * as React from "react";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } from "lucide-react";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
-import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
+import { useGasEstimate } from "@/hooks/use-gas-estimate";
 import {
   CHAIN_GAS_BASELINE,
   CHAIN_GAS_BASELINE_DEFAULT,
@@ -16,11 +15,12 @@ import {
   DEFI_TOKENS,
   GAS_TOKEN_MIN_THRESHOLDS,
 } from "@/lib/config/services/defi.config";
-import { useGasEstimate } from "@/hooks/use-gas-estimate";
 import { cn } from "@/lib/utils";
-import { useDeFiData } from "./defi-data-context";
 import { formatNumber } from "@/lib/utils/formatters";
+import { AlertTriangle, ArrowRight, Clock, Fuel, Globe, Send, Trophy, Wallet } from "lucide-react";
+import * as React from "react";
 import { toast } from "sonner";
+import { useDeFiData } from "./defi-data-context";
 
 export function DeFiTransferWidget(_props: WidgetComponentProps) {
   const {
@@ -247,7 +247,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                   max_slippage_bps: 0,
                   expected_output: amountNum * price,
                   benchmark_price: price,
-                  asset_class: "DeFi",
+                  asset_group: "DeFi",
                   lane: "defi",
                 });
                 toast.success("Transfer submitted", {
@@ -430,7 +430,7 @@ export function DeFiTransferWidget(_props: WidgetComponentProps) {
                   max_slippage_bps: 50,
                   expected_output: amountNum * price * 0.9995,
                   benchmark_price: price,
-                  asset_class: "DeFi",
+                  asset_group: "DeFi",
                   lane: "defi",
                 });
                 toast.success("Bridge submitted", {

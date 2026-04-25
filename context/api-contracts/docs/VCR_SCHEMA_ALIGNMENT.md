@@ -55,7 +55,7 @@ Everything that can be produced by data vendors and exchanges, and that we may n
 | ---------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------- |
 | **Instrument / symbol list** | List of tradeable instruments                        | symbol, base, quote, exchange                                                     |
 | **Instrument definition**    | Full contract/symbol metadata                        | raw_symbol, instrument_id, class, expiry, tick_size, lot_size, etc.               |
-| **Type information**         | Instrument/product type (spot, perp, future, option) | instrument_type, product_type, asset_class, option_style (e.g. American/European) |
+| **Type information**         | Instrument/product type (spot, perp, future, option) | instrument_type, product_type, asset_group, option_style (e.g. American/European) |
 | **Contract specs**           | Tick size, lot size, min notional, etc.              | tick_size, lot_size, min_qty, max_qty, currency                                   |
 
 ### 1.5 Market data – derived and events

@@ -1,18 +1,18 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { formatNumber, formatPercent } from "@/lib/utils/formatters";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { TrendingUp, TrendingDown } from "lucide-react";
-import type { SelectedInstrument, TradeDirection, OrderType } from "@/lib/types/options";
+import { toast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { formatUsd } from "@/lib/mocks/fixtures/options-futures-mock";
+import type { OrderType, SelectedInstrument, TradeDirection } from "@/lib/types/options";
+import { cn } from "@/lib/utils";
+import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { TrendingDown, TrendingUp } from "lucide-react";
+import * as React from "react";
 import { TradePanelCombo } from "./trade-panel-combo";
 import { TradePanelSpread } from "./trade-panel-spread";
 
@@ -282,7 +282,7 @@ export function TradePanel({ instrument }: { instrument: SelectedInstrument | nu
             order_type: orderType === "market" ? "market" : "limit",
             quantity: amountNum,
             price: orderType === "market" ? (instrument.lastPrice ?? priceNum) : priceNum,
-            asset_class: "CeFi",
+            asset_group: "CeFi",
             lane: "options",
           });
           setAmount("");

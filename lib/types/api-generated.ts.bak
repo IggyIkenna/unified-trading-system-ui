@@ -5901,7 +5901,7 @@ export interface paths {
          * List Aggregated Positions
          * @description Return all AggregatedPosition objects from the aggregator.
          *
-         *     Supports filtering by asset_class, venue, instrument_type with pagination.
+         *     Supports filtering by asset_group, venue, instrument_type with pagination.
          */
         get: operations["list_aggregated_positions_aggregated_positions_get"];
         put?: never;
@@ -9308,7 +9308,7 @@ export interface components {
             /** Instrument Id */
             instrument_id: string;
             /** Asset Class */
-            asset_class?: string | null;
+            asset_group?: string | null;
             /** Instrument Type */
             instrument_type?: string | null;
             /** Strategy Id */
@@ -9612,7 +9612,7 @@ export interface components {
              */
             total_pnl: string;
             /** By Asset Class */
-            by_asset_class?: {
+            by_asset_group?: {
                 [key: string]: string;
             };
             /** By Strategy */
@@ -9681,7 +9681,7 @@ export interface components {
              */
             instrument_count: number;
             /** Asset Class Exposures */
-            asset_class_exposures?: {
+            asset_group_exposures?: {
                 [key: string]: string;
             };
             /** Strategy Exposures */
@@ -9770,7 +9770,7 @@ export interface components {
             /** Underlying */
             underlying: string;
             /** Asset Class */
-            asset_class: string;
+            asset_group: string;
             /**
              * Net Delta
              * @default 0
@@ -19016,7 +19016,7 @@ export interface operations {
         parameters: {
             query?: {
                 /** @description Filter by asset class */
-                asset_class?: string | null;
+                asset_group?: string | null;
                 /** @description Filter by venue */
                 venue?: string | null;
                 /** @description Filter by instrument type */

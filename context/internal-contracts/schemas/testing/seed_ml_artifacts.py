@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 STRATEGIES: list[dict[str, object]] = [
     {
         "name": "momentum_cefi",
-        "asset_class": "crypto_cefi",
+        "asset_group": "crypto_cefi",
         "features": [
             "return_1",
             "return_5",
@@ -49,7 +49,7 @@ STRATEGIES: list[dict[str, object]] = [
     },
     {
         "name": "mean_revert_tradfi",
-        "asset_class": "tradfi_equity",
+        "asset_group": "tradfi_equity",
         "features": [
             "return_1",
             "rsi_14",
@@ -63,21 +63,21 @@ STRATEGIES: list[dict[str, object]] = [
     },
     {
         "name": "defi_yield_arb",
-        "asset_class": "crypto_defi",
+        "asset_group": "crypto_defi",
         "features": ["apy", "tvl_usd", "return_1"],
         "n_classes": 2,  # enter / exit
         "description": "Yield arbitrage signal for DeFi protocols",
     },
     {
         "name": "sports_value_bet",
-        "asset_class": "sports",
+        "asset_group": "sports",
         "features": ["odds_home", "odds_draw", "odds_away", "implied_prob_home"],
         "n_classes": 2,  # value / no-value
         "description": "Value bet detection for sports markets",
     },
     {
         "name": "vol_regime",
-        "asset_class": "crypto_cefi",
+        "asset_group": "crypto_cefi",
         "features": ["realised_vol_20", "realised_vol_5", "atr_14", "btc_eth_corr_20"],
         "n_classes": 2,  # high_vol / low_vol regime
         "description": "Volatility regime classifier — adapts position sizing",
@@ -131,7 +131,7 @@ def generate_logistic_model(
     return {
         "model_type": "logistic_regression",
         "strategy": name,
-        "asset_class": str(strategy["asset_class"]),
+        "asset_group": str(strategy["asset_group"]),
         "description": str(strategy["description"]),
         "feature_names": features,
         "n_classes": n_classes,
@@ -195,7 +195,7 @@ def generate_model_registry_index(
         "models": [
             {
                 "strategy": str(s["name"]),
-                "asset_class": str(s["asset_class"]),
+                "asset_group": str(s["asset_group"]),
                 "artifact_path": str(output_dir / version / f"{s['name']}_model.json"),
             }
             for s in strategies

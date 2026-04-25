@@ -68,7 +68,7 @@ class CanonicalInstrument(CanonicalBase):
     instruction_type: InstructionType | None = None
     venue_type: str | None = None
     data_provider: str | None = None
-    asset_class: AssetClass | None = None
+    asset_group: AssetClass | None = None
     available_to_datetime: AwareDatetime | None = None
     base_asset: str | None = None
     quote_asset: str | None = None

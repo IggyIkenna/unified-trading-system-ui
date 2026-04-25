@@ -3043,7 +3043,7 @@
       "category": "CEFI",
       "subcategory": "MOMENTUM",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -3063,7 +3063,7 @@
       "category": "CEFI",
       "subcategory": "MOMENTUM",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -3083,7 +3083,7 @@
       "category": "CEFI",
       "subcategory": "MOMENTUM",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -3103,7 +3103,7 @@
       "category": "TRADFI",
       "subcategory": "MOMENTUM",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "EQUITY"
       ],
       "venues": [
@@ -3122,7 +3122,7 @@
       "category": "DEFI",
       "subcategory": "LENDING",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN"
       ],
       "venues": [
@@ -3141,7 +3141,7 @@
       "category": "DEFI",
       "subcategory": "BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET",
         "PERPETUAL"
       ],
@@ -3166,7 +3166,7 @@
       "category": "DEFI",
       "subcategory": "STAKED_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "LST",
         "PERPETUAL"
       ],
@@ -3191,7 +3191,7 @@
       "category": "DEFI",
       "subcategory": "RECURSIVE_STAKED_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN",
         "DEBT_TOKEN",
         "PERPETUAL"
@@ -3216,7 +3216,7 @@
       "category": "SPORTS",
       "subcategory": "ARBITRAGE",
       "domain": "sports",
-      "asset_classes": [
+      "asset_groupes": [
         "FIXED_ODDS"
       ],
       "venues": [
@@ -3235,7 +3235,7 @@
       "category": "SPORTS",
       "subcategory": "KELLY",
       "domain": "sports",
-      "asset_classes": [
+      "asset_groupes": [
         "FIXED_ODDS"
       ],
       "venues": [
@@ -3254,7 +3254,7 @@
       "category": "SPORTS",
       "subcategory": "ML_SPORTS",
       "domain": "sports",
-      "asset_classes": [
+      "asset_groupes": [
         "FIXED_ODDS"
       ],
       "venues": [
@@ -3273,7 +3273,7 @@
       "category": "SPORTS",
       "subcategory": "MARKET_MAKING",
       "domain": "sports",
-      "asset_classes": [
+      "asset_groupes": [
         "FIXED_ODDS"
       ],
       "venues": [
@@ -3292,7 +3292,7 @@
       "category": "QUANT",
       "subcategory": "STAT_ARB",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_PAIR"
       ],
       "venues": [
@@ -3312,7 +3312,7 @@
       "category": "QUANT",
       "subcategory": "REL_VOL",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_PAIR"
       ],
       "venues": [
@@ -3332,7 +3332,7 @@
       "category": "QUANT",
       "subcategory": "CROSS_EXCHANGE",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_PAIR"
       ],
       "venues": [
@@ -3351,7 +3351,7 @@
       "category": "QUANT",
       "subcategory": "PREDICTION_ARB",
       "domain": "prediction",
-      "asset_classes": [
+      "asset_groupes": [
         "PREDICTION_MARKET"
       ],
       "venues": [
@@ -3369,7 +3369,7 @@
       "category": "QUANT",
       "subcategory": "VOL_SURFACE",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "OPTION",
         "PERPETUAL"
       ],
@@ -3387,7 +3387,7 @@
       "category": "TRADFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "EQUITY"
       ],
       "venues": [
@@ -3406,7 +3406,7 @@
       "category": "CEFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -3425,7 +3425,7 @@
       "category": "CEFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -3444,7 +3444,7 @@
       "category": "CEFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -3463,7 +3463,7 @@
       "category": "TRADFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "CURRENCY"
       ],
       "venues": [
@@ -3482,7 +3482,7 @@
       "category": "TRADFI",
       "subcategory": "MEAN_REVERSION",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "COMMODITY"
       ],
       "venues": [
@@ -3502,7 +3502,7 @@
       "category": "TRADFI",
       "subcategory": "ML_SWING",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "EQUITY"
       ],
       "venues": [
@@ -3521,7 +3521,7 @@
       "category": "TRADFI",
       "subcategory": "ML_SWING",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "CURRENCY"
       ],
       "venues": [
@@ -3540,7 +3540,7 @@
       "category": "TRADFI",
       "subcategory": "ML_SWING",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "COMMODITY"
       ],
       "venues": [
@@ -3560,7 +3560,7 @@
       "category": "OPTIONS",
       "subcategory": "STRIKE_SELECTION",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "OPTION"
       ],
       "venues": [
@@ -3579,7 +3579,7 @@
       "category": "OPTIONS",
       "subcategory": "DELTA_CONVERSION",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "OPTION"
       ],
       "venues": [
@@ -3598,7 +3598,7 @@
       "category": "OPTIONS",
       "subcategory": "VOLATILITY_COMBO",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "OPTION"
       ],
       "venues": [
@@ -3617,7 +3617,7 @@
       "category": "OPTIONS",
       "subcategory": "DELTA_CONVERSION",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "OPTION"
       ],
       "venues": [
@@ -3636,7 +3636,7 @@
       "category": "SPORTS",
       "subcategory": "HALFTIME_ML",
       "domain": "sports",
-      "asset_classes": [
+      "asset_groupes": [
         "FIXED_ODDS"
       ],
       "venues": [
@@ -3654,7 +3654,7 @@
       "category": "DEFI",
       "subcategory": "BTC_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET",
         "PERPETUAL"
       ],
@@ -3676,7 +3676,7 @@
       "category": "DEFI",
       "subcategory": "BTC_LENDING",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN"
       ],
       "venues": [
@@ -3695,7 +3695,7 @@
       "category": "DEFI",
       "subcategory": "SOL_STAKED_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "LST",
         "PERPETUAL"
       ],
@@ -3717,7 +3717,7 @@
       "category": "DEFI",
       "subcategory": "SOL_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET",
         "PERPETUAL"
       ],
@@ -3739,7 +3739,7 @@
       "category": "DEFI",
       "subcategory": "SOL_LENDING",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN"
       ],
       "venues": [
@@ -3758,7 +3758,7 @@
       "category": "DEFI",
       "subcategory": "CONCENTRATED_LP",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "LP_TOKEN"
       ],
       "venues": [
@@ -3776,7 +3776,7 @@
       "category": "DEFI",
       "subcategory": "AMM_LP",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "LP_TOKEN"
       ],
       "venues": [
@@ -3795,7 +3795,7 @@
       "category": "DEFI",
       "subcategory": "ACTIVE_LP",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "LP_TOKEN"
       ],
       "venues": [
@@ -3812,7 +3812,7 @@
       "category": "DEFI",
       "subcategory": "ENHANCED_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET",
         "PERPETUAL",
         "LST"
@@ -3834,7 +3834,7 @@
       "category": "DEFI",
       "subcategory": "ETHENA_BENCHMARK",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET"
       ],
       "venues": [
@@ -3853,7 +3853,7 @@
       "category": "DEFI",
       "subcategory": "L2_BASIS",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET",
         "PERPETUAL"
       ],
@@ -3872,7 +3872,7 @@
       "category": "DEFI",
       "subcategory": "LENDING_ARB",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN"
       ],
       "venues": [
@@ -3891,7 +3891,7 @@
       "category": "DEFI",
       "subcategory": "MULTI_CHAIN_LENDING",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN"
       ],
       "venues": [
@@ -3910,7 +3910,7 @@
       "category": "DEFI",
       "subcategory": "CROSS_CHAIN_SOR",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET"
       ],
       "venues": [
@@ -3929,7 +3929,7 @@
       "category": "DEFI",
       "subcategory": "CROSS_CHAIN_YIELD_ARB",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "A_TOKEN"
       ],
       "venues": [
@@ -3947,7 +3947,7 @@
       "category": "DEFI",
       "subcategory": "OMNICHAIN_TRANSFER",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET"
       ],
       "venues": [
@@ -3964,7 +3964,7 @@
       "category": "DEFI",
       "subcategory": "LIQUIDATION_CAPTURE",
       "domain": "defi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_ASSET",
         "PERPETUAL"
       ],
@@ -3983,7 +3983,7 @@
       "category": "CEFI",
       "subcategory": "MARKET_MAKING",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "SPOT_PAIR",
         "PERPETUAL"
       ],
@@ -4005,7 +4005,7 @@
       "category": "CEFI",
       "subcategory": "ML_DIRECTIONAL",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL"
       ],
       "venues": [
@@ -4025,7 +4025,7 @@
       "category": "OPTIONS",
       "subcategory": "OPTIONS_MM",
       "domain": "cefi",
-      "asset_classes": [
+      "asset_groupes": [
         "OPTION",
         "PERPETUAL"
       ],
@@ -4045,7 +4045,7 @@
       "category": "TRADFI",
       "subcategory": "COMMODITY_REGIME",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "COMMODITY"
       ],
       "venues": [
@@ -4065,7 +4065,7 @@
       "category": "TRADFI",
       "subcategory": "EVENT_MACRO",
       "domain": "tradfi",
-      "asset_classes": [
+      "asset_groupes": [
         "PERPETUAL",
         "EQUITY"
       ],

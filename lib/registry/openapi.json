@@ -7648,7 +7648,7 @@
         ],
         "parameters": [
           {
-            "name": "asset_class",
+            "name": "asset_group",
             "in": "query",
             "required": false,
             "schema": {
@@ -7861,7 +7861,7 @@
         ],
         "parameters": [
           {
-            "name": "asset_class",
+            "name": "asset_group",
             "in": "query",
             "required": false,
             "schema": {
@@ -11724,7 +11724,7 @@
             }
           },
           {
-            "name": "asset_class",
+            "name": "asset_group",
             "in": "query",
             "required": false,
             "schema": {
@@ -30074,7 +30074,7 @@
             "title": "Quote Asset",
             "default": "USD"
           },
-          "asset_class": {
+          "asset_group": {
             "type": "string",
             "title": "Asset Class",
             "default": ""
@@ -32435,7 +32435,7 @@
             ],
             "description": "Trade activity since last snapshot"
           },
-          "asset_class_exposures_usd": {
+          "asset_group_exposures_usd": {
             "additionalProperties": {
               "type": "string",
               "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$"

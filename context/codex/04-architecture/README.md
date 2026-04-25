@@ -103,7 +103,7 @@ The pipeline processes four market categories through the same service graph:
 
 Each category shares the same pipeline services but with different venues, data types, instrument types, and external
 API dependencies. SPORTS was added as the fourth asset class (2026-03-01) and flows through the existing services
-(instruments, market-data-processing, strategy, execution) with `asset_class=SPORTS`. The only new standalone service is
+(instruments, market-data-processing, strategy, execution) with `asset_group=SPORTS`. The only new standalone service is
 `features-sports-service` (sports-specific feature engineering). See `sports-integration-plan.md` for full details.
 
 ### Service Roles

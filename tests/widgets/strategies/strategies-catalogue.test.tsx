@@ -14,9 +14,9 @@
  *
  * Per unified-trading-pm/plans/ai/ui_widget_test_rollout_2026_04_24.plan.md Phase 5.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { buildMockStrategiesData, buildMockStrategy } from "../_helpers/mock-strategies-context";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockStrategiesData } from "../_helpers/mock-strategies-context";
 
 const mockStrategiesData = buildMockStrategiesData();
 
@@ -37,7 +37,7 @@ vi.mock("@/lib/config/services/strategies.config", () => ({
     { id: "yield-rotation", label: "Yield Rotation" },
     { id: "momentum", label: "Momentum" },
   ],
-  ASSET_CLASS_COLORS: {
+  asset_group_COLORS: {
     DeFi: "#10b981",
     Crypto: "#6366f1",
   },
@@ -90,8 +90,8 @@ vi.mock("@/lib/utils/formatters", () => ({
   formatPercent: (n: number, d: number) => `${n.toFixed(d)}%`,
 }));
 
-import * as React from "react";
 import { StrategiesCatalogueWidget } from "@/components/widgets/strategies/strategies-catalogue-widget";
+import * as React from "react";
 
 describe("strategies-catalogue — L1.5 harness", () => {
   beforeEach(() => {

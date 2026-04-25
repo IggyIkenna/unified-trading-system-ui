@@ -1,18 +1,18 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
-import { Droplets, Plus, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import { DEFI_FEE_TIERS } from "@/lib/config/services/defi.config";
-import { useDeFiData } from "./defi-data-context";
+import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { Droplets, Plus, Trash2 } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+import { useDeFiData } from "./defi-data-context";
 
 export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
   const { liquidityPools, executeDeFiOrder } = useDeFiData();
@@ -189,7 +189,7 @@ export function DeFiLiquidityWidget(_props: WidgetComponentProps) {
               max_slippage_bps: 50,
               expected_output: amountNum,
               benchmark_price: pool.apr24h,
-              asset_class: "DeFi",
+              asset_group: "DeFi",
               lane: "defi",
             });
             setAmount("");

@@ -274,6 +274,19 @@ const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
     dart: "visible",
     reports: "visible",
   }),
+
+  // ── Demo personas for general UAT demos (2026-04-25). Distinct from
+  //    prospect-* personas which carry CRM-shaped context. demo-signals-client
+  //    is a clean Signals-In showcase; demo-im-reports-only is a reports-only
+  //    IM client view (no IR, no DART) for the allocator-view walkthrough.
+  "demo-signals-client": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
+  "demo-im-reports-only": tileOverride({
+    dart: "hidden",
+    reports: "visible",
+  }),
 };
 
 const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
@@ -513,6 +526,30 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       "pnl-attribution": "visible",
       settlement: "visible",
       reconciliation: "visible",
+    },
+  }),
+  "demo-signals-client": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      observe: "visible",
+      "signal-intake": "visible",
+      "strategy-catalogue": "visible",
+      research: "locked",
+      promote: "locked",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+    },
+  }),
+  "demo-im-reports-only": subRouteOverride({
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+      regulatory: "locked",
+      catalogue: "locked",
     },
   }),
   "prospect-perp-funding": subRouteOverride({

@@ -181,7 +181,7 @@ have been moved to **Category A** (see A9 above) — `features-onchain-service` 
 | `AuditRetention`      | Same as `AuditRequirement`                   | Retention period enum                                                                |
 | `EXECUTION_AUDIT`     | Compliance service                           | Audit constant for execution log retention                                           |
 | `STRATEGY_AUDIT`      | Compliance service                           | Audit constant for strategy log retention                                            |
-| `AssetClass`          | Market data categorization refactor          | Enum for asset categorization; adopt when instruments-service adds asset_class field |
+| `AssetClass`          | Market data categorization refactor          | Enum for asset categorization; adopt when instruments-service adds asset_group field |
 
 **Note:** The `CanonicalOptions*` family (`CanonicalOptionsChainEntry`) is currently orphaned but has normalizers in UAC. Candidate consumer: `market-data-processing-service` options candle adapter when options tick processing is activated.
 

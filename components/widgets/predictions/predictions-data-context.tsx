@@ -1,35 +1,35 @@
 "use client";
 
-import * as React from "react";
-import { useExecutionMode } from "@/lib/execution-mode-context";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
-import { useToast } from "@/hooks/use-toast";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import type { FilterDefinition } from "@/components/shared/filter-bar";
+import { calcArbStakes } from "@/components/trading/predictions/helpers";
 import type {
-  PredictionMarket,
   MarketCategory,
   MarketVenue,
-  SortOption,
-  PredictionPosition,
   OdumInstrument,
   OdumInstrumentType,
-  Timeframe,
-  PredictionArbOpportunity,
   PredictionArbMarketType,
+  PredictionArbOpportunity,
+  PredictionMarket,
+  PredictionPosition,
   PredictionQuickTradeParams,
+  SortOption,
+  Timeframe,
 } from "@/components/trading/predictions/types";
+import { useToast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { useExecutionMode } from "@/lib/execution-mode-context";
 import {
   MOCK_MARKETS,
   MOCK_POSITIONS,
   MOCK_PREDICTION_ARBS,
-  ODUM_INSTRUMENTS,
   MOCK_RECENT_FILLS,
+  ODUM_INSTRUMENTS,
 } from "@/lib/mocks/fixtures/predictions-data";
-import { calcArbStakes } from "@/components/trading/predictions/helpers";
 import { mock01 } from "@/lib/mocks/generators/deterministic";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
+import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import * as React from "react";
 
 export interface RecentFill {
   id: string;
@@ -375,7 +375,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
         order_type: "limit",
         quantity: stake,
         price,
-        asset_class: "Prediction",
+        asset_group: "Prediction",
         lane: "predictions",
       });
       const shares = stake / price;
@@ -413,7 +413,7 @@ export function PredictionsDataProvider({ children }: { children: React.ReactNod
           order_type: "limit",
           quantity: i === 0 ? s1 : s2,
           price: leg.odds,
-          asset_class: "Prediction",
+          asset_group: "Prediction",
           lane: "predictions",
         });
       });

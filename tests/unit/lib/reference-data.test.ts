@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 
 import {
   ACCESS_MODES,
-  ASSET_CLASS_LABELS,
   DATA_FLOWS,
   EXECUTION_ALGORITHMS,
   PNL_FACTORS,
@@ -13,6 +12,7 @@ import {
   UNDERLYINGS,
   VENUE_ACCESS_MODES,
   VENUE_CATEGORIES,
+  asset_group_LABELS,
   formatCurrency,
   formatPercent,
   getBetStatusColor,
@@ -59,10 +59,10 @@ describe("reference-data — exported constants", () => {
     expect(VENUE_ACCESS_MODES.THEGRAPH).toBe("graphql");
   });
 
-  it("ASSET_CLASS_LABELS covers the core asset classes", () => {
-    expect(ASSET_CLASS_LABELS.crypto).toBe("Crypto");
-    expect(ASSET_CLASS_LABELS.equity).toBe("Equity");
-    expect(ASSET_CLASS_LABELS.fx).toBe("FX");
+  it("asset_group_LABELS covers the core asset classes", () => {
+    expect(asset_group_LABELS.crypto).toBe("Crypto");
+    expect(asset_group_LABELS.equity).toBe("Equity");
+    expect(asset_group_LABELS.fx).toBe("FX");
   });
 
   it("SERVICE_PORTS has known services mapped to ports", () => {

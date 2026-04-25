@@ -7,7 +7,7 @@ Schema design
 -------------
 22 stored fields (down from 36). Fields derivable from UAC venue mappings
 (symbol, settlement_asset, data_source_constraint, etc.) are removed.
-``asset_class`` is set explicitly by URDI adapters using the UAC registry
+``asset_group`` is set explicitly by URDI adapters using the UAC registry
 (per-instrument, not per-venue — e.g. ES futures are equity, CL futures
 are commodity, even though both trade on CME).
 """
@@ -103,7 +103,7 @@ class InstrumentRecord(BaseModel):
     - symbol: derivable as f"{base_asset}/{quote_asset}"
     - settlement_asset: = quote_asset (linear) or base_asset (inverse)
     - min_order_size: = lot_size in practice
-    - data_source_constraint: derivable from asset_class
+    - data_source_constraint: derivable from asset_group
     - is_active: redundant with status
     - trading_hours_open/close: time portion of regular_open/close_utc
     - trading_session: derivable from is_trading_day
@@ -130,7 +130,7 @@ class InstrumentRecord(BaseModel):
     )
 
     # --- Market domain (set by adapter from UAC registry) ---
-    asset_class: AssetClass = AssetClass.CRYPTO
+    asset_group: AssetClass = AssetClass.CRYPTO
     margin_type: MarginType | None = None
 
     # --- Trading params (CeFi/TradFi, None for DeFi) ---

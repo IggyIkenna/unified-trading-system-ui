@@ -13,65 +13,17 @@
 // ---------------------------------------------------------------------------
 
 export {
-  VENUE_CATEGORY_MAP,
-  CLOB_VENUES,
-  DEX_VENUES,
-  SPORTS_VENUES,
-  ZERO_ALPHA_VENUES,
-  INSTRUMENT_TYPES_BY_VENUE,
-  ENDPOINT_REGISTRY,
-  ORDER_SIDES,
-  ORDER_TYPES,
-  ORDER_STATUSES,
-  TIME_IN_FORCE,
-  EXECUTION_STATUSES,
-  EXECUTION_MODES,
-  INSTRUCTION_TYPES,
-  MARKET_STATES,
-  SPORTS,
-  ODDS_FORMATS,
-  ODDS_TYPES,
-  BET_STATUSES,
-  BET_SIDES,
-  MATCH_PERIODS,
-  RISK_TYPES,
-  RISK_CATEGORIES,
-  RISK_STATUSES,
-  RISK_AGGREGATION_LEVELS,
-  ALERT_TYPES,
-  POSITION_SIDES,
-  MARGIN_TYPES,
-  MODEL_TYPES,
-  TARGET_TYPES,
-  REGIME_STATES,
-  FACTOR_TYPES,
-  ASSET_CLASSES,
-  CLOUD_PROVIDERS,
+  ALERT_TYPES, asset_groupES, BET_SIDES, BET_STATUSES, BOOK_TYPES, CLOB_VENUES, CLOUD_PROVIDERS,
   COMPUTE_TYPES,
-  DATA_MODES,
-  RUNTIME_MODES,
-  TESTING_STAGES,
-  PHASE_MODES,
-  DEPLOYMENT_STATUSES,
-  DATA_TYPES,
-  BOOK_TYPES,
-  ERROR_CATEGORIES,
-  ERROR_SEVERITIES,
-  ERROR_RECOVERY_STRATEGIES,
-  LIFECYCLE_EVENT_TYPES,
-  LOG_LEVELS,
-  DURATION_BUCKETS,
-  EMERGENCY_EXIT_TYPES,
-  STRESS_SCENARIO_TYPES,
-  VAR_METHODS,
-  URGENCY_LEVELS,
-  PERMISSIONS,
-  INTERNAL_PUBSUB_TOPICS,
+  DATA_MODES, DATA_TYPES, DEPLOYMENT_STATUSES, DEX_VENUES, DURATION_BUCKETS,
+  EMERGENCY_EXIT_TYPES, ENDPOINT_REGISTRY, ERROR_CATEGORIES, ERROR_RECOVERY_STRATEGIES, ERROR_SEVERITIES, EXECUTION_MODES, EXECUTION_STATUSES, FACTOR_TYPES, INSTRUCTION_TYPES, INSTRUMENT_TYPES_BY_VENUE, INTERNAL_PUBSUB_TOPICS, LIFECYCLE_EVENT_TYPES,
+  LOG_LEVELS, MARGIN_TYPES, MARKET_STATES, MATCH_PERIODS, MODEL_TYPES, ODDS_FORMATS,
+  ODDS_TYPES, ORDER_SIDES, ORDER_STATUSES, ORDER_TYPES, PERMISSIONS, PHASE_MODES, POSITION_SIDES, REGIME_STATES, RISK_AGGREGATION_LEVELS, RISK_CATEGORIES,
+  RISK_STATUSES, RISK_TYPES, RUNTIME_MODES, SPORTS, SPORTS_VENUES, STRESS_SCENARIO_TYPES, TARGET_TYPES, TESTING_STAGES, TIME_IN_FORCE, URGENCY_LEVELS, VAR_METHODS, VENUE_CATEGORY_MAP, ZERO_ALPHA_VENUES
 } from "@/lib/registry/generated";
 
 export {
-  UAC_OPERATION_TYPES as OPERATION_TYPES,
-  UAC_INSTRUMENT_TYPES as INSTRUMENT_TYPES,
+  UAC_INSTRUMENT_TYPES as INSTRUMENT_TYPES, UAC_OPERATION_TYPES as OPERATION_TYPES
 } from "@/lib/registry/generated";
 
 // ---------------------------------------------------------------------------
@@ -79,16 +31,16 @@ export {
 // ---------------------------------------------------------------------------
 
 import {
-  VENUE_CATEGORY_MAP,
-  CLOB_VENUES,
-  DEX_VENUES,
-  SPORTS_VENUES,
-  ZERO_ALPHA_VENUES,
-  ORDER_STATUSES,
   BET_STATUSES,
+  CLOB_VENUES,
   DEPLOYMENT_STATUSES,
-  RISK_STATUSES,
+  DEX_VENUES,
   INSTRUMENT_TYPES_BY_VENUE,
+  ORDER_STATUSES,
+  RISK_STATUSES,
+  SPORTS_VENUES,
+  VENUE_CATEGORY_MAP,
+  ZERO_ALPHA_VENUES,
 } from "@/lib/registry/generated";
 
 export type OrderSide = "buy" | "sell";
@@ -260,7 +212,7 @@ export const ACCESS_MODES = [
 // Asset class labels
 // ---------------------------------------------------------------------------
 
-export const ASSET_CLASS_LABELS: Record<string, string> = {
+export const asset_group_LABELS: Record<string, string> = {
   crypto: "Crypto",
   equity: "Equity",
   fx: "FX",
@@ -309,7 +261,7 @@ export function getVenueCategory(venue: string): VenueCategory | undefined {
 export function getInstrumentTypesForVenue(venue: string): string[] {
   return (
     INSTRUMENT_TYPES_BY_VENUE[
-      venue as keyof typeof INSTRUMENT_TYPES_BY_VENUE
+    venue as keyof typeof INSTRUMENT_TYPES_BY_VENUE
     ] || []
   );
 }
@@ -759,12 +711,12 @@ export interface Service {
   id?: string;
   name: string;
   type:
-    | "api-service"
-    | "service"
-    | "batch-service"
-    | "ui"
-    | "library"
-    | "infrastructure";
+  | "api-service"
+  | "service"
+  | "batch-service"
+  | "ui"
+  | "library"
+  | "infrastructure";
   tier: number;
   domain: string;
   mode: "live" | "batch" | null;

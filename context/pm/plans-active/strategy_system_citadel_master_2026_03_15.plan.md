@@ -106,7 +106,7 @@ todos:
         "category": "CEFI",
         "subcategory": "MOMENTUM",
         "domain": "cefi",
-        "asset_classes": ["PERPETUAL", "SPOT_PAIR"],
+        "asset_groupes": ["PERPETUAL", "SPOT_PAIR"],
         "venues": ["BINANCE_FUTURES", "BYBIT"],
         "instruments": ["BINANCE-FUTURES:PERPETUAL:BTCUSDT"],
         "data_sources": {
@@ -154,7 +154,7 @@ todos:
       3. For each entry where `maturity.code.unit_tests=true`: verify test file exists
       4. For each entry: verify `config_file` path exists on disk
       5. For each entry: verify `venues[]` are all in UCI Venue enum
-      6. For each entry: verify `asset_classes[]` are all in UAC InstrumentType enum
+      6. For each entry: verify `asset_groupes[]` are all in UAC InstrumentType enum
       7. For each entry: verify `api_served_by` exists in workspace-manifest.json
       8. For each entry: verify `ui_rendered_in[]` exist in workspace-manifest.json
       9. Generate `STRATEGY_MANIFEST_DAG.svg` visualization (strategy → venue → instrument → features)
@@ -786,7 +786,7 @@ todos:
       - [x] [AGENT] P1. Generate strategy-instrument validation matrix from strategy-manifest.json.
       Add validation to `check-strategy-maturity.py`:
       - For each strategy: verify every `venues[]` entry maps to an adapter in UMI VENUE_REGISTRY
-      - For each strategy: verify every `asset_classes[]` entry maps to an InstrumentType in UAC
+      - For each strategy: verify every `asset_groupes[]` entry maps to an InstrumentType in UAC
       - For each strategy: verify every `instruments[]` entry exists in instruments-service definitions
       - For each strategy: verify `data_sources.features[]` services exist in workspace-manifest.json
       - WARN if a strategy uses venues/instruments not yet in VENUE_REGISTRY or instrument definitions

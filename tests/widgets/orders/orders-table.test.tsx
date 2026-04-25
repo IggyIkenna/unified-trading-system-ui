@@ -22,9 +22,9 @@
  * copy rather than the TableWidget `data-testid` prop, so the spec stays
  * stable whether or not that attribute is present on the widget.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, within } from "@testing-library/react";
-import { buildMockOrdersData, buildMockOrder } from "../_helpers/mock-orders-context";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { buildMockOrder, buildMockOrdersData } from "../_helpers/mock-orders-context";
 
 const mockOrdersData = buildMockOrdersData();
 
@@ -36,7 +36,7 @@ vi.mock("@/components/widgets/orders/orders-data-context", () => ({
     if (upper.includes("AAVE") || upper.includes("UNISWAP")) return "DeFi" as const;
     return "Spot" as const;
   },
-  ASSET_CLASS_OPTIONS: ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"],
+  asset_group_OPTIONS: ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"],
 }));
 
 import { OrdersTableWidget } from "@/components/widgets/orders/orders-table-widget";

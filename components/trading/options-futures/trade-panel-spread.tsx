@@ -1,14 +1,13 @@
 "use client";
 
-import * as React from "react";
-import { formatNumber } from "@/lib/utils/formatters";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import type { SelectedInstrument } from "@/lib/types/options";
+import { toast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { formatUsd } from "@/lib/mocks/fixtures/options-futures-mock";
+import type { SelectedInstrument } from "@/lib/types/options";
+import { formatNumber } from "@/lib/utils/formatters";
 
 interface TradePanelSpreadProps {
   instrument: SelectedInstrument;
@@ -105,7 +104,7 @@ export function TradePanelSpread({ instrument, amount, setAmount }: TradePanelSp
             order_type: "limit",
             quantity: amountNum,
             price: Math.abs(instrument.spreadAsk ?? 0),
-            asset_class: "CeFi",
+            asset_group: "CeFi",
             lane: "options",
           });
           setAmount("");

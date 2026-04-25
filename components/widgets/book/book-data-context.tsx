@@ -7,8 +7,8 @@ import { getOrders as getLedgerOrders, placeMockOrder } from "@/lib/api/mock-tra
 import { BOOK_CATEGORY_LABELS, type BookAlgoType, type BookCategoryTab } from "@/lib/config/services/trading.config";
 import { MOCK_TRADES, type BookTrade } from "@/lib/mocks/fixtures/book-trades";
 import { getTradesForScope } from "@/lib/mocks/fixtures/mock-data-index";
-import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { STRATEGIES as REGISTRY_STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
+import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import type { AlgoType, InstructionType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
 import { useSearchParams } from "next/navigation";
@@ -348,7 +348,7 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
         order_type: orderType,
         quantity: qty,
         price: priceNum || 0,
-        asset_class: isDeFi ? "DeFi" : "CeFi",
+        asset_group: isDeFi ? "DeFi" : "CeFi",
         lane: isDeFi ? "defi" : "book",
         algo_type: algoType,
       });
@@ -434,9 +434,9 @@ export function BookTradeDataProvider({ children }: { children: React.ReactNode 
         status: "filled" as const,
         counterparty: o.venue,
         settlementDate: o.updated_at || o.created_at,
-        tradeType: (o.asset_class === "DeFi"
+        tradeType: (o.asset_group === "DeFi"
           ? "DeFi"
-          : o.asset_class === "Sports"
+          : o.asset_group === "Sports"
             ? "OTC"
             : "Exchange") as BookTrade["tradeType"],
       }));

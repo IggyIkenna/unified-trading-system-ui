@@ -11,6 +11,8 @@ export type PersonaId =
   | "admin"
   | "anon"
   | "client-full"
+  | "demo-im-reports-only"
+  | "demo-signals-client"
   | "desmond-dart-full"
   | "desmond-signals-in"
   | "elysium-defi-full"
@@ -94,6 +96,38 @@ export const RESTRICTION_PROFILES: Readonly<Record<PersonaId, RestrictionProfile
           "promote": "unlocked",
           "reports": "unlocked",
           "research": "unlocked",
+          "trading": "unlocked"
+      }
+  },
+  "demo-im-reports-only": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "Reports-only IM client demo persona. No DART tile, no investor-relations \u2014 just the Reports surface. Use this when demoing the IM allocator's view: monthly P&L, attribution, settlement reconciliation. Distinct from client-im-pooled / client-im-sma which also have investor-relations (they're warmer client states).",
+      "flavour_overrides": {},
+      "persona_id": "demo-im-reports-only",
+      "tiles": {
+          "admin": "hidden",
+          "data": "hidden",
+          "investor-relations": "hidden",
+          "observe": "hidden",
+          "promote": "hidden",
+          "reports": "unlocked",
+          "research": "hidden",
+          "trading": "hidden"
+      }
+  },
+  "demo-signals-client": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "Clean Signals-In product showcase persona. Distinct from prospect-dart-signals-in (which carries Telegram-conversation context) and from desmond-signals-in (which is one toggle-half of a paired demo). Used in general UAT walkthroughs to show what a Signals-In client sees: DART terminal + Signal Intake + Observe + Reports; Research + Promote padlocked.",
+      "flavour_overrides": {},
+      "persona_id": "demo-signals-client",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "hidden",
+          "observe": "unlocked",
+          "promote": "padlocked-visible",
+          "reports": "unlocked",
+          "research": "padlocked-visible",
           "trading": "unlocked"
       }
   },

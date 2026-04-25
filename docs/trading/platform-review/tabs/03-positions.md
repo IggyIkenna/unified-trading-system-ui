@@ -45,7 +45,7 @@ From `trading-accounts-risk-pnl-reconciliation.md`:
 2. **Sort/filter by health:** Make health column sortable; add a "Show only unhealthy" quick filter chip.
 3. **Quick reconcile navigation:** Row action on unhealthy positions → either a drawer or navigation to a reconcile view. This should be fast — it's a daily workflow.
 4. **Cross-venue consistency check:** For instruments held on multiple venues, surface a warning when positions diverge.
-5. **Asset-class label:** The `InstrumentType` chips (Spot, Perp, etc.) are derived heuristically from instrument strings. Consider aligning these with a canonical `asset_class` field from the API when available.
+5. **Asset-class label:** The `InstrumentType` chips (Spot, Perp, etc.) are derived heuristically from instrument strings. Consider aligning these with a canonical `asset_group` field from the API when available.
 6. **Time series view:** Currently snapshot only. Add a time series toggle to see how position sizes/P&L evolved over time (borrowing the chart pattern from the Overview page).
 7. **Duplicate filter UI:** There is a `FilterBar` AND a separate inline search/selects row — consolidate into one filter row.
 

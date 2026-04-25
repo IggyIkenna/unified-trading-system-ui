@@ -1,30 +1,30 @@
 "use client";
 
+import type { FilterDefinition } from "@/components/shared/filter-bar";
+import { Spinner } from "@/components/shared/spinner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/shared/spinner";
 import { useAmendOrder, useCancelOrder, useOrders } from "@/hooks/api/use-orders";
+import type { MockOrder } from "@/lib/api/mock-trade-ledger";
+import { getOrders as getLedgerOrders } from "@/lib/api/mock-trade-ledger";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
+import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getOrdersForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { SEED_STRATEGIES } from "@/lib/mocks/fixtures/mock-data-seed";
+import { mock01 } from "@/lib/mocks/generators/deterministic";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
-import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
-import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
-import { mock01 } from "@/lib/mocks/generators/deterministic";
-import { getOrders as getLedgerOrders } from "@/lib/api/mock-trade-ledger";
-import type { MockOrder } from "@/lib/api/mock-trade-ledger";
-import type { FilterDefinition } from "@/components/shared/filter-bar";
 import * as React from "react";
 
 export type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "DeFi" | "Prediction";
 
 export type AssetClassFilter = Exclude<InstrumentType, "All">;
 
-const ASSET_CLASS_OPTIONS: AssetClassFilter[] = ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
+const asset_group_OPTIONS: AssetClassFilter[] = ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
 
 export interface OrderRecord {
   order_id: string;
@@ -140,7 +140,7 @@ function classifyInstrument(instrument: string): AssetClassFilter {
   return "Spot";
 }
 
-export { classifyInstrument, ASSET_CLASS_OPTIONS };
+export { asset_group_OPTIONS, classifyInstrument };
 
 export function OrdersDataProvider({ children }: { children: React.ReactNode }) {
   const { data: ordersRaw, isLoading, error, refetch } = useOrders();
@@ -212,7 +212,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
             status: lo.status.toUpperCase(),
             venue: lo.venue,
             strategy_id: lo.strategy_id ?? "",
-            strategy_name: lo.strategy_id ?? lo.asset_class,
+            strategy_name: lo.strategy_id ?? lo.asset_group,
             edge_bps: Math.round((mock01(idx, 801) * 10 - 2) * 10) / 10,
             instant_pnl: lo.status === "filled" ? -Math.round((lo.quantity * lo.price * 0.0005 + 5) * 100) / 100 : 0,
             created_at: lo.created_at,
@@ -478,7 +478,7 @@ export function OrdersDataProvider({ children }: { children: React.ReactNode }) 
       filterDefs,
       filterValues,
       handleFilterChange,
-      assetClassOptions: ASSET_CLASS_OPTIONS,
+      assetClassOptions: asset_group_OPTIONS,
       classifyInstrument,
       amendTarget,
       setAmendTarget,

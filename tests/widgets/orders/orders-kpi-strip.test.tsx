@@ -18,8 +18,8 @@
  * stable whether or not the optional testid attribute is present on the
  * widget.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockOrdersData } from "../_helpers/mock-orders-context";
 
 const mockOrdersData = buildMockOrdersData();
@@ -27,7 +27,7 @@ const mockOrdersData = buildMockOrdersData();
 vi.mock("@/components/widgets/orders/orders-data-context", () => ({
   useOrdersData: () => mockOrdersData,
   classifyInstrument: (_: string) => "Spot" as const,
-  ASSET_CLASS_OPTIONS: ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"],
+  asset_group_OPTIONS: ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"],
 }));
 
 import { OrdersKpiStripWidget } from "@/components/widgets/orders/orders-kpi-strip-widget";

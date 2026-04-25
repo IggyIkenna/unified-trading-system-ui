@@ -14,8 +14,8 @@
  * - Bridge-mode: toggling transfer mode calls setTransferMode; getBridgeRoutes
  *   drives the bridge leg and bridge payload has algo_type=SOR_CROSS_CHAIN.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 const mockDeFiData: ReturnType<typeof buildBaseMock> = buildBaseMock();
@@ -32,25 +32,25 @@ function buildBaseMock() {
     getBridgeRoutes: vi.fn((token: string, amount: number, _fromChain: string, _toChain: string) =>
       amount > 0
         ? [
-            {
-              protocol: "Across",
-              feePct: 0.05,
-              feeUsd: 5,
-              estimatedTimeMin: 3,
-              outputAmount: amount * 0.9995,
-              isBestReturn: true,
-              isFastest: true,
-            },
-            {
-              protocol: "Stargate",
-              feePct: 0.1,
-              feeUsd: 10,
-              estimatedTimeMin: 5,
-              outputAmount: amount * 0.999,
-              isBestReturn: false,
-              isFastest: false,
-            },
-          ]
+          {
+            protocol: "Across",
+            feePct: 0.05,
+            feeUsd: 5,
+            estimatedTimeMin: 3,
+            outputAmount: amount * 0.9995,
+            isBestReturn: true,
+            isFastest: true,
+          },
+          {
+            protocol: "Stargate",
+            feePct: 0.1,
+            feeUsd: 10,
+            estimatedTimeMin: 5,
+            outputAmount: amount * 0.999,
+            isBestReturn: false,
+            isFastest: false,
+          },
+        ]
         : [],
     ),
     chainPortfolios: [
@@ -144,7 +144,7 @@ describe("defi-transfer-widget — L1.5 harness", () => {
         algo_type: "DIRECT",
         quantity: 2,
         max_slippage_bps: 0,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
         side: "sell",
       });
@@ -176,7 +176,7 @@ describe("defi-transfer-widget — L1.5 harness", () => {
         instruction_type: "TRANSFER",
         algo_type: "SOR_CROSS_CHAIN",
         quantity: 1,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
       });
       expect(String(payload.instrument_id)).toMatch(/^BRIDGE:/);

@@ -10,9 +10,20 @@
 
 import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
+import admin from "firebase-admin";
 import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
 
 const INTERNAL_ADDRESS = "info@odum-research.com";
+
+function getAdminApp(): admin.app.App {
+  if (admin.apps.length > 0) {
+    const existing = admin.apps[0];
+    if (existing) return existing;
+  }
+  return admin.initializeApp({
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  });
+}
 
 const PATH_LABELS: Record<string, string> = {
   A: "Path A — DART Full / incubation and rebuild",
@@ -58,25 +69,26 @@ export async function POST(request: Request) {
       : undefined;
   const isRefile = !!parentSubmissionId;
 
-  // Persist to Firestore
+  // Persist to Firestore via the Admin SDK (runs as the Cloud Run service
+  // account). Using Admin SDK rather than the client SDK means this works on
+  // every deploy regardless of whether NEXT_PUBLIC_FIREBASE_* is baked into
+  // the image — UAT historically didn't have those vars and was returning 200
+  // with no submissionId on every submit.
   let submissionId: string | undefined;
+  let persistError: string | undefined;
   try {
-    const [{ addDoc, collection, serverTimestamp }, { getFirebaseDb }] = await Promise.all([
-      import("firebase/firestore"),
-      import("@/lib/auth/firebase-config"),
-    ]);
-    const db = getFirebaseDb();
-    if (db) {
-      const docRef = await addDoc(collection(db, "strategy_evaluations"), {
-        ...body,
-        magicToken,
-        emailVerified: false,
-        parentSubmissionId: parentSubmissionId ?? null,
-        submittedAt: serverTimestamp(),
-      });
-      submissionId = docRef.id;
-    }
+    const app = getAdminApp();
+    const db = admin.firestore(app);
+    const docRef = await db.collection("strategy_evaluations").add({
+      ...body,
+      magicToken,
+      emailVerified: false,
+      parentSubmissionId: parentSubmissionId ?? null,
+      submittedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    submissionId = docRef.id;
   } catch (err) {
+    persistError = err instanceof Error ? err.message : "unknown Firestore error";
     console.error("[strategy-evaluation] Firestore write failed", err);
   }
 
@@ -212,6 +224,43 @@ export async function POST(request: Request) {
       console.info(`[strategy-evaluation] sendEmail OK for ${target}`);
     }
   });
+
+  // Persistence-failed fallback: if Firestore write threw, fire off a manual
+  // pickup email to info@ with the partial payload so the prospect's effort
+  // isn't lost, then surface a 500 to the client. The form's submit hardening
+  // catches non-2xx responses and shows the actual error in the banner.
+  if (!submissionId) {
+    try {
+      const fallbackHtml = `
+        <h2>⚠️ Strategy evaluation persistence FAILED</h2>
+        <p><strong>Strategy:</strong> ${escapeHtml(strategyName)}</p>
+        <p><strong>Submitter:</strong> ${escapeHtml(email ?? "—")}${leadResearcher ? ` (${escapeHtml(leadResearcher)})` : ""}</p>
+        <p><strong>Commercial path:</strong> ${escapeHtml(pathLabel)}</p>
+        <p><strong>Error:</strong> <code>${escapeHtml(persistError ?? "unknown")}</code></p>
+        <hr>
+        <p>The submitter saw an error banner and was asked to retry. Reach out to them and capture the data manually if needed.</p>
+        <details>
+          <summary>Full payload</summary>
+          <pre style="font-size:11px;background:#f9f9f9;padding:8px;border-radius:4px;overflow:auto">${escapeHtml(
+            JSON.stringify(body, null, 2),
+          )}</pre>
+        </details>
+      `;
+      await sendEmail({
+        from: getSenderFor("hello"),
+        to: INTERNAL_ADDRESS,
+        replyTo: email,
+        subject: `⚠️ Strategy evaluation FAILED to persist — ${strategyName}`,
+        html: fallbackHtml,
+      });
+    } catch (err) {
+      console.error("[strategy-evaluation] fallback email also failed", err);
+    }
+    return NextResponse.json(
+      { ok: false, error: persistError ?? "Persistence failed", emailedFallback: true },
+      { status: 500 },
+    );
+  }
 
   return NextResponse.json({ ok: true, submissionId });
 }

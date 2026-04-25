@@ -4,9 +4,9 @@
 // =============================================================================
 
 // Taxonomy imports — SSOT for enums lives in taxonomy.ts
-import type { StrategyArchetype, AssetClass, TestingStage } from "@/lib/taxonomy";
-export type { StrategyArchetype, AssetClass, TestingStage };
-export { STRATEGY_ARCHETYPES, ASSET_CLASSES, TESTING_STAGES } from "@/lib/taxonomy";
+import type { AssetClass, StrategyArchetype, TestingStage } from "@/lib/taxonomy";
+export { asset_groupES, STRATEGY_ARCHETYPES, TESTING_STAGES } from "@/lib/taxonomy";
+export type { AssetClass, StrategyArchetype, TestingStage };
 
 // Strategy lifecycle stages
 export const STRATEGY_LIFECYCLE_STAGES = [
@@ -388,7 +388,7 @@ export type HeatmapDimension =
   | "shard"
   | "testing_stage"
   | "archetype"
-  | "asset_class"
+  | "asset_group"
   | "regime";
 
 // =============================================================================

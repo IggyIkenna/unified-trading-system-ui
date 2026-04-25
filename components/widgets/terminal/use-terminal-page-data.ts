@@ -1,23 +1,23 @@
 "use client";
 
-import * as React from "react";
-import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
-import { MOCK_TERMINAL_EVENTS } from "@/lib/config/services/terminal-events.config";
+import { useAlerts } from "@/hooks/api/use-alerts";
 import { useInstruments } from "@/hooks/api/use-instruments";
 import { useCandles, useOrderBook, useTickers } from "@/hooks/api/use-market-data";
 import { useBalances, usePositions } from "@/hooks/api/use-positions";
 import { useStrategyPerformance } from "@/hooks/api/use-strategies";
-import { useAlerts } from "@/hooks/api/use-alerts";
 import { useTickingNowMs } from "@/hooks/use-ticking-now";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { getOrders, placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { MOCK_TERMINAL_EVENTS } from "@/lib/config/services/terminal-events.config";
+import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
+import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
 import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
-import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import { bollingerBands, ema, sma } from "@/lib/utils/indicators";
+import * as React from "react";
+import type { TerminalData, TerminalInstrument } from "./terminal-data-context";
 
 const DEFAULT_INSTRUMENTS: TerminalInstrument[] = [
   {
@@ -731,7 +731,7 @@ export function useTerminalPageData(): TerminalPageResult {
       order_type: useMarketFill ? "market" : "limit",
       quantity: size,
       price: submitPrice,
-      asset_class: "CeFi",
+      asset_group: "CeFi",
       lane: "book",
       max_slippage_bps: 10,
       strategy_id: linkedStrategyId ?? undefined,

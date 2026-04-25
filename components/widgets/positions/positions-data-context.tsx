@@ -5,12 +5,12 @@ import { usePositions } from "@/hooks/api/use-positions";
 import { useWebSocket } from "@/hooks/use-websocket";
 import type { MockOrder } from "@/lib/api/mock-trade-ledger";
 import { getOrders } from "@/lib/api/mock-trade-ledger";
+import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
+import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
 import { useExecutionMode } from "@/lib/execution-mode-context";
 import { getPositionsForScope } from "@/lib/mocks/fixtures/mock-data-index";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
-import { makeFamilyFilterPredicate } from "@/lib/architecture-v2/family-filter";
-import type { StrategyArchetype, StrategyFamily } from "@/lib/architecture-v2";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
@@ -19,7 +19,7 @@ export type InstrumentType = "All" | "Spot" | "Perp" | "Futures" | "Options" | "
 
 type AssetClassFilter = Exclude<InstrumentType, "All">;
 
-const ASSET_CLASS_OPTIONS: AssetClassFilter[] = ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
+const asset_group_OPTIONS: AssetClassFilter[] = ["Spot", "Perp", "Futures", "Options", "DeFi", "Prediction"];
 
 function hashId(s: string): number {
   let h = 0;
@@ -163,7 +163,7 @@ function makePosition(
 
 function deriveDefiPositionDeltas(existingIds: Set<string>): PositionRecord[] {
   const filledDefi = getOrders().filter((o: MockOrder) => {
-    if (o.asset_class !== "DeFi" || o.status !== "filled" || o.lane !== "defi") return false;
+    if (o.asset_group !== "DeFi" || o.status !== "filled" || o.lane !== "defi") return false;
     const instr = o.instrument_id.toUpperCase();
     return !instr.startsWith("TRANSFER:") && !instr.startsWith("BRIDGE:") && !instr.startsWith("SWAP:");
   });
@@ -653,7 +653,7 @@ export function PositionsDataProvider({ children }: { children: React.ReactNode 
       filterDefs,
       filterValues,
       handleFilterChange,
-      assetClassOptions: ASSET_CLASS_OPTIONS,
+      assetClassOptions: asset_group_OPTIONS,
       isLive,
       classifyInstrument,
       getInstrumentRoute,

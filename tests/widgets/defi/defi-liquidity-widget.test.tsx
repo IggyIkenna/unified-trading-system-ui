@@ -14,9 +14,9 @@
  * - Amount input enables execute button; empty/zero keeps it disabled (cert L4.1).
  * - Execute click fires executeDeFiOrder with expected payload shape.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
 import type { LiquidityPool } from "@/lib/types/defi";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData } from "../_helpers/mock-defi-context";
 
 function buildMockLiquidityPool(overrides: Partial<LiquidityPool> = {}): LiquidityPool {
@@ -151,7 +151,7 @@ describe("defi-liquidity-widget — L1.5 harness", () => {
         instruction_type: "ADD_LIQUIDITY",
         venue: "UNISWAPV3-ETHEREUM",
         quantity: 25,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
         side: "buy",
       });

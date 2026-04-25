@@ -64,7 +64,7 @@ export async function GET(request: Request) {
     }
 
     // Strip the magic token from the response — the user already has it in their URL.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const { magicToken: _t, ...rest } = data;
     const submittedAt =
       data.submittedAt && typeof data.submittedAt.toDate === "function"

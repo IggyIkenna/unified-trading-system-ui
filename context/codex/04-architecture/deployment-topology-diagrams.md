@@ -480,11 +480,11 @@ sports-specific pipeline services (`sports-reference-data-service`, `sports-odds
 ```mermaid
 graph TD
     subgraph BatchA [Batch A: Reference Data]
-        Instruments[instruments-service<br/>asset_class=SPORTS<br/>sports parser + fixture matching]
+        Instruments[instruments-service<br/>asset_group=SPORTS<br/>sports parser + fixture matching]
     end
 
     subgraph BatchB [Batch B: Odds + Processing]
-        MDP[market-data-processing-service<br/>asset_class=SPORTS<br/>Odds API + Betfair + API-Football]
+        MDP[market-data-processing-service<br/>asset_group=SPORTS<br/>Odds API + Betfair + API-Football]
     end
 
     subgraph BatchC [Batch C: Features]
@@ -492,11 +492,11 @@ graph TD
     end
 
     subgraph BatchD [Batch D: Strategy]
-        Strategy[strategy-service<br/>asset_class=SPORTS<br/>arbitrage + value betting + Kelly]
+        Strategy[strategy-service<br/>asset_group=SPORTS<br/>arbitrage + value betting + Kelly]
     end
 
     subgraph BatchE [Batch E: Execution]
-        Execution[execution-service<br/>asset_class=SPORTS<br/>Betfair + Pinnacle + Polymarket via USEI]
+        Execution[execution-service<br/>asset_group=SPORTS<br/>Betfair + Pinnacle + Polymarket via USEI]
     end
 
     GCS[(GCS + PubSub)]
@@ -515,5 +515,5 @@ graph TD
 **Ordering:** Batch A D5 -> Batch B D5 -> Batch C D5 -> Batch D D5 -> Batch E D5. See
 `04-architecture/sports-integration-plan.md` Phase 3 (consolidated).
 
-**Key difference from original plan:** No separate sports service containers. Sports is a category/asset_class within
+**Key difference from original plan:** No separate sports service containers. Sports is a category/asset_group within
 each existing service, following the same sharding model (category x venue x date).

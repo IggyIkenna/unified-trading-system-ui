@@ -1,23 +1,23 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
-import { toast } from "sonner";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
-import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
-import { DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS, DEFI_ALGO_TYPES } from "@/lib/config/services/defi.config";
+import { DEFI_ALGO_TYPES, DEFI_CHAINS, GAS_TOKEN_MIN_THRESHOLDS } from "@/lib/config/services/defi.config";
 import type { AlgoType } from "@/lib/types/defi";
-import { useDeFiData } from "./defi-data-context";
+import { cn } from "@/lib/utils";
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { AlertTriangle, ArrowDown, ArrowLeftRight } from "lucide-react";
+import * as React from "react";
+import { toast } from "sonner";
+import { useDeFiData } from "./defi-data-context";
 
 export function DeFiSwapWidget(props: WidgetComponentProps) {
   const {
@@ -255,7 +255,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
                   {formatPercent(
                     (calculateBasisTradeFundingImpact(tokenOut) -
                       calculateBasisTradeCostOfCarry(parseFloat(amountIn), tokenOut)) /
-                      100,
+                    100,
                     1,
                   )}
                 </div>
@@ -371,7 +371,7 @@ export function DeFiSwapWidget(props: WidgetComponentProps) {
               max_slippage_bps: Number(slippage) * 100,
               expected_output: route?.expectedOutput ?? 0,
               benchmark_price: route?.reference_price ?? 0,
-              asset_class: "DeFi",
+              asset_group: "DeFi",
               lane: "defi",
             });
             setAmountIn("");

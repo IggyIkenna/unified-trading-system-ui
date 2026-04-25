@@ -7,6 +7,7 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 import { getAuthProvider } from "@/lib/auth/get-provider";
 import type { AuthUser } from "@/lib/auth/types";
 import { FirebaseAuthProvider } from "@/lib/auth/firebase-provider";
+import { applyTierOverride, TIER_OVERRIDE_EVENT } from "@/lib/auth/tier-override";
 
 export type { AuthUser } from "@/lib/auth/types";
 
@@ -26,16 +27,33 @@ export const AuthContext = React.createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const provider = React.useMemo(() => getAuthProvider(), []);
-  const [user, setUser] = React.useState<AuthUser | null>(null);
+  const [rawUser, setRawUser] = React.useState<AuthUser | null>(null);
   const [token, setToken] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [loginError, setLoginError] = React.useState<string | null>(null);
+  // Force re-render when DemoPlanToggle flips the tier-override flag.
+  const [overrideEpoch, setOverrideEpoch] = React.useState(0);
   const syncZustand = useAuthStore((s) => s.setPersonaId);
   const router = useRouter();
 
+  // Effective user has the tier override applied — entitlements replaced by
+  // the active tier's set when the email matches a TierBundle. Identity
+  // fields (email, uid, org, displayName, role) are untouched.
+  const user = React.useMemo<AuthUser | null>(
+    () => applyTierOverride(rawUser),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [rawUser, overrideEpoch],
+  );
+
+  React.useEffect(() => {
+    const onTierOverrideChange = () => setOverrideEpoch((e) => e + 1);
+    window.addEventListener(TIER_OVERRIDE_EVENT, onTierOverrideChange);
+    return () => window.removeEventListener(TIER_OVERRIDE_EVENT, onTierOverrideChange);
+  }, []);
+
   React.useEffect(() => {
     const unsubscribe = provider.onAuthStateChanged((authUser) => {
-      setUser(authUser);
+      setRawUser(authUser);
       syncZustand(authUser?.id ?? null);
       if (authUser) {
         provider.getToken().then(setToken);
@@ -47,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const restored = provider.getUser();
     if (restored) {
-      setUser(restored);
+      setRawUser(restored);
       syncZustand(restored.id);
       provider.getToken().then(setToken);
       setLoading(false);
@@ -81,12 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         result.status === "pending_approval" ||
         (result.authorized === false && result.status !== "active")
       ) {
-        setUser(result);
+        setRawUser(result);
         router.push("/pending");
         return true;
       }
 
-      setUser(result);
+      setRawUser(result);
       const newToken = await provider.getToken();
       setToken(newToken);
       syncZustand(result.id);
@@ -97,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = React.useCallback(async () => {
     await provider.logout();
-    setUser(null);
+    setRawUser(null);
     setToken(null);
     setLoginError(null);
     syncZustand(null);

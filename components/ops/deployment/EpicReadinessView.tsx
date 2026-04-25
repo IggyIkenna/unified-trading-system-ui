@@ -1,26 +1,26 @@
 "use client";
 
-import { useState } from "react";
-import {
-  CheckCircle2,
-  AlertCircle,
-  ChevronDown,
-  ChevronRight,
-  RefreshCw,
-  GitMerge,
-  Database,
-  FlaskConical,
-  Wifi,
-  Archive,
-} from "lucide-react";
-import { useEpics, useEpicDetail } from "@/hooks/deployment/useEpics";
 import { Spinner } from "@/components/shared/spinner";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEpicDetail, useEpics } from "@/hooks/deployment/useEpics";
+import type { EpicRepoStatus, EpicSummary } from "@/lib/types/deployment";
 import { cn } from "@/lib/utils";
-import type { EpicSummary, EpicRepoStatus } from "@/lib/types/deployment";
+import {
+  AlertCircle,
+  Archive,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  FlaskConical,
+  GitMerge,
+  RefreshCw,
+  Wifi,
+} from "lucide-react";
+import { useState } from "react";
 
 // ---------------------------------------------------------------------------
 // Circular progress ring
@@ -211,7 +211,7 @@ function RepoRow({ repo, blocking }: { repo: EpicRepoStatus; blocking: boolean }
           {repo.repo}
         </div>
       </td>
-      <td className="py-2 px-3 text-xs text-[var(--color-text-muted)]">{repo.asset_class}</td>
+      <td className="py-2 px-3 text-xs text-[var(--color-text-muted)]">{repo.asset_group}</td>
       <td className={cn("py-2 px-3 text-xs font-mono", crColor(repo.cr_current, repo.cr_required))}>
         {repo.cr_current ?? "—"} <span className="text-[var(--color-text-muted)]">/ {repo.cr_required}</span>
       </td>
@@ -302,7 +302,7 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
               </thead>
               <tbody>
                 {epic.blocking_repos.map((r) => (
-                  <RepoRow key={`${r.repo}-${r.asset_class}`} repo={r} blocking={true} />
+                  <RepoRow key={`${r.repo}-${r.asset_group}`} repo={r} blocking={true} />
                 ))}
               </tbody>
             </table>
@@ -337,7 +337,7 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
           <div className="flex flex-wrap gap-1.5 px-1">
             {epic.optional_repos_status.map((r) => (
               <span
-                key={`${r.repo}-${r.asset_class}`}
+                key={`${r.repo}-${r.asset_group}`}
                 className={cn(
                   "inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-mono border",
                   r.yaml_present
@@ -347,7 +347,7 @@ function EpicDetailPanel({ epicId }: EpicDetailPanelProps) {
                 title={r.note || undefined}
               >
                 {r.repo}
-                <span className="text-[var(--color-text-muted)]">·{r.asset_class}</span>
+                <span className="text-[var(--color-text-muted)]">·{r.asset_group}</span>
               </span>
             ))}
           </div>

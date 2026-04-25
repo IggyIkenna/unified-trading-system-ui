@@ -67,7 +67,7 @@ const TARGET_VARIABLES = [
   },
 ];
 
-const ASSET_CLASSES = ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"];
+const asset_groupES = ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"];
 
 const OPTIMIZERS = ["adam", "sgd", "adamw", "adagrad"];
 const LOSS_FUNCTIONS = ["mse", "cross_entropy", "huber", "focal"];
@@ -186,7 +186,7 @@ export default function MLConfigPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {ASSET_CLASSES.map((ac) => (
+                    {asset_groupES.map((ac) => (
                       <SelectItem key={ac} value={ac}>
                         {ac}
                       </SelectItem>

@@ -18,8 +18,8 @@
  * - End-to-end LEND→WITHDRAW trader flow (L3b strategy spec)
  * - Visual regression (L4 — deferred per plan)
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildMockDeFiData, buildMockLendingProtocol } from "../_helpers/mock-defi-context";
 
 const mockDeFiData = buildMockDeFiData();
@@ -160,7 +160,7 @@ describe("defi-lending-widget — L1.5 harness", () => {
         instruction_type: "LEND",
         venue: "AAVEV3-ETHEREUM",
         quantity: 1.5,
-        asset_class: "DeFi",
+        asset_group: "DeFi",
         lane: "defi",
       });
     });

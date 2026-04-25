@@ -1,35 +1,35 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { MOCK_MARKETS } from "@/lib/mocks/fixtures/predictions-data";
+import { cn } from "@/lib/utils";
+import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
 import {
-  Search,
+  ArrowLeft,
+  BarChart3,
   Bookmark,
-  Share2,
-  ExternalLink,
-  Flame,
-  X,
   ChevronRight,
   Clock,
-  BarChart3,
-  ArrowLeft,
+  ExternalLink,
+  Flame,
+  Search,
+  Share2,
   TrendingUp,
+  X,
 } from "lucide-react";
-import { AreaChart, Area, ResponsiveContainer, Tooltip } from "recharts";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import { useToast } from "@/hooks/use-toast";
-import type { PredictionMarket, MarketCategory, MarketVenue, SortOption } from "./types";
-import { MOCK_MARKETS } from "@/lib/mocks/fixtures/predictions-data";
+import * as React from "react";
+import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
 import { fmtVolume, probColour } from "./helpers";
-import { VenueChip, LiveDot, ProbBadge, YesNoButtons } from "./shared";
+import { LiveDot, ProbBadge, VenueChip, YesNoButtons } from "./shared";
+import type { MarketCategory, MarketVenue, PredictionMarket, SortOption } from "./types";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -437,7 +437,7 @@ export function MarketDetailPanel({
                 order_type: "limit",
                 quantity: stakeNum,
                 price,
-                asset_class: "Prediction",
+                asset_group: "Prediction",
                 lane: "predictions",
               });
               setStakeAmount("");
@@ -463,7 +463,7 @@ export function MarketDetailPanel({
               Resolves {market.resolutionDate}
             </span>
           )}
-          <Button variant="ghost" size="sm" className="text-[11px] h-6 px-1.5 text-muted-foreground" onClick={() => {}}>
+          <Button variant="ghost" size="sm" className="text-[11px] h-6 px-1.5 text-muted-foreground" onClick={() => { }}>
             <ExternalLink className="size-3 mr-1" />
             View on {market.venue === "polymarket" ? "Polymarket" : "Kalshi"}
           </Button>

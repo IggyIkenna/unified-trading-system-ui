@@ -167,6 +167,33 @@ export const PERSONAS: readonly AuthPersona[] = [
     entitlements: ["investor-relations", "investor-regulatory", "reporting"],
     description: "Regulatory umbrella prospect. Sees regulatory presentation, demo, and reporting pages.",
   },
+  {
+    id: "demo-signals-client",
+    email: "demo-signals@odum-research.co.uk",
+    password: "OdumIR2026!",
+    displayName: "Demo Signals Client",
+    role: "client",
+    org: { id: "odum-demo-signals", name: "Demo Signals Client Co" },
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "reporting",
+      { domain: "trading-common", tier: "basic" },
+    ],
+    description:
+      "Clean Signals-In product showcase. DART tile + Reports tile visible; Research / Promote / Strategy Catalogue locked. Use this when demoing the Signals-In product end-to-end without prospect-specific context.",
+  },
+  {
+    id: "demo-im-reports-only",
+    email: "demo-im@odum-research.co.uk",
+    password: "OdumIR2026!",
+    displayName: "Demo IM Client",
+    role: "client",
+    org: { id: "odum-demo-im", name: "Demo IM Client Fund" },
+    entitlements: ["reporting"],
+    description:
+      "Reports-only IM client. No DART tile, no investor-relations — just the Reports surface. Use this when demoing the IM allocator's view: monthly P&L, attribution, settlement reconciliation. Distinct from client-im-pooled / client-im-sma which also have investor-relations.",
+  },
 
   // ── External client demos ─────────────────────────────────────────────
   {

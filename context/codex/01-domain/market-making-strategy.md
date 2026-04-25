@@ -507,7 +507,7 @@ market_making:
     mode: configurable # Strategy chooses per instrument
     liquidity_threshold: 10000000 # Multi-venue if volume > $10M
 
-  asset_classes:
+  asset_groupes:
     priority:
       - options
       - perps

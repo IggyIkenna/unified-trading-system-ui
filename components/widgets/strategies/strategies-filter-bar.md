@@ -11,7 +11,7 @@ Search field plus three multi-select dropdowns (asset class, archetype, status) 
 ## Data sources
 
 - `useStrategiesData()` context for filter state and toggles
-- Config: `ASSET_CLASS_COLORS`, `ARCHETYPES`, `STATUSES`
+- Config: `asset_group_COLORS`, `ARCHETYPES`, `STATUSES`
 
 ## Configuration
 

@@ -1,11 +1,6 @@
-import { describe, expect, it } from "vitest";
 import {
   ACCOUNTS,
   CLIENTS,
-  ORGANIZATIONS,
-  SERVICE_ASSET_CLASS_MAP,
-  SERVICE_VENUE_MAP,
-  STRATEGIES,
   getAccountsForClient,
   getAccountsForVenue,
   getAggregatedPnL,
@@ -18,9 +13,14 @@ import {
   getStrategyServices,
   getToday,
   getYesterday,
+  ORGANIZATIONS,
+  SERVICE_asset_group_MAP,
+  SERVICE_VENUE_MAP,
+  STRATEGIES,
   type Alert,
   type FilterContext,
 } from "@/lib/mocks/fixtures/trading-data";
+import { describe, expect, it } from "vitest";
 
 const BASE_FILTER: FilterContext = {
   organizationIds: [],
@@ -120,10 +120,10 @@ describe("trading-data fixtures", () => {
     expect(getYesterday()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
-  it("SERVICE_ASSET_CLASS_MAP / SERVICE_VENUE_MAP are keyed by service name", () => {
-    expect(Object.keys(SERVICE_ASSET_CLASS_MAP).length).toBeGreaterThan(0);
+  it("SERVICE_asset_group_MAP / SERVICE_VENUE_MAP are keyed by service name", () => {
+    expect(Object.keys(SERVICE_asset_group_MAP).length).toBeGreaterThan(0);
     expect(Object.keys(SERVICE_VENUE_MAP).length).toBeGreaterThan(0);
-    expect(SERVICE_ASSET_CLASS_MAP["Execution Service"]).toBeDefined();
+    expect(SERVICE_asset_group_MAP["Execution Service"]).toBeDefined();
   });
 
   it("getStrategyServices / getFilteredServices return service lists", () => {

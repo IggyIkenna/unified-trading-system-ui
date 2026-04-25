@@ -82,7 +82,7 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "ARCHETYPES/ASSET_CLASS_COLORS/STATUSES in lib/config/services/strategies.config."
+          "note": "ARCHETYPES/asset_group_COLORS/STATUSES in lib/config/services/strategies.config."
         }
       },
       "notes": "All 7 checks pass."
@@ -254,7 +254,9 @@
   },
   "relationships": {
     "mode": "master",
-    "masterOf": ["cefi-strategy-config"],
+    "masterOf": [
+      "cefi-strategy-config"
+    ],
     "detailOf": [],
     "selectionKey": "strategyId",
     "mergeCandidate": null,
@@ -264,7 +266,9 @@
     "notes": "Master widget \u2014 strategy card click drives navigation to /services/trading/strategies/[id] and /config/strategies/[id]. Strategy selection in catalogue could potentially drive cefi-strategy-config widget in future (not yet wired)."
   },
   "dataContract": {
-    "channels": ["rest"],
+    "channels": [
+      "rest"
+    ],
     "primary": "rest",
     "cadence": "on-demand",
     "staleness": "minutes",
@@ -273,10 +277,22 @@
     "notes": "Strategy list served from strategy registry (local) with scope-filtered seed data from mock-data-index. Production: should fetch from strategy management service with live status/performance data."
   },
   "coverage": {
-    "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
-    "strategies": ["all-registered-strategies"],
-    "venues": ["all"],
-    "commonTabs": ["strategies"],
+    "assetClasses": [
+      "defi",
+      "cefi",
+      "tradfi",
+      "sports",
+      "predictions"
+    ],
+    "strategies": [
+      "all-registered-strategies"
+    ],
+    "venues": [
+      "all"
+    ],
+    "commonTabs": [
+      "strategies"
+    ],
     "verifiedOn": [],
     "gaps": [
       "Per-strategy Config page not yet implemented (button rendered disabled)",

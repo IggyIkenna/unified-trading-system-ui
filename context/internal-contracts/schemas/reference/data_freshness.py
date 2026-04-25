@@ -36,7 +36,7 @@ class DataFreshnessContract(BaseModel):
     source: str = Field(
         description="Canonical source identifier (venue key, service name, or provider slug)."
     )
-    asset_class: Literal[
+    asset_group: Literal[
         "crypto_cefi",
         "crypto_defi",
         "tradfi",
@@ -83,7 +83,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # CeFi — high-frequency venues (1s cadence, 5s max)
     "binance": DataFreshnessContract(
         source="binance",
-        asset_class="crypto_cefi",
+        asset_group="crypto_cefi",
         max_age_seconds=5,
         warn_age_seconds=2,
         expected_cadence_seconds=1,
@@ -91,7 +91,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "bybit": DataFreshnessContract(
         source="bybit",
-        asset_class="crypto_cefi",
+        asset_group="crypto_cefi",
         max_age_seconds=5,
         warn_age_seconds=2,
         expected_cadence_seconds=1,
@@ -99,7 +99,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "okx": DataFreshnessContract(
         source="okx",
-        asset_class="crypto_cefi",
+        asset_group="crypto_cefi",
         max_age_seconds=5,
         warn_age_seconds=2,
         expected_cadence_seconds=1,
@@ -107,7 +107,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "coinbase": DataFreshnessContract(
         source="coinbase",
-        asset_class="crypto_cefi",
+        asset_group="crypto_cefi",
         max_age_seconds=5,
         warn_age_seconds=2,
         expected_cadence_seconds=1,
@@ -115,7 +115,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "hyperliquid": DataFreshnessContract(
         source="hyperliquid",
-        asset_class="crypto_cefi",
+        asset_group="crypto_cefi",
         max_age_seconds=5,
         warn_age_seconds=2,
         expected_cadence_seconds=1,
@@ -124,7 +124,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # CeFi — options venue with slightly higher latency (10s max)
     "deribit": DataFreshnessContract(
         source="deribit",
-        asset_class="crypto_cefi",
+        asset_group="crypto_cefi",
         max_age_seconds=10,
         warn_age_seconds=3,
         expected_cadence_seconds=1,
@@ -133,7 +133,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # DeFi — on-chain AMMs / lending (12s cadence, 15s max)
     "uniswap_v3": DataFreshnessContract(
         source="uniswap_v3",
-        asset_class="crypto_defi",
+        asset_group="crypto_defi",
         max_age_seconds=15,
         warn_age_seconds=6,
         expected_cadence_seconds=12,
@@ -141,7 +141,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "aave_v3": DataFreshnessContract(
         source="aave_v3",
-        asset_class="crypto_defi",
+        asset_group="crypto_defi",
         max_age_seconds=15,
         warn_age_seconds=6,
         expected_cadence_seconds=12,
@@ -149,7 +149,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "curve": DataFreshnessContract(
         source="curve",
-        asset_class="crypto_defi",
+        asset_group="crypto_defi",
         max_age_seconds=15,
         warn_age_seconds=6,
         expected_cadence_seconds=12,
@@ -157,7 +157,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "balancer": DataFreshnessContract(
         source="balancer",
-        asset_class="crypto_defi",
+        asset_group="crypto_defi",
         max_age_seconds=15,
         warn_age_seconds=6,
         expected_cadence_seconds=12,
@@ -166,7 +166,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # TradFi — intraday (60s cadence)
     "databento_intraday": DataFreshnessContract(
         source="databento_intraday",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=60,
         warn_age_seconds=30,
         expected_cadence_seconds=60,
@@ -175,7 +175,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # TradFi — EOD (daily cadence)
     "databento_eod": DataFreshnessContract(
         source="databento_eod",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=86400,
@@ -183,7 +183,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "yahoo_finance": DataFreshnessContract(
         source="yahoo_finance",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=86400,
@@ -192,7 +192,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # Alt data — daily (informational)
     "openbb": DataFreshnessContract(
         source="openbb",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=86400,
@@ -200,7 +200,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "fred": DataFreshnessContract(
         source="fred",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=86400,
@@ -208,7 +208,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "ecb": DataFreshnessContract(
         source="ecb",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=86400,
@@ -216,7 +216,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "ofr": DataFreshnessContract(
         source="ofr",
-        asset_class="tradfi",
+        asset_group="tradfi",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=86400,
@@ -225,7 +225,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # Sports betting — odds feeds
     "pinnacle": DataFreshnessContract(
         source="pinnacle",
-        asset_class="sports",
+        asset_group="sports",
         max_age_seconds=300,
         warn_age_seconds=60,
         expected_cadence_seconds=30,
@@ -233,7 +233,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "odds_api": DataFreshnessContract(
         source="odds_api",
-        asset_class="sports",
+        asset_group="sports",
         max_age_seconds=300,
         warn_age_seconds=60,
         expected_cadence_seconds=30,
@@ -241,7 +241,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "betfair": DataFreshnessContract(
         source="betfair",
-        asset_class="sports",
+        asset_group="sports",
         max_age_seconds=60,
         warn_age_seconds=15,
         expected_cadence_seconds=5,
@@ -250,7 +250,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     # Onchain analytics providers (hourly cadence)
     "glassnode": DataFreshnessContract(
         source="glassnode",
-        asset_class="onchain",
+        asset_group="onchain",
         max_age_seconds=3600,
         warn_age_seconds=1800,
         expected_cadence_seconds=3600,
@@ -258,7 +258,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "coinglass": DataFreshnessContract(
         source="coinglass",
-        asset_class="onchain",
+        asset_group="onchain",
         max_age_seconds=3600,
         warn_age_seconds=1800,
         expected_cadence_seconds=3600,
@@ -273,7 +273,7 @@ MARKET_TICK_FRESHNESS: dict[str, DataFreshnessContract] = {
 FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     "features-delta-one-service": DataFreshnessContract(
         source="features-delta-one-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=120,
         warn_age_seconds=60,
         expected_cadence_seconds=60,
@@ -281,7 +281,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-volatility-service": DataFreshnessContract(
         source="features-volatility-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=300,
         warn_age_seconds=150,
         expected_cadence_seconds=60,
@@ -289,7 +289,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-onchain-service": DataFreshnessContract(
         source="features-onchain-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=600,
         warn_age_seconds=300,
         expected_cadence_seconds=300,
@@ -297,7 +297,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-calendar-service": DataFreshnessContract(
         source="features-calendar-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=86400,
         warn_age_seconds=43200,
         expected_cadence_seconds=3600,
@@ -305,7 +305,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-commodity-service": DataFreshnessContract(
         source="features-commodity-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=3600,
         warn_age_seconds=1800,
         expected_cadence_seconds=3600,
@@ -313,7 +313,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-cross-instrument-service": DataFreshnessContract(
         source="features-cross-instrument-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=300,
         warn_age_seconds=150,
         expected_cadence_seconds=60,
@@ -321,7 +321,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-multi-timeframe-service": DataFreshnessContract(
         source="features-multi-timeframe-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=300,
         warn_age_seconds=150,
         expected_cadence_seconds=60,
@@ -329,7 +329,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "features-sports-service": DataFreshnessContract(
         source="features-sports-service",
-        asset_class="feature",
+        asset_group="feature",
         max_age_seconds=300,
         warn_age_seconds=60,
         expected_cadence_seconds=60,
@@ -344,7 +344,7 @@ FEATURE_FRESHNESS: dict[str, DataFreshnessContract] = {
 ML_FRESHNESS: dict[str, DataFreshnessContract] = {
     "ml-inference-api": DataFreshnessContract(
         source="ml-inference-api",
-        asset_class="ml",
+        asset_group="ml",
         max_age_seconds=120,
         warn_age_seconds=60,
         expected_cadence_seconds=60,
@@ -352,7 +352,7 @@ ML_FRESHNESS: dict[str, DataFreshnessContract] = {
     ),
     "ml-training-api": DataFreshnessContract(
         source="ml-training-api",
-        asset_class="ml",
+        asset_group="ml",
         # 7 days (604800s) — model artifacts are not real-time
         max_age_seconds=604800,
         warn_age_seconds=259200,  # 3 days

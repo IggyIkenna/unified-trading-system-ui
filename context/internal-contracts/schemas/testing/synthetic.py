@@ -534,7 +534,7 @@ class SyntheticDataGenerator:
         """Generate synthetic data for all instruments from InstrumentGenerator.
 
         Dispatches each instrument to the appropriate generator method based on
-        instrument_type and asset_class. Applies instrument_overrides from the
+        instrument_type and asset_group. Applies instrument_overrides from the
         scenario config (expire instruments produce truncated data, injected
         instruments get fresh GBM paths, deleted instruments are skipped).
 
@@ -563,7 +563,7 @@ class SyntheticDataGenerator:
         for inst in instruments:
             key = str(getattr(inst, "instrument_key", ""))
             itype = str(getattr(inst, "instrument_type", ""))
-            asset_class = str(getattr(inst, "asset_class", ""))
+            asset_group = str(getattr(inst, "asset_group", ""))
 
             # Skip deleted instruments
             if self._matches_any_pattern(key, deleted_patterns):
@@ -578,7 +578,7 @@ class SyntheticDataGenerator:
                 log.info("Truncating data for expired instrument %s at %s", key, effective_end)
 
             df = self._generate_for_single_instrument(
-                inst, start, effective_end, interval, itype, asset_class
+                inst, start, effective_end, interval, itype, asset_group
             )
             if df is not None and not df.empty:
                 results[key] = df
@@ -592,7 +592,7 @@ class SyntheticDataGenerator:
         end: date,
         interval: str,
         itype: str,
-        asset_class: str,
+        asset_group: str,
     ) -> pd.DataFrame | None:
         """Generate data for a single instrument based on its type."""
         symbol = str(getattr(inst, "symbol", ""))

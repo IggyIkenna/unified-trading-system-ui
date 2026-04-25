@@ -69,7 +69,7 @@ def build_instruments(
     # Log asset class breakdown
     classes: dict[str, int] = {}
     for d in results:
-        ac = str(d.get("asset_class", "unknown"))
+        ac = str(d.get("asset_group", "unknown"))
         classes[ac] = classes.get(ac, 0) + 1
     log.info("Generated %d instruments: %s", len(results), dict(sorted(classes.items())))
 

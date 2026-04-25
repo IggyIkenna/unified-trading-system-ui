@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/components/shared/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/shared/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateBacktest, useStrategyTemplates } from "@/hooks/api/use-strategies";
 import {
-  ASSET_CLASSES,
+  asset_groupES,
   type AssetClass,
   type StrategyArchetype,
   type StrategyTemplate,
@@ -96,21 +96,19 @@ function StepIndicator({ steps, currentStep }: { steps: typeof STEPS; currentSte
               <div
                 className={`
                   flex size-8 items-center justify-center rounded-full text-xs font-semibold transition-all
-                  ${
-                    isCompleted
-                      ? "bg-emerald-500 text-white"
-                      : isCurrent
-                        ? "border-2 border-primary bg-primary/10 text-primary"
-                        : "border border-border bg-muted text-muted-foreground"
+                  ${isCompleted
+                    ? "bg-emerald-500 text-white"
+                    : isCurrent
+                      ? "border-2 border-primary bg-primary/10 text-primary"
+                      : "border border-border bg-muted text-muted-foreground"
                   }
                 `}
               >
                 {isCompleted ? <Check className="size-3.5" /> : index + 1}
               </div>
               <span
-                className={`text-[10px] font-medium leading-tight ${
-                  isCurrent || isCompleted ? "text-foreground" : "text-muted-foreground"
-                }`}
+                className={`text-[10px] font-medium leading-tight ${isCurrent || isCompleted ? "text-foreground" : "text-muted-foreground"
+                  }`}
               >
                 {step.title}
               </span>
@@ -180,7 +178,7 @@ function BasicConfigStep({
             <SelectValue placeholder="Select asset class..." />
           </SelectTrigger>
           <SelectContent>
-            {ASSET_CLASSES.map((ac) => (
+            {asset_groupES.map((ac) => (
               <SelectItem key={ac} value={ac}>
                 {ac.replace(/_/g, " ")}
               </SelectItem>
@@ -262,11 +260,10 @@ function StrategySelectionStep({
                       venue: "",
                     })
                   }
-                  className={`w-full rounded-lg border p-3 text-left transition-all ${
-                    isSelected
+                  className={`w-full rounded-lg border p-3 text-left transition-all ${isSelected
                       ? "border-primary bg-primary/5 ring-1 ring-primary/20"
                       : "border-border hover:border-border/80 hover:bg-muted/50"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">

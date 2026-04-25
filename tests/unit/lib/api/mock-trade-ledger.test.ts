@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   amendMockOrder,
   cancelMockOrder,
@@ -10,6 +9,7 @@ import {
   resetMockOrders,
   type PlaceOrderParams,
 } from "@/lib/api/mock-trade-ledger";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * Mock trade ledger — pure-logic unit tests.
@@ -34,7 +34,7 @@ function baseParams(overrides: Partial<PlaceOrderParams> = {}): PlaceOrderParams
     order_type: "market",
     quantity: 10,
     price: 1,
-    asset_class: "DeFi",
+    asset_group: "DeFi",
     lane: "defi",
     ...overrides,
   };
@@ -138,7 +138,7 @@ describe("mock-trade-ledger", () => {
       vi.advanceTimersByTime(250);
 
       const all = getFilledDefiOrders();
-      expect(all.every((o) => o.asset_class === "DeFi" && o.status === "filled")).toBe(true);
+      expect(all.every((o) => o.asset_group === "DeFi" && o.status === "filled")).toBe(true);
       expect(all.some((o) => o.id === order.id)).toBe(true);
 
       const scoped = getFilledDefiOrders("YIELD_ROTATION_LENDING@test");

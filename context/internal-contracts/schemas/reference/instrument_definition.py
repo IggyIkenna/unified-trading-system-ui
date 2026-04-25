@@ -81,7 +81,7 @@ class InstrumentDefinition(BaseModel):
 
     data_provider: str = ""
     venue_type: str = ""
-    asset_class: str = ""
+    asset_group: str = ""
     market_category: str = ""
     chain: str = ""
 

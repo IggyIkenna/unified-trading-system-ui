@@ -1,19 +1,17 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { Filter, X, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { ChevronDown, Filter, X } from "lucide-react";
 
 // Asset class domains - where the strategy operates
 export type AssetClass = "DeFi" | "CeFi" | "TradFi" | "Sports" | "Prediction";
@@ -31,17 +29,17 @@ export type StrategyType =
   | "Options"
   | "LP Provision";
 
-export const ASSET_CLASSES: {
+export const asset_groupES: {
   value: AssetClass;
   label: string;
   color: string;
 }[] = [
-  { value: "DeFi", label: "DeFi", color: "#4ade80" },
-  { value: "CeFi", label: "CeFi", color: "#60a5fa" },
-  { value: "TradFi", label: "TradFi", color: "#a78bfa" },
-  { value: "Sports", label: "Sports", color: "#fbbf24" },
-  { value: "Prediction", label: "Prediction", color: "#f472b6" },
-];
+    { value: "DeFi", label: "DeFi", color: "#4ade80" },
+    { value: "CeFi", label: "CeFi", color: "#60a5fa" },
+    { value: "TradFi", label: "TradFi", color: "#a78bfa" },
+    { value: "Sports", label: "Sports", color: "#fbbf24" },
+    { value: "Prediction", label: "Prediction", color: "#f472b6" },
+  ];
 
 export const STRATEGY_TYPES: { value: StrategyType; label: string }[] = [
   { value: "Market Making", label: "Market Making" },
@@ -128,7 +126,7 @@ export function StrategyFilterBar({
             Filter by Asset Class
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {ASSET_CLASSES.map((ac) => (
+          {asset_groupES.map((ac) => (
             <DropdownMenuCheckboxItem
               key={ac.value}
               checked={selectedAssetClasses.includes(ac.value)}
@@ -185,7 +183,7 @@ export function StrategyFilterBar({
 
       {/* Active Filter Badges */}
       {selectedAssetClasses.map((ac) => {
-        const config = ASSET_CLASSES.find((a) => a.value === ac);
+        const config = asset_groupES.find((a) => a.value === ac);
         return (
           <Badge
             key={ac}

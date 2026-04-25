@@ -398,7 +398,7 @@ gs://ml-models/SPORTS/
 
 ### Event Logging
 
-**All services emit lifecycle events with `asset_class=SPORTS` label:**
+**All services emit lifecycle events with `asset_group=SPORTS` label:**
 
 - `STARTED`, `INGESTING_DATA`, `PROCESSING_DATA`, `DATA_SAVED`, `COMPLETED`, `FAILED`
 
@@ -406,7 +406,7 @@ gs://ml-models/SPORTS/
 
 **Cloud Monitoring metrics:**
 
-- `instruments_ingested_total{asset_class="SPORTS"}`
+- `instruments_ingested_total{asset_group="SPORTS"}`
 - `odds_updates_received_total{venue="BETFAIR"}`
 - `features_computed_total{horizon="t0"}`
 - `predictions_generated_total{model="match_odds_v1"}`
@@ -510,11 +510,11 @@ gs://ml-models/SPORTS/
 
 | Batch | Service                                    | Sports Augmentation                                             | Outputs                                                                                                       |
 | ----- | ------------------------------------------ | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **A** | instruments-service (AUGMENTED)            | Sports parser, fixture matching, team normalization             | GCS canonical fixtures/teams/leagues; PubSub instruments-updated (asset_class=SPORTS)                         |
-| **B** | market-data-processing-service (AUGMENTED) | Odds API (batch), Betfair Stream (live), API-Football ingestion | GCS odds snapshots + ProcessedOddsOutput; PubSub market-data-updated (asset_class=SPORTS), arbitrage-detected |
+| **A** | instruments-service (AUGMENTED)            | Sports parser, fixture matching, team normalization             | GCS canonical fixtures/teams/leagues; PubSub instruments-updated (asset_group=SPORTS)                         |
+| **B** | market-data-processing-service (AUGMENTED) | Odds API (batch), Betfair Stream (live), API-Football ingestion | GCS odds snapshots + ProcessedOddsOutput; PubSub market-data-updated (asset_group=SPORTS), arbitrage-detected |
 | **C** | features-sports-service (NEW standalone)   | 19 feature categories, time horizons (T-24h, T-60m, T-0, HT)    | GCS features; PubSub sports-features-computed                                                                 |
-| **D** | strategy-service (AUGMENTED)               | Arbitrage, value betting, Kelly criterion for SPORTS            | PubSub bet-orders (asset_class=SPORTS); GCS orders                                                            |
-| **E** | execution-service (AUGMENTED)              | Betfair, Pinnacle, Polymarket API clients via USEI              | GCS BetExecution; PubSub bet-executions (asset_class=SPORTS)                                                  |
+| **D** | strategy-service (AUGMENTED)               | Arbitrage, value betting, Kelly criterion for SPORTS            | PubSub bet-orders (asset_group=SPORTS); GCS orders                                                            |
+| **E** | execution-service (AUGMENTED)              | Betfair, Pinnacle, Polymarket API clients via USEI              | GCS BetExecution; PubSub bet-executions (asset_group=SPORTS)                                                  |
 
 **DEPRECATED sports-specific services (archived 2026-03-01):**
 
@@ -533,11 +533,11 @@ gs://ml-models/SPORTS/
   `.cursor/rules/no-empty-fallbacks.mdc`).
 - **No `dict[str, Any]` at boundaries** — all GCS/PubSub payloads use Pydantic models from unified-api-contracts.
 - **11 lifecycle events** per service (see `03-observability/lifecycle-events.md`).
-- **No separate sports service repos** — sports logic lives as `asset_class=SPORTS` branches within existing services.
+- **No separate sports service repos** — sports logic lives as `asset_group=SPORTS` branches within existing services.
 
 **Infra (Layer 2):** GCS buckets use existing naming conventions with SPORTS category (e.g.,
 `instruments-store-sports-{project_id}`, `market-data-sports-{project_id}`), PubSub topics/subscriptions (reuse existing
-topic patterns with `asset_class=SPORTS` attribute), Secret Manager for sports API keys. See
+topic patterns with `asset_group=SPORTS` attribute), Secret Manager for sports API keys. See
 `deployment-service/scripts/verify_infra.py` sports checks.
 
 ### Phase 3 (original): ML (Q3 2026)
@@ -594,6 +594,6 @@ increases operational overhead, duplicates observability/deployment infrastructu
 - `unified-sports-execution-interface` (USEI) — bookmaker/exchange adapter library; remains standalone as a venue
   adapter layer
 
-**Impact on batch pipeline:** Sports data flows through the same DAG as crypto/tradfi data, using `asset_class=SPORTS` /
+**Impact on batch pipeline:** Sports data flows through the same DAG as crypto/tradfi data, using `asset_group=SPORTS` /
 `category=SPORTS` to route to sports-specific logic branches within each service. No separate sports pipeline
 containers.

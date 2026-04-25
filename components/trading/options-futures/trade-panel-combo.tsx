@@ -1,17 +1,16 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { formatNumber } from "@/lib/utils/formatters";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import { toast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { SelectedInstrument } from "@/lib/types/options";
+import { toast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
 import { formatUsd } from "@/lib/mocks/fixtures/options-futures-mock";
+import type { SelectedInstrument } from "@/lib/types/options";
+import { cn } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/formatters";
 
 interface TradePanelComboProps {
   instrument: SelectedInstrument;
@@ -178,7 +177,7 @@ export function TradePanelCombo({ instrument, amount, setAmount }: TradePanelCom
             order_type: "limit",
             quantity: amountNum,
             price: Math.abs(netDebit),
-            asset_class: "CeFi",
+            asset_group: "CeFi",
             lane: "options",
           });
           setAmount("");

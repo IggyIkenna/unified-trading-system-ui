@@ -82,7 +82,7 @@
         },
         "1.7": {
           "result": "pass",
-          "note": "widget has no inline reference data; ASSET_CLASS_OPTIONS from context is a domain-type constant"
+          "note": "widget has no inline reference data; asset_group_OPTIONS from context is a domain-type constant"
         }
       },
       "notes": "Context (read-only): lib/mocks imports are dev-mode data sources in the context layer, not in the widget. Acceptable per spec."
@@ -261,7 +261,10 @@
     "notes": "Peer of orders-kpi-strip: both consume OrdersDataProvider; neither drives the other. Instrument links navigate to terminal/options/defi/sports tabs \u2014 those pages are independent, not detail widgets driven by this one."
   },
   "dataContract": {
-    "channels": ["rest", "polling"],
+    "channels": [
+      "rest",
+      "polling"
+    ],
     "primary": "rest",
     "cadence": "event-driven",
     "staleness": "near-realtime:<=1s",
@@ -270,10 +273,22 @@
     "notes": "Data via shared OrdersDataProvider calling useOrders() (REST). Ledger changes trigger window events (mock-order-filled, mock-ledger-reset) \u2192 refetch. Production path: REST GET /api/orders; cancel/amend via POST mutations. WebSocket upgrade path anticipated for live order state updates."
   },
   "coverage": {
-    "assetClasses": ["cefi", "defi", "tradfi", "sports", "predictions"],
-    "strategies": ["all"],
-    "venues": ["all"],
-    "commonTabs": ["orders"],
+    "assetClasses": [
+      "cefi",
+      "defi",
+      "tradfi",
+      "sports",
+      "predictions"
+    ],
+    "strategies": [
+      "all"
+    ],
+    "venues": [
+      "all"
+    ],
+    "commonTabs": [
+      "orders"
+    ],
     "verifiedOn": [],
     "gaps": [
       "buildColumns() exceeds 200-line function limit \u2014 refactor to sub-renderers recommended",
@@ -282,7 +297,9 @@
     ],
     "notes": "classifyInstrument() covers Spot, Perp, Futures, Options, DeFi (AAVE/Uniswap/Lido/Morpho), Prediction (Betfair/Polymarket/Kalshi/NBA/NFL/EPL/LaLiga). Full cross-domain coverage by design."
   },
-  "knownIssues": ["buildColumns() function is 263 lines (limit 200) \u2014 marginally over; low priority split"],
+  "knownIssues": [
+    "buildColumns() function is 263 lines (limit 200) \u2014 marginally over; low priority split"
+  ],
   "findings": [
     {
       "level": "l7",

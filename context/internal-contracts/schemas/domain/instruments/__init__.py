@@ -96,7 +96,7 @@ INSTRUMENTS_SCHEMA = SchemaDefinition(
             description="Data provider source: 'tardis' or 'databento'",
         ),
         ColumnSchema(
-            name="asset_class",
+            name="asset_group",
             dtype="string",
             nullable=True,
             description="Asset class: 'crypto' or 'traditional'",
@@ -474,7 +474,7 @@ INSTRUMENTS_PARQUET_SCHEMA: list[dict[str, str | bool]] = [
         "description": "Data provider source: 'tardis' or 'databento'",
     },
     {
-        "name": "asset_class",
+        "name": "asset_group",
         "type": "string",
         "required": False,
         "default": "crypto",

@@ -33,7 +33,7 @@ export async function recordAdminEvent(payload: AdminEventPayload): Promise<void
 
   // Always emit a structured log line — survives if Firestore is unreachable.
   // Cloud Run + local dev will both capture this via stdout.
-  // eslint-disable-next-line no-console
+   
   console.info(
     JSON.stringify({ level: "info", kind: "admin_event", ...record }),
   );

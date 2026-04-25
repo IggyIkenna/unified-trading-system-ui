@@ -27,7 +27,7 @@ Lines: ~669
 
 ### Inline Mock Data
 
-- `ASSET_CLASS_COLORS` — color map for asset classes (move to config)
+- `asset_group_COLORS` — color map for asset classes (move to config)
 - `ARCHETYPES` — archetype filter list (move to config)
 - `STATUSES` — status filter list (move to config)
 - `DEFAULT_STRATEGIES` fallback from `lib/mocks/fixtures/strategy-instances` — already centralized
@@ -82,7 +82,7 @@ export interface StrategiesData {
 
 ## 4. Mock Data Instructions
 
-- **Move**: `ASSET_CLASS_COLORS` to `lib/config/services/strategies.config.ts`
+- **Move**: `asset_group_COLORS` to `lib/config/services/strategies.config.ts`
 - **Move**: `ARCHETYPES` and `STATUSES` constants to `lib/config/services/strategies.config.ts`
 - **No new mock data needed** — `useStrategyPerformance()` already sources from MSW
 - `getTotalAUM()`, `getTotalPnL()`, `getTotalMTDPnL()` are already in `lib/mocks/fixtures/strategy-instances` — keep as-is or refactor to accept a strategy array parameter instead of using the global `STRATEGIES`

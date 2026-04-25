@@ -1,21 +1,20 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { DualStatBar, StatusPill } from "@/components/trading/sports/shared";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { BarChart3, Clock, Zap } from "lucide-react";
-import { ComposedChart, Area, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts";
-import type { OdumInstrument, OdumInstrumentType, Timeframe } from "./types";
-import { MOCK_FIXTURES } from "@/lib/mocks/fixtures/sports-data";
-import { ODUM_INSTRUMENTS } from "@/lib/mocks/fixtures/predictions-data";
-import { fmtVolume, fmtCents, fmtRelativeTime } from "./helpers";
-import { StatusPill, DualStatBar } from "@/components/trading/sports/shared";
-import { VenueChip, DivergenceBadge, DeltaPill, TimeframeBadge, ResolutionCountdown, YesNoButtons } from "./shared";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { ODUM_INSTRUMENTS } from "@/lib/mocks/fixtures/predictions-data";
+import { MOCK_FIXTURES } from "@/lib/mocks/fixtures/sports-data";
+import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
+import { BarChart3, Clock, Zap } from "lucide-react";
+import * as React from "react";
+import { Area, ComposedChart, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { fmtCents, fmtVolume } from "./helpers";
+import { DeltaPill, DivergenceBadge, ResolutionCountdown, TimeframeBadge, VenueChip, YesNoButtons } from "./shared";
+import type { OdumInstrument, OdumInstrumentType, Timeframe } from "./types";
 
 // ─── Filter bar ───────────────────────────────────────────────────────────────
 
@@ -129,7 +128,7 @@ function QuantCard({ inst }: { inst: OdumInstrument }) {
       order_type: "limit",
       quantity: 100,
       price,
-      asset_class: "Prediction",
+      asset_group: "Prediction",
       lane: "predictions",
     });
     toast({
@@ -240,7 +239,7 @@ function FootballCard({
       order_type: "limit",
       quantity: 100,
       price: (side === "yes" ? oddsYes : oddsNo) / 100,
-      asset_class: "Prediction",
+      asset_group: "Prediction",
       lane: "predictions",
     });
     toast({

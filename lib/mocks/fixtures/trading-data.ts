@@ -16,16 +16,17 @@
 // Import canonical taxonomy for type consistency
 import {
   type AssetClass,
+  type StrategyArchetype,
   type StrategyExecutionMode,
   type StrategyStatus,
-  type StrategyArchetype,
 } from "@/lib/taxonomy";
 
 // Import canonical strategy instances (v2 UAC-sourced) as the single source of truth
 import { STRATEGIES as REGISTRY_STRATEGIES, type Strategy as RegistryStrategy } from "@/lib/mocks/fixtures/strategy-instances";
+import type { TradingClient, TradingOrganization } from "@/lib/types/trading";
 
 // Re-export taxonomy types for convenience
-export type { AssetClass, StrategyExecutionMode, StrategyStatus, StrategyArchetype };
+export type { AssetClass, StrategyArchetype, StrategyExecutionMode, StrategyStatus };
 
 // Seeded random for deterministic data
 function seededRandom(seed: string): () => number {
@@ -47,8 +48,7 @@ function seededRandom(seed: string): () => number {
 
 // Canonical types live in lib/types/trading.ts — re-exported here for
 // backward compatibility with existing mock-data consumers.
-export type { TradingOrganization, TradingClient } from "@/lib/types/trading";
-import type { TradingOrganization, TradingClient } from "@/lib/types/trading";
+export type { TradingClient, TradingOrganization } from "@/lib/types/trading";
 
 export interface TradingStrategy {
   id: string;
@@ -949,7 +949,7 @@ export function getYesterday(): string {
 // =============================================================================
 
 // Map of services to the asset classes/archetypes they support
-export const SERVICE_ASSET_CLASS_MAP: Record<string, string[]> = {
+export const SERVICE_asset_group_MAP: Record<string, string[]> = {
   "Execution Service": ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"],
   "Market Data": ["CeFi", "DeFi", "TradFi"],
   "Risk Engine": ["CeFi", "DeFi", "TradFi", "Sports", "Prediction"],
@@ -996,7 +996,7 @@ export function getStrategyServices(strategyId: string): string[] {
   const services: string[] = [];
 
   // Add core services based on asset class
-  Object.entries(SERVICE_ASSET_CLASS_MAP).forEach(([service, assetClasses]) => {
+  Object.entries(SERVICE_asset_group_MAP).forEach(([service, assetClasses]) => {
     if (assetClasses.includes(strategy.assetClass)) {
       services.push(service);
     }

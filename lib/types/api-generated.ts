@@ -10910,7 +10910,7 @@ export interface components {
              * Asset Class
              * @default
              */
-            asset_class: string;
+            asset_group: string;
             /** Strike */
             strike?: number | null;
             /** Option Type */
@@ -12145,7 +12145,7 @@ export interface components {
              * Asset Class Exposures Usd
              * @description Exposure by asset class (CeFi, DeFi, TradFi, etc.)
              */
-            asset_class_exposures_usd?: {
+            asset_group_exposures_usd?: {
                 [key: string]: string;
             };
             /**
@@ -16925,7 +16925,7 @@ export interface operations {
     get_instruments_analytics_instruments_get: {
         parameters: {
             query?: {
-                asset_class?: string;
+                asset_group?: string;
             };
             header?: never;
             path?: never;
@@ -17033,7 +17033,7 @@ export interface operations {
     get_strategies_analytics_strategies_get: {
         parameters: {
             query?: {
-                asset_class?: string;
+                asset_group?: string;
                 status?: string;
                 page?: number;
                 page_size?: number;
@@ -19189,7 +19189,7 @@ export interface operations {
         parameters: {
             query?: {
                 venue?: string;
-                asset_class?: string;
+                asset_group?: string;
                 page?: number;
                 page_size?: number;
             };

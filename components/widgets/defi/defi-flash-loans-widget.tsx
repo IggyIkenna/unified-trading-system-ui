@@ -1,28 +1,27 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import { CollapsibleSection } from "@/components/shared/collapsible-section";
+import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Fuel, Plus, Trash2, Zap } from "lucide-react";
-import { toast } from "sonner";
-import { CollapsibleSection } from "@/components/shared/collapsible-section";
-import { FormWidget, useFormSubmit } from "@/components/shared/form-widget";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
 import { useActiveStrategyId } from "@/hooks/use-active-strategy-id";
 import {
-  FLASH_VENUES,
-  DEFI_INSTRUCTION_TYPES,
   DEFI_ALGO_TYPES,
+  DEFI_INSTRUCTION_TYPES,
+  FLASH_VENUES,
   SLIPPAGE_OPTIONS,
 } from "@/lib/config/services/defi.config";
+import type { AlgoType, InstructionType } from "@/lib/types/defi";
 import { INSTRUCTION_ALGO_MAP } from "@/lib/types/defi";
-import type { InstructionType, AlgoType } from "@/lib/types/defi";
-import { useDeFiData } from "./defi-data-context";
+import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
+import { Fuel, Plus, Trash2, Zap } from "lucide-react";
+import { toast } from "sonner";
+import { useDeFiData } from "./defi-data-context";
 
 export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
   const { flashSteps, addFlashStep, removeFlashStep, updateFlashStep, flashPnl, executeDeFiOrder, swapTokens } =
@@ -253,7 +252,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
                 max_slippage_bps: 50,
                 expected_output: netPnl,
                 benchmark_price: netPnl,
-                asset_class: "DeFi",
+                asset_group: "DeFi",
                 lane: "defi",
                 is_atomic: true,
               });

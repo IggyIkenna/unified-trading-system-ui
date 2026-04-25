@@ -1,21 +1,21 @@
 "use client";
 
-import * as React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
+import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
+import { MOCK_MARKETS, MOCK_RECENT_FILLS } from "@/lib/mocks/fixtures/predictions-data";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Clock, BarChart3, TrendingUp, CheckCircle2 } from "lucide-react";
-import { placeMockOrder } from "@/lib/api/mock-trade-ledger";
-import { useToast } from "@/hooks/use-toast";
+import { BarChart3, CheckCircle2, Clock, Search, TrendingUp } from "lucide-react";
+import * as React from "react";
+import { calcKellyStake, fmtRelativeTime, fmtUsdPrecise, fmtVolume } from "./helpers";
+import { LiveDot, ProbBadge, VenueChip } from "./shared";
 import type { PredictionMarket, PredictionQuickTradeParams } from "./types";
-import { MOCK_MARKETS, MOCK_RECENT_FILLS } from "@/lib/mocks/fixtures/predictions-data";
-import { fmtVolume, calcKellyStake, fmtUsdPrecise, fmtRelativeTime } from "./helpers";
-import { VenueChip, LiveDot, ProbBadge } from "./shared";
 
 // ─── Top markets by volume (for quick-access cards) ───────────────────────────
 
@@ -66,7 +66,7 @@ export function TradePanelInner({
       order_type: "limit",
       quantity: stakeNum,
       price,
-      asset_class: "Prediction",
+      asset_group: "Prediction",
       lane: "predictions",
     });
     setStakeAmount("");

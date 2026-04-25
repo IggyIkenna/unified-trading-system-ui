@@ -89,7 +89,7 @@ const uicEnums = (data.uic_enums ?? {}) as Record<string, string[]>;
 
 export const UIC_ENUMS = uicEnums;
 export const ALERT_TYPES = uicEnums.AlertType ?? [];
-export const ASSET_CLASSES = uicEnums.AssetClass ?? [];
+export const asset_groupES = uicEnums.AssetClass ?? [];
 export const BOOK_TYPES = uicEnums.BookType ?? [];
 export const CLOUD_PROVIDERS = uicEnums.CloudProvider ?? [];
 export const COMPUTE_TYPES = uicEnums.ComputeType ?? [];
@@ -199,16 +199,16 @@ export const DEPLOYMENT_OPERATION_MODES =
 
 export const VENUE_DATA_AVAILABILITY = (data.venue_data_availability ??
   {}) as Record<
-  string,
-  {
-    venue_name: string;
-    category: string;
-    availability_lag_hours: number;
-    available_after_utc_hour: number;
-    is_t_plus_one: boolean;
-    notes: string;
-  }
->;
+    string,
+    {
+      venue_name: string;
+      category: string;
+      availability_lag_hours: number;
+      available_after_utc_hour: number;
+      is_t_plus_one: boolean;
+      notes: string;
+    }
+  >;
 
 // ---------------------------------------------------------------------------
 // Venue Coordinates (stadium geographic positions)
