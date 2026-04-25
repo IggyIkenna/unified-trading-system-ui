@@ -5,23 +5,27 @@ set -euo pipefail
 # dev-tiers.sh — Start the Unified Trading System at a specific runtime tier.
 #
 # Usage:
-#   bash scripts/dev-tiers.sh --tier 0        # UI-only (no Python)
-#   bash scripts/dev-tiers.sh --tier 1        # UI + API gateways (mock)
-#   bash scripts/dev-tiers.sh --tier 2        # UI + APIs + all services
-#   bash scripts/dev-tiers.sh --tier 1 --real # Tier 1 with real adapters
+#   bash scripts/dev-tiers.sh --tier 0        # UI-only (no Python) + Firebase emulators
+#   bash scripts/dev-tiers.sh --tier 1        # UI + API gateways (mock) + Firebase emulators
+#   bash scripts/dev-tiers.sh --tier 2        # UI + APIs + all services + Firebase emulators
+#   bash scripts/dev-tiers.sh --tier 1 --real # Tier 1 with real adapters (still local Firebase)
 #   bash scripts/dev-tiers.sh --tier static   # Serve pre-built static export (port 3100)
-#   bash scripts/dev-tiers.sh --tier 0 --firebase-local  # T0 + Firebase Auth/Firestore/Storage emulator
+#   bash scripts/dev-tiers.sh --tier 0 --no-firebase-local  # opt out of emulators (rare)
 #   bash scripts/dev-tiers.sh --stop          # Stop all processes
 #   bash scripts/dev-tiers.sh --status        # Show what's running
 #
-# --firebase-local: starts the Firebase Emulator Suite (Auth on :9099,
-# Firestore on :8080, Storage on :9199, UI on :4000) alongside the Next.js
-# dev server. The UI bundle is built with NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true
-# so all Firebase SDK calls (auth signin, Firestore writes, Storage uploads)
-# route to localhost — no GCP traffic, no charges, no data pollution. Run
-# `npm run emulators:seed` in another shell to populate the 23 demo personas
-# into the local Auth pool. Without --firebase-local, T0 still uses the
-# client-side demo auth provider with the literal personas.ts password list.
+# Firebase Emulator Suite is ON by default for every local tier (Auth :9099,
+# Firestore :8080, Storage :9199, UI :4000). The UI bundle reads
+# NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true so all SDK calls (auth signin,
+# Firestore writes, Storage uploads) route to localhost — no GCP traffic,
+# no charges, no possibility of writing drafts/claims/files to real
+# odum-staging or prod projects from a dev machine.
+#
+# To populate the 23 demo personas into the local Auth pool the first time:
+#   npm run emulators:seed   (in another shell after emulators are up)
+#
+# Pass --no-firebase-local only if you genuinely want the dev server to
+# talk to a real Firebase project (set NEXT_PUBLIC_FIREBASE_* in .env.local).
 #
 # Tiers:
 #   T-static = Pre-built Next.js static export on port 3100. No dev server, no APIs.
@@ -45,20 +49,26 @@ LOG_DIR="$UI_ROOT/.local-dev-cache/logs"
 
 TIER=""
 REAL_MODE=false
-FIREBASE_LOCAL=false
+# Firebase Emulator Suite is ON by default for every local tier — keeps
+# auth + Firestore + Storage on localhost so we don't accidentally write
+# drafts / claims / files to the real odum-staging or prod projects from
+# a developer machine. Override with --no-firebase-local for the rare
+# case where you actually want to point at a real Firebase project.
+FIREBASE_LOCAL=true
 DO_STOP=false
 DO_STATUS=false
 DO_RESET=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --tier)            TIER="$2"; shift 2 ;;
-    --real)            REAL_MODE=true; shift ;;
-    --firebase-local)  FIREBASE_LOCAL=true; shift ;;
-    --stop)            DO_STOP=true; shift ;;
-    --status)          DO_STATUS=true; shift ;;
-    --reset)           DO_RESET=true; shift ;;
-    *)                 echo "Unknown arg: $1"; exit 1 ;;
+    --tier)               TIER="$2"; shift 2 ;;
+    --real)               REAL_MODE=true; shift ;;
+    --firebase-local)     FIREBASE_LOCAL=true; shift ;;     # kept as no-op for explicitness
+    --no-firebase-local)  FIREBASE_LOCAL=false; shift ;;
+    --stop)               DO_STOP=true; shift ;;
+    --status)             DO_STATUS=true; shift ;;
+    --reset)              DO_RESET=true; shift ;;
+    *)                    echo "Unknown arg: $1"; exit 1 ;;
   esac
 done
 
