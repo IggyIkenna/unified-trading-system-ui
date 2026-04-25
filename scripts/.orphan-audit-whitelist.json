@@ -83,6 +83,10 @@
       "reason": "API-HANDLER — Next.js route.ts called by /strategy-evaluation/status page to read a submission by magic token; not a page."
     },
     {
+      "path": "/api/strategy-evaluation/resend-link",
+      "reason": "API-HANDLER — Next.js route.ts called from /strategy-evaluation form's 'Already submitted? Resend my access link' button; not a page."
+    },
+    {
       "path": "/strategy-evaluation/status",
       "reason": "UNAUTHENTICATED-FUNNEL — token-gated submission view; reached only via magic-link email after a successful form submit, not a declared nav tile."
     }

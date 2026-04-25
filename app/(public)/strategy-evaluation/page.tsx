@@ -381,6 +381,55 @@ function FieldError({ message }: { message: string }) {
   return <p className="text-destructive text-xs mt-1">{message}</p>;
 }
 
+/**
+ * "Already submitted? Resend my access link" — for prospects who lost the magic
+ * link from their original confirmation email. Always shows a generic confirmation
+ * (we don't tell the world whether an email has a submission); the server only
+ * actually sends an email when a matching submission exists.
+ */
+function ResendLinkRow({ email }: { email: string }) {
+  const [state, setState] = React.useState<"idle" | "sending" | "sent">("idle");
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  async function onResend() {
+    if (!valid || state !== "idle") return;
+    setState("sending");
+    try {
+      await fetch("/api/strategy-evaluation/resend-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+        cache: "no-store",
+      });
+    } catch {
+      // ignore — always show the generic confirmation
+    }
+    setState("sent");
+  }
+
+  if (state === "sent") {
+    return (
+      <p className="text-xs text-muted-foreground mt-1">
+        If we have a submission for that email, we&rsquo;ve sent the access link to your inbox. Open it to edit your
+        existing submission instead of starting a new one.
+      </p>
+    );
+  }
+  return (
+    <p className="text-xs text-muted-foreground mt-1">
+      Already submitted before?{" "}
+      <button
+        type="button"
+        onClick={onResend}
+        disabled={!valid || state !== "idle"}
+        className="underline disabled:no-underline disabled:opacity-60"
+      >
+        {state === "sending" ? "Sending…" : "Resend my access link →"}
+      </button>
+    </p>
+  );
+}
+
 type FileFieldKey = "backtestMethodologyDoc" | "assumptionsDoc" | "tearSheet" | "tradeLogCsv" | "equityCurveCsv";
 
 export default function StrategyEvaluationPage() {
@@ -394,6 +443,7 @@ export default function StrategyEvaluationPage() {
   const [uploadStatus, setUploadStatus] = React.useState<string>("");
   const [editingFromToken, setEditingFromToken] = React.useState<string | null>(null);
   const [previousSubmissionId, setPreviousSubmissionId] = React.useState<string | null>(null);
+  const [prefillState, setPrefillState] = React.useState<"idle" | "loading" | "loaded" | "failed">("idle");
   const [currentStep, setCurrentStep] = React.useState<number>(1);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   // Files cached in-memory between pick and submit. Not serialised to
@@ -411,9 +461,13 @@ export default function StrategyEvaluationPage() {
     const token = sp.get("token");
     if (token) {
       setEditingFromToken(token);
+      setPrefillState("loading");
       fetch(`/api/strategy-evaluation/status?token=${encodeURIComponent(token)}`, { cache: "no-store" })
         .then(async (res) => {
-          if (!res.ok) return null;
+          if (!res.ok) {
+            setPrefillState("failed");
+            return null;
+          }
           return res.json() as Promise<Record<string, unknown> & { id?: string }>;
         })
         .then((data) => {
@@ -427,12 +481,13 @@ export default function StrategyEvaluationPage() {
               restored.draftSubmissionId = `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
             }
             setForm(restored);
+            setPrefillState("loaded");
           } catch {
-            // If the persisted shape is too far from FormState, fall through to a fresh form
+            setPrefillState("failed");
           }
         })
         .catch(() => {
-          // Network failure — fall through to fresh form
+          setPrefillState("failed");
         });
       return;
     }
@@ -695,12 +750,32 @@ export default function StrategyEvaluationPage() {
 
       <p className="text-sm text-muted-foreground mb-8">Sections A–P below. Starred fields are required.</p>
 
-      {editingFromToken && (
+      {editingFromToken && prefillState === "loading" && (
         <div className="mb-6 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
-          <p className="font-medium">Editing your earlier submission</p>
+          <p className="font-medium">Loading your earlier submission…</p>
           <p className="mt-1 text-xs text-muted-foreground">
+            Pulling your prior answers from our records. The form will populate in a second.
+          </p>
+        </div>
+      )}
+      {editingFromToken && prefillState === "loaded" && (
+        <div className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm">
+          <p className="font-medium text-emerald-200">Editing your earlier submission</p>
+          <p className="mt-1 text-xs text-emerald-200/80">
             Your previous answers are loaded below. Make any changes and submit again — we&rsquo;ll file the new version
             alongside the original. Uploaded files carry over; re-attach a file to overwrite that slot.
+          </p>
+        </div>
+      )}
+      {editingFromToken && prefillState === "failed" && (
+        <div className="mb-6 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm">
+          <p className="font-medium text-destructive">Couldn&rsquo;t load your earlier submission</p>
+          <p className="mt-1 text-xs text-destructive/90">
+            The link may have expired. You can fill the form fresh and submit, or email{" "}
+            <a href="mailto:info@odum-research.com" className="underline">
+              info@odum-research.com
+            </a>{" "}
+            with the link from your email and we&rsquo;ll pick it up manually.
           </p>
         </div>
       )}
@@ -786,6 +861,7 @@ export default function StrategyEvaluationPage() {
                   aria-invalid={!!getError("email")}
                 />
                 {getError("email") && <FieldError message={getError("email")!} />}
+                {!editingFromToken && <ResendLinkRow email={form.email} />}
               </div>
 
               <div className="space-y-1">
