@@ -12,6 +12,7 @@ import {
   getTotalPnL,
   type Strategy,
 } from "@/lib/mocks/fixtures/strategy-instances";
+import { normalizeArchetype } from "@/lib/config/services/strategies.config";
 import * as React from "react";
 
 // ---------------------------------------------------------------------------
@@ -418,7 +419,7 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
     }
 
     if (selectedArchetypes.length > 0) {
-      result = result.filter((s) => selectedArchetypes.includes(s.archetype));
+      result = result.filter((s) => selectedArchetypes.includes(normalizeArchetype(s.archetype)));
     }
 
     if (selectedStatuses.length > 0) {

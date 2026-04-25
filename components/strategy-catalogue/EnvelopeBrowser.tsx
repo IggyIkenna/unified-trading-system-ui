@@ -31,6 +31,7 @@ import {
   type StrategyInstrumentsJson,
 } from "@/lib/architecture-v2/envelope-loader";
 import { TERMS, formatCategory, CATEGORY_LABELS } from "@/lib/architecture-v2/terminology";
+import { formatFamily } from "@/lib/strategy-display";
 import {
   resolveSlotAccess,
   resolveArchetypeAccess,
@@ -78,7 +79,18 @@ export function EnvelopeBrowser(): React.ReactElement {
           return;
         }
         setEnvelope(env);
-        setInstruments(inst && typeof inst === "object" && inst.slots ? inst : { schema_version: "0.0.0", generated_at: "", source_script: "", resolver: "missing", slot_count: 0, slots: {} });
+        setInstruments(
+          inst && typeof inst === "object" && inst.slots
+            ? inst
+            : {
+                schema_version: "0.0.0",
+                generated_at: "",
+                source_script: "",
+                resolver: "missing",
+                slot_count: 0,
+                slots: {},
+              },
+        );
       })
       .catch((e: unknown) => {
         if (cancelled) return;
@@ -128,17 +140,19 @@ export function EnvelopeBrowser(): React.ReactElement {
   const availableArchetypes = React.useMemo(() => {
     if (!envelope?.categories) return [];
     const out = new Set<string>();
-    const cats = categoryFilter === "ALL"
-      ? Object.entries(envelope.categories)
-      : envelope.categories[categoryFilter]
-        ? [[categoryFilter, envelope.categories[categoryFilter]] as const]
-        : [];
-    for (const [, cat] of cats) {
-      const families = familyFilter === "ALL"
-        ? Object.entries(cat?.families ?? {})
-        : cat?.families[familyFilter]
-          ? [[familyFilter, cat.families[familyFilter]] as const]
+    const cats =
+      categoryFilter === "ALL"
+        ? Object.entries(envelope.categories)
+        : envelope.categories[categoryFilter]
+          ? [[categoryFilter, envelope.categories[categoryFilter]] as const]
           : [];
+    for (const [, cat] of cats) {
+      const families =
+        familyFilter === "ALL"
+          ? Object.entries(cat?.families ?? {})
+          : cat?.families[familyFilter]
+            ? [[familyFilter, cat.families[familyFilter]] as const]
+            : [];
       for (const [, fam] of families) {
         for (const arc of Object.keys(fam?.archetypes ?? {})) out.add(arc);
       }
@@ -150,9 +164,12 @@ export function EnvelopeBrowser(): React.ReactElement {
     if (!envelope) return [];
     const rows: FlatRow[] = [];
 
-    const filteredCats = categoryFilter === "ALL"
-      ? CATEGORY_ORDER.filter((c) => envelope.categories?.[c])
-      : envelope.categories?.[categoryFilter] ? [categoryFilter] : [];
+    const filteredCats =
+      categoryFilter === "ALL"
+        ? CATEGORY_ORDER.filter((c) => envelope.categories?.[c])
+        : envelope.categories?.[categoryFilter]
+          ? [categoryFilter]
+          : [];
 
     for (const category of filteredCats) {
       const cat = envelope.categories?.[category];
@@ -212,6 +229,7 @@ export function EnvelopeBrowser(): React.ReactElement {
 
   const parentRef = React.useRef<HTMLDivElement>(null);
   const useVirtual = flatRows.length > VIRTUALISATION_THRESHOLD;
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: flatRows.length,
     getScrollElement: () => parentRef.current,
@@ -222,9 +240,7 @@ export function EnvelopeBrowser(): React.ReactElement {
   if (error) {
     return (
       <Card>
-        <CardContent className="p-6 text-red-600">
-          Failed to load catalogue: {error}
-        </CardContent>
+        <CardContent className="p-6 text-red-600">Failed to load catalogue: {error}</CardContent>
       </Card>
     );
   }
@@ -244,7 +260,8 @@ export function EnvelopeBrowser(): React.ReactElement {
         <CardTitle className="flex items-center justify-between">
           <span>{TERMS.CATALOGUE} — full envelope</span>
           <span className="text-sm font-normal text-muted-foreground">
-            {envelope.totals.instances.toLocaleString()} instances · {envelope.totals.bespoke_archetype_rows} bespoke archetypes
+            {envelope.totals.instances.toLocaleString()} instances · {envelope.totals.bespoke_archetype_rows} bespoke
+            archetypes
           </span>
         </CardTitle>
       </CardHeader>
@@ -256,9 +273,13 @@ export function EnvelopeBrowser(): React.ReactElement {
               <SelectValue placeholder={TERMS.FILTER_CATEGORY} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{TERMS.FILTER_ALL} {TERMS.FILTER_CATEGORY}</SelectItem>
+              <SelectItem value="ALL">
+                {TERMS.FILTER_ALL} {TERMS.FILTER_CATEGORY}
+              </SelectItem>
               {CATEGORY_ORDER.filter((c) => envelope.categories[c]).map((c) => (
-                <SelectItem key={c} value={c}>{formatCategory(c)} ({envelope.categories[c]?.instances_count ?? 0})</SelectItem>
+                <SelectItem key={c} value={c}>
+                  {formatCategory(c)} ({envelope.categories[c]?.instances_count ?? 0})
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -268,9 +289,13 @@ export function EnvelopeBrowser(): React.ReactElement {
               <SelectValue placeholder={TERMS.FILTER_FAMILY} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{TERMS.FILTER_ALL} {TERMS.FILTER_FAMILY}</SelectItem>
+              <SelectItem value="ALL">
+                {TERMS.FILTER_ALL} {TERMS.FILTER_FAMILY}
+              </SelectItem>
               {availableFamilies.map((f) => (
-                <SelectItem key={f} value={f}>{f}</SelectItem>
+                <SelectItem key={f} value={f}>
+                  {f}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -280,9 +305,13 @@ export function EnvelopeBrowser(): React.ReactElement {
               <SelectValue placeholder={TERMS.FILTER_ARCHETYPE} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">{TERMS.FILTER_ALL} {TERMS.FILTER_ARCHETYPE}</SelectItem>
+              <SelectItem value="ALL">
+                {TERMS.FILTER_ALL} {TERMS.FILTER_ARCHETYPE}
+              </SelectItem>
               {availableArchetypes.map((a) => (
-                <SelectItem key={a} value={a}>{a}</SelectItem>
+                <SelectItem key={a} value={a}>
+                  {a}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -390,9 +419,7 @@ function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRender
       >
         {isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
         <span className="text-sm">{formatCategory(cat)}</span>
-        <span className="ml-auto text-xs text-muted-foreground">
-          {CATEGORY_LABELS[cat] ?? cat}
-        </span>
+        <span className="ml-auto text-xs text-muted-foreground">{CATEGORY_LABELS[cat] ?? cat}</span>
       </button>
     );
   }
@@ -404,7 +431,7 @@ function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRender
         className="flex w-full items-center gap-2 border-b px-3 py-2 pl-10 text-left text-sm font-medium hover:bg-muted/30"
       >
         {isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-        <span>{row.family}</span>
+        <span>{row.family ? formatFamily(row.family) : ""}</span>
       </button>
     );
   }
@@ -419,11 +446,11 @@ function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRender
         {isExpanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
         <span className="font-mono text-xs">{row.archetypeId}</span>
         {row.archetype.bespoke_capable ? (
-          <Badge variant="outline" className="ml-1 text-[9px]">+ bespoke ∞</Badge>
+          <Badge variant="outline" className="ml-1 text-[9px]">
+            + bespoke ∞
+          </Badge>
         ) : null}
-        <span className="ml-2 text-xs text-muted-foreground">
-          {row.archetype.instances_total} instances
-        </span>
+        <span className="ml-2 text-xs text-muted-foreground">{row.archetype.instances_total} instances</span>
         <Badge className={`ml-auto text-[10px] ${ACCESS_BADGE_VARIANTS[access]}`} variant="outline">
           {access === "terminal" ? <Eye className="mr-1 size-3" /> : <Lock className="mr-1 size-3" />}
           {ACCESS_LABELS[access]}
@@ -440,7 +467,9 @@ function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRender
     return (
       <div className="flex items-center gap-3 border-b px-3 py-1.5 pl-24 text-xs">
         <span className="font-mono">{cell.instrument_type}</span>
-        <Badge variant="outline" className="text-[9px]">{cell.status}</Badge>
+        <Badge variant="outline" className="text-[9px]">
+          {cell.status}
+        </Badge>
         <span className="text-muted-foreground">
           {cell.venue_count} venues × {cell.tf_count} tfs = {cell.instances}
         </span>
@@ -449,10 +478,7 @@ function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRender
             {concrete.instruments.length} live instrument{concrete.instruments.length === 1 ? "" : "s"}
           </span>
         ) : null}
-        <Badge
-          className={`ml-auto text-[9px] ${ACCESS_BADGE_VARIANTS[access]}`}
-          variant="outline"
-        >
+        <Badge className={`ml-auto text-[9px] ${ACCESS_BADGE_VARIANTS[access]}`} variant="outline">
           {access === "terminal" ? null : <Lock className="mr-1 size-3" />}
           {access}
         </Badge>

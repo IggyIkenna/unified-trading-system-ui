@@ -15,14 +15,9 @@ import { PnLValue } from "@/components/trading/pnl-value";
 import { useClients, useTradeHistory } from "@/hooks/api/use-performance";
 import type { TradeRecord } from "@/lib/mocks/fixtures/client-performance";
 import { formatCurrency, formatNumber } from "@/lib/utils/formatters";
-import {
-  ArrowDownUp,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Filter,
-  Search,
-} from "lucide-react";
+import { CATEGORY_LABELS } from "@/lib/architecture-v2/terminology";
+import { formatFamily, formatArchetype } from "@/lib/strategy-display";
+import { ArrowDownUp, ChevronLeft, ChevronRight, Download, Filter, Search } from "lucide-react";
 
 export function TradesDashboard() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
@@ -35,18 +30,21 @@ export function TradesDashboard() {
   const pageSize = 50;
 
   const { data: clientsData, isLoading: clientsLoading } = useClients();
-  const { data: tradesData, isLoading: tradesLoading, isError, error, refetch } = useTradeHistory(
-    selectedClientId,
-    {
-      symbol: symbolFilter || undefined,
-      side: sideFilter !== "all" ? sideFilter : undefined,
-      limit: pageSize,
-      offset: page * pageSize,
-    },
-  );
+  const {
+    data: tradesData,
+    isLoading: tradesLoading,
+    isError,
+    error,
+    refetch,
+  } = useTradeHistory(selectedClientId, {
+    symbol: symbolFilter || undefined,
+    side: sideFilter !== "all" ? sideFilter : undefined,
+    limit: pageSize,
+    offset: page * pageSize,
+  });
 
-  const clients = clientsData?.clients ?? [];
-  const strategies = clientsData?.strategies ?? [];
+  const clients = React.useMemo(() => clientsData?.clients ?? [], [clientsData]);
+  const strategies = React.useMemo(() => clientsData?.strategies ?? [], [clientsData]);
 
   const categories = React.useMemo(() => {
     const s = new Set<string>();
@@ -77,9 +75,9 @@ export function TradesDashboard() {
     if (categoryFilter === "all" && familyFilter === "all" && archetypeFilter === "all") return null;
     return new Set(
       strategies
-        .filter((st) => (categoryFilter === "all" || st.category === categoryFilter))
-        .filter((st) => (familyFilter === "all" || st.family === familyFilter))
-        .filter((st) => (archetypeFilter === "all" || st.archetype === archetypeFilter))
+        .filter((st) => categoryFilter === "all" || st.category === categoryFilter)
+        .filter((st) => familyFilter === "all" || st.family === familyFilter)
+        .filter((st) => archetypeFilter === "all" || st.archetype === archetypeFilter)
         .map((st) => st.id),
     );
   }, [strategies, categoryFilter, familyFilter, archetypeFilter]);
@@ -104,9 +102,11 @@ export function TradesDashboard() {
   }, [clients, selectedClientId]);
 
   // Reset page on filter change
-  React.useEffect(() => { setPage(0); }, [symbolFilter, sideFilter, selectedClientId, categoryFilter, familyFilter, archetypeFilter]);
+  React.useEffect(() => {
+    setPage(0);
+  }, [symbolFilter, sideFilter, selectedClientId, categoryFilter, familyFilter, archetypeFilter]);
 
-  const rawTrades = tradesData?.trades ?? [];
+  const rawTrades = React.useMemo(() => tradesData?.trades ?? [], [tradesData]);
   const trades = React.useMemo(() => {
     if (matchingStrategyIds === null) return rawTrades;
     return rawTrades.filter((t) => t.strategy_id != null && matchingStrategyIds.has(t.strategy_id));
@@ -127,7 +127,10 @@ export function TradesDashboard() {
   if (isError) {
     return (
       <div className="p-6 max-w-[1600px] mx-auto">
-        <ApiError error={error instanceof Error ? error : new Error("Failed to load trade history")} onRetry={() => refetch()} />
+        <ApiError
+          error={error instanceof Error ? error : new Error("Failed to load trade history")}
+          onRetry={() => refetch()}
+        />
       </div>
     );
   }
@@ -135,10 +138,7 @@ export function TradesDashboard() {
   return (
     <div className="p-6">
       <div className="max-w-[1600px] mx-auto space-y-6">
-        <PageHeader
-          title="Trade History"
-          description="Full order history with fills, fees, and slippage"
-        >
+        <PageHeader title="Trade History" description="Full order history with fills, fees, and slippage">
           {categories.length > 0 && (
             <Select value={categoryFilter} onValueChange={setCategoryFilter}>
               <SelectTrigger className="w-[140px]">
@@ -147,7 +147,9 @@ export function TradesDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                  <SelectItem key={c} value={c}>
+                    {CATEGORY_LABELS[c] ?? c}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -160,7 +162,9 @@ export function TradesDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Families</SelectItem>
                 {familiesForCategory.map((f) => (
-                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                  <SelectItem key={f} value={f}>
+                    {formatFamily(f)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -173,7 +177,9 @@ export function TradesDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Archetypes</SelectItem>
                 {archetypesForFamily.map((a) => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                  <SelectItem key={a} value={a}>
+                    {formatArchetype(a)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -184,7 +190,9 @@ export function TradesDashboard() {
             </SelectTrigger>
             <SelectContent>
               {clients.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -205,11 +213,16 @@ export function TradesDashboard() {
             ]}
             filename={`${selectedClientId}_trades`}
           />
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => {
-            if (selectedClientId) {
-              window.open(`/api/reporting/exports/trades?client_id=${selectedClientId}`, "_blank");
-            }
-          }}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => {
+              if (selectedClientId) {
+                window.open(`/api/reporting/exports/trades?client_id=${selectedClientId}`, "_blank");
+              }
+            }}
+          >
             <Download className="size-4" />
             CSV
           </Button>
@@ -221,26 +234,37 @@ export function TradesDashboard() {
             <Card className="border-border/50">
               <CardContent className="pt-5 pb-4 space-y-1">
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Trades</p>
-                <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{formatNumber(agg.total_trades, 0)}</p>
+                <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                  {formatNumber(agg.total_trades, 0)}
+                </p>
               </CardContent>
             </Card>
             <Card className="border-border/50">
               <CardContent className="pt-5 pb-4 space-y-1">
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Volume</p>
-                <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{formatCurrency(agg.total_volume_usd, "USD", 0)}</p>
+                <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                  {formatCurrency(agg.total_volume_usd, "USD", 0)}
+                </p>
               </CardContent>
             </Card>
             <Card className="border-border/50">
               <CardContent className="pt-5 pb-4 space-y-1">
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Fees</p>
-                <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">{formatCurrency(agg.total_fees_usd, "USD", 2)}</p>
+                <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
+                  {formatCurrency(agg.total_fees_usd, "USD", 2)}
+                </p>
               </CardContent>
             </Card>
             <Card className="border-border/50">
               <CardContent className="pt-5 pb-4 space-y-1">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Net Realized P&L</p>
-                <p className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${agg.net_realized_pnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}>
-                  {agg.net_realized_pnl >= 0 ? "+" : ""}{formatCurrency(agg.net_realized_pnl, "USD", 2)}
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                  Net Realized P&L
+                </p>
+                <p
+                  className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${agg.net_realized_pnl >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+                >
+                  {agg.net_realized_pnl >= 0 ? "+" : ""}
+                  {formatCurrency(agg.net_realized_pnl, "USD", 2)}
                 </p>
               </CardContent>
             </Card>
@@ -279,7 +303,9 @@ export function TradesDashboard() {
           <CardContent className="p-0">
             {tradesLoading ? (
               <div className="p-6 space-y-3">
-                {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-10" />)}
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <Skeleton key={i} className="h-10" />
+                ))}
               </div>
             ) : (
               <Table>
@@ -306,10 +332,17 @@ export function TradesDashboard() {
                     <TableRow key={t.trade_id}>
                       <TableCell className="font-mono text-xs">{t.trade_id}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {new Date(t.timestamp).toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        {new Date(t.timestamp).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs">{t.venue}</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {t.venue}
+                        </Badge>
                       </TableCell>
                       <TableCell className="font-mono font-medium">{t.symbol}</TableCell>
                       <TableCell>
@@ -321,9 +354,15 @@ export function TradesDashboard() {
                       <TableCell className="text-right font-mono">{t.quantity}</TableCell>
                       <TableCell className="text-right font-mono">{formatCurrency(t.price, "USD", 2)}</TableCell>
                       <TableCell className="text-right font-mono">{formatCurrency(t.notional_usd, "USD", 0)}</TableCell>
-                      <TableCell className="text-right font-mono text-muted-foreground">{formatCurrency(t.fee, "USD", 2)}</TableCell>
+                      <TableCell className="text-right font-mono text-muted-foreground">
+                        {formatCurrency(t.fee, "USD", 2)}
+                      </TableCell>
                       <TableCell className="text-right">
-                        {t.realized_pnl !== 0 ? <PnLValue value={t.realized_pnl} size="sm" showSign /> : <span className="text-muted-foreground">—</span>}
+                        {t.realized_pnl !== 0 ? (
+                          <PnLValue value={t.realized_pnl} size="sm" showSign />
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">{t.strategy_id ?? "—"}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{t.client_name ?? "—"}</TableCell>
@@ -353,7 +392,12 @@ export function TradesDashboard() {
               <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
                 <ChevronLeft className="size-4 mr-1" /> Previous
               </Button>
-              <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage((p) => p + 1)}>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages - 1}
+                onClick={() => setPage((p) => p + 1)}
+              >
                 Next <ChevronRight className="size-4 ml-1" />
               </Button>
             </div>

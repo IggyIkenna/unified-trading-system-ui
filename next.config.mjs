@@ -13,9 +13,7 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
-  experimental: {
-    turbopackFileSystemCacheForBuild: true,
-  },
+  experimental: {},
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {

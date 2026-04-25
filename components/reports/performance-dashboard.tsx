@@ -20,6 +20,8 @@ import {
   useBalanceBreakdown,
 } from "@/hooks/api/use-performance";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/formatters";
+import { CATEGORY_LABELS } from "@/lib/architecture-v2/terminology";
+import { formatFamily, formatArchetype } from "@/lib/strategy-display";
 import {
   BarChart3,
   Download,
@@ -57,14 +59,20 @@ export function PerformanceDashboard() {
   const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all");
   const [strategyFilter, setStrategyFilter] = React.useState<string>("all");
   const { data: clientsData, isLoading: clientsLoading } = useClients();
-  const { data: summary, isLoading: summaryLoading, isError: summaryError, error: summaryErr, refetch: refetchSummary } = usePerformanceSummary(selectedClientId);
+  const {
+    data: summary,
+    isLoading: summaryLoading,
+    isError: summaryError,
+    error: summaryErr,
+    refetch: refetchSummary,
+  } = usePerformanceSummary(selectedClientId);
   const { data: positionsData } = useOpenPositions(selectedClientId);
   const { data: coinsData } = useCoinBreakdown(selectedClientId);
   const { data: balancesData } = useBalanceBreakdown(selectedClientId);
 
-  const allClients = clientsData?.clients ?? [];
-  const organisations = clientsData?.organisations ?? [];
-  const strategies = clientsData?.strategies ?? [];
+  const allClients = React.useMemo(() => clientsData?.clients ?? [], [clientsData]);
+  const organisations = React.useMemo(() => clientsData?.organisations ?? [], [clientsData]);
+  const strategies = React.useMemo(() => clientsData?.strategies ?? [], [clientsData]);
 
   const categories = React.useMemo(() => {
     const s = new Set<string>();
@@ -146,9 +154,9 @@ export function PerformanceDashboard() {
     }
   }, [filteredClients, selectedClientId]);
 
-  const positions = positionsData?.positions ?? [];
-  const coins = coinsData?.coins ?? [];
-  const balances = balancesData?.balances ?? [];
+  const positions = React.useMemo(() => positionsData?.positions ?? [], [positionsData]);
+  const coins = React.useMemo(() => coinsData?.coins ?? [], [coinsData]);
+  const balances = React.useMemo(() => balancesData?.balances ?? [], [balancesData]);
 
   // Downsample equity curve for chart (max 90 points)
   // Handles both mock format (timestamp, hwm_usd, drawdown_pct)
@@ -168,9 +176,10 @@ export function PerformanceDashboard() {
         const drawdown = runningHwm > 0 ? ((runningHwm - equity) / runningHwm) * 100 : 0;
         // Parse date from either "timestamp" (ISO) or "date" (YYYY-MM-DD) field
         const dateStr = String(p.timestamp ?? p.date ?? "");
-        const dateLabel = dateStr.length === 10
-          ? new Date(dateStr + "T00:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" })
-          : new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        const dateLabel =
+          dateStr.length === 10
+            ? new Date(dateStr + "T00:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+            : new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
         return {
           date: dateLabel,
           equity,
@@ -178,7 +187,7 @@ export function PerformanceDashboard() {
           drawdown: p.drawdown_pct != null ? Math.abs(Number(p.drawdown_pct) * 100) : drawdown,
         };
       });
-  }, [summary?.equity_curve]);
+  }, [summary]);
 
   // Monthly returns bar data — handles both mock and live formats
   const monthlyBarData = React.useMemo(() => {
@@ -203,7 +212,7 @@ export function PerformanceDashboard() {
         pnl: Number(m.pnl_usd ?? 0),
       };
     });
-  }, [summary?.monthly_returns]);
+  }, [summary]);
 
   // Allocation pie data
   const allocationData = React.useMemo(() => {
@@ -218,7 +227,9 @@ export function PerformanceDashboard() {
       <div className="p-6 max-w-[1600px] mx-auto space-y-6">
         <Skeleton className="h-8 w-64" />
         <div className="grid grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-24" />
+          ))}
         </div>
         <Skeleton className="h-[400px]" />
       </div>
@@ -228,7 +239,10 @@ export function PerformanceDashboard() {
   if (summaryError) {
     return (
       <div className="p-6 max-w-[1600px] mx-auto">
-        <ApiError error={summaryErr instanceof Error ? summaryErr : new Error("Failed to load performance data")} onRetry={() => refetchSummary()} />
+        <ApiError
+          error={summaryErr instanceof Error ? summaryErr : new Error("Failed to load performance data")}
+          onRetry={() => refetchSummary()}
+        />
       </div>
     );
   }
@@ -249,7 +263,9 @@ export function PerformanceDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                  <SelectItem key={c} value={c}>
+                    {CATEGORY_LABELS[c] ?? c}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -262,7 +278,9 @@ export function PerformanceDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Families</SelectItem>
                 {familiesForCategory.map((f) => (
-                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                  <SelectItem key={f} value={f}>
+                    {formatFamily(f)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -275,7 +293,9 @@ export function PerformanceDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Archetypes</SelectItem>
                 {archetypesForFamily.map((a) => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                  <SelectItem key={a} value={a}>
+                    {formatArchetype(a)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -288,7 +308,9 @@ export function PerformanceDashboard() {
               <SelectContent>
                 <SelectItem value="all">All Strategies</SelectItem>
                 {strategiesForArchetype.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -301,14 +323,20 @@ export function PerformanceDashboard() {
               {Object.entries(clientsByOrg).map(([orgName, orgClients]) => (
                 <React.Fragment key={orgName}>
                   {Object.keys(clientsByOrg).length > 1 && (
-                    <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{orgName}</div>
+                    <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      {orgName}
+                    </div>
                   )}
                   {orgClients.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       <span className="flex items-center gap-2">
                         {c.name}
                         <span className="text-xs text-muted-foreground">{c.venue}</span>
-                        {c.is_underwater && <Badge variant="destructive" className="text-[9px] px-1 py-0">UW</Badge>}
+                        {c.is_underwater && (
+                          <Badge variant="destructive" className="text-[9px] px-1 py-0">
+                            UW
+                          </Badge>
+                        )}
                       </span>
                     </SelectItem>
                   ))}
@@ -325,11 +353,16 @@ export function PerformanceDashboard() {
             ]}
             filename={`${selectedClientId}_performance`}
           />
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => {
-            if (selectedClientId) {
-              window.open(`/api/reporting/exports/trades?client_id=${selectedClientId}`, "_blank");
-            }
-          }}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => {
+              if (selectedClientId) {
+                window.open(`/api/reporting/exports/trades?client_id=${selectedClientId}`, "_blank");
+              }
+            }}
+          >
             <Download className="size-4" />
             Export CSV
           </Button>
@@ -337,7 +370,13 @@ export function PerformanceDashboard() {
 
         {summaryLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => <Card key={i}><CardContent className="pt-4"><Skeleton className="h-16" /></CardContent></Card>)}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Card key={i}>
+                <CardContent className="pt-4">
+                  <Skeleton className="h-16" />
+                </CardContent>
+              </Card>
+            ))}
           </div>
         ) : summary ? (
           <>
@@ -345,20 +384,23 @@ export function PerformanceDashboard() {
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
               <Card className="border-border/50">
                 <CardContent className="pt-5 pb-4 space-y-1">
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Current Equity</p>
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                    Current Equity
+                  </p>
                   <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
                     {formatCurrency(summary.current_equity_usd, "USD", 0)}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60">
-                    {summary.position_count ?? 0} positions
-                  </p>
+                  <p className="text-[10px] text-muted-foreground/60">{summary.position_count ?? 0} positions</p>
                 </CardContent>
               </Card>
               <Card className="border-border/50">
                 <CardContent className="pt-5 pb-4 space-y-1">
                   <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Total Return</p>
-                  <p className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${(summary.stats?.total_return_pct ?? 0) >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}>
-                    {(summary.stats?.total_return_pct ?? 0) >= 0 ? "+" : ""}{formatNumber(summary.stats?.total_return_pct ?? 0, 2)}%
+                  <p
+                    className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${(summary.stats?.total_return_pct ?? 0) >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+                  >
+                    {(summary.stats?.total_return_pct ?? 0) >= 0 ? "+" : ""}
+                    {formatNumber(summary.stats?.total_return_pct ?? 0, 2)}%
                   </p>
                   <p className="text-[10px] text-muted-foreground/60">
                     Ann: {formatNumber(summary.stats?.annualized_return_pct ?? 0, 1)}%
@@ -371,9 +413,7 @@ export function PerformanceDashboard() {
                   <p className="text-2xl font-semibold tabular-nums tracking-tight font-mono">
                     {formatNumber(summary.stats?.sharpe_ratio ?? 0, 2)}
                   </p>
-                  <p className="text-[10px] text-muted-foreground/60">
-                    Annualized
-                  </p>
+                  <p className="text-[10px] text-muted-foreground/60">Annualized</p>
                 </CardContent>
               </Card>
               <Card className="border-border/50">
@@ -389,9 +429,14 @@ export function PerformanceDashboard() {
               </Card>
               <Card className="border-border/50">
                 <CardContent className="pt-5 pb-4 space-y-1">
-                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Unrealized P&L</p>
-                  <p className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${(summary.unrealized_pnl_usd ?? 0) >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}>
-                    {(summary.unrealized_pnl_usd ?? 0) >= 0 ? "+" : ""}{formatCurrency(summary.unrealized_pnl_usd ?? 0, "USD", 2)}
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                    Unrealized P&L
+                  </p>
+                  <p
+                    className={`text-2xl font-semibold tabular-nums tracking-tight font-mono ${(summary.unrealized_pnl_usd ?? 0) >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]"}`}
+                  >
+                    {(summary.unrealized_pnl_usd ?? 0) >= 0 ? "+" : ""}
+                    {formatCurrency(summary.unrealized_pnl_usd ?? 0, "USD", 2)}
                   </p>
                   <p className="text-[10px] text-muted-foreground/60">
                     Free: {formatCurrency(summary.free_balance_usd ?? 0, "USD", 0)}
@@ -405,7 +450,13 @@ export function PerformanceDashboard() {
                     {summary.stats?.equity_curve_days ?? summary.equity_curve?.length ?? 0}
                   </p>
                   <p className="text-[10px] text-muted-foreground/60">
-                    {summary.equity_source === "binance_income" ? "Binance Ledger" : summary.equity_source === "okx_bills" ? "OKX Bills" : summary.trade_count ? `${summary.trade_count} trades` : `${summary.asset_count ?? 0} assets`}
+                    {summary.equity_source === "binance_income"
+                      ? "Binance Ledger"
+                      : summary.equity_source === "okx_bills"
+                        ? "OKX Bills"
+                        : summary.trade_count
+                          ? `${summary.trade_count} trades`
+                          : `${summary.asset_count ?? 0} assets`}
                   </p>
                 </CardContent>
               </Card>
@@ -414,18 +465,38 @@ export function PerformanceDashboard() {
             {/* Main content tabs */}
             <Tabs defaultValue="equity" className="space-y-6">
               <TabsList className="flex-wrap h-auto">
-                <TabsTrigger value="equity" className="gap-2"><TrendingUp className="size-4" />Equity Curve</TabsTrigger>
-                <TabsTrigger value="monthly" className="gap-2"><BarChart3 className="size-4" />Monthly Returns</TabsTrigger>
-                <TabsTrigger value="stats" className="gap-2"><Activity className="size-4" />Stats</TabsTrigger>
-                <TabsTrigger value="positions" className="gap-2"><Target className="size-4" />Positions</TabsTrigger>
-                <TabsTrigger value="coins" className="gap-2"><Layers className="size-4" />Coin Breakdown</TabsTrigger>
-                <TabsTrigger value="balances" className="gap-2"><Wallet className="size-4" />Balances</TabsTrigger>
+                <TabsTrigger value="equity" className="gap-2">
+                  <TrendingUp className="size-4" />
+                  Equity Curve
+                </TabsTrigger>
+                <TabsTrigger value="monthly" className="gap-2">
+                  <BarChart3 className="size-4" />
+                  Monthly Returns
+                </TabsTrigger>
+                <TabsTrigger value="stats" className="gap-2">
+                  <Activity className="size-4" />
+                  Stats
+                </TabsTrigger>
+                <TabsTrigger value="positions" className="gap-2">
+                  <Target className="size-4" />
+                  Positions
+                </TabsTrigger>
+                <TabsTrigger value="coins" className="gap-2">
+                  <Layers className="size-4" />
+                  Coin Breakdown
+                </TabsTrigger>
+                <TabsTrigger value="balances" className="gap-2">
+                  <Wallet className="size-4" />
+                  Balances
+                </TabsTrigger>
               </TabsList>
 
               {/* Equity Curve Tab */}
               <TabsContent value="equity">
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Equity Curve &amp; Drawdown</CardTitle></CardHeader>
+                  <CardHeader>
+                    <CardTitle className="text-base">Equity Curve &amp; Drawdown</CardTitle>
+                  </CardHeader>
                   <CardContent>
                     <div className="h-[400px]">
                       <ResponsiveContainer width="100%" height="100%">
@@ -446,7 +517,12 @@ export function PerformanceDashboard() {
                             className="text-muted-foreground"
                           />
                           <Tooltip
-                            contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--card))",
+                              border: "1px solid hsl(var(--border))",
+                              borderRadius: 8,
+                              fontSize: 12,
+                            }}
                             formatter={(value: number, name: string) => {
                               if (name === "equity") return [formatCurrency(value, "USD", 0), "Equity"];
                               if (name === "hwm") return [formatCurrency(value, "USD", 0), "HWM"];
@@ -454,9 +530,36 @@ export function PerformanceDashboard() {
                             }}
                           />
                           <Legend />
-                          <Area yAxisId="equity" type="monotone" dataKey="equity" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} name="Equity" strokeWidth={2} />
-                          <Area yAxisId="equity" type="monotone" dataKey="hwm" stroke="#6b7280" fill="none" strokeDasharray="5 5" name="HWM" strokeWidth={1} />
-                          <Area yAxisId="dd" type="monotone" dataKey="drawdown" stroke="#ef4444" fill="#ef4444" fillOpacity={0.05} name="Drawdown %" strokeWidth={1} />
+                          <Area
+                            yAxisId="equity"
+                            type="monotone"
+                            dataKey="equity"
+                            stroke="#3b82f6"
+                            fill="#3b82f6"
+                            fillOpacity={0.1}
+                            name="Equity"
+                            strokeWidth={2}
+                          />
+                          <Area
+                            yAxisId="equity"
+                            type="monotone"
+                            dataKey="hwm"
+                            stroke="#6b7280"
+                            fill="none"
+                            strokeDasharray="5 5"
+                            name="HWM"
+                            strokeWidth={1}
+                          />
+                          <Area
+                            yAxisId="dd"
+                            type="monotone"
+                            dataKey="drawdown"
+                            stroke="#ef4444"
+                            fill="#ef4444"
+                            fillOpacity={0.05}
+                            name="Drawdown %"
+                            strokeWidth={1}
+                          />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
@@ -467,7 +570,9 @@ export function PerformanceDashboard() {
               {/* Monthly Returns Tab */}
               <TabsContent value="monthly">
                 <Card>
-                  <CardHeader><CardTitle className="text-base">Monthly Returns</CardTitle></CardHeader>
+                  <CardHeader>
+                    <CardTitle className="text-base">Monthly Returns</CardTitle>
+                  </CardHeader>
                   <CardContent>
                     <div className="h-[350px]">
                       <ResponsiveContainer width="100%" height="100%">
@@ -476,7 +581,12 @@ export function PerformanceDashboard() {
                           <XAxis dataKey="label" tick={{ fontSize: 10 }} />
                           <YAxis tick={{ fontSize: 10 }} tickFormatter={(v: number) => `${v}%`} />
                           <Tooltip
-                            contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
+                            contentStyle={{
+                              backgroundColor: "hsl(var(--card))",
+                              border: "1px solid hsl(var(--border))",
+                              borderRadius: 8,
+                              fontSize: 12,
+                            }}
                             formatter={(value: number, name: string) => {
                               if (name === "return_pct") return [`${value.toFixed(2)}%`, "Return"];
                               return [formatCurrency(value, "USD", 0), "P&L"];
@@ -502,7 +612,9 @@ export function PerformanceDashboard() {
                         {monthlyBarData.map((m, i) => (
                           <TableRow key={i}>
                             <TableCell className="font-medium">{m.label}</TableCell>
-                            <TableCell className="text-right"><PnLChange value={m.return_pct} size="sm" /></TableCell>
+                            <TableCell className="text-right">
+                              <PnLChange value={m.return_pct} size="sm" />
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -514,54 +626,74 @@ export function PerformanceDashboard() {
               {/* Stats Grid Tab */}
               <TabsContent value="stats">
                 {summary.stats && Object.keys(summary.stats).length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader><CardTitle className="text-base">Return Metrics</CardTitle></CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {[
-                          ["Total Return", `${formatNumber(summary.stats.total_return_pct ?? 0, 2)}%`],
-                          ["Annualized Return", `${formatNumber(summary.stats.annualized_return_pct ?? 0, 2)}%`],
-                          ["Equity Curve Days", `${summary.stats.equity_curve_days ?? 0}`],
-                          ["Start Date", summary.stats.start_date ?? "N/A"],
-                          ["End Date", summary.stats.end_date ?? "N/A"],
-                        ].map(([label, val]) => (
-                          <div key={label} className="flex justify-between items-center py-1 border-b border-border/30">
-                            <span className="text-sm text-muted-foreground">{label}</span>
-                            <span className="font-mono font-medium text-sm">{val}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader><CardTitle className="text-base">Risk Metrics</CardTitle></CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {[
-                          ["Sharpe Ratio", formatNumber(summary.stats.sharpe_ratio ?? 0, 2)],
-                          ["Max Drawdown", `-${formatNumber(summary.stats.max_drawdown_pct ?? 0, 2)}%`],
-                          ["High Water Mark", formatCurrency(summary.stats.high_water_mark_usd ?? 0, "USD", 0)],
-                          ["Trade Count", `${summary.trade_count ?? 0}`],
-                          ["Data Source", summary.equity_source === "binance_income" ? "Binance Income Ledger" : summary.equity_source === "okx_bills" ? "OKX Bills Ledger" : "Trade Fees (Legacy)"],
-                        ].map(([label, val]) => (
-                          <div key={label} className="flex justify-between items-center py-1 border-b border-border/30">
-                            <span className="text-sm text-muted-foreground">{label}</span>
-                            <span className="font-mono font-medium text-sm">{val}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base">Return Metrics</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {[
+                            ["Total Return", `${formatNumber(summary.stats.total_return_pct ?? 0, 2)}%`],
+                            ["Annualized Return", `${formatNumber(summary.stats.annualized_return_pct ?? 0, 2)}%`],
+                            ["Equity Curve Days", `${summary.stats.equity_curve_days ?? 0}`],
+                            ["Start Date", summary.stats.start_date ?? "N/A"],
+                            ["End Date", summary.stats.end_date ?? "N/A"],
+                          ].map(([label, val]) => (
+                            <div
+                              key={label}
+                              className="flex justify-between items-center py-1 border-b border-border/30"
+                            >
+                              <span className="text-sm text-muted-foreground">{label}</span>
+                              <span className="font-mono font-medium text-sm">{val}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base">Risk Metrics</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {[
+                            ["Sharpe Ratio", formatNumber(summary.stats.sharpe_ratio ?? 0, 2)],
+                            ["Max Drawdown", `-${formatNumber(summary.stats.max_drawdown_pct ?? 0, 2)}%`],
+                            ["High Water Mark", formatCurrency(summary.stats.high_water_mark_usd ?? 0, "USD", 0)],
+                            ["Trade Count", `${summary.trade_count ?? 0}`],
+                            [
+                              "Data Source",
+                              summary.equity_source === "binance_income"
+                                ? "Binance Income Ledger"
+                                : summary.equity_source === "okx_bills"
+                                  ? "OKX Bills Ledger"
+                                  : "Trade Fees (Legacy)",
+                            ],
+                          ].map(([label, val]) => (
+                            <div
+                              key={label}
+                              className="flex justify-between items-center py-1 border-b border-border/30"
+                            >
+                              <span className="text-sm text-muted-foreground">{label}</span>
+                              <span className="font-mono font-medium text-sm">{val}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
                 ) : (
-                <Card>
-                  <CardContent className="pt-6 text-center text-muted-foreground">
-                    <Activity className="size-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Stats will be computed once more historical data is available.</p>
-                    <p className="text-xs mt-1">Current data: {summary.equity_curve?.length ?? 0} equity curve points, {summary.monthly_returns?.length ?? 0} monthly returns</p>
-                  </CardContent>
-                </Card>
+                  <Card>
+                    <CardContent className="pt-6 text-center text-muted-foreground">
+                      <Activity className="size-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Stats will be computed once more historical data is available.</p>
+                      <p className="text-xs mt-1">
+                        Current data: {summary.equity_curve?.length ?? 0} equity curve points,{" "}
+                        {summary.monthly_returns?.length ?? 0} monthly returns
+                      </p>
+                    </CardContent>
+                  </Card>
                 )}
               </TabsContent>
 
@@ -571,7 +703,9 @@ export function PerformanceDashboard() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base">Open Positions</CardTitle>
-                      <span className="text-xs text-muted-foreground font-mono">{positions.length} position{positions.length !== 1 ? "s" : ""}</span>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        {positions.length} position{positions.length !== 1 ? "s" : ""}
+                      </span>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -595,17 +729,31 @@ export function PerformanceDashboard() {
                             <TableCell className="font-medium font-mono">{p.symbol}</TableCell>
                             <TableCell>
                               <Badge variant={p.side === "long" ? "default" : "destructive"} className="text-xs">
-                                {p.side === "long" ? <TrendingUp className="size-3 mr-1" /> : <TrendingDown className="size-3 mr-1" />}
+                                {p.side === "long" ? (
+                                  <TrendingUp className="size-3 mr-1" />
+                                ) : (
+                                  <TrendingDown className="size-3 mr-1" />
+                                )}
                                 {p.side}
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right font-mono">{p.quantity}</TableCell>
-                            <TableCell className="text-right font-mono">{formatCurrency(p.entry_price, "USD", 2)}</TableCell>
-                            <TableCell className="text-right font-mono">{formatCurrency(p.mark_price, "USD", 2)}</TableCell>
-                            <TableCell className="text-right"><PnLValue value={p.unrealized_pnl} size="sm" showSign /></TableCell>
+                            <TableCell className="text-right font-mono">
+                              {formatCurrency(p.entry_price, "USD", 2)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono">
+                              {formatCurrency(p.mark_price, "USD", 2)}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <PnLValue value={p.unrealized_pnl} size="sm" showSign />
+                            </TableCell>
                             <TableCell className="text-right font-mono">{p.leverage}x</TableCell>
-                            <TableCell className="text-right font-mono text-muted-foreground">{formatCurrency(p.notional_usd, "USD", 0)}</TableCell>
-                            <TableCell className="text-right font-mono text-[var(--pnl-negative)]">{formatCurrency(p.liquidation_price, "USD", 0)}</TableCell>
+                            <TableCell className="text-right font-mono text-muted-foreground">
+                              {formatCurrency(p.notional_usd, "USD", 0)}
+                            </TableCell>
+                            <TableCell className="text-right font-mono text-[var(--pnl-negative)]">
+                              {formatCurrency(p.liquidation_price, "USD", 0)}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -618,7 +766,9 @@ export function PerformanceDashboard() {
               <TabsContent value="coins">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <Card className="lg:col-span-2">
-                    <CardHeader><CardTitle className="text-base">Per-Coin P&L</CardTitle></CardHeader>
+                    <CardHeader>
+                      <CardTitle className="text-base">Per-Coin P&L</CardTitle>
+                    </CardHeader>
                     <CardContent>
                       <Table>
                         <TableHeader>
@@ -633,9 +783,15 @@ export function PerformanceDashboard() {
                           {coins.map((c) => (
                             <TableRow key={c.symbol}>
                               <TableCell className="font-medium font-mono">{c.symbol}</TableCell>
-                              <TableCell className="text-right font-mono">{formatNumber(c.quantity, c.quantity < 10 ? 4 : 0)}</TableCell>
-                              <TableCell className="text-right font-mono">{formatCurrency(c.market_value_usd ?? c.current_price ?? 0, "USD", 2)}</TableCell>
-                              <TableCell className="text-right font-mono">{formatPercent((c.allocation_pct ?? 0) * 100, 1)}</TableCell>
+                              <TableCell className="text-right font-mono">
+                                {formatNumber(c.quantity, c.quantity < 10 ? 4 : 0)}
+                              </TableCell>
+                              <TableCell className="text-right font-mono">
+                                {formatCurrency(c.market_value_usd ?? c.current_price ?? 0, "USD", 2)}
+                              </TableCell>
+                              <TableCell className="text-right font-mono">
+                                {formatPercent((c.allocation_pct ?? 0) * 100, 1)}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -643,7 +799,9 @@ export function PerformanceDashboard() {
                     </CardContent>
                   </Card>
                   <Card>
-                    <CardHeader><CardTitle className="text-base">Portfolio Allocation</CardTitle></CardHeader>
+                    <CardHeader>
+                      <CardTitle className="text-base">Portfolio Allocation</CardTitle>
+                    </CardHeader>
                     <CardContent>
                       <div className="h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
@@ -678,7 +836,9 @@ export function PerformanceDashboard() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base">Balance Breakdown</CardTitle>
-                      <span className="font-mono font-semibold text-sm">Total: {formatCurrency(balancesData?.total_equity_usd ?? 0, "USD", 0)}</span>
+                      <span className="font-mono font-semibold text-sm">
+                        Total: {formatCurrency(balancesData?.total_equity_usd ?? 0, "USD", 0)}
+                      </span>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -699,7 +859,9 @@ export function PerformanceDashboard() {
                             <TableCell className="text-right font-mono text-[var(--pnl-positive)]">{b.free}</TableCell>
                             <TableCell className="text-right font-mono text-muted-foreground">{b.locked}</TableCell>
                             <TableCell className="text-right font-mono font-medium">{b.total}</TableCell>
-                            <TableCell className="text-right font-mono">${formatNumber(parseFloat(b.usd_value), 2)}</TableCell>
+                            <TableCell className="text-right font-mono">
+                              ${formatNumber(parseFloat(b.usd_value), 2)}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

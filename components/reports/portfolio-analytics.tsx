@@ -12,6 +12,8 @@ import { PageHeader } from "@/components/shared/page-header";
 import { PnLValue } from "@/components/trading/pnl-value";
 import { useClients, usePerformanceSummary, useCoinBreakdown } from "@/hooks/api/use-performance";
 import { formatCurrency, formatPercent } from "@/lib/utils/formatters";
+import { CATEGORY_LABELS } from "@/lib/architecture-v2/terminology";
+import { formatFamily, formatArchetype } from "@/lib/strategy-display";
 import { PieChart as PieChartIcon, Grid3X3, ShieldAlert, Layers3 } from "lucide-react";
 import { AllocatorStrategyOverlay } from "@/components/reports/allocator-strategy-overlay";
 import {
@@ -75,8 +77,8 @@ export function PortfolioAnalytics() {
   const { data: summary } = usePerformanceSummary(selectedClientId);
   const { data: coinsData } = useCoinBreakdown(selectedClientId);
 
-  const allClients = clientsData?.clients ?? [];
-  const strategies = clientsData?.strategies ?? [];
+  const allClients = React.useMemo(() => clientsData?.clients ?? [], [clientsData]);
+  const strategies = React.useMemo(() => clientsData?.strategies ?? [], [clientsData]);
 
   const categories = React.useMemo(() => {
     const s = new Set<string>();
@@ -107,9 +109,9 @@ export function PortfolioAnalytics() {
     if (categoryFilter === "all" && familyFilter === "all" && archetypeFilter === "all") return allClients;
     const matchingIds = new Set(
       strategies
-        .filter((st) => (categoryFilter === "all" || st.category === categoryFilter))
-        .filter((st) => (familyFilter === "all" || st.family === familyFilter))
-        .filter((st) => (archetypeFilter === "all" || st.archetype === archetypeFilter))
+        .filter((st) => categoryFilter === "all" || st.category === categoryFilter)
+        .filter((st) => familyFilter === "all" || st.family === familyFilter)
+        .filter((st) => archetypeFilter === "all" || st.archetype === archetypeFilter)
         .map((st) => st.id),
     );
     return allClients.filter((c) => c.strategy_id && matchingIds.has(c.strategy_id));
@@ -134,7 +136,7 @@ export function PortfolioAnalytics() {
     }
   }, [clients, selectedClientId]);
 
-  const coins = coinsData?.coins ?? [];
+  const coins = React.useMemo(() => coinsData?.coins ?? [], [coinsData]);
 
   // Allocation pie data
   const allocationData = React.useMemo(() => {
@@ -220,7 +222,9 @@ export function PortfolioAnalytics() {
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
                 {categories.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                  <SelectItem key={c} value={c}>
+                    {CATEGORY_LABELS[c] ?? c}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -233,7 +237,9 @@ export function PortfolioAnalytics() {
               <SelectContent>
                 <SelectItem value="all">All Families</SelectItem>
                 {familiesForCategory.map((f) => (
-                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                  <SelectItem key={f} value={f}>
+                    {formatFamily(f)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -246,7 +252,9 @@ export function PortfolioAnalytics() {
               <SelectContent>
                 <SelectItem value="all">All Archetypes</SelectItem>
                 {archetypesForFamily.map((a) => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                  <SelectItem key={a} value={a}>
+                    {formatArchetype(a)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

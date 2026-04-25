@@ -13,6 +13,7 @@ import type { Strategy } from "@/lib/mocks/fixtures/strategy-instances";
 import { STRATEGIES } from "@/lib/mocks/fixtures/strategy-instances";
 import { mock01, mockRange } from "@/lib/mocks/generators/deterministic";
 import { generateMockOrderBook } from "@/lib/mocks/generators/order-book";
+import { useStrategyScopedInstruments } from "@/lib/architecture-v2/use-strategy-scoped-instruments";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { bollingerBands, ema, sma } from "@/lib/utils/indicators";
@@ -183,16 +184,6 @@ export function useTerminalPageData(): TerminalPageResult {
     return DEFAULT_INSTRUMENTS.map((d) => ({ ...d }));
   }, [instrumentsApiData, tickersData]);
 
-  const instrumentsByCategory = React.useMemo(() => {
-    const groups: Record<string, typeof instruments> = {};
-    for (const inst of instruments) {
-      const cat = inst.category ?? "Other";
-      if (!groups[cat]) groups[cat] = [];
-      groups[cat].push(inst);
-    }
-    return groups;
-  }, [instruments]);
-
   const [selectedInstrument, setSelectedInstrument] = React.useState(instruments[0]);
   const [livePrice, setLivePrice] = React.useState(instruments[0]?.midPrice ?? 0);
   const [priceChange, setPriceChange] = React.useState(instruments[0]?.change ?? 0);
@@ -210,6 +201,29 @@ export function useTerminalPageData(): TerminalPageResult {
   const [chartType, setChartType] = React.useState<"candles" | "line">("candles");
   const [activeIndicators, setActiveIndicators] = React.useState<Set<string>>(new Set());
   const [linkedStrategyId, setLinkedStrategyId] = React.useState<string | null>(null);
+
+  const scopedInstruments = useStrategyScopedInstruments(
+    linkedStrategyId ?? "manual",
+    instruments,
+    (inst) => inst.instrumentKey,
+  );
+
+  const watchlistInstruments = React.useMemo(() => {
+    if (!linkedStrategyId) {
+      return scopedInstruments.filter((i) => i.category === "CeFi");
+    }
+    return scopedInstruments;
+  }, [linkedStrategyId, scopedInstruments]);
+
+  const instrumentsByCategory = React.useMemo(() => {
+    const groups: Record<string, TerminalInstrument[]> = {};
+    for (const inst of watchlistInstruments) {
+      const cat = inst.category ?? "Other";
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(inst);
+    }
+    return groups;
+  }, [watchlistInstruments]);
 
   const linkedStrategy: Strategy | null = React.useMemo(() => {
     if (!linkedStrategyId) return null;
@@ -764,11 +778,22 @@ export function useTerminalPageData(): TerminalPageResult {
     ]);
     setOrderSize("");
     setOrderPrice("");
-  }, [orderSize, orderPrice, orderType, orderSide, livePrice, isContextComplete, bids, asks, selectedInstrument]);
+  }, [
+    orderSize,
+    orderPrice,
+    orderType,
+    orderSide,
+    livePrice,
+    isContextComplete,
+    bids,
+    asks,
+    selectedInstrument,
+    linkedStrategyId,
+  ]);
 
   const terminalData: TerminalData = React.useMemo(
     () => ({
-      instruments,
+      instruments: [...watchlistInstruments],
       instrumentsByCategory,
       selectedInstrument,
       setSelectedInstrument,
@@ -817,7 +842,7 @@ export function useTerminalPageData(): TerminalPageResult {
       errorEvents: null,
     }),
     [
-      instruments,
+      watchlistInstruments,
       instrumentsByCategory,
       selectedInstrument,
       livePrice,
