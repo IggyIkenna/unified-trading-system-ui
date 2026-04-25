@@ -1,710 +1,775 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Story — Odum Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-surface: #161618;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-accent: rgba(255, 255, 255, 0.12);
+        --text: #e4e4e7;
+        --text-muted: #a1a1aa;
+        --text-secondary: #c4c4cc;
+        --text-dim: #71717a;
+        --primary: #22d3ee;
+        --sky: #38bdf8;
+        --emerald: #4ade80;
+        --violet: #a78bfa;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --cyan: #22d3ee;
+        --font-sans: "IBM Plex Sans", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Our Story — Odum Research</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --bg-card: #111113;
-      --bg-surface: #161618;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(255, 255, 255, 0.12);
-      --text: #e4e4e7;
-      --text-muted: #a1a1aa;
-      --text-secondary: #c4c4cc;
-      --text-dim: #71717a;
-      --primary: #22d3ee;
-      --sky: #38bdf8;
-      --emerald: #4ade80;
-      --violet: #a78bfa;
-      --amber: #fbbf24;
-      --rose: #fb7185;
-      --cyan: #22d3ee;
-      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
-
-    section {
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-pad {
-      padding: 72px 0;
-    }
-
-    .eyebrow {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
-    }
-
-    .hero-content {
-      position: relative;
-      text-align: center;
-      padding: 80px 24px 60px;
-      max-width: 820px;
-      margin: 0 auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(28px, 4vw, 46px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .hero .subtitle {
-      margin-top: 20px;
-      font-size: clamp(16px, 2vw, 19px);
-      color: var(--text-muted);
-      max-width: 660px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .prose {
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .prose h2 {
-      font-size: 26px;
-      font-weight: 700;
-      margin-bottom: 18px;
-      letter-spacing: -0.01em;
-    }
-
-    .prose h3 {
-      font-size: 18px;
-      font-weight: 600;
-      margin: 22px 0 8px;
-      color: var(--text);
-    }
-
-    .prose p {
-      font-size: 16px;
-      color: var(--text-secondary);
-      margin-bottom: 18px;
-      line-height: 1.75;
-    }
-
-    .prose strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .prose em {
-      color: var(--text);
-      font-style: normal;
-      font-weight: 600;
-    }
-
-    .prose ul {
-      list-style: none;
-      margin: 8px 0 20px;
-      padding: 0;
-    }
-
-    .prose ul li {
-      position: relative;
-      padding-left: 22px;
-      margin-bottom: 10px;
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-
-    .prose ul li::before {
-      content: '—';
-      position: absolute;
-      left: 0;
-      color: var(--text-dim);
-    }
-
-    .prose ul li strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .pull {
-      margin: 28px 0;
-      padding: 20px 24px;
-      border-left: 2px solid var(--primary);
-      background: rgba(34, 211, 238, 0.04);
-      color: var(--text);
-      font-size: 17px;
-      line-height: 1.6;
-      font-weight: 500;
-    }
-
-    .byline {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 24px;
-      font-size: 13px;
-      color: var(--text-dim);
-    }
-
-    .byline img {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--border-accent);
-      filter: grayscale(20%);
-    }
-
-    .byline a {
-      color: var(--text-muted);
-      text-decoration: underline;
-      text-decoration-color: var(--border-accent);
-      text-underline-offset: 3px;
-    }
-
-    .byline a:hover {
-      color: var(--primary);
-    }
-
-    .card-grid {
-      display: grid;
-      gap: 20px;
-    }
-
-    .card-grid-3 {
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    }
-
-    .card-grid-2 {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      transition: all 0.2s;
-    }
-
-    .card:hover {
-      border-color: var(--border-accent);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-    }
-
-    .card .tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--primary);
-      margin-bottom: 10px;
-    }
-
-    .card h3 {
-      font-size: 17px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-
-    .card p {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.65;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #0a0a0b;
-    }
-
-    .btn-primary:hover {
-      background: #06b6d4;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border-accent);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    @media (max-width: 768px) {
-      .card-grid-3,
-      .card-grid-2 {
-        grid-template-columns: 1fr;
+      section {
+        border-bottom: 1px solid var(--border);
       }
 
       .section-pad {
-        padding: 52px 0;
+        padding: 72px 0;
+      }
+
+      .eyebrow {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
       }
 
       .hero-content {
-        padding: 56px 16px 44px;
+        position: relative;
+        text-align: center;
+        padding: 80px 24px 60px;
+        max-width: 820px;
+        margin: 0 auto;
       }
 
-      .prose p,
+      .hero h1 {
+        font-size: clamp(28px, 4vw, 46px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .hero .subtitle {
+        margin-top: 20px;
+        font-size: clamp(16px, 2vw, 19px);
+        color: var(--text-muted);
+        max-width: 660px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .prose {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .prose h2 {
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        letter-spacing: -0.01em;
+      }
+
+      .prose h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 22px 0 8px;
+        color: var(--text);
+      }
+
+      .prose p {
+        font-size: 16px;
+        color: var(--text-secondary);
+        margin-bottom: 18px;
+        line-height: 1.75;
+      }
+
+      .prose strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      .prose em {
+        color: var(--text);
+        font-style: normal;
+        font-weight: 600;
+      }
+
+      .prose ul {
+        list-style: none;
+        margin: 8px 0 20px;
+        padding: 0;
+      }
+
       .prose ul li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 10px;
         font-size: 15px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+
+      .prose ul li::before {
+        content: "—";
+        position: absolute;
+        left: 0;
+        color: var(--text-dim);
+      }
+
+      .prose ul li strong {
+        color: var(--text);
+        font-weight: 600;
       }
 
       .pull {
-        font-size: 16px;
-      }
-    }
-
-    /* SIDEBAR TOC ──────────────────────────────── */
-    .toc-sidebar {
-      display: none;
-    }
-    @media (min-width: 1280px) {
-      .toc-sidebar {
-        display: block;
-        position: fixed;
-        top: 96px;
-        left: clamp(24px, 4vw, 64px);
-        width: 220px;
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
-        padding-bottom: 24px;
-        z-index: 10;
-      }
-      .toc-label {
-        font-size: 10.5px;
-        font-weight: 600;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        padding: 0 10px 6px;
-        margin: 0;
-      }
-      .toc-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-      .toc-list li {
-        margin: 0;
-      }
-      .toc-link {
-        display: block;
-        padding: 7px 12px;
-        font-size: 13px;
-        line-height: 1.4;
-        color: var(--text-muted);
-        text-decoration: none;
-        border-left: 2px solid transparent;
-        border-radius: 0 6px 6px 0;
-        transition: color 0.15s, background 0.15s, border-color 0.15s;
-      }
-      .toc-link:hover {
+        margin: 28px 0;
+        padding: 20px 24px;
+        border-left: 2px solid var(--primary);
+        background: rgba(34, 211, 238, 0.04);
         color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
-      }
-      .toc-link.is-active {
-        color: var(--text);
-        border-left-color: var(--primary);
-        background: rgba(34, 211, 238, 0.06);
+        font-size: 17px;
+        line-height: 1.6;
         font-weight: 500;
       }
-    }
-  </style>
-</head>
 
-<body>
+      .byline {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 24px;
+        font-size: 13px;
+        color: var(--text-dim);
+      }
 
+      .byline img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--border-accent);
+        filter: grayscale(20%);
+      }
 
-  <!-- SIDEBAR TOC (visible ≥1280px) -->
-  <aside class="toc-sidebar" aria-label="Our Story sections">
-    <p class="toc-label">On this page</p>
-    <ul class="toc-list">
-      <li><a href="#part-1" class="toc-link">Part I — The arb desk</a></li>
-      <li><a href="#part-2" class="toc-link">Part II — The chicken-and-egg</a></li>
-      <li><a href="#part-3" class="toc-link">Part III — The vendor search</a></li>
-      <li><a href="#part-4" class="toc-link">Part IV — The Citadel realisation</a></li>
-      <li><a href="#part-5" class="toc-link">Part V — What we built</a></li>
-      <li><a href="#part-6" class="toc-link">Part VI — The landscape</a></li>
-      <li><a href="#cta" class="toc-link">Why it matters →</a></li>
-    </ul>
-  </aside>
+      .byline a {
+        color: var(--text-muted);
+        text-decoration: underline;
+        text-decoration-color: var(--border-accent);
+        text-underline-offset: 3px;
+      }
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-content">
-      <p class="eyebrow">Our Story</p>
-      <h1>I spent two and a half years trying to find the stack I needed. Nobody had it. So we built it.</h1>
-      <p class="subtitle">
-        Odum started as one founder's frustration with a fragmented vendor landscape. It grew into an institutional
-        trading operating system that now runs across crypto, DeFi, traditional markets, sports, and prediction
-        markets &mdash; and is offered to the firms that asked us for it.
-      </p>
-      <div class="byline">
-        <img src="team-ikenna.jpg" alt="Ikenna Igboaka">
-        <span>
-          Written by Ikenna Igboaka, Founder &amp; CEO &middot;
-          <a href="https://www.linkedin.com/in/ikennaigboaka/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        </span>
-      </div>
-    </div>
-  </section>
+      .byline a:hover {
+        color: var(--primary);
+      }
 
-  <!-- PART I — THE ARB DESK -->
-  <section id="part-1" class="section-pad">
-    <div class="container prose">
-      <p class="eyebrow">Part I &mdash; The problem</p>
-      <h2>It started on a crypto arb desk.</h2>
-      <p>
-        I spent two and a half years running high-frequency cross-exchange arbitrage in crypto. It started
-        extremely easy. It ended very hard. The market matured, the edges compressed, and the only way to stay
-        competitive was to iterate on strategy faster than the market iterated on me.
-      </p>
-      <p>
-        The hard way is always the honest way to learn a lesson. Mine was this: <strong>without the ability to
-        change your view of the world as fast as the market changes its view of you, you will run out of runway
-        before you run out of ideas.</strong>
-      </p>
-      <p>
-        So I went on a solo mission to re-engineer the stack. Two goals: reduce sole reliance on latency
-        &mdash; compete on smarts, not just speed &mdash; and build an arsenal of strategies rather than
-        riding a single one.
-      </p>
-    </div>
-  </section>
+      .card-grid {
+        display: grid;
+        gap: 20px;
+      }
 
-  <!-- PART II — THE CHICKEN AND EGG -->
-  <section id="part-2" class="section-pad" style="background: var(--bg-surface);">
-    <div class="container prose">
-      <p class="eyebrow">Part II &mdash; The chicken-and-egg</p>
-      <h2>Building a strategy is a chicken-and-egg problem.</h2>
-      <p>
-        You invest a lot of time to get one right, and it only makes sense if it makes money. If you already
-        knew what was going to make money, you'd have stopped researching and started shipping. Everyone who
-        has actually run a book knows this tension.
-      </p>
-      <p>
-        I needed a top-down view of the world. Not at a press-release level &mdash; at a <strong>medium-to-low
-        level of resolution</strong>. I needed to be able to ask clean questions across the full universe of
-        venues, instruments, and regimes, and get back signal that was comparable across domains. Only then
-        could I decide where to spend research time next.
-      </p>
-      <div class="pull">
-        The question I kept asking myself: how do I build fast enough and cheap enough not to run out of money
-        before it's too late?
-      </div>
-    </div>
-  </section>
+      .card-grid-3 {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
 
-  <!-- PART III — THE VENDOR SEARCH -->
-  <section id="part-3" class="section-pad">
-    <div class="container prose">
-      <p class="eyebrow">Part III &mdash; The vendor search</p>
-      <h2>I went looking &mdash; not for a strategy, for a stack.</h2>
-      <p>
-        Something that could give me the view of the universe I needed. Something I could build research on
-        without throwing out the infrastructure every time the domain shifted. Over a long period I spoke to,
-        trialled, or built proofs-of-concept across most of what exists. A partial list &mdash; each of them
-        strong at what they set out to do:
-      </p>
-      <ul>
-        <li><strong>Hummingbot</strong> &mdash; best-in-class open-source market-making framework. Deliberately
-          tight on scope so the bots stay simple and predictable.</li>
-        <li><strong>Amberdata, Tardis, Databento</strong> &mdash; three of the cleanest data providers in
-          crypto and beyond. We still source from firms in this tier. Data is one piece of the puzzle; I
-          needed research and execution layers on top of it.</li>
-        <li><strong>Lean &middot; QuantConnect</strong> &mdash; a genuine research stack with a strong
-          community. Crypto-flavoured, and the venue / asset breadth I needed sat outside its focus.</li>
-        <li><strong>Deribit &middot; IBKR &middot; CoinRoutes</strong> &mdash; venue-specific execution that
-          does its job well. None of them was trying to be cross-domain infrastructure, and rightly so.</li>
-        <li><strong>TradingView</strong> &mdash; the best charting and scripting UX in the business.
-          <strong>We still use it for some of our charts today.</strong> It was never trying to be an
-          operating layer.</li>
-        <li><strong>Versify</strong> &mdash; high-quality ML execution. The protocol assumes single-order
-          instructions with entry / exit / take-profit / stop-loss &mdash; the right shape for their customer,
-          not the shape I needed to run market-making through the same pipeline.</li>
+      .card-grid-2 {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        transition: all 0.2s;
+      }
+
+      .card:hover {
+        border-color: var(--border-accent);
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      }
+
+      .card .tag {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin-bottom: 10px;
+      }
+
+      .card h3 {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: var(--text);
+      }
+
+      .card p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        line-height: 1.65;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #0a0a0b;
+      }
+
+      .btn-primary:hover {
+        background: #06b6d4;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border-accent);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      @media (max-width: 768px) {
+        .card-grid-3,
+        .card-grid-2 {
+          grid-template-columns: 1fr;
+        }
+
+        .section-pad {
+          padding: 52px 0;
+        }
+
+        .hero-content {
+          padding: 56px 16px 44px;
+        }
+
+        .prose p,
+        .prose ul li {
+          font-size: 15px;
+        }
+
+        .pull {
+          font-size: 16px;
+        }
+      }
+
+      /* SIDEBAR TOC ──────────────────────────────── */
+      .toc-sidebar {
+        display: none;
+      }
+      @media (min-width: 1280px) {
+        .toc-sidebar {
+          display: block;
+          position: fixed;
+          top: 96px;
+          left: clamp(24px, 4vw, 64px);
+          width: 220px;
+          max-height: calc(100vh - 120px);
+          overflow-y: auto;
+          padding-bottom: 24px;
+          z-index: 10;
+        }
+        .toc-label {
+          font-size: 10.5px;
+          font-weight: 600;
+          color: var(--text-muted);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          padding: 0 10px 6px;
+          margin: 0;
+        }
+        .toc-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .toc-list li {
+          margin: 0;
+        }
+        .toc-link {
+          display: block;
+          padding: 7px 12px;
+          font-size: 13px;
+          line-height: 1.4;
+          color: var(--text-muted);
+          text-decoration: none;
+          border-left: 2px solid transparent;
+          border-radius: 0 6px 6px 0;
+          transition:
+            color 0.15s,
+            background 0.15s,
+            border-color 0.15s;
+        }
+        .toc-link:hover {
+          color: var(--text);
+          background: rgba(255, 255, 255, 0.04);
+        }
+        .toc-link.is-active {
+          color: var(--text);
+          border-left-color: var(--primary);
+          background: rgba(34, 211, 238, 0.06);
+          font-weight: 500;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- SIDEBAR TOC (visible ≥1280px) -->
+    <aside class="toc-sidebar" aria-label="Our Story sections">
+      <p class="toc-label">On this page</p>
+      <ul class="toc-list">
+        <li><a href="#part-1" class="toc-link">Part I — The arb desk</a></li>
+        <li><a href="#part-2" class="toc-link">Part II — The chicken-and-egg</a></li>
+        <li><a href="#part-3" class="toc-link">Part III — The vendor search</a></li>
+        <li><a href="#part-4" class="toc-link">Part IV — The Citadel realisation</a></li>
+        <li><a href="#part-5" class="toc-link">Part V — What we built</a></li>
+        <li><a href="#part-6" class="toc-link">Part VI — The landscape</a></li>
+        <li><a href="#cta" class="toc-link">Why it matters →</a></li>
       </ul>
-      <p>
-        <strong>To be clear: none of this is a criticism.</strong> Several of these firms do what they do
-        better than anyone else, and some of them cover ground we don&rsquo;t (and don&rsquo;t need to). We
-        still use TradingView for charting, we still source from the data-provider tier, and the story here
-        isn&rsquo;t that they fell short &mdash; it&rsquo;s that the combined problem I was trying to solve
-        needed a shape none of them was built for on its own.
-      </p>
-      <p>
-        So the instinct isn&rsquo;t to compete with them; it&rsquo;s to partner. We actively welcome
-        partnerships with <strong>trading companies, hedge funds, fund admins, exchanges, and analytics /
-        pricing platforms</strong> &mdash; anyone whose capability complements ours rather than overlaps.
-        Odum has a unique combined product; several of the firms above have genuinely great ones of their
-        own. <strong>When complementary platforms cooperate, everyone&rsquo;s clients win.</strong> Our job
-        is to make the combined offering better, not to pretend we&rsquo;re the only room in the building.
-      </p>
-    </div>
-  </section>
+    </aside>
 
-  <!-- PART IV — THE CITADEL REALISATION -->
-  <section id="part-4" class="section-pad" style="background: var(--bg-surface);">
-    <div class="container prose">
-      <p class="eyebrow">Part IV &mdash; The Citadel realisation</p>
-      <h2>I started to realise what I wanted simply didn't exist.</h2>
-      <p>
-        The only way I was going to get the stack I needed was to go to <strong>Citadel, Jane Street, or Two
-        Sigma</strong> and convince them to let me build my pipeline inside theirs. They don't offer that as a
-        product. It would be incredibly expensive if they did. And honestly, <strong>even they don't have crypto
-        exchanges, traditional markets, sports, DeFi, and prediction markets unified under one stack at
-        scale.</strong>
-      </p>
-      <p>
-        That's when the shape of the problem clarified. Every company has a gap. Every service provider has a
-        gap. Even the best internal trading firms have gaps. If someone truly doesn't, they're not open to the
-        public.
-      </p>
-      <p>
-        Why does the gap exist? Because to think multi-dimensionally enough to build infrastructure that serves
-        the universe of strategy families across the universe of categories &mdash; while also having the
-        experience to build <strong>institutional-grade trading software, security architecture, and latency
-        optimisation</strong> &mdash; is an extremely rare combinatory skill set. Given my background and the
-        way my brain is wired, it's the most exciting problem I could point myself at.
-      </p>
-    </div>
-  </section>
-
-  <!-- PART V — WHAT WE BUILT -->
-  <section id="part-5" class="section-pad">
-    <div class="container prose">
-      <p class="eyebrow">Part V &mdash; What we built</p>
-      <h2>One operating system across five categories.</h2>
-      <p>
-        Odum is a unified trading infrastructure that treats <strong>CeFi, DeFi, traditional markets, sports,
-        and prediction markets</strong> as a single taxonomy. One research layer. One execution layer. One risk
-        layer. One reporting layer. <strong>Simulation equals live</strong> &mdash; the same code path runs
-        historical replay and live trading; the only seam that differs is whether a fill comes from a
-        matching engine or a real venue.
-      </p>
-      <p>
-        The architectural discipline &mdash; a single source of truth for all data contracts, config-hashed
-        versioning, shard-level failure isolation, honest-coverage manifests &mdash; is standard practice at
-        top-tier firms. That alone puts the platform in an unusual category. <strong>What's genuinely novel is
-        applying that discipline to the full spread</strong>: institutional-grade rigor on crypto exchange
-        arbitrage, DeFi protocols across multiple chains, sports leagues, prediction markets, and traditional
-        equities / futures / FX &mdash; inside one stack, with one strategy-instruction protocol, all traded by
-        us.
-      </p>
-    </div>
-    <div class="container" style="margin-top: 32px;">
-      <div class="card-grid card-grid-3" style="max-width: 1040px; margin: 0 auto;">
-        <article class="card">
-          <h3>The taxonomy</h3>
-          <p>Five asset categories, one ontology. Every instrument, venue, timeframe and strategy archetype
-            lives in the same registry. Cross-domain questions become comparable.</p>
-        </article>
-        <article class="card">
-          <h3>Simulation equals live</h3>
-          <p>The same component graph runs historical research and live trading. No separate backtest engine.
-            No divergence between what you tested and what you shipped.</p>
-        </article>
-        <article class="card">
-          <h3>Institutional rigor, applied broadly</h3>
-          <p>Contracts-first, config-hashed, failure-isolated. The quant-platform pattern you'd expect at a
-            top-tier firm &mdash; extended to the domains those firms typically don't touch.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- PART VI — THE INDUSTRY LANDSCAPE -->
-  <section id="part-6" class="section-pad" style="background: var(--bg-surface);">
-    <div class="container prose">
-      <p class="eyebrow">Part VI &mdash; The landscape</p>
-      <h2>What the industry actually offers today.</h2>
-      <p>
-        It helps to see how the market is split.
-      </p>
-      <p>
-        On one side, there are <strong>signal-takers</strong> &mdash; execution firms, order-management
-        systems. You design the strategy &mdash; say, <em>buy bitcoin every time it drops 1%</em> &mdash; hand
-        over the instruction, and they route it to the venues. That service is genuinely useful. Venue access
-        is harder than it looks: some exchanges require jurisdictional presence, others require regulatory
-        permissions, and building infrastructure that trades crypto cleanly 24/7 over weekends is non-trivial
-        work. Firms that specialise in keeping that stable exist in traditional markets and in crypto &mdash;
-        <strong>but very few of them cover a serious cross-asset range</strong>.
-      </p>
-      <p>
-        On the other side, there are <strong>platforms that let you research and build strategies inside their
-        infrastructure</strong>. This is a tiny niche. And it shrinks further the moment you ask for the full
-        range &mdash; crypto, traditional markets, DeFi, sports, prediction &mdash; under one roof.
-      </p>
-      <div class="pull">
-        Odum is one of very few firms that does both &mdash; execution and research &mdash; and, as far as we
-        can tell, the only one doing both across the full range.
-      </div>
-      <div
-        style="margin-top: 28px; padding: 22px 24px; border-radius: 12px; border: 1px solid rgba(34, 211, 238, 0.3); background: rgba(34, 211, 238, 0.06);">
-        <p style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--primary); margin-bottom: 10px;">
-          The questions from here on out live on the FAQ
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Our Story</p>
+        <h1>I spent two and a half years trying to find the stack I needed. Nobody had it. So we built it.</h1>
+        <p class="subtitle">
+          Odum started as one founder's frustration with a fragmented vendor landscape. It grew into an institutional
+          trading operating system that now runs across crypto, DeFi, traditional markets, sports, and prediction
+          markets &mdash; and is offered to the firms that asked us for it.
         </p>
-        <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
-          The next questions the story raises &mdash; <strong>how do you protect IP?</strong> (DART
-          Signals-In vs Full, lock-off mechanics, the 2,500-combinatoric catalogue behind the bespoke conversation);
-          <strong>why don&rsquo;t you just trade it all yourselves?</strong> (the 100-years-of-work maths
-          and the partnership model that replaces it); <strong>what about strategy decay?</strong> (v1 /
-          v2 / v3 iteration, baseline → backtest → paper → live) &mdash; are all answered in Q&amp;A form
-          on the FAQ, along with sanctions, onboarding, and the rest. Short answers where possible, with
-          links to the deep dives when they aren&rsquo;t.
+        <div class="byline">
+          <img src="team-ikenna.jpg" alt="Ikenna Igboaka" />
+          <span>
+            Written by Ikenna Igboaka, Founder &amp; CEO &middot;
+            <a href="https://www.linkedin.com/in/ikennaigboaka/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART I — THE ARB DESK -->
+    <section id="part-1" class="section-pad">
+      <div class="container prose">
+        <p class="eyebrow">Part I &mdash; The problem</p>
+        <h2>It started on a crypto arb desk.</h2>
+        <p>
+          I spent two and a half years running high-frequency cross-exchange arbitrage in crypto. It started extremely
+          easy. It ended very hard. The market matured, the edges compressed, and the only way to stay competitive was
+          to iterate on strategy faster than the market iterated on me.
         </p>
-        <a href="/faq"
-          style="display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; background: var(--primary); color: #0a0a0b; padding: 10px 18px; font-size: 14px; font-weight: 500; text-decoration: none;">
-          Go to the FAQ &rarr;
-        </a>
+        <p>
+          The hard way is always the honest way to learn a lesson. Mine was this:
+          <strong
+            >without the ability to change your view of the world as fast as the market changes its view of you, you
+            will run out of runway before you run out of ideas.</strong
+          >
+        </p>
+        <p>
+          So I went on a solo mission to re-engineer the stack. Two goals: reduce sole reliance on latency &mdash;
+          compete on smarts, not just speed &mdash; and build an arsenal of strategies rather than riding a single one.
+        </p>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA — DUAL INCENTIVE -->
-  <section id="cta" class="section-pad" style="background: var(--bg-surface); text-align: center;">
-    <div class="container" style="max-width: 760px; margin: 0 auto;">
-      <p class="eyebrow">Why this matters</p>
-      <h2 style="font-size: clamp(24px, 3vw, 32px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px;">
-        Most of this industry was built on a lack of trust. We're building trust through dual incentive.
-      </h2>
-      <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 32px; line-height: 1.7;">
-        Between firms, between counterparties, between the people who build alpha and the people who execute
-        it &mdash; the trading world is historically suspicious terrain. We're trying to structure something
-        different: a platform and a relationship where <strong style="color: var(--text);">our clients and we
-        want the same thing &mdash; to grow together.</strong>
-      </p>
-      <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px;">
-        Allocator, prop firm, asset manager, sports quant, prediction-market shop, or another quant team
-        &mdash; the door is open. A 45-minute call is usually the fastest way to work out which path fits.
-      </p>
-      <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
-        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
-          class="btn btn-primary">Book a 45-minute call</a>
-        <a href="/contact?service=general" class="btn btn-outline">Contact us</a>
+    <!-- PART II — THE CHICKEN AND EGG -->
+    <section id="part-2" class="section-pad" style="background: var(--bg-surface)">
+      <div class="container prose">
+        <p class="eyebrow">Part II &mdash; The chicken-and-egg</p>
+        <h2>Building a strategy is a chicken-and-egg problem.</h2>
+        <p>
+          You invest a lot of time to get one right, and it only makes sense if it makes money. If you already knew what
+          was going to make money, you'd have stopped researching and started shipping. Everyone who has actually run a
+          book knows this tension.
+        </p>
+        <p>
+          I needed a top-down view of the world. Not at a press-release level &mdash; at a
+          <strong>medium-to-low level of resolution</strong>. I needed to be able to ask clean questions across the full
+          universe of venues, instruments, and regimes, and get back signal that was comparable across domains. Only
+          then could I decide where to spend research time next.
+        </p>
+        <div class="pull">
+          The question I kept asking myself: how do I build fast enough and cheap enough not to run out of money before
+          it's too late?
+        </div>
       </div>
-      <p style="margin-top: 28px; font-size: 13px; color: var(--text-dim);">
-        info@odum-research.co.uk &middot; London, United Kingdom &middot;
-        <a href="https://www.linkedin.com/in/ikennaigboaka/" target="_blank" rel="noopener noreferrer"
-          style="color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px;">Ikenna on
-          LinkedIn</a>
-      </p>
-    </div>
-  </section>
+    </section>
 
+    <!-- PART III — THE VENDOR SEARCH -->
+    <section id="part-3" class="section-pad">
+      <div class="container prose">
+        <p class="eyebrow">Part III &mdash; The vendor search</p>
+        <h2>I went looking &mdash; not for a strategy, for a stack.</h2>
+        <p>
+          Something that could give me the view of the universe I needed. Something I could build research on without
+          throwing out the infrastructure every time the domain shifted. Over a long period I spoke to, trialled, or
+          built proofs-of-concept across most of what exists. A partial list &mdash; each of them strong at what they
+          set out to do:
+        </p>
+        <ul>
+          <li>
+            <strong>Hummingbot</strong> &mdash; best-in-class open-source market-making framework. Deliberately tight on
+            scope so the bots stay simple and predictable.
+          </li>
+          <li>
+            <strong>Amberdata, Tardis, Databento</strong> &mdash; three of the cleanest data providers in crypto and
+            beyond. We still source from firms in this tier. Data is one piece of the puzzle; I needed research and
+            execution layers on top of it.
+          </li>
+          <li>
+            <strong>Lean &middot; QuantConnect</strong> &mdash; a genuine research stack with a strong community.
+            Crypto-flavoured, and the venue / asset breadth I needed sat outside its focus.
+          </li>
+          <li>
+            <strong>Deribit &middot; IBKR &middot; CoinRoutes</strong> &mdash; venue-specific execution that does its
+            job well. None of them was trying to be cross-domain infrastructure, and rightly so.
+          </li>
+          <li>
+            <strong>TradingView</strong> &mdash; the best charting and scripting UX in the business.
+            <strong>We still use it for some of our charts today.</strong> It was never trying to be an operating layer.
+          </li>
+          <li>
+            <strong>Versify</strong> &mdash; high-quality ML execution. The protocol assumes single-order instructions
+            with entry / exit / take-profit / stop-loss &mdash; the right shape for their customer, not the shape I
+            needed to run market-making through the same pipeline.
+          </li>
+        </ul>
+        <p>
+          <strong>To be clear: none of this is a criticism.</strong> Several of these firms do what they do better than
+          anyone else, and some of them cover ground we don&rsquo;t (and don&rsquo;t need to). We still use TradingView
+          for charting, we still source from the data-provider tier, and the story here isn&rsquo;t that they fell short
+          &mdash; it&rsquo;s that the combined problem I was trying to solve needed a shape none of them was built for
+          on its own.
+        </p>
+        <p>
+          So the instinct isn&rsquo;t to compete with them; it&rsquo;s to partner. We actively welcome partnerships with
+          <strong>trading companies, hedge funds, fund admins, exchanges, and analytics / pricing platforms</strong>
+          &mdash; anyone whose capability complements ours rather than overlaps. Odum has a unique combined product;
+          several of the firms above have genuinely great ones of their own.
+          <strong>When complementary platforms cooperate, everyone&rsquo;s clients win.</strong> Our job is to make the
+          combined offering better, not to pretend we&rsquo;re the only room in the building.
+        </p>
+      </div>
+    </section>
 
-  <script>
-    (function () {
-      var links = document.querySelectorAll('.toc-sidebar .toc-link');
-      if (!links || links.length === 0) return;
+    <!-- PART IV — THE CITADEL REALISATION -->
+    <section id="part-4" class="section-pad" style="background: var(--bg-surface)">
+      <div class="container prose">
+        <p class="eyebrow">Part IV &mdash; The Citadel realisation</p>
+        <h2>I started to realise what I wanted simply didn't exist.</h2>
+        <p>
+          The only way I was going to get the stack I needed was to go to
+          <strong>Citadel, Jane Street, or Two Sigma</strong> and convince them to let me build my pipeline inside
+          theirs. They don't offer that as a product. It would be incredibly expensive if they did. And honestly,
+          <strong
+            >even they don't have crypto exchanges, traditional markets, sports, DeFi, and prediction markets unified
+            under one stack at scale.</strong
+          >
+        </p>
+        <p>
+          That's when the shape of the problem clarified. Every company has a gap. Every service provider has a gap.
+          Even the best internal trading firms have gaps. If someone truly doesn't, they're not open to the public.
+        </p>
+        <p>
+          Why does the gap exist? Because to think multi-dimensionally enough to build infrastructure that serves the
+          universe of strategy families across the universe of categories &mdash; while also having the experience to
+          build
+          <strong>institutional-grade trading software, security architecture, and latency optimisation</strong> &mdash;
+          is an extremely rare combinatory skill set. Given my background and the way my brain is wired, it's the most
+          exciting problem I could point myself at.
+        </p>
+      </div>
+    </section>
 
-      // Click: smooth-scroll within shadow DOM to the target id
-      links.forEach(function (link) {
-        link.addEventListener('click', function (e) {
-          var href = link.getAttribute('href') || '';
-          if (href.charAt(0) !== '#') return;
-          var id = href.slice(1);
-          var target = document.getElementById(id);
-          if (target && target.scrollIntoView) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+    <!-- PART V — WHAT WE BUILT -->
+    <section id="part-5" class="section-pad">
+      <div class="container prose">
+        <p class="eyebrow">Part V &mdash; What we built</p>
+        <h2>One operating system across five categories.</h2>
+        <p>
+          Odum is a unified trading infrastructure that treats
+          <strong>CeFi, DeFi, traditional markets, sports, and prediction markets</strong> as a single taxonomy. One
+          research layer. One execution layer. One risk layer. One reporting layer.
+          <strong>Simulation equals live</strong> &mdash; the same code path runs historical replay and live trading;
+          the only seam that differs is whether a fill comes from a matching engine or a real venue.
+        </p>
+        <p>
+          The architectural discipline &mdash; a single source of truth for all data contracts, config-hashed
+          versioning, shard-level failure isolation, honest-coverage manifests &mdash; is standard practice at top-tier
+          firms. That alone puts the platform in an unusual category.
+          <strong>What's genuinely novel is applying that discipline to the full spread</strong>: institutional-grade
+          rigor on crypto exchange arbitrage, DeFi protocols across multiple chains, sports leagues, prediction markets,
+          and traditional equities / futures / FX &mdash; inside one stack, with one strategy-instruction protocol, all
+          traded by us.
+        </p>
+      </div>
+      <div class="container" style="margin-top: 32px">
+        <div class="card-grid card-grid-3" style="max-width: 1040px; margin: 0 auto">
+          <article class="card">
+            <h3>The taxonomy</h3>
+            <p>
+              Five asset categories, one ontology. Every instrument, venue, timeframe and strategy archetype lives in
+              the same registry. Cross-domain questions become comparable.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Simulation equals live</h3>
+            <p>
+              The same component graph runs historical research and live trading. No separate backtest engine. No
+              divergence between what you tested and what you shipped.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Institutional rigor, applied broadly</h3>
+            <p>
+              Contracts-first, config-hashed, failure-isolated. The quant-platform pattern you'd expect at a top-tier
+              firm &mdash; extended to the domains those firms typically don't touch.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PART VI — THE INDUSTRY LANDSCAPE -->
+    <section id="part-6" class="section-pad" style="background: var(--bg-surface)">
+      <div class="container prose">
+        <p class="eyebrow">Part VI &mdash; The landscape</p>
+        <h2>What the industry actually offers today.</h2>
+        <p>It helps to see how the market is split.</p>
+        <p>
+          On one side, there are <strong>signal-takers</strong> &mdash; execution firms, order-management systems. You
+          design the strategy &mdash; say, <em>buy bitcoin every time it drops 1%</em> &mdash; hand over the
+          instruction, and they route it to the venues. That service is genuinely useful. Venue access is harder than it
+          looks: some exchanges require jurisdictional presence, others require regulatory permissions, and building
+          infrastructure that trades crypto cleanly 24/7 over weekends is non-trivial work. Firms that specialise in
+          keeping that stable exist in traditional markets and in crypto &mdash;
+          <strong>but very few of them cover a serious cross-asset range</strong>.
+        </p>
+        <p>
+          On the other side, there are
+          <strong>platforms that let you research and build strategies inside their infrastructure</strong>. This is a
+          tiny niche. And it shrinks further the moment you ask for the full range &mdash; crypto, traditional markets,
+          DeFi, sports, prediction &mdash; under one roof.
+        </p>
+        <div class="pull">
+          Odum is one of very few firms that does both &mdash; execution and research &mdash; and, as far as we can
+          tell, the only one doing both across the full range.
+        </div>
+        <div
+          style="
+            margin-top: 28px;
+            padding: 22px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            background: rgba(34, 211, 238, 0.06);
+          "
+        >
+          <p
+            style="
+              font-size: 11px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.08em;
+              color: var(--primary);
+              margin-bottom: 10px;
+            "
+          >
+            The questions from here on out live on the FAQ
+          </p>
+          <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px">
+            The next questions the story raises &mdash; <strong>how do you protect IP?</strong> (DART Signals-In vs
+            Full, lock-off mechanics, the 2,500-combinatoric catalogue behind the bespoke conversation);
+            <strong>why don&rsquo;t you just trade it all yourselves?</strong> (the 100-years-of-work maths and the
+            partnership model that replaces it); <strong>what about strategy decay?</strong> (v1 / v2 / v3 iteration,
+            baseline → backtest → paper → live) &mdash; are all answered in Q&amp;A form on the FAQ, along with
+            sanctions, onboarding, and the rest. Short answers where possible, with links to the deep dives when they
+            aren&rsquo;t.
+          </p>
+          <a
+            href="/faq"
+            style="
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              border-radius: 8px;
+              background: var(--primary);
+              color: #0a0a0b;
+              padding: 10px 18px;
+              font-size: 14px;
+              font-weight: 500;
+              text-decoration: none;
+            "
+          >
+            Go to the FAQ &rarr;
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA — DUAL INCENTIVE -->
+    <section id="cta" class="section-pad" style="background: var(--bg-surface); text-align: center">
+      <div class="container" style="max-width: 760px; margin: 0 auto">
+        <p class="eyebrow">Why this matters</p>
+        <h2 style="font-size: clamp(24px, 3vw, 32px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 20px">
+          Most of this industry was built on a lack of trust. We're building trust through dual incentive.
+        </h2>
+        <p style="color: var(--text-muted); font-size: 16px; margin-bottom: 32px; line-height: 1.7">
+          Between firms, between counterparties, between the people who build alpha and the people who execute it
+          &mdash; the trading world is historically suspicious terrain. We're trying to structure something different: a
+          platform and a relationship where
+          <strong style="color: var(--text)">our clients and we want the same thing &mdash; to grow together.</strong>
+        </p>
+        <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 28px">
+          Allocator, prop firm, asset manager, sports quant, prediction-market shop, or another quant team &mdash; the
+          door is open. A 45-minute call is usually the fastest way to work out which path fits.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap">
+          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-primary"
+            >Book a 45-minute call</a
+          >
+          <a href="/contact?service=general" class="btn btn-outline">Contact us</a>
+        </div>
+        <p style="margin-top: 28px; font-size: 13px; color: var(--text-dim)">
+          info@odum-research.co.uk &middot; 9 Appold Street, London, EC2A 2AP, UK &middot;
+          <a
+            href="https://www.linkedin.com/in/ikennaigboaka/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px"
+            >Ikenna on LinkedIn</a
+          >
+        </p>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        var links = document.querySelectorAll(".toc-sidebar .toc-link");
+        if (!links || links.length === 0) return;
+
+        // Click: smooth-scroll within shadow DOM to the target id
+        links.forEach(function (link) {
+          link.addEventListener("click", function (e) {
+            var href = link.getAttribute("href") || "";
+            if (href.charAt(0) !== "#") return;
+            var id = href.slice(1);
+            var target = document.getElementById(id);
+            if (target && target.scrollIntoView) {
+              e.preventDefault();
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          });
         });
-      });
 
-      // Scroll-spy: highlight the link for the currently-visible section
-      if (typeof IntersectionObserver === 'undefined') return;
-      var linkById = {};
-      links.forEach(function (link) {
-        var href = link.getAttribute('href') || '';
-        if (href.charAt(0) === '#') linkById[href.slice(1)] = link;
-      });
-      var targets = Object.keys(linkById)
-        .map(function (id) { return document.getElementById(id); })
-        .filter(function (el) { return !!el; });
-      if (targets.length === 0) return;
-
-      var observer = new IntersectionObserver(function (entries) {
-        var visible = entries
-          .filter(function (e) { return e.isIntersecting; })
-          .sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; });
-        if (visible.length === 0) return;
-        var activeId = visible[0].target.id;
-        Object.keys(linkById).forEach(function (id) {
-          linkById[id].classList.toggle('is-active', id === activeId);
+        // Scroll-spy: highlight the link for the currently-visible section
+        if (typeof IntersectionObserver === "undefined") return;
+        var linkById = {};
+        links.forEach(function (link) {
+          var href = link.getAttribute("href") || "";
+          if (href.charAt(0) === "#") linkById[href.slice(1)] = link;
         });
-      }, { rootMargin: '-25% 0px -60% 0px', threshold: [0, 1] });
-      targets.forEach(function (t) { observer.observe(t); });
-    })();
-  </script>
-</body>
+        var targets = Object.keys(linkById)
+          .map(function (id) {
+            return document.getElementById(id);
+          })
+          .filter(function (el) {
+            return !!el;
+          });
+        if (targets.length === 0) return;
 
+        var observer = new IntersectionObserver(
+          function (entries) {
+            var visible = entries
+              .filter(function (e) {
+                return e.isIntersecting;
+              })
+              .sort(function (a, b) {
+                return a.boundingClientRect.top - b.boundingClientRect.top;
+              });
+            if (visible.length === 0) return;
+            var activeId = visible[0].target.id;
+            Object.keys(linkById).forEach(function (id) {
+              linkById[id].classList.toggle("is-active", id === activeId);
+            });
+          },
+          { rootMargin: "-25% 0px -60% 0px", threshold: [0, 1] },
+        );
+        targets.forEach(function (t) {
+          observer.observe(t);
+        });
+      })();
+    </script>
+  </body>
 </html>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BriefingAccessGate } from "@/components/briefings/briefing-access-gate";
 import { MarketingStaticFromFile } from "@/components/marketing/marketing-static-from-file";
 
 export const metadata: Metadata = {
@@ -8,9 +9,17 @@ export const metadata: Metadata = {
     "Odum's founder story: why two and a half years on a crypto arb desk led us to build a unified trading operating system — and why we offer it to other firms through a dual-incentive partnership model.",
 };
 
+/**
+ * Full founder narrative + dual-incentive partnership rationale — gated
+ * behind the Deep Dive access code (same gate as /briefings/*). Public
+ * surfaces:
+ *   - /story        — abridged timeline + cards linking here (lock hinted)
+ *   - /who-we-are   — firm identity, no narrative
+ *   - /faq          — open
+ */
 export default function MarketingOurStoryPage() {
   return (
-    <>
+    <BriefingAccessGate>
       <MarketingStaticFromFile file="our-story.html" />
       <section className="border-t border-border/40 bg-background">
         <div className="container px-4 py-10 md:px-6">
@@ -26,22 +35,13 @@ export default function MarketingOurStoryPage() {
                 >
                   Book a call
                 </a>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; schedule a first call on Calendly.
-                </span>
+                <span className="text-muted-foreground"> &mdash; schedule a first call on Calendly.</span>
               </li>
               <li>
-                <Link
-                  href="/who-we-are"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/who-we-are" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Who We Are
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; the firm, the team, and what&apos;s live today.
-                </span>
+                <span className="text-muted-foreground"> &mdash; the firm, the team, and what&apos;s live today.</span>
               </li>
               <li>
                 <Link
@@ -56,10 +56,7 @@ export default function MarketingOurStoryPage() {
                 </span>
               </li>
               <li>
-                <Link
-                  href="/platform"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/platform" className="font-medium text-foreground underline-offset-4 hover:underline">
                   DART
                 </Link>
                 <span className="text-muted-foreground">
@@ -68,22 +65,13 @@ export default function MarketingOurStoryPage() {
                 </span>
               </li>
               <li>
-                <Link
-                  href="/signals"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/signals" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Odum Signals
                 </Link>
-                <span className="text-muted-foreground">
-                  {" "}
-                  &mdash; our signals, your execution stack.
-                </span>
+                <span className="text-muted-foreground"> &mdash; our signals, your execution stack.</span>
               </li>
               <li>
-                <Link
-                  href="/regulatory"
-                  className="font-medium text-foreground underline-offset-4 hover:underline"
-                >
+                <Link href="/regulatory" className="font-medium text-foreground underline-offset-4 hover:underline">
                   Regulatory Umbrella
                 </Link>
                 <span className="text-muted-foreground">
@@ -95,6 +83,6 @@ export default function MarketingOurStoryPage() {
           </div>
         </div>
       </section>
-    </>
+    </BriefingAccessGate>
   );
 }

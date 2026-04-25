@@ -1,5 +1,6 @@
 "use client";
 
+import { BriefingSignOutLink } from "@/components/briefings/briefing-signout-link";
 import { PLATFORM_MARKETING_NAV_LABEL } from "@/components/shell/nav-copy";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -228,6 +229,8 @@ export function SiteHeader() {
                     ))}
                   </div>
                 ) : null}
+                {/* Non-prod-only "Sign out of Briefings" — clears localStorage flag for testers / shared computers. */}
+                <BriefingSignOutLink className="mt-1" />
               </div>
               <div className="mt-3 border-t border-border/40 pt-3">
                 {NAV_SECONDARY.map((item) => (

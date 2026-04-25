@@ -1,505 +1,515 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Story — Odum Research</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-surface: #161618;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-accent: rgba(255, 255, 255, 0.12);
+        --text: #e4e4e7;
+        --text-muted: #a1a1aa;
+        --text-secondary: #c4c4cc;
+        --text-dim: #71717a;
+        --primary: #22d3ee;
+        --sky: #38bdf8;
+        --emerald: #4ade80;
+        --violet: #a78bfa;
+        --amber: #fbbf24;
+        --rose: #fb7185;
+        --cyan: #22d3ee;
+        --font-sans: "IBM Plex Sans", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Story — Odum Research</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0b;
-      --bg-card: #111113;
-      --bg-surface: #161618;
-      --border: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(255, 255, 255, 0.12);
-      --text: #e4e4e7;
-      --text-muted: #a1a1aa;
-      --text-secondary: #c4c4cc;
-      --text-dim: #71717a;
-      --primary: #22d3ee;
-      --sky: #38bdf8;
-      --emerald: #4ade80;
-      --violet: #a78bfa;
-      --amber: #fbbf24;
-      --rose: #fb7185;
-      --cyan: #22d3ee;
-      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
+      section {
+        border-bottom: 1px solid var(--border);
+      }
 
-    section {
-      border-bottom: 1px solid var(--border);
-    }
-
-    .section-pad {
-      padding: 72px 0;
-    }
-
-    .eyebrow {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--primary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
-    }
-
-    .hero-content {
-      position: relative;
-      text-align: center;
-      padding: 72px 24px 56px;
-      max-width: 820px;
-      margin: 0 auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(28px, 4vw, 44px);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .hero .subtitle {
-      margin-top: 18px;
-      font-size: clamp(16px, 2vw, 18px);
-      color: var(--text-muted);
-      max-width: 640px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .timeline-wrap {
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .timeline {
-      position: relative;
-      padding-left: 32px;
-      border-left: 2px solid var(--border-accent);
-    }
-
-    .timeline-entry {
-      position: relative;
-      margin-bottom: 40px;
-    }
-
-    .timeline-entry:last-child {
-      margin-bottom: 0;
-    }
-
-    .timeline-entry::before {
-      content: '';
-      position: absolute;
-      left: -41px;
-      top: 8px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 2px solid var(--primary);
-      box-shadow: 0 0 0 4px var(--bg);
-    }
-
-    .timeline-entry.timeline-entry-muted::before {
-      border-color: var(--border-accent);
-    }
-
-    .timeline-date {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-    }
-
-    .timeline-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 8px;
-      letter-spacing: -0.005em;
-    }
-
-    .timeline-body {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-    }
-
-    .timeline-body strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .timeline-tag {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      background: rgba(34, 211, 238, 0.08);
-      color: var(--primary);
-      margin-left: 10px;
-      vertical-align: 2px;
-    }
-
-    .timeline-tag-muted {
-      background: rgba(255, 255, 255, 0.04);
-      color: var(--text-dim);
-    }
-
-    .timeline-tag-rose {
-      background: rgba(251, 113, 133, 0.1);
-      color: var(--rose);
-    }
-
-    .timeline-tag-emerald {
-      background: rgba(74, 222, 128, 0.1);
-      color: var(--emerald);
-    }
-
-    .prose {
-      max-width: 760px;
-      margin: 0 auto;
-    }
-
-    .prose h2 {
-      font-size: 24px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      letter-spacing: -0.01em;
-    }
-
-    .prose p {
-      font-size: 15px;
-      color: var(--text-muted);
-      margin-bottom: 14px;
-      line-height: 1.7;
-    }
-
-    .prose a.inline-link {
-      color: var(--text);
-      text-decoration: underline;
-      text-decoration-color: var(--border-accent);
-      text-underline-offset: 3px;
-      font-weight: 500;
-    }
-
-    .prose a.inline-link:hover {
-      text-decoration-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-sans);
-      font-size: 14px;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border: none;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: #0a0a0b;
-    }
-
-    .btn-primary:hover {
-      background: #06b6d4;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border-accent);
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    @media (max-width: 768px) {
       .section-pad {
-        padding: 48px 0;
+        padding: 72px 0;
+      }
+
+      .eyebrow {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 30%, rgba(148, 163, 184, 0.06) 0%, transparent 60%);
       }
 
       .hero-content {
-        padding: 48px 16px 36px;
+        position: relative;
+        text-align: center;
+        padding: 72px 24px 56px;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .hero h1 {
+        font-size: clamp(28px, 4vw, 44px);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .hero .subtitle {
+        margin-top: 18px;
+        font-size: clamp(16px, 2vw, 18px);
+        color: var(--text-muted);
+        max-width: 640px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .timeline-wrap {
+        max-width: 760px;
+        margin: 0 auto;
       }
 
       .timeline {
-        padding-left: 24px;
+        position: relative;
+        padding-left: 32px;
+        border-left: 2px solid var(--border-accent);
+      }
+
+      .timeline-entry {
+        position: relative;
+        margin-bottom: 40px;
+      }
+
+      .timeline-entry:last-child {
+        margin-bottom: 0;
       }
 
       .timeline-entry::before {
-        left: -32px;
-        top: 6px;
-        width: 10px;
-        height: 10px;
+        content: "";
+        position: absolute;
+        left: -41px;
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 2px solid var(--primary);
+        box-shadow: 0 0 0 4px var(--bg);
+      }
+
+      .timeline-entry.timeline-entry-muted::before {
+        border-color: var(--border-accent);
+      }
+
+      .timeline-date {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-bottom: 6px;
       }
 
       .timeline-title {
-        font-size: 17px;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+        letter-spacing: -0.005em;
       }
 
       .timeline-body {
-        font-size: 14.5px;
+        font-size: 15px;
+        color: var(--text-secondary);
+        line-height: 1.7;
       }
-    }
-  </style>
-</head>
 
-<body>
+      .timeline-body strong {
+        color: var(--text);
+        font-weight: 600;
+      }
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-content">
-      <p class="eyebrow">Story</p>
-      <h1>How Odum came to be &mdash; dated.</h1>
-      <p class="subtitle">
-        The moments that shaped Odum &mdash; the trading desks that came before, FCA authorisation, the build,
-        the commercial launch. It&rsquo;s a living page; it grows as we do.
-      </p>
-      <p class="subtitle" style="margin-top: 18px; font-size: 14px; color: var(--text-muted);">
-        Three ways to read from here &mdash; scroll down for the timeline, or jump into one of the two boxes
-        below for the long essay or the common questions.
-      </p>
-    </div>
-  </section>
+      .timeline-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        background: rgba(34, 211, 238, 0.08);
+        color: var(--primary);
+        margin-left: 10px;
+        vertical-align: 2px;
+      }
 
-  <!-- GO DEEPER / FAQ — above the timeline so readers see the two entry points first -->
-  <section class="section-pad" style="background: var(--bg-surface);">
-    <div class="container" style="max-width: 960px; margin: 0 auto;">
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-        <div style="border: 1px solid var(--border); border-radius: 12px; padding: 24px; background: var(--bg-card);">
-          <p class="eyebrow" style="margin-bottom: 10px;">Long version</p>
-          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.005em;">
-            The founder&rsquo;s first-person story
-          </h3>
-          <p style="font-size: 14.5px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
-            The timeline below is the short form. For the vendor search, the Citadel realisation, and why
-            Odum ended up as a dual-incentive partnership platform &mdash; read the essay.
-          </p>
-          <a href="/our-story"
-            style="display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; border: 1px solid var(--border-accent); padding: 9px 16px; font-size: 13.5px; font-weight: 500; color: var(--text); text-decoration: none;">
-            Read Our Story &rarr;
-          </a>
+      .timeline-tag-muted {
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text-dim);
+      }
+
+      .timeline-tag-rose {
+        background: rgba(251, 113, 133, 0.1);
+        color: var(--rose);
+      }
+
+      .timeline-tag-emerald {
+        background: rgba(74, 222, 128, 0.1);
+        color: var(--emerald);
+      }
+
+      .prose {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .prose h2 {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        letter-spacing: -0.01em;
+      }
+
+      .prose p {
+        font-size: 15px;
+        color: var(--text-muted);
+        margin-bottom: 14px;
+        line-height: 1.7;
+      }
+
+      .prose a.inline-link {
+        color: var(--text);
+        text-decoration: underline;
+        text-decoration-color: var(--border-accent);
+        text-underline-offset: 3px;
+        font-weight: 500;
+      }
+
+      .prose a.inline-link:hover {
+        text-decoration-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: #0a0a0b;
+      }
+
+      .btn-primary:hover {
+        background: #06b6d4;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border-accent);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      @media (max-width: 768px) {
+        .section-pad {
+          padding: 48px 0;
+        }
+
+        .hero-content {
+          padding: 48px 16px 36px;
+        }
+
+        .timeline {
+          padding-left: 24px;
+        }
+
+        .timeline-entry::before {
+          left: -32px;
+          top: 6px;
+          width: 10px;
+          height: 10px;
+        }
+
+        .timeline-title {
+          font-size: 17px;
+        }
+
+        .timeline-body {
+          font-size: 14.5px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <p class="eyebrow">Story</p>
+        <h1>How Odum came to be &mdash; dated.</h1>
+        <p class="subtitle">
+          The moments that shaped Odum &mdash; the trading desks that came before, FCA authorisation, the build, the
+          commercial launch. It&rsquo;s a living page; it grows as we do.
+        </p>
+        <p class="subtitle" style="margin-top: 18px; font-size: 14px; color: var(--text-muted)">
+          Three ways to read from here &mdash; scroll down for the timeline, or jump into one of the two boxes below for
+          the long essay or the common questions.
+        </p>
+      </div>
+    </section>
+
+    <!-- GO DEEPER / FAQ — slim two-line strip below the eyebrow.
+       Long-version essay is gated behind the Deep Dive access code; FAQ is open. -->
+    <section style="padding: 18px 0; background: var(--bg-surface); border-bottom: 1px solid var(--border)">
+      <div
+        class="container"
+        style="
+          max-width: 960px;
+          margin: 0 auto;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 18px;
+          align-items: center;
+          justify-content: center;
+          font-size: 13.5px;
+          color: var(--text-secondary);
+        "
+      >
+        <span>Want more depth?</span>
+        <a
+          href="/our-story"
+          style="
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--border-accent);
+          "
+        >
+          <span aria-hidden="true" style="font-size: 12px">🔒</span>
+          Long-form founder essay
+          <span
+            style="
+              color: var(--text-secondary);
+              font-size: 11.5px;
+              font-weight: 500;
+              letter-spacing: 0.02em;
+              text-transform: uppercase;
+            "
+            >(Deep Dive access)</span
+          >
+        </a>
+        <span style="color: var(--border)">·</span>
+        <a
+          href="/faq"
+          style="color: var(--text); text-decoration: none; border-bottom: 1px dotted var(--border-accent)"
+        >
+          FAQ &rarr;
+        </a>
+      </div>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="section-pad">
+      <div class="container timeline-wrap">
+        <div class="timeline">
+          <article class="timeline-entry">
+            <p class="timeline-date">2026 &middot; Spring</p>
+            <h2 class="timeline-title">
+              All four commercial paths live
+              <span class="timeline-tag">Now</span>
+            </h2>
+            <p class="timeline-body">
+              <strong>Investment Management, DART, and Regulatory Umbrella</strong> are serving clients. The same
+              operating system powers every path &mdash; research, execution, risk, and reporting share one code base.
+              Categories covered end-to-end: crypto exchanges, DeFi protocols, traditional markets, sports, and
+              prediction markets.
+            </p>
+          </article>
+
+          <article class="timeline-entry">
+            <p class="timeline-date">From 2025</p>
+            <h2 class="timeline-title">Platform team settles at five</h2>
+            <p class="timeline-body">
+              The team building the current Odum platform settles at <strong>five</strong>.
+              <strong>Rob Osborne</strong> joins as CFO &amp; Adviser; <strong>Harsh Kantariya</strong> leads Quant
+              Engineering; <strong>Julian John</strong> runs Programme &amp; Operations;
+              <strong>Femi Amoo</strong> builds core infrastructure. Quant research, engineering, programme, and finance
+              all in place alongside the CEO.
+            </p>
+            <p class="timeline-body" style="margin-top: 12px">
+              <strong>Small by design.</strong> The mandate is that the platform does the talking, not the headcount
+              &mdash; heavy automation, tight scope, technology carrying the weight other firms add people for.
+            </p>
+          </article>
+
+          <article class="timeline-entry">
+            <p class="timeline-date">2024 &middot; Summer</p>
+            <h2 class="timeline-title">HFT lesson lands; unified stack build begins</h2>
+            <p class="timeline-body">
+              Two and a half years in, the HFT journey runs its known arc. AUM grows from the initial $100k to
+              <strong>$3.5M by Q1 2024</strong>, and then the environment shifts.
+              <strong>Extremely easy at the start. Very hard at the end.</strong> The market matures, edges compress,
+              and the research pipeline starts to decay faster than it can be rebuilt. The lesson lands: build an
+              arsenal of strategies rather than ride a single one; reduce sole reliance on latency &mdash; compete on
+              smarts, not just speed; get a top-down view of the full market universe before committing research time.
+            </p>
+            <p class="timeline-body" style="margin-top: 12px">
+              The accelerator thesis emerges from that lesson. The hunt was for
+              <strong>someone else&rsquo;s accelerator</strong> for our own journey &mdash; a stack that could carry the
+              whole market in one taxonomy &mdash; and it ended with the realisation nobody was building it.
+            </p>
+            <p class="timeline-body" style="margin-top: 12px">
+              Summer 2024: we start building it ourselves. Institutional-grade infrastructure &mdash; single source of
+              truth for data contracts, config-hashed versioning, shard-level failure isolation,
+              <strong>simulation equals live</strong> &mdash; extends across every asset category. One
+              strategy-instruction protocol covers CeFi, DeFi, TradFi, sports, and prediction; the catalogue grows into
+              the thousands of combinations.
+              <strong
+                >With breadth like that, growing with others starts to look smarter than being the centre of our own
+                universe.</strong
+              >
+            </p>
+            <p class="timeline-body" style="margin-top: 12px">
+              <strong>First run is for ourselves</strong> &mdash; the same stack that will be offered to clients carries
+              our own live capital end-to-end. Client paths get structured early: partners can build on the platform;
+              strategies built together stay exclusive to that engagement; everyone grows without competing.
+            </p>
+          </article>
+
+          <article class="timeline-entry">
+            <p class="timeline-date">January 2023</p>
+            <h2 class="timeline-title">
+              FCA authorisation &middot; HFT strategy live
+              <span class="timeline-tag timeline-tag-emerald">FRN 975797</span>
+            </h2>
+            <p class="timeline-body">
+              Roughly <strong>14 months after founding</strong>, Odum Research Ltd is authorised by the Financial
+              Conduct Authority. The HFT crypto strategy goes live under the new licence; first client capital arrives
+              &mdash; <strong>starting modestly at $100k</strong>. Compliance, reporting, and client oversight are built
+              into the operating model from day one &mdash; not retrofitted later. Client scope: professional clients
+              and eligible counterparties.
+            </p>
+          </article>
+
+          <article class="timeline-entry">
+            <p class="timeline-date">2021</p>
+            <h2 class="timeline-title">Odum Research Ltd founded</h2>
+            <p class="timeline-body">
+              Odum launches. The first two and a half years are a focused <strong>HFT crypto arbitrage journey</strong>:
+              year one builds the strategy core while the FCA authorisation runway runs in parallel. Crypto-focused
+              throughout &mdash; HFT arbitrage being a market teh founder knew well from his time at IMC.
+            </p>
+          </article>
+
+          <article class="timeline-entry timeline-entry-muted">
+            <p class="timeline-date">From 2011</p>
+            <h2 class="timeline-title">
+              Trading desks &mdash; IMC, then Mako
+              <span class="timeline-tag">Pedigree</span>
+            </h2>
+            <p class="timeline-body">
+              From 2011, Ikenna trades at <strong>IMC (Amsterdam)</strong> and <strong>Mako (London)</strong>.
+              Volatility arbitrage and systematic market-making across European and US indices; builds and runs
+              <strong>eight-figure-revenue desks</strong> at both firms. Earlier exposure to Morgan Stanley and Goldman
+              Sachs preceded that &mdash; the prop path was a deliberate choice for the meritocracy and tech-first
+              culture over the bulge bracket.
+            </p>
+            <p class="timeline-body" style="margin-top: 12px">
+              Self-taught code along the way, formalised with a <strong>data-science course in New York</strong> that
+              sharpened the machine-learning half &mdash; well before AI assistants existed. Across the career, desks
+              have traded <strong>crypto, commodities, equities, and interest rates</strong>
+              &mdash; single-name and index, OTC and electronic, high-frequency and medium-frequency, predictive signal
+              and liquidity provision. That cross-market breadth is why one stack can credibly treat every category as a
+              single taxonomy.
+            </p>
+          </article>
         </div>
-        <div style="border: 1px solid var(--border); border-radius: 12px; padding: 24px; background: var(--bg-card);">
-          <p class="eyebrow" style="margin-bottom: 10px;">Short answers</p>
-          <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 10px; letter-spacing: -0.005em;">
-            Frequently asked questions
-          </h3>
-          <p style="font-size: 14.5px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px;">
-            The questions we get asked most &mdash; product scope, IP protection, strategy decay, sanctions,
-            onboarding &mdash; answered in one line each where possible.
-          </p>
-          <a href="/faq"
-            style="display: inline-flex; align-items: center; gap: 6px; border-radius: 8px; border: 1px solid var(--border-accent); padding: 9px 16px; font-size: 13.5px; font-weight: 500; color: var(--text); text-decoration: none;">
-            Read the FAQ &rarr;
-          </a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section-pad" style="text-align: center">
+      <div class="container" style="max-width: 680px; margin: 0 auto">
+        <p class="eyebrow">Talk to us</p>
+        <h2 style="font-size: clamp(22px, 2.5vw, 28px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px">
+          The next milestone is an open slot on the calendar.
+        </h2>
+        <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px">
+          If the timeline resonates &mdash; allocator, trading firm, asset manager, prop shop, or another quant team
+          &mdash; a 45-minute call is usually the fastest way to find the right path in.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap">
+          <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer" class="btn btn-primary"
+            >Book a 45-minute call</a
+          >
+          <a href="/contact?service=general" class="btn btn-outline">Contact us</a>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- TIMELINE -->
-  <section class="section-pad">
-    <div class="container timeline-wrap">
-      <div class="timeline">
-
-        <article class="timeline-entry">
-          <p class="timeline-date">2026 &middot; Spring</p>
-          <h2 class="timeline-title">
-            All four commercial paths live
-            <span class="timeline-tag">Now</span>
-          </h2>
-          <p class="timeline-body">
-            <strong>Investment Management, DART, and Regulatory Umbrella</strong> are serving clients. The
-            same operating system powers every path &mdash; research, execution, risk, and reporting share
-            one code base. Categories covered end-to-end: crypto exchanges, DeFi protocols, traditional
-            markets, sports, and prediction markets.
-          </p>
-        </article>
-
-        <article class="timeline-entry">
-          <p class="timeline-date">From 2025</p>
-          <h2 class="timeline-title">Platform team settles at five</h2>
-          <p class="timeline-body">
-            The team building the current Odum platform settles at <strong>five</strong>.
-            <strong>Rob Osborne</strong> joins as CFO &amp; Adviser;
-            <strong>Harsh Kantariya</strong> leads Quant Engineering;
-            <strong>Julian John</strong> runs Programme &amp; Operations;
-            <strong>Femi Amoo</strong> builds core infrastructure. Quant research, engineering, programme,
-            and finance all in place alongside the CEO.
-          </p>
-          <p class="timeline-body" style="margin-top: 12px;">
-            <strong>Small by design.</strong> The mandate is that the platform does the talking, not the
-            headcount &mdash; heavy automation, tight scope, technology carrying the weight other firms add
-            people for.
-          </p>
-        </article>
-
-        <article class="timeline-entry">
-          <p class="timeline-date">2024 &middot; Summer</p>
-          <h2 class="timeline-title">HFT lesson lands; unified stack build begins</h2>
-          <p class="timeline-body">
-            Two and a half years in, the HFT journey runs its known arc. AUM grows from the initial $100k
-            to <strong>$3.5M by Q1 2024</strong>, and then the environment shifts. <strong>Extremely easy
-              at the start. Very hard at the end.</strong> The market matures, edges compress, and the
-            research pipeline starts to decay faster than it can be rebuilt. The lesson lands: build an
-            arsenal of strategies rather than ride a single one; reduce sole reliance on latency &mdash;
-            compete on smarts, not just speed; get a top-down view of the full market universe before
-            committing research time.
-          </p>
-          <p class="timeline-body" style="margin-top: 12px;">
-            The accelerator thesis emerges from that lesson. The hunt was for <strong>someone else&rsquo;s
-              accelerator</strong> for our own journey &mdash; a stack that could carry the whole market in
-            one taxonomy &mdash; and it ended with the realisation nobody was building it.
-          </p>
-          <p class="timeline-body" style="margin-top: 12px;">
-            Summer 2024: we start building it ourselves. Institutional-grade infrastructure &mdash; single
-            source of truth for data contracts, config-hashed versioning, shard-level failure isolation,
-            <strong>simulation equals live</strong> &mdash; extends across every asset category. One
-            strategy-instruction protocol covers CeFi, DeFi, TradFi, sports, and prediction; the catalogue
-            grows into the thousands of combinations. <strong>With breadth like that, growing with others
-              starts to look smarter than being the centre of our own universe.</strong>
-          </p>
-          <p class="timeline-body" style="margin-top: 12px;">
-            <strong>First run is for ourselves</strong> &mdash; the same stack that will be offered to
-            clients carries our own live capital end-to-end. Client paths get structured early: partners
-            can build on the platform; strategies built together stay exclusive to that engagement;
-            everyone grows without competing.
-          </p>
-        </article>
-
-        <article class="timeline-entry">
-          <p class="timeline-date">January 2023</p>
-          <h2 class="timeline-title">
-            FCA authorisation &middot; HFT strategy live
-            <span class="timeline-tag timeline-tag-emerald">FRN 975797</span>
-          </h2>
-          <p class="timeline-body">
-            Roughly <strong>14 months after founding</strong>, Odum Research Ltd is authorised by the
-            Financial Conduct Authority. The HFT crypto strategy goes live under the new licence; first
-            client capital arrives &mdash; <strong>starting modestly at $100k</strong>. Compliance,
-            reporting, and client oversight are built into the operating model from day one &mdash; not
-            retrofitted later. Client scope: professional clients and eligible counterparties.
-          </p>
-        </article>
-
-        <article class="timeline-entry">
-          <p class="timeline-date">2021</p>
-          <h2 class="timeline-title">Odum Research Ltd founded</h2>
-          <p class="timeline-body">
-            Odum launches. The first two and a half years are a focused <strong>HFT crypto arbitrage
-              journey</strong>: year one builds the strategy core while the FCA authorisation runway runs
-            in parallel. Crypto-focused throughout &mdash; HFT arbitrage being a market teh founder knew well from his
-            time at IMC.
-          </p>
-        </article>
-
-        <article class="timeline-entry timeline-entry-muted">
-          <p class="timeline-date">From 2011</p>
-          <h2 class="timeline-title">
-            Trading desks &mdash; IMC, then Mako
-            <span class="timeline-tag">Pedigree</span>
-          </h2>
-          <p class="timeline-body">
-            From 2011, Ikenna trades at <strong>IMC (Amsterdam)</strong> and <strong>Mako (London)</strong>.
-            Volatility arbitrage and systematic market-making across European and US indices; builds and
-            runs <strong>eight-figure-revenue desks</strong> at both firms. Earlier exposure to Morgan
-            Stanley and Goldman Sachs preceded that &mdash; the prop path was a deliberate choice for the
-            meritocracy and tech-first culture over the bulge bracket.
-          </p>
-          <p class="timeline-body" style="margin-top: 12px;">
-            Self-taught code along the way, formalised with a <strong>data-science course in New York</strong>
-            that sharpened the machine-learning half &mdash; well before AI assistants existed. Across the
-            career, desks have traded <strong>crypto, commodities, equities, and interest rates</strong>
-            &mdash; single-name and index, OTC and electronic, high-frequency and medium-frequency, predictive
-            signal and liquidity provision. That cross-market breadth is why one stack can credibly treat
-            every category as a single taxonomy.
-          </p>
-        </article>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="section-pad" style="text-align: center;">
-    <div class="container" style="max-width: 680px; margin: 0 auto;">
-      <p class="eyebrow">Talk to us</p>
-      <h2 style="font-size: clamp(22px, 2.5vw, 28px); font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px;">
-        The next milestone is an open slot on the calendar.
-      </h2>
-      <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 24px;">
-        If the timeline resonates &mdash; allocator, trading firm, asset manager, prop shop, or another quant
-        team &mdash; a 45-minute call is usually the fastest way to find the right path in.
-      </p>
-      <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
-        <a href="https://calendly.com/odum-ikenna" target="_blank" rel="noopener noreferrer"
-          class="btn btn-primary">Book a 45-minute call</a>
-        <a href="/contact?service=general" class="btn btn-outline">Contact us</a>
-      </div>
-    </div>
-  </section>
-
-</body>
-
+    </section>
+  </body>
 </html>

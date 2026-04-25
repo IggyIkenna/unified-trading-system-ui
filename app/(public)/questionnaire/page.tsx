@@ -40,6 +40,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import Link from "next/link";
 import { setBriefingSessionActive } from "@/lib/briefings/session";
+import { readConsent } from "@/components/marketing/cookie-consent-banner";
 import type {
   QuestionnaireCategory,
   QuestionnaireEnvelope,
@@ -289,6 +290,28 @@ function QuestionnaireForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Enforce cookie consent before submit. The access-code persistence
+    // mechanism (setBriefingSessionActive → localStorage) is exactly the
+    // kind of client-side storage the cookie banner is asking the user to
+    // consent to. If they haven't decided yet, prompt them; if they
+    // declined, prompt them to accept (since otherwise the access code
+    // we're about to email won't auto-unlock their session next visit).
+    const consent = readConsent();
+    if (consent !== "accepted") {
+      setResult({
+        success: false,
+        sink: "localStorage",
+        error:
+          consent === "declined"
+            ? "Please accept the cookie banner at the bottom of the page to continue — we need to store a small flag in your browser so the access code we send unlocks the briefings hub on your next visit."
+            : "Please accept the cookie banner at the bottom of the page to continue.",
+      });
+      // Scroll to the banner so it's visible if they missed it.
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }
+      return;
+    }
     setSubmitting(true);
     const response = buildResponse(state);
 
