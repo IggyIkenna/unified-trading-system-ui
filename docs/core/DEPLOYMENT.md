@@ -8,12 +8,48 @@ UAT and production are **separate, one-at-a-time deploys** — different Cloud R
 
 ---
 
+## Service map across the workspace
+
+The portal (`unified-trading-system-ui`, this repo) is **just the frontend**. It calls multiple sibling services, each in its own repo, each deployed as its own Cloud Run service:
+
+| Repo                          | Cloud Run service        | Region(s)                                  | Purpose                                |
+| ----------------------------- | ------------------------ | ------------------------------------------ | -------------------------------------- |
+| `unified-trading-system-ui`   | `odum-portal`            | europe-west4 + us-central1 + asia-northeast1 (multi-region prod) | The Next.js public + signed-in portal  |
+| `unified-trading-api`         | `unified-trading-api`    | (varies per env)                           | Main trading backend                   |
+| `user-management-api`         | `user-management-api`    | us-central1                                | Auth / role / entitlement `/authorize` |
+| `client-reporting-api`        | `client-reporting-api`   | us-central1                                | Client-facing P&L, performance, exports |
+| `deployment-api`              | `deployment-api`         | us-central1                                | Deployment automation                  |
+
+The portal calls these via `NEXT_PUBLIC_*_URL` env vars baked at build time. **`user-management-api` is not part of this repo** — it's a sibling service whose URL is configured in `docker-build.env.production`.
+
+---
+
+## Multi-region prod
+
+`odum-portal` (the UI) deploys to **3 regions** for global latency and HA:
+
+- `europe-west4` → `odum-portal-cldtjniqvq-ez.a.run.app`
+- `us-central1` → `odum-portal-cldtjniqvq-uc.a.run.app`
+- `asia-northeast1` → `odum-portal-cldtjniqvq-an.a.run.app`
+
+A Google global HTTPS load balancer in front of `www.odum-research.com` routes each user to the nearest healthy region. Same image tag (`:production`) deployed to all three; same env file; identical code. The image lives in a single Artifact Registry (`europe-west4-docker.pkg.dev/...`) and is pulled by Cloud Run in each region.
+
+⚠️ **`scripts/deploy-cloud-run.sh --env=prod` only deploys to `europe-west4` today.** us-central1 and asia-northeast1 get refreshed by a separate workflow. **It's easy to ship a europe-only fix and leave US / Asia stale** — verify with `gcloud run services list --region=us-central1 --project=central-element-323112` and `gcloud run services list --region=asia-northeast1 --project=central-element-323112` after a prod deploy that needs to reach all users. Improving the deploy script to fan out to all three (or fail loudly) is a follow-up.
+
+UAT is single-region (`europe-west4`). No multi-region need — UAT serves staff testing, not global customer traffic.
+
+---
+
 ## Environments
 
-| Env  | Public URL                      | Cloud Run service       | Image tag     | BUILD_ENV_FILE                       | Firebase Hosting site        | Auth + data mode                                   |
-| ---- | ------------------------------- | ----------------------- | ------------- | ------------------------------------ | ---------------------------- | -------------------------------------------------- |
-| prod | `https://www.odum-research.com` | `odum-portal`           | `:production` | `config/docker-build.env.production` | `central-element-323112`     | Firebase Auth (`central-element-323112`), live API |
-| uat  | `https://uat.odum-research.com` | `odum-portal-staging` † | `:uat`        | `config/docker-build.env.uat`        | `odum-portal-staging-site` † | Demo auth + mock API                               |
+| Env  | Public URL                      | Cloud Run service       | GCP project (compute / Firebase) | Image tag     | BUILD_ENV_FILE                       |
+| ---- | ------------------------------- | ----------------------- | ------------------------------- | ------------- | ------------------------------------ |
+| prod | `https://www.odum-research.com` | `odum-portal`           | `central-element-323112` / `central-element-323112` | `:production` | `config/docker-build.env.production` |
+| uat  | `https://uat.odum-research.com` | `odum-portal-staging` † | `central-element-323112` / `odum-staging`   | `:uat`        | `config/docker-build.env.uat`        |
+
+**UAT compute lives on `central-element-323112` but UAT data + auth live on `odum-staging`.** Decoupled by design — the UI bundle is built with `NEXT_PUBLIC_FIREBASE_*` pointing at `odum-staging`, so when the user's browser calls Firebase APIs they go directly to the staging project, bypassing Cloud Run entirely. Cloud Run is just the static-asset host. See `config/docker-build.env.uat` header comment for the full split.
+
+**Why isn't UAT compute on `odum-staging` too?** Pipeline cost. Cloud Build triggers, Artifact Registry, GitHub Actions deploy SAs, secrets — all wired against `central-element-323112`. Moving UAT compute to staging means duplicating that infra. Cheaper to keep compute on prod and isolate the data layer where it actually matters (Auth pool, Firestore, Storage). If/when that calculus changes, parallel pipeline on `odum-staging` is a separate plan.
 
 † The Cloud Run service name and Firebase Hosting site still carry the historical "staging" suffix. Renaming them to `odum-portal-uat` / `odum-portal-uat-site` is a clean-up pass (create new service + site → move domain mapping + hosting target → delete old — involves a cert-provisioning window). Until then: the service/site names in GCP / Firebase console say "staging"; every other surface (domain, env file, deploy flag, image tag, Firebase target alias) says "uat". See §Follow-ups.
 
@@ -178,9 +214,16 @@ target is the env-specific Firebase project (now fully isolated since 2026-04-25
 
 | Env  | Firestore project        | Email sender (Resend)                                                                                  |
 | ---- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| prod | `central-element-323112` | `hello@mail.odum-research.com`                                                                         |
-| uat  | `odum-staging`           | `hello@mail.uat.odum-research.com`                                                                     |
+| prod | `central-element-323112` | `hello@mail.odum-research.com` — DKIM + SPF verified                                                   |
+| uat  | `odum-staging`           | `hello@mail.uat.odum-research.com` ⚠️ **DKIM/SPF not yet set up** (see below)                          |
 | dev  | None (writes silently no-op) | `onboarding@resend.dev` — Resend's test domain; only delivers to the email tied to your Resend account |
+
+⚠️ **Resend domain verification for `mail.uat.odum-research.com` is a separate setup.** The DKIM/SPF records you added for `mail.odum-research.com` do NOT cover the `mail.uat.` subdomain — Resend verifies per exact subdomain. Until the staging subdomain is verified, sends from `hello@mail.uat.odum-research.com` will fail SPF/DKIM and likely be quarantined. Two options:
+
+- **Easy:** in `lib/email/resend.ts` `getMailDomain()`, change the uat branch to return `mail.odum-research.com` instead of `mail.uat.odum-research.com`. UAT sends then route through the prod-domain sender. Minor cosmetic confusion (UAT users see "@mail.odum-research.com" in the From), but works today with no DNS changes.
+- **Properly isolated:** in Resend dashboard → Domains → Add domain → `mail.uat.odum-research.com`. Resend gives you 4 DKIM CNAMEs + 1 SPF TXT for that exact subdomain. Add them to your DNS (probably via Squarespace or wherever `odum-research.com` is hosted). Then the staging-domain sender starts delivering cleanly.
+
+Recommended: do the easy fix today, plan the properly-isolated setup when UAT-sourced email volume / cosmetic distinction actually matters.
 
 API routes use the **Admin SDK** (`firebase-admin`) on the server — runs as the Cloud Run service account. Works regardless of `NEXT_PUBLIC_FIREBASE_*` bake-state. The Cloud Run service account `1060025368044-compute@developer.gserviceaccount.com` (prod's compute SA) has cross-project `datastore.user` + `storage.admin` + `firebaseauth.admin` on `odum-staging` so the same UAT image can hit the staging project from server-side routes.
 
@@ -200,8 +243,8 @@ firebase deploy --only storage --project odum-staging            # uat
    RESEND_API_KEY=re_...your-key...
    NEXT_PUBLIC_SITE_URL=http://localhost:3000
    ```
-   Optionally set `NEXT_PUBLIC_FIREBASE_*` to your staging project to test
-   Firestore persistence locally too.
+   Optionally set `NEXT_PUBLIC_FIREBASE_*` to `odum-staging` to test Firestore persistence
+   against the real staging project.
 2. `npm run dev` and submit a form using **the email address tied to your Resend account**
    (Resend's test domain `onboarding@resend.dev` only delivers to the verified owner).
 3. Magic-link emails use `NEXT_PUBLIC_SITE_URL` for the `/strategy-evaluation/status?token=...`
@@ -210,6 +253,59 @@ firebase deploy --only storage --project odum-staging            # uat
 If `RESEND_API_KEY` is unset locally, submissions still succeed and console-log; no email fires.
 If `NEXT_PUBLIC_FIREBASE_*` is unset, Firestore writes silently no-op (the route returns
 `ok: true` but no submission is persisted) — fine for UI-only testing.
+
+### Local dev — fully isolated via Firebase Emulator Suite
+
+For zero-network local testing of Firestore + Storage + Auth, use the Firebase Emulator Suite:
+
+```bash
+# one-off install
+firebase init emulators
+# select Auth (port 9099), Firestore (8080), Storage (9199)
+
+# every dev session
+firebase emulators:start --only auth,firestore,storage
+```
+
+Then in `.env.local`, point the SDK at the local emulators (Firebase auto-detects when these env vars are set):
+
+```
+FIRESTORE_EMULATOR_HOST=localhost:8080
+FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
+FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=odum-local-dev   # any string — emulator doesn't validate
+```
+
+Drafts, magic tokens, file uploads then live in `.firebase/emulators/` data files, never touching real GCP. Emulator UI at `http://localhost:4000` lets you inspect docs / users.
+
+### Local dev — demo personas vs Firebase users
+
+The 23 personas in `lib/auth/personas.ts` exist in two parallel forms:
+
+| Where        | Auth provider                            | Login password                              | Source                                |
+| ------------ | ---------------------------------------- | ------------------------------------------- | ------------------------------------- |
+| Local dev    | demo (client-side)                       | as in `personas.ts` (`demo` / `OdumIR2026!`) | Validated against in-memory PERSONAS  |
+| UAT          | firebase against `odum-staging`          | bumped to `demo123` (Firebase 6-char min)   | Seeded via `seed-firebase-users.mjs`  |
+| Prod         | firebase against `central-element-323112` | only `ikenna@` exists with admin claim     | Manually created in Firebase console  |
+
+Same persona email everywhere; password differs by environment because Firebase enforces a 6-char minimum that the demo provider doesn't. The DemoPlanToggle (`lib/auth/tier-override.ts`) is provider-agnostic — it overlays entitlements via localStorage on top of the authenticated user, so a UAT user can flip between FOMO ("show me everything in the catalogue") and scoped ("show me only what my plan buys") without re-login.
+
+---
+
+## API token-verification seam (UAT, future)
+
+Today UAT runs `NEXT_PUBLIC_MOCK_API=true` so the UI never calls `user-management-api` (or any other API). Form submissions, drafts, magic tokens go straight to `odum-staging` Firestore via Firebase Admin SDK — no API in the loop.
+
+When UAT eventually flips to `MOCK_API=false`, this seam appears: the UI gets a Firebase ID token signed by `odum-staging`, calls `user-management-api` (running on `central-element-323112`) with that token, and the API's auth middleware rejects it because the `aud` (audience) claim is `odum-staging`, not `central-element-323112`.
+
+Two ways to fix when that day comes:
+
+- **(a) Update `user-management-api` to accept tokens from both projects.** Small code change in the auth middleware — verify the token's audience against `['central-element-323112', 'odum-staging']` instead of just one. The API service account already has `firebaseauth.admin` on `odum-staging` (granted as part of the cross-project IAM setup) so token verification will work without further IAM changes.
+- **(b) Deploy a parallel `user-management-api` instance on `odum-staging`.** Heavier — duplicates the whole pipeline, requires its own secrets, separate Cloud Run service, separate database.
+
+(a) is much smaller and is the recommended path. **No need to deploy `user-management-api` to `odum-staging`.**
+
+Same pattern applies to any other API the UI ends up calling on UAT: dual-verify project IDs, don't duplicate the service.
 
 ---
 
