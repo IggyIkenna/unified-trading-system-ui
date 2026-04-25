@@ -80,7 +80,8 @@ export const ALL_INSTRUMENTS: Instrument[] = snapshot.instruments;
 // ---------------------------------------------------------------------------
 
 const _byVenue = new Map<string, Instrument[]>();
-const _byCategory = new Map<string, Instrument[]>();
+/** Grouped by snapshot `category` (CeFi/DeFi/TradFi/sports axis). */
+const _byAssetGroup = new Map<string, Instrument[]>();
 const _byType = new Map<string, Instrument[]>();
 
 for (const inst of ALL_INSTRUMENTS) {
@@ -92,12 +93,12 @@ for (const inst of ALL_INSTRUMENTS) {
     _byVenue.set(inst.venue, [inst]);
   }
 
-  // By category
-  const catList = _byCategory.get(inst.category);
-  if (catList) {
-    catList.push(inst);
+  // By asset group (snapshot field `category`)
+  const agList = _byAssetGroup.get(inst.category);
+  if (agList) {
+    agList.push(inst);
   } else {
-    _byCategory.set(inst.category, [inst]);
+    _byAssetGroup.set(inst.category, [inst]);
   }
 
   // By instrument type
@@ -118,9 +119,9 @@ export function getInstrumentsByVenue(venue: string): Instrument[] {
   return _byVenue.get(venue) ?? [];
 }
 
-/** Get all instruments for a category (e.g., "cefi", "defi", "tradfi", "sports"). */
-export function getInstrumentsByCategory(category: string): Instrument[] {
-  return _byCategory.get(category) ?? [];
+/** Get all instruments for an asset group (e.g., "cefi", "defi", "tradfi", "sports"). */
+export function getInstrumentsByAssetGroup(assetGroup: string): Instrument[] {
+  return _byAssetGroup.get(assetGroup) ?? [];
 }
 
 /** Get all instruments of a given type (e.g., "spot_pair", "perp", "lending_market", "option"). */
@@ -133,9 +134,9 @@ export function getVenuesWithInstruments(): string[] {
   return Array.from(_byVenue.keys()).sort();
 }
 
-/** Get all categories that have instruments. */
-export function getCategoriesWithInstruments(): string[] {
-  return Array.from(_byCategory.keys()).sort();
+/** Get all asset groups (snapshot `category` values) that have instruments. */
+export function getAssetGroupsWithInstruments(): string[] {
+  return Array.from(_byAssetGroup.keys()).sort();
 }
 
 /** Get all instrument types present in the snapshot. */
@@ -143,13 +144,13 @@ export function getInstrumentTypes(): string[] {
   return Array.from(_byType.keys()).sort();
 }
 
-/** Get sports fixtures (instruments with category "sports"). */
+/** Get sports fixtures (instruments with asset group "sports" on the snapshot). */
 export function getSportsFixtures(): Instrument[] {
-  return _byCategory.get("sports") ?? [];
+  return _byAssetGroup.get("sports") ?? [];
 }
 
-/** Get venues grouped by category. */
-export function getVenuesByCategory(): Record<string, string[]> {
+/** Get venues grouped by asset group (snapshot `category` field). */
+export function getVenuesGroupedByAssetGroup(): Record<string, string[]> {
   const result: Record<string, string[]> = {};
   for (const inst of ALL_INSTRUMENTS) {
     if (!result[inst.category]) {
@@ -159,18 +160,15 @@ export function getVenuesByCategory(): Record<string, string[]> {
       result[inst.category].push(inst.venue);
     }
   }
-  // Sort venue lists
-  for (const cat of Object.keys(result)) {
-    result[cat].sort();
+  for (const ag of Object.keys(result)) {
+    result[ag].sort();
   }
   return result;
 }
 
-/** Get instrument count per venue, optionally filtered by category. */
-export function getVenueInstrumentCounts(
-  category?: string,
-): Record<string, number> {
-  const source = category ? getInstrumentsByCategory(category) : ALL_INSTRUMENTS;
+/** Get instrument count per venue, optionally filtered by asset group. */
+export function getVenueInstrumentCounts(assetGroup?: string): Record<string, number> {
+  const source = assetGroup ? getInstrumentsByAssetGroup(assetGroup) : ALL_INSTRUMENTS;
   const counts: Record<string, number> = {};
   for (const inst of source) {
     counts[inst.venue] = (counts[inst.venue] ?? 0) + 1;
@@ -182,10 +180,7 @@ export function getVenueInstrumentCounts(
  * Search instruments by keyword (matches instrument_key, raw_symbol, base_asset, venue).
  * Returns at most `limit` results (default 100) for performance.
  */
-export function searchInstruments(
-  query: string,
-  limit = 100,
-): Instrument[] {
+export function searchInstruments(query: string, limit = 100): Instrument[] {
   const q = query.toUpperCase();
   const results: Instrument[] = [];
 

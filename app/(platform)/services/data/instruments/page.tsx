@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOCK_ALERTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/mocks/fixtures/data-service";
 import type { DataCategory, InstrumentEntry } from "@/lib/types/data-service";
-import { DATA_CATEGORY_LABELS, FOLDERS_BY_CATEGORY } from "@/lib/types/data-service";
+import { DATA_CATEGORY_LABELS, FOLDERS_BY_ASSET_GROUP } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { Bell, RefreshCw } from "lucide-react";
@@ -90,7 +90,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
 
   if (venueData) {
     const counts = MOCK_INSTRUMENT_COUNTS[venueData.venue];
-    const folders = FOLDERS_BY_CATEGORY[venueData.cat] ?? [];
+    const folders = FOLDERS_BY_ASSET_GROUP[venueData.cat] ?? [];
     return (
       <div className="p-4 space-y-3">
         <p className="text-sm font-semibold capitalize">{venueData.venue.replace(/_/g, " ")}</p>

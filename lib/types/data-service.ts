@@ -18,11 +18,11 @@ export interface DataOrg {
   monthlySpend: number; // USD cents
 }
 
-// ─── Sharding dimensions (match internal: category/venue/folder/data_type/date) ─
+// ─── Sharding dimensions (match internal: asset_group/venue/folder/data_type/date) ─
 
-export type DataCategory = "cefi" | "tradfi" | "defi" | "onchain_perps" | "prediction_market" | "sports";
+export type DataAssetGroup = "cefi" | "tradfi" | "defi" | "onchain_perps" | "prediction_market" | "sports";
 
-export const DATA_CATEGORY_LABELS: Record<DataCategory, string> = {
+export const DATA_ASSET_GROUP_LABELS: Record<DataAssetGroup, string> = {
   cefi: "Crypto CeFi",
   tradfi: "TradFi",
   defi: "DeFi",
@@ -32,12 +32,12 @@ export const DATA_CATEGORY_LABELS: Record<DataCategory, string> = {
 };
 
 /**
- * Maps each data category to the entitlement required to access it.
+ * Maps each data asset group to the entitlement required to access it.
  * Internal/admin users (entitlements: ["*"]) bypass this check entirely.
  * "data-basic" grants cefi only; "data-pro" grants cefi + tradfi + defi + onchain_perps.
  * sports and prediction_market require explicit future entitlements (currently internal-only).
  */
-export const CATEGORY_ENTITLEMENT_MAP: Record<DataCategory, "data-basic" | "data-pro" | "internal-only"> = {
+export const ASSET_GROUP_ENTITLEMENT_MAP: Record<DataAssetGroup, "data-basic" | "data-pro" | "internal-only"> = {
   cefi: "data-basic",
   tradfi: "data-pro",
   defi: "data-pro",
@@ -46,7 +46,7 @@ export const CATEGORY_ENTITLEMENT_MAP: Record<DataCategory, "data-basic" | "data
   sports: "internal-only",
 };
 
-export const VENUES_BY_CATEGORY: Record<DataCategory, string[]> = {
+export const VENUES_BY_ASSET_GROUP: Record<DataAssetGroup, string[]> = {
   cefi: ["binance", "bybit", "coinbase", "okx", "deribit", "upbit"],
   tradfi: ["databento", "tardis", "yahoo_finance", "fred", "ibkr", "ecb", "ofr", "openbb"],
   defi: [
@@ -84,7 +84,7 @@ export type DataFolder =
   | "game_events"
   | "fixtures";
 
-export const FOLDERS_BY_CATEGORY: Record<DataCategory, DataFolder[]> = {
+export const FOLDERS_BY_ASSET_GROUP: Record<DataAssetGroup, DataFolder[]> = {
   cefi: ["spot", "perpetuals", "options", "futures"],
   tradfi: ["equity", "futures", "options", "rates"],
   defi: ["pool_state", "lending", "swaps", "staking"],
@@ -151,7 +151,7 @@ export interface DataPlan {
   name: string;
   monthlyPrice: number;
   queryLimitGb: number;
-  categories: DataCategory[];
+  assetGroups: DataAssetGroup[];
   historyYears: number;
   features: string[];
 }
@@ -162,7 +162,7 @@ export const DATA_PLANS: DataPlan[] = [
     name: "Starter",
     monthlyPrice: 250,
     queryLimitGb: 100,
-    categories: ["cefi"],
+    assetGroups: ["cefi"],
     historyYears: 2,
     features: ["1 category", "OHLCV + trades", "API access", "Email support"],
   },
@@ -171,7 +171,7 @@ export const DATA_PLANS: DataPlan[] = [
     name: "Professional",
     monthlyPrice: 1499,
     queryLimitGb: 500,
-    categories: ["cefi", "tradfi"],
+    assetGroups: ["cefi", "tradfi"],
     historyYears: 4,
     features: ["2 categories", "All data types", "API + WebSocket", "Priority support"],
   },
@@ -180,7 +180,7 @@ export const DATA_PLANS: DataPlan[] = [
     name: "Institutional",
     monthlyPrice: 3999,
     queryLimitGb: 2000,
-    categories: ["cefi", "tradfi", "defi", "onchain_perps"],
+    assetGroups: ["cefi", "tradfi", "defi", "onchain_perps"],
     historyYears: 6,
     features: ["4 categories", "All data types", "Egress included 500GB/mo", "Dedicated support"],
   },
@@ -189,7 +189,7 @@ export const DATA_PLANS: DataPlan[] = [
     name: "Enterprise",
     monthlyPrice: 0, // custom
     queryLimitGb: -1, // unlimited
-    categories: ["cefi", "tradfi", "defi", "onchain_perps", "prediction_market", "sports"],
+    assetGroups: ["cefi", "tradfi", "defi", "onchain_perps", "prediction_market", "sports"],
     historyYears: 6,
     features: ["All categories", "Custom instruments", "Unlimited egress", "SLA + white-glove"],
   },
@@ -200,7 +200,7 @@ export const DATA_PLANS: DataPlan[] = [
 export interface InstrumentEntry {
   instrumentKey: string; // "{venue}:{folder}:{symbol}"
   venue: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   folder: DataFolder;
   symbol: string;
   baseCurrency?: string;
@@ -238,7 +238,7 @@ export interface DataSubscription {
   orgId: string;
   label: string;
   shardFilters: {
-    categories: DataCategory[];
+    assetGroups: DataAssetGroup[];
     venues: string[];
     folders: DataFolder[];
     dataTypes: DataType[];
@@ -261,7 +261,7 @@ export interface DataQueryLog {
   id: string;
   orgId: string;
   instrumentKey: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   venue: string;
   folder: DataFolder;
   dataType: DataType;
@@ -279,7 +279,7 @@ export interface DataQueryLog {
 // ─── Shard-level availability response ───────────────────────────────────────
 
 export interface ShardAvailability {
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   venue: string;
   folder: DataFolder;
   dataType: DataType;
@@ -309,7 +309,7 @@ export type ETLStatus = "healthy" | "degraded" | "failed" | "pending" | "disable
 
 export interface ETLPipelineConfig {
   id: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   venue: string;
   folder: DataFolder;
   dataTypes: DataType[];
@@ -353,7 +353,7 @@ export interface ETLAlert {
 
 export interface InstrumentCoverage {
   venue: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   folder: DataFolder;
   totalInstruments: number;
   activeInstruments: number;
@@ -371,7 +371,7 @@ export interface InstrumentCoverage {
 
 export interface VenueCoverage {
   venue: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   label: string;
   dataSource: "exchange_api" | "vendor" | "scraper" | "onchain";
   status: "active" | "maintenance" | "deprecated";
@@ -389,7 +389,7 @@ export interface VenueCoverage {
 
 export interface DataGap {
   id: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   venue: string;
   folder: DataFolder;
   dataType: DataType;
@@ -417,8 +417,8 @@ export interface PipelineStageSummary {
   failedShards: number;
   completionPct: number;
   lastUpdated: string;
-  byCategory: {
-    category: DataCategory;
+  byAssetGroup: {
+    assetGroup: DataAssetGroup;
     totalShards: number;
     completedShards: number;
     completionPct: number;
@@ -434,7 +434,7 @@ export interface JobInfo {
   id: string;
   type: JobType;
   status: JobStatus;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   venue: string;
   dateRange: { start: string; end: string };
   shardsTotal: number;
@@ -452,7 +452,7 @@ export interface JobInfo {
 
 export interface JobHistoryEntry {
   jobType: JobType;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   venue: string;
   avgDurationMs: number;
   p50DurationMs: number;
@@ -481,7 +481,7 @@ export interface AlertItem {
   timestamp: string;
   read: boolean;
   venue?: string;
-  category?: DataCategory;
+  assetGroup?: DataAssetGroup;
   actionHref?: string;
 }
 
@@ -609,7 +609,7 @@ export interface CalendarHoliday {
 
 export interface DeployRequest {
   stage: PipelineStage;
-  categories: DataCategory[];
+  assetGroups: DataAssetGroup[];
   venues: string[];
   dateRange: { start: string; end: string };
   workerCount: number;
@@ -628,7 +628,7 @@ export interface CoverageCell {
 
 export interface CoverageRow {
   venue: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   date: string;
   instruments: CoverageCell;
   rawData: CoverageCell;
@@ -643,7 +643,7 @@ export type Timeframe = "1m" | "5m" | "15m" | "1h" | "4h" | "1d";
 export interface TimeframeStatus {
   timeframe: Timeframe;
   venue: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   completionPct: number;
   totalDays: number;
   completedDays: number;

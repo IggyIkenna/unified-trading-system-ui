@@ -1,7 +1,7 @@
-import { useFilterStore } from "@/lib/stores/filter-store";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { useUIPrefsStore } from "@/lib/stores/ui-prefs-store";
+import { useFilterStore } from "@/lib/stores/filter-store";
 import { usePromoteLifecycleStore } from "@/lib/stores/promote-lifecycle-store";
+import { useUIPrefsStore } from "@/lib/stores/ui-prefs-store";
 import { act } from "@testing-library/react";
 
 // Zustand stores work outside React in tests since they're just JS objects
@@ -12,19 +12,19 @@ describe("filter-store", () => {
 
   it("starts with null values", () => {
     const state = useFilterStore.getState();
-    expect(state.category).toBeNull();
+    expect(state.assetGroup).toBeNull();
     expect(state.venue).toBeNull();
     expect(state.instrument).toBeNull();
   });
 
-  it("setCategory updates and clears downstream", () => {
+  it("setAssetGroup updates and clears downstream", () => {
     act(() => {
       useFilterStore.getState().setVenue("Binance");
       useFilterStore.getState().setInstrument("BTC/USDT");
-      useFilterStore.getState().setCategory("CEFI");
+      useFilterStore.getState().setAssetGroup("CEFI");
     });
     const state = useFilterStore.getState();
-    expect(state.category).toBe("CEFI");
+    expect(state.assetGroup).toBe("CEFI");
     expect(state.venue).toBeNull();
     expect(state.instrument).toBeNull();
   });
@@ -41,12 +41,12 @@ describe("filter-store", () => {
 
   it("reset clears all state", () => {
     act(() => {
-      useFilterStore.getState().setCategory("DEFI");
+      useFilterStore.getState().setAssetGroup("DEFI");
       useFilterStore.getState().setVenue("Uniswap");
       useFilterStore.getState().reset();
     });
     const state = useFilterStore.getState();
-    expect(state.category).toBeNull();
+    expect(state.assetGroup).toBeNull();
     expect(state.venue).toBeNull();
     expect(state.instrument).toBeNull();
   });

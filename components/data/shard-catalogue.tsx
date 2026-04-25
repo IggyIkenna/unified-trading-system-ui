@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ChevronRight, ChevronDown, Search, CheckCircle2, Lock, Plus, Database, Zap, Cloud } from "lucide-react";
-import { VENUES_BY_CATEGORY, DATA_CATEGORY_LABELS, FOLDERS_BY_CATEGORY } from "@/lib/types/data-service";
+import { VENUES_BY_ASSET_GROUP, DATA_CATEGORY_LABELS, FOLDERS_BY_ASSET_GROUP } from "@/lib/types/data-service";
 import type {
   DataCategory,
   DataFolder,
@@ -128,7 +128,7 @@ export function ShardCatalogue({
         .map((cat) => {
           const catEntries = filteredCatalogue.filter((e) => e.instrument.category === cat);
 
-          const allVenues = VENUES_BY_CATEGORY[cat];
+          const allVenues = VENUES_BY_ASSET_GROUP[cat];
           // Filter venues by search — only show venues matching the search term
           const venueList =
             search === ""
@@ -224,7 +224,7 @@ export function ShardCatalogue({
                                 </div>
                               )}
                               <div className="flex gap-1">
-                                {FOLDERS_BY_CATEGORY[cat].map((folder) => (
+                                {FOLDERS_BY_ASSET_GROUP[cat].map((folder) => (
                                   <Badge key={folder} variant="secondary" className="text-[10px] h-4 px-1">
                                     {folder}
                                   </Badge>

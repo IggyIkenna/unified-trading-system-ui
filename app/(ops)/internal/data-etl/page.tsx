@@ -50,7 +50,7 @@ import {
 } from "@/lib/mocks/fixtures/data-service";
 import {
   DATA_CATEGORY_LABELS,
-  VENUES_BY_CATEGORY,
+  VENUES_BY_ASSET_GROUP,
   type DataCategory,
   type ETLStatus,
   type ETLStage,
@@ -595,7 +595,7 @@ function InstrumentBrowser({
 
   const categories =
     selectedCategory === "all"
-      ? (Object.keys(VENUES_BY_CATEGORY) as DataCategory[]).filter((c) => c !== "prediction_market")
+      ? (Object.keys(VENUES_BY_ASSET_GROUP) as DataCategory[]).filter((c) => c !== "prediction_market")
       : [selectedCategory];
 
   return (
@@ -607,12 +607,12 @@ function InstrumentBrowser({
               <Badge variant="outline" className={CATEGORY_COLORS[cat]}>
                 {DATA_CATEGORY_LABELS[cat]}
               </Badge>
-              <span className="text-muted-foreground font-normal">{VENUES_BY_CATEGORY[cat].length} venues</span>
+              <span className="text-muted-foreground font-normal">{VENUES_BY_ASSET_GROUP[cat].length} venues</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
-              {VENUES_BY_CATEGORY[cat]
+              {VENUES_BY_ASSET_GROUP[cat]
                 .filter((v) => !searchQuery || v.toLowerCase().includes(searchQuery.toLowerCase()))
                 .map((venue) => {
                   const coverage = MOCK_VENUE_COVERAGE.find((vc) => vc.venue === venue);

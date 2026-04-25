@@ -9,11 +9,9 @@ import { WidgetScroll } from "@/components/shared/widget-scroll";
  * Read-only Features column links to the Build tab.
  */
 
-import * as React from "react";
-import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -22,18 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Download, ExternalLink, RefreshCw } from "lucide-react";
-import {
-  DATA_CATEGORY_LABELS,
-  type DataCategory,
-  type CoverageStatus,
-  type CoverageRow,
-} from "@/lib/types/data-service";
+import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import { MOCK_COVERAGE_ROWS } from "@/lib/mocks/fixtures/data-service";
-import { useScopedCategories } from "@/hooks/use-scoped-categories";
-import { Lock } from "lucide-react";
-import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
+import {
+  DATA_ASSET_GROUP_LABELS,
+  type CoverageRow,
+  type CoverageStatus,
+  type DataAssetGroup,
+} from "@/lib/types/data-service";
+import { cn } from "@/lib/utils";
 import { formatPercent } from "@/lib/utils/formatters";
+import { Download, ExternalLink, Lock, RefreshCw } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
 const STATUS_COLORS: Record<CoverageStatus, string> = {
   complete: "bg-emerald-500/80 text-emerald-900",
@@ -101,7 +100,7 @@ function exportToCsv(rows: CoverageRow[]) {
   ];
   const csvRows = rows.map((r) => [
     r.venue,
-    r.category,
+    r.assetGroup,
     r.date,
     r.instruments.completionPct ?? r.instruments.status,
     r.rawData.completionPct ?? r.rawData.status,
@@ -121,17 +120,17 @@ function exportToCsv(rows: CoverageRow[]) {
 export default function CoveragePage() {
   const [groupBy, setGroupBy] = React.useState<"venue" | "category">("venue");
   const [filterCategory, setFilterCategory] = React.useState<
-    DataCategory | "all"
+    DataAssetGroup | "all"
   >("all");
-  const { subscribed, locked } = useScopedCategories();
+  const { subscribed, locked } = useScopedAssetGroups();
 
   // Filter rows to only subscribed categories (backend would handle this in production)
   const scopedRows = MOCK_COVERAGE_ROWS.filter(
-    (row) => subscribed.length === 0 || subscribed.includes(row.category),
+    (row) => subscribed.length === 0 || subscribed.includes(row.assetGroup),
   );
 
   const filteredRows = scopedRows.filter(
-    (row) => filterCategory === "all" || row.category === filterCategory,
+    (row) => filterCategory === "all" || row.assetGroup === filterCategory,
   );
 
   const sortedRows = React.useMemo(() => {
@@ -139,8 +138,8 @@ export default function CoveragePage() {
     rows.sort((a, b) =>
       groupBy === "venue"
         ? a.venue.localeCompare(b.venue) || a.date.localeCompare(b.date)
-        : a.category.localeCompare(b.category) ||
-          a.venue.localeCompare(b.venue),
+        : a.assetGroup.localeCompare(b.assetGroup) ||
+        a.venue.localeCompare(b.venue),
     );
     return rows;
   }, [filteredRows, groupBy]);
@@ -148,7 +147,7 @@ export default function CoveragePage() {
   const categories =
     subscribed.length > 0
       ? subscribed
-      : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
+      : (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]);
 
   // Summary stats
   const totalCells = filteredRows.length;
@@ -161,122 +160,122 @@ export default function CoveragePage() {
 
   return (
     <div className="p-6 space-y-6 platform-page-width">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <PageHeader
-        title="Coverage"
-        description="Cross-stage completeness — Instruments → Raw → Processing →
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <PageHeader
+          title="Coverage"
+          description="Cross-stage completeness — Instruments → Raw → Processing →
               Features"
-      />
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => exportToCsv(filteredRows)}
-            >
-              <Download className="size-4 mr-2" />
-              Export CSV
-            </Button>
-            <Button variant="outline" size="sm">
-              <RefreshCw className="size-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
+        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportToCsv(filteredRows)}
+          >
+            <Download className="size-4 mr-2" />
+            Export CSV
+          </Button>
+          <Button variant="outline" size="sm">
+            <RefreshCw className="size-4 mr-2" />
+            Refresh
+          </Button>
         </div>
+      </div>
 
-        {/* KPIs */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-foreground">
-                {totalCells}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Venue-date combinations
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div className="text-2xl font-bold font-mono text-emerald-400">
-                {completeCells}
-              </div>
-              <div className="text-xs text-muted-foreground">Fully covered</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-4">
-              <div
-                className={cn(
-                  "text-2xl font-bold font-mono",
-                  missingCells > 0 ? "text-red-400" : "text-muted-foreground",
-                )}
-              >
-                {missingCells}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Missing raw data
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Controls */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Group by:</span>
-            <Select
-              value={groupBy}
-              onValueChange={(v) => setGroupBy(v as "venue" | "category")}
-            >
-              <SelectTrigger className="h-8 w-32 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="venue">Venue</SelectItem>
-                <SelectItem value="category">Category</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">Category:</span>
-            <Select
-              value={filterCategory}
-              onValueChange={(v) =>
-                setFilterCategory(v as DataCategory | "all")
-              }
-            >
-              <SelectTrigger className="h-8 w-40 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {DATA_CATEGORY_LABELS[cat]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div className="flex items-center gap-4 text-[10px] text-muted-foreground flex-wrap">
-          {(Object.entries(STATUS_LABELS) as [CoverageStatus, string][]).map(
-            ([status, label]) => (
-              <span key={status} className="flex items-center gap-1.5">
-                <span className={cn("size-3 rounded", STATUS_COLORS[status])} />
-                {label}
-              </span>
-            ),
-          )}
-        </div>
-
-        {/* Coverage Matrix Table */}
+      {/* KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="pt-4 px-0">
-            <WidgetScroll axes="horizontal" scrollbarSize="thin">
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold font-mono text-foreground">
+              {totalCells}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Venue-date combinations
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div className="text-2xl font-bold font-mono text-emerald-400">
+              {completeCells}
+            </div>
+            <div className="text-xs text-muted-foreground">Fully covered</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-4">
+            <div
+              className={cn(
+                "text-2xl font-bold font-mono",
+                missingCells > 0 ? "text-red-400" : "text-muted-foreground",
+              )}
+            >
+              {missingCells}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Missing raw data
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Controls */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Group by:</span>
+          <Select
+            value={groupBy}
+            onValueChange={(v) => setGroupBy(v as "venue" | "category")}
+          >
+            <SelectTrigger className="h-8 w-32 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="venue">Venue</SelectItem>
+              <SelectItem value="category">Category</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Category:</span>
+          <Select
+            value={filterCategory}
+            onValueChange={(v) =>
+              setFilterCategory(v as DataAssetGroup | "all")
+            }
+          >
+            <SelectTrigger className="h-8 w-40 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {DATA_ASSET_GROUP_LABELS[cat]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-[10px] text-muted-foreground flex-wrap">
+        {(Object.entries(STATUS_LABELS) as [CoverageStatus, string][]).map(
+          ([status, label]) => (
+            <span key={status} className="flex items-center gap-1.5">
+              <span className={cn("size-3 rounded", STATUS_COLORS[status])} />
+              {label}
+            </span>
+          ),
+        )}
+      </div>
+
+      {/* Coverage Matrix Table */}
+      <Card>
+        <CardContent className="pt-4 px-0">
+          <WidgetScroll axes="horizontal" scrollbarSize="thin">
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-border">
@@ -318,10 +317,10 @@ export default function CoveragePage() {
                         variant="outline"
                         className={cn(
                           "text-[10px]",
-                          CATEGORY_COLORS[row.category],
+                          CATEGORY_COLORS[row.assetGroup],
                         )}
                       >
-                        {DATA_CATEGORY_LABELS[row.category]}
+                        {DATA_ASSET_GROUP_LABELS[row.assetGroup]}
                       </Badge>
                     </td>
                     <td className="px-4 py-1.5 font-mono text-muted-foreground">
@@ -357,45 +356,45 @@ export default function CoveragePage() {
                 ))}
               </tbody>
             </table>
-            </WidgetScroll>
-          </CardContent>
-        </Card>
+          </WidgetScroll>
+        </CardContent>
+      </Card>
 
-        {/* Build Tab note */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <ExternalLink className="size-3.5" />
-          Features column is read-only here.
-          <Link
-            href="/services/research/features"
-            className="text-sky-400 hover:underline"
-          >
-            Go to Build → Features
-          </Link>
-          to manage feature calculation.
-        </div>
+      {/* Build Tab note */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <ExternalLink className="size-3.5" />
+        Features column is read-only here.
+        <Link
+          href="/services/research/features"
+          className="text-sky-400 hover:underline"
+        >
+          Go to Build → Features
+        </Link>
+        to manage feature calculation.
+      </div>
 
-        {/* Locked categories notice */}
-        {locked.length > 0 && (
-          <div className="p-3 rounded-lg border border-border/40 bg-muted/10">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-              <Lock className="size-3.5" />
-              <span className="font-medium">Not in your subscription:</span>
-              {locked.map((cat) => (
-                <Badge
-                  key={cat}
-                  variant="outline"
-                  className="text-[10px] opacity-60"
-                >
-                  {DATA_CATEGORY_LABELS[cat]}
-                </Badge>
-              ))}
-            </div>
-            <p className="text-[11px] text-muted-foreground/70">
-              Upgrade your plan to see coverage data for additional asset
-              classes.
-            </p>
+      {/* Locked categories notice */}
+      {locked.length > 0 && (
+        <div className="p-3 rounded-lg border border-border/40 bg-muted/10">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+            <Lock className="size-3.5" />
+            <span className="font-medium">Not in your subscription:</span>
+            {locked.map((cat) => (
+              <Badge
+                key={cat}
+                variant="outline"
+                className="text-[10px] opacity-60"
+              >
+                {DATA_ASSET_GROUP_LABELS[cat]}
+              </Badge>
+            ))}
           </div>
-        )}
+          <p className="text-[11px] text-muted-foreground/70">
+            Upgrade your plan to see coverage data for additional asset
+            classes.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

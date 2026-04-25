@@ -13,17 +13,65 @@
 // ---------------------------------------------------------------------------
 
 export {
-  ALERT_TYPES, asset_groupES, BET_SIDES, BET_STATUSES, BOOK_TYPES, CLOB_VENUES, CLOUD_PROVIDERS,
+  ALERT_TYPES,
+  asset_groupES,
+  BET_SIDES,
+  BET_STATUSES,
+  BOOK_TYPES,
+  CLOB_VENUES,
+  CLOUD_PROVIDERS,
   COMPUTE_TYPES,
-  DATA_MODES, DATA_TYPES, DEPLOYMENT_STATUSES, DEX_VENUES, DURATION_BUCKETS,
-  EMERGENCY_EXIT_TYPES, ENDPOINT_REGISTRY, ERROR_CATEGORIES, ERROR_RECOVERY_STRATEGIES, ERROR_SEVERITIES, EXECUTION_MODES, EXECUTION_STATUSES, FACTOR_TYPES, INSTRUCTION_TYPES, INSTRUMENT_TYPES_BY_VENUE, INTERNAL_PUBSUB_TOPICS, LIFECYCLE_EVENT_TYPES,
-  LOG_LEVELS, MARGIN_TYPES, MARKET_STATES, MATCH_PERIODS, MODEL_TYPES, ODDS_FORMATS,
-  ODDS_TYPES, ORDER_SIDES, ORDER_STATUSES, ORDER_TYPES, PERMISSIONS, PHASE_MODES, POSITION_SIDES, REGIME_STATES, RISK_AGGREGATION_LEVELS, RISK_CATEGORIES,
-  RISK_STATUSES, RISK_TYPES, RUNTIME_MODES, SPORTS, SPORTS_VENUES, STRESS_SCENARIO_TYPES, TARGET_TYPES, TESTING_STAGES, TIME_IN_FORCE, URGENCY_LEVELS, VAR_METHODS, VENUE_CATEGORY_MAP, ZERO_ALPHA_VENUES
+  DATA_MODES,
+  DATA_TYPES,
+  DEPLOYMENT_STATUSES,
+  DEX_VENUES,
+  DURATION_BUCKETS,
+  EMERGENCY_EXIT_TYPES,
+  ENDPOINT_REGISTRY,
+  ERROR_CATEGORIES,
+  ERROR_RECOVERY_STRATEGIES,
+  ERROR_SEVERITIES,
+  EXECUTION_MODES,
+  EXECUTION_STATUSES,
+  FACTOR_TYPES,
+  INSTRUCTION_TYPES,
+  INSTRUMENT_TYPES_BY_VENUE,
+  INTERNAL_PUBSUB_TOPICS,
+  LIFECYCLE_EVENT_TYPES,
+  LOG_LEVELS,
+  MARGIN_TYPES,
+  MARKET_STATES,
+  MATCH_PERIODS,
+  MODEL_TYPES,
+  ODDS_FORMATS,
+  ODDS_TYPES,
+  ORDER_SIDES,
+  ORDER_STATUSES,
+  ORDER_TYPES,
+  PERMISSIONS,
+  PHASE_MODES,
+  POSITION_SIDES,
+  REGIME_STATES,
+  RISK_AGGREGATION_LEVELS,
+  RISK_CATEGORIES,
+  RISK_STATUSES,
+  RISK_TYPES,
+  RUNTIME_MODES,
+  SPORTS,
+  SPORTS_VENUES,
+  STRESS_SCENARIO_TYPES,
+  TARGET_TYPES,
+  TESTING_STAGES,
+  TIME_IN_FORCE,
+  URGENCY_LEVELS,
+  VAR_METHODS,
+  VENUE_CATEGORY_MAP,
+  ZERO_ALPHA_VENUES,
 } from "@/lib/registry/generated";
 
 export {
-  UAC_INSTRUMENT_TYPES as INSTRUMENT_TYPES, UAC_OPERATION_TYPES as OPERATION_TYPES
+  UAC_INSTRUMENT_TYPES as INSTRUMENT_TYPES,
+  UAC_OPERATION_TYPES as OPERATION_TYPES,
 } from "@/lib/registry/generated";
 
 // ---------------------------------------------------------------------------
@@ -44,30 +92,11 @@ import {
 } from "@/lib/registry/generated";
 
 export type OrderSide = "buy" | "sell";
-export type OrderType =
-  | "market"
-  | "limit"
-  | "stop"
-  | "stop_limit"
-  | "trailing_stop"
-  | "twap"
-  | "vwap";
+export type OrderType = "market" | "limit" | "stop" | "stop_limit" | "trailing_stop" | "twap" | "vwap";
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 export type TimeInForce = "GTC" | "IOC" | "FOK" | "GTD" | "POST_ONLY";
-export type ExecutionStatus =
-  | "pending"
-  | "submitted"
-  | "partial"
-  | "completed"
-  | "failed"
-  | "cancelled"
-  | "timeout";
-export type ExecutionMode =
-  | "AGGRESSIVE"
-  | "PASSIVE"
-  | "NEUTRAL"
-  | "TWAP"
-  | "VWAP";
+export type ExecutionStatus = "pending" | "submitted" | "partial" | "completed" | "failed" | "cancelled" | "timeout";
+export type ExecutionMode = "AGGRESSIVE" | "PASSIVE" | "NEUTRAL" | "TWAP" | "VWAP";
 export type OperationType =
   | "BUY"
   | "SELL"
@@ -94,30 +123,13 @@ export type InstructionType =
   | "REMOVE_LIQUIDITY"
   | "COLLECT_FEES";
 export type InstrumentType = string;
-export type MarketState =
-  | "normal"
-  | "halted"
-  | "auction"
-  | "pre_market"
-  | "post_market"
-  | "closed";
+export type MarketState = "normal" | "halted" | "auction" | "pre_market" | "post_market" | "closed";
 export type PositionSide = "LONG" | "SHORT" | "FLAT";
 export type MarginType = "linear" | "inverse" | "quanto";
 export type RiskType = string;
-export type RiskCategory =
-  | "first_order"
-  | "second_order"
-  | "structural"
-  | "operational"
-  | "domain_specific";
+export type RiskCategory = "first_order" | "second_order" | "structural" | "operational" | "domain_specific";
 export type RiskStatus = (typeof RISK_STATUSES)[number];
-export type RiskAggregationLevel =
-  | "company"
-  | "client"
-  | "account"
-  | "strategy"
-  | "underlying"
-  | "instrument";
+export type RiskAggregationLevel = "company" | "client" | "account" | "strategy" | "underlying" | "instrument";
 export type AlertType = string;
 export type Sport = string;
 export type OddsFormat = "decimal" | "american" | "fractional";
@@ -134,22 +146,12 @@ export type CloudProvider = string;
 export type ComputeType = string;
 export type DataMode = "mock" | "real";
 export type RuntimeMode = "live" | "batch";
-export type TestingStage =
-  | "MOCK"
-  | "HISTORICAL"
-  | "LIVE_MOCK"
-  | "LIVE_TESTNET"
-  | "STAGING"
-  | "LIVE_REAL";
+export type TestingStage = "MOCK" | "HISTORICAL" | "LIVE_MOCK" | "LIVE_TESTNET" | "STAGING" | "LIVE_REAL";
 export type PhaseMode = "phase1" | "phase2" | "phase3";
 export type DeploymentStatus = (typeof DEPLOYMENT_STATUSES)[number];
 export type DataType = string;
 export type BookType = string;
-export type AccessMode =
-  | "rest_polling"
-  | "streaming_websocket"
-  | "batch_file"
-  | "graphql";
+export type AccessMode = "rest_polling" | "streaming_websocket" | "batch_file" | "graphql";
 export type ErrorCategory = string;
 export type ErrorSeverity = "low" | "medium" | "high" | "critical";
 export type ErrorRecoveryStrategy = string;
@@ -176,13 +178,7 @@ export const VENUE_CATEGORIES: Record<string, string> = {
   prediction: "Prediction",
 };
 
-export type VenueCategory =
-  | "cefi"
-  | "tradfi"
-  | "defi"
-  | "onchain_perps"
-  | "sports"
-  | "prediction";
+export type VenueAssetGroup = "cefi" | "tradfi" | "defi" | "onchain_perps" | "sports" | "prediction";
 
 // ---------------------------------------------------------------------------
 // Venue access modes
@@ -201,12 +197,7 @@ export function getVenueAccessMode(venue: string): string {
   return VENUE_ACCESS_MODES[venue] || "rest_polling";
 }
 
-export const ACCESS_MODES = [
-  "rest_polling",
-  "streaming_websocket",
-  "batch_file",
-  "graphql",
-] as const;
+export const ACCESS_MODES = ["rest_polling", "streaming_websocket", "batch_file", "graphql"] as const;
 
 // ---------------------------------------------------------------------------
 // Asset class labels
@@ -246,31 +237,22 @@ export const SERVICE_PORTS: Record<string, number> = {
 // Helper functions
 // ---------------------------------------------------------------------------
 
-export function getVenuesByCategory(category: VenueCategory): string[] {
+export function getVenuesByAssetGroup(assetGroup: VenueAssetGroup): string[] {
   return Object.entries(VENUE_CATEGORY_MAP)
-    .filter(([, cat]) => cat === category)
+    .filter(([, ag]) => ag === assetGroup)
     .map(([venue]) => venue);
 }
 
-export function getVenueCategory(venue: string): VenueCategory | undefined {
-  return (VENUE_CATEGORY_MAP as Record<string, string>)[venue] as
-    | VenueCategory
-    | undefined;
+export function getVenueAssetGroup(venue: string): VenueAssetGroup | undefined {
+  return (VENUE_CATEGORY_MAP as Record<string, string>)[venue] as VenueAssetGroup | undefined;
 }
 
 export function getInstrumentTypesForVenue(venue: string): string[] {
-  return (
-    INSTRUMENT_TYPES_BY_VENUE[
-    venue as keyof typeof INSTRUMENT_TYPES_BY_VENUE
-    ] || []
-  );
+  return INSTRUMENT_TYPES_BY_VENUE[venue as keyof typeof INSTRUMENT_TYPES_BY_VENUE] || [];
 }
 
 export function isExchangeVenue(venue: string): boolean {
-  return (
-    (CLOB_VENUES as readonly string[]).includes(venue) ||
-    (DEX_VENUES as readonly string[]).includes(venue)
-  );
+  return (CLOB_VENUES as readonly string[]).includes(venue) || (DEX_VENUES as readonly string[]).includes(venue);
 }
 
 export function isSportsVenue(venue: string): boolean {
@@ -357,8 +339,8 @@ export function getDeploymentStatusColor(status: string): string {
   }
 }
 
-export function getVenueCategoryColor(category: VenueCategory): string {
-  switch (category) {
+export function getVenueAssetGroupColor(assetGroup: VenueAssetGroup): string {
+  switch (assetGroup) {
     case "cefi":
       return "var(--surface-trading)";
     case "tradfi":
@@ -560,11 +542,7 @@ export const DATA_FLOWS: DataFlow[] = [
     service: "execution-service",
     dataSource: "pubsub",
     api: "execution-results-api",
-    ui: [
-      "execution-analytics-ui",
-      "trading-analytics-ui",
-      "live-health-monitor-ui",
-    ],
+    ui: ["execution-analytics-ui", "trading-analytics-ui", "live-health-monitor-ui"],
   },
   {
     id: "market-data",
@@ -710,13 +688,7 @@ export function getDataFlowsByMode(mode: "live" | "batch"): DataFlow[] {
 export interface Service {
   id?: string;
   name: string;
-  type:
-  | "api-service"
-  | "service"
-  | "batch-service"
-  | "ui"
-  | "library"
-  | "infrastructure";
+  type: "api-service" | "service" | "batch-service" | "ui" | "library" | "infrastructure";
   tier: number;
   domain: string;
   mode: "live" | "batch" | null;
@@ -940,11 +912,7 @@ export const SERVICES: Service[] = [
     mode: "live",
     capabilities: ["data_source", "event_bus", "cache"],
     status: "active",
-    servesUi: [
-      "trading-analytics-ui",
-      "live-health-monitor-ui",
-      "execution-analytics-ui",
-    ],
+    servesUi: ["trading-analytics-ui", "live-health-monitor-ui", "execution-analytics-ui"],
     coveragePct: 66,
   },
   {
@@ -1157,13 +1125,7 @@ export type ExecutionAlgorithm = (typeof EXECUTION_ALGORITHMS)[number]["id"];
 // Underlying assets (UI config)
 // ---------------------------------------------------------------------------
 
-export type UnderlyingType =
-  | "CRYPTO"
-  | "EQUITY"
-  | "COMMODITY"
-  | "FX"
-  | "SPORTS_LEAGUE"
-  | "PREDICTION_MARKET";
+export type UnderlyingType = "CRYPTO" | "EQUITY" | "COMMODITY" | "FX" | "SPORTS_LEAGUE" | "PREDICTION_MARKET";
 
 export interface Underlying {
   id: string;
@@ -1303,8 +1265,7 @@ export function getUnderlyingsByType(type: UnderlyingType): Underlying[] {
 
 export function formatCurrency(value: number, decimals = 0): string {
   const absValue = Math.abs(value);
-  if (absValue >= 1_000_000_000)
-    return `${(value / 1_000_000_000).toFixed(decimals)}B`;
+  if (absValue >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(decimals)}B`;
   if (absValue >= 1_000_000) return `${(value / 1_000_000).toFixed(decimals)}M`;
   if (absValue >= 1_000) return `${(value / 1_000).toFixed(decimals)}K`;
   return value.toFixed(decimals);

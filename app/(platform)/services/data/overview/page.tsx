@@ -14,12 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  useDataPipelineAlerts,
-  useDataPipelineJobs,
-  useDataPipelineStages,
-} from "@/hooks/api/use-data-pipeline";
-import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { useDataPipelineAlerts, useDataPipelineJobs, useDataPipelineStages } from "@/hooks/api/use-data-pipeline";
+import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import {
   DATA_CATEGORY_LABELS,
   type DataCategory,
@@ -235,7 +231,7 @@ export default function AcquireOverviewPage() {
   const { data: stages = [] } = useDataPipelineStages();
   const { data: jobs = [] } = useDataPipelineJobs();
   const { data: alerts = [] } = useDataPipelineAlerts();
-  const { subscribed, locked } = useScopedCategories();
+  const { subscribed, locked } = useScopedAssetGroups();
 
   // Use scoped categories if available; fall back to all categories for internal users
   const categories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);

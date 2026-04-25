@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 export interface FilterState {
-  /** Selected market category (CEFI, TRADFI, DEFI, etc.) */
-  category: string | null;
+  /** Selected venue asset group (CEFI, TRADFI, DEFI, etc.) */
+  assetGroup: string | null;
   /** Selected venue (binance, deribit, etc.) */
   venue: string | null;
   /** Selected instrument key */
@@ -10,7 +10,7 @@ export interface FilterState {
   /** Date range filter */
   dateRange: { start: string; end: string } | null;
 
-  setCategory: (category: string | null) => void;
+  setAssetGroup: (assetGroup: string | null) => void;
   setVenue: (venue: string | null) => void;
   setInstrument: (instrument: string | null) => void;
   setDateRange: (range: { start: string; end: string } | null) => void;
@@ -18,7 +18,7 @@ export interface FilterState {
 }
 
 const initialState = {
-  category: null,
+  assetGroup: null,
   venue: null,
   instrument: null,
   dateRange: null,
@@ -26,7 +26,7 @@ const initialState = {
 
 export const useFilterStore = create<FilterState>((set) => ({
   ...initialState,
-  setCategory: (category) => set({ category, venue: null, instrument: null }),
+  setAssetGroup: (assetGroup) => set({ assetGroup, venue: null, instrument: null }),
   setVenue: (venue) => set({ venue, instrument: null }),
   setInstrument: (instrument) => set({ instrument }),
   setDateRange: (dateRange) => set({ dateRange }),

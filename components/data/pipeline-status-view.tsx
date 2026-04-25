@@ -14,11 +14,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import { MOCK_SHARD_AVAILABILITY } from "@/lib/mocks/fixtures/data-service";
 import {
   DATA_CATEGORY_LABELS,
-  VENUES_BY_CATEGORY,
+  VENUES_BY_ASSET_GROUP,
   type DataCategory,
   type JobHistoryEntry,
   type JobInfo,
@@ -26,9 +26,9 @@ import {
   type TimeframeStatus,
 } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
+import { formatPercent } from "@/lib/utils/formatters";
 import { ChevronDown, ChevronRight, Lock, Play, RefreshCw, Users } from "lucide-react";
 import * as React from "react";
-import { formatPercent } from "@/lib/utils/formatters";
 
 export interface PipelineStageConfig {
   stage: "raw" | "processing" | "features" | "training";
@@ -226,7 +226,7 @@ interface PipelineStatusViewProps {
 
 export function PipelineStatusView({ config, stage, jobs, jobHistory, className }: PipelineStatusViewProps) {
   const [selectedCategory, setSelectedCategory] = React.useState<DataCategory | "all">("all");
-  const { subscribed, locked } = useScopedCategories();
+  const { subscribed, locked } = useScopedAssetGroups();
 
   const activeJobs = jobs.filter((j) => j.status === "running" || j.status === "queued");
 
@@ -345,7 +345,7 @@ export function PipelineStatusView({ config, stage, jobs, jobHistory, className 
           {visibleCategories
             .filter((cat) => selectedCategory === "all" || cat === selectedCategory)
             .map((cat) => {
-              const venues = VENUES_BY_CATEGORY[cat];
+              const venues = VENUES_BY_ASSET_GROUP[cat];
               return venues.map((venue) => {
                 const job = jobs.find((j) => j.venue === venue && j.category === cat);
                 const history = jobHistory.find((h) => h.venue === venue && h.category === cat);

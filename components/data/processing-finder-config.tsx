@@ -18,8 +18,8 @@ import type {
 } from "@/components/shared/finder/types";
 import {
   DATA_CATEGORY_LABELS,
-  VENUES_BY_CATEGORY,
-  FOLDERS_BY_CATEGORY,
+  VENUES_BY_ASSET_GROUP,
+  FOLDERS_BY_ASSET_GROUP,
   type DataCategory,
   type DataFolder,
   type InstrumentEntry,
@@ -138,7 +138,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
         completionPct: number;
       };
       if (!cat) return [];
-      return (VENUES_BY_CATEGORY[cat] ?? []).map((venue) => ({
+      return (VENUES_BY_ASSET_GROUP[cat] ?? []).map((venue) => ({
         id: venue,
         label: venue.replace(/_/g, " "),
         count: MOCK_INSTRUMENT_COUNTS[venue]?.total ?? 0,
@@ -157,7 +157,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
         cat: DataCategory;
       };
       if (!venue || !cat) return [];
-      return (FOLDERS_BY_CATEGORY[cat] ?? []).map((folder) => ({
+      return (FOLDERS_BY_ASSET_GROUP[cat] ?? []).map((folder) => ({
         id: folder,
         label: folder.replace(/_/g, " "),
         data: { folder, venue, cat },
@@ -314,7 +314,7 @@ export function getProcessingContextStats(selections: FinderSelections): FinderC
   }
 
   if (venueData) {
-    const folders = FOLDERS_BY_CATEGORY[venueData.cat] ?? [];
+    const folders = FOLDERS_BY_ASSET_GROUP[venueData.cat] ?? [];
     const avgPct = Math.round(
       ALL_TIMEFRAMES.reduce(
         (s, tf) =>
@@ -344,7 +344,7 @@ export function getProcessingContextStats(selections: FinderSelections): FinderC
         },
         {
           label: "venues",
-          value: (VENUES_BY_CATEGORY[catData.cat] ?? []).length,
+          value: (VENUES_BY_ASSET_GROUP[catData.cat] ?? []).length,
         },
       ],
       progressBar: {

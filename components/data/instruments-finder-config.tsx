@@ -4,7 +4,7 @@
  * FinderBrowser column configuration for /services/data/instruments
  *
  * Hierarchy: Category → Venue → Instrument
- * Source: VENUES_BY_CATEGORY, MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS
+ * Source: VENUES_BY_ASSET_GROUP, MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS
  */
 
 import { Badge } from "@/components/ui/badge";
@@ -18,8 +18,8 @@ import type {
 } from "@/components/shared/finder/types";
 import {
   DATA_CATEGORY_LABELS,
-  VENUES_BY_CATEGORY,
-  FOLDERS_BY_CATEGORY,
+  VENUES_BY_ASSET_GROUP,
+  FOLDERS_BY_ASSET_GROUP,
   type DataCategory,
   type DataFolder,
   type InstrumentEntry,
@@ -61,7 +61,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     minWidthPx: 168,
     getItems: (): FinderItem[] =>
       (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
-        const venues = VENUES_BY_CATEGORY[cat] ?? [];
+        const venues = VENUES_BY_ASSET_GROUP[cat] ?? [];
         const total = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0), 0);
         return {
           id: cat,
@@ -93,7 +93,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     getItems: (sel): FinderItem[] => {
       const cat = sel["category"]?.data as DataCategory | undefined;
       if (!cat) return [];
-      const venues = VENUES_BY_CATEGORY[cat] ?? [];
+      const venues = VENUES_BY_ASSET_GROUP[cat] ?? [];
       return venues.map((venue) => ({
         id: venue,
         label: venue.replace(/_/g, " "),
@@ -104,7 +104,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     renderLabel: (item) => {
       const { venue, cat } = item.data as { venue: string; cat: DataCategory };
       const counts = MOCK_INSTRUMENT_COUNTS[venue];
-      const folders = FOLDERS_BY_CATEGORY[cat] ?? [];
+      const folders = FOLDERS_BY_ASSET_GROUP[cat] ?? [];
       return (
         <div className="flex flex-col gap-0.5 flex-1 min-w-0">
           <span className={cn("font-medium capitalize break-words leading-snug text-left min-w-0", finderText.body)}>
@@ -136,7 +136,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
         cat: DataCategory;
       };
       if (!cat) return [];
-      const folders = FOLDERS_BY_CATEGORY[cat] ?? [];
+      const folders = FOLDERS_BY_ASSET_GROUP[cat] ?? [];
       return folders.map((folder) => {
         const instruments = MOCK_INSTRUMENTS.filter(
           (i) =>
@@ -237,7 +237,7 @@ export function getInstrumentsContextStats(selections: FinderSelections): Finder
   }
 
   if (cat) {
-    const venues = VENUES_BY_CATEGORY[cat] ?? [];
+    const venues = VENUES_BY_ASSET_GROUP[cat] ?? [];
     const total = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0), 0);
     const active = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.active ?? 0), 0);
     return {

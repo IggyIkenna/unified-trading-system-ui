@@ -7,15 +7,15 @@
 
 import { CATEGORY_COLORS } from "@/components/data/shard-catalogue";
 import { AlertRow } from "@/components/shared/alert-row";
+import { MetricCard } from "@/components/shared/metric-card";
 import { PageHeader } from "@/components/shared/page-header";
 import { WidgetScroll } from "@/components/shared/widget-scroll";
-import { MetricCard } from "@/components/shared/metric-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useScopedCategories } from "@/hooks/use-scoped-categories";
+import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import { MOCK_ALERTS, MOCK_ENHANCED_GAPS } from "@/lib/mocks/fixtures/data-service";
 import { DATA_CATEGORY_LABELS, type DataCategory, type DataGap } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
@@ -80,7 +80,7 @@ export default function GapsPage() {
   const [severityFilter, setSeverityFilter] = React.useState<string>("all");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
   const [categoryFilter, setCategoryFilter] = React.useState<DataCategory | "all">("all");
-  const { subscribed, locked } = useScopedCategories();
+  const { subscribed, locked } = useScopedAssetGroups();
 
   const categories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
 

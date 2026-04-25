@@ -18,8 +18,8 @@ import type {
 } from "@/components/shared/finder/types";
 import {
   DATA_CATEGORY_LABELS,
-  VENUES_BY_CATEGORY,
-  FOLDERS_BY_CATEGORY,
+  VENUES_BY_ASSET_GROUP,
+  FOLDERS_BY_ASSET_GROUP,
   type DataCategory,
   type DataFolder,
   type DataType,
@@ -159,7 +159,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
         completionPct: number;
       };
       if (!cat) return [];
-      const venues = VENUES_BY_CATEGORY[cat] ?? [];
+      const venues = VENUES_BY_ASSET_GROUP[cat] ?? [];
       return venues.map((venue) => {
         const counts = MOCK_INSTRUMENT_COUNTS[venue];
         return {
@@ -182,7 +182,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
         cat: DataCategory;
       };
       if (!venue || !cat) return [];
-      const folders = FOLDERS_BY_CATEGORY[cat] ?? [];
+      const folders = FOLDERS_BY_ASSET_GROUP[cat] ?? [];
       return folders.map((folder) => {
         const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder);
         return {
@@ -356,7 +356,7 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
   }
 
   if (venueData) {
-    const folders = FOLDERS_BY_CATEGORY[venueData.cat] ?? [];
+    const folders = FOLDERS_BY_ASSET_GROUP[venueData.cat] ?? [];
     const avgPct = Math.round(
       folders.reduce((s, f) => {
         const dts = getDataTypesForFolderVenue(venueData.venue, f, venueData.cat);
@@ -385,7 +385,7 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
         },
         {
           label: "venues",
-          value: (VENUES_BY_CATEGORY[catData.cat] ?? []).length,
+          value: (VENUES_BY_ASSET_GROUP[catData.cat] ?? []).length,
         },
       ],
       progressBar: {

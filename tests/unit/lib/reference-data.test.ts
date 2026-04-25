@@ -26,9 +26,9 @@ import {
   getServicesByType,
   getUnderlyingsByType,
   getVenueAccessMode,
-  getVenueCategory,
-  getVenueCategoryColor,
-  getVenuesByCategory,
+  getVenueAssetGroup,
+  getVenueAssetGroupColor,
+  getVenuesByAssetGroup,
   isExchangeVenue,
   isSportsVenue,
   isZeroAlphaVenue,
@@ -44,12 +44,7 @@ describe("reference-data — exported constants", () => {
   });
 
   it("ACCESS_MODES covers 4 modes", () => {
-    expect(ACCESS_MODES).toEqual([
-      "rest_polling",
-      "streaming_websocket",
-      "batch_file",
-      "graphql",
-    ]);
+    expect(ACCESS_MODES).toEqual(["rest_polling", "streaming_websocket", "batch_file", "graphql"]);
   });
 
   it("VENUE_ACCESS_MODES maps named venues", () => {
@@ -117,16 +112,16 @@ describe("getVenueAccessMode", () => {
   });
 });
 
-describe("getVenuesByCategory / getVenueCategory", () => {
-  it("getVenuesByCategory('sports') returns only sports venues", () => {
-    const sports = getVenuesByCategory("sports");
+describe("getVenuesByAssetGroup / getVenueAssetGroup", () => {
+  it("getVenuesByAssetGroup('sports') returns only sports venues", () => {
+    const sports = getVenuesByAssetGroup("sports");
     for (const v of sports) {
-      expect(getVenueCategory(v)).toBe("sports");
+      expect(getVenueAssetGroup(v)).toBe("sports");
     }
   });
 
-  it("getVenueCategory returns undefined for unknown venue", () => {
-    expect(getVenueCategory("__no-such-venue__")).toBeUndefined();
+  it("getVenueAssetGroup returns undefined for unknown venue", () => {
+    expect(getVenueAssetGroup("__no-such-venue__")).toBeUndefined();
   });
 });
 
@@ -192,12 +187,12 @@ describe("status color helpers", () => {
     expect(getDeploymentStatusColor("other")).toContain("muted-foreground");
   });
 
-  it("getVenueCategoryColor covers each branch", () => {
-    expect(getVenueCategoryColor("cefi")).toContain("surface-trading");
-    expect(getVenueCategoryColor("tradfi")).toContain("surface-markets");
-    expect(getVenueCategoryColor("defi")).toContain("surface-config");
-    expect(getVenueCategoryColor("sports")).toContain("surface-strategy");
-    expect(getVenueCategoryColor("onchain_perps")).toContain("muted-foreground");
+  it("getVenueAssetGroupColor covers each branch", () => {
+    expect(getVenueAssetGroupColor("cefi")).toContain("surface-trading");
+    expect(getVenueAssetGroupColor("tradfi")).toContain("surface-markets");
+    expect(getVenueAssetGroupColor("defi")).toContain("surface-config");
+    expect(getVenueAssetGroupColor("sports")).toContain("surface-strategy");
+    expect(getVenueAssetGroupColor("onchain_perps")).toContain("muted-foreground");
   });
 });
 

@@ -10,7 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
 import { AlertTriangle, CheckCircle2, ShieldCheck, ShieldX, TrendingDown, TrendingUp, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BOOK_ALGO_OPTIONS, BOOK_VENUES_BY_CATEGORY, type BookCategoryTab } from "@/lib/config/services/trading.config";
+import {
+  BOOK_ALGO_OPTIONS,
+  BOOK_VENUES_BY_ASSET_GROUP,
+  type BookCategoryTab,
+} from "@/lib/config/services/trading.config";
 import { DEFI_ALGO_TYPES, DEFI_INSTRUCTION_TYPES, SLIPPAGE_OPTIONS } from "@/lib/config/services/defi.config";
 import type { AlgoType, InstructionType } from "@/lib/types/defi";
 import type { WidgetComponentProps } from "@/components/widgets/widget-registry";
@@ -128,7 +132,7 @@ export function BookOrderEntryWidget(_props: WidgetComponentProps) {
                         <SelectValue placeholder="Select venue" />
                       </SelectTrigger>
                       <SelectContent>
-                        {(BOOK_VENUES_BY_CATEGORY[category] ?? []).map((v) => (
+                        {(BOOK_VENUES_BY_ASSET_GROUP[category] ?? []).map((v) => (
                           <SelectItem key={v} value={v}>
                             {v}
                           </SelectItem>
