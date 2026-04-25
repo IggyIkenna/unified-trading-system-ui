@@ -1,6 +1,7 @@
 # Exclude workspace context dirs — Python packages here cause buildpack to
 # mis-detect the project as Python instead of Node.js / Dockerfile-based.
-context/
+# Anchored to repo root so it does NOT match lib/context/ etc.
+/context/
 
 # Standard excludes
 .git/
