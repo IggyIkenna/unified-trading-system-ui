@@ -267,28 +267,60 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
             <TabsList className="h-8">
               <TabsTrigger
                 value="live"
-                className="gap-1 data-[state=active]:bg-[var(--status-live)]/10 data-[state=active]:text-[var(--status-live)]"
+                className="gap-1"
+                style={
+                  viewMode === "live"
+                    ? {
+                        backgroundColor: "color-mix(in oklab, var(--status-live) 15%, transparent)",
+                        color: "var(--status-live)",
+                      }
+                    : undefined
+                }
               >
                 <Radio className="size-3" />
                 Live
               </TabsTrigger>
               <TabsTrigger
                 value="batch"
-                className="gap-1 data-[state=active]:bg-primary/10 data-[state=active]:text-primary"
+                className="gap-1"
+                style={
+                  viewMode === "batch"
+                    ? {
+                        backgroundColor: "color-mix(in oklab, var(--primary) 15%, transparent)",
+                        color: "var(--primary)",
+                      }
+                    : undefined
+                }
               >
                 <Database className="size-3" />
                 Batch
               </TabsTrigger>
               <TabsTrigger
                 value="split"
-                className="gap-1 data-[state=active]:bg-[var(--chart-5)]/15 data-[state=active]:text-[var(--chart-5)]"
+                className="gap-1"
+                style={
+                  viewMode === "split"
+                    ? {
+                        backgroundColor: "color-mix(in oklab, var(--chart-5) 15%, transparent)",
+                        color: "var(--chart-5)",
+                      }
+                    : undefined
+                }
               >
                 <SplitSquareVertical className="size-3" />
                 Split
               </TabsTrigger>
               <TabsTrigger
                 value="delta"
-                className="gap-1 data-[state=active]:bg-[var(--pnl-negative)]/15 data-[state=active]:text-[var(--pnl-negative)]"
+                className="gap-1"
+                style={
+                  viewMode === "delta"
+                    ? {
+                        backgroundColor: "color-mix(in oklab, var(--pnl-negative) 15%, transparent)",
+                        color: "var(--pnl-negative)",
+                      }
+                    : undefined
+                }
               >
                 <Minus className="size-3" />
                 Delta
