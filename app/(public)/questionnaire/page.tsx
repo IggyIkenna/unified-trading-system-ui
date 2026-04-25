@@ -281,16 +281,108 @@ function QuestionnaireForm() {
     return QUESTIONNAIRE_SERVICE_FAMILIES.find((sf) => sf === raw) ?? null;
   }, [searchParams]);
   useEffect(() => {
-    if (urlServiceFamily && state.service_family === "") {
+    // Only seeded on initial mount when a ?service= URL param resolves to a
+    // valid service family — never re-seed on user edits since this effect
+    // depends only on urlServiceFamily.
+    if (urlServiceFamily) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- one-shot URL-param seeding on mount
       setState((s) => ({ ...s, service_family: urlServiceFamily }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlServiceFamily]);
 
   const regUmbrellaVisible = useMemo(() => isRegUmbrellaPath(state.service_family), [state.service_family]);
 
+  /**
+   * Required-field validation. The "Strategy preferences" section (axes 7-11)
+   * is intentionally optional and excluded. Reg-Umbrella branch is required
+   * only when service_family ∈ {RegUmbrella, combo}.
+   *
+   * Returns the data-testid of the first axis with a problem (so we can
+   * scroll to it) plus a human-readable message. Null when valid.
+   */
+  function validateRequired(): { testId: string; message: string } | null {
+    if (state.categories.size === 0) {
+      return { testId: "axis-categories", message: "Pick at least one asset-class category (Q1)." };
+    }
+    if (state.instrument_types.size === 0) {
+      return { testId: "axis-instrument-types", message: "Pick at least one instrument type (Q2)." };
+    }
+    if (state.venue_scope_mode === "explicit" && state.venue_scope_csv.trim() === "") {
+      return { testId: "axis-venue-scope", message: "List the venues you want, or switch to All venues (Q3)." };
+    }
+    if (state.strategy_style.size === 0) {
+      return { testId: "axis-strategy-style", message: "Pick at least one strategy style (Q4)." };
+    }
+    if (state.fund_structure.size === 0) {
+      return { testId: "axis-fund-structure", message: "Pick at least one fund structure (Q6)." };
+    }
+    if (isRegUmbrellaPath(state.service_family)) {
+      if (state.licence_region === null) {
+        return { testId: "axis-licence-region", message: "Pick a licence region (Reg Umbrella branch)." };
+      }
+      if (state.entity_jurisdiction.trim() === "") {
+        return { testId: "axis-entity-jurisdiction", message: "Enter the entity jurisdiction (Reg Umbrella branch)." };
+      }
+      if (state.supported_currencies.size === 0 && state.supported_currencies_other.trim() === "") {
+        return {
+          testId: "axis-supported-currencies",
+          message: "Pick at least one supported currency (Reg Umbrella branch).",
+        };
+      }
+    }
+    if (state.email.trim() === "") {
+      return {
+        testId: "envelope-email",
+        message: "Enter your work email — that's where the access code will be sent.",
+      };
+    }
+    // Lightweight email shape check — RFC-strict validation is out of scope;
+    // Resend will reject if the address is malformed.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email.trim())) {
+      return { testId: "envelope-email", message: "That email doesn't look right — double-check it." };
+    }
+    if (state.firm_name.trim() === "") {
+      return { testId: "envelope-firm-name", message: "Enter your firm name." };
+    }
+    if (state.firm_location.trim() === "") {
+      return { testId: "envelope-location", message: "Pick where the firm is based (or planned to be)." };
+    }
+    return null;
+  }
+
+  function focusFirstError(testId: string): void {
+    if (typeof document === "undefined") return;
+    // Scroll to the error banner at the top of the form first so the user
+    // actually sees the message — scrolling straight to the field would whisk
+    // them past the banner and the page would look like it did nothing.
+    const banner = document.querySelector<HTMLElement>('[data-testid="questionnaire-error-banner"]');
+    const form = document.querySelector<HTMLElement>('[data-testid="questionnaire-form"]');
+    (banner ?? form)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = document.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+    if (!el) return;
+    // Focus the first input/select/textarea inside the offending fieldset
+    // without re-scrolling — the banner already drew their eye.
+    const focusable = el.querySelector<HTMLElement>("input,select,textarea,button") ?? el;
+    setTimeout(() => focusable.focus({ preventScroll: true }), 350);
+  }
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Required-fields gate FIRST — before cookie consent or anything else.
+    // Strategy preferences (axes 7-11) stay optional. Everything else has
+    // to be filled before we'll mail an access code.
+    const validation = validateRequired();
+    if (validation) {
+      setResult({
+        success: false,
+        sink: "localStorage",
+        error: validation.message,
+      });
+      focusFirstError(validation.testId);
+      return;
+    }
+
     // Enforce cookie consent before submit. The access-code persistence
     // mechanism (setBriefingSessionActive → localStorage) is exactly the
     // kind of client-side storage the cookie banner is asking the user to
@@ -467,9 +559,36 @@ function QuestionnaireForm() {
       </div>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8" data-testid="questionnaire-form">
+        <p className="text-xs text-muted-foreground">
+          Fields marked{" "}
+          <span className="text-rose-500" aria-hidden>
+            *
+          </span>{" "}
+          are required. The &ldquo;Strategy preferences&rdquo; section (Q7&ndash;Q11) is optional.
+        </p>
+
+        {/* Top-of-form error banner — visible right after we scrollIntoView the
+            offending fieldset. The bottom-of-form inline span (next to Submit)
+            also still renders for users who read sequentially, but this banner
+            is what they actually see after focus lands on the empty field. */}
+        {result !== null && !result.success && (
+          <div
+            data-testid="questionnaire-error-banner"
+            role="alert"
+            className="rounded-md border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-900"
+          >
+            <strong className="font-semibold">Please complete the form:</strong> {result.error ?? "Submission failed"}
+          </div>
+        )}
+
         {/* 1. Categories */}
         <fieldset data-testid="axis-categories">
-          <legend className="font-medium">1. Which asset-class categories interest you?</legend>
+          <legend className="font-medium">
+            1. Which asset-class categories interest you?{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {QUESTIONNAIRE_CATEGORIES.map((cat) => (
               <label key={cat} className="inline-flex items-center gap-2 rounded border px-3 py-1">
@@ -489,7 +608,12 @@ function QuestionnaireForm() {
 
         {/* 2. Instrument types */}
         <fieldset data-testid="axis-instrument-types">
-          <legend className="font-medium">2. Which instrument types?</legend>
+          <legend className="font-medium">
+            2. Which instrument types?{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {QUESTIONNAIRE_INSTRUMENT_TYPES.map((it) => (
               <label key={it} className="inline-flex items-center gap-2 rounded border px-3 py-1">
@@ -520,7 +644,12 @@ function QuestionnaireForm() {
 
         {/* 3. Venue scope */}
         <fieldset data-testid="axis-venue-scope">
-          <legend className="font-medium">3. Venue scope</legend>
+          <legend className="font-medium">
+            3. Venue scope{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <div className="mt-2 space-y-2">
             <label className="flex items-center gap-2">
               <input
@@ -560,7 +689,12 @@ function QuestionnaireForm() {
 
         {/* 4. Strategy style */}
         <fieldset data-testid="axis-strategy-style">
-          <legend className="font-medium">4. Strategy styles</legend>
+          <legend className="font-medium">
+            4. Strategy styles{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {QUESTIONNAIRE_STRATEGY_STYLES.map((style) => (
               <label key={style} className="inline-flex items-center gap-2 rounded border px-3 py-1">
@@ -586,7 +720,12 @@ function QuestionnaireForm() {
 
         {/* 5. Service family */}
         <fieldset data-testid="axis-service-family">
-          <legend className="font-medium">5. Which service family fits?</legend>
+          <legend className="font-medium">
+            5. Which service family fits?{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <div className="mt-2 space-y-1">
             {QUESTIONNAIRE_SERVICE_FAMILIES.map((sf) => (
               <label key={sf} className="flex items-center gap-2">
@@ -612,7 +751,12 @@ function QuestionnaireForm() {
 
         {/* 6. Fund structure */}
         <fieldset data-testid="axis-fund-structure">
-          <legend className="font-medium">6. Fund structure</legend>
+          <legend className="font-medium">
+            6. Fund structure{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <p className="mt-1 text-xs text-muted-foreground">Select all that apply.</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {(
@@ -814,7 +958,12 @@ function QuestionnaireForm() {
 
             {/* 7. Licence region */}
             <fieldset data-testid="axis-licence-region">
-              <legend className="font-medium">7. Licence region preference</legend>
+              <legend className="font-medium">
+                7. Licence region preference{" "}
+                <span className="text-rose-500" aria-label="required">
+                  *
+                </span>
+              </legend>
               <div className="mt-2 space-y-1">
                 {QUESTIONNAIRE_LICENCE_REGIONS.map((lr) => (
                   <label key={lr} className="flex items-center gap-2">
@@ -834,7 +983,12 @@ function QuestionnaireForm() {
 
             {/* 8. Entity jurisdiction */}
             <fieldset data-testid="axis-entity-jurisdiction">
-              <legend className="font-medium">8. Operating entity jurisdiction</legend>
+              <legend className="font-medium">
+                8. Operating entity jurisdiction{" "}
+                <span className="text-rose-500" aria-label="required">
+                  *
+                </span>
+              </legend>
               <input
                 type="text"
                 name="entity_jurisdiction"
@@ -851,7 +1005,12 @@ function QuestionnaireForm() {
 
             {/* 9. Supported currencies */}
             <fieldset data-testid="axis-supported-currencies">
-              <legend className="font-medium">9. Operating currencies</legend>
+              <legend className="font-medium">
+                9. Operating currencies{" "}
+                <span className="text-rose-500" aria-label="required">
+                  *
+                </span>
+              </legend>
               <div className="mt-2 flex flex-wrap gap-2">
                 {COMMON_CURRENCIES.map((ccy) => (
                   <label key={ccy} className="inline-flex items-center gap-2 rounded border px-3 py-1">
@@ -959,12 +1118,20 @@ function QuestionnaireForm() {
 
         {/* Envelope: we always ask; admin playback pivots off these. */}
         <fieldset data-testid="axis-envelope">
-          <legend className="font-medium">Who&apos;s this for?</legend>
+          <legend className="font-medium">
+            Who&apos;s this for?{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
+          </legend>
           <p className="mt-1 text-xs text-slate-500">
             So we can tie your answers back to your organisation when we follow up.
           </p>
           <label className="mt-3 block text-sm">
-            Work email
+            Work email{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
             <input
               type="email"
               name="email"
@@ -973,10 +1140,15 @@ function QuestionnaireForm() {
               placeholder="you@firm.com"
               value={state.email}
               onChange={(e) => setState((s) => ({ ...s, email: e.target.value }))}
+              required
+              aria-required="true"
             />
           </label>
           <label className="mt-3 block text-sm">
-            Firm name
+            Firm name{" "}
+            <span className="text-rose-500" aria-label="required">
+              *
+            </span>
             <input
               type="text"
               name="firm_name"
@@ -985,10 +1157,17 @@ function QuestionnaireForm() {
               placeholder="Acme Capital LLP"
               value={state.firm_name}
               onChange={(e) => setState((s) => ({ ...s, firm_name: e.target.value }))}
+              required
+              aria-required="true"
             />
           </label>
-          <div className="mt-3 text-sm">
-            <p className="font-medium">Where is the firm based (or planned to be)?</p>
+          <div className="mt-3 text-sm" data-testid="envelope-location">
+            <p className="font-medium">
+              Where is the firm based (or planned to be)?{" "}
+              <span className="text-rose-500" aria-label="required">
+                *
+              </span>
+            </p>
             <p className="mt-1 text-xs text-muted-foreground">
               If the entity doesn&rsquo;t exist yet, pick the intended jurisdiction.
             </p>
