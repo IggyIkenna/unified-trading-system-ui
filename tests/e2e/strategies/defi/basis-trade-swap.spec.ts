@@ -1,4 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
+import { seedPersona } from "../../_shared/persona";
+import { demoPause } from "../../_shared/demo-pause";
 
 /**
  * DeFi Basis Trade (Swap leg) — trader workflow E2E.
@@ -28,10 +30,7 @@ test.describe("DeFi Basis Trade Swap — trader workflow", () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.addInitScript(() => {
-      localStorage.setItem("portal_user", JSON.stringify({ id: "internal-trader", email: "trader@odum.internal" }));
-      localStorage.setItem("portal_token", "demo-token-internal-trader");
-    });
+    await seedPersona(page, "internal-trader");
     await page.goto(`${BASE_URL}/services/trading/strategies/carry-basis`, {
       waitUntil: "domcontentloaded",
       timeout: 60_000,
@@ -67,6 +66,7 @@ test.describe("DeFi Basis Trade Swap — trader workflow", () => {
 
     // Swap button present but disabled before an amount is entered.
     await expect(swap().locator('[data-testid="execute-button"]')).toBeDisabled();
+    await demoPause(page);
   });
 
   // ── Trade execution ────────────────────────────────────────────────────────
@@ -97,5 +97,6 @@ test.describe("DeFi Basis Trade Swap — trader workflow", () => {
     await swap().locator('[data-testid="execute-button"]').click();
     await page.waitForSelector("text=submitted", { timeout: 5_000 });
     await expect.poll(() => page.locator("[data-testid='capital-input']").inputValue(), { timeout: 8_000 }).toBe("");
+    await demoPause(page);
   });
 });

@@ -1,31 +1,36 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
+import { seedPersona } from "../../_shared/persona";
+import { demoPause } from "../../_shared/demo-pause";
+import { loadStrategyFixture } from "../../_shared/fixtures";
+import { countTradeRows, verifyObservationWidgetsVisible, verifyScenarioOutcome } from "../../_shared/verify";
 
 /**
- * DeFi Aave Lending — trader workflow E2E.
+ * YIELD_ROTATION_LENDING (BORROW/REPAY) — trader workflow E2E.
  *
- * Simulates what a trader does manually when executing YIELD_ROTATION_LENDING:
- *   1. Open the DeFi route, confirm the lending widget is ready
- *   2. LEND — enter amount, check APY + expected aToken output, execute, verify trade row
- *   3. WITHDRAW — switch operation, enter amount, check output includes yield, execute, verify
- *   4. BORROW — check health factor drops after entry, execute, verify
- *   5. REPAY — check health factor recovers, execute, verify
+ * Covers the four core lending operations a trader executes when running
+ * YIELD_ROTATION_LENDING on Aave V3:
+ *   1. LEND   — deposit ETH, verify aToken receipt output, verify ledger row
+ *   2. WITHDRAW — redeem aETH, verify ETH output >= deposited (yield), verify row
+ *   3. BORROW — borrow ETH, verify health factor drops, verify row
+ *   4. REPAY  — repay ETH, verify health factor recovers, verify row
  *
- * Serial mode + shared page: one browser window for the whole suite so
- * --project=human shows a continuous trader flow, not 5 open/close cycles.
+ * yield-rotation-lending.spec.ts covers protocol/asset switch reactivity.
+ * This spec covers the full 4-operation lifecycle including BORROW and REPAY.
  *
- * UI validation (button states, reactive inputs, slippage counts, etc.)
+ * UI validation (button states, reactive output, operation-button CSS classes)
  * belongs in tests/unit/widgets/defi/defi-lending-widget.test.tsx — not here.
  */
 
+const FIXTURE = loadStrategyFixture("aave-lending");
 const BASE_URL = "http://localhost:3100";
 
 function w(page: Page): Locator {
-  return page.locator('[data-testid="defi-lending-widget"]');
+  return page.locator(FIXTURE.rootSelector);
 }
 
 test.describe.configure({ mode: "serial" });
 
-test.describe("DeFi Aave Lending — trader workflow", () => {
+test.describe(`${FIXTURE.name} — operator flow`, () => {
   test.setTimeout(120_000);
 
   let page: Page;
@@ -33,13 +38,10 @@ test.describe("DeFi Aave Lending — trader workflow", () => {
   test.beforeAll(async ({ browser }) => {
     const context = await browser.newContext();
     page = await context.newPage();
-    await page.addInitScript(() => {
-      localStorage.setItem("portal_user", JSON.stringify({ id: "internal-trader", email: "trader@odum.internal" }));
-      localStorage.setItem("portal_token", "demo-token-internal-trader");
-    });
-    await page.goto(`${BASE_URL}/services/trading/defi`, { waitUntil: "domcontentloaded", timeout: 60_000 });
+    await seedPersona(page, FIXTURE.persona);
+    await page.goto(`${BASE_URL}${FIXTURE.route}`, { waitUntil: "domcontentloaded", timeout: 60_000 });
     await page.keyboard.press("Escape").catch(() => undefined);
-    await page.waitForSelector('[data-testid="defi-lending-widget"]', { timeout: 30_000 });
+    await page.waitForSelector(FIXTURE.rootSelector, { timeout: 30_000 });
     // Start from LEND so every subsequent test begins in a known state.
     await w(page).locator('[data-testid="operation-button-LEND"]').click();
   });
@@ -48,83 +50,90 @@ test.describe("DeFi Aave Lending — trader workflow", () => {
     await page.close();
   });
 
-  // ── Baseline ──────────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Scenario 0 — baseline
+  // ---------------------------------------------------------------------------
 
-  test("lending widget is ready — protocol, asset, APY, execute button visible", async () => {
+  test(FIXTURE.scenarios[0]!.name, async () => {
     await expect(w(page)).toBeVisible();
     await expect(w(page).locator('[data-testid="protocol-select"]')).toBeVisible();
     await expect(w(page).locator('[data-testid="asset-select"]')).toBeVisible();
 
-    // Trader checks the current APY before entering a position.
     const supplyApy = w(page).locator('[data-testid="supply-apy"]');
     await expect(supplyApy).toBeVisible();
     expect((await supplyApy.textContent()) ?? "").toMatch(/\d+(\.\d+)?\s*%/);
 
     await expect(w(page).locator('[data-testid="execute-button"]')).toBeDisabled();
+
+    expect(await countTradeRows(page)).toBeGreaterThanOrEqual(0);
+    await verifyObservationWidgetsVisible(page, FIXTURE);
+    await demoPause(page);
   });
 
-  // ── Leg 1: LEND ───────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Scenario 1 — LEND
+  // ---------------------------------------------------------------------------
 
-  test("LEND — enter 10 ETH, verify aToken output, execute, trade row added", async () => {
+  test(FIXTURE.scenarios[1]!.name, async () => {
+    const sc = FIXTURE.scenarios[1]!;
     await w(page).locator('[data-testid="operation-button-LEND"]').click();
-    await expect(w(page).locator('[data-testid="operation-button-LEND"]')).toHaveClass(/bg-emerald-600/);
 
-    // Trader reviews supply APY before committing capital.
-    const supplyApy = w(page).locator('[data-testid="supply-apy"]');
-    expect((await supplyApy.textContent()) ?? "").toMatch(/\d+(\.\d+)?\s*%/);
-
-    // Enter amount and check expected output shows the aToken receipt.
     const amountInput = w(page).locator('[data-testid="amount-input"]');
-    await amountInput.fill("10");
+    await amountInput.fill(String(sc.inputs.amount));
     await page.waitForTimeout(300);
 
+    // Trader reviews the aToken receipt before committing capital.
     const expectedOutput = w(page).locator('[data-testid="expected-output"]');
     await expect(expectedOutput).toBeVisible();
     expect((await expectedOutput.textContent()) ?? "").toMatch(/a[A-Z]{2,}/);
 
-    // Execute and confirm trade history row is added.
-    const beforeRows = await page.locator('[data-testid="trade-history-row"]').count();
+    const beforeRows = await countTradeRows(page);
     await w(page).locator('[data-testid="execute-button"]').click();
     await page.waitForSelector("text=DeFi order placed", { timeout: 5_000 }).catch(() => undefined);
-    await expect
-      .poll(() => page.locator('[data-testid="trade-history-row"]').count(), { timeout: 5_000 })
-      .toBeGreaterThanOrEqual(beforeRows + 1);
 
+    await verifyScenarioOutcome(page, beforeRows, sc.expected);
     expect(await amountInput.inputValue()).toBe("");
+
+    await demoPause(page);
   });
 
-  // ── Leg 2: WITHDRAW ───────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Scenario 2 — WITHDRAW
+  // ---------------------------------------------------------------------------
 
-  test("WITHDRAW — enter 5 ETH, verify output includes yield accrual, execute, trade row added", async () => {
+  test(FIXTURE.scenarios[2]!.name, async () => {
+    const sc = FIXTURE.scenarios[2]!;
     await w(page).locator('[data-testid="operation-button-WITHDRAW"]').click();
-    await expect(w(page).locator('[data-testid="operation-button-WITHDRAW"]')).toHaveClass(/bg-amber-600/);
 
     const amountInput = w(page).locator('[data-testid="amount-input"]');
-    await amountInput.fill("5");
+    await amountInput.fill(String(sc.inputs.amount));
     await page.waitForTimeout(300);
 
-    // Trader expects to get back slightly more than deposited (yield accrued).
+    // Trader expects to receive slightly more than deposited (yield accrued).
     const expectedOutput = w(page).locator('[data-testid="expected-output"]');
     await expect(expectedOutput).toBeVisible();
     const outputText = (await expectedOutput.textContent()) ?? "";
     expect(outputText).toContain("ETH");
     const match = outputText.match(/(\d+\.?\d*)\s+ETH/);
-    if (match) expect(parseFloat(match[1])).toBeGreaterThanOrEqual(5 * 0.99);
+    if (match) expect(parseFloat(match[1])).toBeGreaterThanOrEqual(Number(sc.inputs.amount) * 0.99);
 
-    const beforeRows = await page.locator('[data-testid="trade-history-row"]').count();
+    const beforeRows = await countTradeRows(page);
     await w(page).locator('[data-testid="execute-button"]').click();
     await page.waitForSelector("text=DeFi order placed", { timeout: 5_000 }).catch(() => undefined);
-    await expect
-      .poll(() => page.locator('[data-testid="trade-history-row"]').count(), { timeout: 5_000 })
-      .toBeGreaterThanOrEqual(beforeRows + 1);
 
+    await verifyScenarioOutcome(page, beforeRows, sc.expected);
     expect(await amountInput.inputValue()).toBe("");
+
     await w(page).locator('[data-testid="operation-button-LEND"]').click();
+    await demoPause(page);
   });
 
-  // ── Leg 3: BORROW ─────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Scenario 3 — BORROW
+  // ---------------------------------------------------------------------------
 
-  test("BORROW — enter 5 ETH, verify health factor decreases, execute, trade row added", async () => {
+  test(FIXTURE.scenarios[3]!.name, async () => {
+    const sc = FIXTURE.scenarios[3]!;
     await w(page).locator('[data-testid="operation-button-BORROW"]').click();
 
     const currentHf = w(page).locator('[data-testid="current-hf"]');
@@ -132,28 +141,30 @@ test.describe("DeFi Aave Lending — trader workflow", () => {
     const initialHfValue = parseFloat((await currentHf.textContent()) ?? "0");
 
     const amountInput = w(page).locator('[data-testid="amount-input"]');
-    await amountInput.fill("5");
+    await amountInput.fill(String(sc.inputs.amount));
     await page.waitForTimeout(300);
 
-    // Trader checks the projected health factor — must stay above liquidation threshold.
+    // Trader checks projected HF stays above liquidation threshold before committing.
     await expect(afterHf).toBeVisible();
-    const projectedHf = parseFloat((await afterHf.textContent()) ?? "0");
-    expect(projectedHf).toBeLessThan(initialHfValue);
+    expect(parseFloat((await afterHf.textContent()) ?? "0")).toBeLessThan(initialHfValue);
 
-    const beforeRows = await page.locator('[data-testid="trade-history-row"]').count();
+    const beforeRows = await countTradeRows(page);
     await w(page).locator('[data-testid="execute-button"]').click();
     await page.waitForSelector("text=DeFi order placed", { timeout: 5_000 }).catch(() => undefined);
-    await expect
-      .poll(() => page.locator('[data-testid="trade-history-row"]').count(), { timeout: 5_000 })
-      .toBeGreaterThanOrEqual(beforeRows + 1);
 
+    await verifyScenarioOutcome(page, beforeRows, sc.expected);
     expect(await amountInput.inputValue()).toBe("");
+
     await w(page).locator('[data-testid="operation-button-LEND"]').click();
+    await demoPause(page);
   });
 
-  // ── Leg 4: REPAY ──────────────────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  // Scenario 4 — REPAY
+  // ---------------------------------------------------------------------------
 
-  test("REPAY — enter 5 ETH, verify health factor recovers, execute, trade row added", async () => {
+  test(FIXTURE.scenarios[4]!.name, async () => {
+    const sc = FIXTURE.scenarios[4]!;
     await w(page).locator('[data-testid="operation-button-REPAY"]').click();
 
     const currentHf = w(page).locator('[data-testid="current-hf"]');
@@ -161,22 +172,21 @@ test.describe("DeFi Aave Lending — trader workflow", () => {
     const initialHfValue = parseFloat((await currentHf.textContent()) ?? "0");
 
     const amountInput = w(page).locator('[data-testid="amount-input"]');
-    await amountInput.fill("5");
+    await amountInput.fill(String(sc.inputs.amount));
     await page.waitForTimeout(300);
 
     // Repaying debt should improve the health factor.
     await expect(afterHf).toBeVisible();
-    const projectedHf = parseFloat((await afterHf.textContent()) ?? "0");
-    expect(projectedHf).toBeGreaterThan(initialHfValue);
+    expect(parseFloat((await afterHf.textContent()) ?? "0")).toBeGreaterThan(initialHfValue);
 
-    const beforeRows = await page.locator('[data-testid="trade-history-row"]').count();
+    const beforeRows = await countTradeRows(page);
     await w(page).locator('[data-testid="execute-button"]').click();
     await page.waitForSelector("text=DeFi order placed", { timeout: 5_000 }).catch(() => undefined);
-    await expect
-      .poll(() => page.locator('[data-testid="trade-history-row"]').count(), { timeout: 5_000 })
-      .toBeGreaterThanOrEqual(beforeRows + 1);
 
+    await verifyScenarioOutcome(page, beforeRows, sc.expected);
     expect(await amountInput.inputValue()).toBe("");
+
     await w(page).locator('[data-testid="operation-button-LEND"]').click();
+    await demoPause(page);
   });
 });

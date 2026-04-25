@@ -1,0 +1,72 @@
+{
+  "name": "YIELD_ROTATION_LENDING (BORROW/REPAY)",
+  "persona": "internal-trader",
+  "route": "/services/trading/defi",
+  "rootSelector": "[data-testid=\"defi-lending-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/yield-rotation-lending.md",
+  "observationWidgets": [
+    {
+      "testid": "defi-wallet-summary-widget",
+      "assertVisible": true,
+      "assertsUpdatedAfter": ["LEND", "WITHDRAW", "BORROW", "REPAY"]
+    },
+    { "testid": "defi-health-factor-widget", "assertVisible": false }
+  ],
+  "scenarios": [
+    {
+      "name": "baseline — lending widget ready, APY visible, execute disabled",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert widget + supply APY render cleanly with empty input."
+      }
+    },
+    {
+      "name": "LEND 10 ETH — verify aToken output, execute, trade row added",
+      "inputs": {
+        "operation": "LEND",
+        "amount": "10"
+      },
+      "expected": {
+        "tradeType": "LEND",
+        "minRowsAdded": 1,
+        "notes": "Supply leg — ETH deposited on Aave V3, aETH receipt visible before execute."
+      }
+    },
+    {
+      "name": "WITHDRAW 5 ETH — verify output includes yield, execute, trade row added",
+      "inputs": {
+        "operation": "WITHDRAW",
+        "amount": "5"
+      },
+      "expected": {
+        "tradeType": "WITHDRAW",
+        "minRowsAdded": 1,
+        "notes": "Partial withdrawal — output ETH >= 5 * 0.99 confirming yield accrual."
+      }
+    },
+    {
+      "name": "BORROW 5 ETH — verify health factor decreases, execute, trade row added",
+      "inputs": {
+        "operation": "BORROW",
+        "amount": "5"
+      },
+      "expected": {
+        "tradeType": "BORROW",
+        "minRowsAdded": 1,
+        "notes": "Borrow leg — projected HF must be < current HF (risk increases with debt)."
+      }
+    },
+    {
+      "name": "REPAY 5 ETH — verify health factor recovers, execute, trade row added",
+      "inputs": {
+        "operation": "REPAY",
+        "amount": "5"
+      },
+      "expected": {
+        "tradeType": "REPAY",
+        "minRowsAdded": 1,
+        "notes": "Repay leg — projected HF must be > current HF (risk decreases as debt is cleared)."
+      }
+    }
+  ]
+}
