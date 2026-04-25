@@ -22,6 +22,8 @@ interface FileUploadFieldProps {
   readonly value: UploadedFileRef | null;
   readonly onChange: (ref: UploadedFileRef | null) => void;
   readonly onFileChange: (file: File | null) => void;
+  /** Server-side upload failure surfaced from the parent's submit handler. */
+  readonly errorMessage?: string | null;
 }
 
 export function FileUploadField({
@@ -31,6 +33,7 @@ export function FileUploadField({
   value,
   onChange,
   onFileChange,
+  errorMessage,
 }: FileUploadFieldProps) {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -109,8 +112,8 @@ export function FileUploadField({
         <>
           {staleDraft && (
             <p className="text-xs text-amber-700 dark:text-amber-300 mb-1">
-              Attachment &ldquo;{value?.filename}&rdquo; needs to be re-selected — the browser
-              cache was cleared when you reopened the form.
+              Attachment &ldquo;{value?.filename}&rdquo; needs to be re-selected — the browser cache was cleared when
+              you reopened the form.
             </p>
           )}
           <label className="mt-1 inline-flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border px-3 py-2 text-sm transition-colors hover:border-foreground hover:bg-muted/30">
@@ -127,6 +130,16 @@ export function FileUploadField({
             <span className="text-muted-foreground">Choose file</span>
           </label>
         </>
+      )}
+
+      {errorMessage && (
+        <div className="mt-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          <p className="font-medium">Upload failed for this file.</p>
+          <p className="mt-0.5 font-mono break-words">{errorMessage}</p>
+          <p className="mt-1 text-destructive/80">
+            Re-select a different file or check the file&rsquo;s format / size (50&nbsp;MB max).
+          </p>
+        </div>
       )}
     </div>
   );

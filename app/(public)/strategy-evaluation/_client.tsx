@@ -479,12 +479,20 @@ export default function StrategyEvaluationFormClient({
   );
   const [currentStep, setCurrentStep] = React.useState<number>(1);
   const [draftSavedAt, setDraftSavedAt] = React.useState<number | null>(null);
+  const [uploadErrors, setUploadErrors] = React.useState<Partial<Record<FileFieldKey, string>>>({});
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   // Files cached in-memory between pick and submit. Not serialised to
   // localStorage — abandoning a draft never produces orphan uploads.
   const pendingFilesRef = React.useRef<Map<FileFieldKey, File>>(new Map());
 
   const handleFileChange = React.useCallback((fieldKey: FileFieldKey, file: File | null) => {
+    // Picking a new file (or removing) clears the prior upload error for that field
+    setUploadErrors((prev) => {
+      if (!(fieldKey in prev)) return prev;
+      const next = { ...prev };
+      delete next[fieldKey];
+      return next;
+    });
     if (file) pendingFilesRef.current.set(fieldKey, file);
     else pendingFilesRef.current.delete(fieldKey);
   }, []);
@@ -636,6 +644,8 @@ export default function StrategyEvaluationFormClient({
       const { uploadStrategyEvalFile } = await import("@/lib/strategy-evaluation/upload");
       const uploadedRefs = new Map<FileFieldKey, UploadedFileRef>();
       const pending = Array.from(pendingFilesRef.current.entries());
+      // Reset stale per-field upload errors at the start of each submit.
+      setUploadErrors({});
       for (const [fieldKey, file] of pending) {
         setUploadStatus(`Uploading ${file.name}…`);
         try {
@@ -648,6 +658,12 @@ export default function StrategyEvaluationFormClient({
               : typeof uploadErr === "string"
                 ? uploadErr
                 : "unknown upload error";
+          // Surface the failure inline at the upload field (Step 5) so the
+          // user can re-attach a different file without scrolling back from
+          // the Submit button. Jump back to the evidence step too.
+          setUploadErrors((prev) => ({ ...prev, [fieldKey]: msg }));
+          setCurrentStep(5);
+          window.scrollTo({ top: 0, behavior: "smooth" });
           throw new Error(`Upload of "${file.name}" failed: ${msg}`);
         }
       }
@@ -2121,6 +2137,7 @@ export default function StrategyEvaluationFormClient({
                     value={form[key]}
                     onChange={(ref) => setField(key, ref)}
                     onFileChange={(file) => handleFileChange(key, file)}
+                    errorMessage={uploadErrors[key] ?? null}
                   />
                 ))}
 
