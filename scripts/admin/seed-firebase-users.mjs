@@ -77,19 +77,19 @@ const STAGING_USERS = [
   {
     email: "admin@odum.internal",
     displayName: "Admin",
-    password: "demo",
+    password: "demo123",
     claims: { role: "admin", entitlements: ["*"] },
   },
   {
     email: "trader@odum.internal",
     displayName: "Internal Trader",
-    password: "demo",
+    password: "demo123",
     claims: { role: "internal", entitlements: ["*"] },
   },
   {
     email: "desk@odum.internal",
     displayName: "IM Desk Operator",
-    password: "demo",
+    password: "demo123",
     claims: { role: "internal", entitlements: ["*"] },
   },
   // External advisor / IR (@odum-research.co.uk)
@@ -143,7 +143,7 @@ const STAGING_USERS = [
   {
     email: "prospect-im@odum-research.com",
     displayName: "Investment Prospect",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["investor-relations", "investor-im"],
@@ -152,7 +152,7 @@ const STAGING_USERS = [
   {
     email: "prospect-dart-full@odum-research.com",
     displayName: "DART Full Pipeline Prospect",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: [
@@ -169,7 +169,7 @@ const STAGING_USERS = [
   {
     email: "prospect-dart-signals-in@odum-research.com",
     displayName: "DART Signals-In Prospect",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["investor-relations", "investor-platform", "data-pro", "execution-full", "reporting"],
@@ -178,7 +178,7 @@ const STAGING_USERS = [
   {
     email: "prospect-odum-signals@odum-research.com",
     displayName: "Odum Signals Prospect",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["investor-relations", "execution-full", "reporting"],
@@ -187,7 +187,7 @@ const STAGING_USERS = [
   {
     email: "prospect-regulatory@odum-research.com",
     displayName: "Regulatory Prospect",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["investor-relations", "investor-regulatory", "reporting"],
@@ -197,7 +197,7 @@ const STAGING_USERS = [
   {
     email: "pm@alphacapital.com",
     displayName: "Portfolio Manager",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
@@ -206,13 +206,13 @@ const STAGING_USERS = [
   {
     email: "analyst@betafund.com",
     displayName: "Data Analyst",
-    password: "demo",
+    password: "demo123",
     claims: { role: "client", entitlements: ["data-basic"] },
   },
   {
     email: "cio@vertex.com",
     displayName: "CIO",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["data-pro", "execution-full", "strategy-full", "reporting"],
@@ -221,7 +221,7 @@ const STAGING_USERS = [
   {
     email: "patrick@bankelysium.com",
     displayName: "Patrick",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["data-pro", "execution-full", "reporting"],
@@ -230,7 +230,7 @@ const STAGING_USERS = [
   {
     email: "sarah.quant@examplehedge.com",
     displayName: "Sarah Quant",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["data-pro", "execution-full", "ml-full", "strategy-full", "reporting"],
@@ -239,37 +239,37 @@ const STAGING_USERS = [
   {
     email: "fm@emergingmgr.com",
     displayName: "Fund Manager",
-    password: "demo",
+    password: "demo123",
     claims: { role: "client", entitlements: ["reporting", "data-pro"] },
   },
   {
     email: "pm@lpfund.com",
     displayName: "Pooled-Fund LP",
-    password: "demo",
+    password: "demo123",
     claims: { role: "client", entitlements: ["reporting", "investor-relations"] },
   },
   {
     email: "cio@smaclient.com",
     displayName: "SMA CIO",
-    password: "demo",
+    password: "demo123",
     claims: { role: "client", entitlements: ["reporting", "investor-relations", "data-pro"] },
   },
   {
     email: "ops@defihf.com",
     displayName: "Signals-Only Ops Lead",
-    password: "demo",
+    password: "demo123",
     claims: { role: "client", entitlements: ["execution-full", "data-pro", "reporting"] },
   },
   {
     email: "cio@hybridfund.example",
     displayName: "IM-under-Regulatory CIO",
-    password: "demo",
+    password: "demo123",
     claims: { role: "client", entitlements: ["reporting", "investor-relations", "data-pro"] },
   },
   {
     email: "platform-prospect@odum-research.com",
     displayName: "Platform Prospect",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["data-pro", "execution-full", "strategy-full", "reporting"],
@@ -278,7 +278,7 @@ const STAGING_USERS = [
   {
     email: "ops@desmond-capital.example",
     displayName: "Desmond Ops",
-    password: "demo",
+    password: "demo123",
     claims: {
       role: "client",
       entitlements: ["reporting", "investor-regulatory", "data-pro", "execution-full"],
