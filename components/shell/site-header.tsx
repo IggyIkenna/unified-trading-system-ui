@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
+import { useBriefingSession } from "@/lib/briefings/session";
 import { cn } from "@/lib/utils";
-import { Menu } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -28,10 +29,14 @@ const NAV_SECONDARY = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-// Deep Dive: public, un-gated briefings + developer docs. Separate from the
-// Spaces dropdown (which holds gated product surfaces behind an access code).
+// Deep Dive: gated briefings hub + developer docs. The hub itself is locked
+// behind an access code (see app/(public)/briefings/layout.tsx). To get a
+// code, the "Request access code" link routes visitors to /questionnaire,
+// which auto-unlocks them on submit and emails them a code for use in
+// other browsers.
 const DEEP_DIVE_HEADLINE = [
   { href: "/briefings", label: "Briefings hub" },
+  { href: "/questionnaire", label: "Request access code" },
   { href: "/docs", label: "Developer docs" },
   { href: "/faq", label: "FAQ" },
 ] as const;
@@ -65,8 +70,18 @@ const NAV_DISMISSED_KEY = "odum.nav.dismissed";
 export function SiteHeader() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
+  const briefingSessionActive = useBriefingSession();
   const [hash, setHash] = React.useState("");
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  // Pre-unlock: Deep Dive section shows headline items only (Briefings hub /
+  // Request access code / Developer docs / FAQ) and the per-pillar briefings
+  // sub-list is collapsed behind a chevron. Post-unlock (briefing session
+  // active OR user already on a /briefings/* page so they're already in):
+  // sub-list auto-expands. User can still toggle manually.
+  const [briefingsExpanded, setBriefingsExpanded] = React.useState(false);
+  React.useEffect(() => {
+    if (briefingSessionActive) setBriefingsExpanded(true);
+  }, [briefingSessionActive]);
 
   const syncHashFromWindow = React.useCallback(() => {
     setHash(window.location.hash);
@@ -104,6 +119,7 @@ export function SiteHeader() {
       <div className="container flex min-h-14 items-center justify-between gap-3 px-4 py-2 md:px-6">
         {/* Logo — always navigates home across breakpoints. */}
         <Link href="/" className="flex shrink-0 items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/odum-logo.png" alt="Odum Research" className="size-9" />
           <div className="flex flex-col items-start gap-0.5 leading-tight">
             <span className="text-lg font-semibold">Odum Research</span>
@@ -130,6 +146,7 @@ export function SiteHeader() {
           <SheetContent side="left" className="w-72 p-0">
             <SheetHeader className="border-b border-border/40 px-4 py-3">
               <SheetTitle className="flex items-center gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/images/odum-logo.png" alt="Odum Research" className="size-8" />
                 <span className="text-base font-semibold">Odum Research</span>
               </SheetTitle>
@@ -157,7 +174,7 @@ export function SiteHeader() {
                 <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
                   Deep Dive
                 </p>
-                {[...DEEP_DIVE_HEADLINE, ...DEEP_DIVE_BRIEFINGS].map((item) => (
+                {DEEP_DIVE_HEADLINE.map((item) => (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -172,6 +189,45 @@ export function SiteHeader() {
                     {item.label}
                   </Link>
                 ))}
+                <button
+                  type="button"
+                  onClick={() => setBriefingsExpanded((v) => !v)}
+                  aria-expanded={briefingsExpanded}
+                  aria-controls="deep-dive-briefings-list"
+                  className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-left text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  data-testid="deep-dive-briefings-toggle"
+                >
+                  <span className="flex items-center gap-2">
+                    Briefings
+                    {briefingSessionActive ? null : (
+                      <Lock className="size-3 text-muted-foreground/60" aria-label="Locked — request access code" />
+                    )}
+                  </span>
+                  {briefingsExpanded ? (
+                    <ChevronDown className="size-3.5" aria-hidden />
+                  ) : (
+                    <ChevronRight className="size-3.5" aria-hidden />
+                  )}
+                </button>
+                {briefingsExpanded ? (
+                  <div id="deep-dive-briefings-list" className="ml-2 border-l border-border/30 pl-2">
+                    {DEEP_DIVE_BRIEFINGS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          "block rounded-md px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+                          isNavItemActive(pathname, hash, item.href)
+                            ? "bg-accent font-medium text-accent-foreground"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                ) : null}
               </div>
               <div className="mt-3 border-t border-border/40 pt-3">
                 {NAV_SECONDARY.map((item) => (

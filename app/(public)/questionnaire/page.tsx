@@ -1,10 +1,23 @@
 /**
  * Prospect questionnaire — 6 base axes + 7 optional Reg-Umbrella axes.
  *
- * Access-gate: wrapped in <BriefingAccessGate> so the page is only reachable
- * with an invite code (or when no access code is configured for this env).
- * The code fingerprint is attached to each submission so admins can pivot
- * from access-code → cohort.
+ * This page is INTENTIONALLY UN-GATED — it's the path through which
+ * visitors get a Deep Dive access code. The flow:
+ *   1. Visitor clicks "Request access code" under Deep Dive in the nav.
+ *   2. Lands here. Top of form has "Already have an access code? Enter it →"
+ *      pointing to /briefings, which is gated via briefings/layout.tsx.
+ *   3. Fills questionnaire → submit handler:
+ *        a. Persists envelope + access-code fingerprint to Firestore.
+ *        b. Calls setBriefingSessionActive() to unlock the briefings hub
+ *           on this browser without re-typing the code (they just gave
+ *           us their info; no need to re-gate).
+ *        c. Resend emails the access code + Calendly link + next-steps.
+ *   4. Different browser later? Use the emailed access code via /briefings.
+ *
+ * Reg-Umbrella branch: the 7 extra axes (licence region, 3mo/1yr/2yr targets,
+ * own-MLRO, entity jurisdiction, supported currencies) render ONLY when
+ * `service_family ∈ {RegUmbrella, combo}`. This keeps the form short for
+ * DART / IM prospects.
  *
  * Reg-Umbrella branch: the 7 extra axes (licence region, 3mo/1yr/2yr targets,
  * own-MLRO, entity jurisdiction, supported currencies) render ONLY when
@@ -25,7 +38,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { BriefingAccessGate } from "@/components/briefings/briefing-access-gate";
+import Link from "next/link";
+import { setBriefingSessionActive } from "@/lib/briefings/session";
 import type {
   QuestionnaireCategory,
   QuestionnaireEnvelope,
@@ -218,11 +232,11 @@ function buildResponse(state: FormState): QuestionnaireResponse {
 }
 
 export default function QuestionnairePage() {
-  return (
-    <BriefingAccessGate>
-      <QuestionnaireForm />
-    </BriefingAccessGate>
-  );
+  // Intentionally NOT wrapped in <BriefingAccessGate>: this page IS the
+  // path to GET an access code. Visitors who already have a code follow
+  // the "Already have an access code?" link inside the form to /briefings,
+  // which has its own gate via app/(public)/briefings/layout.tsx.
+  return <QuestionnaireForm />;
 }
 
 function QuestionnaireForm() {
@@ -260,15 +274,21 @@ function QuestionnaireForm() {
   const [result, setResult] = useState<SubmitResult | null>(null);
 
   // Pre-select service_family from ?service= query param when the visitor
-  // lands here via a briefing-specific CTA. Runs once on mount.
-  useEffect(() => {
+  // lands here via a briefing-specific CTA. Compute synchronously via useMemo
+  // to avoid the react-hooks/set-state-in-effect warning; only seed when
+  // state.service_family is the initial empty string so user overrides aren't
+  // clobbered by re-runs.
+  const urlServiceFamily = useMemo(() => {
     const raw = searchParams?.get("service");
-    if (!raw) return;
-    const match = QUESTIONNAIRE_SERVICE_FAMILIES.find((sf) => sf === raw);
-    if (match) {
-      setState((s) => ({ ...s, service_family: match }));
-    }
+    if (!raw) return null;
+    return QUESTIONNAIRE_SERVICE_FAMILIES.find((sf) => sf === raw) ?? null;
   }, [searchParams]);
+  useEffect(() => {
+    if (urlServiceFamily && state.service_family === "") {
+      setState((s) => ({ ...s, service_family: urlServiceFamily }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlServiceFamily]);
 
   const regUmbrellaVisible = useMemo(() => isRegUmbrellaPath(state.service_family), [state.service_family]);
 
@@ -344,6 +364,15 @@ function QuestionnaireForm() {
     setResult(outcome);
     setSubmitting(false);
     if (outcome.success) {
+      // The visitor just gave us their info — auto-unlock the briefings hub
+      // on this browser without making them re-type the code we're about to
+      // email. Same browser, same session: straight in. Different browser
+      // later: enter the code from the email at /briefings.
+      try {
+        setBriefingSessionActive();
+      } catch {
+        /* localStorage unavailable — they'll need to enter the code manually next time */
+      }
       const filter = seedFiltersFromQuestionnaire(response);
       const filterQs = new URLSearchParams(serialiseCatalogueFilter(filter)).toString();
       const target = `/services/strategy-catalogue?tab=explore&from=questionnaire${filterQs ? `&${filterQs}` : ""}`;
@@ -353,10 +382,24 @@ function QuestionnaireForm() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12" data-testid="questionnaire-page">
+      <div
+        data-testid="questionnaire-have-code-affordance"
+        className="mb-6 flex items-center justify-between rounded-md border border-border/60 bg-muted/30 px-4 py-3 text-sm"
+      >
+        <span className="text-muted-foreground">Already have a Deep Dive access code?</span>
+        <Link
+          href="/briefings"
+          className="font-medium text-foreground underline-offset-4 hover:underline"
+          data-testid="questionnaire-enter-code-link"
+        >
+          Enter it →
+        </Link>
+      </div>
+
       <h1 className="text-3xl font-semibold">Tell us about your strategy</h1>
       <p className="mt-2 text-slate-500">
-        Invite-only questionnaire. Six quick questions (plus a Regulatory Umbrella branch if you need FCA cover) so we
-        can pre-configure your path.
+        Six quick questions (plus a Regulatory Umbrella branch if you need FCA cover). Submit and we&apos;ll email you a
+        Deep Dive access code + a calendar link to book a first call.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8" data-testid="questionnaire-form">

@@ -2,6 +2,7 @@ import {
   PublicDepthNextStripGated,
   PublicMobileNextStepsBarGated,
 } from "@/components/marketing/public-depth-next-strip-gate";
+import { CookieConsentBanner } from "@/components/marketing/cookie-consent-banner";
 import { FooterContactLink } from "@/components/shell/footer-contact-link";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -58,6 +59,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </footer>
       <PublicMobileNextStepsBar />
       <ChatWidgetPublic />
+      <CookieConsentBanner />
     </>
   );
 }
