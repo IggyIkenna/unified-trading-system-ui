@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# 1. Format + lint staged files only — no stash, no full working-tree scan
+pnpm exec lint-staged || exit 1
+
+# 2. Safety checks on staged diff
+STAGED_DIFF=$(git diff --cached)
+
+# Merge conflict markers (match "<<<<<<< HEAD" or "<<<<<<< branch" — not grep patterns)
+if echo "$STAGED_DIFF" | grep -qP "^\+<{7} "; then
+  echo "pre-commit: merge conflict markers found in staged files"
+  exit 1
+fi
+
+# Private key material (match PEM header "-----BEGIN * PRIVATE KEY-----")
+if echo "$STAGED_DIFF" | grep -qP "^\+-----BEGIN .* PRIVATE KEY-----"; then
+  echo "pre-commit: possible private key in staged files"
+  exit 1
+fi
+
+# Large files (>1 MB)
+git diff --cached --name-only | while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  size=$(wc -c < "$f")
+  if [ "$size" -gt 1000000 ]; then
+    echo "pre-commit: large file staged ($size bytes): $f"
+    exit 1
+  fi
+done
+
+# 3. Branch drift check (non-blocking if script missing — CI handles this)
+HOOK="${WORKSPACE_ROOT:-$(cd "$(git rev-parse --show-toplevel)/.." && pwd)}/unified-trading-pm/scripts/hooks/check-branch-drift.sh"
+[ -f "$HOOK" ] && bash "$HOOK" || true

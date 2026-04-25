@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Conventional commits: feat|fix|chore|docs|refactor|test|ci|style|perf|build|revert
+# Allows breaking-change marker (!) and optional scope.
+MSG=$(cat "$1")
+PATTERN="^(feat|fix|chore|docs|refactor|test|ci|style|perf|build|revert)(\([^)]+\))?(!)?: .+"
+
+if ! echo "$MSG" | grep -qE "$PATTERN"; then
+  # Allow merge commits and fixup commits through
+  if echo "$MSG" | grep -qE "^(Merge|fixup!|squash!)"; then
+    exit 0
+  fi
+  echo ""
+  echo "  commit-msg: message does not follow Conventional Commits format."
+  echo "  Expected:   type(scope): description"
+  echo "  Types:      feat fix chore docs refactor test ci style perf build revert"
+  echo "  Example:    feat(trading-nav): add collapse toggle"
+  echo ""
+  exit 1
+fi
