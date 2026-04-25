@@ -54,6 +54,40 @@ import {
   seedFiltersFromQuestionnaire,
 } from "@/lib/questionnaire/resolve-persona";
 import { serialiseCatalogueFilter } from "@/lib/architecture-v2/catalogue-filter";
+import { Term } from "@/components/marketing/term";
+
+/**
+ * Map of strategy_style enum values to glossary IDs (lib/glossary.ts).
+ * Wraps the option label in <Term> so users get a hover-glossary explainer.
+ * Falls through to the raw text label when no glossary entry exists.
+ */
+const STRATEGY_STYLE_GLOSSARY: Record<string, string> = {
+  ml_directional: "ml-directional",
+  rules_directional: "rules-directional",
+  carry: "carry-yield",
+  arbitrage: "arbitrage",
+  event_driven: "event-driven",
+  stat_arb: "stat-arb",
+  // vol_trading + market_making + portfolio: glossary entries TBD; renders plain
+};
+
+/** Map of instrument_type enum values to glossary IDs. */
+const INSTRUMENT_TYPE_GLOSSARY: Record<string, string> = {
+  perp: "perpetual",
+  // spot, lending, staking, lp, option, dated_future, event_settled — no glossary entries today
+};
+
+/** Map of service_family enum values to glossary IDs. */
+const SERVICE_FAMILY_GLOSSARY: Record<string, string> = {
+  DART: "dart",
+  IM: "im",
+};
+
+/** Map of fund_structure enum values to glossary IDs. */
+const FUND_STRUCTURE_GLOSSARY: Record<string, string> = {
+  SMA: "sma",
+  Pooled: "pooled",
+};
 
 /** Canonical 4217 short-list offered as checkboxes before "Other" fallback. */
 const COMMON_CURRENCIES: readonly string[] = [
@@ -365,7 +399,13 @@ function QuestionnaireForm() {
                     }))
                   }
                 />
-                <span>{it}</span>
+                {INSTRUMENT_TYPE_GLOSSARY[it] ? (
+                  <Term id={INSTRUMENT_TYPE_GLOSSARY[it]}>
+                    <span>{it}</span>
+                  </Term>
+                ) : (
+                  <span>{it}</span>
+                )}
               </label>
             ))}
           </div>
@@ -425,7 +465,13 @@ function QuestionnaireForm() {
                   checked={state.strategy_style.has(style)}
                   onChange={() => setState((s) => ({ ...s, strategy_style: toggleInSet(s.strategy_style, style) }))}
                 />
-                <span>{style.replace(/_/g, " ")}</span>
+                {STRATEGY_STYLE_GLOSSARY[style] ? (
+                  <Term id={STRATEGY_STYLE_GLOSSARY[style]}>
+                    <span>{style.replace(/_/g, " ")}</span>
+                  </Term>
+                ) : (
+                  <span>{style.replace(/_/g, " ")}</span>
+                )}
               </label>
             ))}
           </div>
@@ -445,7 +491,13 @@ function QuestionnaireForm() {
                   checked={state.service_family === sf}
                   onChange={() => setState((s) => ({ ...s, service_family: sf }))}
                 />
-                <span>{sf}</span>
+                {SERVICE_FAMILY_GLOSSARY[sf] ? (
+                  <Term id={SERVICE_FAMILY_GLOSSARY[sf]}>
+                    <span>{sf}</span>
+                  </Term>
+                ) : (
+                  <span>{sf}</span>
+                )}
               </label>
             ))}
           </div>
@@ -473,7 +525,13 @@ function QuestionnaireForm() {
                   checked={state.fund_structure.has(value)}
                   onChange={() => setState((s) => ({ ...s, fund_structure: toggleInSet(s.fund_structure, value) }))}
                 />
-                <span>{label}</span>
+                {FUND_STRUCTURE_GLOSSARY[value] ? (
+                  <Term id={FUND_STRUCTURE_GLOSSARY[value]}>
+                    <span>{label}</span>
+                  </Term>
+                ) : (
+                  <span>{label}</span>
+                )}
               </label>
             ))}
           </div>
