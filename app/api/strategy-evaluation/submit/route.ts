@@ -9,6 +9,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { randomBytes } from "node:crypto";
 import { sendEmail, getSenderFor, escapeHtml } from "@/lib/email/resend";
 
 const INTERNAL_ADDRESS = "info@odum-research.com";
@@ -18,6 +19,13 @@ const PATH_LABELS: Record<string, string> = {
   B: "Path B — DART Signals-In / client signals, Odum execution",
   C: "Path C — Regulatory Umbrella / read-only API integration",
 };
+
+function getSiteUrl(request: Request): string {
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (envUrl) return envUrl.replace(/\/$/, "");
+  // Fallback to request origin (covers Cloud Run URL access)
+  return new URL(request.url).origin;
+}
 
 export async function POST(request: Request) {
   let body: Record<string, unknown>;
@@ -29,12 +37,15 @@ export async function POST(request: Request) {
   }
 
   const email = typeof body.email === "string" ? body.email : undefined;
-  const strategyName =
-    typeof body.strategyName === "string" ? body.strategyName : "Unnamed Strategy";
-  const leadResearcher =
-    typeof body.leadResearcher === "string" ? body.leadResearcher : undefined;
+  const strategyName = typeof body.strategyName === "string" ? body.strategyName : "Unnamed Strategy";
+  const leadResearcher = typeof body.leadResearcher === "string" ? body.leadResearcher : undefined;
   const commercialPath = typeof body.commercialPath === "string" ? body.commercialPath : undefined;
   const pathLabel = PATH_LABELS[commercialPath ?? ""] ?? commercialPath ?? "—";
+
+  // Generate a magic token: doubles as email-verification proof and
+  // a stable handle for the status page (`/strategy-evaluation/status?token=...`).
+  const magicToken = randomBytes(32).toString("hex");
+  const statusUrl = `${getSiteUrl(request)}/strategy-evaluation/status?token=${magicToken}`;
 
   // Persist to Firestore
   let submissionId: string | undefined;
@@ -47,6 +58,8 @@ export async function POST(request: Request) {
     if (db) {
       const docRef = await addDoc(collection(db, "strategy_evaluations"), {
         ...body,
+        magicToken,
+        emailVerified: false,
         submittedAt: serverTimestamp(),
       });
       submissionId = docRef.id;
@@ -68,6 +81,21 @@ export async function POST(request: Request) {
           <p style="margin:0 0 6px"><strong>Strategy:</strong> ${escapeHtml(strategyName)}</p>
           <p style="margin:0"><strong>Commercial path:</strong> ${escapeHtml(pathLabel)}</p>
         </div>
+        <p>
+          Click below to confirm your email address and view your submission.
+          From there you can download your uploaded documents and edit / resubmit
+          if anything needs to change:
+        </p>
+        <p style="text-align:center;margin:24px 0">
+          <a href="${statusUrl}"
+             style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:600">
+            Confirm email and view submission
+          </a>
+        </p>
+        <p style="color:#6b7280;font-size:13px">
+          If the button doesn't work, copy and paste this link into your browser:<br>
+          <a href="${statusUrl}" style="color:#111;word-break:break-all">${statusUrl}</a>
+        </p>
         <p>
           Our team will review the evaluation carefully and be in touch within
           <strong>3 business days</strong> to discuss fit, next steps, and any
