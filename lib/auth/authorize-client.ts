@@ -1,14 +1,16 @@
 /**
- * Client for the user-management-api /api/v1/authorize endpoint.
+ * Client for the portal's native /api/v1/authorize route.
  *
  * Given an app_id and Firebase UID, returns the user's effective role
- * and capabilities for this application. This is the single source
- * of truth for what the user can do — the UI never hardcodes role logic.
+ * and capabilities for this application. The route reads Firestore via
+ * the Admin SDK (server-side) so the browser only ever sees the result —
+ * this is the single source of truth for what the user can do; the UI
+ * never hardcodes role logic.
+ *
+ * Same-origin call only — no NEXT_PUBLIC_USER_MGMT_API_URL anymore. The
+ * legacy user-management-api Cloud Run service is being retired in favour
+ * of native portal routes (see plans/active/retire_user_mgmt_api_*.plan.md).
  */
-
-const USER_MGMT_API =
-  process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017";
-
 export const APP_ID = "unified-trading-system-ui";
 
 export interface AuthorizeResult {
@@ -28,9 +30,9 @@ export async function fetchAuthorization(
   const params = new URLSearchParams({ app_id: APP_ID, uid });
   if (env) params.set("env", env);
 
-  const res = await fetch(
-    `${USER_MGMT_API}/api/v1/authorize?${params.toString()}`,
-  );
+  const res = await fetch(`/api/v1/authorize?${params.toString()}`, {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
     return {

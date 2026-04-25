@@ -1,21 +1,13 @@
 /**
- * Client for the user-management-api /api/v1/signup endpoint.
+ * Client for the portal's native /api/v1/signup route.
  *
  * Creates a Firebase Auth user (disabled) + Firestore profile (pending_approval)
- * + onboarding request. Admin must approve before the user can sign in.
+ * + onboarding request via the same-origin Admin SDK route. Admin must approve
+ * before the user can sign in.
+ *
+ * Same-origin call — no NEXT_PUBLIC_USER_MGMT_API_URL anymore. The legacy
+ * user-management-api Cloud Run service is being retired.
  */
-
-// In mock mode, use relative URLs so the mock handler intercepts them.
-// In production, call the UMU backend directly.
-import { isMockDataMode } from "@/lib/runtime/data-mode";
-
-const isMockMode =
-  typeof process !== "undefined" &&
-  isMockDataMode();
-
-const USER_MGMT_API = isMockMode
-  ? ""
-  : (process.env.NEXT_PUBLIC_USER_MGMT_API_URL || "http://localhost:8017").replace(/\/+$/, "");
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   let binary = "";
@@ -50,8 +42,7 @@ export interface SignupPayload {
   entity_address?: string;
   /**
    * Firestore doc id of the prospect's prior questionnaire response, when
-   * available. Backend falls back to lookup-by-email if omitted. See
-   * codex/08-workflows/signup-signin-workflow.md §2.3.4.
+   * available. Backend falls back to lookup-by-email if omitted.
    */
   questionnaire_response_id?: string;
   /**
@@ -71,39 +62,19 @@ export interface SignupResult {
     status: string;
   };
   onboarding_request_id: string;
-  /**
-   * Questionnaire response id the backend resolved at signup, either from
-   * the request payload or by email-matching the persisted envelope. `null`
-   * when no match was found — ops will link manually on review.
-   */
   questionnaire_response_id?: string | null;
-  /**
-   * `true` when the backend has queued a Firebase email-verification link.
-   * The link is mailed asynchronously; the prospect can sign in only after
-   * ops approves the account regardless of verification status.
-   */
   email_verification_pending?: boolean;
 }
 
-export async function submitSignup(
-  payload: SignupPayload,
-): Promise<SignupResult> {
-  const res = await fetch(`${USER_MGMT_API}/api/v1/signup`, {
+export async function submitSignup(payload: SignupPayload): Promise<SignupResult> {
+  const res = await fetch(`/api/v1/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
-    const body = await res
-      .json()
-      .catch(() => ({ error: `HTTP ${res.status}` }));
-    if (res.status === 404) {
-      throw new Error(
-        body.error ||
-        "Signup API not found (404). Deploy a user-management API that exposes POST /api/v1/signup, or set NEXT_PUBLIC_USER_MGMT_API_URL to that service’s base URL.",
-      );
-    }
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
     throw new Error(body.error || `Signup failed: HTTP ${res.status}`);
   }
 
@@ -121,25 +92,20 @@ export interface DocumentUploadPayload {
 
 export async function uploadUserDocument(payload: DocumentUploadPayload) {
   const base64 = arrayBufferToBase64(await payload.file.arrayBuffer());
-  const res = await fetch(
-    `${USER_MGMT_API}/api/v1/users/${payload.firebase_uid}/documents/upload`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        onboarding_request_id: payload.onboarding_request_id,
-        doc_type: payload.doc_type,
-        file_name: payload.file_name,
-        content_type: payload.content_type || "application/octet-stream",
-        file_base64: base64,
-      }),
-    },
-  );
+  const res = await fetch(`/api/v1/users/${encodeURIComponent(payload.firebase_uid)}/documents/upload`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      onboarding_request_id: payload.onboarding_request_id,
+      doc_type: payload.doc_type,
+      file_name: payload.file_name,
+      content_type: payload.content_type || "application/octet-stream",
+      file_base64: base64,
+    }),
+  });
 
   if (!res.ok) {
-    const body = await res
-      .json()
-      .catch(() => ({ error: `HTTP ${res.status}` }));
+    const body = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
     throw new Error(body.error || `Document upload failed`);
   }
 
