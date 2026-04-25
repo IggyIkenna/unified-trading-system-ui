@@ -15,6 +15,8 @@ interface FormState {
   leadResearcher: string;
   email: string;
   phone: string;
+  referralSource: string;
+  referralSourceNotes: string;
   entityStructure: string;
   fundJurisdiction: string;
   entityLocation: string;
@@ -132,6 +134,8 @@ const INITIAL_STATE: FormState = {
   leadResearcher: "",
   email: "",
   phone: "",
+  referralSource: "",
+  referralSourceNotes: "",
   entityStructure: "",
   fundJurisdiction: "",
   entityLocation: "",
@@ -241,6 +245,9 @@ function serializeState(state: FormState): SerializedFormState {
 function deserializeState(raw: SerializedFormState): FormState {
   return {
     ...raw,
+    // New fields default to empty so older cached drafts don't violate FormState string types
+    referralSource: typeof raw.referralSource === "string" ? raw.referralSource : "",
+    referralSourceNotes: typeof raw.referralSourceNotes === "string" ? raw.referralSourceNotes : "",
     assetGroups: new Set(raw.assetGroups),
     instrumentTypes: new Set(raw.instrumentTypes),
     archetypeMarkers: new Set(raw.archetypeMarkers),
@@ -628,6 +635,54 @@ export default function StrategyEvaluationPage() {
               Phone / Telegram / Signal
             </Label>
             <Input id="phone" value={form.phone} onChange={(e) => setField("phone", e.target.value)} />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">How did you hear about us?</Label>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-1">
+              {(
+                [
+                  { value: "referral", label: "Personal referral / introduction" },
+                  { value: "linkedin", label: "LinkedIn" },
+                  { value: "x", label: "X / Twitter" },
+                  { value: "search", label: "Google / search" },
+                  { value: "event", label: "Industry event / conference" },
+                  { value: "publication", label: "Newsletter / publication" },
+                  { value: "existing", label: "Existing relationship with Odum" },
+                  { value: "other", label: "Other" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="radio"
+                    name="referralSource"
+                    value={value}
+                    checked={form.referralSource === value}
+                    onChange={() => setField("referralSource", value)}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {(form.referralSource === "referral" ||
+              form.referralSource === "event" ||
+              form.referralSource === "publication" ||
+              form.referralSource === "other") && (
+              <Input
+                className="mt-2"
+                placeholder={
+                  form.referralSource === "referral"
+                    ? "Who introduced you?"
+                    : form.referralSource === "event"
+                      ? "Which event?"
+                      : form.referralSource === "publication"
+                        ? "Which publication?"
+                        : "Tell us a bit more"
+                }
+                value={form.referralSourceNotes}
+                onChange={(e) => setField("referralSourceNotes", e.target.value)}
+              />
+            )}
           </div>
 
           <div className="space-y-1">

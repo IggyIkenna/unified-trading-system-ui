@@ -122,11 +122,19 @@ export async function POST(request: Request) {
   }
 
   // Internal notification
+  const referralSource = typeof body.referralSource === "string" ? body.referralSource : "";
+  const referralSourceNotes = typeof body.referralSourceNotes === "string" ? body.referralSourceNotes : "";
+  const referralLine = referralSource
+    ? referralSourceNotes
+      ? `${referralSource} (${referralSourceNotes})`
+      : referralSource
+    : "—";
   const metrics = [
     ["Strategy", strategyName],
     ["Lead researcher", leadResearcher || "—"],
     ["Email", email || "—"],
     ["Commercial path", pathLabel],
+    ["Heard about us", referralLine],
     ["Asset groups", Array.isArray(body.assetGroups) ? (body.assetGroups as string[]).join(", ") : "—"],
     ["Strategy family", typeof body.strategyFamily === "string" ? body.strategyFamily : "—"],
     ["Sharpe ratio", typeof body.sharpeRatio === "string" ? body.sharpeRatio : "—"],

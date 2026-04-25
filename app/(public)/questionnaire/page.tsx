@@ -47,11 +47,7 @@ import {
   QUESTIONNAIRE_SERVICE_FAMILIES,
   QUESTIONNAIRE_STRATEGY_STYLES,
 } from "@/lib/questionnaire/types";
-import {
-  fingerprintAccessCode,
-  submitQuestionnaire,
-  type SubmitResult,
-} from "@/lib/questionnaire/submit";
+import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
 import {
   persistResolvedPersona,
   resolvePersonaFromQuestionnaire,
@@ -105,6 +101,8 @@ interface FormState {
   firm_name: string;
   firm_location: string;
   firm_location_notes: string;
+  referral_source: string;
+  referral_source_notes: string;
 }
 
 function toggleInSet<T>(set: Set<T>, value: T): Set<T> {
@@ -167,7 +165,9 @@ function buildResponse(state: FormState): QuestionnaireResponse {
           .split(",")
           .map((v) => v.trim().toUpperCase())
           .filter((v) => v.length > 0),
-      ].slice().sort(),
+      ]
+        .slice()
+        .sort(),
     ),
   );
 
@@ -219,6 +219,8 @@ function QuestionnaireForm() {
     firm_name: "",
     firm_location: "",
     firm_location_notes: "",
+    referral_source: "",
+    referral_source_notes: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
@@ -234,10 +236,7 @@ function QuestionnaireForm() {
     }
   }, [searchParams]);
 
-  const regUmbrellaVisible = useMemo(
-    () => isRegUmbrellaPath(state.service_family),
-    [state.service_family],
-  );
+  const regUmbrellaVisible = useMemo(() => isRegUmbrellaPath(state.service_family), [state.service_family]);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,9 +249,7 @@ function QuestionnaireForm() {
         ? {
             email: state.email.trim(),
             firm_name: state.firm_name.trim(),
-            access_code_fingerprint: await fingerprintAccessCode(
-              readStoredAccessCode() ?? "",
-            ),
+            access_code_fingerprint: await fingerprintAccessCode(readStoredAccessCode() ?? ""),
           }
         : null;
 
@@ -260,25 +257,55 @@ function QuestionnaireForm() {
     if (outcome.success) {
       const personaId = resolvePersonaFromQuestionnaire(response);
       persistResolvedPersona(personaId);
-      // Fire-and-forget: email ack + internal notify
+      // Fire-and-forget: send full response email to user + BCC info@.
+      // Server inlines every answer into both copies so the prospect sees
+      // exactly what we received and we have a durable inbox record.
       fetch("/api/questionnaire/email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: state.email.trim() || undefined,
           firmName: state.firm_name.trim() || undefined,
+          firmLocation: state.firm_location || undefined,
+          firmLocationNotes: state.firm_location_notes.trim() || undefined,
+          referralSource: state.referral_source || undefined,
+          referralSourceNotes: state.referral_source_notes.trim() || undefined,
           serviceFamily: state.service_family,
           submissionId: outcome.submissionId,
           categories: [...state.categories],
-          fundStructure: [...state.fund_structure],
+          instrumentTypes: [...state.instrument_types],
+          venueScope:
+            state.venue_scope_mode === "all"
+              ? "all"
+              : state.venue_scope_csv
+                  .split(",")
+                  .map((v) => v.trim())
+                  .filter((v) => v.length > 0),
           strategyStyle: [...state.strategy_style],
+          fundStructure: [...state.fund_structure],
           marketNeutral: state.market_neutral,
           shareClassPreferences: [...state.share_class_preferences],
           riskProfile: state.risk_profile,
           targetSharpeMin: state.target_sharpe_min_str || undefined,
           leveragePreference: state.leverage_preference,
+          // Reg-Umbrella-only axes — pass even when unset; server skips empty values
+          licenceRegion: state.licence_region,
+          targets3mo: state.targets_3mo.trim() || undefined,
+          targets1yr: state.targets_1yr.trim() || undefined,
+          targets2yr: state.targets_2yr.trim() || undefined,
+          ownMlro: state.own_mlro,
+          entityJurisdiction: state.entity_jurisdiction.trim() || undefined,
+          supportedCurrencies: [
+            ...state.supported_currencies,
+            ...state.supported_currencies_other
+              .split(",")
+              .map((v) => v.trim().toUpperCase())
+              .filter((v) => v.length > 0),
+          ],
         }),
-      }).catch(() => {/* non-critical */});
+      }).catch(() => {
+        /* non-critical */
+      });
     }
     setResult(outcome);
     setSubmitting(false);
@@ -294,8 +321,8 @@ function QuestionnaireForm() {
     <main className="mx-auto max-w-2xl px-6 py-12" data-testid="questionnaire-page">
       <h1 className="text-3xl font-semibold">Tell us about your strategy</h1>
       <p className="mt-2 text-slate-500">
-        Invite-only questionnaire. Six quick questions (plus a Regulatory Umbrella
-        branch if you need FCA cover) so we can pre-configure your path.
+        Invite-only questionnaire. Six quick questions (plus a Regulatory Umbrella branch if you need FCA cover) so we
+        can pre-configure your path.
       </p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-8" data-testid="questionnaire-form">
@@ -311,9 +338,7 @@ function QuestionnaireForm() {
                   value={cat}
                   data-testid={`category-${cat}`}
                   checked={state.categories.has(cat)}
-                  onChange={() =>
-                    setState((s) => ({ ...s, categories: toggleInSet(s.categories, cat) }))
-                  }
+                  onChange={() => setState((s) => ({ ...s, categories: toggleInSet(s.categories, cat) }))}
                 />
                 <span>{cat}</span>
               </label>
@@ -391,19 +416,14 @@ function QuestionnaireForm() {
           <legend className="font-medium">4. Strategy styles</legend>
           <div className="mt-2 flex flex-wrap gap-2">
             {QUESTIONNAIRE_STRATEGY_STYLES.map((style) => (
-              <label
-                key={style}
-                className="inline-flex items-center gap-2 rounded border px-3 py-1"
-              >
+              <label key={style} className="inline-flex items-center gap-2 rounded border px-3 py-1">
                 <input
                   type="checkbox"
                   name="strategy_style"
                   value={style}
                   data-testid={`strategy-${style}`}
                   checked={state.strategy_style.has(style)}
-                  onChange={() =>
-                    setState((s) => ({ ...s, strategy_style: toggleInSet(s.strategy_style, style) }))
-                  }
+                  onChange={() => setState((s) => ({ ...s, strategy_style: toggleInSet(s.strategy_style, style) }))}
                 />
                 <span>{style.replace(/_/g, " ")}</span>
               </label>
@@ -451,9 +471,7 @@ function QuestionnaireForm() {
                   value={value}
                   data-testid={`fund-structure-${value}`}
                   checked={state.fund_structure.has(value)}
-                  onChange={() =>
-                    setState((s) => ({ ...s, fund_structure: toggleInSet(s.fund_structure, value) }))
-                  }
+                  onChange={() => setState((s) => ({ ...s, fund_structure: toggleInSet(s.fund_structure, value) }))}
                 />
                 <span>{label}</span>
               </label>
@@ -467,7 +485,9 @@ function QuestionnaireForm() {
           className="rounded-lg border border-border/40 bg-card/20 p-5 space-y-6"
         >
           <header>
-            <h2 className="text-lg font-semibold">Strategy preferences <span className="text-sm font-normal text-muted-foreground">(optional)</span></h2>
+            <h2 className="text-lg font-semibold">
+              Strategy preferences <span className="text-sm font-normal text-muted-foreground">(optional)</span>
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               These shape the strategy universe we show you. Skip any you&apos;re unsure of.
             </p>
@@ -547,7 +567,9 @@ function QuestionnaireForm() {
                     value={value}
                     data-testid={`leverage-${value}`}
                     checked={state.leverage_preference === value}
-                    onChange={() => setState((s) => ({ ...s, leverage_preference: value as QuestionnaireLeveragePreference }))}
+                    onChange={() =>
+                      setState((s) => ({ ...s, leverage_preference: value as QuestionnaireLeveragePreference }))
+                    }
                   />
                   <span>{label}</span>
                 </label>
@@ -558,7 +580,9 @@ function QuestionnaireForm() {
           {/* Share class preference */}
           <fieldset data-testid="axis-share-class">
             <legend className="font-medium">10. Base currency preference</legend>
-            <p className="mt-1 text-xs text-muted-foreground">Preferred denomination for strategy P&amp;L. Select all that apply — leave blank for no preference.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Preferred denomination for strategy P&amp;L. Select all that apply — leave blank for no preference.
+            </p>
             <div className="mt-2 flex flex-wrap gap-2">
               {(
                 [
@@ -575,7 +599,10 @@ function QuestionnaireForm() {
                     data-testid={`share-class-${value}`}
                     checked={state.share_class_preferences.has(value)}
                     onChange={() =>
-                      setState((s) => ({ ...s, share_class_preferences: toggleInSet(s.share_class_preferences, value) }))
+                      setState((s) => ({
+                        ...s,
+                        share_class_preferences: toggleInSet(s.share_class_preferences, value),
+                      }))
                     }
                   />
                   <span>{label}</span>
@@ -586,7 +613,9 @@ function QuestionnaireForm() {
 
           {/* Target Sharpe (optional free text) */}
           <fieldset data-testid="axis-target-sharpe">
-            <legend className="font-medium">11. Minimum Sharpe target <span className="font-normal text-muted-foreground text-sm">(optional)</span></legend>
+            <legend className="font-medium">
+              11. Minimum Sharpe target <span className="font-normal text-muted-foreground text-sm">(optional)</span>
+            </legend>
             <input
               type="number"
               name="target_sharpe_min"
@@ -598,7 +627,9 @@ function QuestionnaireForm() {
               value={state.target_sharpe_min_str}
               onChange={(e) => setState((s) => ({ ...s, target_sharpe_min_str: e.target.value }))}
             />
-            <p className="mt-1 text-xs text-muted-foreground">Used for display annotation and ranking — not a hard filter.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Used for display annotation and ranking — not a hard filter.
+            </p>
           </fieldset>
         </section>
 
@@ -611,8 +642,8 @@ function QuestionnaireForm() {
             <header>
               <h2 className="text-lg font-semibold">Regulatory Umbrella details</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                These help us tailor the umbrella structure to your firm. Skip any
-                you&apos;re unsure of — we&apos;ll follow up.
+                These help us tailor the umbrella structure to your firm. Skip any you&apos;re unsure of — we&apos;ll
+                follow up.
               </p>
             </header>
 
@@ -646,13 +677,10 @@ function QuestionnaireForm() {
                 className="mt-2 w-full rounded border px-3 py-2"
                 placeholder="GB, IE, LU, JE, GG, Gibraltar …"
                 value={state.entity_jurisdiction}
-                onChange={(e) =>
-                  setState((s) => ({ ...s, entity_jurisdiction: e.target.value }))
-                }
+                onChange={(e) => setState((s) => ({ ...s, entity_jurisdiction: e.target.value }))}
               />
               <p className="mt-1 text-xs text-muted-foreground">
-                ISO-2 country code preferred; free text accepted for dependent
-                territories or EEA sub-regions.
+                ISO-2 country code preferred; free text accepted for dependent territories or EEA sub-regions.
               </p>
             </fieldset>
 
@@ -661,10 +689,7 @@ function QuestionnaireForm() {
               <legend className="font-medium">9. Operating currencies</legend>
               <div className="mt-2 flex flex-wrap gap-2">
                 {COMMON_CURRENCIES.map((ccy) => (
-                  <label
-                    key={ccy}
-                    className="inline-flex items-center gap-2 rounded border px-3 py-1"
-                  >
+                  <label key={ccy} className="inline-flex items-center gap-2 rounded border px-3 py-1">
                     <input
                       type="checkbox"
                       name="supported_currencies"
@@ -726,12 +751,9 @@ function QuestionnaireForm() {
 
             {/* 11-13. Targets */}
             <fieldset data-testid="axis-targets">
-              <legend className="font-medium">
-                11. Business targets (free text)
-              </legend>
+              <legend className="font-medium">11. Business targets (free text)</legend>
               <p className="mt-1 text-xs text-muted-foreground">
-                AUM / revenue / headcount / licence-milestone — whatever best
-                captures the plan. Blank entries are fine.
+                AUM / revenue / headcount / licence-milestone — whatever best captures the plan. Blank entries are fine.
               </p>
               <label className="mt-3 block text-sm">
                 First 3 months
@@ -774,8 +796,7 @@ function QuestionnaireForm() {
         <fieldset data-testid="axis-envelope">
           <legend className="font-medium">Who&apos;s this for?</legend>
           <p className="mt-1 text-xs text-slate-500">
-            So we can tie your answers back to your organisation when we follow
-            up.
+            So we can tie your answers back to your organisation when we follow up.
           </p>
           <label className="mt-3 block text-sm">
             Work email
@@ -849,6 +870,55 @@ function QuestionnaireForm() {
               />
             )}
           </div>
+          <div className="mt-3 text-sm">
+            <p className="font-medium">How did you hear about us?</p>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+              {(
+                [
+                  { value: "referral", label: "Personal referral / introduction" },
+                  { value: "linkedin", label: "LinkedIn" },
+                  { value: "x", label: "X / Twitter" },
+                  { value: "search", label: "Google / search" },
+                  { value: "event", label: "Industry event / conference" },
+                  { value: "publication", label: "Newsletter / publication" },
+                  { value: "existing", label: "Existing relationship with Odum" },
+                  { value: "other", label: "Other" },
+                ] as { value: string; label: string }[]
+              ).map(({ value, label }) => (
+                <label key={value} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="referral_source"
+                    value={value}
+                    checked={state.referral_source === value}
+                    onChange={() => setState((s) => ({ ...s, referral_source: value }))}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {(state.referral_source === "referral" ||
+              state.referral_source === "event" ||
+              state.referral_source === "publication" ||
+              state.referral_source === "other") && (
+              <input
+                type="text"
+                name="referral_source_notes"
+                className="mt-2 w-full rounded border px-3 py-2"
+                placeholder={
+                  state.referral_source === "referral"
+                    ? "Who introduced you?"
+                    : state.referral_source === "event"
+                      ? "Which event?"
+                      : state.referral_source === "publication"
+                        ? "Which publication?"
+                        : "Tell us a bit more"
+                }
+                value={state.referral_source_notes}
+                onChange={(e) => setState((s) => ({ ...s, referral_source_notes: e.target.value }))}
+              />
+            )}
+          </div>
         </fieldset>
 
         <div className="flex items-center gap-4">
@@ -878,9 +948,9 @@ function QuestionnaireForm() {
         <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Optional</p>
         <h2 className="mt-1 text-lg font-semibold">Strategy Evaluation Pack</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          If you have an existing strategy to submit for evaluation — incubation, signal integration,
-          or regulatory coverage — the full DDQ covers backtest methodology, performance evidence,
-          path-specific questions, and deployment readiness.
+          If you have an existing strategy to submit for evaluation — incubation, signal integration, or regulatory
+          coverage — the full DDQ covers backtest methodology, performance evidence, path-specific questions, and
+          deployment readiness.
         </p>
         <a
           href="/strategy-evaluation"
