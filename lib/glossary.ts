@@ -109,8 +109,7 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
   pnl: {
     id: "pnl",
     label: "P&L",
-    definition:
-      "Profit and loss — the running tally of gains and losses on a position, strategy, or book.",
+    definition: "Profit and loss — the running tally of gains and losses on a position, strategy, or book.",
   },
   var: {
     id: "var",
@@ -291,6 +290,12 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
     label: "treasury management",
     definition:
       "Active management of idle capital across venues, chains, or currencies — sweep accounts, stablecoin yield, collateral optimisation, and inter-venue transfer flows.",
+  },
+  stbt: {
+    id: "stbt",
+    label: "STBT",
+    definition:
+      "Sell today, buy tomorrow — short-term overnight position, opened on day T and closed on day T+1. Originally an Indian-equities convention for one-day shorts, used loosely to mean any ~1-day overnight hold.",
   },
   "execution-alpha": {
     id: "execution-alpha",

@@ -445,6 +445,7 @@ export default function StrategyEvaluationPage() {
   const [previousSubmissionId, setPreviousSubmissionId] = React.useState<string | null>(null);
   const [prefillState, setPrefillState] = React.useState<"idle" | "loading" | "loaded" | "failed">("idle");
   const [currentStep, setCurrentStep] = React.useState<number>(1);
+  const [draftSavedAt, setDraftSavedAt] = React.useState<number | null>(null);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   // Files cached in-memory between pick and submit. Not serialised to
   // localStorage — abandoning a draft never produces orphan uploads.
@@ -529,6 +530,7 @@ export default function StrategyEvaluationPage() {
     debounceRef.current = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState(form)));
+        setDraftSavedAt(Date.now());
       } catch {
         // ignore storage errors
       }
@@ -808,7 +810,13 @@ export default function StrategyEvaluationPage() {
             <span className="font-medium">{STEPS[currentStep - 1]?.title}</span>
             <span className="text-muted-foreground text-xs ml-2">(Sections {STEPS[currentStep - 1]?.sections})</span>
           </p>
-          <p className="text-xs text-muted-foreground hidden sm:block">Tap any bar above to jump</p>
+          <p className="text-xs text-muted-foreground hidden sm:block">
+            {draftSavedAt ? (
+              <span className="text-emerald-500/80">Draft saved · stays in this browser</span>
+            ) : (
+              "Tap any bar above to jump"
+            )}
+          </p>
         </div>
       </div>
 
@@ -1528,6 +1536,41 @@ export default function StrategyEvaluationPage() {
               </div>
 
               <div className="space-y-1">
+                <Label className="text-sm font-medium">Holding period</Label>
+                <p className="text-xs text-muted-foreground">How long does a typical position stay open?</p>
+                <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
+                  {(
+                    [
+                      { value: "intraday", label: "Intraday — closes by session end" },
+                      {
+                        value: "stbt",
+                        label: "Overnight — ~1 day",
+                        hint: "a.k.a. STBT (sell-today-buy-tomorrow)",
+                      },
+                      { value: "positional", label: "Positional — multi-day to weeks" },
+                      { value: "long_term", label: "Long-term — weeks to months" },
+                      { value: "mixed", label: "Mixed / variable" },
+                    ] as { value: string; label: string; hint?: string }[]
+                  ).map(({ value, label, hint }) => (
+                    <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                      <input
+                        type="radio"
+                        name="holdingPeriod"
+                        value={value}
+                        checked={form.holdingPeriod === value}
+                        onChange={() => setField("holdingPeriod", value)}
+                        className="mt-0.5"
+                      />
+                      <span>
+                        {label}
+                        {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
                 <Label className="text-sm font-medium">How do you see this fitting into our system?</Label>
                 <p className="text-xs text-muted-foreground">
                   Optional — share any context on your current tech stack, how standalone the strategy is, or what level
@@ -1965,33 +2008,6 @@ export default function StrategyEvaluationPage() {
                       value={form.latencyAssumptions}
                       onChange={(e) => setField("latencyAssumptions", e.target.value)}
                     />
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label className="text-sm font-medium">Holding period</Label>
-                    <p className="text-xs text-muted-foreground">How long does a typical position stay open?</p>
-                    <div className="flex flex-wrap gap-x-6 gap-y-3 mt-2">
-                      {(
-                        [
-                          { value: "intraday", label: "Intraday — closes by session end" },
-                          { value: "stbt", label: "Overnight / STBT — 1 day or so" },
-                          { value: "positional", label: "Positional — multi-day to weeks" },
-                          { value: "long_term", label: "Long-term — weeks to months" },
-                          { value: "mixed", label: "Mixed / variable" },
-                        ] as { value: string; label: string }[]
-                      ).map(({ value, label }) => (
-                        <label key={value} className="flex items-center gap-2 text-sm cursor-pointer">
-                          <input
-                            type="radio"
-                            name="holdingPeriod"
-                            value={value}
-                            checked={form.holdingPeriod === value}
-                            onChange={() => setField("holdingPeriod", value)}
-                          />
-                          {label}
-                        </label>
-                      ))}
-                    </div>
                   </div>
 
                   <div className="space-y-1">
@@ -2901,6 +2917,19 @@ export default function StrategyEvaluationPage() {
               <Button
                 type="button"
                 onClick={() => {
+                  // Block forward navigation only for the early required-field steps
+                  // (1 + 2). Later steps are best-effort — let the user move freely
+                  // and surface any remaining gaps at final Submit.
+                  if (currentStep === 1 || currentStep === 2) {
+                    const allErrs = validate();
+                    const stepErrs = allErrs.filter((e) => FIELD_TO_STEP[e.field] === currentStep);
+                    if (stepErrs.length > 0) {
+                      setErrors(allErrs);
+                      const first = document.getElementById(stepErrs[0].field);
+                      if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+                      return;
+                    }
+                  }
                   setCurrentStep((s) => Math.min(TOTAL_STEPS, s + 1));
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
