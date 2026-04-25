@@ -189,7 +189,28 @@ export async function POST(request: Request) {
     }),
   );
 
-  await Promise.allSettled(sends);
+  // Surface delivery outcomes — silent allSettled hid an Outlook
+  // quarantine issue once. Each entry logs whether sendEmail returned
+  // ok / sent / reason so Cloud Run logs reveal when Resend rejected
+  // or when the API key was missing.
+  const results = await Promise.allSettled(sends);
+  results.forEach((r, idx) => {
+    const target = idx === 0 && email ? `submitter (${email})` : `internal (${INTERNAL_ADDRESS})`;
+    if (r.status === "rejected") {
+      console.error(`[strategy-evaluation] sendEmail threw for ${target}:`, r.reason);
+      return;
+    }
+    const out = r.value as { ok: boolean; sent: boolean; reason?: string } | undefined;
+    if (!out) {
+      console.error(`[strategy-evaluation] sendEmail returned undefined for ${target}`);
+    } else if (!out.ok) {
+      console.error(`[strategy-evaluation] sendEmail !ok for ${target}: ${out.reason ?? "?"}`);
+    } else if (!out.sent) {
+      console.warn(`[strategy-evaluation] sendEmail not sent for ${target}: ${out.reason ?? "?"}`);
+    } else {
+      console.info(`[strategy-evaluation] sendEmail OK for ${target}`);
+    }
+  });
 
   return NextResponse.json({ ok: true, submissionId });
 }

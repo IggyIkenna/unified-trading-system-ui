@@ -186,7 +186,7 @@ export async function POST(request: Request) {
   const to = body.email || INTERNAL_ADDRESS;
   const bcc = body.email ? [INTERNAL_ADDRESS] : undefined;
 
-  await sendEmail({
+  const result = await sendEmail({
     from: getSenderFor("hello"),
     to,
     bcc,
@@ -194,6 +194,13 @@ export async function POST(request: Request) {
     subject: `Your questionnaire responses — ${displayName} (${serviceName})`,
     html,
   });
+  if (!result.ok) {
+    console.error(`[questionnaire/email] sendEmail !ok to ${to}: ${result.reason ?? "?"}`);
+  } else if (!result.sent) {
+    console.warn(`[questionnaire/email] sendEmail not sent to ${to}: ${result.reason ?? "?"}`);
+  } else {
+    console.info(`[questionnaire/email] sendEmail OK to ${to}`);
+  }
 
   return NextResponse.json({ ok: true });
 }
