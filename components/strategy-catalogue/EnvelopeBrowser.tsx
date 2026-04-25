@@ -114,11 +114,11 @@ export function EnvelopeBrowser(): React.ReactElement {
   }, [archetypeFilter, familyFilter, categoryFilter, envelope]);
 
   const availableFamilies = React.useMemo(() => {
-    if (!envelope) return [];
+    if (!envelope?.categories) return [];
     if (categoryFilter === "ALL") {
       const s = new Set<string>();
       for (const cat of Object.values(envelope.categories)) {
-        for (const fam of Object.keys(cat.families)) s.add(fam);
+        for (const fam of Object.keys(cat?.families ?? {})) s.add(fam);
       }
       return Array.from(s).sort();
     }
@@ -126,7 +126,7 @@ export function EnvelopeBrowser(): React.ReactElement {
   }, [envelope, categoryFilter]);
 
   const availableArchetypes = React.useMemo(() => {
-    if (!envelope) return [];
+    if (!envelope?.categories) return [];
     const out = new Set<string>();
     const cats = categoryFilter === "ALL"
       ? Object.entries(envelope.categories)
@@ -135,12 +135,12 @@ export function EnvelopeBrowser(): React.ReactElement {
         : [];
     for (const [, cat] of cats) {
       const families = familyFilter === "ALL"
-        ? Object.entries(cat.families)
-        : cat.families[familyFilter]
+        ? Object.entries(cat?.families ?? {})
+        : cat?.families[familyFilter]
           ? [[familyFilter, cat.families[familyFilter]] as const]
           : [];
       for (const [, fam] of families) {
-        for (const arc of Object.keys(fam.archetypes)) out.add(arc);
+        for (const arc of Object.keys(fam?.archetypes ?? {})) out.add(arc);
       }
     }
     return Array.from(out).sort();
