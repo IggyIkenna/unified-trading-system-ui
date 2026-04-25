@@ -1,16 +1,26 @@
 "use client";
 
-import { DriftAnalysisPanel } from "@/components/trading/drift-analysis-panel";
-import { LiveBatchComparison } from "@/components/trading/live-batch-comparison";
+import { LiveBatchComparison, type ViewMode } from "@/components/trading/live-batch-comparison";
+import { StatusDot } from "@/components/shared/status-badge";
 import { ValueFormatToggle, useValueFormat } from "@/components/trading/value-format-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import { ChevronDown, ChevronUp, Database, Radio } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { formatPercent } from "@/lib/utils/formatters";
+import { ArrowLeftRight, Calendar, Database, Minus, Radio, SplitSquareVertical } from "lucide-react";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
+
+type MetricKey = "pnl" | "nav" | "exposure";
+
+const METRIC_TITLES: Record<MetricKey, string> = {
+  pnl: "Cumulative P&L",
+  nav: "Net Asset Value",
+  exposure: "Net Exposure",
+};
 
 function getYesterday(): string {
   const d = new Date();
@@ -18,20 +28,87 @@ function getYesterday(): string {
   return d.toISOString().split("T")[0];
 }
 
+function getMaxBatchDate(): string {
+  return new Date(Date.now() - 86400000).toISOString().split("T")[0];
+}
+
+// Radix ScrollArea wraps Viewport content in display:table, which breaks
+// height propagation through flex/h-full. Walk up to the ScrollArea Root
+// (data-slot="widget-scroll") for the extrinsic height and observe the actual
+// header row to subtract its real height — needed because the legend wraps to
+// a second line on narrow widgets and a fixed-px chrome estimate either
+// over-clips the chart or overflows and produces a vertical scrollbar.
+//
+// Returns a chart ref + header ref + computed chart height in pixels.
+const PADDING_PX = 32 + 16; // pt-5 + pb-3 + gap-4
+function useChartPixelHeight(): {
+  chartRef: (node: HTMLDivElement | null) => void;
+  headerRef: (node: HTMLDivElement | null) => void;
+  chartHeight: number;
+} {
+  const [rootHeight, setRootHeight] = React.useState(0);
+  const [headerHeight, setHeaderHeight] = React.useState(0);
+  const rootCleanupRef = React.useRef<(() => void) | null>(null);
+  const headerCleanupRef = React.useRef<(() => void) | null>(null);
+
+  const chartRef = React.useCallback((node: HTMLDivElement | null) => {
+    rootCleanupRef.current?.();
+    rootCleanupRef.current = null;
+    if (!node) return;
+    let root: HTMLElement | null = node.parentElement;
+    while (root && root.dataset.slot !== "widget-scroll") {
+      root = root.parentElement;
+    }
+    if (!root) return;
+    const target = root;
+    const measure = () => {
+      const h = target.getBoundingClientRect().height;
+      if (h > 0) setRootHeight(h);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(target);
+    rootCleanupRef.current = () => ro.disconnect();
+  }, []);
+
+  const headerRef = React.useCallback((node: HTMLDivElement | null) => {
+    headerCleanupRef.current?.();
+    headerCleanupRef.current = null;
+    if (!node) return;
+    const measure = () => {
+      const h = node.getBoundingClientRect().height;
+      if (h > 0) setHeaderHeight(h);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(node);
+    headerCleanupRef.current = () => ro.disconnect();
+  }, []);
+
+  // Subtract a couple of extra px so the chart never quite fills the viewport
+  // — keeps the parent ScrollArea from showing a 1-2px sliver of vertical scroll.
+  const chartHeight = Math.max(rootHeight - headerHeight - PADDING_PX - 4, 120);
+  return { chartRef, headerRef, chartHeight };
+}
+
 export function PnLChartWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
   const { scope: context } = useGlobalScope();
-  const [showTimeSeries, setShowTimeSeries] = React.useState(true);
   const [batchDate, setBatchDate] = React.useState(getYesterday());
+  const [activeTab, setActiveTab] = React.useState<MetricKey>("pnl");
+  const [viewMode, setViewMode] = React.useState<ViewMode>("split");
   const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar");
-  if (!ctx)
-    return (
-      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
-        Navigate to Overview tab
-      </div>
-    );
+  const { chartRef, headerRef, chartHeight } = useChartPixelHeight();
+
   const { liveTimeSeries, batchTimeSeries, realtimePnlPoints, timeseriesLoading, liveBatchLoading, formatCurrency } =
-    ctx;
+    ctx || {
+      liveTimeSeries: { pnl: [], nav: [], exposure: [] },
+      batchTimeSeries: { pnl: [], nav: [], exposure: [] },
+      realtimePnlPoints: [],
+      timeseriesLoading: false,
+      liveBatchLoading: false,
+      formatCurrency: (v: number) => v.toString(),
+    };
 
   const hasData =
     liveTimeSeries.pnl.length > 0 ||
@@ -42,6 +119,65 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
     batchTimeSeries.exposure.length > 0 ||
     realtimePnlPoints.length > 0;
 
+  const liveByMetric: Record<MetricKey, typeof liveTimeSeries.pnl> = {
+    pnl: [...liveTimeSeries.pnl, ...realtimePnlPoints],
+    nav: liveTimeSeries.nav,
+    exposure: liveTimeSeries.exposure,
+  };
+  const batchByMetric: Record<MetricKey, typeof batchTimeSeries.pnl> = {
+    pnl: batchTimeSeries.pnl,
+    nav: batchTimeSeries.nav,
+    exposure: batchTimeSeries.exposure,
+  };
+
+  const liveData = liveByMetric[activeTab];
+  const batchData = batchByMetric[activeTab];
+  const latestLive = liveData[liveData.length - 1]?.value ?? 0;
+  const latestBatch = batchData[batchData.length - 1]?.value ?? 0;
+  const latestDelta = latestLive - latestBatch;
+  const deltaPercent = latestBatch !== 0 ? (latestDelta / Math.abs(latestBatch)) * 100 : 0;
+
+  // Per-metric percent semantics:
+  //   P&L      → value / startingNAV * 100         (cumulative return on capital)
+  //   NAV      → (value - firstNAV) / firstNAV * 100      (% change since start)
+  //   Exposure → (value - firstExposure) / firstExposure * 100  (% change since start)
+  // Keeps each chart visually meaningful: P&L starts ≈0% and grows, NAV/Exposure
+  // open at 0% and trend up/down, instead of the previous one-size-fits-all
+  // (v / totalNav) which made NAV a flat ~100% line.
+  const startingNav = liveTimeSeries.nav[0]?.value ?? batchTimeSeries.nav[0]?.value ?? 0;
+  const percentBaseline = activeTab === "pnl" ? startingNav : (liveData[0]?.value ?? batchData[0]?.value ?? 0);
+
+  const formatChart = React.useCallback(
+    (v: number) => {
+      if (valueFormat === "dollar") return formatCurrency(v);
+      if (!percentBaseline) return "0.00%";
+      const pct = activeTab === "pnl" ? (v / percentBaseline) * 100 : ((v - percentBaseline) / percentBaseline) * 100;
+      return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+    },
+    [valueFormat, formatCurrency, percentBaseline, activeTab],
+  );
+
+  // Delta in percent mode is a *difference*, not a level — format as a linear
+  // fraction of the baseline regardless of the per-metric semantics above.
+  const formatDelta = React.useCallback(
+    (delta: number) => {
+      if (valueFormat === "dollar") return formatCurrency(delta);
+      if (!percentBaseline) return "0.00%";
+      const pct = (delta / percentBaseline) * 100;
+      return `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`;
+    },
+    [valueFormat, formatCurrency, percentBaseline],
+  );
+
+  const maxBatchDate = getMaxBatchDate();
+
+  if (!ctx)
+    return (
+      <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
+        Navigate to Overview tab
+      </div>
+    );
+
   if (!timeseriesLoading && !liveBatchLoading && !hasData) {
     return (
       <div className="flex h-full items-center justify-center p-3 text-xs text-muted-foreground">
@@ -51,105 +187,147 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   }
 
   return (
-    <div className="p-3 space-y-2">
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setShowTimeSeries(!showTimeSeries)}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {showTimeSeries ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-          <span>{showTimeSeries ? "Hide" : "Show"} Time Series</span>
-        </button>
-        <ValueFormatToggle format={valueFormat} onFormatChange={setValueFormat} className="ml-2" />
-        <Badge variant="outline" className="ml-2 text-micro">
-          {context.mode === "live" ? (
-            <span className="flex items-center gap-1">
-              <Radio className="size-2.5 animate-pulse text-[var(--status-live)]" />
+    <div className="flex h-full flex-col px-3 pt-5 pb-3 gap-4 overflow-hidden">
+      <div ref={headerRef} className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap">
+          <h3 className="text-base font-semibold">{METRIC_TITLES[activeTab]}</h3>
+          <div className="flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <StatusDot status="live" className="size-2" />
+              <span className="text-muted-foreground">Live</span>
+              <span className="font-medium">{formatChart(latestLive)}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <StatusDot status="batch" className="size-2" />
+              <span className="text-muted-foreground">Batch</span>
+              <span className="font-medium">{formatChart(latestBatch)}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <ArrowLeftRight className="size-3 text-muted-foreground" />
+              <span className="text-muted-foreground">Delta</span>
+              <span
+                className={cn(
+                  "font-medium",
+                  latestDelta >= 0 ? "text-[var(--pnl-positive)]" : "text-[var(--pnl-negative)]",
+                )}
+              >
+                {latestDelta >= 0 ? "+" : ""}
+                {formatDelta(latestDelta)}
+                <span className="text-muted-foreground ml-1">
+                  ({deltaPercent >= 0 ? "+" : ""}
+                  {formatPercent(deltaPercent, 1)})
+                </span>
+              </span>
+            </div>
+          </div>
+          <Badge variant="outline" className="text-micro">
+            {context.mode === "live" ? (
+              <span className="flex items-center gap-1">
+                <Radio className="size-2.5 animate-pulse text-[var(--status-live)]" />
+                Live
+              </span>
+            ) : (
+              <span className="flex items-center gap-1">
+                <Database className="size-2.5" />
+                Batch ({context.asOfDatetime?.split("T")[0]})
+              </span>
+            )}
+          </Badge>
+          {(timeseriesLoading || liveBatchLoading) && <Spinner size="sm" className="size-3.5 text-muted-foreground" />}
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as MetricKey)}>
+            <TabsList>
+              <TabsTrigger value="pnl">P&L</TabsTrigger>
+              <TabsTrigger value="nav">NAV</TabsTrigger>
+              <TabsTrigger value="exposure">Exposure</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <ValueFormatToggle format={valueFormat} onFormatChange={setValueFormat} />
+          <div className="flex items-center border border-border rounded-md overflow-hidden">
+            <button
+              onClick={() => setViewMode("live")}
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
+                viewMode === "live"
+                  ? "bg-[var(--status-live)]/10 text-[var(--status-live)]"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Radio className="size-3" />
               Live
-            </span>
-          ) : (
-            <span className="flex items-center gap-1">
-              <Database className="size-2.5" />
-              Batch ({context.asOfDatetime?.split("T")[0]})
-            </span>
-          )}
-        </Badge>
-        {(timeseriesLoading || liveBatchLoading) && (
-          <Spinner size="sm" className="size-3.5 text-muted-foreground ml-1" />
-        )}
+            </button>
+            <button
+              onClick={() => setViewMode("batch")}
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
+                viewMode === "batch" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Database className="size-3" />
+              Batch
+            </button>
+            <button
+              onClick={() => setViewMode("split")}
+              style={
+                viewMode === "split"
+                  ? {
+                      backgroundColor: "color-mix(in oklab, var(--chart-5) 15%, transparent)",
+                      color: "var(--chart-5)",
+                    }
+                  : undefined
+              }
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
+                viewMode !== "split" && "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <SplitSquareVertical className="size-3" />
+              Split
+            </button>
+            <button
+              onClick={() => setViewMode("delta")}
+              style={
+                viewMode === "delta"
+                  ? {
+                      backgroundColor: "color-mix(in oklab, var(--pnl-negative) 15%, transparent)",
+                      color: "var(--pnl-negative)",
+                    }
+                  : undefined
+              }
+              className={cn(
+                "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
+                viewMode !== "delta" && "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <Minus className="size-3" />
+              Delta
+            </button>
+          </div>
+          <div className="flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
+            <Calendar className="size-3 text-muted-foreground" />
+            <input
+              type="date"
+              value={batchDate}
+              onChange={(e) => setBatchDate(e.target.value)}
+              max={maxBatchDate}
+              className="bg-transparent text-xs border-none focus:outline-none w-28"
+            />
+          </div>
+        </div>
       </div>
 
-      {showTimeSeries && (
-        <Tabs defaultValue="pnl" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="pnl">P&L</TabsTrigger>
-            <TabsTrigger value="nav">NAV</TabsTrigger>
-            <TabsTrigger value="exposure">Exposure</TabsTrigger>
-          </TabsList>
-          <TabsContent value="pnl">
-            <LiveBatchComparison
-              title="Cumulative P&L"
-              liveData={[...liveTimeSeries.pnl, ...realtimePnlPoints]}
-              batchData={batchTimeSeries.pnl}
-              valueFormatter={formatCurrency}
-              height={220}
-              selectedDate={batchDate}
-              onDateChange={setBatchDate}
-            />
-          </TabsContent>
-          <TabsContent value="nav">
-            <LiveBatchComparison
-              title="Net Asset Value"
-              liveData={liveTimeSeries.nav}
-              batchData={batchTimeSeries.nav}
-              valueFormatter={formatCurrency}
-              height={220}
-              selectedDate={batchDate}
-              onDateChange={setBatchDate}
-            />
-          </TabsContent>
-          <TabsContent value="exposure">
-            <LiveBatchComparison
-              title="Net Exposure"
-              liveData={liveTimeSeries.exposure}
-              batchData={batchTimeSeries.exposure}
-              valueFormatter={formatCurrency}
-              height={220}
-              selectedDate={batchDate}
-              onDateChange={setBatchDate}
-            />
-          </TabsContent>
-        </Tabs>
-      )}
-
-      {showTimeSeries && (
-        <DriftAnalysisPanel
-          metrics={[
-            {
-              label: "P&L",
-              liveValue: liveTimeSeries.pnl[liveTimeSeries.pnl.length - 1]?.value || 0,
-              batchValue: batchTimeSeries.pnl[batchTimeSeries.pnl.length - 1]?.value || 0,
-              threshold: 2,
-            },
-            {
-              label: "Net Exposure",
-              liveValue: liveTimeSeries.exposure[liveTimeSeries.exposure.length - 1]?.value || 0,
-              batchValue: batchTimeSeries.exposure[batchTimeSeries.exposure.length - 1]?.value || 0,
-              threshold: 5,
-            },
-            {
-              label: "NAV",
-              liveValue: liveTimeSeries.nav[liveTimeSeries.nav.length - 1]?.value || 0,
-              batchValue: batchTimeSeries.nav[batchTimeSeries.nav.length - 1]?.value || 0,
-              threshold: 1,
-            },
-          ]}
-          unreconciledItems={[]}
-          batchAsOf={`${batchDate} 23:59 UTC`}
-          liveAsOf="Now"
+      <div ref={chartRef} style={{ height: chartHeight }} className="w-full">
+        <LiveBatchComparison
+          liveData={liveData}
+          batchData={batchData}
+          valueFormatter={formatChart}
+          viewMode={viewMode}
+          height={chartHeight}
+          animationId={activeTab}
         />
-      )}
+      </div>
     </div>
   );
 }
