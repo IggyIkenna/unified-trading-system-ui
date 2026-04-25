@@ -344,6 +344,18 @@ export const GLOSSARY: Readonly<Record<string, GlossaryEntry>> = {
   },
 
   // ── Strategy families ────────────────────────────────────────────────────
+  "strategy-family": {
+    id: "strategy-family",
+    label: "Strategy family",
+    definition:
+      "A grouping of strategies by the style of edge they generate — carry, arbitrage, market-making, directional signal, volatility, portfolio, etc. Families are the top-level taxonomy used to route clients to the kind of strategy they are interested in or already run. A family contains one or more archetypes; each archetype is a concrete recipe instantiated across venues, instruments, and timeframes.",
+  },
+  "strategy-archetype": {
+    id: "strategy-archetype",
+    label: "Strategy archetype",
+    definition:
+      "A concrete recipe inside a strategy family — e.g. CARRY_BASIS_PERP (funding-rate carry via perpetuals) is an archetype of the Carry & Yield family. Archetypes define the mechanics; instances are archetypes pinned to specific venues, instruments, timeframes, and share classes.",
+  },
   "ml-directional": {
     id: "ml-directional",
     label: "ML Directional",

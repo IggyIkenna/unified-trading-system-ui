@@ -68,15 +68,50 @@ const MOCK_RISK_METRICS: RiskMetric[] = [
 
 export function PortfolioAnalytics() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
+  const [familyFilter, setFamilyFilter] = React.useState<string>("all");
+  const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all");
   const { data: clientsData, isLoading: clientsLoading } = useClients();
   const { data: summary } = usePerformanceSummary(selectedClientId);
   const { data: coinsData } = useCoinBreakdown(selectedClientId);
 
-  const clients = clientsData?.clients ?? [];
+  const allClients = clientsData?.clients ?? [];
+  const strategies = clientsData?.strategies ?? [];
 
-  // Auto-select first client
+  const families = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) if (st.family) s.add(st.family);
+    return Array.from(s).sort();
+  }, [strategies]);
+
+  const archetypesForFamily = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) {
+      if (!st.archetype) continue;
+      if (familyFilter === "all" || st.family === familyFilter) s.add(st.archetype);
+    }
+    return Array.from(s).sort();
+  }, [strategies, familyFilter]);
+
+  const clients = React.useMemo(() => {
+    if (familyFilter === "all" && archetypeFilter === "all") return allClients;
+    const matchingIds = new Set(
+      strategies
+        .filter((st) => (familyFilter === "all" || st.family === familyFilter))
+        .filter((st) => (archetypeFilter === "all" || st.archetype === archetypeFilter))
+        .map((st) => st.id),
+    );
+    return allClients.filter((c) => c.strategy_id && matchingIds.has(c.strategy_id));
+  }, [allClients, strategies, familyFilter, archetypeFilter]);
+
   React.useEffect(() => {
-    if (clients.length > 0 && !selectedClientId) {
+    if (archetypeFilter !== "all" && !archetypesForFamily.includes(archetypeFilter)) {
+      setArchetypeFilter("all");
+    }
+  }, [archetypeFilter, archetypesForFamily]);
+
+  // Auto-select first client (reset when cascade filter shrinks list)
+  React.useEffect(() => {
+    if (clients.length > 0 && (!selectedClientId || !clients.some((c) => c.id === selectedClientId))) {
       setSelectedClientId(clients[0].id);
     }
   }, [clients, selectedClientId]);
@@ -159,6 +194,32 @@ export function PortfolioAnalytics() {
           title="Portfolio Analytics"
           description="Allocation breakdown, correlation analysis, and risk metrics"
         >
+          {families.length > 0 && (
+            <Select value={familyFilter} onValueChange={setFamilyFilter}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="All Families" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Families</SelectItem>
+                {families.map((f) => (
+                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {archetypesForFamily.length > 0 && (
+            <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Archetypes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Archetypes</SelectItem>
+                {archetypesForFamily.map((a) => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Select value={selectedClientId ?? ""} onValueChange={setSelectedClientId}>
             <SelectTrigger className="w-[220px]">
               <SelectValue placeholder="Select client" />

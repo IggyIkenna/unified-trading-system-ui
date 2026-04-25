@@ -28,6 +28,8 @@ export function TradesDashboard() {
   const [selectedClientId, setSelectedClientId] = React.useState<string | null>(null);
   const [symbolFilter, setSymbolFilter] = React.useState<string>("");
   const [sideFilter, setSideFilter] = React.useState<string>("all");
+  const [familyFilter, setFamilyFilter] = React.useState<string>("all");
+  const [archetypeFilter, setArchetypeFilter] = React.useState<string>("all");
   const [page, setPage] = React.useState(0);
   const pageSize = 50;
 
@@ -43,6 +45,38 @@ export function TradesDashboard() {
   );
 
   const clients = clientsData?.clients ?? [];
+  const strategies = clientsData?.strategies ?? [];
+
+  const families = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) if (st.family) s.add(st.family);
+    return Array.from(s).sort();
+  }, [strategies]);
+
+  const archetypesForFamily = React.useMemo(() => {
+    const s = new Set<string>();
+    for (const st of strategies) {
+      if (!st.archetype) continue;
+      if (familyFilter === "all" || st.family === familyFilter) s.add(st.archetype);
+    }
+    return Array.from(s).sort();
+  }, [strategies, familyFilter]);
+
+  const matchingStrategyIds = React.useMemo(() => {
+    if (familyFilter === "all" && archetypeFilter === "all") return null;
+    return new Set(
+      strategies
+        .filter((st) => (familyFilter === "all" || st.family === familyFilter))
+        .filter((st) => (archetypeFilter === "all" || st.archetype === archetypeFilter))
+        .map((st) => st.id),
+    );
+  }, [strategies, familyFilter, archetypeFilter]);
+
+  React.useEffect(() => {
+    if (archetypeFilter !== "all" && !archetypesForFamily.includes(archetypeFilter)) {
+      setArchetypeFilter("all");
+    }
+  }, [archetypeFilter, archetypesForFamily]);
 
   // Auto-select first client
   React.useEffect(() => {
@@ -52,10 +86,14 @@ export function TradesDashboard() {
   }, [clients, selectedClientId]);
 
   // Reset page on filter change
-  React.useEffect(() => { setPage(0); }, [symbolFilter, sideFilter, selectedClientId]);
+  React.useEffect(() => { setPage(0); }, [symbolFilter, sideFilter, selectedClientId, familyFilter, archetypeFilter]);
 
-  const trades = tradesData?.trades ?? [];
-  const total = tradesData?.total ?? 0;
+  const rawTrades = tradesData?.trades ?? [];
+  const trades = React.useMemo(() => {
+    if (matchingStrategyIds === null) return rawTrades;
+    return rawTrades.filter((t) => t.strategy_id != null && matchingStrategyIds.has(t.strategy_id));
+  }, [rawTrades, matchingStrategyIds]);
+  const total = matchingStrategyIds === null ? (tradesData?.total ?? 0) : trades.length;
   const agg = tradesData?.aggregates;
   const totalPages = Math.ceil(total / pageSize);
 
@@ -83,6 +121,32 @@ export function TradesDashboard() {
           title="Trade History"
           description="Full order history with fills, fees, and slippage"
         >
+          {families.length > 0 && (
+            <Select value={familyFilter} onValueChange={setFamilyFilter}>
+              <SelectTrigger className="w-[160px]">
+                <SelectValue placeholder="All Families" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Families</SelectItem>
+                {families.map((f) => (
+                  <SelectItem key={f} value={f}>{f}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          {archetypesForFamily.length > 0 && (
+            <Select value={archetypeFilter} onValueChange={setArchetypeFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All Archetypes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Archetypes</SelectItem>
+                {archetypesForFamily.map((a) => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Select value={selectedClientId ?? ""} onValueChange={setSelectedClientId}>
             <SelectTrigger className="w-[220px]">
               <SelectValue placeholder="Select client" />

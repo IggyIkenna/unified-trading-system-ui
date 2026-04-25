@@ -30,6 +30,8 @@ export interface StrategyInfo {
   id: string;
   name: string;
   description?: string;
+  family?: string;
+  archetype?: string;
 }
 
 export interface ClientsResponse {
@@ -53,8 +55,8 @@ export const MOCK_ORGANISATIONS: OrganisationInfo[] = [
 ];
 
 export const MOCK_STRATEGIES: StrategyInfo[] = [
-  { id: "mean_reversion_top20", name: "Mean Reversion Top 20", description: "Perpetual futures mean reversion on top 20 crypto assets" },
-  { id: "defi_btc_yield", name: "DeFi BTC Yield", description: "BTC-denominated yield via DeFi protocols and fund-of-fund allocation" },
+  { id: "mean_reversion_top20", name: "Mean Reversion Top 20", description: "Perpetual futures mean reversion on top 20 crypto assets", family: "STAT_ARB_PAIRS", archetype: "STAT_ARB_CROSS_SECTIONAL" },
+  { id: "defi_btc_yield", name: "DeFi BTC Yield", description: "BTC-denominated yield via DeFi protocols and fund-of-fund allocation", family: "CARRY_AND_YIELD", archetype: "YIELD_ROTATION_LENDING" },
 ];
 
 export const MOCK_CLIENTS: ClientInfo[] = [
@@ -204,11 +206,11 @@ export interface PerformanceSummary {
   position_count?: number;
   equity_source?: string;
   trade_count?: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   equity_curve: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   monthly_returns: any[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   stats: Record<string, any>;
 }
 
