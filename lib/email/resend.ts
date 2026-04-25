@@ -17,7 +17,7 @@ function getMailDomain(): string {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   if (siteUrl.includes("www.odum-research.com")) return "mail.odum-research.com";
   if (siteUrl.includes("uat.odum-research.com") || siteUrl.includes("odum-research.co.uk")) {
-    return "mail.uat.odum-research.com";
+    return "mail.odum-research.com"; // uat shares prod sender — staging subdomain DNS not set up
   }
   return "resend.dev";
 }
@@ -64,9 +64,5 @@ export async function sendEmail(params: ResendEmailParams): Promise<SendResult> 
 }
 
 export function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }

@@ -20,7 +20,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "admin",
     email: "admin@odum.internal",
-    password: "demo",
+    password: "demo123",
     displayName: "Admin",
     role: "admin",
     org: { id: "odum-internal", name: "Odum Internal" },
@@ -30,7 +30,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "internal-trader",
     email: "trader@odum.internal",
-    password: "demo",
+    password: "demo123",
     displayName: "Internal Trader",
     role: "internal",
     org: { id: "odum-internal", name: "Odum Internal" },
@@ -40,7 +40,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "im-desk-operator",
     email: "desk@odum.internal",
-    password: "demo",
+    password: "demo123",
     displayName: "IM Desk Operator",
     role: "internal",
     org: { id: "odum-internal", name: "Odum Internal" },
@@ -109,7 +109,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-im",
     email: "prospect-im@odum-research.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Investment Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
@@ -119,7 +119,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-dart-full",
     email: "prospect-dart-full@odum-research.com",
-    password: "demo",
+    password: "demo123",
     displayName: "DART Full Pipeline Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
@@ -138,7 +138,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-dart-signals-in",
     email: "prospect-dart-signals-in@odum-research.com",
-    password: "demo",
+    password: "demo123",
     displayName: "DART Signals-In Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
@@ -149,7 +149,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-odum-signals",
     email: "prospect-odum-signals@odum-research.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Odum Signals Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
@@ -160,7 +160,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-regulatory",
     email: "prospect-regulatory@odum-research.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Regulatory Prospect",
     role: "client",
     org: { id: "odum-ir", name: "Odum Investor Relations" },
@@ -174,12 +174,7 @@ export const PERSONAS: readonly AuthPersona[] = [
     displayName: "Demo Signals Client",
     role: "client",
     org: { id: "odum-demo-signals", name: "Demo Signals Client Co" },
-    entitlements: [
-      "data-pro",
-      "execution-full",
-      "reporting",
-      { domain: "trading-common", tier: "basic" },
-    ],
+    entitlements: ["data-pro", "execution-full", "reporting", { domain: "trading-common", tier: "basic" }],
     description:
       "Clean Signals-In product showcase. DART tile + Reports tile visible; Research / Promote / Strategy Catalogue locked. Use this when demoing the Signals-In product end-to-end without prospect-specific context.",
   },
@@ -199,7 +194,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "client-full",
     email: "pm@alphacapital.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Portfolio Manager",
     role: "client",
     org: { id: "acme", name: "Alpha Capital" },
@@ -220,7 +215,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "client-data-only",
     email: "analyst@betafund.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Data Analyst",
     role: "client",
     org: { id: "beta", name: "Beta Fund" },
@@ -230,7 +225,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "client-premium",
     email: "cio@vertex.com",
-    password: "demo",
+    password: "demo123",
     displayName: "CIO",
     role: "client",
     org: { id: "vertex", name: "Vertex Partners" },
@@ -249,7 +244,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "elysium-defi",
     email: "patrick@bankelysium.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Patrick",
     role: "client",
     org: { id: "elysium", name: "Elysium" },
@@ -267,11 +262,17 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "elysium-defi-full",
     email: "patrick@bankelysium.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Patrick",
     role: "client",
     org: { id: "elysium", name: "Elysium" },
-    entitlements: ["data-pro", "execution-full", "strategy-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
+    entitlements: [
+      "data-pro",
+      "execution-full",
+      "strategy-full",
+      { domain: "trading-defi", tier: "basic" },
+      "reporting",
+    ],
     description:
       "DeFi client demo (upgrade preview). Adds strategy-full — shows CARRY_BASIS_PERP + CARRY_STAKED_BASIS catalogue, recursive staked locked as next tier.",
     // Upgrade tier — adds CARRY_RECURSIVE_STAKED + multi-protocol yield
@@ -287,7 +288,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-dart",
     email: "sarah.quant@examplehedge.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Sarah Quant",
     role: "client",
     org: { id: "example-hedge", name: "Example Hedge" },
@@ -298,7 +299,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "client-regulatory",
     email: "fm@emergingmgr.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Fund Manager",
     role: "client",
     org: { id: "emerging-mgr", name: "Emerging Manager Ltd" },
@@ -309,7 +310,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "client-im-pooled",
     email: "pm@lpfund.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Pooled-Fund LP",
     role: "client",
     org: { id: "lp-fund", name: "LP Fund" },
@@ -319,7 +320,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "client-im-sma",
     email: "cio@smaclient.com",
-    password: "demo",
+    password: "demo123",
     displayName: "SMA CIO",
     role: "client",
     org: { id: "sma-client", name: "SMA Client Inc" },
@@ -329,7 +330,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-signals-only",
     email: "ops@defihf.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Signals-Only Ops Lead",
     role: "client",
     org: { id: "defi-hf", name: "DeFi Hedge Fund" },
@@ -339,7 +340,7 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-im-under-regulatory",
     email: "cio@hybridfund.example",
-    password: "demo",
+    password: "demo123",
     displayName: "IM-under-Regulatory CIO",
     role: "client",
     org: { id: "hybrid-fund", name: "Hybrid Fund" },
@@ -349,18 +350,17 @@ export const PERSONAS: readonly AuthPersona[] = [
   {
     id: "prospect-platform",
     email: "platform-prospect@odum-research.com",
-    password: "demo",
+    password: "demo123",
     displayName: "Platform Prospect",
     role: "client",
     org: { id: "example-platform", name: "Example Platform Co" },
     entitlements: ["data-pro", "execution-full", "strategy-full", "reporting"],
-    description:
-      "Generic DART / platform prospect. Full DART access + reporting; no Manage stage.",
+    description: "Generic DART / platform prospect. Full DART access + reporting; no Manage stage.",
   },
   {
     id: "prospect-perp-funding",
     email: "ops@desmond-capital.example",
-    password: "demo",
+    password: "demo123",
     displayName: "Desmond Ops",
     role: "client",
     org: { id: "desmond-capital", name: "Desmond Capital" },
@@ -372,8 +372,7 @@ export const PERSONAS: readonly AuthPersona[] = [
       { domain: "trading-defi", tier: "basic" },
       { domain: "trading-common", tier: "basic" },
     ],
-    description:
-      "Reg Umbrella + DART Signals-In prospect running cross-exchange perp-funding arbitrage (CeFi + DeFi).",
+    description: "Reg Umbrella + DART Signals-In prospect running cross-exchange perp-funding arbitrage (CeFi + DeFi).",
   },
 
   // ── Desmond H-W — real-email staging demo (2026-04-24) ───────────────────
@@ -472,9 +471,7 @@ export function getPersonaByEmail(email: string): AuthPersona | undefined {
  * try to authenticate against the production Firebase pool. Adding a new demo
  * persona here automatically enrolls them in the redirect.
  */
-export const DEMO_PERSONA_EMAILS: ReadonlySet<string> = new Set(
-  PERSONAS.map((p) => p.email.toLowerCase()),
-);
+export const DEMO_PERSONA_EMAILS: ReadonlySet<string> = new Set(PERSONAS.map((p) => p.email.toLowerCase()));
 
 export function isDemoPersonaEmail(email: string): boolean {
   return DEMO_PERSONA_EMAILS.has(email.trim().toLowerCase());

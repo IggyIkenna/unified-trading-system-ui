@@ -127,38 +127,52 @@ else
   docker push "${IMAGE_REF}"
 fi
 
-echo "=== Deploying to Cloud Run (${SERVICE}) ==="
-gcloud run deploy "${SERVICE}" \
-  --image "${IMAGE_REF}" \
-  --region "${REGION}" \
-  --platform managed \
-  --allow-unauthenticated \
-  --port=3000
+# Prod is multi-region (LB-fronted at www.odum-research.com). UAT is single-region.
+# Without fan-out, prod deploys would update only europe-west4 and silently leave
+# us-central1 + asia-northeast1 stale — easy to ship a europe-only fix and have
+# US / Asia customers seeing old code.
+if [[ "${DEPLOY_ENV}" == "prod" ]]; then
+  DEPLOY_REGIONS=("europe-west4" "us-central1" "asia-northeast1")
+else
+  DEPLOY_REGIONS=("${REGION}")
+fi
 
-echo "=== Routing 100% traffic to latest ==="
-gcloud run services update-traffic "${SERVICE}" \
-  --region "${REGION}" \
-  --to-latest
+for region in "${DEPLOY_REGIONS[@]}"; do
+  echo "=== Deploying to Cloud Run (${SERVICE} @ ${region}) ==="
+  gcloud run deploy "${SERVICE}" \
+    --image "${IMAGE_REF}" \
+    --region "${region}" \
+    --platform managed \
+    --allow-unauthenticated \
+    --port=3000
 
-echo "=== Cleaning up old revisions ==="
-LATEST=$(gcloud run revisions list \
-  --service="${SERVICE}" \
-  --region="${REGION}" \
-  --format="value(name)" \
-  --sort-by="~metadata.creationTimestamp" \
-  --limit=1)
+  echo "=== Routing 100% traffic to latest (${region}) ==="
+  gcloud run services update-traffic "${SERVICE}" \
+    --region "${region}" \
+    --to-latest
 
-gcloud run revisions list \
-  --service="${SERVICE}" \
-  --region="${REGION}" \
-  --format="value(name)" \
-  --sort-by="~metadata.creationTimestamp" | tail -n +2 | while read -r rev; do
-    if [ -n "$rev" ]; then
-      echo "  Deleting old revision: $rev"
-      gcloud run revisions delete "$rev" --region="${REGION}" --quiet 2>/dev/null || true
-    fi
-  done
+  echo "=== Cleaning up old revisions (${region}) ==="
+  LATEST=$(gcloud run revisions list \
+    --service="${SERVICE}" \
+    --region="${region}" \
+    --format="value(name)" \
+    --sort-by="~metadata.creationTimestamp" \
+    --limit=1)
 
-echo "=== Done — Cloud Run ${SERVICE} updated (${REGION}) ==="
-echo "  $(echo "${DEPLOY_ENV}" | tr '[:lower:]' '[:upper:]') service updated (image only). Confirm traffic: ${PUBLIC_URL} → ${SERVICE}"
-echo "  Active revision: ${LATEST}"
+  gcloud run revisions list \
+    --service="${SERVICE}" \
+    --region="${region}" \
+    --format="value(name)" \
+    --sort-by="~metadata.creationTimestamp" | tail -n +2 | while read -r rev; do
+      if [ -n "$rev" ]; then
+        echo "  Deleting old revision: $rev"
+        gcloud run revisions delete "$rev" --region="${region}" --quiet 2>/dev/null || true
+      fi
+    done
+
+  echo "=== Done — Cloud Run ${SERVICE} updated (${region}) — active: ${LATEST} ==="
+done
+
+echo
+echo "=== ALL REGIONS DEPLOYED (${DEPLOY_ENV}) — ${#DEPLOY_REGIONS[@]} region(s): ${DEPLOY_REGIONS[*]} ==="
+echo "  Confirm traffic: ${PUBLIC_URL} → ${SERVICE}"

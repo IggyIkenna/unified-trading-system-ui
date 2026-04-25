@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth";
-import { getFirestore, type Firestore } from "firebase/firestore";
-import { getStorage, type FirebaseStorage } from "firebase/storage";
+import { getAuth, connectAuthEmulator, type Auth } from "firebase/auth";
+import { connectFirestoreEmulator, getFirestore, type Firestore } from "firebase/firestore";
+import { connectStorageEmulator, getStorage, type FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,13 +12,29 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const hasConfig = !!firebaseConfig.apiKey;
+// Local emulator detection. Set NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true in
+// .env.local (alongside `firebase emulators:start`) and the SDK will route
+// every Auth / Firestore / Storage call to localhost — zero network traffic
+// to real GCP, drafts/tokens/uploads land in `.firebase/emulators/`. Default
+// emulator ports per `firebase.json`: auth 9099, firestore 8080, storage 9199.
+// Project ID can be any string in emulator mode (the emulator doesn't
+// validate it), so we let the build use a placeholder when the real config
+// is absent locally.
+const useEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true";
+const hasConfig = !!firebaseConfig.apiKey || useEmulator;
 
 let _app: FirebaseApp | null = null;
 function getFirebaseApp(): FirebaseApp | null {
   if (!hasConfig) return null;
   if (!_app) {
-    _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    const config = useEmulator
+      ? {
+          ...firebaseConfig,
+          apiKey: firebaseConfig.apiKey || "demo",
+          projectId: firebaseConfig.projectId || "odum-local-dev",
+        }
+      : firebaseConfig;
+    _app = getApps().length === 0 ? initializeApp(config) : getApp();
   }
   return _app;
 }
@@ -29,6 +45,13 @@ export function getFirebaseAuth(): Auth | null {
   const app = getFirebaseApp();
   if (!app) return null;
   _auth = getAuth(app);
+  if (useEmulator && typeof window !== "undefined") {
+    try {
+      connectAuthEmulator(_auth, "http://localhost:9099", { disableWarnings: true });
+    } catch {
+      /* idempotent — already connected on hot reload */
+    }
+  }
   return _auth;
 }
 
@@ -38,6 +61,13 @@ export function getFirebaseDb(): Firestore | null {
   const app = getFirebaseApp();
   if (!app) return null;
   _db = getFirestore(app);
+  if (useEmulator && typeof window !== "undefined") {
+    try {
+      connectFirestoreEmulator(_db, "localhost", 8080);
+    } catch {
+      /* idempotent */
+    }
+  }
   return _db;
 }
 
@@ -47,6 +77,13 @@ export function getFirebaseStorage(): FirebaseStorage | null {
   const app = getFirebaseApp();
   if (!app) return null;
   _storage = getStorage(app);
+  if (useEmulator && typeof window !== "undefined") {
+    try {
+      connectStorageEmulator(_storage, "localhost", 9199);
+    } catch {
+      /* idempotent */
+    }
+  }
   return _storage;
 }
 
