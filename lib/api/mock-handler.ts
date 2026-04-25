@@ -117,7 +117,7 @@ function seedAlertToApiShape(a: (typeof SEED_ALERTS)[number]) {
     description: a.message,
     source: a.source,
     entity: a.strategyId || "portfolio",
-    entityType: "strategy" as const,
+    alertType: a.alertType,
     timestamp: a.timestamp,
   };
 }

@@ -6,6 +6,9 @@
  * This file is NEVER cleared by reset — it's the permanent seed.
  */
 
+import type { AlertType } from "@/lib/config/services/alerts.config";
+export type { AlertType };
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export interface SeedPosition {
@@ -70,6 +73,7 @@ export interface SeedAlert {
   orgId: string;
   strategyId: string;
   acknowledged: boolean;
+  alertType: AlertType;
 }
 
 export interface SeedStrategy {
@@ -1634,6 +1638,7 @@ function alrt(
   orgId: string,
   stratId: string,
   ack: boolean,
+  type: AlertType = "GENERIC",
 ): SeedAlert {
   const d = new Date();
   d.setHours(d.getHours() - hoursAgo);
@@ -1646,6 +1651,7 @@ function alrt(
     orgId,
     strategyId: stratId,
     acknowledged: ack,
+    alertType: type,
   };
 }
 
@@ -1659,6 +1665,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-btc-mom-alpha",
     false,
+    "EXPOSURE_BREACH",
   ),
   alrt(
     "alert-002",
@@ -1669,6 +1676,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "BASIS_TRADE",
     true,
+    "GENERIC",
   ),
   alrt(
     "alert-003",
@@ -1679,6 +1687,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "AAVE_LENDING",
     false,
+    "HEALTH_FACTOR_CRITICAL",
   ),
   alrt(
     "alert-004",
@@ -1689,6 +1698,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-ml-dir-beta",
     true,
+    "FEATURE_STALE",
   ),
   alrt(
     "alert-005",
@@ -1699,6 +1709,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-sports-arb",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-006",
@@ -1709,6 +1720,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-btc-mom-apex",
     false,
+    "DRAWDOWN_LIMIT",
   ),
   alrt(
     "alert-007",
@@ -1719,6 +1731,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-xexch-apex",
     true,
+    "GENERIC",
   ),
   alrt(
     "alert-008",
@@ -1729,6 +1742,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-opts-vol-apex",
     false,
+    "MARGIN_WARNING",
   ),
   alrt(
     "alert-009",
@@ -1739,6 +1753,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "vertex-partners",
     "strat-opts-zen",
     false,
+    "RISK_WARNING",
   ),
   alrt(
     "alert-010",
@@ -1749,6 +1764,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "vertex-partners",
     "strat-spreads-zen",
     true,
+    "GENERIC",
   ),
   alrt(
     "alert-011",
@@ -1759,6 +1775,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-ml-dir-mer",
     true,
+    "GENERIC",
   ),
   alrt(
     "alert-012",
@@ -1769,6 +1786,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-eth-basis-mer",
     false,
+    "FUNDING_RATE_FLIP",
   ),
   alrt(
     "alert-013",
@@ -1779,6 +1797,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "atlas-ventures",
     "RECURSIVE_STAKED_BASIS",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-014",
@@ -1789,6 +1808,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "atlas-ventures",
     "strat-btc-mom-atlas",
     true,
+    "GENERIC",
   ),
   // DeFi-specific alerts (strategy IDs = DeFi factory keys where noted; empty = book-level)
   alrt(
@@ -1800,6 +1820,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "RECURSIVE_STAKED_BASIS",
     false,
+    "HEALTH_FACTOR_CRITICAL",
   ),
   alrt(
     "alert-defi-002",
@@ -1810,6 +1831,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "BASIS_TRADE",
     false,
+    "FUNDING_RATE_FLIP",
   ),
   alrt(
     "alert-defi-003",
@@ -1820,6 +1842,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "",
     false,
+    "EXPOSURE_BREACH",
   ),
   alrt(
     "alert-defi-004",
@@ -1830,6 +1853,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "AMM_LP",
     false,
+    "RATE_DEVIATION",
   ),
   alrt(
     "alert-defi-005",
@@ -1840,6 +1864,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "STAKED_BASIS",
     false,
+    "WEETH_DEPEG",
   ),
   // TradFi alerts
   alrt(
@@ -1851,6 +1876,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-cme-basis",
     false,
+    "RISK_WARNING",
   ),
   alrt(
     "alert-tradfi-002",
@@ -1861,6 +1887,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-equity-stat-arb",
     false,
+    "RISK_WARNING",
   ),
   alrt(
     "alert-tradfi-003",
@@ -1871,6 +1898,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-commodity-trend",
     true,
+    "GENERIC",
   ),
   // Sports alerts
   alrt(
@@ -1882,6 +1910,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-sports-arb-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-sports-002",
@@ -1892,6 +1921,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-sports-arb-apex",
     false,
+    "GENERIC",
   ),
 
   // ── Trade execution alerts ────────────────────────────────────────────────
@@ -1904,6 +1934,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-btc-mom-alpha",
     false,
+    "PRE_TRADE_REJECTION",
   ),
   alrt(
     "alert-exec-002",
@@ -1914,6 +1945,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-xexch-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-exec-003",
@@ -1924,6 +1956,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-eth-basis-mer",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-exec-004",
@@ -1934,6 +1967,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-ml-dir-mer",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-exec-005",
@@ -1944,6 +1978,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-flash-arb",
     false,
+    "TX_SIMULATION_FAILED",
   ),
 
   // ── Order management alerts ───────────────────────────────────────────────
@@ -1956,6 +1991,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-btc-mom-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-order-002",
@@ -1966,6 +2002,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-opts-vol-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-order-003",
@@ -1976,6 +2013,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-sports-arb-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-order-004",
@@ -1986,6 +2024,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-cme-basis",
     true,
+    "GENERIC",
   ),
 
   // ── Strategy risk alerts ──────────────────────────────────────────────────
@@ -1998,6 +2037,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-equity-stat-arb",
     false,
+    "RISK_CRITICAL",
   ),
   alrt(
     "alert-risk-002",
@@ -2008,6 +2048,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "vertex-partners",
     "strat-opts-zen",
     false,
+    "RISK_CRITICAL",
   ),
   alrt(
     "alert-risk-003",
@@ -2018,6 +2059,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "vertex-partners",
     "strat-spreads-zen",
     false,
+    "EXPOSURE_BREACH",
   ),
   alrt(
     "alert-risk-004",
@@ -2028,6 +2070,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-disc-mer",
     false,
+    "EXPOSURE_BREACH",
   ),
   alrt(
     "alert-risk-005",
@@ -2038,6 +2081,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-commodity-trend",
     false,
+    "CONCENTRATION_LIMIT",
   ),
 
   // ── Circuit breaker / kill switch / compliance alerts ─────────────────────
@@ -2050,6 +2094,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-btc-mom-alpha",
     false,
+    "DRAWDOWN_LIMIT",
   ),
   alrt(
     "alert-cb-002",
@@ -2060,6 +2105,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "atlas-ventures",
     "RECURSIVE_STAKED_BASIS",
     false,
+    "LIQUIDATION_RISK",
   ),
   alrt(
     "alert-cb-003",
@@ -2070,6 +2116,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-equity-stat-arb",
     false,
+    "CONCENTRATION_LIMIT",
   ),
   alrt(
     "alert-cb-004",
@@ -2080,6 +2127,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-ml-dir-mer",
     false,
+    "DRAWDOWN_LIMIT",
   ),
 
   // ── Venue / market structure alerts ──────────────────────────────────────
@@ -2092,6 +2140,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-btc-mom-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-venue-002",
@@ -2102,6 +2151,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-opts-vol-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-venue-003",
@@ -2112,6 +2162,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "meridian-fund",
     "strat-eth-basis-mer",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-venue-004",
@@ -2122,6 +2173,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "odum",
     "strat-cme-basis",
     true,
+    "GENERIC",
   ),
 
   // ── P&L reconciliation alerts ─────────────────────────────────────────────
@@ -2134,6 +2186,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "alpha-capital",
     "strat-opts-vol-apex",
     false,
+    "GENERIC",
   ),
   alrt(
     "alert-recon-002",
@@ -2144,6 +2197,7 @@ export const SEED_ALERTS: SeedAlert[] = [
     "atlas-ventures",
     "strat-btc-mom-atlas",
     false,
+    "GENERIC",
   ),
 ];
 

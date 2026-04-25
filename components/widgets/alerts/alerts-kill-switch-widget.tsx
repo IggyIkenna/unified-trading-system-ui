@@ -117,9 +117,7 @@ export function AlertsKillSwitchWidget(_props: WidgetComponentProps) {
     }
   }, [scopeType, entityOptions, entityId]);
 
-  const activeEntityAlerts = filteredAlerts.filter(
-    (a) => a.entityType === "strategy" && a.entity === entityId && a.status === "active",
-  ).length;
+  const activeEntityAlerts = filteredAlerts.filter((a) => a.entity === entityId && a.status === "active").length;
 
   const handleSelectAction = React.useCallback(
     (actionId: KillSwitchAction) => {

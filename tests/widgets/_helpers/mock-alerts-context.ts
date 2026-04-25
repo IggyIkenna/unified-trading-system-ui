@@ -1,3 +1,4 @@
+import type { AlertType } from "@/lib/config/services/alerts.config";
 import { vi } from "vitest";
 
 /**
@@ -14,7 +15,7 @@ export interface MockAlert {
   description: string;
   source: string;
   entity: string;
-  entityType: "strategy" | "venue" | "service" | "position";
+  alertType: AlertType;
   timestamp: string;
   value?: string;
   threshold?: string;
@@ -30,7 +31,7 @@ export function buildMockAlert(overrides: Partial<MockAlert> = {}): MockAlert {
     description: "Funding rate exceeded threshold on Binance ETH-PERP.",
     source: "market-data",
     entity: "BASIS_TRADE",
-    entityType: "strategy",
+    alertType: "FUNDING_RATE_FLIP",
     timestamp: "2026-04-24T00:00:00Z",
     value: "0.15%",
     threshold: "0.10%",

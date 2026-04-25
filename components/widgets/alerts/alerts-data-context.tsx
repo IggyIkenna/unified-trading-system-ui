@@ -6,6 +6,8 @@ import type { FilterDefinition } from "@/components/shared/filter-bar";
 export type AlertFilterBarValues = Record<string, string | string[] | Date | { start: Date; end: Date } | undefined>;
 import { useAcknowledgeAlert, useAlerts, useEscalateAlert, useResolveAlert } from "@/hooks/api/use-alerts";
 import { getAlertsForScope } from "@/lib/mocks/fixtures/mock-data-index";
+import type { AlertType } from "@/lib/config/services/alerts.config";
+export type { AlertType };
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { getStrategyIdsForScope } from "@/lib/stores/scope-helpers";
 import { toast } from "sonner";
@@ -32,7 +34,7 @@ export interface Alert {
   description: string;
   source: string;
   entity: string;
-  entityType: "strategy" | "venue" | "service" | "position";
+  alertType: AlertType;
   timestamp: string;
   value?: string;
   threshold?: string;
@@ -113,7 +115,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
         description: "Recursive position active. Health Factor = 1.42 (target: 1.50). Alert if HF < 1.25.",
         source: "risk-engine",
         entity: "RECURSIVE_STAKED_BASIS",
-        entityType: "strategy",
+        alertType: "HEALTH_FACTOR_CRITICAL",
         timestamp: new Date().toISOString(),
         value: "1.42",
         threshold: "1.25",
@@ -133,7 +135,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
         description: "Basis trade collecting funding: BTC 0.012%/8h, ETH 0.008%/8h. All venues positive.",
         source: "market-data",
         entity: "BASIS_TRADE",
-        entityType: "strategy",
+        alertType: "FUNDING_RATE_FLIP",
         timestamp: new Date().toISOString(),
         value: "0.012%/8h",
       });
@@ -149,7 +151,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
         description: "Treasury at 35% of AUM (target: 20%). Consider rebalancing to increase yield generation.",
         source: "treasury-monitor",
         entity: "PORTFOLIO",
-        entityType: "strategy",
+        alertType: "EXPOSURE_BREACH",
         timestamp: new Date().toISOString(),
         value: "35%",
         threshold: "20%",
@@ -178,7 +180,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
       description: s.message,
       source: s.source,
       entity: s.strategyId,
-      entityType: "strategy" as const,
+      alertType: (s.alertType ?? "GENERIC") as AlertType,
       timestamp: s.timestamp,
     }));
     return [...seedAlerts, ...defiAlerts];
@@ -262,9 +264,7 @@ export function AlertsDataProvider({ children }: { children: React.ReactNode }) 
         key: "source",
         label: "Source",
         type: "select" as const,
-        options: [
-          { value: "recovery", label: "Recovery Events" },
-        ],
+        options: [{ value: "recovery", label: "Recovery Events" }],
       },
     ],
     [],

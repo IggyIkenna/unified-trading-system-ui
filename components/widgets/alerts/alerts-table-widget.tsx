@@ -151,10 +151,10 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
         header: "Entity",
         cell: ({ row }) => {
           const alert = row.original;
-          const isStrategy = alert.entityType === "strategy" && alert.entity;
+          const isStrategyLink = alert.entity && alert.entity.startsWith("strat-");
           return (
             <div className="flex flex-col">
-              {isStrategy ? (
+              {isStrategyLink ? (
                 <Link
                   href={`/services/trading/strategies/${encodeURIComponent(alert.entity)}`}
                   className="text-primary hover:underline"
@@ -162,9 +162,9 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
                   {alert.entity}
                 </Link>
               ) : (
-                <span className="text-foreground">{alert.entity}</span>
+                <span className="text-foreground">{alert.entity || "—"}</span>
               )}
-              <span className="text-xs text-muted-foreground capitalize">{alert.entityType}</span>
+              <span className="text-xs text-muted-foreground font-mono">{alert.alertType}</span>
             </div>
           );
         },
@@ -286,8 +286,8 @@ export function AlertsTableWidget(_props: WidgetComponentProps) {
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground mb-1">Entity</div>
-                        <div className="text-sm font-medium">{alert.entity}</div>
-                        <div className="text-xs text-muted-foreground capitalize">{alert.entityType}</div>
+                        <div className="text-sm font-medium">{alert.entity || "—"}</div>
+                        <div className="text-xs text-muted-foreground font-mono">{alert.alertType}</div>
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground mb-1">Source</div>
