@@ -146,16 +146,12 @@ export function LiveBatchComparison({
       <AreaChart key={animId} data={combinedData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
         <defs>
           <linearGradient id="gradient-live" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--status-live)" stopOpacity={0.3} />
+            <stop offset="5%" stopColor="var(--status-live)" stopOpacity={0.25} />
             <stop offset="95%" stopColor="var(--status-live)" stopOpacity={0} />
           </linearGradient>
-          <linearGradient id="gradient-batch-above" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--pnl-negative)" stopOpacity={0.18} />
-            <stop offset="95%" stopColor="var(--pnl-negative)" stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id="gradient-batch-below" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--pnl-positive)" stopOpacity={0.18} />
-            <stop offset="95%" stopColor="var(--pnl-positive)" stopOpacity={0} />
+          <linearGradient id="gradient-batch-split" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
+            <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -186,27 +182,15 @@ export function LiveBatchComparison({
           labelFormatter={(label) => `Time: ${label}`}
         />
         <ReferenceLine y={0} stroke="var(--border)" strokeDasharray="3 3" />
-        {/* Batch renders instantly so live can animate over it */}
+        {/* Batch (primary/cyan) renders instantly; live (green) animates over it */}
         <Area
           type="monotone"
-          dataKey="batchAbove"
+          dataKey="batch"
           name="batch"
-          stroke="var(--pnl-negative)"
+          stroke="var(--primary)"
           strokeWidth={2}
-          fill="url(#gradient-batch-above)"
+          fill="url(#gradient-batch-split)"
           strokeDasharray="5 5"
-          connectNulls={false}
-          isAnimationActive={false}
-        />
-        <Area
-          type="monotone"
-          dataKey="batchBelow"
-          name="batch"
-          stroke="var(--pnl-positive)"
-          strokeWidth={2}
-          fill="url(#gradient-batch-below)"
-          strokeDasharray="5 5"
-          connectNulls={false}
           isAnimationActive={false}
         />
         <Area
@@ -279,8 +263,8 @@ export function LiveBatchComparison({
 
   return (
     <div className={cn("w-full h-full", className)}>
-      {viewMode === "live" && renderChart(liveData, "var(--status-live)", "Live")}
-      {viewMode === "batch" && renderChart(batchData, "var(--primary)", "Batch")}
+      {viewMode === "live" && renderChart(liveData, "var(--status-live)", "Live", true)}
+      {viewMode === "batch" && renderChart(batchData, "var(--primary)", "Batch", false)}
       {viewMode === "split" && renderSplitChart()}
       {viewMode === "delta" && renderDeltaChart()}
     </div>

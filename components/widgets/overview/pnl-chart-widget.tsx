@@ -3,22 +3,16 @@
 import { LiveBatchComparison, type ViewMode } from "@/components/trading/live-batch-comparison";
 import { StatusDot } from "@/components/shared/status-badge";
 import { type ValueFormat, useValueFormat } from "@/components/trading/value-format-toggle";
+import { DateRangePicker } from "@/components/shared/date-range-picker";
+import { generateMonthlyTimeSeries, MONTHLY_TS_START } from "@/lib/mocks/fixtures/trading-data";
+import type { TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
 import { cn } from "@/lib/utils";
 import { formatPercent } from "@/lib/utils/formatters";
-import {
-  ArrowLeftRight,
-  Calendar,
-  Database,
-  DollarSign,
-  Minus,
-  Percent,
-  Radio,
-  SplitSquareVertical,
-} from "lucide-react";
+import { ArrowLeftRight, Database, DollarSign, Minus, Percent, Radio, SplitSquareVertical } from "lucide-react";
 import * as React from "react";
 import type { WidgetComponentProps } from "../widget-registry";
 import { useOverviewDataSafe } from "./overview-data-context";
@@ -31,14 +25,18 @@ const METRIC_TITLES: Record<MetricKey, string> = {
   exposure: "Net Exposure",
 };
 
-function getYesterday(): string {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return d.toISOString().split("T")[0];
+function getToday(): string {
+  return new Date().toISOString().split("T")[0];
 }
 
-function getMaxBatchDate(): string {
-  return new Date(Date.now() - 86400000).toISOString().split("T")[0];
+function filterToRange(pts: TimeSeriesPoint[], from: string, to: string): TimeSeriesPoint[] {
+  // Timestamps are "MM/DD HH:mm"; extract "MM/DD" and compare to the date's "MM/DD".
+  const fromMD = from.slice(5).replace("-", "/"); // "2026-03-20" → "03/20"
+  const toMD = to.slice(5).replace("-", "/");
+  return pts.filter((p) => {
+    const md = p.timestamp.slice(0, 5);
+    return md >= fromMD && md <= toMD;
+  });
 }
 
 // Radix ScrollArea wraps Viewport content in display:table, which breaks
@@ -103,41 +101,41 @@ function useChartPixelHeight(): {
 export function PnLChartWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
   const { scope: context } = useGlobalScope();
-  const [batchDate, setBatchDate] = React.useState(getYesterday());
+  const today = getToday();
+  const [dateRange, setDateRange] = React.useState({ from: MONTHLY_TS_START, to: today });
   const [activeTab, setActiveTab] = React.useState<MetricKey>("pnl");
   const [viewMode, setViewMode] = React.useState<ViewMode>("split");
   const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar");
   const { chartRef, headerRef, chartHeight } = useChartPixelHeight();
 
-  const { liveTimeSeries, batchTimeSeries, realtimePnlPoints, timeseriesLoading, liveBatchLoading, formatCurrency } =
-    ctx || {
-      liveTimeSeries: { pnl: [], nav: [], exposure: [] },
-      batchTimeSeries: { pnl: [], nav: [], exposure: [] },
-      realtimePnlPoints: [],
-      timeseriesLoading: false,
-      liveBatchLoading: false,
-      formatCurrency: (v: number) => v.toString(),
-    };
-
-  const hasData =
-    liveTimeSeries.pnl.length > 0 ||
-    liveTimeSeries.nav.length > 0 ||
-    liveTimeSeries.exposure.length > 0 ||
-    batchTimeSeries.pnl.length > 0 ||
-    batchTimeSeries.nav.length > 0 ||
-    batchTimeSeries.exposure.length > 0 ||
-    realtimePnlPoints.length > 0;
-
-  const liveByMetric: Record<MetricKey, typeof liveTimeSeries.pnl> = {
-    pnl: [...liveTimeSeries.pnl, ...realtimePnlPoints],
-    nav: liveTimeSeries.nav,
-    exposure: liveTimeSeries.exposure,
+  const { timeseriesLoading, liveBatchLoading, formatCurrency } = ctx || {
+    timeseriesLoading: false,
+    liveBatchLoading: false,
+    formatCurrency: (v: number) => v.toString(),
   };
-  const batchByMetric: Record<MetricKey, typeof batchTimeSeries.pnl> = {
-    pnl: batchTimeSeries.pnl,
-    nav: batchTimeSeries.nav,
-    exposure: batchTimeSeries.exposure,
-  };
+
+  // Generate full walks up to the range end, then slice to the selected window.
+  const monthlyLive = React.useMemo(() => generateMonthlyTimeSeries(dateRange.to, "live"), [dateRange.to]);
+  const monthlyBatch = React.useMemo(() => generateMonthlyTimeSeries(dateRange.to, "batch"), [dateRange.to]);
+
+  const liveByMetric = React.useMemo(
+    () => ({
+      pnl: filterToRange(monthlyLive.pnl, dateRange.from, dateRange.to),
+      nav: filterToRange(monthlyLive.nav, dateRange.from, dateRange.to),
+      exposure: filterToRange(monthlyLive.exposure, dateRange.from, dateRange.to),
+    }),
+    [monthlyLive, dateRange.from, dateRange.to],
+  );
+  const batchByMetric = React.useMemo(
+    () => ({
+      pnl: filterToRange(monthlyBatch.pnl, dateRange.from, dateRange.to),
+      nav: filterToRange(monthlyBatch.nav, dateRange.from, dateRange.to),
+      exposure: filterToRange(monthlyBatch.exposure, dateRange.from, dateRange.to),
+    }),
+    [monthlyBatch, dateRange.from, dateRange.to],
+  );
+
+  const hasData = liveByMetric.pnl.length > 0;
 
   const liveData = liveByMetric[activeTab];
   const batchData = batchByMetric[activeTab];
@@ -153,7 +151,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   // Keeps each chart visually meaningful: P&L starts ≈0% and grows, NAV/Exposure
   // open at 0% and trend up/down, instead of the previous one-size-fits-all
   // (v / totalNav) which made NAV a flat ~100% line.
-  const startingNav = liveTimeSeries.nav[0]?.value ?? batchTimeSeries.nav[0]?.value ?? 0;
+  const startingNav = monthlyLive.nav[0]?.value ?? monthlyBatch.nav[0]?.value ?? 0;
   const percentBaseline = activeTab === "pnl" ? startingNav : (liveData[0]?.value ?? batchData[0]?.value ?? 0);
 
   const formatChart = React.useCallback(
@@ -177,8 +175,6 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
     },
     [valueFormat, formatCurrency, percentBaseline],
   );
-
-  const maxBatchDate = getMaxBatchDate();
 
   if (!ctx)
     return (
@@ -327,16 +323,13 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
               </TabsTrigger>
             </TabsList>
           </Tabs>
-          <div className="h-8 flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
-            <Calendar className="size-3 text-muted-foreground" />
-            <input
-              type="date"
-              value={batchDate}
-              onChange={(e) => setBatchDate(e.target.value)}
-              max={maxBatchDate}
-              className="bg-transparent text-xs border-none focus:outline-none w-28 h-full"
-            />
-          </div>
+          <DateRangePicker
+            from={dateRange.from}
+            to={dateRange.to}
+            minDate={MONTHLY_TS_START}
+            maxDate={today}
+            onChange={(from, to) => setDateRange({ from, to })}
+          />
         </div>
       </div>
 

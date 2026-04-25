@@ -1065,97 +1065,109 @@ export function getFilteredAlerts(alerts: Alert[], filter: FilterContext): Alert
 }
 
 // =============================================================================
-// MONTHLY TIME SERIES — daily resolution, 2026-03-01 onwards
-// Generates realistic P&L / NAV / Exposure data with seeded random walk.
-// Deterministic: same date + mode always produces identical values.
+// MULTI-MONTH TIME SERIES — 15-minute resolution, 2026-03-01 onwards
+// Same resolution as the intraday generator (96 pts/day) but spanning 2 months.
+// State (cumPnl, nav, exposure) carries across day boundaries — no daily reset.
+// Deterministic: same endDateStr + mode always produces identical values.
 // =============================================================================
 
 export const MONTHLY_TS_START = "2026-03-01";
 
-function monthlyDateLabel(dateStr: string): string {
-  const [, m, d] = dateStr.split("-");
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${months[parseInt(m, 10) - 1]} ${d}`;
+// Each 15-min step's vol is daily_vol / sqrt(96) to preserve realistic daily σ.
+const INTERVAL_MINUTES = 15;
+const INTERVALS_PER_DAY = (24 * 60) / INTERVAL_MINUTES; // 96
+
+const BASE_NAV = 50_000_000;
+const DAILY_VOL = 130_000;
+const DAILY_DRIFT = 7_000;
+const BASE_EXPOSURE = 33_000_000;
+
+const INTERVAL_VOL = DAILY_VOL / Math.sqrt(INTERVALS_PER_DAY);
+const INTERVAL_DRIFT = DAILY_DRIFT / INTERVALS_PER_DAY;
+
+function fmtIntervalTimestamp(ms: number): string {
+  const d = new Date(ms);
+  const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const hh = String(d.getUTCHours()).padStart(2, "0");
+  const mm = String(d.getUTCMinutes()).padStart(2, "0");
+  return `${mo}/${day} ${hh}:${mm}`;
 }
 
-/**
- * Generates one data point per calendar day from MONTHLY_TS_START through
- * endDateStr for all three metrics (pnl, nav, exposure).
- *
- * Design parameters:
- *   BASE_NAV      = $50 M — starting portfolio NAV
- *   DAILY_VOL     = $130 k — daily P&L ±1σ (≈ 0.26 % of NAV, ~4 % ann. vol)
- *   DAILY_DRIFT   = $7 k  — positive expected return (~3.5 % annual)
- *   REGIME_PERIOD = 7 days — week-long bullish/bearish runs
- *
- * Batch mode adds a small systematic offset and per-day noise to model
- * EOD-batch vs real-time calculation discrepancies.
- */
 export function generateMonthlyTimeSeries(
   endDateStr: string,
   mode: "live" | "batch",
 ): { pnl: TimeSeriesPoint[]; nav: TimeSeriesPoint[]; exposure: TimeSeriesPoint[] } {
-  const start = new Date(MONTHLY_TS_START + "T00:00:00Z");
-  const end = new Date(endDateStr + "T00:00:00Z");
+  const startMs = Date.UTC(2026, 2, 1); // 2026-03-01 00:00 UTC
+  const [ey, em, ed] = endDateStr.split("-").map(Number);
+  // End at the last interval of endDateStr (23:45)
+  const endMs = Date.UTC(ey, em - 1, ed, 23, 45);
 
-  // Build list of calendar dates from start to end (inclusive)
-  const dates: string[] = [];
-  const cur = new Date(start);
-  while (cur <= end) {
-    dates.push(cur.toISOString().split("T")[0]);
-    cur.setUTCDate(cur.getUTCDate() + 1);
-  }
-  if (dates.length === 0) return { pnl: [], nav: [], exposure: [] };
+  if (endMs < startMs) return { pnl: [], nav: [], exposure: [] };
 
-  const BASE_NAV = 50_000_000;
-  const DAILY_VOL = 130_000;
-  const DAILY_DRIFT = 7_000;
-  const BASE_EXPOSURE = 33_000_000;
+  const totalIntervals = Math.floor((endMs - startMs) / (INTERVAL_MINUTES * 60_000)) + 1;
 
-  // Batch: persistent systematic offset simulating EOD-batch calc differences
-  const sysRand = seededRandom(`sys-offset-${mode}`);
-  const batchSysOffset = mode === "batch" ? (sysRand() - 0.4) * DAILY_VOL * 7 : 0;
+  // Single seeded sequence drives the live random walk.
+  const rand = seededRandom("multi-month-ts-v1");
+
+  // Batch: persistent systematic offset (EOD-batch vs real-time discrepancy).
+  const sysRand = seededRandom("batch-sys-offset-v1");
+  // 0.2% of BASE_NAV = $100k max divergence; systematic offset ≤ $60k
+  const batchSysOffset = mode === "batch" ? (sysRand() - 0.5) * 60_000 : 0;
+  const batchNoiseRand = seededRandom("batch-noise-seq-v1");
 
   let cumPnl = 0;
   let exposure = BASE_EXPOSURE;
+  let dayIndex = 0;
+  let prevDayOfYear = -1;
 
   const pnlPts: TimeSeriesPoint[] = [];
   const navPts: TimeSeriesPoint[] = [];
   const expPts: TimeSeriesPoint[] = [];
 
-  for (let i = 0; i < dates.length; i++) {
-    const date = dates[i];
-    const rand = seededRandom(`monthly-pnl-${date}`);
+  for (let i = 0; i < totalIntervals; i++) {
+    const ms = startMs + i * INTERVAL_MINUTES * 60_000;
+    const d = new Date(ms);
+    const dayOfYear = Math.floor((ms - startMs) / (24 * 3600_000));
 
-    // Approximate N(0,1) via sum of 12 uniform draws (CLT; σ≈1)
-    let z = 0;
-    for (let k = 0; k < 12; k++) z += rand();
-    z -= 6;
+    if (dayOfYear !== prevDayOfYear) {
+      prevDayOfYear = dayOfYear;
+      dayIndex = dayOfYear;
+    }
 
-    // Week-long regime: bullish (+3×drift) → neutral → bearish (−2×drift)
-    const regimePeriod = Math.floor(i / 7);
-    const regimeRand = seededRandom(`regime-${regimePeriod}`);
-    const regimeVal = regimeRand();
-    const regimeBias = regimeVal < 0.35 ? DAILY_DRIFT * 3.5 : regimeVal < 0.65 ? 0 : -DAILY_DRIFT * 2.5;
+    const hour = d.getUTCHours() + d.getUTCMinutes() / 60;
+    // Higher vol during ~market hours (08:00–17:00 UTC ≈ US pre-market + session)
+    const volMult = hour >= 8 && hour < 17 ? 1.4 : 0.6;
 
-    // Soft mean-reversion: gently pull P&L back if it drifts too far
-    const meanReversion = -cumPnl * 0.025;
+    // Week-long regime bias
+    const regimePeriod = Math.floor(dayIndex / 7);
+    const rr = seededRandom(`regime-${regimePeriod}`)();
+    const regimeBias = (rr < 0.35 ? DAILY_DRIFT * 3 : rr < 0.65 ? 0 : -DAILY_DRIFT * 2) / INTERVALS_PER_DAY;
 
-    cumPnl += DAILY_DRIFT + regimeBias + z * DAILY_VOL + meanReversion;
+    // Soft mean-reversion toward zero
+    const meanReversion = -cumPnl * (0.025 / INTERVALS_PER_DAY);
 
-    // Exposure: mean-reverts to base with mild daily noise
-    const expRand = seededRandom(`monthly-exp-${date}`);
-    exposure += (BASE_EXPOSURE - exposure) * 0.04 + (expRand() - 0.5) * 1_400_000;
+    // Approximate N(0,1) from two uniform draws (Box-Muller-lite via CLT pair)
+    const u1 = rand();
+    const u2 = rand();
+    const z = (u1 + u2 - 1) * Math.SQRT2; // 2-sample CLT approximation
+
+    cumPnl += INTERVAL_DRIFT + regimeBias + meanReversion + z * INTERVAL_VOL * volMult;
+
+    // Exposure: slow mean-reversion + small intraday noise
+    const eu = rand();
+    exposure += (BASE_EXPOSURE - exposure) * (0.04 / INTERVALS_PER_DAY) + (eu - 0.5) * 350_000;
     exposure = Math.max(20_000_000, Math.min(45_000_000, exposure));
 
-    // Batch-specific per-day noise (on top of systematic offset)
-    const batchNoise = mode === "batch" ? (seededRandom(`batch-noise-${date}`)() - 0.5) * DAILY_VOL * 0.14 : 0;
+    // Batch divergence: systematic offset + per-interval micro-noise
+    // Small per-interval noise — kept tiny so total drift stays within ±0.2% NAV
+    const batchNoise = mode === "batch" ? (batchNoiseRand() - 0.5) * 200 : 0;
     const effectivePnl = cumPnl + batchSysOffset + batchNoise;
 
-    const label = monthlyDateLabel(date);
-    pnlPts.push({ timestamp: label, value: Math.round(effectivePnl) });
-    navPts.push({ timestamp: label, value: Math.round(BASE_NAV + effectivePnl) });
-    expPts.push({ timestamp: label, value: Math.round(exposure) });
+    const ts = fmtIntervalTimestamp(ms);
+    pnlPts.push({ timestamp: ts, value: Math.round(effectivePnl) });
+    navPts.push({ timestamp: ts, value: Math.round(BASE_NAV + effectivePnl) });
+    expPts.push({ timestamp: ts, value: Math.round(exposure) });
   }
 
   return { pnl: pnlPts, nav: navPts, exposure: expPts };
