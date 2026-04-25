@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
-import { RotateCcw } from "lucide-react";
+import { Lock, RotateCcw } from "lucide-react";
 
 import {
   LockStateBadge,
@@ -10,6 +11,7 @@ import {
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Card,
   CardContent,
@@ -51,7 +53,34 @@ function listAllSlotLabels(): readonly string[] {
   return Array.from(seen).sort();
 }
 
+function AdminOnlyGate() {
+  return (
+    <main className="mx-auto max-w-xl px-6 py-16">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex size-10 items-center justify-center rounded-full bg-amber-100">
+          <Lock className="size-5 text-amber-600" />
+        </div>
+        <h1 className="text-xl font-semibold">Admin only</h1>
+      </div>
+      <p className="text-muted-foreground mb-6">
+        The strategy catalogue lock-state editor is reserved for Odum admin operators.
+        Your role does not include admin permissions.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <Button asChild>
+          <Link href="/services/strategy-catalogue?tab=explore">Browse strategy universe</Link>
+        </Button>
+        <Button variant="outline" asChild>
+          <Link href="/dashboard">Back to dashboard</Link>
+        </Button>
+      </div>
+    </main>
+  );
+}
+
 export default function AdminLockStatePage() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin" || user?.role === "internal";
   const store = useAvailabilityStore();
   const allSlots = useMemo(listAllSlotLabels, []);
   const [selectedSlot, setSelectedSlot] = useState<string>(allSlots[0] ?? "");
@@ -111,6 +140,10 @@ export default function AdminLockStatePage() {
       (lockState === "INVESTMENT_MANAGEMENT_RESERVED" &&
         reservingBusinessUnitId !==
           (currentEntry.reservingBusinessUnitId ?? "")));
+
+  if (!isAdmin) {
+    return <AdminOnlyGate />;
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">

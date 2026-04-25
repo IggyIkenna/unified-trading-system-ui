@@ -11,8 +11,14 @@ export type PersonaId =
   | "admin"
   | "anon"
   | "client-full"
+  | "desmond-dart-full"
+  | "desmond-signals-in"
+  | "elysium-defi-full"
   | "prospect-dart"
+  | "prospect-dart-full"
+  | "prospect-dart-signals-in"
   | "prospect-im"
+  | "prospect-perp-funding"
   | "prospect-regulatory";
 
 export type DemoFlavour = "broader_platform" | "turbo" | "deep_dive" | "sales_pitch";
@@ -91,6 +97,54 @@ export const RESTRICTION_PROFILES: Readonly<Record<PersonaId, RestrictionProfile
           "trading": "unlocked"
       }
   },
+  "desmond-dart-full": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "",
+      "flavour_overrides": {},
+      "persona_id": "desmond-dart-full",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "unlocked",
+          "observe": "unlocked",
+          "promote": "unlocked",
+          "reports": "unlocked",
+          "research": "unlocked",
+          "trading": "unlocked"
+      }
+  },
+  "desmond-signals-in": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "",
+      "flavour_overrides": {},
+      "persona_id": "desmond-signals-in",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "unlocked",
+          "observe": "unlocked",
+          "promote": "padlocked-visible",
+          "reports": "unlocked",
+          "research": "padlocked-visible",
+          "trading": "unlocked"
+      }
+  },
+  "elysium-defi-full": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "Patrick / Elysium DeFi Full upgrade-preview persona. Same universe access as the base elysium-defi persona but with strategy-full + ml-full entitlements unlocked so research + promote + customisation tiles are visible. Toggle from elysium-defi via DemoPlanToggle.",
+      "flavour_overrides": {},
+      "persona_id": "elysium-defi-full",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "hidden",
+          "observe": "unlocked",
+          "promote": "unlocked",
+          "reports": "unlocked",
+          "research": "unlocked",
+          "trading": "unlocked"
+      }
+  },
   "prospect-dart": {
       "base_audience": "trading_platform_subscriber",
       "description": "Warm DART prospect. Sees the DART engagement story \u2014 data, research, trading, observe, reporting. Promote is padlocked as a full-DART upsell tease. Investor-relations is hidden (IM-only).",
@@ -116,6 +170,38 @@ export const RESTRICTION_PROFILES: Readonly<Record<PersonaId, RestrictionProfile
           "trading": "unlocked"
       }
   },
+  "prospect-dart-full": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "Generic DART Full prospect demo persona \u2014 equivalent to client-full but used in prospect demos where the org isn't a paying client yet. All Research \u2192 Promote \u2192 Trading \u2192 Observe lifecycle tiles unlocked.",
+      "flavour_overrides": {},
+      "persona_id": "prospect-dart-full",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "hidden",
+          "observe": "unlocked",
+          "promote": "unlocked",
+          "reports": "unlocked",
+          "research": "unlocked",
+          "trading": "unlocked"
+      }
+  },
+  "prospect-dart-signals-in": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "Generic DART Signals-In prospect demo persona. Trading + signal-intake + observe + reports unlocked; research + promote padlocked (kept visible to signal upgrade path). Strategy catalogue visible (read-only universe).",
+      "flavour_overrides": {},
+      "persona_id": "prospect-dart-signals-in",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "hidden",
+          "observe": "unlocked",
+          "promote": "padlocked-visible",
+          "reports": "unlocked",
+          "research": "padlocked-visible",
+          "trading": "unlocked"
+      }
+  },
   "prospect-im": {
       "base_audience": "im_client",
       "description": "Warm prospect on the IM path. Odum runs strategies; client sees reporting + capital statements. DART surfaces (research/promote/trading/observe) are hidden because IM clients don't operate strategies themselves.",
@@ -137,6 +223,22 @@ export const RESTRICTION_PROFILES: Readonly<Record<PersonaId, RestrictionProfile
           "reports": "unlocked",
           "research": "hidden",
           "trading": "hidden"
+      }
+  },
+  "prospect-perp-funding": {
+      "base_audience": "trading_platform_subscriber",
+      "description": "Reg-Umbrella + DART Signals-In prospect operating cross-exchange perp-funding arbitrage (CeFi + DeFi). Trading + signal-intake + reports + observe unlocked; research + promote padlocked.",
+      "flavour_overrides": {},
+      "persona_id": "prospect-perp-funding",
+      "tiles": {
+          "admin": "hidden",
+          "data": "unlocked",
+          "investor-relations": "hidden",
+          "observe": "unlocked",
+          "promote": "padlocked-visible",
+          "reports": "unlocked",
+          "research": "padlocked-visible",
+          "trading": "unlocked"
       }
   },
   "prospect-regulatory": {

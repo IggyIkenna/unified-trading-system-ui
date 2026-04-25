@@ -364,6 +364,7 @@ export const STRATEGY_CATALOGUE_SUB_TABS: ServiceTab[] = [
   {
     label: "Admin · Lock state",
     href: "/services/strategy-catalogue/admin/lock-state",
+    requiredEntitlement: "admin",
   },
 ];
 

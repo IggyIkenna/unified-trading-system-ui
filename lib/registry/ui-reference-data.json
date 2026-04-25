@@ -11480,7 +11480,7 @@
         "perp",
         "dated_future"
       ],
-      "label": "Elysium \u2014 Base (3 CEX)",
+      "label": "Base (3 CEX)",
       "pricing_tier": "base"
     },
     {
@@ -11499,7 +11499,7 @@
         "perp",
         "dated_future"
       ],
-      "label": "Elysium \u2014 Premium (6 CEX)",
+      "label": "Premium (6 CEX)",
       "pricing_tier": "premium"
     },
     {
@@ -11520,7 +11520,7 @@
         "perp",
         "dated_future"
       ],
-      "label": "Elysium \u2014 Multi-EVM",
+      "label": "Multi-EVM",
       "pricing_tier": "top_tier"
     },
     {
@@ -11542,7 +11542,7 @@
         "perp",
         "dated_future"
       ],
-      "label": "Elysium \u2014 Multi-EVM + Solana",
+      "label": "Multi-EVM + Solana",
       "pricing_tier": "apex"
     },
     {
