@@ -229,6 +229,13 @@ export const PERSONAS: readonly AuthPersona[] = [
     entitlements: ["data-pro", "execution-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
     description:
       "DeFi client demo (base tier). Execution + reporting only. Strategy catalogue locked — use elysium-defi-full toggle to preview upgrade.",
+    // Patrick's base tier — only the two foundation DeFi carry strategies are
+    // routed (no strategy-full, so resolver gives reports-only). Recursive
+    // staked is in the upgrade-preview persona below, locked here.
+    assigned_strategies: [
+      "CARRY_BASIS_PERP@defi-perp-hyperliquid@hyperliquid",
+      "CARRY_STAKED_BASIS@defi-staking-lido@ethereum",
+    ],
   },
   {
     id: "elysium-defi-full",
@@ -240,6 +247,15 @@ export const PERSONAS: readonly AuthPersona[] = [
     entitlements: ["data-pro", "execution-full", "strategy-full", { domain: "trading-defi", tier: "basic" }, "reporting"],
     description:
       "DeFi client demo (upgrade preview). Adds strategy-full — shows CARRY_BASIS_PERP + CARRY_STAKED_BASIS catalogue, recursive staked locked as next tier.",
+    // Upgrade tier — adds CARRY_RECURSIVE_STAKED + multi-protocol yield
+    // rotation. With strategy-full the resolver returns "terminal" for these.
+    assigned_strategies: [
+      "CARRY_BASIS_PERP@defi-perp-hyperliquid@hyperliquid",
+      "CARRY_STAKED_BASIS@defi-staking-lido@ethereum",
+      "CARRY_RECURSIVE_STAKED@defi-staking-lido@ethereum",
+      "YIELD_ROTATION_LENDING@defi-lending-aave_v3@ethereum",
+      "YIELD_ROTATION_LENDING@defi-lending-aave_v3@arbitrum",
+    ],
   },
   {
     id: "prospect-dart",
@@ -360,6 +376,22 @@ export const PERSONAS: readonly AuthPersona[] = [
     ],
     description:
       "Desmond (DART Full) — funding rate arb, stable yield, market-neutral, CeFi+DeFi, perp-only. Full Research/Promote access.",
+    // Real catalogue slot labels routed to Desmond Capital — sourced from
+    // strategy_instruments.json. Funding-rate carry on majors, structural
+    // perp-funding arb, stat-arb across CeFi venues, ML-directional on perps.
+    assigned_strategies: [
+      "CARRY_BASIS_PERP@cefi-perp-binance",
+      "CARRY_BASIS_PERP@cefi-perp-okx",
+      "CARRY_BASIS_PERP@cefi-perp-bybit",
+      "CARRY_BASIS_PERP@cefi-perp-hyperliquid",
+      "ARBITRAGE_PRICE_DISPERSION@cefi-perp-binance",
+      "ARBITRAGE_PRICE_DISPERSION@cefi-perp-okx",
+      "ARBITRAGE_PRICE_DISPERSION@cefi-perp-bybit",
+      "STAT_ARB_CROSS_SECTIONAL@cefi-spot-binance",
+      "STAT_ARB_CROSS_SECTIONAL@cefi-spot-okx",
+      "ML_DIRECTIONAL_CONTINUOUS@cefi-perp-binance",
+      "ML_DIRECTIONAL_CONTINUOUS@cefi-perp-bybit",
+    ],
   },
   {
     id: "desmond-signals-in",
@@ -380,6 +412,22 @@ export const PERSONAS: readonly AuthPersona[] = [
     ],
     description:
       "Desmond (Signals-In) — same universe as DART Full; Research/Promote locked. Toggle from desmond-dart-full to compare tiers.",
+    // Same catalogue universe as DART-Full but lacks `strategy-full` — the
+    // resolver returns "reports-only" for assigned slots since Research /
+    // Promote are gated.
+    assigned_strategies: [
+      "CARRY_BASIS_PERP@cefi-perp-binance",
+      "CARRY_BASIS_PERP@cefi-perp-okx",
+      "CARRY_BASIS_PERP@cefi-perp-bybit",
+      "CARRY_BASIS_PERP@cefi-perp-hyperliquid",
+      "ARBITRAGE_PRICE_DISPERSION@cefi-perp-binance",
+      "ARBITRAGE_PRICE_DISPERSION@cefi-perp-okx",
+      "ARBITRAGE_PRICE_DISPERSION@cefi-perp-bybit",
+      "STAT_ARB_CROSS_SECTIONAL@cefi-spot-binance",
+      "STAT_ARB_CROSS_SECTIONAL@cefi-spot-okx",
+      "ML_DIRECTIONAL_CONTINUOUS@cefi-perp-binance",
+      "ML_DIRECTIONAL_CONTINUOUS@cefi-perp-bybit",
+    ],
   },
 ] as const;
 

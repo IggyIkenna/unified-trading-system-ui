@@ -96,6 +96,15 @@ export interface AuthPersona {
   org: Org;
   entitlements: readonly (EntitlementOrWildcard | TradingEntitlement)[];
   description: string;
+  /**
+   * Catalogue slot labels (`{archetype}@{category}-{instrument}-{venue}`)
+   * routed to this persona's org. When set, this is the closed list of
+   * strategies available — anything not in the list is `locked-visible`.
+   * Resolved by lib/entitlements/strategy-route.ts. In production this is
+   * sourced from AdminStrategyAssignment records (Phase 9 of DART UI plan);
+   * demo personas seed it explicitly to exercise the same code path.
+   */
+  assigned_strategies?: readonly string[];
 }
 
 /** Subscription tier metadata for marketing / pricing pages */
