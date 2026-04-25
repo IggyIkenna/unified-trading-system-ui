@@ -2119,7 +2119,7 @@ export default function StrategyEvaluationFormClient({
                     {
                       key: "equityCurveCsv" as const,
                       label: "Equity curve CSV",
-                      hint: "Timestamp + cumulative equity / NAV",
+                      hint: "Timestamp + account / strategy equity at that point — i.e. NAV: realised P&L plus unrealised P&L on open positions, marked-to-market. Daily granularity is fine; intraday welcome if you have it.",
                       accept: ".csv,.tsv,.parquet",
                     },
                   ] as {

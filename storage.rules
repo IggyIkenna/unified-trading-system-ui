@@ -27,12 +27,13 @@ service firebase.storage {
         request.auth.token.admin == true ||
         request.auth.token.im_desk == true
       );
-      // 50MB cap is the real abuse guard. We previously had a content-type
-      // allow-list but it kept rejecting legitimate uploads (`.md`,
-      // `.markdown`, exotic CSV mime variants, etc.) because browsers vary on
-      // what File.type they report. Drop the content-type filter; size + path
-      // shape (draft id + fieldKey + filename) is enough.
-      allow create: if request.resource.size < 50 * 1024 * 1024;
+      // 500 MB cap is the real abuse guard. Trade-log CSVs from HFT or
+      // multi-year backtests routinely run 100 MB+, so the previous 50 MB
+      // ceiling rejected legitimate uploads. We previously had a content-type
+      // allow-list too but it kept rejecting `.md` / exotic CSV mime variants
+      // because browsers vary on what File.type they report — dropped that
+      // filter; size + path shape (draft id + fieldKey + filename) is enough.
+      allow create: if request.resource.size < 500 * 1024 * 1024;
       allow update, delete: if request.auth != null
                             && request.auth.token.admin == true;
     }

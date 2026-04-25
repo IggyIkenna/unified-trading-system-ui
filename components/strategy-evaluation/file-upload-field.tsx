@@ -137,7 +137,7 @@ export function FileUploadField({
           <p className="font-medium">Upload failed for this file.</p>
           <p className="mt-0.5 font-mono break-words">{errorMessage}</p>
           <p className="mt-1 text-destructive/80">
-            Re-select a different file or check the file&rsquo;s format / size (50&nbsp;MB max).
+            Re-select a different file or check the file&rsquo;s format / size (500&nbsp;MB max).
           </p>
         </div>
       )}
