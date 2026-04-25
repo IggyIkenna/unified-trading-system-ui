@@ -164,6 +164,15 @@ export async function POST(request: Request) {
       <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px;margin-top:16px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden">
         ${tableRows}
       </table>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:14px 16px;margin:24px 0;font-size:14px">
+        <p style="margin:0;font-weight:600;color:#15803d">After our intro call</p>
+        <p style="margin:6px 0 0;color:#166534">
+          We'll set you up in our sandbox at
+          <a href="https://uat.odum-research.com" style="color:#15803d;font-weight:600">uat.odum-research.com</a>
+          — a curated demo environment configured to your stack so you can see the
+          platform end-to-end before any commitment.
+        </p>
+      </div>
       <p style="color:#6b7280;font-size:13px;margin-top:24px">
         Anything you'd like to clarify or change? Reply to this email or contact us at
         <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.

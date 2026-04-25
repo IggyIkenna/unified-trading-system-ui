@@ -47,6 +47,16 @@ export async function POST(request: Request) {
   const magicToken = randomBytes(32).toString("hex");
   const statusUrl = `${getSiteUrl(request)}/strategy-evaluation/status?token=${magicToken}`;
 
+  // Refile flow: when /status → "Edit and resubmit" round-trips through the
+  // form, the client tags the payload with parentSubmissionId. We persist a
+  // new doc (Firestore client SDK can't update under the public-create rule)
+  // and link the lineage so admins can see the version history.
+  const parentSubmissionId =
+    typeof body.parentSubmissionId === "string" && body.parentSubmissionId.length > 0
+      ? body.parentSubmissionId
+      : undefined;
+  const isRefile = !!parentSubmissionId;
+
   // Persist to Firestore
   let submissionId: string | undefined;
   try {
@@ -60,6 +70,7 @@ export async function POST(request: Request) {
         ...body,
         magicToken,
         emailVerified: false,
+        parentSubmissionId: parentSubmissionId ?? null,
         submittedAt: serverTimestamp(),
       });
       submissionId = docRef.id;
@@ -74,9 +85,9 @@ export async function POST(request: Request) {
   if (email) {
     const ackHtml = `
       <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#111">
-        <h2 style="margin-bottom:4px">Your strategy evaluation has been received</h2>
+        <h2 style="margin-bottom:4px">${isRefile ? "Your updated strategy evaluation has been received" : "Your strategy evaluation has been received"}</h2>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0">
-        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""} — we've received your evaluation of <strong>${escapeHtml(strategyName)}</strong>.</p>
+        <p>Thank you${leadResearcher ? `, ${escapeHtml(leadResearcher)}` : ""} — we've received ${isRefile ? "your updated evaluation" : "your evaluation"} of <strong>${escapeHtml(strategyName)}</strong>.${isRefile ? " The new version is filed alongside your original — we'll work from the latest." : ""}</p>
         <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:16px;margin:16px 0">
           <p style="margin:0 0 6px"><strong>Strategy:</strong> ${escapeHtml(strategyName)}</p>
           <p style="margin:0"><strong>Commercial path:</strong> ${escapeHtml(pathLabel)}</p>
@@ -101,6 +112,15 @@ export async function POST(request: Request) {
           <strong>3 business days</strong> to discuss fit, next steps, and any
           clarifying questions.
         </p>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:14px 16px;margin:16px 0;font-size:14px">
+          <p style="margin:0;font-weight:600;color:#15803d">After our intro call</p>
+          <p style="margin:6px 0 0;color:#166534">
+            We&rsquo;ll set you up in our sandbox at
+            <a href="https://uat.odum-research.com" style="color:#15803d;font-weight:600">uat.odum-research.com</a>
+            — a curated demo environment configured to your asset class and strategy
+            so you can see the platform end-to-end before any commitment.
+          </p>
+        </div>
         <p style="color:#6b7280;font-size:13px">
           Questions in the meantime? Reply to this email or reach us at
           <a href="mailto:info@odum-research.com" style="color:#111">info@odum-research.com</a>.
@@ -115,7 +135,9 @@ export async function POST(request: Request) {
         from: getSenderFor("hello"),
         to: email,
         replyTo: INTERNAL_ADDRESS,
-        subject: `Your strategy evaluation has been received — Odum`,
+        subject: isRefile
+          ? `Your updated strategy evaluation has been received — Odum`
+          : `Your strategy evaluation has been received — Odum`,
         html: ackHtml,
       }),
     );
@@ -140,6 +162,7 @@ export async function POST(request: Request) {
     ["Sharpe ratio", typeof body.sharpeRatio === "string" ? body.sharpeRatio : "—"],
     ["Max drawdown", typeof body.maxDrawdown === "string" ? body.maxDrawdown : "—"],
     ["Submission ID", submissionId || "—"],
+    ["Refile of", parentSubmissionId || "—"],
   ]
     .map(
       ([k, v], i) =>

@@ -208,7 +208,7 @@ export default function StrategyEvaluationStatusPage() {
         </p>
         <div className="flex flex-wrap gap-3">
           <Button asChild>
-            <Link href="/strategy-evaluation">
+            <Link href={token ? `/strategy-evaluation?token=${encodeURIComponent(token)}` : "/strategy-evaluation"}>
               <ExternalLink className="size-4 mr-1.5" />
               Refile / edit and resubmit
             </Link>

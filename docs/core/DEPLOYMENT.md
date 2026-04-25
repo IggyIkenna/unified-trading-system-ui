@@ -10,16 +10,16 @@ UAT and production are **separate, one-at-a-time deploys** — different Cloud R
 
 ## Environments
 
-| Env  | Public URL                | Cloud Run service       | Image tag     | BUILD_ENV_FILE                        | Firebase Hosting site        | Auth + data mode                                 |
-| ---- | ------------------------- | ----------------------- | ------------- | ------------------------------------- | ---------------------------- | ------------------------------------------------ |
-| prod | `https://www.odum-research.com` | `odum-portal`           | `:production` | `config/docker-build.env.production`  | `central-element-323112`     | Firebase Auth (`central-element-323112`), live API |
-| uat  | `https://uat.odum-research.com` | `odum-portal-staging` † | `:uat`        | `config/docker-build.env.uat`         | `odum-portal-staging-site` † | Demo auth + mock API                             |
+| Env  | Public URL                      | Cloud Run service       | Image tag     | BUILD_ENV_FILE                       | Firebase Hosting site        | Auth + data mode                                   |
+| ---- | ------------------------------- | ----------------------- | ------------- | ------------------------------------ | ---------------------------- | -------------------------------------------------- |
+| prod | `https://www.odum-research.com` | `odum-portal`           | `:production` | `config/docker-build.env.production` | `central-element-323112`     | Firebase Auth (`central-element-323112`), live API |
+| uat  | `https://uat.odum-research.com` | `odum-portal-staging` † | `:uat`        | `config/docker-build.env.uat`        | `odum-portal-staging-site` † | Demo auth + mock API                               |
 
 † The Cloud Run service name and Firebase Hosting site still carry the historical "staging" suffix. Renaming them to `odum-portal-uat` / `odum-portal-uat-site` is a clean-up pass (create new service + site → move domain mapping + hosting target → delete old — involves a cert-provisioning window). Until then: the service/site names in GCP / Firebase console say "staging"; every other surface (domain, env file, deploy flag, image tag, Firebase target alias) says "uat". See §Follow-ups.
 
 `odum-research.co.uk` is a **redirect-only** domain. It forwards (via Squarespace) to `https://www.odum-research.com`. No Cloud Run service or Firebase Hosting site is bound to `.co.uk` in steady state.
 
-**NEXT_PUBLIC_\* are inlined at Docker build time.** Cloud Run runtime `--set-env-vars` cannot retroactively change an already-baked client bundle. Change env → rebuild image → redeploy.
+**NEXT*PUBLIC*\* are inlined at Docker build time.** Cloud Run runtime `--set-env-vars` cannot retroactively change an already-baked client bundle. Change env → rebuild image → redeploy.
 
 ---
 
@@ -99,10 +99,12 @@ If QG fails: **fix the failing code, don't bypass the gate.** The only acceptabl
 `.firebaserc` declares project aliases + hosting targets.
 
 Project aliases (`projects`):
+
 - `default` / `prod` → `central-element-323112`
 - `staging` → `odum-staging` (reserved; see below)
 
 Hosting targets (`targets.central-element-323112.hosting`):
+
 - `prod` → site `central-element-323112` (serves `odum-research.com` via rewrites to Cloud Run `odum-portal`)
 - `uat` → site `odum-portal-staging-site` (serves `uat.odum-research.com` via rewrites to Cloud Run `odum-portal-staging` — currently routed through Cloud Run's own domain mapping, not Firebase Hosting; Firebase Hosting binding for `uat.` is a follow-up that would need DNS A-records → `199.36.158.100`)
 
@@ -129,10 +131,10 @@ This is a **follow-up**, not a prerequisite for content deploys. See `docs/FIREB
 
 ### Architecture
 
-| Env  | Auth provider              | Who authenticates                                       |
-|------|----------------------------|---------------------------------------------------------|
+| Env  | Auth provider                       | Who authenticates                                                               |
+| ---- | ----------------------------------- | ------------------------------------------------------------------------------- |
 | prod | Firebase (`central-element-323112`) | Real users only. Demo/advisor emails → redirected to UAT before Firebase fires. |
-| uat  | Demo (client-side PERSONAS) | All personas from `lib/auth/personas.ts`, no Firebase needed. |
+| uat  | Demo (client-side PERSONAS)         | All personas from `lib/auth/personas.ts`, no Firebase needed.                   |
 
 The redirect is based on `NEXT_PUBLIC_SITE_URL` (baked at build time): if it contains `www.odum-research.com`, any `@odum-research.co.uk` or `@odum-research.com` login attempt redirects to `uat.odum-research.com` without touching Firebase.
 
@@ -159,6 +161,61 @@ Creates all 22 demo personas from `lib/auth/personas.ts` with their entitlements
 Passwords match the persona definitions (e.g. `OdumIR2026!` for IR accounts, `demo` for others).
 When `staging` is seeded, update `config/docker-build.env.uat` to set `NEXT_PUBLIC_AUTH_PROVIDER=firebase`
 and point the Firebase config vars at the staging project.
+
+---
+
+## Public form submissions (questionnaire / strategy-evaluation)
+
+Both forms write to Firestore + send confirmation email via Resend. The persistence
+target is keyed off `NEXT_PUBLIC_FIREBASE_*` baked at build time:
+
+| Env  | Firestore project                                                               | Email sender (Resend)                                                                                  |
+| ---- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| prod | `central-element-323112`                                                        | `hello@mail.odum-research.com`                                                                         |
+| uat  | Same as prod by default; override via the staging-firebase template (see below) | `hello@mail.uat.odum-research.com`                                                                     |
+| dev  | None (writes silently no-op)                                                    | `onboarding@resend.dev` — Resend's test domain; only delivers to the email tied to your Resend account |
+
+### Pointing UAT at a separate Firebase project
+
+To make UAT submissions land in their own Firestore (so prod and UAT can be tested
+independently without polluting each other):
+
+1. Create a new Firebase project in the console (e.g. `odum-staging`).
+2. Add a Web app, copy the config values.
+3. Copy the template:
+   ```bash
+   cp config/docker-build.env.staging.firebase.example \
+      config/docker-build.env.uat.firebase.local
+   ```
+   Fill in the `NEXT_PUBLIC_FIREBASE_*` values from the new project. Set
+   `NEXT_PUBLIC_SITE_URL=https://uat.odum-research.com` and keep `NEXT_PUBLIC_MOCK_API=true`.
+4. Deploy UAT with the override:
+   ```bash
+   bash scripts/deploy-cloud-run.sh --env=uat --cloud \
+     --build-env-file=config/docker-build.env.uat.firebase.local
+   ```
+5. Add to the staging-project's Storage and Firestore rules — the same files that
+   live in `storage.rules` and `firestore.rules` apply (anonymous create on
+   `strategy-evaluations/*` + `questionnaires/*`, admin-only read).
+6. Optionally seed staging personas (see "Seeding staging Firebase" above).
+
+### Local dev — testing the full email flow
+
+1. Create `.env.local` (gitignored) with at minimum:
+   ```
+   RESEND_API_KEY=re_...your-key...
+   NEXT_PUBLIC_SITE_URL=http://localhost:3000
+   ```
+   Optionally set `NEXT_PUBLIC_FIREBASE_*` to your staging project to test
+   Firestore persistence locally too.
+2. `npm run dev` and submit a form using **the email address tied to your Resend account**
+   (Resend's test domain `onboarding@resend.dev` only delivers to the verified owner).
+3. Magic-link emails use `NEXT_PUBLIC_SITE_URL` for the `/strategy-evaluation/status?token=...`
+   URL, so dev links open against `http://localhost:3000`.
+
+If `RESEND_API_KEY` is unset locally, submissions still succeed and console-log; no email fires.
+If `NEXT_PUBLIC_FIREBASE_*` is unset, Firestore writes silently no-op (the route returns
+`ok: true` but no submission is persisted) — fine for UI-only testing.
 
 ---
 

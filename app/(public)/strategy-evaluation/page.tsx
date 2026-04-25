@@ -341,6 +341,8 @@ export default function StrategyEvaluationPage() {
   const [submitError, setSubmitError] = React.useState(false);
   const [submitErrorDetail, setSubmitErrorDetail] = React.useState<string>("");
   const [uploadStatus, setUploadStatus] = React.useState<string>("");
+  const [editingFromToken, setEditingFromToken] = React.useState<string | null>(null);
+  const [previousSubmissionId, setPreviousSubmissionId] = React.useState<string | null>(null);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   // Files cached in-memory between pick and submit. Not serialised to
   // localStorage — abandoning a draft never produces orphan uploads.
@@ -352,6 +354,37 @@ export default function StrategyEvaluationPage() {
   }, []);
 
   React.useEffect(() => {
+    // ?token=... → pre-fill from existing submission (refile / edit flow)
+    const sp = new URLSearchParams(window.location.search);
+    const token = sp.get("token");
+    if (token) {
+      setEditingFromToken(token);
+      fetch(`/api/strategy-evaluation/status?token=${encodeURIComponent(token)}`)
+        .then(async (res) => {
+          if (!res.ok) return null;
+          return res.json() as Promise<Record<string, unknown> & { id?: string }>;
+        })
+        .then((data) => {
+          if (!data) return;
+          if (typeof data.id === "string") setPreviousSubmissionId(data.id);
+          // Coerce the persisted payload back into FormState. Anything we don't
+          // recognise falls through harmlessly via the spread + defaults.
+          try {
+            const restored = deserializeState(data as unknown as SerializedFormState);
+            if (!restored.draftSubmissionId) {
+              restored.draftSubmissionId = `draft-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+            }
+            setForm(restored);
+          } catch {
+            // If the persisted shape is too far from FormState, fall through to a fresh form
+          }
+        })
+        .catch(() => {
+          // Network failure — fall through to fresh form
+        });
+      return;
+    }
+
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -498,10 +531,11 @@ export default function StrategyEvaluationPage() {
       setForm(finalForm);
 
       const payload = serializeState(finalForm);
+      const enriched = previousSubmissionId ? { ...payload, parentSubmissionId: previousSubmissionId } : payload;
       const res = await fetch("/api/strategy-evaluation/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(enriched),
       });
       if (!res.ok) {
         const errBody = await res.text().catch(() => "");
@@ -581,6 +615,16 @@ export default function StrategyEvaluationPage() {
       </div>
 
       <p className="text-sm text-muted-foreground mb-8">Sections A–P below. Starred fields are required.</p>
+
+      {editingFromToken && (
+        <div className="mb-6 rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+          <p className="font-medium">Editing your earlier submission</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Your previous answers are loaded below. Make any changes and submit again — we&rsquo;ll file the new version
+            alongside the original. Uploaded files carry over; re-attach a file to overwrite that slot.
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} noValidate className="space-y-0">
         {/* Section A */}
@@ -1773,64 +1817,82 @@ export default function StrategyEvaluationPage() {
               />
             ))}
 
-            <div className="space-y-1">
-              <Label className="text-sm font-medium">One-day pipeline sample description</Label>
-              <p className="text-xs text-muted-foreground">
-                Narrative — how a single trading day flows end-to-end through the pipeline.
-              </p>
-              <Textarea
-                rows={3}
-                value={form.pipelineSample}
-                onChange={(e) => setField("pipelineSample", e.target.value)}
-              />
-            </div>
-          </section>
-        )}
-
-        {/* Section G — gated on backtest existing */}
-        {form.hasBacktest !== "no" && form.hasBacktest !== "" && (
-          <section className="space-y-4 pt-8 border-t border-border/40">
-            <SectionHeading letter="G" title="Key performance metrics" />
-
-            {(
-              [
-                { key: "sharpeRatio" as const, label: "Sharpe ratio" },
-                { key: "calmarRatio" as const, label: "Calmar ratio" },
-                { key: "maxDrawdown" as const, label: "Max drawdown" },
-                { key: "totalReturn" as const, label: "Total return / CAGR" },
-                { key: "winRate" as const, label: "Win rate" },
-                { key: "winningVsLosingDays" as const, label: "Winning days vs losing days" },
-                { key: "avgTradeExpectancy" as const, label: "Average trade expectancy" },
-              ] as {
-                key: keyof Pick<
-                  FormState,
-                  | "sharpeRatio"
-                  | "calmarRatio"
-                  | "maxDrawdown"
-                  | "totalReturn"
-                  | "winRate"
-                  | "winningVsLosingDays"
-                  | "avgTradeExpectancy"
-                >;
-                label: string;
-              }[]
-            ).map(({ key, label }) => (
-              <div key={key} className="space-y-1">
-                <Label className="text-sm font-medium">{label}</Label>
-                <Input value={form[key] as string} onChange={(e) => setField(key, e.target.value)} />
+            {(form.tradeLogCsv?.filename || form.equityCurveCsv?.filename) && (
+              <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm">
+                <p className="font-medium text-emerald-200">
+                  We&rsquo;ll derive metrics + the day-flow narrative from your CSV.
+                </p>
+                <p className="mt-1 text-xs text-emerald-200/70">
+                  You can skip the pipeline narrative below and the Key performance metrics section — we&rsquo;ll
+                  compute Sharpe, drawdown, win rate etc. from the data you uploaded. The methodology / assumptions /
+                  tear-sheet uploads above are still helpful but not required.
+                </p>
               </div>
-            ))}
+            )}
 
-            <div className="space-y-1">
-              <Label className="text-sm font-medium">Benchmark / comparison notes</Label>
-              <Textarea
-                rows={3}
-                value={form.benchmarkNotes}
-                onChange={(e) => setField("benchmarkNotes", e.target.value)}
-              />
-            </div>
+            {!(form.tradeLogCsv?.filename || form.equityCurveCsv?.filename) && (
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">One-day pipeline sample description</Label>
+                <p className="text-xs text-muted-foreground">
+                  Narrative — how a single trading day flows end-to-end through the pipeline.
+                </p>
+                <Textarea
+                  rows={3}
+                  value={form.pipelineSample}
+                  onChange={(e) => setField("pipelineSample", e.target.value)}
+                />
+              </div>
+            )}
           </section>
         )}
+
+        {/* Section G — gated on backtest existing AND no CSV uploaded (CSV → we derive these) */}
+        {form.hasBacktest !== "no" &&
+          form.hasBacktest !== "" &&
+          !form.tradeLogCsv?.filename &&
+          !form.equityCurveCsv?.filename && (
+            <section className="space-y-4 pt-8 border-t border-border/40">
+              <SectionHeading letter="G" title="Key performance metrics" />
+
+              {(
+                [
+                  { key: "sharpeRatio" as const, label: "Sharpe ratio" },
+                  { key: "calmarRatio" as const, label: "Calmar ratio" },
+                  { key: "maxDrawdown" as const, label: "Max drawdown" },
+                  { key: "totalReturn" as const, label: "Total return / CAGR" },
+                  { key: "winRate" as const, label: "Win rate" },
+                  { key: "winningVsLosingDays" as const, label: "Winning days vs losing days" },
+                  { key: "avgTradeExpectancy" as const, label: "Average trade expectancy" },
+                ] as {
+                  key: keyof Pick<
+                    FormState,
+                    | "sharpeRatio"
+                    | "calmarRatio"
+                    | "maxDrawdown"
+                    | "totalReturn"
+                    | "winRate"
+                    | "winningVsLosingDays"
+                    | "avgTradeExpectancy"
+                  >;
+                  label: string;
+                }[]
+              ).map(({ key, label }) => (
+                <div key={key} className="space-y-1">
+                  <Label className="text-sm font-medium">{label}</Label>
+                  <Input value={form[key] as string} onChange={(e) => setField(key, e.target.value)} />
+                </div>
+              ))}
+
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Benchmark / comparison notes</Label>
+                <Textarea
+                  rows={3}
+                  value={form.benchmarkNotes}
+                  onChange={(e) => setField("benchmarkNotes", e.target.value)}
+                />
+              </div>
+            </section>
+          )}
 
         {/* Section H */}
         <section className="space-y-4 pt-8 border-t border-border/40">
