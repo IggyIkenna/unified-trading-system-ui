@@ -31,7 +31,7 @@ interface FormState {
   managementFee: string;
   rebalancingModel: string;
   rebalancingNotes: string;
-  commercialPath: "A" | "B" | "C" | "";
+  commercialPath: "A" | "B" | "C" | "D" | "";
   commercialPathSecondary: Set<string>;
   commercialPathTertiary: Set<string>;
   understandFit: boolean;
@@ -95,6 +95,12 @@ interface FormState {
   pathCApiKeyOwnership: string;
   pathCApiAccess: string;
   pathCReportingViews: string;
+  pathDDeliveryMechanism: string;
+  pathDDeliveryNotes: string;
+  pathDSchemaChoice: string;
+  pathDSchemaNotes: string;
+  pathDLatencyTolerance: string;
+  pathDExecutionContext: string;
   deploymentContinuity: string;
   paperTradedAtLeast7Days: boolean;
   paperUsesRealApis: boolean;
@@ -215,6 +221,12 @@ const INITIAL_STATE: FormState = {
   pathCApiKeyOwnership: "",
   pathCApiAccess: "",
   pathCReportingViews: "",
+  pathDDeliveryMechanism: "",
+  pathDDeliveryNotes: "",
+  pathDSchemaChoice: "",
+  pathDSchemaNotes: "",
+  pathDLatencyTolerance: "",
+  pathDExecutionContext: "",
   deploymentContinuity: "",
   paperTradedAtLeast7Days: false,
   paperUsesRealApis: false,
@@ -1118,7 +1130,13 @@ export default function StrategyEvaluationPage() {
                       description:
                         "Cross-cutting: Odum provides FCA regulatory coverage, reporting, and oversight. Compatible with any engagement shape — whether the client holds their own API keys and faces exchanges directly, or Odum operates the keys. The client retains full operational control; Odum acts as the appointed representative or regulatory anchor.",
                     },
-                  ] as { value: "A" | "B" | "C"; label: string; description: string }[]
+                    {
+                      value: "D" as const,
+                      label: "Odum Signals — Odum-generated signals, you execute elsewhere",
+                      description:
+                        "Direction reverses: Odum emits signals on a published payload schema; you execute on your own infrastructure (your venue accounts, your OMS, or another execution provider). Delivery via webhook push or REST pull, HMAC-signed, with idempotency keys. A distinct fourth path outside DART. See the deep-dive briefing at /briefings/signals-out for the full schema, delivery mechanics, and observability surface.",
+                    },
+                  ] as { value: "A" | "B" | "C" | "D"; label: string; description: string }[]
                 ).map(({ value, label, description }) => {
                   const isPrimary = form.commercialPath === value;
                   // Across all paths there is at most ONE secondary and ONE tertiary —
@@ -2305,11 +2323,29 @@ export default function StrategyEvaluationPage() {
                   </p>
                 </div>
 
+                <div className="rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+                  <p className="font-medium">DART Signals-In instruction schema</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Eight required fields per instruction (instrument, side, size, lifecycle markers, sub-client
+                    identifier, etc.). Full field-by-field spec, lifecycle semantics, and venue/instrument compatibility
+                    matrix:{" "}
+                    <a
+                      href="/briefings/dart-signals-in"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-medium"
+                    >
+                      /briefings/dart-signals-in →
+                    </a>
+                  </p>
+                </div>
+
                 <div className="space-y-1">
                   <Label className="text-sm font-medium">Signal format and delivery</Label>
                   <p className="text-xs text-muted-foreground">
-                    Can signals map into the agreed payload schema? Describe how signals are generated and delivered —
-                    batch file, webhook push, REST pull, or other — and the expected latency from decision to delivery.
+                    Can your signals map into the eight-field schema linked above? Describe how signals are generated
+                    and delivered — batch file, webhook push, REST pull, or other — and the expected latency from
+                    decision to delivery.
                   </p>
                   <Textarea
                     rows={4}
@@ -2395,6 +2431,156 @@ export default function StrategyEvaluationPage() {
                     rows={4}
                     value={form.pathCReportingViews}
                     onChange={(e) => setField("pathCReportingViews", e.target.value)}
+                  />
+                </div>
+              </section>
+            )}
+
+            {/* Section L₂ — Path D / Odum Signals only */}
+            {form.commercialPath === "D" && (
+              <section className="space-y-4 pt-8 border-t border-border/40">
+                <SectionHeading letter="L" title="Path D — Odum Signals specific" />
+
+                <div className="rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-sm">
+                  <p className="font-medium">Odum Signals payload schema</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    The Odum standard payload, delivery mechanics (webhook + REST pull), HMAC signing, idempotency keys,
+                    and the light observability surface are documented in the deep-dive briefing:{" "}
+                    <a
+                      href="/briefings/signals-out"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-medium"
+                    >
+                      /briefings/signals-out →
+                    </a>
+                    . You can adopt the Odum standard as-is, or share your own schema and we&rsquo;ll map between them
+                    on emission.
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Preferred delivery mechanism</Label>
+                  <div className="flex flex-col gap-2 mt-1">
+                    {(
+                      [
+                        {
+                          value: "webhook",
+                          label: "Webhook push",
+                          hint: "Odum POSTs to your endpoint as soon as a signal fires; lowest latency",
+                        },
+                        {
+                          value: "rest_pull",
+                          label: "REST pull",
+                          hint: "You poll an Odum endpoint on your cadence; simpler integration, slightly higher latency",
+                        },
+                        {
+                          value: "batch_file",
+                          label: "Batch file (S3 / SFTP / GCS)",
+                          hint: "End-of-period file drops; use when sub-second latency isn't needed",
+                        },
+                        { value: "other", label: "Other (describe below)" },
+                      ] as { value: string; label: string; hint?: string }[]
+                    ).map(({ value, label, hint }) => (
+                      <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                        <input
+                          type="radio"
+                          name="pathDDeliveryMechanism"
+                          value={value}
+                          checked={form.pathDDeliveryMechanism === value}
+                          onChange={() => setField("pathDDeliveryMechanism", value)}
+                          className="mt-0.5"
+                        />
+                        <span>
+                          {label}
+                          {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  {(form.pathDDeliveryMechanism === "other" || form.pathDDeliveryMechanism === "batch_file") && (
+                    <Input
+                      className="mt-2"
+                      placeholder={
+                        form.pathDDeliveryMechanism === "batch_file"
+                          ? "Drop location + cadence (e.g. s3://bucket/signals/, daily 17:00 UTC)"
+                          : "Describe the delivery channel"
+                      }
+                      value={form.pathDDeliveryNotes}
+                      onChange={(e) => setField("pathDDeliveryNotes", e.target.value)}
+                    />
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Schema preference</Label>
+                  <div className="flex flex-col gap-2 mt-1">
+                    {(
+                      [
+                        {
+                          value: "odum_standard",
+                          label: "Use Odum's standard payload schema",
+                          hint: "Field-by-field spec at /briefings/signals-out — simplest path",
+                        },
+                        {
+                          value: "custom",
+                          label: "Map to our own schema (we'll share it)",
+                          hint: "Send us a sample / spec; Odum maps emissions to your shape",
+                        },
+                      ] as { value: string; label: string; hint?: string }[]
+                    ).map(({ value, label, hint }) => (
+                      <label key={value} className="flex items-start gap-2 text-sm cursor-pointer">
+                        <input
+                          type="radio"
+                          name="pathDSchemaChoice"
+                          value={value}
+                          checked={form.pathDSchemaChoice === value}
+                          onChange={() => setField("pathDSchemaChoice", value)}
+                          className="mt-0.5"
+                        />
+                        <span>
+                          {label}
+                          {hint && <span className="block text-xs text-muted-foreground">{hint}</span>}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                  {form.pathDSchemaChoice === "custom" && (
+                    <Textarea
+                      className="mt-2"
+                      rows={3}
+                      placeholder="Describe your schema — required fields, instrument identifier convention, signed/unsigned, lifecycle markers, etc. We'll follow up to collect the full spec."
+                      value={form.pathDSchemaNotes}
+                      onChange={(e) => setField("pathDSchemaNotes", e.target.value)}
+                    />
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Latency tolerance</Label>
+                  <p className="text-xs text-muted-foreground">
+                    How quickly do signals need to land with you after Odum&rsquo;s decision? Tight tolerances steer us
+                    toward webhook delivery and dedicated infrastructure.
+                  </p>
+                  <Input
+                    placeholder="e.g. <100ms, <1s, <5min, end-of-day"
+                    value={form.pathDLatencyTolerance}
+                    onChange={(e) => setField("pathDLatencyTolerance", e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium">Where will you execute these signals?</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Your own venue accounts, an in-house OMS, a third-party execution provider, or a mix. Helpful
+                    context for sizing recommendations and reconciliation expectations — we don&rsquo;t need account
+                    details, just the operating shape.
+                  </p>
+                  <Textarea
+                    rows={3}
+                    placeholder="e.g. own Binance + Coinbase accounts; FIX into broker; in-house Python OMS routing to 3 venues."
+                    value={form.pathDExecutionContext}
+                    onChange={(e) => setField("pathDExecutionContext", e.target.value)}
                   />
                 </div>
               </section>

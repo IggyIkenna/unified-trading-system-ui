@@ -17,7 +17,8 @@ const INTERNAL_ADDRESS = "info@odum-research.com";
 const PATH_LABELS: Record<string, string> = {
   A: "Path A — DART Full / incubation and rebuild",
   B: "Path B — DART Signals-In / client signals, Odum execution",
-  C: "Path C — Regulatory Umbrella / read-only API integration",
+  C: "Path C — Regulatory Umbrella / FCA coverage and oversight",
+  D: "Path D — Odum Signals / Odum signals, client execution elsewhere",
 };
 
 function getSiteUrl(request: Request): string {

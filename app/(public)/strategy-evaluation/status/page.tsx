@@ -49,6 +49,7 @@ const PATH_LABELS: Record<string, string> = {
   A: "Path A — DART Full",
   B: "Path B — DART Signals-In",
   C: "Path C — Regulatory Umbrella",
+  D: "Path D — Odum Signals",
 };
 
 const FILE_FIELDS: { key: keyof SubmissionData; label: string }[] = [
@@ -98,7 +99,6 @@ async function loadSubmission(token: string): Promise<SubmissionData | null> {
         });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { magicToken: _t, ...rest } = data;
     const submittedAt =
       data.submittedAt && typeof data.submittedAt.toDate === "function"
