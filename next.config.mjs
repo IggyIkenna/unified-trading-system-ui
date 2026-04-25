@@ -71,12 +71,16 @@ const nextConfig = {
 
   async rewrites() {
     if (process.env.NEXT_PUBLIC_MOCK_API === "true") return [];
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8030";
     const authBase = process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:8200";
     const reportingBase = process.env.NEXT_PUBLIC_REPORTING_API_URL || "http://localhost:8014";
     const deploymentBase = process.env.NEXT_PUBLIC_DEPLOYMENT_API_URL || "http://localhost:8004";
+    // /api/v1/* is intentionally NOT rewritten — those paths are served by
+    // the portal's own Admin SDK routes under app/api/v1/*. Same for the
+    // /api/auth/* portal-native routes (signup verification, password reset).
+    // Everything below is fan-out to sibling backends that still live as
+    // separate Cloud Run services.
     return [
-      { source: "/api/auth/:path*", destination: `${authBase}/:path*` },
+      { source: "/api/auth/provisioning/:path*", destination: `${authBase}/provisioning/:path*` },
       { source: "/api/reporting/:path*", destination: `${reportingBase}/api/reporting/:path*` },
       { source: "/api/health", destination: `${deploymentBase}/health` },
       { source: "/api/services/:path*", destination: `${deploymentBase}/api/services/:path*` },
@@ -90,7 +94,6 @@ const nextConfig = {
       { source: "/api/cache/:path*", destination: `${deploymentBase}/api/cache/:path*` },
       { source: "/api/capabilities/:path*", destination: `${deploymentBase}/api/capabilities/:path*` },
       { source: "/api/config/:path*", destination: `${deploymentBase}/api/config/:path*` },
-      { source: "/api/:path*", destination: `${apiBase}/:path*` },
     ];
   },
 

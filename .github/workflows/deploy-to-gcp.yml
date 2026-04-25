@@ -16,7 +16,6 @@ env:
   GCP_PROJECT: central-element-323112
   SERVICE_NAME: odum-portal
   PORT: "3000"
-  USER_MGMT_API_URL: https://user-management-api-1060025368044.us-central1.run.app
 
 jobs:
   deploy:
@@ -43,8 +42,7 @@ jobs:
             --region ${{ github.event.inputs.region }} \
             --port ${{ env.PORT }} \
             --allow-unauthenticated \
-            --project ${{ env.GCP_PROJECT }} \
-            --set-env-vars "NEXT_PUBLIC_USER_MGMT_API_URL=${{ env.USER_MGMT_API_URL }}"
+            --project ${{ env.GCP_PROJECT }}
 
       - name: Verify health
         run: |
