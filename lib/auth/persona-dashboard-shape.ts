@@ -239,6 +239,23 @@ const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
     dart: "visible",
     reports: "locked",
   }),
+
+  // ── Real-prospect demo personas (2026-04-25 — landed alongside the per-prospect
+  //    UAT redirect from www login). Without these the dashboard falls through to
+  //    DEFAULT_TILE_SHAPE and shows DART locked + Reports visible only — both
+  //    Desmond personas + Patrick's full-tier persona need explicit shapes.
+  "desmond-dart-full": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
+  "desmond-signals-in": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
+  "elysium-defi-full": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
 };
 
 const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
@@ -399,6 +416,54 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
   "elysium-defi": subRouteOverride({
     dart: { terminal: "visible", observe: "visible" },
     reports: { "pnl-attribution": "locked" },
+  }),
+
+  // ── Real-prospect demo personas (2026-04-25). DART Full / DeFi Full shapes
+  //    mirror "client-full" — all DART sub-routes visible, full Reports. Signals-In
+  //    shape mirrors "prospect-signals-only" — DART with Signal Intake + Observe,
+  //    Research / Promote / Strategy Config / Deployment locked.
+  "desmond-dart-full": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      research: "visible",
+      promote: "visible",
+      observe: "visible",
+      "strategy-catalogue": "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+    },
+  }),
+  "desmond-signals-in": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      observe: "visible",
+      "signal-intake": "visible",
+      "strategy-catalogue": "visible",
+      research: "locked",
+      promote: "locked",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+    },
+  }),
+  "elysium-defi-full": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      research: "visible",
+      promote: "visible",
+      observe: "visible",
+      "strategy-catalogue": "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+    },
   }),
 };
 
