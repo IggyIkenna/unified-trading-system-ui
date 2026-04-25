@@ -19,10 +19,10 @@ export function ValueFormatToggle({ format, onFormatChange, className }: ValueFo
       <button
         onClick={() => onFormatChange("dollar")}
         className={cn(
-          "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
+          "flex items-center gap-1 px-2 py-1 text-xs transition-colors border border-transparent",
           format === "dollar"
-            ? "bg-secondary text-foreground font-medium"
-            : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+            ? "bg-primary/10 text-primary font-medium border-primary"
+            : "text-muted-foreground hover:text-foreground",
         )}
         title="Show values in dollars"
       >
@@ -32,10 +32,10 @@ export function ValueFormatToggle({ format, onFormatChange, className }: ValueFo
       <button
         onClick={() => onFormatChange("percent")}
         className={cn(
-          "flex items-center gap-1 px-2 py-1 text-xs transition-colors",
+          "flex items-center gap-1 px-2 py-1 text-xs transition-colors border border-transparent",
           format === "percent"
-            ? "bg-secondary text-foreground font-medium"
-            : "text-muted-foreground hover:text-foreground hover:bg-secondary/50",
+            ? "bg-primary/10 text-primary font-medium border-primary"
+            : "text-muted-foreground hover:text-foreground",
         )}
         title="Show values as percentage"
       >
@@ -45,9 +45,31 @@ export function ValueFormatToggle({ format, onFormatChange, className }: ValueFo
   );
 }
 
-// Hook for managing value format state
+// Module-level subscription so every useValueFormat() consumer shares one
+// value-format state. Using local useState meant the toggle button and the
+// chart's formatter held independent copies and never synced.
+let sharedFormat: ValueFormat = "dollar";
+const listeners = new Set<() => void>();
+const subscribe = (cb: () => void) => {
+  listeners.add(cb);
+  return () => listeners.delete(cb);
+};
+const getSnapshot = () => sharedFormat;
+function setSharedFormat(next: ValueFormat) {
+  if (sharedFormat === next) return;
+  sharedFormat = next;
+  listeners.forEach((l) => l());
+}
+
+// Hook for managing value format state (shared across all consumers).
 export function useValueFormat(initial: ValueFormat = "dollar") {
-  const [format, setFormat] = React.useState<ValueFormat>(initial);
+  // Initialize on first mount only — subsequent callers join the existing state.
+  const initRef = React.useRef(false);
+  if (!initRef.current) {
+    initRef.current = true;
+    if (sharedFormat === "dollar" && initial !== "dollar") setSharedFormat(initial);
+  }
+  const format = React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   const formatValue = React.useCallback(
     (dollarValue: number, baseValue: number): string => {
@@ -56,7 +78,6 @@ export function useValueFormat(initial: ValueFormat = "dollar") {
         const pct = (dollarValue / baseValue) * 100;
         return `${pct >= 0 ? "+" : ""}${formatNumber(pct, 2)}%`;
       }
-      // Dollar format
       if (Math.abs(dollarValue) >= 1000000) return `$${formatNumber(dollarValue / 1000000, 2)}M`;
       if (Math.abs(dollarValue) >= 1000) return `$${formatNumber(dollarValue / 1000, 0)}k`;
       return formatCurrency(dollarValue, "USD", 0);
@@ -64,7 +85,7 @@ export function useValueFormat(initial: ValueFormat = "dollar") {
     [format],
   );
 
-  return { format, setFormat, formatValue };
+  return { format, setFormat: setSharedFormat, formatValue };
 }
 
 // Combined component with value display

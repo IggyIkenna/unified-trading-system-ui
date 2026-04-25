@@ -237,15 +237,19 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as MetricKey)}>
-            <TabsList>
-              <TabsTrigger value="pnl">P&L</TabsTrigger>
-              <TabsTrigger value="nav">NAV</TabsTrigger>
-              <TabsTrigger value="exposure">Exposure</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <ValueFormatToggle format={valueFormat} onFormatChange={setValueFormat} />
-          <div className="flex items-center border border-border rounded-md overflow-hidden">
+          <div className="h-8 flex items-center">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as MetricKey)}>
+              <TabsList className="h-8">
+                <TabsTrigger value="pnl">P&L</TabsTrigger>
+                <TabsTrigger value="nav">NAV</TabsTrigger>
+                <TabsTrigger value="exposure">Exposure</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+          <div className="h-8">
+            <ValueFormatToggle format={valueFormat} onFormatChange={setValueFormat} />
+          </div>
+          <div className="h-8 flex items-center border border-border rounded-md overflow-hidden">
             <button
               onClick={() => setViewMode("live")}
               className={cn(
@@ -305,14 +309,14 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
               Delta
             </button>
           </div>
-          <div className="flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
+          <div className="h-8 flex items-center gap-1.5 px-2 py-1 border border-border rounded-md">
             <Calendar className="size-3 text-muted-foreground" />
             <input
               type="date"
               value={batchDate}
               onChange={(e) => setBatchDate(e.target.value)}
               max={maxBatchDate}
-              className="bg-transparent text-xs border-none focus:outline-none w-28"
+              className="bg-transparent text-xs border-none focus:outline-none w-28 h-full"
             />
           </div>
         </div>
