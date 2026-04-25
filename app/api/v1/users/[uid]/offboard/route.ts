@@ -7,13 +7,9 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import {
-  logWorkflowRun,
-  safeStartWorkflowExecutionStub,
-  usersCollection,
-  WORKFLOW_NAMES,
-} from "@/lib/admin/server/collections";
+import { usersCollection, WORKFLOW_NAMES } from "@/lib/admin/server/collections";
 import { resolveUserUid } from "@/lib/admin/server/users-list";
+import { triggerWorkflow } from "@/lib/admin/server/integrations/workflow-trigger";
 import { getAdminAuth } from "@/lib/firebase-admin";
 
 export const runtime = "nodejs";
@@ -52,19 +48,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
       { merge: true },
     );
 
-    // TODO Phase 4: wire Google Workflows + real provider deprovisioning
-    // (revoke Slack/M365/GitHub/GCP/AWS access).
-    const execution = safeStartWorkflowExecutionStub(WORKFLOW_NAMES.offboard, {
+    const wf = await triggerWorkflow(WORKFLOW_NAMES.offboard, "offboard", id, {
       firebase_uid: id,
       actions,
-    });
-    await logWorkflowRun({
-      firebase_uid: id,
-      run_type: "offboard",
-      workflow_name: WORKFLOW_NAMES.offboard,
-      execution_name: execution.name,
-      status: execution.state,
-      input: actions,
     });
 
     const revocation_steps = [
@@ -79,7 +65,10 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ uid: strin
     return NextResponse.json({
       user: { firebase_uid: id, ...((userSnap.data() ?? {}) as Record<string, unknown>) },
       revocation_steps,
-      workflow_execution: execution.name,
+      workflow_execution: wf.execution_name,
+      workflow_state: wf.state,
+      workflow_outcome: wf.outcome,
+      workflow_error: wf.error,
       previous_profile: profile,
     });
   } catch (err) {

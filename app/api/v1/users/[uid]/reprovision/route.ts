@@ -1,18 +1,14 @@
 /**
- * POST /api/v1/users/:id/reprovision — re-trigger onboarding workflow.
+ * POST /api/v1/users/:uid/reprovision — re-trigger the reprovision workflow.
  *
- * STUB: workflow execution + provider provisioning are placeholders that
- * Phase 4 will wire to Google Workflows REST + real provider APIs.
+ * Calls Google Workflows when GOOGLE_WORKFLOW_PROJECT is configured;
+ * otherwise records a stub run so admin pages render without a backend.
  */
 import { NextRequest, NextResponse } from "next/server";
 
-import {
-  logWorkflowRun,
-  safeStartWorkflowExecutionStub,
-  usersCollection,
-  WORKFLOW_NAMES,
-} from "@/lib/admin/server/collections";
+import { usersCollection, WORKFLOW_NAMES } from "@/lib/admin/server/collections";
 import { resolveUserUid } from "@/lib/admin/server/users-list";
+import { triggerWorkflow } from "@/lib/admin/server/integrations/workflow-trigger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,29 +20,19 @@ export async function POST(_req: NextRequest, ctx: { params: Promise<{ uid: stri
     const profileRef = usersCollection().doc(id);
     const snap = await profileRef.get();
     if (!snap.exists) return NextResponse.json({ error: "User profile not found." }, { status: 404 });
-
     const profile = snap.data() as Record<string, unknown>;
-    // TODO Phase 4: wire google-auth-library + Workflows REST endpoint.
-    const execution = safeStartWorkflowExecutionStub(WORKFLOW_NAMES.reprovision, {
+
+    const result = await triggerWorkflow(WORKFLOW_NAMES.reprovision, "reprovision", id, {
       firebase_uid: id,
       profile,
       access_template: profile["access_template"] ?? null,
     });
-    await logWorkflowRun({
-      firebase_uid: id,
-      run_type: "reprovision",
-      workflow_name: WORKFLOW_NAMES.reprovision,
-      execution_name: execution.name,
-      status: execution.state,
-      input: profile,
-    });
-
     await profileRef.set({ last_modified: new Date().toISOString() }, { merge: true });
-
     return NextResponse.json({
-      workflow_execution: execution.name,
-      workflow_state: execution.state,
-      workflow_error: execution.error ?? null,
+      workflow_execution: result.execution_name,
+      workflow_state: result.state,
+      workflow_error: result.error,
+      workflow_outcome: result.outcome,
       provisioning_steps: [],
     });
   } catch (err) {

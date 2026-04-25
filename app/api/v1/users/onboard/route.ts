@@ -11,12 +11,11 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   computeQuotaCheck,
   getAccessTemplateById,
-  logWorkflowRun,
-  safeStartWorkflowExecutionStub,
   usersCollection,
   WORKFLOW_NAMES,
 } from "@/lib/admin/server/collections";
 import { getDefaultServicesForUser } from "@/lib/admin/server/service-defaults";
+import { triggerWorkflow } from "@/lib/admin/server/integrations/workflow-trigger";
 import { getAdminAuth } from "@/lib/firebase-admin";
 
 export const runtime = "nodejs";
@@ -85,20 +84,10 @@ export async function POST(req: NextRequest) {
     };
     await usersCollection().doc(firebaseUser.uid).set(profile);
 
-    // TODO Phase 4: wire google-auth-library + Workflows REST endpoint +
-    // real provider provisioning (Slack/M365/GitHub/GCP/AWS).
-    const execution = safeStartWorkflowExecutionStub(WORKFLOW_NAMES.onboard, {
+    const wf = await triggerWorkflow(WORKFLOW_NAMES.onboard, "onboard", firebaseUser.uid, {
       firebase_uid: firebaseUser.uid,
       profile,
       access_template: accessTemplate,
-    });
-    await logWorkflowRun({
-      firebase_uid: firebaseUser.uid,
-      run_type: "onboard",
-      workflow_name: WORKFLOW_NAMES.onboard,
-      execution_name: execution.name,
-      status: execution.state,
-      input: { firebase_uid: firebaseUser.uid, profile, access_template: accessTemplate },
     });
 
     const provisioning_steps = [
@@ -109,7 +98,10 @@ export async function POST(req: NextRequest) {
       {
         user: { ...profile, firebase_uid: firebaseUser.uid },
         provisioning_steps,
-        workflow_execution: execution.name,
+        workflow_execution: wf.execution_name,
+        workflow_state: wf.state,
+        workflow_outcome: wf.outcome,
+        workflow_error: wf.error,
         quota,
       },
       { status: 201 },

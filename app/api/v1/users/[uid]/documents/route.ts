@@ -23,7 +23,10 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ uid: strin
   try {
     const snap = await userDocumentsCollection().where("firebase_uid", "==", uid).get();
     const documents: UserDocument[] = snap.docs
-      .map((d) => ({ id: d.id, ...(d.data() as Record<string, unknown>) }))
+      .map((d) => {
+        const row = d.data() as Record<string, unknown>;
+        return { id: d.id, ...row } as UserDocument;
+      })
       .sort((a, b) => (b.uploaded_at ?? "").localeCompare(a.uploaded_at ?? ""));
     return NextResponse.json({ documents, total: documents.length });
   } catch (err) {

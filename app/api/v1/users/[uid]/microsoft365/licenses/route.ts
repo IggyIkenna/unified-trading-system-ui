@@ -1,17 +1,25 @@
 /**
- * GET /api/v1/users/:id/microsoft365/licenses — STUB.
- *
- * TODO Phase 4: wire Microsoft Graph for real license enumeration. For now
- * this returns ok=true with an empty licenses array so admin pages render.
+ * GET /api/v1/users/:uid/microsoft365/licenses — list assigned M365 licenses
+ * for the user identified by their work email (microsoft_upn). Falls back
+ * gracefully when MS_GRAPH_* secrets are unset.
  */
 import { NextRequest, NextResponse } from "next/server";
 
+import { usersCollection } from "@/lib/admin/server/collections";
 import { isPlatformAdmin, verifyCaller } from "@/lib/admin/server/auth-context";
+import { getGraphClient } from "@/lib/admin/server/integrations/graph-client";
+import { resolveUserUid } from "@/lib/admin/server/users-list";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest, _ctx: { params: Promise<{ uid: string }> }) {
+interface LicenseDetail {
+  skuId: string;
+  skuPartNumber?: string;
+  servicePlans?: { servicePlanId: string; servicePlanName?: string; provisioningStatus?: string }[];
+}
+
+export async function GET(req: NextRequest, ctx: { params: Promise<{ uid: string }> }) {
   const actor = await verifyCaller(req);
   if (!actor || !(await isPlatformAdmin(actor.uid))) {
     return NextResponse.json(
@@ -19,9 +27,32 @@ export async function GET(req: NextRequest, _ctx: { params: Promise<{ uid: strin
       { status: 403 },
     );
   }
-  return NextResponse.json({
-    ok: true,
-    licenses: [],
-    message: "Microsoft 365 license listing not yet wired (Phase 4).",
-  });
+  const { uid: rawId } = await ctx.params;
+  const id = await resolveUserUid(rawId);
+  const profile = await usersCollection().doc(id).get();
+  if (!profile.exists) return NextResponse.json({ error: "User not found" }, { status: 404 });
+  const upn = (profile.data() as { microsoft_upn?: string } | undefined)?.microsoft_upn;
+  if (!upn) {
+    return NextResponse.json({
+      ok: true,
+      licenses: [],
+      message: "User has no microsoft_upn set — issue a work email first.",
+    });
+  }
+  const graph = getGraphClient();
+  if (!graph) {
+    return NextResponse.json({
+      ok: false,
+      licenses: [],
+      message: "MS_GRAPH_* secrets not configured.",
+    });
+  }
+  try {
+    const res = (await graph.api(`/users/${encodeURIComponent(upn)}/licenseDetails`).get()) as {
+      value: LicenseDetail[];
+    };
+    return NextResponse.json({ ok: true, upn, licenses: res.value ?? [] });
+  } catch (err) {
+    return NextResponse.json({ ok: false, error: String(err) }, { status: 502 });
+  }
 }
