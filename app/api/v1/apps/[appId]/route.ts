@@ -1,6 +1,6 @@
 /**
- * GET /api/v1/apps/:id — read one application
- * PUT /api/v1/apps/:id — partial update
+ * GET /api/v1/apps/:appId — read one application
+ * PUT /api/v1/apps/:appId — partial update
  */
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,15 +10,15 @@ import { verifyCaller } from "@/lib/admin/server/auth-context";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
-  const { id } = await ctx.params;
-  const snap = await applicationsCollection().doc(id).get();
+export async function GET(_req: NextRequest, ctx: { params: Promise<{ appId: string }> }) {
+  const { appId } = await ctx.params;
+  const snap = await applicationsCollection().doc(appId).get();
   if (!snap.exists) return NextResponse.json({ error: "Application not found" }, { status: 404 });
   return NextResponse.json({ application: { id: snap.id, ...snap.data() } });
 }
 
-export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
-  const { id } = await ctx.params;
+export async function PUT(req: NextRequest, ctx: { params: Promise<{ appId: string }> }) {
+  const { appId } = await ctx.params;
   const caller = await verifyCaller(req);
   let payload: Record<string, unknown>;
   try {
@@ -26,14 +26,14 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
-  const ref = applicationsCollection().doc(id);
+  const ref = applicationsCollection().doc(appId);
   const existing = await ref.get();
   if (!existing.exists) return NextResponse.json({ error: "Application not found" }, { status: 404 });
   const next = { ...payload, updated_at: new Date().toISOString() };
   delete (next as Record<string, unknown>).id;
   delete (next as Record<string, unknown>).created_at;
   await ref.set(next, { merge: true });
-  await writeAuditEntry({ action: "app.updated", app_id: id, actor: caller?.uid ?? "system" });
+  await writeAuditEntry({ action: "app.updated", app_id: appId, actor: caller?.uid ?? "system" });
   const updated = await ref.get();
   return NextResponse.json({ app: { id: updated.id, ...updated.data() } });
 }
