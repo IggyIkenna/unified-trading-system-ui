@@ -388,6 +388,7 @@ export default function StrategyEvaluationPage() {
   const [errors, setErrors] = React.useState<FieldError[]>([]);
   const [submitting, setSubmitting] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
+  const [submittedSubmissionId, setSubmittedSubmissionId] = React.useState<string | null>(null);
   const [submitError, setSubmitError] = React.useState(false);
   const [submitErrorDetail, setSubmitErrorDetail] = React.useState<string>("");
   const [uploadStatus, setUploadStatus] = React.useState<string>("");
@@ -601,13 +602,21 @@ export default function StrategyEvaluationPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(enriched),
+        cache: "no-store",
       });
       if (!res.ok) {
         const errBody = await res.text().catch(() => "");
         throw new Error(`Server returned ${res.status}${errBody ? `: ${errBody.slice(0, 200)}` : ""}`);
       }
+      // Server must have echoed a submissionId — otherwise Firestore silently
+      // failed and the form would otherwise claim success on nothing.
+      const responseBody = (await res.json().catch(() => ({}))) as { ok?: boolean; submissionId?: string };
+      if (!responseBody.submissionId) {
+        throw new Error("Server returned 200 but no submission ID — persistence likely failed. Please try again.");
+      }
       localStorage.removeItem(STORAGE_KEY);
       pendingFilesRef.current.clear();
+      setSubmittedSubmissionId(responseBody.submissionId);
       setSubmitted(true);
     } catch (err: unknown) {
       const detail = err instanceof Error ? err.message : "unknown error";
@@ -638,6 +647,11 @@ export default function StrategyEvaluationPage() {
               . Click the link inside to confirm your email and view a private status page where you can download your
               uploaded documents and refile if anything needs to change.
             </p>
+            {submittedSubmissionId && (
+              <p className="text-xs text-muted-foreground pt-1">
+                Submission ID: <code className="font-mono text-foreground/80">{submittedSubmissionId}</code>
+              </p>
+            )}
           </div>
         </div>
       </div>
