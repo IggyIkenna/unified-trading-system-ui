@@ -322,10 +322,12 @@ export function StrategiesDataProvider({ children }: { children: React.ReactNode
   const { data: perfData, isLoading } = useStrategyPerformance();
   const { scope: globalScope } = useGlobalScope();
 
-  const rawPayload =
-    (perfData as Record<string, unknown> | undefined)?.data ??
-    (perfData as Record<string, unknown> | undefined)?.strategies;
-  const perfRaw: unknown[] = Array.isArray(rawPayload) ? rawPayload : [];
+  const perfRaw: unknown[] = React.useMemo(() => {
+    const rawPayload =
+      (perfData as Record<string, unknown> | undefined)?.data ??
+      (perfData as Record<string, unknown> | undefined)?.strategies;
+    return Array.isArray(rawPayload) ? rawPayload : [];
+  }, [perfData]);
   const allStrategies: Strategy[] = React.useMemo(() => {
     if (perfRaw.length > 0) return perfRaw as Strategy[];
     // Merge registry strategies with seed data for richer org/client info
