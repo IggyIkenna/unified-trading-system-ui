@@ -151,12 +151,12 @@ export function EnvelopeBrowser(): React.ReactElement {
     const rows: FlatRow[] = [];
 
     const filteredCats = categoryFilter === "ALL"
-      ? CATEGORY_ORDER.filter((c) => envelope.categories[c])
-      : envelope.categories[categoryFilter] ? [categoryFilter] : [];
+      ? CATEGORY_ORDER.filter((c) => envelope.categories?.[c])
+      : envelope.categories?.[categoryFilter] ? [categoryFilter] : [];
 
     for (const category of filteredCats) {
-      const cat = envelope.categories[category];
-      if (!cat) continue;
+      const cat = envelope.categories?.[category];
+      if (!cat || !cat.families) continue;
       const catKey = `cat:${category}`;
       rows.push({ type: "category", category, depth: 0, key: catKey });
       if (!expandedKeys.has(catKey) && categoryFilter === "ALL") continue;

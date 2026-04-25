@@ -104,7 +104,21 @@ async function fetchArtefact<T>(file: string): Promise<T> {
   if (!res.ok) {
     throw new Error(`Failed to load ${file}: ${res.status} ${res.statusText}`);
   }
-  return (await res.json()) as T;
+  // Mock-mode interceptor may swap the body for non-JSON; guard `res.json()`
+  // and surface a useful message instead of an opaque parse failure.
+  const text = await res.text();
+  if (!text || text.trim().startsWith("<")) {
+    throw new Error(
+      `Failed to load ${file}: response is not JSON (mock mode may be intercepting the GCS proxy route — switch to real-data mode or run regen-catalogue.sh).`,
+    );
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse ${file}: ${err instanceof Error ? err.message : "invalid JSON"}`,
+    );
+  }
 }
 
 export function loadEnvelope(): Promise<EnvelopeJson> {
