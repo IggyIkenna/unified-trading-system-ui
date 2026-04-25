@@ -43,6 +43,7 @@ import { Term } from "@/components/marketing/term";
 import { setBriefingSessionActive } from "@/lib/briefings/session";
 import { persistResolvedPersona, resolvePersonaFromQuestionnaire } from "@/lib/questionnaire/resolve-persona";
 import { fingerprintAccessCode, submitQuestionnaire, type SubmitResult } from "@/lib/questionnaire/submit";
+import { validateRequired, type ValidationFailure } from "@/lib/questionnaire/validate-required";
 import type {
   QuestionnaireCategory,
   QuestionnaireEnvelope,
@@ -293,61 +294,12 @@ function QuestionnaireForm() {
   const regUmbrellaVisible = useMemo(() => isRegUmbrellaPath(state.service_family), [state.service_family]);
 
   /**
-   * Required-field validation. The "Strategy preferences" section (axes 7-11)
-   * is intentionally optional and excluded. Reg-Umbrella branch is required
-   * only when service_family ∈ {RegUmbrella, combo}.
-   *
-   * Returns the data-testid of the first axis with a problem (so we can
-   * scroll to it) plus a human-readable message. Null when valid.
+   * Required-field validation lives in lib/questionnaire/validate-required.ts
+   * so it can be unit-tested as a pure function. The component just hands
+   * `state` over and reacts to the {testId, message} | null result.
    */
-  function validateRequired(): { testId: string; message: string } | null {
-    if (state.categories.size === 0) {
-      return { testId: "axis-categories", message: "Pick at least one asset-class category (Q1)." };
-    }
-    if (state.instrument_types.size === 0) {
-      return { testId: "axis-instrument-types", message: "Pick at least one instrument type (Q2)." };
-    }
-    if (state.venue_scope_mode === "explicit" && state.venue_scope_csv.trim() === "") {
-      return { testId: "axis-venue-scope", message: "List the venues you want, or switch to All venues (Q3)." };
-    }
-    if (state.strategy_style.size === 0) {
-      return { testId: "axis-strategy-style", message: "Pick at least one strategy style (Q4)." };
-    }
-    if (state.fund_structure.size === 0) {
-      return { testId: "axis-fund-structure", message: "Pick at least one fund structure (Q6)." };
-    }
-    if (isRegUmbrellaPath(state.service_family)) {
-      if (state.licence_region === null) {
-        return { testId: "axis-licence-region", message: "Pick a licence region (Reg Umbrella branch)." };
-      }
-      if (state.entity_jurisdiction.trim() === "") {
-        return { testId: "axis-entity-jurisdiction", message: "Enter the entity jurisdiction (Reg Umbrella branch)." };
-      }
-      if (state.supported_currencies.size === 0 && state.supported_currencies_other.trim() === "") {
-        return {
-          testId: "axis-supported-currencies",
-          message: "Pick at least one supported currency (Reg Umbrella branch).",
-        };
-      }
-    }
-    if (state.email.trim() === "") {
-      return {
-        testId: "envelope-email",
-        message: "Enter your work email — that's where the access code will be sent.",
-      };
-    }
-    // Lightweight email shape check — RFC-strict validation is out of scope;
-    // Resend will reject if the address is malformed.
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email.trim())) {
-      return { testId: "envelope-email", message: "That email doesn't look right — double-check it." };
-    }
-    if (state.firm_name.trim() === "") {
-      return { testId: "envelope-firm-name", message: "Enter your firm name." };
-    }
-    if (state.firm_location.trim() === "") {
-      return { testId: "envelope-location", message: "Pick where the firm is based (or planned to be)." };
-    }
-    return null;
+  function validateForm(): ValidationFailure | null {
+    return validateRequired(state);
   }
 
   function focusFirstError(testId: string): void {
@@ -372,7 +324,7 @@ function QuestionnaireForm() {
     // Required-fields gate FIRST — before cookie consent or anything else.
     // Strategy preferences (axes 7-11) stay optional. Everything else has
     // to be filled before we'll mail an access code.
-    const validation = validateRequired();
+    const validation = validateForm();
     if (validation) {
       setResult({
         success: false,
@@ -558,7 +510,7 @@ function QuestionnaireForm() {
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-8" data-testid="questionnaire-form">
+      <form onSubmit={onSubmit} noValidate className="mt-8 space-y-8" data-testid="questionnaire-form">
         <p className="text-xs text-muted-foreground">
           Fields marked{" "}
           <span className="text-rose-500" aria-hidden>
