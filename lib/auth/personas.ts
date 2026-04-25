@@ -390,3 +390,17 @@ export function getPersonaById(id: string): AuthPersona | undefined {
 export function getPersonaByEmail(email: string): AuthPersona | undefined {
   return PERSONAS.find((p) => p.email === email);
 }
+
+/**
+ * Canonical set of demo-persona email addresses (lowercased). Consumed by the
+ * production login page to redirect known demo prospects to UAT before they
+ * try to authenticate against the production Firebase pool. Adding a new demo
+ * persona here automatically enrolls them in the redirect.
+ */
+export const DEMO_PERSONA_EMAILS: ReadonlySet<string> = new Set(
+  PERSONAS.map((p) => p.email.toLowerCase()),
+);
+
+export function isDemoPersonaEmail(email: string): boolean {
+  return DEMO_PERSONA_EMAILS.has(email.trim().toLowerCase());
+}

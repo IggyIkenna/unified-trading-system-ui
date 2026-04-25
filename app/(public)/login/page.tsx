@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight, Mail, Lock, KeyRound } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "@/hooks/use-toast";
+import { isDemoPersonaEmail } from "@/lib/auth/personas";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
 import Link from "next/link";
 
@@ -90,16 +91,27 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    // On the main production site, advisor/demo accounts (@odum-research.co.uk and
-    // @odum-research.com) are homed on the UAT demo environment. Show a brief notice
-    // then redirect — they never auth against prod Firebase.
-    const isAdvisorOrDemoEmail =
-      email.toLowerCase().endsWith("@odum-research.co.uk") || email.toLowerCase().endsWith("@odum-research.com");
+    // On the main production site, demo accounts (advisors / investor relations on
+    // @odum-research.co.uk + @odum-research.com domains, plus per-prospect demo
+    // personas like Desmond's gmail) are homed on the UAT demo environment. Show a
+    // brief notice then redirect — they never auth against prod Firebase.
+    //
+    // Domain-suffix match catches the standing internal accounts; isDemoPersonaEmail
+    // checks the canonical PERSONAS list in lib/auth/personas.ts so adding a new
+    // prospect persona auto-enrolls them in the redirect without touching this page.
+    const lowerEmail = email.toLowerCase();
+    const isStandingInternalEmail =
+      lowerEmail.endsWith("@odum-research.co.uk") || lowerEmail.endsWith("@odum-research.com");
+    const isAdvisorOrDemoEmail = isStandingInternalEmail || isDemoPersonaEmail(email);
     const isProdSite = process.env.NEXT_PUBLIC_SITE_URL?.includes("www.odum-research.com") ?? false;
     if (isAdvisorOrDemoEmail && isProdSite) {
       setIsLoading(false);
       setUatRedirecting(true);
-      const target = encodeURIComponent(redirectTo || "/investor-relations");
+      // Standing internal advisor accounts go to /investor-relations; per-prospect
+      // demo personas (Desmond, Patrick, etc.) land on /dashboard so they hit the
+      // platform shell and the DemoPlanToggle is in scope.
+      const fallback = isStandingInternalEmail ? "/investor-relations" : "/dashboard";
+      const target = encodeURIComponent(redirectTo || fallback);
       setTimeout(() => {
         window.location.href = `https://uat.odum-research.com/login?redirect=${target}`;
       }, 2800);
