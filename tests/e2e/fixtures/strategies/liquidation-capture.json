@@ -1,0 +1,50 @@
+{
+  "name": "LIQUIDATION_CAPTURE",
+  "persona": "internal-trader",
+  "route": "/services/trading/defi",
+  "rootSelector": "[data-testid=\"defi-flash-loans-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/liquidation-capture.md",
+  "observationWidgets": [
+    {
+      "testid": "defi-wallet-summary-widget",
+      "assertVisible": true,
+      "assertsUpdatedAfter": ["FLASH_BORROW"]
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "baseline — flash loans widget renders, execute button disabled",
+      "inputs": {},
+      "expected": {
+        "notes": "No steps added yet; assert defi-flash-loans-widget mounts with flash-add-step-button visible and flash-execute-button disabled."
+      }
+    },
+    {
+      "name": "build liquidation bundle — add SWAP step",
+      "inputs": {
+        "stepType": "SWAP"
+      },
+      "expected": {
+        "notes": "Adding a SWAP step enables the Execute bundle button and populates the bundle operations list."
+      }
+    },
+    {
+      "name": "execute flash bundle — liquidation trade row appears",
+      "inputs": {},
+      "expected": {
+        "tradeType": "FLASH_BORROW",
+        "minRowsAdded": 1,
+        "notes": "Executes the atomic flash bundle (FLASH_BORROW → SWAP → FLASH_REPAY); emits a FLASH_BORROW ledger row."
+      }
+    },
+    {
+      "name": "P&L preview shows net gain before execution",
+      "inputs": {
+        "stepType": "BORROW"
+      },
+      "expected": {
+        "notes": "Reactive-only — P&L preview panel (gross profit, flash fee, gas estimate, net P&L) is visible after steps are added."
+      }
+    }
+  ]
+}

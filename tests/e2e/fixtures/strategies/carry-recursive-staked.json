@@ -1,0 +1,82 @@
+{
+  "name": "CARRY_RECURSIVE_STAKED",
+  "persona": "internal-trader",
+  "route": "/services/trading/strategies/staked-basis",
+  "rootSelector": "[data-testid=\"defi-lending-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/carry-recursive-staked.md",
+  "observationWidgets": [
+    { "testid": "defi-wallet-summary-widget", "assertVisible": true, "assertsUpdatedAfter": ["LEND", "BORROW"] },
+    { "testid": "defi-transfer-widget", "assertVisible": true }
+  ],
+  "scenarios": [
+    {
+      "name": "baseline — lending + swap + perp widgets all render",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert defi-lending-widget, defi-swap-widget, defi-perp-short-widget and defi-transfer-widget all mount cleanly."
+      }
+    },
+    {
+      "name": "loop leg 1 — LEND stETH as collateral on Aave",
+      "inputs": {
+        "operation": "LEND",
+        "asset": "ETH",
+        "amount": "10"
+      },
+      "expected": {
+        "tradeType": "LEND",
+        "minRowsAdded": 1,
+        "notes": "First deposit into Aave — establishes collateral base for the recursive leverage loop."
+      }
+    },
+    {
+      "name": "loop leg 2 — BORROW USDC against stETH collateral",
+      "inputs": {
+        "operation": "BORROW",
+        "asset": "USDC",
+        "amount": "12000"
+      },
+      "expected": {
+        "tradeType": "BORROW",
+        "minRowsAdded": 1,
+        "notes": "Borrow USDC at LTV70 against the pledged stETH — proceeds re-deployed into staking below."
+      }
+    },
+    {
+      "name": "loop leg 3 — re-SWAP USDC → weETH (deepen leverage loop)",
+      "inputs": {
+        "tokenIn": "USDC",
+        "tokenOut": "weETH",
+        "amountIn": "12000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Converts borrowed USDC back to LST, to be re-pledged in a second Aave deposit — completing one recursive loop."
+      }
+    },
+    {
+      "name": "loop leg 4 — second LEND (deepen leverage, round 2)",
+      "inputs": {
+        "operation": "LEND",
+        "asset": "ETH",
+        "amount": "5"
+      },
+      "expected": {
+        "tradeType": "LEND",
+        "minRowsAdded": 1,
+        "notes": "Second deposit round deepens the leverage loop — net APY compounds per CARRY_RECURSIVE_STAKED SSOT."
+      }
+    },
+    {
+      "name": "health factor and leverage loop metrics visible",
+      "inputs": {
+        "operation": "LEND",
+        "amount": "2"
+      },
+      "expected": {
+        "notes": "Reactive-only — after entering an amount the lending widget exposes Health Factor (current + after) and supply APY."
+      }
+    }
+  ]
+}

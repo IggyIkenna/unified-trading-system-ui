@@ -181,7 +181,13 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
           </div>
         ))}
 
-        <Button variant="outline" size="sm" className="w-full text-xs" onClick={addFlashStep}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full text-xs"
+          onClick={addFlashStep}
+          data-testid="flash-add-step-button"
+        >
           <Plus className="size-3 mr-1.5" />
           Add step
         </Button>
@@ -235,6 +241,7 @@ export function DeFiFlashLoansWidget(_props: WidgetComponentProps) {
         </Button>
         <Button
           className="text-xs"
+          data-testid="flash-execute-button"
           disabled={flashSteps.length === 0 || isSubmitting}
           onClick={() =>
             handleSubmit(() => {

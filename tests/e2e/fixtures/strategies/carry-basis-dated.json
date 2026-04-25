@@ -1,0 +1,77 @@
+{
+  "name": "CARRY_BASIS_DATED",
+  "persona": "internal-trader",
+  "route": "/services/trading/strategies/carry-basis",
+  "rootSelector": "[data-testid=\"defi-swap-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/carry-basis-dated.md",
+  "observationWidgets": [
+    { "testid": "defi-wallet-summary-widget", "assertVisible": true, "assertsUpdatedAfter": ["SWAP", "TRADE"] },
+    { "testid": "defi-funding-matrix-widget", "assertVisible": true },
+    { "testid": "enhanced-basis-widget", "assertVisible": true }
+  ],
+  "scenarios": [
+    {
+      "name": "baseline — swap + perp-short widgets both render",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert both legs mount (defi-swap-widget + defi-perp-short-widget) with default inputs."
+      }
+    },
+    {
+      "name": "spot long BTC — SWAP USDC → BTC (90% capital)",
+      "inputs": {
+        "amountIn": "90000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Spot long leg of CARRY_BASIS_DATED — BTC bought on spot; hedged below by short dated futures."
+      }
+    },
+    {
+      "name": "short BTC dated futures on Deribit (fixed-maturity hedge)",
+      "inputs": {
+        "operation": "TRADE",
+        "asset": "ETH",
+        "size": "20"
+      },
+      "expected": {
+        "tradeType": "TRADE",
+        "venueContains": "HYPERLIQUID",
+        "minRowsAdded": 1,
+        "notes": "Perp-short leg simulates a dated-futures hedge; completes the CARRY_BASIS_DATED SSOT flow."
+      }
+    },
+    {
+      "name": "basis spread + roll cost analytics visible",
+      "inputs": {
+        "amountIn": "50000"
+      },
+      "expected": {
+        "notes": "Reactive-only — Funding APY / Cost of Carry / Net APY / Roll Cost panel appears for basis-trade mode."
+      }
+    },
+    {
+      "name": "second spot swap appends another SWAP row",
+      "inputs": {
+        "amountIn": "25000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Idempotent ledger check — multiple executes produce distinct rows."
+      }
+    },
+    {
+      "name": "slippage tolerance tightens expected output",
+      "inputs": {
+        "amountIn": "10000",
+        "slippageLoose": "1",
+        "slippageTight": "0.1"
+      },
+      "expected": {
+        "notes": "Reactive-only — tightening slippage reduces aggregate price impact for dated-futures carry."
+      }
+    }
+  ]
+}

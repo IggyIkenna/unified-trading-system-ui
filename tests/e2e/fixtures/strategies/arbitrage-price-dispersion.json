@@ -1,0 +1,67 @@
+{
+  "name": "ARBITRAGE_PRICE_DISPERSION",
+  "persona": "internal-trader",
+  "route": "/services/trading/defi",
+  "rootSelector": "[data-testid=\"defi-swap-widget\"]",
+  "playbook": "docs/trading/defi/playbooks/arbitrage-price-dispersion.md",
+  "observationWidgets": [
+    {
+      "testid": "defi-wallet-summary-widget",
+      "assertVisible": true,
+      "assertsUpdatedAfter": ["SWAP"]
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "baseline — swap widget renders, trade history queryable",
+      "inputs": {},
+      "expected": {
+        "notes": "No execution; assert defi-swap-widget mounts with asset-from-select, capital-input, execute-button (disabled) and trade-history is reachable."
+      }
+    },
+    {
+      "name": "buy-leg — SWAP USDC → ETH (acquire at lower venue price)",
+      "inputs": {
+        "amountIn": "50000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "First leg of the price-dispersion arb — buy ETH where price is lower. SOR routes across Uniswap/Curve/Balancer."
+      }
+    },
+    {
+      "name": "sell-leg — SWAP ETH → USDC (sell at higher venue price)",
+      "inputs": {
+        "amountIn": "18"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Second leg — sell ETH acquired in buy-leg at a higher cross-venue price, capturing the spread."
+      }
+    },
+    {
+      "name": "second arb cycle appends two more SWAP rows",
+      "inputs": {
+        "amountIn": "25000"
+      },
+      "expected": {
+        "tradeType": "SWAP",
+        "minRowsAdded": 1,
+        "notes": "Confirm ledger keeps appending on repeated arb cycles — important for high-frequency arb strategies."
+      }
+    },
+    {
+      "name": "slippage tolerance affects expected output",
+      "inputs": {
+        "amountIn": "10000",
+        "slippageLoose": "1",
+        "slippageTight": "0.1"
+      },
+      "expected": {
+        "notes": "Reactive-only — slippage tolerance has a direct impact on arb profitability; assert expected-output differs."
+      }
+    }
+  ]
+}

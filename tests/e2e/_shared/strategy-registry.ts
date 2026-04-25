@@ -165,11 +165,11 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
   // ──────────────────────────────────────────────────────────────────────
   CARRY_BASIS_DATED: {
     archetype: "CARRY_BASIS_DATED",
-    coverage: "detail-view",
+    coverage: "execution",
     description: "Spot long vs. dated futures short for fixed-maturity basis carry.",
     persona: "internal-trader",
-    buildRoute: strategiesRoute,
-    rootSelector: '[class*="max-w-"]',
+    buildRoute: () => "/services/trading/strategies/carry-basis",
+    rootSelector: '[data-testid="defi-swap-widget"]',
     primaryInstanceId: "CARRY_BASIS_DATED@binance-deribit-btc-dated-usdt-prod",
     instanceIds: [
       "CARRY_BASIS_DATED@binance-deribit-btc-dated-usdt-prod",
@@ -184,11 +184,11 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
 
   CARRY_RECURSIVE_STAKED: {
     archetype: "CARRY_RECURSIVE_STAKED",
-    coverage: "detail-view",
+    coverage: "execution",
     description: "Leverage LST via recursive deposit→borrow loops for amplified staking yield.",
     persona: "internal-trader",
-    buildRoute: strategiesRoute,
-    rootSelector: '[class*="max-w-"]',
+    buildRoute: () => "/services/trading/strategies/staked-basis",
+    rootSelector: '[data-testid="defi-lending-widget"]',
     primaryInstanceId: "CARRY_RECURSIVE_STAKED@lido-aave-steth-ltv70-ethereum-prod",
     instanceIds: [
       "CARRY_RECURSIVE_STAKED@lido-aave-steth-ltv70-ethereum-prod",
@@ -199,11 +199,11 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
 
   ARBITRAGE_PRICE_DISPERSION: {
     archetype: "ARBITRAGE_PRICE_DISPERSION",
-    coverage: "detail-view",
+    coverage: "execution",
     description: "Cross-venue / cross-instrument price-dispersion arbitrage.",
     persona: "internal-trader",
-    buildRoute: strategiesRoute,
-    rootSelector: '[class*="max-w-"]',
+    buildRoute: () => "/services/trading/defi",
+    rootSelector: '[data-testid="defi-swap-widget"]',
     primaryInstanceId: "ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-usdt-prod",
     instanceIds: [
       "ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-usdt-prod",
@@ -224,11 +224,11 @@ export const STRATEGY_REGISTRY: Readonly<Record<string, StrategyRegistryEntry>> 
 
   LIQUIDATION_CAPTURE: {
     archetype: "LIQUIDATION_CAPTURE",
-    coverage: "detail-view",
+    coverage: "execution",
     description: "Capture liquidation-cascade inefficiencies on perp & lending venues.",
     persona: "internal-trader",
-    buildRoute: strategiesRoute,
-    rootSelector: '[class*="max-w-"]',
+    buildRoute: () => "/services/trading/defi",
+    rootSelector: '[data-testid="defi-flash-loans-widget"]',
     primaryInstanceId: "LIQUIDATION_CAPTURE@hyperliquid-btc-perp-bidladder-usdt-prod",
     instanceIds: [
       "LIQUIDATION_CAPTURE@hyperliquid-btc-perp-bidladder-usdt-prod",
