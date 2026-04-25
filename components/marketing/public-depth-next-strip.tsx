@@ -11,6 +11,11 @@ const mutedClass = "text-zinc-400";
 /**
  * Persistent strip under the public site header — dark bar, cyan links (one visual
  * system with `public/homepage.html` marketing pages).
+ *
+ * Order matches the prospect flow chronologically:
+ *   1. Questionnaire — captures who they are and emails them a Deep Dive code
+ *   2. Briefings    — pre-call narrative + IP / strategy / regulatory depth
+ *   3. Book         — Calendly first-call slot
  */
 export function PublicDepthNextStrip() {
   return (
@@ -21,6 +26,12 @@ export function PublicDepthNextStrip() {
       <div className="container flex items-center justify-end px-4 py-2 text-xs md:px-6">
         <p className={`shrink-0 text-center text-[11px] leading-snug sm:text-right sm:text-xs ${mutedClass}`}>
           <span className="text-zinc-500">Next:</span>{" "}
+          <Link href="/questionnaire" className={linkClass}>
+            Questionnaire
+          </Link>
+          <span className="px-0.5 text-zinc-600" aria-hidden>
+            →
+          </span>
           <Link href="/briefings" className={linkClass}>
             Briefings
           </Link>
@@ -30,12 +41,6 @@ export function PublicDepthNextStrip() {
           <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className={linkClass}>
             Book
           </a>
-          <span className="px-0.5 text-zinc-600" aria-hidden>
-            →
-          </span>
-          <Link href="/questionnaire" className={linkClass}>
-            Questionnaire
-          </Link>
         </p>
       </div>
     </div>
@@ -54,6 +59,12 @@ export function PublicMobileNextStepsBar() {
     >
       <div className="mx-auto flex max-w-lg items-stretch justify-center gap-1.5 text-xs font-medium">
         <Link
+          href="/questionnaire"
+          className="min-h-9 flex-1 rounded-md border border-white/10 bg-zinc-900/90 px-1 py-2 text-center text-cyan-400 hover:border-cyan-500/50 hover:bg-zinc-900"
+        >
+          Form
+        </Link>
+        <Link
           href="/briefings"
           className="min-h-9 flex-1 rounded-md border border-white/10 bg-zinc-900/90 px-1 py-2 text-center text-cyan-400 hover:border-cyan-500/50 hover:bg-zinc-900"
         >
@@ -67,12 +78,6 @@ export function PublicMobileNextStepsBar() {
         >
           Book
         </a>
-        <Link
-          href="/questionnaire"
-          className="min-h-9 flex-1 rounded-md border border-white/10 bg-zinc-900/90 px-1 py-2 text-center text-cyan-400 hover:border-cyan-500/50 hover:bg-zinc-900"
-        >
-          Form
-        </Link>
       </div>
     </nav>
   );
