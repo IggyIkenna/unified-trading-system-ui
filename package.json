@@ -41,7 +41,7 @@
     "orphan-audit": "tsx scripts/orphan-audit.ts",
     "orphan-audit:blocking": "tsx scripts/orphan-audit.ts --blocking",
     "orphan-audit:write-baseline": "tsx scripts/orphan-audit.ts --write-baseline",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@azure/identity": "^4.13.1",
