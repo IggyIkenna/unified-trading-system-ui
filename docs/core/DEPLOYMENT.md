@@ -12,13 +12,13 @@ UAT and production are **separate, one-at-a-time deploys** — different Cloud R
 
 The portal (`unified-trading-system-ui`, this repo) is **just the frontend**. It calls multiple sibling services, each in its own repo, each deployed as its own Cloud Run service:
 
-| Repo                          | Cloud Run service        | Region(s)                                  | Purpose                                |
-| ----------------------------- | ------------------------ | ------------------------------------------ | -------------------------------------- |
-| `unified-trading-system-ui`   | `odum-portal`            | europe-west4 + us-central1 + asia-northeast1 (multi-region prod) | The Next.js public + signed-in portal  |
-| `unified-trading-api`         | `unified-trading-api`    | (varies per env)                           | Main trading backend                   |
-| `user-management-api`         | `user-management-api`    | us-central1                                | Auth / role / entitlement `/authorize` |
-| `client-reporting-api`        | `client-reporting-api`   | us-central1                                | Client-facing P&L, performance, exports |
-| `deployment-api`              | `deployment-api`         | us-central1                                | Deployment automation                  |
+| Repo                        | Cloud Run service      | Region(s)                                                        | Purpose                                 |
+| --------------------------- | ---------------------- | ---------------------------------------------------------------- | --------------------------------------- |
+| `unified-trading-system-ui` | `odum-portal`          | europe-west4 + us-central1 + asia-northeast1 (multi-region prod) | The Next.js public + signed-in portal   |
+| `unified-trading-api`       | `unified-trading-api`  | (varies per env)                                                 | Main trading backend                    |
+| `user-management-api`       | `user-management-api`  | us-central1                                                      | Auth / role / entitlement `/authorize`  |
+| `client-reporting-api`      | `client-reporting-api` | us-central1                                                      | Client-facing P&L, performance, exports |
+| `deployment-api`            | `deployment-api`       | us-central1                                                      | Deployment automation                   |
 
 The portal calls these via `NEXT_PUBLIC_*_URL` env vars baked at build time. **`user-management-api` is not part of this repo** — it's a sibling service whose URL is configured in `docker-build.env.production`.
 
@@ -42,10 +42,10 @@ UAT is single-region (`europe-west4`). No multi-region need — UAT serves staff
 
 ## Environments
 
-| Env  | Public URL                      | Cloud Run service       | GCP project (compute / Firebase) | Image tag     | BUILD_ENV_FILE                       |
-| ---- | ------------------------------- | ----------------------- | ------------------------------- | ------------- | ------------------------------------ |
+| Env  | Public URL                      | Cloud Run service       | GCP project (compute / Firebase)                    | Image tag     | BUILD_ENV_FILE                       |
+| ---- | ------------------------------- | ----------------------- | --------------------------------------------------- | ------------- | ------------------------------------ |
 | prod | `https://www.odum-research.com` | `odum-portal`           | `central-element-323112` / `central-element-323112` | `:production` | `config/docker-build.env.production` |
-| uat  | `https://uat.odum-research.com` | `odum-portal-staging` † | `central-element-323112` / `odum-staging`   | `:uat`        | `config/docker-build.env.uat`        |
+| uat  | `https://uat.odum-research.com` | `odum-portal-staging` † | `central-element-323112` / `odum-staging`           | `:uat`        | `config/docker-build.env.uat`        |
 
 **UAT compute lives on `central-element-323112` but UAT data + auth live on `odum-staging`.** Decoupled by design — the UI bundle is built with `NEXT_PUBLIC_FIREBASE_*` pointing at `odum-staging`, so when the user's browser calls Firebase APIs they go directly to the staging project, bypassing Cloud Run entirely. Cloud Run is just the static-asset host. See `config/docker-build.env.uat` header comment for the full split.
 
@@ -167,19 +167,19 @@ This is a **follow-up**, not a prerequisite for content deploys. See `docs/FIREB
 
 ### Two isolated Firebase projects (provisioned 2026-04-25)
 
-| Env  | GCP / Firebase project   | Auth pool                                | Firestore                              | Storage default bucket               |
-| ---- | ------------------------ | ---------------------------------------- | -------------------------------------- | ------------------------------------ |
-| prod | `central-element-323112` | Real users only                          | `(default)` in `eur3`                  | `central-element-323112.appspot.com` |
-| uat  | `odum-staging`           | Demo personas + internal team for testing | `(default)` in `eur3`                  | `odum-staging.firebasestorage.app`   |
+| Env  | GCP / Firebase project   | Auth pool                                 | Firestore             | Storage default bucket               |
+| ---- | ------------------------ | ----------------------------------------- | --------------------- | ------------------------------------ |
+| prod | `central-element-323112` | Real users only                           | `(default)` in `eur3` | `central-element-323112.appspot.com` |
+| uat  | `odum-staging`           | Demo personas + internal team for testing | `(default)` in `eur3` | `odum-staging.firebasestorage.app`   |
 
 UAT and prod have **fully isolated** Auth pools, Firestore data, Storage buckets, and IAM. Anyone admin'ing UAT cannot affect prod. Keys for `odum-staging` are baked into `config/docker-build.env.uat`.
 
 ### Per-env admins (target IAM state)
 
-| Project                  | Project owners (`roles/owner`)                                 | Firebase admin (`roles/firebase.admin`)            |
-| ------------------------ | -------------------------------------------------------------- | -------------------------------------------------- |
-| `central-element-323112` | `ikenna@odum-research.com`, `femi@odum-research.com`           | (not granted directly — owners have it implicitly) |
-| `odum-staging`           | `ikenna@odum-research.com` (project creator)                   | `femi@odum-research.com`, `harshkantariya@odum-research.com` |
+| Project                  | Project owners (`roles/owner`)                       | Firebase admin (`roles/firebase.admin`)                      |
+| ------------------------ | ---------------------------------------------------- | ------------------------------------------------------------ |
+| `central-element-323112` | `ikenna@odum-research.com`, `femi@odum-research.com` | (not granted directly — owners have it implicitly)           |
+| `odum-staging`           | `ikenna@odum-research.com` (project creator)         | `femi@odum-research.com`, `harshkantariya@odum-research.com` |
 
 `harshkantariya@odum-research.com` is staging-only — never grant `firebase.admin` on prod. The script that mirrors his prod operational roles from the legacy Gmail (`harshkantariya.work@gmail.com`) is at `scripts/admin/grant-harsh-iam.sh` and explicitly excludes `firebase.admin` on prod.
 
@@ -212,10 +212,10 @@ Demo/advisor emails (`@odum-research.co.uk`, `@odum-research.com` non-staff) on 
 Both forms write to Firestore + send confirmation email via Resend. The persistence
 target is the env-specific Firebase project (now fully isolated since 2026-04-25):
 
-| Env  | Firestore project        | Email sender (Resend)                                                                                  |
-| ---- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| prod | `central-element-323112` | `hello@mail.odum-research.com` — DKIM + SPF verified                                                   |
-| uat  | `odum-staging`           | `hello@mail.uat.odum-research.com` ⚠️ **DKIM/SPF not yet set up** (see below)                          |
+| Env  | Firestore project            | Email sender (Resend)                                                                                  |
+| ---- | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
+| prod | `central-element-323112`     | `hello@mail.odum-research.com` — DKIM + SPF verified                                                   |
+| uat  | `odum-staging`               | `hello@mail.uat.odum-research.com` ⚠️ **DKIM/SPF not yet set up** (see below)                          |
 | dev  | None (writes silently no-op) | `onboarding@resend.dev` — Resend's test domain; only delivers to the email tied to your Resend account |
 
 ⚠️ **Resend domain verification for `mail.uat.odum-research.com` is a separate setup.** The DKIM/SPF records you added for `mail.odum-research.com` do NOT cover the `mail.uat.` subdomain — Resend verifies per exact subdomain. Until the staging subdomain is verified, sends from `hello@mail.uat.odum-research.com` will fail SPF/DKIM and likely be quarantined. Two options:
@@ -254,58 +254,100 @@ If `RESEND_API_KEY` is unset locally, submissions still succeed and console-log;
 If `NEXT_PUBLIC_FIREBASE_*` is unset, Firestore writes silently no-op (the route returns
 `ok: true` but no submission is persisted) — fine for UI-only testing.
 
-### Local dev — fully isolated via Firebase Emulator Suite
+### Local dev — Firebase Emulator Suite (default-on since 2026-04-25)
 
-For zero-network local testing of Firestore + Storage + Auth, use the Firebase Emulator Suite:
+Every `bash scripts/dev-tiers.sh --tier <N>` invocation auto-boots the Firebase Emulator
+Suite alongside Next.js so a developer can never accidentally write drafts / claims / file
+uploads to the real `odum-staging` or `central-element-323112` projects from their machine.
 
 ```bash
-# one-off install
-firebase init emulators
-# select Auth (port 9099), Firestore (8080), Storage (9199)
-
-# every dev session
-firebase emulators:start --only auth,firestore,storage
+bash scripts/dev-tiers.sh --tier 0          # UI + emulators (default)
+bash scripts/dev-tiers.sh --tier 0 --no-firebase-local  # opt-out (rare)
+bash scripts/dev-tiers.sh --stop            # kill everything
 ```
 
-Then in `.env.local`, point the SDK at the local emulators (Firebase auto-detects when these env vars are set):
+Stack: Auth :9099 (Node), Firestore :8080 (JVM), Storage :9199 (JVM), Emulator UI :4000
+(browser inspector), Hub :4400 (internal coordination), Next.js :3000.
 
-```
-FIRESTORE_EMULATOR_HOST=localhost:8080
-FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
-FIREBASE_STORAGE_EMULATOR_HOST=localhost:9199
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=odum-local-dev   # any string — emulator doesn't validate
+**Java requirement:** Firestore + Storage emulators are JVM apps. The dev-tiers script
+auto-locates a brew-installed OpenJDK 21 (Apple Silicon and Intel paths both probed) and
+sets `JAVA_HOME`. If neither is installed:
+
+```bash
+brew install openjdk@21
 ```
 
-Drafts, magic tokens, file uploads then live in `.firebase/emulators/` data files, never touching real GCP. Emulator UI at `http://localhost:4000` lets you inspect docs / users.
+The macOS `/usr/bin/java` shim is detected and bypassed (it just opens an "install Java" dialog).
+
+#### Persistence
+
+Emulator state is auto-saved to `.local-dev-cache/emulator-state/` on shutdown via
+`--export-on-exit` and reloaded on next start via `--import`. Wipe everything with
+`bash scripts/dev-tiers.sh --reset`.
+
+| State           | Path                                                | Survives restart? |
+| --------------- | --------------------------------------------------- | ----------------- |
+| Auth users      | `.local-dev-cache/emulator-state/auth_export/`      | ✅                |
+| Firestore docs  | `.local-dev-cache/emulator-state/firestore_export/` | ✅                |
+| Storage objects | `.local-dev-cache/emulator-state/storage_export/`   | ✅                |
+
+#### Seeding
+
+```bash
+npm run emulators:seed                  # 23 personas matching staging shape
+npm run emulators:seed:dev              # local-only edge-case fixtures (edit dev.mjs first)
+npm run emulators:hydrate-from-staging  # pull a real Firestore + Auth snapshot from odum-staging
+```
+
+`emulators:seed` fires once on a fresh emulator boot to populate the Auth pool with the same
+23 demo personas that staging has, password `demo123`. Subsequent boots persist via
+`--export-on-exit`.
+
+`emulators:hydrate-from-staging` is for development that needs realistic data shape (apps +
+groups + entitlements + audit log + onboarding requests, not just Auth users): it runs
+`gcloud firestore export` against `odum-staging`, downloads the export to
+`.local-dev-cache/firestore-staging-snapshot/`, and dumps Auth via `firebase auth:export`.
+You then boot once with `--import=.local-dev-cache/firestore-staging-snapshot` to load it.
+
+`emulators:seed:dev` reads `scripts/admin/seed-firebase-users.dev.mjs` for fixtures only
+useful locally (pagination at scale, weird claim shapes). The script refuses to run unless
+the emulator host env vars are set, so a misconfiguration can never write to staging or prod.
+
+SSOT: [unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md](../../../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md).
 
 ### Local dev — demo personas vs Firebase users
 
 The 23 personas in `lib/auth/personas.ts` exist in two parallel forms:
 
-| Where        | Auth provider                            | Login password                              | Source                                |
-| ------------ | ---------------------------------------- | ------------------------------------------- | ------------------------------------- |
-| Local dev    | demo (client-side)                       | as in `personas.ts` (`demo` / `OdumIR2026!`) | Validated against in-memory PERSONAS  |
-| UAT          | firebase against `odum-staging`          | bumped to `demo123` (Firebase 6-char min)   | Seeded via `seed-firebase-users.mjs`  |
-| Prod         | firebase against `central-element-323112` | only `ikenna@` exists with admin claim     | Manually created in Firebase console  |
+| Where     | Auth provider                             | Login password                               | Source                               |
+| --------- | ----------------------------------------- | -------------------------------------------- | ------------------------------------ |
+| Local dev | demo (client-side)                        | as in `personas.ts` (`demo` / `OdumIR2026!`) | Validated against in-memory PERSONAS |
+| UAT       | firebase against `odum-staging`           | bumped to `demo123` (Firebase 6-char min)    | Seeded via `seed-firebase-users.mjs` |
+| Prod      | firebase against `central-element-323112` | only `ikenna@` exists with admin claim       | Manually created in Firebase console |
 
 Same persona email everywhere; password differs by environment because Firebase enforces a 6-char minimum that the demo provider doesn't. The DemoPlanToggle (`lib/auth/tier-override.ts`) is provider-agnostic — it overlays entitlements via localStorage on top of the authenticated user, so a UAT user can flip between FOMO ("show me everything in the catalogue") and scoped ("show me only what my plan buys") without re-login.
 
 ---
 
-## API token-verification seam (UAT, future)
+## API token-verification — seam closed 2026-04-25
 
-Today UAT runs `NEXT_PUBLIC_MOCK_API=true` so the UI never calls `user-management-api` (or any other API). Form submissions, drafts, magic tokens go straight to `odum-staging` Firestore via Firebase Admin SDK — no API in the loop.
+This seam used to be open: the legacy `user-management-api` Cloud Run service ran in
+`central-element-323112` and its auth middleware verified Firebase ID tokens against a single
+project. UAT bundles signed by `odum-staging` would have hit a token-audience rejection.
 
-When UAT eventually flips to `MOCK_API=false`, this seam appears: the UI gets a Firebase ID token signed by `odum-staging`, calls `user-management-api` (running on `central-element-323112`) with that token, and the API's auth middleware rejects it because the `aud` (audience) claim is `odum-staging`, not `central-element-323112`.
+**Resolved by retiring the API.** All admin endpoints now run as native `/api/v1/*` Next.js
+routes inside this repo, on the same Cloud Run service that serves the bundle. The Firebase
+Admin SDK auto-resolves project ID from `NEXT_PUBLIC_FIREBASE_PROJECT_ID` baked at build
+time — UAT bundle reads `odum-staging`, prod bundle reads `central-element-323112`, local
+emulator reads `odum-local-dev`. Token verification never crosses a project boundary.
 
-Two ways to fix when that day comes:
+The 54 native routes are listed in `app/api/v1/*` and described in
+[unified-trading-pm/codex/14-playbooks/authentication/README.md](../../../unified-trading-pm/codex/14-playbooks/authentication/README.md)
+§"All admin endpoints native (2026-04-25)".
 
-- **(a) Update `user-management-api` to accept tokens from both projects.** Small code change in the auth middleware — verify the token's audience against `['central-element-323112', 'odum-staging']` instead of just one. The API service account already has `firebaseauth.admin` on `odum-staging` (granted as part of the cross-project IAM setup) so token verification will work without further IAM changes.
-- **(b) Deploy a parallel `user-management-api` instance on `odum-staging`.** Heavier — duplicates the whole pipeline, requires its own secrets, separate Cloud Run service, separate database.
-
-(a) is much smaller and is the recommended path. **No need to deploy `user-management-api` to `odum-staging`.**
-
-Same pattern applies to any other API the UI ends up calling on UAT: dual-verify project IDs, don't duplicate the service.
+The legacy source is preserved at `archive/user-management-api-2026-04-25/` for historical
+reference; do not import or extend it. New endpoints go in `app/api/v1/*` as Next.js route
+handlers.
 
 ---
 

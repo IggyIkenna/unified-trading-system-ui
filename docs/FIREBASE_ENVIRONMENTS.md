@@ -1,8 +1,61 @@
-# Firebase — dev, staging, and production (portal)
+# Firebase — local, staging, and production (portal)
 
-Use **three separate Firebase / GCP projects** so Auth users, Firestore data, and Hosting defaults never cross between
-**local demos**, **staging**, and **production**. The portal reads **web client** keys via `NEXT_PUBLIC_FIREBASE_*`
-(baked at Docker build from `config/docker-build.env.*`).
+> **Current state:** all three environments live and isolated as of 2026-04-25.
+> Per-env SSOTs in codex:
+>
+> - [firebase-local.md](../../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md)
+> - [firebase-staging.md](../../unified-trading-pm/codex/14-playbooks/authentication/firebase-staging.md)
+> - [firebase-production.md](../../unified-trading-pm/codex/14-playbooks/authentication/firebase-production.md)
+
+| Env   | Project ID                  | Host                            | Cloud Run service         | Build env file                       |
+| ----- | --------------------------- | ------------------------------- | ------------------------- | ------------------------------------ |
+| Local | `odum-local-dev` (emulator) | `localhost:3000`                | n/a                       | `.env.development` / `.env.local`    |
+| UAT   | `odum-staging`              | `https://uat.odum-research.com` | `odum-portal-staging`     | `config/docker-build.env.uat`        |
+| Prod  | `central-element-323112`    | `https://www.odum-research.com` | `odum-portal` (3 regions) | `config/docker-build.env.production` |
+
+Three projects, **same Next.js bundle**: `lib/auth/firebase-config.ts` reads
+`NEXT_PUBLIC_FIREBASE_*` at build time and routes accordingly. The 54 native `/api/v1/*`
+Admin SDK routes use the same code path against all three. Result: a bug reproducible against
+any project is reproducible against all of them; the only difference is data.
+
+## Local emulator (most dev sessions)
+
+```bash
+cd unified-trading-system-ui
+bash scripts/dev-tiers.sh --tier 0     # UI + emulators (default)
+npm run emulators:seed                 # populate 23 demo personas (one-off)
+```
+
+Auto-saves state to `.local-dev-cache/emulator-state/` so subsequent boots persist users / docs / files.
+Full guide: [codex/14-playbooks/authentication/firebase-local.md](../../unified-trading-pm/codex/14-playbooks/authentication/firebase-local.md).
+
+## Three deviation switches (when local should diverge from staging)
+
+| Switch                       | Effect                                                         | When                                        |
+| ---------------------------- | -------------------------------------------------------------- | ------------------------------------------- |
+| `--no-firebase-local`        | Local server talks to a real Firebase project                  | Reproducing a staging-only bug              |
+| `NEXT_PUBLIC_MOCK_API=true`  | UI uses client-side mock responses, no Firebase at all         | Deterministic test runs / no auth           |
+| `npm run emulators:seed:dev` | Inject extra personas only useful locally (edit dev.mjs first) | Edge cases, scale tests, weird claim shapes |
+
+## Hydrate from staging snapshot
+
+For development needing realistic data shape (apps + groups + entitlements + audit log):
+
+```bash
+npm run emulators:hydrate-from-staging
+```
+
+Pulls a managed Firestore export + Auth dump from `odum-staging` into
+`.local-dev-cache/firestore-staging-snapshot/` + `.local-dev-cache/auth-staging-export.json`.
+Boot once with `--import=...` to load it, then it persists via `--export-on-exit`.
+
+---
+
+## Reference — setting up a fresh Firebase project (rare)
+
+The three above are already provisioned. The instructions below are kept for the rare case
+of standing up a new sibling project (e.g. a dedicated EU staging in addition to
+`odum-staging`). For day-to-day work use the codex SSOTs linked above.
 
 ## What you do in Google Cloud / Firebase Console (once per project)
 
@@ -42,11 +95,11 @@ domains** — those remain in the Firebase UI (or Terraform if you add it later)
 
 ## Map projects → portal build files
 
-| Environment | Typical Firebase project | Portal build-time env SSOT |
-|-------------|--------------------------|----------------------------|
-| **Local dev** | `odum-portal-dev` (recommended) or reuse an isolated project | `.env.local` (gitignored) |
-| **Staging** | `odum-portal-staging` | `config/docker-build.env.staging.firebase.local` (see `docker-build.env.staging.firebase.example`) |
-| **Production** | Existing prod project | `config/docker-build.env.production` |
+| Environment    | Typical Firebase project                                     | Portal build-time env SSOT                                                                         |
+| -------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| **Local dev**  | `odum-portal-dev` (recommended) or reuse an isolated project | `.env.local` (gitignored)                                                                          |
+| **Staging**    | `odum-portal-staging`                                        | `config/docker-build.env.staging.firebase.local` (see `docker-build.env.staging.firebase.example`) |
+| **Production** | Existing prod project                                        | `config/docker-build.env.production`                                                               |
 
 Set `NEXT_PUBLIC_AUTH_PROVIDER=firebase` in dev/staging env files when real keys are present; keep **demo** only for
 quick UI churn without Firebase.
