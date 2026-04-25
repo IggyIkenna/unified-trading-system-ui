@@ -4,8 +4,7 @@ import { LiveBatchComparison, type ViewMode } from "@/components/trading/live-ba
 import { StatusDot } from "@/components/shared/status-badge";
 import { type ValueFormat, useValueFormat } from "@/components/trading/value-format-toggle";
 import { DateRangePicker } from "@/components/shared/date-range-picker";
-import { generateMonthlyTimeSeries, MONTHLY_TS_START } from "@/lib/mocks/fixtures/trading-data";
-import type { TimeSeriesPoint } from "@/lib/mocks/fixtures/trading-data";
+import { usePnlChartData, CHART_DATA_START } from "./use-pnl-chart-data";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/shared/spinner";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,16 +26,6 @@ const METRIC_TITLES: Record<MetricKey, string> = {
 
 function getToday(): string {
   return new Date().toISOString().split("T")[0];
-}
-
-function filterToRange(pts: TimeSeriesPoint[], from: string, to: string): TimeSeriesPoint[] {
-  // Timestamps are "MM/DD HH:mm"; extract "MM/DD" and compare to the date's "MM/DD".
-  const fromMD = from.slice(5).replace("-", "/"); // "2026-03-20" → "03/20"
-  const toMD = to.slice(5).replace("-", "/");
-  return pts.filter((p) => {
-    const md = p.timestamp.slice(0, 5);
-    return md >= fromMD && md <= toMD;
-  });
 }
 
 // Radix ScrollArea wraps Viewport content in display:table, which breaks
@@ -114,26 +103,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
     formatCurrency: (v: number) => v.toString(),
   };
 
-  // Generate full walks up to the range end, then slice to the selected window.
-  const monthlyLive = React.useMemo(() => generateMonthlyTimeSeries(dateRange.to, "live"), [dateRange.to]);
-  const monthlyBatch = React.useMemo(() => generateMonthlyTimeSeries(dateRange.to, "batch"), [dateRange.to]);
-
-  const liveByMetric = React.useMemo(
-    () => ({
-      pnl: filterToRange(monthlyLive.pnl, dateRange.from, dateRange.to),
-      nav: filterToRange(monthlyLive.nav, dateRange.from, dateRange.to),
-      exposure: filterToRange(monthlyLive.exposure, dateRange.from, dateRange.to),
-    }),
-    [monthlyLive, dateRange.from, dateRange.to],
-  );
-  const batchByMetric = React.useMemo(
-    () => ({
-      pnl: filterToRange(monthlyBatch.pnl, dateRange.from, dateRange.to),
-      nav: filterToRange(monthlyBatch.nav, dateRange.from, dateRange.to),
-      exposure: filterToRange(monthlyBatch.exposure, dateRange.from, dateRange.to),
-    }),
-    [monthlyBatch, dateRange.from, dateRange.to],
-  );
+  const { live: liveByMetric, batch: batchByMetric } = usePnlChartData(dateRange);
 
   const hasData = liveByMetric.pnl.length > 0;
 
@@ -151,7 +121,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   // Keeps each chart visually meaningful: P&L starts ≈0% and grows, NAV/Exposure
   // open at 0% and trend up/down, instead of the previous one-size-fits-all
   // (v / totalNav) which made NAV a flat ~100% line.
-  const startingNav = monthlyLive.nav[0]?.value ?? monthlyBatch.nav[0]?.value ?? 0;
+  const startingNav = liveByMetric.nav[0]?.value ?? batchByMetric.nav[0]?.value ?? 0;
   const percentBaseline = activeTab === "pnl" ? startingNav : (liveData[0]?.value ?? batchData[0]?.value ?? 0);
 
   const formatChart = React.useCallback(
@@ -326,7 +296,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
           <DateRangePicker
             from={dateRange.from}
             to={dateRange.to}
-            minDate={MONTHLY_TS_START}
+            minDate={CHART_DATA_START}
             maxDate={today}
             onChange={(from, to) => setDateRange({ from, to })}
           />

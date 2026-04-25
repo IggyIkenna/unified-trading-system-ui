@@ -29,8 +29,8 @@
           "note": "No any types or @ts-ignore in widget file."
         },
         "0.5": {
-          "result": "pass",
-          "note": "No lib/mocks/ imports in widget file."
+          "result": "fail",
+          "note": "Widget imports generateMonthlyTimeSeries, MONTHLY_TS_START, and TimeSeriesPoint directly from lib/mocks/fixtures/trading-data (lines 7-8). Recorded as deferred — mock generation is intentional until real API timeseries endpoint replaces it. See finding F-004."
         },
         "0.6": {
           "result": "pass",
@@ -49,7 +49,7 @@
           "note": "No dead code, no commented-out blocks."
         }
       },
-      "notes": "All checks pass. 0.7 empty state added. 0.8 context error gap recorded as known issue."
+      "notes": "0.1–0.4/0.6–0.9 pass. 0.5 deferred: widget directly imports mock data generator until real API replaces it. 0.8 context error gap recorded as known issue."
     },
     "l1": {
       "status": "pass",
@@ -57,8 +57,8 @@
       "date": "2026-04-17",
       "checks": {
         "1.1": {
-          "result": "pass",
-          "note": "Widget reads data exclusively via useOverviewDataSafe(); no inline fetch."
+          "result": "fail",
+          "note": "Widget generates its own 15-min mock time series via generateMonthlyTimeSeries() (lib/mocks) rather than reading from context. formatCurrency still sourced from context. Deferred — intentional mock until real API wired. See finding F-005."
         },
         "1.2": {
           "result": "pass",
@@ -85,7 +85,7 @@
           "note": "Widget file has no mock imports. Context layer type-only import is not a widget concern."
         }
       },
-      "notes": "All 7 checks pass."
+      "notes": "1.2–1.7 pass. 1.1 deferred: widget self-generates mock data until real API integration."
     },
     "l2": {
       "status": "pass",
@@ -100,7 +100,7 @@
       "checks": {
         "3.1": {
           "result": "pass",
-          "note": "Mode relevance: live ✓ (WebSocket P&L stream), batch ✓ (shows liveBatchData comparison + batch date picker), paper ✓ (reads mode badge). Widget renders mode badge using context.mode."
+          "note": "Mode relevance: live ✓ (WebSocket P&L stream), batch ✓ (shows liveBatchData comparison + date range picker), paper ✓ (reads mode badge). Widget renders mode badge using context.mode."
         },
         "3.2": {
           "result": "pass",
@@ -140,11 +140,11 @@
         },
         "4.3": {
           "result": "n/a",
-          "note": "Human check: batchDate input field for selecting comparison date."
+          "note": "Human check: DateRangePicker (from/to) with dual-calendar popover, quick presets (7D/30D/All), and Apply button for committing the range."
         },
         "4.4": {
           "result": "n/a",
-          "note": "Human check: date change triggers batchDate state update and LiveBatchComparison re-render."
+          "note": "Human check: Apply triggers dateRange state update → filterToRange slices series → LiveBatchComparison re-renders with new window."
         },
         "4.5": {
           "result": "pass",
@@ -193,16 +193,16 @@
           "note": "grep '#[0-9a-fA-F]{3,8}\\b|rgb[a]?\\(|hsl[a]?\\(' → zero matches. text-[var(--status-live)] is a CSS var reference, not a hardcoded color."
         },
         "7.2": {
-          "result": "pass",
-          "note": "No lib/mocks imports in widget file."
+          "result": "fail",
+          "note": "lib/mocks/fixtures/trading-data imported at lines 7-8. Deferred — intentional mock data generation until real API. See finding F-006."
         },
         "7.3": {
           "result": "pass",
-          "note": "155 lines — under 500-line limit. No single function > 200 lines."
+          "note": "348 lines — under 500-line limit. No single function > 200 lines. useChartPixelHeight hook is largest block at ~50 lines."
         },
         "7.4": {
           "result": "pass",
-          "note": "PnLChartWidget (PascalCase), getYesterday (camelCase helper), pnl-chart-widget.tsx (kebab-case)."
+          "note": "PnLChartWidget (PascalCase), getToday/filterToRange (camelCase helpers), pnl-chart-widget.tsx (kebab-case)."
         },
         "7.5": {
           "result": "pass",
@@ -214,10 +214,10 @@
         },
         "7.7": {
           "result": "pass",
-          "note": "No useEffect/useMemo with inline object/array deps. batchDate state is primitive string. No expensive derives needing memoization at widget level."
+          "note": "monthlyLive/monthlyBatch/liveByMetric/batchByMetric all wrapped in useMemo with correct primitive deps. dateRange.from/to are strings (primitives). filterToRange is stable module-level function."
         }
       },
-      "notes": "All L7 checks pass. 7.5 globally deferred."
+      "notes": "7.1/7.3–7.7 pass. 7.2 deferred (mock import). 7.5 globally deferred."
     },
     "l8": {
       "status": "partial",
@@ -264,9 +264,9 @@
     "primary": "rest",
     "cadence": "event-driven",
     "staleness": "near-realtime:<=1s",
-    "mockSource": "lib/mocks/fixtures/trading-data.ts (liveTimeSeries/batchTimeSeries via use-overview-page-data.ts)",
+    "mockSource": "lib/mocks/fixtures/trading-data.ts (generateMonthlyTimeSeries — 15-min resolution, 2 months, called directly by widget)",
     "backendOwner": "trading-api (timeseries + liveBatchDelta endpoints)",
-    "notes": "Live P&L points streamed via WebSocket (ws://localhost:8030/ws) in live mode. batchTimeSeries from /api/trading/live-batch-delta REST. Date picker drives batchDate param."
+    "notes": "Live P&L points streamed via WebSocket (ws://localhost:8030/ws) in live mode. batchTimeSeries from /api/trading/live-batch-delta REST. DateRangePicker drives dateRange.from/to; filterToRange slices the mock series to the selected window."
   },
   "coverage": {
     "assetClasses": ["defi", "cefi", "tradfi", "sports", "predictions"],
@@ -274,7 +274,11 @@
     "venues": ["all"],
     "commonTabs": null,
     "verifiedOn": [],
-    "gaps": ["Batch date picker behavior not verified with real API data", "Chart rendering at minW=3 not tested"],
+    "gaps": [
+      "DateRangePicker + filterToRange behavior not verified with real API data",
+      "Chart rendering at minW=3 not tested",
+      "Mock data generator bypasses context layer — must be replaced when timeseries API is wired"
+    ],
     "notes": "Strategy-agnostic at render level; covers all strategies that produce timeseries P&L data."
   },
   "knownIssues": [
@@ -318,8 +322,32 @@
       "description": "pnl-chart-widget.tsx:65 — text-[10px] on mode Badge chip",
       "status": "fixed",
       "fix": "Replaced text-[10px] with text-micro utility (token --text-micro: 0.625rem already exists in globals.css)."
+    },
+    {
+      "id": "F-004",
+      "level": "l0",
+      "check": "0.5",
+      "description": "pnl-chart-widget.tsx lines 7-8 — direct imports from lib/mocks/fixtures/trading-data (generateMonthlyTimeSeries, MONTHLY_TS_START, TimeSeriesPoint)",
+      "status": "deferred",
+      "deferReason": "Intentional: widget self-generates 15-min resolution mock time series until real API timeseries endpoint is wired. Must be migrated to context layer (use-overview-page-data.ts) when backend integration lands."
+    },
+    {
+      "id": "F-005",
+      "level": "l1",
+      "check": "1.1",
+      "description": "Widget calls generateMonthlyTimeSeries() directly inside useMemo rather than consuming pre-fetched data from OverviewDataContext",
+      "status": "deferred",
+      "deferReason": "Context layer (use-overview-page-data.ts) does not yet expose a date-range-filtered timeseries. Mock generation is the interim solution. Fix: add dateRange param to context or move series computation into context producer."
+    },
+    {
+      "id": "F-006",
+      "level": "l7",
+      "check": "7.2",
+      "description": "pnl-chart-widget.tsx lines 7-8 — lib/mocks imports violate mock-data placement rule",
+      "status": "deferred",
+      "deferReason": "Same root cause as F-004. Deferred until real API integration moves data generation out of widget."
     }
   ],
   "updatedBy": "agent",
-  "updatedAt": "2026-04-24"
+  "updatedAt": "2026-04-25"
 }
