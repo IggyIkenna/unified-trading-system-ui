@@ -20,6 +20,23 @@ import {
   usersCollection,
 } from "./collections";
 
+/** True when the caller is a platform admin (profile.role==="admin" OR custom claim). */
+export async function isPlatformAdmin(uid: string): Promise<boolean> {
+  const snap = await usersCollection().doc(uid).get();
+  const profileRole = snap.exists
+    ? (snap.data() as { role?: string } | undefined)?.role
+    : undefined;
+  if (profileRole === "admin") return true;
+  const auth = getAdminAuth();
+  if (!auth) return false;
+  try {
+    const rec = await auth.getUser(uid);
+    return rec.customClaims?.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
 export interface VerifiedCaller {
   readonly uid: string;
   readonly email: string | null;
