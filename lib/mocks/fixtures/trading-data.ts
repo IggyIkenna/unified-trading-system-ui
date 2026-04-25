@@ -1107,14 +1107,17 @@ export function generateMonthlyTimeSeries(
 
   const totalIntervals = Math.floor((endMs - startMs) / (INTERVAL_MINUTES * 60_000)) + 1;
 
-  // Single seeded sequence drives the live random walk.
+  // Single seeded sequence drives the shared base random walk.
   const rand = seededRandom("multi-month-ts-v1");
 
-  // Batch: persistent systematic offset (EOD-batch vs real-time discrepancy).
-  const sysRand = seededRandom("batch-sys-offset-v1");
-  // 0.2% of BASE_NAV = $100k max divergence; systematic offset ≤ $60k
-  const batchSysOffset = mode === "batch" ? (sysRand() - 0.5) * 60_000 : 0;
-  const batchNoiseRand = seededRandom("batch-noise-seq-v1");
+  // Batch divergence: a mean-reverting walk so batch crosses above/below live
+  // every few days rather than sitting at a constant offset.
+  // σ_steady ≈ DIV_STEP / sqrt(2 * DIV_REVERT) ≈ $26k; hard-capped at ±$100k.
+  const divRand = seededRandom("batch-div-walk-v2");
+  const DIV_STEP = 2_000; // per-interval random step size
+  const DIV_REVERT = 0.003; // mean-reversion strength per interval
+  const DIV_CAP = 100_000; // hard cap ±0.2% of $50M NAV
+  let batchDiv = 0;
 
   let cumPnl = 0;
   let exposure = BASE_EXPOSURE;
@@ -1159,10 +1162,12 @@ export function generateMonthlyTimeSeries(
     exposure += (BASE_EXPOSURE - exposure) * (0.04 / INTERVALS_PER_DAY) + (eu - 0.5) * 350_000;
     exposure = Math.max(20_000_000, Math.min(45_000_000, exposure));
 
-    // Batch divergence: systematic offset + per-interval micro-noise
-    // Small per-interval noise — kept tiny so total drift stays within ±0.2% NAV
-    const batchNoise = mode === "batch" ? (batchNoiseRand() - 0.5) * 200 : 0;
-    const effectivePnl = cumPnl + batchSysOffset + batchNoise;
+    // Advance the batch divergence walk (always consume RNG to keep sequences aligned)
+    const dv = (divRand() - 0.5) * 2 * DIV_STEP;
+    batchDiv += dv - batchDiv * DIV_REVERT;
+    batchDiv = Math.max(-DIV_CAP, Math.min(DIV_CAP, batchDiv));
+
+    const effectivePnl = cumPnl + (mode === "batch" ? batchDiv : 0);
 
     const ts = fmtIntervalTimestamp(ms);
     pnlPts.push({ timestamp: ts, value: Math.round(effectivePnl) });

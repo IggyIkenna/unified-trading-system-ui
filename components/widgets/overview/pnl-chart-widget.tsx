@@ -102,7 +102,7 @@ export function PnLChartWidget(_props: WidgetComponentProps) {
   const ctx = useOverviewDataSafe();
   const { scope: context } = useGlobalScope();
   const today = getToday();
-  const [dateRange, setDateRange] = React.useState({ from: MONTHLY_TS_START, to: today });
+  const [dateRange, setDateRange] = React.useState({ from: today, to: today });
   const [activeTab, setActiveTab] = React.useState<MetricKey>("pnl");
   const [viewMode, setViewMode] = React.useState<ViewMode>("split");
   const { format: valueFormat, setFormat: setValueFormat } = useValueFormat("dollar");

@@ -19,10 +19,15 @@ function toDate(s: string): Date {
 }
 
 function toStr(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function startOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), 1);
+}
+
+function addMonths(d: Date, n: number): Date {
+  return new Date(d.getFullYear(), d.getMonth() + n, 1);
 }
 
 interface DateRangePickerProps {
@@ -36,10 +41,18 @@ interface DateRangePickerProps {
 
 export function DateRangePicker({ from, to, minDate, maxDate, onChange, className }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [pending, setPending] = React.useState<DateRange | undefined>({
-    from: toDate(from),
-    to: toDate(to),
+
+  // Each calendar tracks its own month independently.
+  const [leftMonth, setLeftMonth] = React.useState<Date>(() => startOfMonth(toDate(from)));
+  const [rightMonth, setRightMonth] = React.useState<Date>(() => {
+    const lm = startOfMonth(toDate(from));
+    const rm = startOfMonth(toDate(to));
+    // If from and to are in the same month, right calendar shows the next month.
+    return rm > lm ? rm : addMonths(lm, 1);
   });
+
+  // pending is undefined on open so the user starts fresh each time.
+  const [pending, setPending] = React.useState<DateRange | undefined>(undefined);
 
   const todayDate = React.useMemo(() => {
     const t = new Date();
@@ -50,9 +63,17 @@ export function DateRangePicker({ from, to, minDate, maxDate, onChange, classNam
   const maxD = maxDate ? toDate(maxDate) : todayDate;
   const minD = minDate ? toDate(minDate) : undefined;
 
-  // Reset pending to committed value whenever popover opens
+  const disabled = [{ after: maxD }, ...(minD ? [{ before: minD }] : [])];
+
   const handleOpenChange = (next: boolean) => {
-    if (next) setPending({ from: toDate(from), to: toDate(to) });
+    if (next) {
+      // Fresh start: clear pending and reset months to the committed range.
+      setPending(undefined);
+      const lm = startOfMonth(toDate(from));
+      const rm = startOfMonth(toDate(to));
+      setLeftMonth(lm);
+      setRightMonth(rm > lm ? rm : addMonths(lm, 1));
+    }
     setOpen(next);
   };
 
@@ -82,6 +103,13 @@ export function DateRangePicker({ from, to, minDate, maxDate, onChange, classNam
   const fromDate = toDate(from);
   const toDateObj = toDate(to);
 
+  const statusLabel =
+    pending?.from && pending?.to
+      ? `${fmtDate(pending.from)} – ${fmtDate(pending.to)}`
+      : pending?.from
+        ? `${fmtDate(pending.from)} — pick end date`
+        : "Pick start date";
+
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
@@ -98,7 +126,9 @@ export function DateRangePicker({ from, to, minDate, maxDate, onChange, classNam
           </span>
         </button>
       </PopoverTrigger>
+
       <PopoverContent className="w-auto p-0" align="end" sideOffset={6}>
+        {/* Quick presets */}
         <div className="flex items-center gap-1.5 px-3 py-2 border-b border-border">
           <span className="text-[11px] text-muted-foreground">Quick:</span>
           {(
@@ -117,23 +147,34 @@ export function DateRangePicker({ from, to, minDate, maxDate, onChange, classNam
             </button>
           ))}
         </div>
-        <Calendar
-          mode="range"
-          selected={pending}
-          onSelect={setPending}
-          numberOfMonths={2}
-          defaultMonth={pending?.from ?? fromDate}
-          disabled={[{ after: todayDate }, ...(minD ? [{ before: minD }] : [])]}
-          initialFocus
-        />
+
+        {/* Two independent calendars */}
+        <div className="flex divide-x divide-border">
+          <Calendar
+            mode="range"
+            selected={pending}
+            onSelect={setPending}
+            numberOfMonths={1}
+            month={leftMonth}
+            onMonthChange={setLeftMonth}
+            disabled={disabled}
+            classNames={{ root: "p-3" }}
+          />
+          <Calendar
+            mode="range"
+            selected={pending}
+            onSelect={setPending}
+            numberOfMonths={1}
+            month={rightMonth}
+            onMonthChange={setRightMonth}
+            disabled={disabled}
+            classNames={{ root: "p-3" }}
+          />
+        </div>
+
+        {/* Status + Apply */}
         <div className="flex items-center justify-between px-3 py-2 border-t border-border gap-3">
-          <span className="text-[11px] text-muted-foreground">
-            {pending?.from && pending?.to
-              ? `${fmtDate(pending.from)} – ${fmtDate(pending.to)}`
-              : pending?.from
-                ? `${fmtDate(pending.from)} – pick end date`
-                : "Pick start date"}
-          </span>
+          <span className="text-[11px] text-muted-foreground">{statusLabel}</span>
           <button
             onClick={handleApply}
             disabled={!canApply}
