@@ -256,6 +256,24 @@ const PERSONA_TILE_SHAPES: Record<string, DashboardTileVisibility> = {
     dart: "visible",
     reports: "visible",
   }),
+
+  // ── Generic prospect personas (pre-existing demo coverage; surfaced by the
+  //    persona-shape registration gate 2026-04-25). prospect-dart-full mirrors
+  //    desmond-dart-full; prospect-dart-signals-in mirrors desmond-signals-in;
+  //    prospect-perp-funding is reg-umbrella + signals-in (reports + DART signals
+  //    sub-routes only).
+  "prospect-dart-full": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
+  "prospect-dart-signals-in": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
+  "prospect-perp-funding": tileOverride({
+    dart: "visible",
+    reports: "visible",
+  }),
 };
 
 const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
@@ -465,7 +483,69 @@ const PERSONA_SUBROUTE_SHAPES: Record<string, DashboardSubRouteVisibility> = {
       reconciliation: "visible",
     },
   }),
+
+  // ── Generic prospect personas (pre-existing; registered 2026-04-25 by the
+  //    persona-shape gate). Mirrors the analogous client-full / Signals-In shapes.
+  "prospect-dart-full": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      research: "visible",
+      promote: "visible",
+      observe: "visible",
+      "strategy-catalogue": "visible",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+    },
+  }),
+  "prospect-dart-signals-in": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      observe: "visible",
+      "signal-intake": "visible",
+      "strategy-catalogue": "visible",
+      research: "locked",
+      promote: "locked",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+    },
+  }),
+  "prospect-perp-funding": subRouteOverride({
+    dart: {
+      terminal: "visible",
+      observe: "visible",
+      "signal-intake": "visible",
+      "strategy-catalogue": "visible",
+      research: "locked",
+      promote: "locked",
+    },
+    reports: {
+      "pnl-attribution": "visible",
+      settlement: "visible",
+      reconciliation: "visible",
+      regulatory: "visible",
+    },
+  }),
 };
+
+/**
+ * Persona IDs that have an explicit tile-shape entry. Exported so tests can
+ * assert every persona in `PERSONAS` is registered (the alternative is silent
+ * fall-through to DEFAULT_TILE_SHAPE which hides 3 of 5 tiles — see the
+ * 2026-04-25 desmond / elysium-defi-full regression).
+ */
+export const REGISTERED_TILE_SHAPE_IDS: ReadonlySet<string> = new Set(
+  Object.keys(PERSONA_TILE_SHAPES),
+);
+
+export const REGISTERED_SUBROUTE_SHAPE_IDS: ReadonlySet<string> = new Set(
+  Object.keys(PERSONA_SUBROUTE_SHAPES),
+);
 
 /**
  * Resolve the per-persona 5-tile visibility. Falls back to a conservative
