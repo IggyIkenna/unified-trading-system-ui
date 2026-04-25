@@ -21,7 +21,7 @@
 export const ASSET_GROUPS = ["DeFi", "CeFi", "TradFi", "Sports", "Prediction"] as const;
 export type AssetClass = (typeof ASSET_GROUPS)[number];
 
-export const asset_group_CONFIG: Record<
+export const ASSET_GROUP_CONFIG: Record<
   AssetClass,
   {
     label: string;
@@ -193,7 +193,7 @@ export interface CrossAssetLink {
   archetypes: StrategyArchetype[];
 }
 
-export const CROSS_asset_group_LINKS: CrossAssetLink[] = [
+export const CROSS_ASSET_GROUP_LINKS: CrossAssetLink[] = [
   {
     from: "Prediction",
     to: "CeFi",
@@ -832,7 +832,7 @@ export type UnderlyingId = keyof typeof UNDERLYINGS;
 // =============================================================================
 
 export function getAssetClassColor(assetClass: AssetClass): string {
-  return asset_group_CONFIG[assetClass].color;
+  return ASSET_GROUP_CONFIG[assetClass].color;
 }
 
 export function getStrategyStatusColor(status: StrategyStatus): string {
