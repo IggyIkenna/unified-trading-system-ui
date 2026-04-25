@@ -17,7 +17,10 @@ import type {
   PermissionDomain,
 } from "@/lib/types/user-management";
 
-const BASE = "/api/auth/provisioning";
+// Unified path-shape for the user-management surface — all routes serve from
+// the portal's native /api/v1/* Admin SDK routes. Replaces the never-deployed
+// /api/auth/provisioning/* path that pre-dated the user-management-api fold-in.
+const BASE = "/api/v1";
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const resp = await fetch(url, {
@@ -269,9 +272,7 @@ export function usePermissionCatalogue() {
   return useQuery({
     queryKey: ["catalogue"],
     queryFn: () =>
-      fetchJson<{ domains: PermissionDomain[] }>(
-        `${BASE.replace("/provisioning", "")}/catalogue`,
-      ),
+      fetchJson<{ domains: PermissionDomain[] }>(`${BASE}/catalogue`),
     staleTime: Infinity, // Catalogue is static
   });
 }
@@ -292,9 +293,7 @@ export function useSearchPermissions(query: string) {
           internal_only: string;
         }>;
         total: number;
-      }>(
-        `${BASE.replace("/provisioning", "")}/catalogue/search/${encodeURIComponent(query)}`,
-      ),
+      }>(`${BASE}/catalogue/search/${encodeURIComponent(query)}`),
     enabled: query.length >= 2,
   });
 }
