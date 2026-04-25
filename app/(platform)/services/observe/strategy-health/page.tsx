@@ -133,7 +133,7 @@ function formatPnl(value: number): string {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const asset_groupES = ["All", "Crypto", "DeFi", "Equities", "FX", "Fixed Income", "Commodities", "Sports"] as const;
+const ASSET_GROUPS = ["All", "Crypto", "DeFi", "Equities", "FX", "Fixed Income", "Commodities", "Sports"] as const;
 const HEALTH_STATUSES = ["All", "Healthy", "Warning", "Critical"] as const;
 const SORT_OPTIONS = [
   { value: "health-desc", label: "Health (High to Low)" },
@@ -286,7 +286,7 @@ export default function StrategyHealthPage() {
               <SelectValue placeholder="Asset Class" />
             </SelectTrigger>
             <SelectContent>
-              {asset_groupES.map((ac) => (
+              {ASSET_GROUPS.map((ac) => (
                 <SelectItem key={ac} value={ac}>
                   {ac === "All" ? "All Classes" : ac}
                 </SelectItem>

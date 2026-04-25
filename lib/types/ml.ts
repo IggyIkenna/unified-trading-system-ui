@@ -642,11 +642,11 @@ export interface MLAlert {
 // Grid Config — feature group subscription for training
 // =============================================================================
 
-export type GridConfigCategory = "CEFI" | "TRADFI" | "SPORTS";
+export type GridConfigAssetGroup = "CEFI" | "TRADFI" | "SPORTS";
 
 export interface MLGridConfig {
   name: string;
-  category: GridConfigCategory;
+  asset_group: GridConfigAssetGroup;
   description?: string;
   instruments?: string[];
   sports_families?: string[];
@@ -657,7 +657,7 @@ export interface MLGridConfig {
 }
 
 export interface FeatureGroupsResponse {
-  category: GridConfigCategory;
+  asset_group: GridConfigAssetGroup;
   feature_groups: string[];
 }
 

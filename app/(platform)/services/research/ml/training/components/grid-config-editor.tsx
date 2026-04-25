@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Copy, Layers, X } from "lucide-react";
 
 import { useCreateMLGridConfig, useFeatureGroups, useUpdateMLGridConfig } from "@/hooks/api/use-ml-models";
-import type { GridConfigCategory, MLGridConfig } from "@/lib/types/ml";
+import type { GridConfigAssetGroup, MLGridConfig } from "@/lib/types/ml";
 
 interface GridConfigEditorProps {
   open: boolean;
@@ -27,7 +27,7 @@ export function GridConfigEditor({ open, onOpenChange, config, onSaved }: GridCo
   const isEdit = !!config && !isSaveAs;
 
   const [name, setName] = React.useState("");
-  const [category, setCategory] = React.useState<GridConfigCategory>("CEFI");
+  const [category, setCategory] = React.useState<GridConfigAssetGroup>("CEFI");
   const [description, setDescription] = React.useState("");
   const [selectedGroups, setSelectedGroups] = React.useState<string[]>([]);
   const [excludeFeatures, setExcludeFeatures] = React.useState<string[]>([]);
@@ -45,7 +45,7 @@ export function GridConfigEditor({ open, onOpenChange, config, onSaved }: GridCo
   React.useEffect(() => {
     if (config) {
       setName(config.name);
-      setCategory(config.category);
+      setCategory(config.asset_group);
       setDescription(config.description ?? "");
       setSelectedGroups(config.feature_groups);
       setExcludeFeatures(config.exclude_features);
@@ -87,7 +87,7 @@ export function GridConfigEditor({ open, onOpenChange, config, onSaved }: GridCo
   function handleSave() {
     const body: Partial<MLGridConfig> = {
       name,
-      category,
+      asset_group: category,
       description: description || undefined,
       feature_groups: selectedGroups,
       exclude_features: excludeFeatures,
@@ -142,7 +142,7 @@ export function GridConfigEditor({ open, onOpenChange, config, onSaved }: GridCo
                 <Select
                   value={category}
                   onValueChange={(v) => {
-                    setCategory(v as GridConfigCategory);
+                    setCategory(v as GridConfigAssetGroup);
                     setSelectedGroups([]);
                   }}
                 >

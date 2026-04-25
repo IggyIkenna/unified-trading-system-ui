@@ -75,7 +75,7 @@ export default function GridConfigPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">CeFi</p>
-                <p className="text-2xl font-bold mt-0.5">{configs.filter((c) => c.category === "CEFI").length}</p>
+                <p className="text-2xl font-bold mt-0.5">{configs.filter((c) => c.asset_group === "CEFI").length}</p>
               </div>
             </div>
           </CardContent>
@@ -85,7 +85,7 @@ export default function GridConfigPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Sports</p>
-                <p className="text-2xl font-bold mt-0.5">{configs.filter((c) => c.category === "SPORTS").length}</p>
+                <p className="text-2xl font-bold mt-0.5">{configs.filter((c) => c.asset_group === "SPORTS").length}</p>
               </div>
             </div>
           </CardContent>
@@ -112,7 +112,7 @@ export default function GridConfigPage() {
                     <TableCell className="font-mono text-xs font-medium">{cfg.name}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="text-[10px]">
-                        {cfg.category}
+                        {cfg.asset_group}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">{cfg.feature_groups.length} groups</TableCell>

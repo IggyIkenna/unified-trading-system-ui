@@ -115,7 +115,7 @@ function DefiProtocolsTab() {
         venue,
         protocol: info.protocol,
         chain: info.chain ?? "-",
-        category: categoryMap[venue] ?? "defi",
+        assetGroup: categoryMap[venue] ?? "defi",
       }))
       .filter((r) => !chainFilter || r.chain.toLowerCase().includes(chainFilter.toLowerCase()));
   }, [chainFilter, defiMap, categoryMap]);
@@ -146,7 +146,7 @@ function DefiProtocolsTab() {
               <SortHeader label="Chain" field="chain" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
               <SortHeader
                 label="Category"
-                field="category"
+                field="assetGroup"
                 sortKey={String(sortKey)}
                 sortDir={sortDir}
                 onSort={onSort}
@@ -224,7 +224,7 @@ function VenuesTab() {
     return Object.entries(categoryMap)
       .map(([venue, cat]) => ({
         venue,
-        category: cat,
+        assetGroup: cat,
         instruments: (instrumentMap[venue] ?? []).join(", ") || "-",
       }))
       .filter((r) => !catFilter || r.assetGroup === catFilter);
@@ -262,7 +262,7 @@ function VenuesTab() {
               <SortHeader label="Venue ID" field="venue" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
               <SortHeader
                 label="Category"
-                field="category"
+                field="assetGroup"
                 sortKey={String(sortKey)}
                 sortDir={sortDir}
                 onSort={onSort}

@@ -18,14 +18,8 @@
 // ASSET CLASSES
 // =============================================================================
 
-export const asset_groupES = [
-  "DeFi",
-  "CeFi",
-  "TradFi",
-  "Sports",
-  "Prediction",
-] as const;
-export type AssetClass = (typeof asset_groupES)[number];
+export const ASSET_GROUPS = ["DeFi", "CeFi", "TradFi", "Sports", "Prediction"] as const;
+export type AssetClass = (typeof ASSET_GROUPS)[number];
 
 export const asset_group_CONFIG: Record<
   AssetClass,
@@ -156,8 +150,7 @@ export const STRATEGY_ARCHETYPE_CONFIG: Record<
   PREDICTION_ARB: {
     label: "Prediction Arbitrage",
     shortLabel: "Pred",
-    description:
-      "Cross-platform prediction market arbitrage (includes BTC prediction vs CeFi derivatives)",
+    description: "Cross-platform prediction market arbitrage (includes BTC prediction vs CeFi derivatives)",
     assetClasses: ["Prediction", "CeFi"],
   },
   YIELD: {
@@ -205,8 +198,7 @@ export const CROSS_asset_group_LINKS: CrossAssetLink[] = [
     from: "Prediction",
     to: "CeFi",
     instruments: ["BTC", "ETH", "SOL"],
-    description:
-      "BTC/ETH prediction markets (up/down binary) vs CeFi futures/options",
+    description: "BTC/ETH prediction markets (up/down binary) vs CeFi futures/options",
     archetypes: ["PREDICTION_ARB", "ARBITRAGE"],
   },
   {
@@ -220,8 +212,7 @@ export const CROSS_asset_group_LINKS: CrossAssetLink[] = [
     from: "Sports",
     to: "Prediction",
     instruments: ["NFL", "NBA", "Soccer", "Tennis"],
-    description:
-      "Traditional sportsbook odds vs prediction market implied probabilities",
+    description: "Traditional sportsbook odds vs prediction market implied probabilities",
     archetypes: ["SPORTS_ARB", "PREDICTION_ARB"],
   },
   {
@@ -412,14 +403,7 @@ export const INSTRUCTION_TYPE_CONFIG: Record<
 // =============================================================================
 
 // Correct 6-stage testing progression (BATCH_REAL removed - does not exist in real system)
-export const TESTING_STAGES = [
-  "MOCK",
-  "HISTORICAL",
-  "LIVE_MOCK",
-  "LIVE_TESTNET",
-  "STAGING",
-  "LIVE_REAL",
-] as const;
+export const TESTING_STAGES = ["MOCK", "HISTORICAL", "LIVE_MOCK", "LIVE_TESTNET", "STAGING", "LIVE_REAL"] as const;
 export type TestingStage = (typeof TESTING_STAGES)[number];
 
 export const TESTING_STAGE_CONFIG: Record<
@@ -473,13 +457,7 @@ export const TESTING_STAGE_CONFIG: Record<
 // STATUS VALUES
 // =============================================================================
 
-export const STRATEGY_STATUSES = [
-  "live",
-  "warning",
-  "error",
-  "paused",
-  "stopped",
-] as const;
+export const STRATEGY_STATUSES = ["live", "warning", "error", "paused", "stopped"] as const;
 export type StrategyStatus = (typeof STRATEGY_STATUSES)[number];
 
 export const STRATEGY_STATUS_CONFIG: Record<
@@ -743,13 +721,7 @@ export const PNL_FACTOR_CONFIG: Record<
 // ALERT SEVERITIES
 // =============================================================================
 
-export const ALERT_SEVERITIES = [
-  "critical",
-  "high",
-  "medium",
-  "low",
-  "info",
-] as const;
+export const ALERT_SEVERITIES = ["critical", "high", "medium", "low", "info"] as const;
 export type AlertSeverity = (typeof ALERT_SEVERITIES)[number];
 
 export const ALERT_SEVERITY_CONFIG: Record<
@@ -872,31 +844,18 @@ export function getTestingStageProgress(stage: TestingStage): number {
 }
 
 export function getVenuesByAssetClass(assetClass: AssetClass): VenueId[] {
-  return (Object.keys(VENUES) as VenueId[]).filter(
-    (id) => VENUES[id].assetClass === assetClass,
-  );
+  return (Object.keys(VENUES) as VenueId[]).filter((id) => VENUES[id].assetClass === assetClass);
 }
 
-export function getUnderlyingsByAssetClass(
-  assetClass: AssetClass,
-): UnderlyingId[] {
-  return (Object.keys(UNDERLYINGS) as UnderlyingId[]).filter(
-    (id) => UNDERLYINGS[id].assetClass === assetClass,
-  );
+export function getUnderlyingsByAssetClass(assetClass: AssetClass): UnderlyingId[] {
+  return (Object.keys(UNDERLYINGS) as UnderlyingId[]).filter((id) => UNDERLYINGS[id].assetClass === assetClass);
 }
 
 // =============================================================================
 // NAVIGATION SURFACES
 // =============================================================================
 
-export const NAVIGATION_SURFACES = [
-  "strategy",
-  "markets",
-  "ops",
-  "ml",
-  "config",
-  "reports",
-] as const;
+export const NAVIGATION_SURFACES = ["strategy", "markets", "ops", "ml", "config", "reports"] as const;
 export type NavigationSurface = (typeof NAVIGATION_SURFACES)[number];
 
 export const NAVIGATION_SURFACE_CONFIG: Record<
@@ -954,15 +913,7 @@ export const NAVIGATION_SURFACE_CONFIG: Record<
 // The `stage` key is the machine identifier; `label` is the only user-facing name.
 // Do NOT invent synonyms ("Build" for "Research", "Run" for "Trading", etc.).
 
-export const PLATFORM_LIFECYCLE_STAGES = [
-  "acquire",
-  "build",
-  "promote",
-  "run",
-  "observe",
-  "manage",
-  "report",
-] as const;
+export const PLATFORM_LIFECYCLE_STAGES = ["acquire", "build", "promote", "run", "observe", "manage", "report"] as const;
 export type PlatformLifecycleStage = (typeof PLATFORM_LIFECYCLE_STAGES)[number];
 
 export const PLATFORM_LIFECYCLE_CONFIG: Record<
@@ -1215,13 +1166,7 @@ export const CANDIDATE_STATUS_CONFIG: Record<
 // READINESS STATES — deployment/testing readiness
 // =============================================================================
 
-export const READINESS_STATES = [
-  "not_ready",
-  "partial",
-  "ready",
-  "validated",
-  "deployed",
-] as const;
+export const READINESS_STATES = ["not_ready", "partial", "ready", "validated", "deployed"] as const;
 export type ReadinessState = (typeof READINESS_STATES)[number];
 
 export const READINESS_STATE_CONFIG: Record<
@@ -1269,15 +1214,8 @@ export const READINESS_STATE_CONFIG: Record<
 // SERVICE AVAILABILITY STATES — hub display states
 // =============================================================================
 
-export const SERVICE_AVAILABILITY_STATES = [
-  "available",
-  "locked",
-  "degraded",
-  "hidden",
-  "maintenance",
-] as const;
-export type ServiceAvailabilityState =
-  (typeof SERVICE_AVAILABILITY_STATES)[number];
+export const SERVICE_AVAILABILITY_STATES = ["available", "locked", "degraded", "hidden", "maintenance"] as const;
+export type ServiceAvailabilityState = (typeof SERVICE_AVAILABILITY_STATES)[number];
 
 export const SERVICE_AVAILABILITY_CONFIG: Record<
   ServiceAvailabilityState,
@@ -1386,13 +1324,7 @@ export interface CandidatePackage {
 // LEGACY LIFECYCLE PHASES (deprecated — use PLATFORM_LIFECYCLE_STAGES)
 // =============================================================================
 
-export const LIFECYCLE_PHASES = [
-  "build",
-  "stage",
-  "run",
-  "explain",
-  "reconcile",
-] as const;
+export const LIFECYCLE_PHASES = ["build", "stage", "run", "explain", "reconcile"] as const;
 export type LifecyclePhase = (typeof LIFECYCLE_PHASES)[number];
 
 export const LIFECYCLE_PHASE_CONFIG: Record<

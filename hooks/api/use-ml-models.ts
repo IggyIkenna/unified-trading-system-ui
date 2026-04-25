@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiFetch } from "@/lib/api/fetch";
 import { useGlobalScope } from "@/lib/stores/global-scope-store";
-import type { RunComparison, MLGridConfig, FeatureGroupsResponse, GridConfigCategory } from "@/lib/types/ml";
+import type { RunComparison, MLGridConfig, FeatureGroupsResponse, GridConfigAssetGroup } from "@/lib/types/ml";
 
 function withMode(base: string, mode: string): string {
   const sep = base.includes("?") ? "&" : "?";
@@ -326,7 +326,7 @@ export function useRegistryModels() {
 // =============================================================================
 
 /** GET /api/ml/grid-configs — list saved grid configs */
-export function useMLGridConfigs(category?: GridConfigCategory) {
+export function useMLGridConfigs(category?: GridConfigAssetGroup) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
   const qs = category ? `?category=${category}` : "";
@@ -360,7 +360,7 @@ export function useMLGridConfig(name: string | null) {
 }
 
 /** GET /api/ml/feature-groups?category=X — available feature groups for a category */
-export function useFeatureGroups(category: GridConfigCategory) {
+export function useFeatureGroups(category: GridConfigAssetGroup) {
   const { user, token } = useAuth();
   const { scope } = useGlobalScope();
 
@@ -417,8 +417,7 @@ export function useDeleteMLGridConfig() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (name: string) =>
-      apiFetch(`/api/ml/grid-configs/${name}`, token, { method: "DELETE" }),
+    mutationFn: (name: string) => apiFetch(`/api/ml/grid-configs/${name}`, token, { method: "DELETE" }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ml-grid-configs"] });
     },

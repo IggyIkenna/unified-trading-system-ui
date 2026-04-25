@@ -14,7 +14,7 @@
 
 export {
   ALERT_TYPES,
-  asset_groupES,
+  ASSET_CLASSES,
   BET_SIDES,
   BET_STATUSES,
   BOOK_TYPES,

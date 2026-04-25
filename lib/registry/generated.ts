@@ -27,21 +27,14 @@ const data = referenceData as Record<string, unknown>;
 
 const registries = (data.registries ?? {}) as Record<string, unknown>;
 
-export const VENUE_CATEGORY_MAP = (registries.venue_category_map ??
-  {}) as Record<string, string>;
-export const INSTRUMENT_TYPES_BY_VENUE =
-  (registries.instrument_types_by_venue ?? {}) as Record<string, string[]>;
-export const INSTRUMENT_TYPE_FOLDER_MAP =
-  (registries.instrument_type_folder_map ?? {}) as Record<string, string>;
+export const VENUE_CATEGORY_MAP = (registries.venue_category_map ?? {}) as Record<string, string>;
+export const INSTRUMENT_TYPES_BY_VENUE = (registries.instrument_types_by_venue ?? {}) as Record<string, string[]>;
+export const INSTRUMENT_TYPE_FOLDER_MAP = (registries.instrument_type_folder_map ?? {}) as Record<string, string>;
 export const CLOB_VENUES = (registries.clob_venues ?? []) as string[];
 export const DEX_VENUES = (registries.dex_venues ?? []) as string[];
 export const SPORTS_VENUES = (registries.sports_venues ?? []) as string[];
-export const ZERO_ALPHA_VENUES = (registries.zero_alpha_venues ??
-  []) as string[];
-export const ENDPOINT_REGISTRY = (registries.endpoint_registry ?? {}) as Record<
-  string,
-  unknown
->;
+export const ZERO_ALPHA_VENUES = (registries.zero_alpha_venues ?? []) as string[];
+export const ENDPOINT_REGISTRY = (registries.endpoint_registry ?? {}) as Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // UAC Enums (may not exist in current JSON version)
@@ -78,8 +71,7 @@ export const BOOKMAKER_CATEGORIES = uacEnums.BookmakerCategory ?? [];
 export const MATCH_PERIODS = uacEnums.MatchPeriod ?? [];
 export const OUTCOME_TYPES = uacEnums.OutcomeType ?? [];
 export const UAC_MARKET_STATUSES = uacEnums.MarketStatus ?? [];
-export const PREDICTION_MARKET_CATEGORIES =
-  uacEnums.PredictionMarketCategory ?? [];
+export const PREDICTION_MARKET_CATEGORIES = uacEnums.PredictionMarketCategory ?? [];
 
 // ---------------------------------------------------------------------------
 // UIC Enums (may not exist in current JSON version)
@@ -89,13 +81,12 @@ const uicEnums = (data.uic_enums ?? {}) as Record<string, string[]>;
 
 export const UIC_ENUMS = uicEnums;
 export const ALERT_TYPES = uicEnums.AlertType ?? [];
-export const asset_groupES = uicEnums.AssetClass ?? [];
+export const ASSET_CLASSES = uicEnums.AssetClass ?? [];
 export const BOOK_TYPES = uicEnums.BookType ?? [];
 export const CLOUD_PROVIDERS = uicEnums.CloudProvider ?? [];
 export const COMPUTE_TYPES = uicEnums.ComputeType ?? [];
 export const CORRELATION_REGIMES = uicEnums.CorrelationRegime ?? [];
-export const CUSTOM_RISK_EVALUATION_METHODS =
-  uicEnums.CustomRiskEvaluationMethod ?? [];
+export const CUSTOM_RISK_EVALUATION_METHODS = uicEnums.CustomRiskEvaluationMethod ?? [];
 export const DATA_MODES = uicEnums.DataMode ?? [];
 export const DATA_SOURCE_CONSTRAINTS = uicEnums.DataSourceConstraint ?? [];
 export const DATA_TYPES = uicEnums.DataType ?? [];
@@ -134,8 +125,7 @@ export const UIC_ORDER_TYPES = uicEnums.OrderType ?? [];
 export const PERMISSIONS = uicEnums.Permission ?? [];
 export const PHASE_MODES = uicEnums.PhaseMode ?? [];
 export const POSITION_SIDES = uicEnums.PositionSide ?? [];
-export const PREDICTION_MARKET_USE_CASES =
-  uicEnums.PredictionMarketUseCase ?? [];
+export const PREDICTION_MARKET_USE_CASES = uicEnums.PredictionMarketUseCase ?? [];
 export const REGIME_STATES = uicEnums.RegimeState ?? [];
 export const RISK_AGGREGATION_LEVELS = uicEnums.RiskAggregationLevel ?? [];
 export const RISK_STATUSES = uicEnums.RiskStatus ?? [];
@@ -159,56 +149,46 @@ export const UIC_VENUE_CATEGORIES = uicEnums.VenueCategory ?? [];
 // Config Schemas
 // ---------------------------------------------------------------------------
 
-export const CONFIG_SCHEMAS = (data.config_schemas ?? {}) as Record<
-  string,
-  unknown
->;
+export const CONFIG_SCHEMAS = (data.config_schemas ?? {}) as Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // Operational Modes
 // ---------------------------------------------------------------------------
 
-export const OPERATIONAL_MODES = (data.operational_modes ?? {}) as Record<
-  string,
-  unknown
->;
+export const OPERATIONAL_MODES = (data.operational_modes ?? {}) as Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // Service Port Registry
 // ---------------------------------------------------------------------------
 
-export const SERVICE_PORT_REGISTRY = (data.service_port_registry ??
-  {}) as Record<string, unknown>;
+export const SERVICE_PORT_REGISTRY = (data.service_port_registry ?? {}) as Record<string, unknown>;
 
 // ---------------------------------------------------------------------------
 // Deployment Enums (from UIC via schema sync pipeline)
 // ---------------------------------------------------------------------------
 
-const deploymentEnums = ((data.deployment_enums as Record<string, unknown>)
-  ?.entries ?? {}) as Record<string, string[]>;
+const deploymentEnums = ((data.deployment_enums as Record<string, unknown>)?.entries ?? {}) as Record<string, string[]>;
 
 export const DEPLOYMENT_CLUSTERS = deploymentEnums.DeploymentCluster ?? [];
 export const DEPLOYMENT_TIERS = deploymentEnums.DeploymentTier ?? [];
-export const DEPLOYMENT_OPERATION_MODES =
-  deploymentEnums.DeploymentOperationMode ?? [];
+export const DEPLOYMENT_OPERATION_MODES = deploymentEnums.DeploymentOperationMode ?? [];
 // DEPLOYMENT_STATUSES already exported from uicEnums above (line 88)
 
 // ---------------------------------------------------------------------------
 // Venue Data Availability (provider timing — when data arrives post-T)
 // ---------------------------------------------------------------------------
 
-export const VENUE_DATA_AVAILABILITY = (data.venue_data_availability ??
-  {}) as Record<
-    string,
-    {
-      venue_name: string;
-      category: string;
-      availability_lag_hours: number;
-      available_after_utc_hour: number;
-      is_t_plus_one: boolean;
-      notes: string;
-    }
-  >;
+export const VENUE_DATA_AVAILABILITY = (data.venue_data_availability ?? {}) as Record<
+  string,
+  {
+    venue_name: string;
+    category: string;
+    availability_lag_hours: number;
+    available_after_utc_hour: number;
+    is_t_plus_one: boolean;
+    notes: string;
+  }
+>;
 
 // ---------------------------------------------------------------------------
 // Venue Coordinates (stadium geographic positions)
@@ -223,12 +203,10 @@ export const VENUE_COORDINATES = (data.venue_coordinates ?? {}) as Record<
 // TradFi Tick Data Windows (Databento expensive tick collection dates)
 // ---------------------------------------------------------------------------
 
-export const TRADFI_TICK_DATA_WINDOWS = (data.tradfi_tick_data_windows ??
-  []) as Array<{ start: string; end: string }>;
+export const TRADFI_TICK_DATA_WINDOWS = (data.tradfi_tick_data_windows ?? []) as Array<{ start: string; end: string }>;
 
 // ---------------------------------------------------------------------------
 // MVP CME Exchange Codes
 // ---------------------------------------------------------------------------
 
-export const MVP_CME_EXCHANGE_CODES = (data.mvp_cme_exchange_codes ??
-  []) as string[];
+export const MVP_CME_EXCHANGE_CODES = (data.mvp_cme_exchange_codes ?? []) as string[];

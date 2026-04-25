@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Filter, X } from "lucide-react";
@@ -29,17 +29,17 @@ export type StrategyType =
   | "Options"
   | "LP Provision";
 
-export const asset_groupES: {
+export const ASSET_GROUPS: {
   value: AssetClass;
   label: string;
   color: string;
 }[] = [
-    { value: "DeFi", label: "DeFi", color: "#4ade80" },
-    { value: "CeFi", label: "CeFi", color: "#60a5fa" },
-    { value: "TradFi", label: "TradFi", color: "#a78bfa" },
-    { value: "Sports", label: "Sports", color: "#fbbf24" },
-    { value: "Prediction", label: "Prediction", color: "#f472b6" },
-  ];
+  { value: "DeFi", label: "DeFi", color: "#4ade80" },
+  { value: "CeFi", label: "CeFi", color: "#60a5fa" },
+  { value: "TradFi", label: "TradFi", color: "#a78bfa" },
+  { value: "Sports", label: "Sports", color: "#fbbf24" },
+  { value: "Prediction", label: "Prediction", color: "#f472b6" },
+];
 
 export const STRATEGY_TYPES: { value: StrategyType; label: string }[] = [
   { value: "Market Making", label: "Market Making" },
@@ -69,14 +69,11 @@ export function StrategyFilterBar({
   onStrategyTypeChange,
   className,
 }: StrategyFilterBarProps) {
-  const hasFilters =
-    selectedAssetClasses.length > 0 || selectedStrategyTypes.length > 0;
+  const hasFilters = selectedAssetClasses.length > 0 || selectedStrategyTypes.length > 0;
 
   const toggleAssetClass = (assetClass: AssetClass) => {
     if (selectedAssetClasses.includes(assetClass)) {
-      onAssetClassChange(
-        selectedAssetClasses.filter((ac) => ac !== assetClass),
-      );
+      onAssetClassChange(selectedAssetClasses.filter((ac) => ac !== assetClass));
     } else {
       onAssetClassChange([...selectedAssetClasses, assetClass]);
     }
@@ -84,9 +81,7 @@ export function StrategyFilterBar({
 
   const toggleStrategyType = (strategyType: StrategyType) => {
     if (selectedStrategyTypes.includes(strategyType)) {
-      onStrategyTypeChange(
-        selectedStrategyTypes.filter((st) => st !== strategyType),
-      );
+      onStrategyTypeChange(selectedStrategyTypes.filter((st) => st !== strategyType));
     } else {
       onStrategyTypeChange([...selectedStrategyTypes, strategyType]);
     }
@@ -107,10 +102,7 @@ export function StrategyFilterBar({
           <Button
             variant="outline"
             size="sm"
-            className={cn(
-              "h-7 gap-1.5 text-xs",
-              selectedAssetClasses.length > 0 && "border-primary",
-            )}
+            className={cn("h-7 gap-1.5 text-xs", selectedAssetClasses.length > 0 && "border-primary")}
           >
             Asset Class
             {selectedAssetClasses.length > 0 && (
@@ -122,21 +114,16 @@ export function StrategyFilterBar({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48">
-          <DropdownMenuLabel className="text-xs text-muted-foreground">
-            Filter by Asset Class
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Asset Class</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {asset_groupES.map((ac) => (
+          {ASSET_GROUPS.map((ac) => (
             <DropdownMenuCheckboxItem
               key={ac.value}
               checked={selectedAssetClasses.includes(ac.value)}
               onCheckedChange={() => toggleAssetClass(ac.value)}
             >
               <span className="flex items-center gap-2">
-                <span
-                  className="size-2 rounded-full"
-                  style={{ backgroundColor: ac.color }}
-                />
+                <span className="size-2 rounded-full" style={{ backgroundColor: ac.color }} />
                 {ac.label}
               </span>
             </DropdownMenuCheckboxItem>
@@ -150,10 +137,7 @@ export function StrategyFilterBar({
           <Button
             variant="outline"
             size="sm"
-            className={cn(
-              "h-7 gap-1.5 text-xs",
-              selectedStrategyTypes.length > 0 && "border-primary",
-            )}
+            className={cn("h-7 gap-1.5 text-xs", selectedStrategyTypes.length > 0 && "border-primary")}
           >
             Strategy Type
             {selectedStrategyTypes.length > 0 && (
@@ -165,9 +149,7 @@ export function StrategyFilterBar({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-48">
-          <DropdownMenuLabel className="text-xs text-muted-foreground">
-            Filter by Strategy Type
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Strategy Type</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {STRATEGY_TYPES.map((st) => (
             <DropdownMenuCheckboxItem
@@ -183,7 +165,7 @@ export function StrategyFilterBar({
 
       {/* Active Filter Badges */}
       {selectedAssetClasses.map((ac) => {
-        const config = asset_groupES.find((a) => a.value === ac);
+        const config = ASSET_GROUPS.find((a) => a.value === ac);
         return (
           <Badge
             key={ac}
@@ -191,15 +173,9 @@ export function StrategyFilterBar({
             className="h-6 gap-1 pl-2 pr-1 text-xs"
             style={{ borderColor: config?.color, borderWidth: 1 }}
           >
-            <span
-              className="size-1.5 rounded-full"
-              style={{ backgroundColor: config?.color }}
-            />
+            <span className="size-1.5 rounded-full" style={{ backgroundColor: config?.color }} />
             {ac}
-            <button
-              onClick={() => toggleAssetClass(ac)}
-              className="ml-0.5 hover:bg-secondary rounded p-0.5"
-            >
+            <button onClick={() => toggleAssetClass(ac)} className="ml-0.5 hover:bg-secondary rounded p-0.5">
               <X className="size-3" />
             </button>
           </Badge>
@@ -207,16 +183,9 @@ export function StrategyFilterBar({
       })}
 
       {selectedStrategyTypes.map((st) => (
-        <Badge
-          key={st}
-          variant="secondary"
-          className="h-6 gap-1 pl-2 pr-1 text-xs"
-        >
+        <Badge key={st} variant="secondary" className="h-6 gap-1 pl-2 pr-1 text-xs">
           {st}
-          <button
-            onClick={() => toggleStrategyType(st)}
-            className="ml-0.5 hover:bg-secondary rounded p-0.5"
-          >
+          <button onClick={() => toggleStrategyType(st)} className="ml-0.5 hover:bg-secondary rounded p-0.5">
             <X className="size-3" />
           </button>
         </Badge>

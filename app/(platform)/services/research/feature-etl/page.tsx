@@ -167,7 +167,7 @@ function ActiveJobs() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium">
-                        {job.shard} — {job.assetGroup}
+                        {job.shard} — {job.category}
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">{job.service_id}</p>
                     </div>
@@ -208,7 +208,7 @@ function ActiveJobs() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="text-sm font-medium">
-                        {job.shard} — {job.assetGroup}
+                        {job.shard} — {job.category}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {job.service_id} · {job.date_range.start} → {job.date_range.end}

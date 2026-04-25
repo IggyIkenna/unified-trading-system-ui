@@ -205,7 +205,7 @@ export function useRiskPageData(): {
       domain_specific: [],
     };
     filteredExposureRows.forEach((row) => {
-      if (groups[row.assetGroup]) groups[row.assetGroup].push(row);
+      if (groups[row.category]) groups[row.category].push(row);
     });
     return groups;
   }, [filteredExposureRows]);

@@ -46,7 +46,7 @@ const CATEGORY_ORDER = ["CEFI", "DEFI", "TRADFI", "SPORTS", "PREDICTION", "CROSS
 
 interface FlatRow {
   type: "category" | "family" | "archetype" | "cell";
-  category: string;
+  assetGroup: string;
   family?: string;
   archetypeId?: string;
   archetype?: EnvelopeArchetype;
@@ -175,7 +175,7 @@ export function EnvelopeBrowser(): React.ReactElement {
       const cat = envelope.categories?.[category];
       if (!cat || !cat.families) continue;
       const catKey = `cat:${category}`;
-      rows.push({ type: "category", category, depth: 0, key: catKey });
+      rows.push({ type: "category", assetGroup: category, depth: 0, key: catKey });
       if (!expandedKeys.has(catKey) && categoryFilter === "ALL") continue;
 
       const families = Object.entries(cat.families)
@@ -184,7 +184,7 @@ export function EnvelopeBrowser(): React.ReactElement {
 
       for (const [family, famData] of families) {
         const famKey = `fam:${category}:${family}`;
-        rows.push({ type: "family", category, family, depth: 1, key: famKey });
+        rows.push({ type: "family", assetGroup: category, family, depth: 1, key: famKey });
         if (!expandedKeys.has(famKey) && categoryFilter === "ALL" && familyFilter === "ALL") continue;
 
         const archetypes = Object.entries(famData.archetypes)
@@ -200,7 +200,7 @@ export function EnvelopeBrowser(): React.ReactElement {
           const arcKey = `arc:${category}:${family}:${archetypeId}`;
           rows.push({
             type: "archetype",
-            category,
+            assetGroup: category,
             family,
             archetypeId,
             archetype,
@@ -212,7 +212,7 @@ export function EnvelopeBrowser(): React.ReactElement {
           archetype.cells.forEach((_, idx) => {
             rows.push({
               type: "cell",
-              category,
+              assetGroup: category,
               family,
               archetypeId,
               archetype,

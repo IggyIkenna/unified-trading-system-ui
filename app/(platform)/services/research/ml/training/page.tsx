@@ -323,11 +323,8 @@ export default function TrainingPage() {
                       <SelectItem value="">Default (all groups)</SelectItem>
                       {gridConfigs.map((gc) => (
                         <SelectItem key={gc.name} value={gc.name}>
-                          {gc.name} — {gc.category} ({gc.feature_groups.length} groups
-                          {gc.exclude_features.length > 0
-                            ? `, -${gc.exclude_features.length} excl`
-                            : ""}
-                          )
+                          {gc.name} — {gc.asset_group} ({gc.feature_groups.length} groups
+                          {gc.exclude_features.length > 0 ? `, -${gc.exclude_features.length} excl` : ""})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -339,9 +336,7 @@ export default function TrainingPage() {
                       size="sm"
                       className="shrink-0"
                       onClick={() => {
-                        const cfg = gridConfigs.find(
-                          (gc) => gc.name === newGridConfig,
-                        );
+                        const cfg = gridConfigs.find((gc) => gc.name === newGridConfig);
                         if (cfg) {
                           setEditingConfig(cfg);
                           setConfigEditorOpen(true);
@@ -390,11 +385,7 @@ export default function TrainingPage() {
           </DialogContent>
         </Dialog>
 
-        <GridConfigEditor
-          open={configEditorOpen}
-          onOpenChange={setConfigEditorOpen}
-          config={editingConfig}
-        />
+        <GridConfigEditor open={configEditorOpen} onOpenChange={setConfigEditorOpen} config={editingConfig} />
 
         {/* Data freshness */}
         <DataFreshnessStrip sources={dataSources} />

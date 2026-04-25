@@ -5,7 +5,7 @@
 
 // Taxonomy imports — SSOT for enums lives in taxonomy.ts
 import type { AssetClass, StrategyArchetype, TestingStage } from "@/lib/taxonomy";
-export { asset_groupES, STRATEGY_ARCHETYPES, TESTING_STAGES } from "@/lib/taxonomy";
+export { ASSET_GROUPS, STRATEGY_ARCHETYPES, TESTING_STAGES } from "@/lib/taxonomy";
 export type { AssetClass, StrategyArchetype, TestingStage };
 
 // Strategy lifecycle stages
