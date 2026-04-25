@@ -32,7 +32,7 @@ const columns: ColumnDef<PredictionPosition, unknown>[] = [
           <div className="flex items-center gap-1.5 mt-1">
             <VenueChip venue={r.venue} />
             <Badge variant="outline" className="text-nano border-zinc-700/50 text-zinc-500">
-              {categoryLabel(r.category)}
+              {categoryLabel(r.assetGroup)}
             </Badge>
           </div>
         </div>

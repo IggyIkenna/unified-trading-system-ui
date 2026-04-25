@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, Lock, ArrowUpRight, Cloud, Zap, Download, Clock, AlertCircle, Plus } from "lucide-react";
 import type { DataSubscription, AccessMode, OrgMode } from "@/lib/types/data-service";
-import { DATA_CATEGORY_LABELS, PRICING_MODELS } from "@/lib/types/data-service";
+import { DATA_ASSET_GROUP_LABELS, PRICING_MODELS } from "@/lib/types/data-service";
 
 // Access mode badge colours
 const ACCESS_MODE_STYLE: Record<AccessMode, { badge: string; icon: React.ElementType; label: string }> = {
@@ -119,9 +119,9 @@ export function DataSubscriptionManager({
                         )}
                       </CardTitle>
                       <CardDescription className="mt-1 flex flex-wrap gap-1">
-                        {sub.shardFilters.categories.map((cat) => (
+                        {sub.shardFilters.assetGroups.map((cat) => (
                           <Badge key={cat} variant="secondary" className="text-[10px]">
-                            {DATA_CATEGORY_LABELS[cat]}
+                            {DATA_ASSET_GROUP_LABELS[cat]}
                           </Badge>
                         ))}
                       </CardDescription>

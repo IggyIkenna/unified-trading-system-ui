@@ -1084,7 +1084,7 @@ function mockRoute(path: string, opts?: RequestInit): Promise<Response> | null {
       const entitlement =
         baseCur && RESTRICTED_BASES.includes(baseCur)
           ? ("restricted" as const)
-          : DEFI_CATEGORIES.includes(inst.category)
+          : DEFI_CATEGORIES.includes(inst.assetGroup)
             ? ("delayed" as const)
             : ("live" as const);
       const symData = baseCur ? SYMBOLOGY_MAP[baseCur] : undefined;

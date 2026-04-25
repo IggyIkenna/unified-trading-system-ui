@@ -20,7 +20,7 @@ import type {
   DataGap,
   ETLStage,
   ETLStatus,
-  DataCategory,
+  DataAssetGroup,
   DataFolder,
   DataType,
 } from "@/lib/types/data-service";
@@ -74,7 +74,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "binance:perpetuals:BTCUSDT",
     venue: "binance",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "perpetuals",
     symbol: "BTCUSDT",
     baseCurrency: "BTC",
@@ -85,7 +85,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "binance:perpetuals:ETHUSDT",
     venue: "binance",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "perpetuals",
     symbol: "ETHUSDT",
     baseCurrency: "ETH",
@@ -96,7 +96,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "bybit:perpetuals:SOLUSDT",
     venue: "bybit",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "perpetuals",
     symbol: "SOLUSDT",
     baseCurrency: "SOL",
@@ -107,7 +107,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "bybit:perpetuals:BTCUSDT",
     venue: "bybit",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "perpetuals",
     symbol: "BTCUSDT",
     baseCurrency: "BTC",
@@ -119,7 +119,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "deribit:options:BTC-PERPETUAL",
     venue: "deribit",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "options",
     symbol: "BTC-PERPETUAL",
     baseCurrency: "BTC",
@@ -130,7 +130,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "deribit:options:ETH-PERPETUAL",
     venue: "deribit",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "options",
     symbol: "ETH-PERPETUAL",
     baseCurrency: "ETH",
@@ -142,7 +142,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "coinbase:spot:BTC-USD",
     venue: "coinbase",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "spot",
     symbol: "BTC-USD",
     baseCurrency: "BTC",
@@ -153,7 +153,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "okx:spot:ETH-USDT",
     venue: "okx",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "spot",
     symbol: "ETH-USDT",
     baseCurrency: "ETH",
@@ -165,7 +165,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "binance:futures:BTCUSDT_250328",
     venue: "binance",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "futures",
     symbol: "BTCUSDT_250328",
     baseCurrency: "BTC",
@@ -177,7 +177,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "bybit:futures:BTCUSDT_250627",
     venue: "bybit",
-    category: "cefi",
+    assetGroup: "cefi",
     folder: "futures",
     symbol: "BTCUSDT_250627",
     baseCurrency: "BTC",
@@ -189,7 +189,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "databento:futures:ES.c.0",
     venue: "databento",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "futures",
     symbol: "ES.c.0",
     dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"],
@@ -198,7 +198,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "databento:futures:NQ.c.0",
     venue: "databento",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "futures",
     symbol: "NQ.c.0",
     dataTypes: ["ohlcv", "trades", "book_snapshot_5"],
@@ -207,7 +207,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "databento:equity:AAPL",
     venue: "databento",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "equity",
     symbol: "AAPL",
     dataTypes: ["ohlcv", "trades", "book_snapshot_5"],
@@ -216,7 +216,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "ibkr:equity:AAPL",
     venue: "ibkr",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "equity",
     symbol: "AAPL",
     dataTypes: ["ohlcv", "trades"],
@@ -225,7 +225,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "ibkr:equity:MSFT",
     venue: "ibkr",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "equity",
     symbol: "MSFT",
     dataTypes: ["ohlcv", "trades"],
@@ -234,7 +234,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "fred:rates:DFF",
     venue: "fred",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "rates",
     symbol: "DFF",
     dataTypes: ["ohlcv"],
@@ -243,7 +243,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "fred:rates:US10Y",
     venue: "fred",
-    category: "tradfi",
+    assetGroup: "tradfi",
     folder: "rates",
     symbol: "US10Y",
     dataTypes: ["ohlcv"],
@@ -253,7 +253,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05",
     venue: "uniswap_v3",
-    category: "defi",
+    assetGroup: "defi",
     folder: "pool_state",
     symbol: "USDC-ETH-0.05",
     dataTypes: ["pool_state", "swap_events", "price_feeds"],
@@ -262,7 +262,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "uniswap_v3:pool_state:WBTC-ETH-0.3",
     venue: "uniswap_v3",
-    category: "defi",
+    assetGroup: "defi",
     folder: "pool_state",
     symbol: "WBTC-ETH-0.3",
     dataTypes: ["pool_state", "swap_events", "price_feeds"],
@@ -271,7 +271,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "aave_v3:lending:USDC",
     venue: "aave_v3",
-    category: "defi",
+    assetGroup: "defi",
     folder: "lending",
     symbol: "USDC",
     dataTypes: ["lending_rates", "price_feeds"],
@@ -280,7 +280,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "aave_v3:lending:WETH",
     venue: "aave_v3",
-    category: "defi",
+    assetGroup: "defi",
     folder: "lending",
     symbol: "WETH",
     dataTypes: ["lending_rates", "price_feeds"],
@@ -289,7 +289,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "lido:staking:ETH",
     venue: "lido",
-    category: "defi",
+    assetGroup: "defi",
     folder: "staking",
     symbol: "stETH",
     dataTypes: ["staking_yields", "price_feeds"],
@@ -299,7 +299,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "hyperliquid:perpetuals:BTC-USD",
     venue: "hyperliquid",
-    category: "onchain_perps",
+    assetGroup: "onchain_perps",
     folder: "perpetuals",
     symbol: "BTC-USD",
     baseCurrency: "BTC",
@@ -310,7 +310,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "hyperliquid:perpetuals:ETH-USD",
     venue: "hyperliquid",
-    category: "onchain_perps",
+    assetGroup: "onchain_perps",
     folder: "perpetuals",
     symbol: "ETH-USD",
     dataTypes: ["ohlcv", "trades", "funding_rates"],
@@ -320,7 +320,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "polymarket:predictions:TRUMP_WIN_2024",
     venue: "polymarket",
-    category: "prediction_market",
+    assetGroup: "prediction_market",
     folder: "predictions",
     symbol: "TRUMP_WIN_2024",
     dataTypes: ["odds", "settlement_prices"],
@@ -330,7 +330,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "polymarket:odds:BTC_100K_2025",
     venue: "polymarket",
-    category: "prediction_market",
+    assetGroup: "prediction_market",
     folder: "odds",
     symbol: "BTC_100K_2025",
     dataTypes: ["odds", "settlement_prices"],
@@ -339,7 +339,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "kalshi:predictions:FED_RATE_JUL2025",
     venue: "kalshi",
-    category: "prediction_market",
+    assetGroup: "prediction_market",
     folder: "predictions",
     symbol: "FED_RATE_JUL2025",
     dataTypes: ["odds", "settlement_prices"],
@@ -348,7 +348,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "kalshi:odds:US_RECESSION_2025",
     venue: "kalshi",
-    category: "prediction_market",
+    assetGroup: "prediction_market",
     folder: "odds",
     symbol: "US_RECESSION_2025",
     dataTypes: ["odds", "settlement_prices"],
@@ -358,7 +358,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "api_football:fixtures:EPL_2025",
     venue: "api_football",
-    category: "sports",
+    assetGroup: "sports",
     folder: "fixtures",
     symbol: "EPL_2025",
     dataTypes: ["odds", "game_events"],
@@ -367,7 +367,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "api_football:fixtures:UCL_2025",
     venue: "api_football",
-    category: "sports",
+    assetGroup: "sports",
     folder: "fixtures",
     symbol: "UCL_2025",
     dataTypes: ["odds", "game_events"],
@@ -376,7 +376,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "api_football:odds:EPL_2025_MD32",
     venue: "api_football",
-    category: "sports",
+    assetGroup: "sports",
     folder: "odds",
     symbol: "EPL_2025_MD32",
     dataTypes: ["odds"],
@@ -385,7 +385,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "footystats:fixtures:EPL_2025",
     venue: "footystats",
-    category: "sports",
+    assetGroup: "sports",
     folder: "fixtures",
     symbol: "EPL_2025",
     dataTypes: ["odds", "game_events"],
@@ -394,7 +394,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "footystats:fixtures:LA_LIGA_2025",
     venue: "footystats",
-    category: "sports",
+    assetGroup: "sports",
     folder: "fixtures",
     symbol: "LA_LIGA_2025",
     dataTypes: ["odds", "game_events"],
@@ -403,7 +403,7 @@ export const MOCK_INSTRUMENTS: InstrumentEntry[] = [
   {
     instrumentKey: "footystats:game_events:EPL_2025_GW34",
     venue: "footystats",
-    category: "sports",
+    assetGroup: "sports",
     folder: "game_events",
     symbol: "EPL_2025_GW34",
     dataTypes: ["game_events"],
@@ -599,7 +599,7 @@ export const MOCK_SUBSCRIPTIONS: DataSubscription[] = [
     orgId: "arcadia-capital",
     label: "CeFi Core Bundle",
     shardFilters: {
-      categories: ["cefi"],
+      assetGroups: ["cefi"],
       venues: ["binance", "bybit", "deribit"],
       folders: ["perpetuals", "options"],
       dataTypes: ["ohlcv", "trades", "funding_rates", "book_snapshot_5"],
@@ -620,7 +620,7 @@ export const MOCK_SUBSCRIPTIONS: DataSubscription[] = [
     orgId: "arcadia-capital",
     label: "TradFi Futures",
     shardFilters: {
-      categories: ["tradfi"],
+      assetGroups: ["tradfi"],
       venues: ["databento"],
       folders: ["futures"],
       dataTypes: ["ohlcv", "trades", "book_snapshot_5"],
@@ -641,7 +641,7 @@ export const MOCK_SUBSCRIPTIONS: DataSubscription[] = [
     orgId: "meridian-quant",
     label: "DeFi Research Pack",
     shardFilters: {
-      categories: ["defi", "onchain_perps"],
+      assetGroups: ["defi", "onchain_perps"],
       venues: ["uniswap_v3", "aave_v3", "hyperliquid"],
       folders: ["pool_state", "lending", "perpetuals"],
       dataTypes: ["pool_state", "lending_rates", "ohlcv", "funding_rates"],
@@ -662,7 +662,7 @@ export const MOCK_SUBSCRIPTIONS: DataSubscription[] = [
     orgId: "demo",
     label: "Demo Bundle (Mock)",
     shardFilters: {
-      categories: ["cefi", "defi"],
+      assetGroups: ["cefi", "defi"],
       venues: ["binance", "uniswap_v3"],
       folders: ["perpetuals", "pool_state"],
       dataTypes: ["ohlcv", "trades"],
@@ -687,7 +687,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     id: "qry-001",
     orgId: "arcadia-capital",
     instrumentKey: "binance:perpetuals:BTCUSDT",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "ohlcv",
@@ -705,7 +705,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     id: "qry-002",
     orgId: "arcadia-capital",
     instrumentKey: "databento:futures:ES.c.0",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "DATABENTO",
     folder: "futures",
     dataType: "book_snapshot_5",
@@ -723,7 +723,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     id: "qry-003",
     orgId: "arcadia-capital",
     instrumentKey: "bybit:perpetuals:SOLUSDT",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BYBIT",
     folder: "perpetuals",
     dataType: "trades",
@@ -740,7 +740,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
     id: "qry-004",
     orgId: "meridian-quant",
     instrumentKey: "uniswap_v3:pool_state:USDC-ETH-0.05",
-    category: "defi",
+    assetGroup: "defi",
     venue: "UNISWAPV3-ETHEREUM",
     folder: "pool_state",
     dataType: "pool_state",
@@ -760,7 +760,7 @@ export const MOCK_QUERY_LOG: DataQueryLog[] = [
 
 // Generate shard availability with stats matching the 90-day heatmap
 function makeShardAvailability(
-  category: DataCategory,
+  assetGroup: DataAssetGroup,
   venue: string,
   folder: DataFolder,
   dataType: DataType,
@@ -774,7 +774,7 @@ function makeShardAvailability(
   const missing = dates.filter((s) => s === "missing").length;
   const total = complete + partial + missing;
   return {
-    category,
+    assetGroup,
     venue,
     folder,
     dataType,
@@ -816,7 +816,7 @@ export const ADMIN_SUMMARY = {
   monthlyRevenueUsd: 68420,
   avgFreshnessPct: 97.4,
   totalInstruments: 18743,
-  categoryCounts: {
+  assetGroupCounts: {
     cefi: 4200,
     tradfi: 9800,
     defi: 3100,
@@ -859,7 +859,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-binance-perps",
-      category: "cefi",
+      assetGroup: "cefi",
       venue: "BINANCE-SPOT",
       folder: "perpetuals",
       dataTypes: ["ohlcv", "trades", "book_snapshot_5", "funding_rates", "liquidations"],
@@ -877,7 +877,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-binance-spot",
-      category: "cefi",
+      assetGroup: "cefi",
       venue: "BINANCE-SPOT",
       folder: "spot",
       dataTypes: ["ohlcv", "trades"],
@@ -894,7 +894,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-bybit-perps",
-      category: "cefi",
+      assetGroup: "cefi",
       venue: "BYBIT",
       folder: "perpetuals",
       dataTypes: ["ohlcv", "trades", "funding_rates"],
@@ -921,7 +921,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-deribit-options",
-      category: "cefi",
+      assetGroup: "cefi",
       venue: "DERIBIT",
       folder: "options",
       dataTypes: ["ohlcv", "trades", "greeks", "iv_surface"],
@@ -938,7 +938,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-coinbase-spot",
-      category: "cefi",
+      assetGroup: "cefi",
       venue: "COINBASE-SPOT",
       folder: "spot",
       dataTypes: ["ohlcv", "trades", "tick"],
@@ -956,7 +956,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-databento-futures",
-      category: "tradfi",
+      assetGroup: "tradfi",
       venue: "DATABENTO",
       folder: "futures",
       dataTypes: ["ohlcv", "trades", "book_snapshot_5", "book_snapshot_25"],
@@ -973,7 +973,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-ibkr-equity",
-      category: "tradfi",
+      assetGroup: "tradfi",
       venue: "IBKR",
       folder: "equity",
       dataTypes: ["ohlcv", "trades"],
@@ -990,7 +990,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-fred-rates",
-      category: "tradfi",
+      assetGroup: "tradfi",
       venue: "FRED",
       folder: "rates",
       dataTypes: ["ohlcv"],
@@ -1008,7 +1008,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-uniswap-v3",
-      category: "defi",
+      assetGroup: "defi",
       venue: "UNISWAPV3-ETHEREUM",
       folder: "pool_state",
       dataTypes: ["pool_state", "swap_events", "price_feeds"],
@@ -1025,7 +1025,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-aave-v3",
-      category: "defi",
+      assetGroup: "defi",
       venue: "AAVEV3-ETHEREUM",
       folder: "lending",
       dataTypes: ["lending_rates", "price_feeds"],
@@ -1042,7 +1042,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-lido-staking",
-      category: "defi",
+      assetGroup: "defi",
       venue: "LIDO-ETHEREUM",
       folder: "staking",
       dataTypes: ["staking_yields", "price_feeds"],
@@ -1060,7 +1060,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
   {
     config: {
       id: "etl-hyperliquid",
-      category: "onchain_perps",
+      assetGroup: "onchain_perps",
       venue: "HYPERLIQUID",
       folder: "perpetuals",
       dataTypes: ["ohlcv", "trades", "funding_rates", "open_interest"],
@@ -1089,7 +1089,7 @@ export const MOCK_ETL_PIPELINES: ETLPipelineStatus[] = [
 export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   {
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     label: "Binance",
     dataSource: "exchange_api",
     status: "active",
@@ -1104,7 +1104,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "BYBIT",
-    category: "cefi",
+    assetGroup: "cefi",
     label: "Bybit",
     dataSource: "exchange_api",
     status: "active",
@@ -1119,7 +1119,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "DERIBIT",
-    category: "cefi",
+    assetGroup: "cefi",
     label: "Deribit",
     dataSource: "exchange_api",
     status: "active",
@@ -1134,7 +1134,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "COINBASE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     label: "Coinbase",
     dataSource: "exchange_api",
     status: "active",
@@ -1149,7 +1149,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "OKX-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     label: "OKX",
     dataSource: "exchange_api",
     status: "active",
@@ -1164,7 +1164,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     label: "Databento",
     dataSource: "vendor",
     status: "active",
@@ -1179,7 +1179,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "IBKR",
-    category: "tradfi",
+    assetGroup: "tradfi",
     label: "Interactive Brokers",
     dataSource: "vendor",
     status: "active",
@@ -1194,7 +1194,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "FRED",
-    category: "tradfi",
+    assetGroup: "tradfi",
     label: "FRED",
     dataSource: "vendor",
     status: "active",
@@ -1209,7 +1209,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "UNISWAPV3-ETHEREUM",
-    category: "defi",
+    assetGroup: "defi",
     label: "Uniswap V3",
     dataSource: "onchain",
     status: "active",
@@ -1224,7 +1224,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "AAVEV3-ETHEREUM",
-    category: "defi",
+    assetGroup: "defi",
     label: "Aave V3",
     dataSource: "onchain",
     status: "active",
@@ -1239,7 +1239,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "LIDO-ETHEREUM",
-    category: "defi",
+    assetGroup: "defi",
     label: "Lido",
     dataSource: "onchain",
     status: "active",
@@ -1254,7 +1254,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
   },
   {
     venue: "HYPERLIQUID",
-    category: "onchain_perps",
+    assetGroup: "onchain_perps",
     label: "Hyperliquid",
     dataSource: "onchain",
     status: "active",
@@ -1272,7 +1272,7 @@ export const MOCK_VENUE_COVERAGE: VenueCoverage[] = [
 export const MOCK_DATA_GAPS: DataGap[] = [
   {
     id: "gap-1",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BYBIT",
     folder: "perpetuals",
     dataType: "trades",
@@ -1287,7 +1287,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   },
   {
     id: "gap-2",
-    category: "defi",
+    assetGroup: "defi",
     venue: "UNISWAPV3-ETHEREUM",
     folder: "pool_state",
     dataType: "swap_events",
@@ -1302,7 +1302,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   },
   {
     id: "gap-3",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "DATABENTO",
     folder: "futures",
     dataType: "book_snapshot_25",
@@ -1316,7 +1316,7 @@ export const MOCK_DATA_GAPS: DataGap[] = [
   },
   {
     id: "gap-4",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "liquidations",
@@ -1386,39 +1386,39 @@ export const MOCK_PIPELINE_STAGES: import("@/lib/types/data-service").PipelineSt
     failedShards: 3,
     completionPct: 96.0,
     lastUpdated: "2026-03-23T08:14:00Z",
-    byCategory: [
+    byAssetGroup: [
       {
-        category: "cefi",
+        assetGroup: "cefi",
         totalShards: 2_400,
         completedShards: 2_400,
         completionPct: 100,
       },
       {
-        category: "tradfi",
+        assetGroup: "tradfi",
         totalShards: 1_560,
         completedShards: 1_520,
         completionPct: 97.4,
       },
       {
-        category: "defi",
+        assetGroup: "defi",
         totalShards: 2_000,
         completedShards: 1_870,
         completionPct: 93.5,
       },
       {
-        category: "onchain_perps",
+        assetGroup: "onchain_perps",
         totalShards: 730,
         completedShards: 730,
         completionPct: 100,
       },
       {
-        category: "prediction_market",
+        assetGroup: "prediction_market",
         totalShards: 570,
         completedShards: 412,
         completionPct: 72.3,
       },
       {
-        category: "sports",
+        assetGroup: "sports",
         totalShards: 1_190,
         completedShards: 1_180,
         completionPct: 99.2,
@@ -1434,39 +1434,39 @@ export const MOCK_PIPELINE_STAGES: import("@/lib/types/data-service").PipelineSt
     failedShards: 12,
     completionPct: 83.5,
     lastUpdated: "2026-03-23T08:02:00Z",
-    byCategory: [
+    byAssetGroup: [
       {
-        category: "cefi",
+        assetGroup: "cefi",
         totalShards: 52_000,
         completedShards: 48_800,
         completionPct: 93.8,
       },
       {
-        category: "tradfi",
+        assetGroup: "tradfi",
         totalShards: 34_000,
         completedShards: 30_100,
         completionPct: 88.5,
       },
       {
-        category: "defi",
+        assetGroup: "defi",
         totalShards: 28_000,
         completedShards: 21_200,
         completionPct: 75.7,
       },
       {
-        category: "onchain_perps",
+        assetGroup: "onchain_perps",
         totalShards: 9_800,
         completedShards: 9_600,
         completionPct: 98.0,
       },
       {
-        category: "prediction_market",
+        assetGroup: "prediction_market",
         totalShards: 6_200,
         completedShards: 2_400,
         completionPct: 38.7,
       },
       {
-        category: "sports",
+        assetGroup: "sports",
         totalShards: 12_000,
         completedShards: 6_400,
         completionPct: 53.3,
@@ -1482,39 +1482,39 @@ export const MOCK_PIPELINE_STAGES: import("@/lib/types/data-service").PipelineSt
     failedShards: 8,
     completionPct: 79.5,
     lastUpdated: "2026-03-23T07:45:00Z",
-    byCategory: [
+    byAssetGroup: [
       {
-        category: "cefi",
+        assetGroup: "cefi",
         totalShards: 48_800,
         completedShards: 46_000,
         completionPct: 94.3,
       },
       {
-        category: "tradfi",
+        assetGroup: "tradfi",
         totalShards: 30_100,
         completedShards: 27_200,
         completionPct: 90.4,
       },
       {
-        category: "defi",
+        assetGroup: "defi",
         totalShards: 21_200,
         completedShards: 13_800,
         completionPct: 65.1,
       },
       {
-        category: "onchain_perps",
+        assetGroup: "onchain_perps",
         totalShards: 9_600,
         completedShards: 9_100,
         completionPct: 94.8,
       },
       {
-        category: "prediction_market",
+        assetGroup: "prediction_market",
         totalShards: 2_400,
         completedShards: 600,
         completionPct: 25.0,
       },
       {
-        category: "sports",
+        assetGroup: "sports",
         totalShards: 6_400,
         completedShards: 3_500,
         completionPct: 54.7,
@@ -1530,39 +1530,39 @@ export const MOCK_PIPELINE_STAGES: import("@/lib/types/data-service").PipelineSt
     failedShards: 5,
     completionPct: 83.2,
     lastUpdated: "2026-03-23T07:30:00Z",
-    byCategory: [
+    byAssetGroup: [
       {
-        category: "cefi",
+        assetGroup: "cefi",
         totalShards: 46_000,
         completedShards: 42_100,
         completionPct: 91.5,
       },
       {
-        category: "tradfi",
+        assetGroup: "tradfi",
         totalShards: 27_200,
         completedShards: 23_800,
         completionPct: 87.5,
       },
       {
-        category: "defi",
+        assetGroup: "defi",
         totalShards: 13_800,
         completedShards: 8_200,
         completionPct: 59.4,
       },
       {
-        category: "onchain_perps",
+        assetGroup: "onchain_perps",
         totalShards: 9_100,
         completedShards: 8_600,
         completionPct: 94.5,
       },
       {
-        category: "prediction_market",
+        assetGroup: "prediction_market",
         totalShards: 600,
         completedShards: 120,
         completionPct: 20.0,
       },
       {
-        category: "sports",
+        assetGroup: "sports",
         totalShards: 3_500,
         completedShards: 1_580,
         completionPct: 45.1,
@@ -1578,7 +1578,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     id: "job-dl-bin-0323",
     type: "download",
     status: "running",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     dateRange: { start: "2026-03-18", end: "2026-03-23" },
     shardsTotal: 6,
@@ -1594,7 +1594,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     id: "job-dl-db-0323",
     type: "download",
     status: "running",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "DATABENTO",
     dateRange: { start: "2026-03-15", end: "2026-03-23" },
     shardsTotal: 9,
@@ -1610,7 +1610,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     id: "job-proc-cefi-0322",
     type: "process",
     status: "running",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BYBIT",
     dateRange: { start: "2026-03-20", end: "2026-03-22" },
     shardsTotal: 3,
@@ -1626,7 +1626,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
     id: "job-backfill-defi-0301",
     type: "backfill",
     status: "queued",
-    category: "defi",
+    assetGroup: "defi",
     venue: "AAVEV3-ETHEREUM",
     dateRange: { start: "2026-02-28", end: "2026-03-05" },
     shardsTotal: 6,
@@ -1644,7 +1644,7 @@ export const MOCK_ACTIVE_JOBS: import("@/lib/types/data-service").JobInfo[] = [
 export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntry[] = [
   {
     jobType: "download",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     avgDurationMs: 3_600_000,
     p50DurationMs: 3_200_000,
@@ -1655,7 +1655,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   },
   {
     jobType: "download",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BYBIT",
     avgDurationMs: 2_800_000,
     p50DurationMs: 2_600_000,
@@ -1666,7 +1666,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   },
   {
     jobType: "download",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "DATABENTO",
     avgDurationMs: 7_200_000,
     p50DurationMs: 6_800_000,
@@ -1677,7 +1677,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   },
   {
     jobType: "process",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     avgDurationMs: 1_800_000,
     p50DurationMs: 1_600_000,
@@ -1688,7 +1688,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   },
   {
     jobType: "process",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "DATABENTO",
     avgDurationMs: 2_400_000,
     p50DurationMs: 2_200_000,
@@ -1699,7 +1699,7 @@ export const MOCK_JOB_HISTORY: import("@/lib/types/data-service").JobHistoryEntr
   },
   {
     jobType: "backfill",
-    category: "defi",
+    assetGroup: "defi",
     venue: "UNISWAPV3-ETHEREUM",
     avgDurationMs: 10_800_000,
     p50DurationMs: 9_600_000,
@@ -1722,7 +1722,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     timestamp: "2026-03-23T08:14:00Z",
     read: false,
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     actionHref: "/services/data/instruments",
   },
   {
@@ -1734,7 +1734,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     timestamp: "2026-03-23T07:42:00Z",
     read: false,
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     actionHref: "/services/data/raw",
   },
   {
@@ -1746,7 +1746,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     timestamp: "2026-03-23T06:30:00Z",
     read: false,
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     actionHref: "/services/data/gaps",
   },
   {
@@ -1758,7 +1758,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     timestamp: "2026-03-23T05:15:00Z",
     read: true,
     venue: "OKX-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
   },
   {
     id: "alert-005",
@@ -1769,7 +1769,7 @@ export const MOCK_ALERTS: import("@/lib/types/data-service").AlertItem[] = [
     timestamp: "2026-03-22T14:00:00Z",
     read: true,
     venue: "API-FOOTBALL",
-    category: "sports",
+    assetGroup: "sports",
     actionHref: "/services/data/raw",
   },
 ];
@@ -1968,31 +1968,31 @@ export const MOCK_INSTRUMENT_COUNTS: Record<
   {
     total: number;
     active: number;
-    category: import("@/lib/types/data-service").DataCategory;
+    assetGroup: import("@/lib/types/data-service").DataAssetGroup;
   }
 > = {
-  binance: { total: 412, active: 398, category: "cefi" },
-  bybit: { total: 284, active: 276, category: "cefi" },
-  okx: { total: 198, active: 192, category: "cefi" },
-  coinbase: { total: 87, active: 84, category: "cefi" },
-  deribit: { total: 2840, active: 2840, category: "cefi" }, // options
-  upbit: { total: 156, active: 149, category: "cefi" },
-  hyperliquid: { total: 64, active: 64, category: "onchain_perps" },
-  databento: { total: 4200, active: 4200, category: "tradfi" }, // CME + NASDAQ + ICE
-  ibkr: { total: 12500, active: 12100, category: "tradfi" }, // stocks
-  yahoo_finance: { total: 8400, active: 8200, category: "tradfi" },
-  fred: { total: 820_000, active: 820_000, category: "tradfi" }, // macro series
-  uniswap_v3: { total: 8920, active: 6400, category: "defi" },
-  uniswap_v4: { total: 1240, active: 1240, category: "defi" },
-  aave_v3: { total: 48, active: 42, category: "defi" },
-  curve: { total: 342, active: 298, category: "defi" },
-  balancer: { total: 287, active: 241, category: "defi" },
-  lido: { total: 3, active: 3, category: "defi" },
-  morpho: { total: 62, active: 62, category: "defi" },
-  polymarket: { total: 4200, active: 1840, category: "prediction_market" },
-  kalshi: { total: 1600, active: 890, category: "prediction_market" },
-  api_football: { total: 14_000, active: 2400, category: "sports" }, // all fixtures
-  footystats: { total: 11_500, active: 2100, category: "sports" },
+  binance: { total: 412, active: 398, assetGroup: "cefi" },
+  bybit: { total: 284, active: 276, assetGroup: "cefi" },
+  okx: { total: 198, active: 192, assetGroup: "cefi" },
+  coinbase: { total: 87, active: 84, assetGroup: "cefi" },
+  deribit: { total: 2840, active: 2840, assetGroup: "cefi" }, // options
+  upbit: { total: 156, active: 149, assetGroup: "cefi" },
+  hyperliquid: { total: 64, active: 64, assetGroup: "onchain_perps" },
+  databento: { total: 4200, active: 4200, assetGroup: "tradfi" }, // CME + NASDAQ + ICE
+  ibkr: { total: 12500, active: 12100, assetGroup: "tradfi" }, // stocks
+  yahoo_finance: { total: 8400, active: 8200, assetGroup: "tradfi" },
+  fred: { total: 820_000, active: 820_000, assetGroup: "tradfi" }, // macro series
+  uniswap_v3: { total: 8920, active: 6400, assetGroup: "defi" },
+  uniswap_v4: { total: 1240, active: 1240, assetGroup: "defi" },
+  aave_v3: { total: 48, active: 42, assetGroup: "defi" },
+  curve: { total: 342, active: 298, assetGroup: "defi" },
+  balancer: { total: 287, active: 241, assetGroup: "defi" },
+  lido: { total: 3, active: 3, assetGroup: "defi" },
+  morpho: { total: 62, active: 62, assetGroup: "defi" },
+  polymarket: { total: 4200, active: 1840, assetGroup: "prediction_market" },
+  kalshi: { total: 1600, active: 890, assetGroup: "prediction_market" },
+  api_football: { total: 14_000, active: 2400, assetGroup: "sports" }, // all fixtures
+  footystats: { total: 11_500, active: 2100, assetGroup: "sports" },
 };
 
 // ─── Coverage Matrix Rows ─────────────────────────────────────────────────────
@@ -2000,7 +2000,7 @@ export const MOCK_INSTRUMENT_COUNTS: Record<
 export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[] = [
   {
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "complete", completionPct: 100 },
@@ -2009,7 +2009,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     date: "2026-03-21",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "complete", completionPct: 100 },
@@ -2018,7 +2018,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     date: "2026-03-20",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "partial", completionPct: 98 },
@@ -2027,7 +2027,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     date: "2026-03-19",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "complete", completionPct: 100 },
@@ -2036,7 +2036,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "partial", completionPct: 94 },
@@ -2045,7 +2045,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     date: "2026-03-21",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "complete", completionPct: 100 },
@@ -2054,7 +2054,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "AAVEV3-ETHEREUM",
-    category: "defi",
+    assetGroup: "defi",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "complete", completionPct: 100 },
@@ -2063,7 +2063,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "AAVEV3-ETHEREUM",
-    category: "defi",
+    assetGroup: "defi",
     date: "2026-03-21",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "partial", completionPct: 87 },
@@ -2072,7 +2072,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "API-FOOTBALL",
-    category: "sports",
+    assetGroup: "sports",
     date: "2026-03-22",
     instruments: { status: "complete", completionPct: 100 },
     rawData: { status: "partial", completionPct: 78 },
@@ -2081,7 +2081,7 @@ export const MOCK_COVERAGE_ROWS: import("@/lib/types/data-service").CoverageRow[
   },
   {
     venue: "POLYMARKET",
-    category: "prediction_market",
+    assetGroup: "prediction_market",
     date: "2026-03-22",
     instruments: { status: "partial", completionPct: 44 },
     rawData: { status: "partial", completionPct: 38 },
@@ -2096,7 +2096,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "1m",
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     completionPct: 98.2,
     totalDays: 2400,
     completedDays: 2357,
@@ -2106,7 +2106,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "5m",
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     completionPct: 97.8,
     totalDays: 2400,
     completedDays: 2347,
@@ -2116,7 +2116,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "15m",
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     completionPct: 97.4,
     totalDays: 2400,
     completedDays: 2338,
@@ -2126,7 +2126,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "1h",
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     completionPct: 99.1,
     totalDays: 2400,
     completedDays: 2378,
@@ -2136,7 +2136,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "4h",
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     completionPct: 99.3,
     totalDays: 2400,
     completedDays: 2383,
@@ -2146,7 +2146,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "1d",
     venue: "BINANCE-SPOT",
-    category: "cefi",
+    assetGroup: "cefi",
     completionPct: 99.8,
     totalDays: 2400,
     completedDays: 2395,
@@ -2156,7 +2156,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "1m",
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     completionPct: 91.2,
     totalDays: 1560,
     completedDays: 1423,
@@ -2166,7 +2166,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "5m",
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     completionPct: 91.0,
     totalDays: 1560,
     completedDays: 1420,
@@ -2176,7 +2176,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "1h",
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     completionPct: 93.5,
     totalDays: 1560,
     completedDays: 1459,
@@ -2186,7 +2186,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
   {
     timeframe: "1d",
     venue: "DATABENTO",
-    category: "tradfi",
+    assetGroup: "tradfi",
     completionPct: 95.8,
     totalDays: 1560,
     completedDays: 1495,
@@ -2200,7 +2200,7 @@ export const MOCK_TIMEFRAME_STATUS: import("@/lib/types/data-service").Timeframe
 export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = [
   {
     id: "gap-001",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "ohlcv",
@@ -2215,7 +2215,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-002",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "BINANCE-SPOT",
     folder: "perpetuals",
     dataType: "trades",
@@ -2230,7 +2230,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-003",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "DATABENTO",
     folder: "equity",
     dataType: "ohlcv",
@@ -2245,7 +2245,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-004",
-    category: "defi",
+    assetGroup: "defi",
     venue: "AAVEV3-ETHEREUM",
     folder: "lending",
     dataType: "lending_rates",
@@ -2259,7 +2259,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-005",
-    category: "sports",
+    assetGroup: "sports",
     venue: "API-FOOTBALL",
     folder: "game_events",
     dataType: "game_events",
@@ -2274,7 +2274,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-006",
-    category: "cefi",
+    assetGroup: "cefi",
     venue: "OKX-SPOT",
     folder: "spot",
     dataType: "ohlcv",
@@ -2288,7 +2288,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-007",
-    category: "tradfi",
+    assetGroup: "tradfi",
     venue: "IBKR",
     folder: "equity",
     dataType: "trades",
@@ -2302,7 +2302,7 @@ export const MOCK_ENHANCED_GAPS: import("@/lib/types/data-service").DataGap[] = 
   },
   {
     id: "gap-008",
-    category: "defi",
+    assetGroup: "defi",
     venue: "UNISWAPV3-ETHEREUM",
     folder: "pool_state",
     dataType: "pool_state",

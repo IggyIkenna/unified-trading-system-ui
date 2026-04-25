@@ -284,7 +284,7 @@ export default function DataServicePublicPage() {
                       >
                         <span className="font-medium">{sub.label}</span>
                         <div className="flex items-center gap-2">
-                          {sub.shardFilters.categories.map((c) => (
+                          {sub.shardFilters.assetGroups.map((c) => (
                             <Badge key={c} variant="secondary" className="text-[10px]">
                               {c}
                             </Badge>

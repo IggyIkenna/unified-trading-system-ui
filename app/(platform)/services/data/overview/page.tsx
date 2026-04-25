@@ -17,8 +17,8 @@ import { Progress } from "@/components/ui/progress";
 import { useDataPipelineAlerts, useDataPipelineJobs, useDataPipelineStages } from "@/hooks/api/use-data-pipeline";
 import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import {
-  DATA_CATEGORY_LABELS,
-  type DataCategory,
+  DATA_ASSET_GROUP_LABELS,
+  type DataAssetGroup,
   type JobInfo,
   type PipelineStageSummary,
 } from "@/lib/types/data-service";
@@ -140,8 +140,8 @@ function StageCard({ stage }: { stage: PipelineStageSummary }) {
   );
 }
 
-function CategoryProgressRow({ cat, stages }: { cat: DataCategory; stages: PipelineStageSummary[] }) {
-  const label = DATA_CATEGORY_LABELS[cat];
+function CategoryProgressRow({ cat, stages }: { cat: DataAssetGroup; stages: PipelineStageSummary[] }) {
+  const label = DATA_ASSET_GROUP_LABELS[cat];
   const colorClass = CATEGORY_COLORS[cat];
 
   return (
@@ -152,7 +152,7 @@ function CategoryProgressRow({ cat, stages }: { cat: DataCategory; stages: Pipel
         </Badge>
         <div className="flex items-center gap-6 text-xs text-muted-foreground">
           {stages.map((stage) => {
-            const catData = stage.byCategory.find((c) => c.category === cat);
+            const catData = stage.byAssetGroup.find((c) => c.assetGroup === cat);
             if (!catData) return null;
             const pct = catData.completionPct;
             return (
@@ -171,7 +171,7 @@ function CategoryProgressRow({ cat, stages }: { cat: DataCategory; stages: Pipel
       </div>
       <div className="grid grid-cols-4 gap-1.5">
         {stages.map((stage) => {
-          const catData = stage.byCategory.find((c) => c.category === cat);
+          const catData = stage.byAssetGroup.find((c) => c.assetGroup === cat);
           const pct = catData?.completionPct ?? 0;
           return (
             <div key={stage.stage} className="space-y-0.5">
@@ -205,7 +205,7 @@ function ActiveJobRow({ job }: { job: JobInfo }) {
             <Badge variant="secondary" className="text-[10px] mr-1.5">
               {job.type}
             </Badge>
-            {DATA_CATEGORY_LABELS[job.category]} · {job.venue}
+            {DATA_ASSET_GROUP_LABELS[job.assetGroup]} · {job.venue}
           </div>
           <div className="text-xs text-muted-foreground">
             {job.dateRange.start} → {job.dateRange.end} · {job.workersActive}/{job.workersMax} workers
@@ -234,7 +234,7 @@ export default function AcquireOverviewPage() {
   const { subscribed, locked } = useScopedAssetGroups();
 
   // Use scoped categories if available; fall back to all categories for internal users
-  const categories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
+  const categories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]);
   const unreadAlerts = alerts.filter((a) => !a.read).length;
 
   return (
@@ -286,7 +286,7 @@ export default function AcquireOverviewPage() {
                   {locked.map((cat) => (
                     <div key={cat} className="flex items-center justify-between py-2 opacity-50">
                       <Badge variant="outline" className={cn("text-xs", CATEGORY_COLORS[cat])}>
-                        {DATA_CATEGORY_LABELS[cat]}
+                        {DATA_ASSET_GROUP_LABELS[cat]}
                       </Badge>
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <Lock className="size-3" />

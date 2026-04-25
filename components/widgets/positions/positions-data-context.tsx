@@ -331,7 +331,7 @@ function mapRawRowToPosition(row: Record<string, unknown>): PositionRecord {
     updated_at: String(row.updated_at ?? new Date().toISOString()),
     notional_usd: row.notional_usd != null ? Number(row.notional_usd) : undefined,
     client_name: row.client_name != null ? String(row.client_name) : undefined,
-    category: row.category != null ? String(row.category) : undefined,
+    category: row.assetGroup != null ? String(row.assetGroup) : undefined,
     strategy_family: row.strategy_family != null ? String(row.strategy_family) : undefined,
     account_id: row.account_id != null ? String(row.account_id) : undefined,
     chain: row.chain != null ? String(row.chain) : undefined,

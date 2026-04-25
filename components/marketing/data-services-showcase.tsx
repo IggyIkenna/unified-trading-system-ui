@@ -20,12 +20,12 @@ import {
   Globe,
   Zap,
 } from "lucide-react";
-import { DATA_CATEGORY_LABELS } from "@/lib/types/data-service";
-import type { DataCategory } from "@/lib/types/data-service";
+import { DATA_ASSET_GROUP_LABELS } from "@/lib/types/data-service";
+import type { DataAssetGroup } from "@/lib/types/data-service";
 import { VENUE_DISPLAY, ADMIN_SUMMARY } from "@/lib/mocks/fixtures/data-service";
 
 // Category colours consistent with rest of platform
-const CATEGORY_COLORS: Record<DataCategory, { text: string; bg: string; border: string }> = {
+const CATEGORY_COLORS: Record<DataAssetGroup, { text: string; bg: string; border: string }> = {
   cefi: {
     text: "text-sky-400",
     bg: "bg-sky-400/10",
@@ -141,7 +141,7 @@ const ACCESS_TIERS = [
 
 export function DataServicesShowcase() {
   const heatmapData = React.useMemo(() => generateMockHeatmap(8), []);
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  const categories = Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[];
 
   return (
     <section className="relative border-t border-border bg-gradient-to-b from-card/50 to-background">
@@ -188,7 +188,7 @@ export function DataServicesShowcase() {
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
             {categories.map((cat) => {
               const color = CATEGORY_COLORS[cat];
-              const count = ADMIN_SUMMARY.categoryCounts[cat];
+              const count = ADMIN_SUMMARY.assetGroupCounts[cat];
               return (
                 <div
                   key={cat}
@@ -198,7 +198,7 @@ export function DataServicesShowcase() {
                     color.border,
                   )}
                 >
-                  <div className={cn("text-xs font-semibold", color.text)}>{DATA_CATEGORY_LABELS[cat]}</div>
+                  <div className={cn("text-xs font-semibold", color.text)}>{DATA_ASSET_GROUP_LABELS[cat]}</div>
                   <div className="mt-1 text-lg font-bold">{count?.toLocaleString() || "—"}</div>
                   <div className="text-[10px] text-muted-foreground">instruments</div>
                 </div>

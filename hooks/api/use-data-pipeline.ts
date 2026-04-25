@@ -1,18 +1,9 @@
 import type { TurboCategoryData, TurboDataStatusResponse } from "@/hooks/deployment/_api-stub";
 import { getDataStatusTurbo, getServicesOverview } from "@/hooks/deployment/_api-stub";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  MOCK_ACTIVE_JOBS,
-  MOCK_ALERTS,
-  MOCK_PIPELINE_STAGES,
-} from "@/lib/mocks/fixtures/data-service";
+import { MOCK_ACTIVE_JOBS, MOCK_ALERTS, MOCK_PIPELINE_STAGES } from "@/lib/mocks/fixtures/data-service";
 import { isMockDataMode } from "@/lib/runtime/data-mode";
-import type {
-  AlertItem,
-  DataCategory,
-  JobInfo,
-  PipelineStageSummary,
-} from "@/lib/types/data-service";
+import type { AlertItem, DataAssetGroup, JobInfo, PipelineStageSummary } from "@/lib/types/data-service";
 import { useQuery } from "@tanstack/react-query";
 
 const STAGE_SERVICE_MAP: Record<string, string> = {
@@ -40,10 +31,7 @@ function thirtyDaysAgo(): string {
   return d.toISOString().slice(0, 10);
 }
 
-function turboToStageSummary(
-  stage: string,
-  turbo: TurboDataStatusResponse | null,
-): PipelineStageSummary {
+function turboToStageSummary(stage: string, turbo: TurboDataStatusResponse | null): PipelineStageSummary {
   const label = STAGE_LABELS[stage] ?? stage;
   if (!turbo || !turbo.categories) {
     return {
@@ -55,21 +43,21 @@ function turboToStageSummary(
       failedShards: 0,
       completionPct: 0,
       lastUpdated: new Date().toISOString(),
-      byCategory: [],
+      byAssetGroup: [],
     };
   }
 
   let totalFound = 0;
   let totalExpected = 0;
-  const byCategory: PipelineStageSummary["byCategory"] = [];
+  const byAssetGroup: PipelineStageSummary["byAssetGroup"] = [];
 
   for (const [catKey, catData] of Object.entries(turbo.categories) as [string, TurboCategoryData][]) {
     const found = catData.dates_found ?? catData.dates_found_count ?? 0;
     const expected = catData.dates_expected ?? found;
     totalFound += found;
     totalExpected += expected;
-    byCategory.push({
-      category: catKey.toLowerCase() as DataCategory,
+    byAssetGroup.push({
+      assetGroup: catKey.toLowerCase() as DataAssetGroup,
       totalShards: expected,
       completedShards: found,
       completionPct: expected > 0 ? Math.round((found / expected) * 100 * 10) / 10 : 0,
@@ -87,7 +75,7 @@ function turboToStageSummary(
     failedShards: Math.max(totalExpected - totalFound, 0),
     completionPct: pct,
     lastUpdated: new Date().toISOString(),
-    byCategory,
+    byAssetGroup,
   };
 }
 
@@ -128,7 +116,7 @@ async function fetchPipelineStages(): Promise<PipelineStageSummary[]> {
         failedShards: 0,
         completionPct: processingStage?.completionPct ?? 0,
         lastUpdated: new Date().toISOString(),
-        byCategory: processingStage?.byCategory ?? [],
+        byAssetGroup: processingStage?.byAssetGroup ?? [],
       });
       continue;
     }
@@ -149,7 +137,7 @@ async function fetchActiveJobs(): Promise<JobInfo[]> {
         id: `job-${i}`,
         type: "process" as const,
         status: "running" as const,
-        category: "cefi" as DataCategory,
+        assetGroup: "cefi" as DataAssetGroup,
         venue: s.service,
         dateRange: { start: thirtyDaysAgo(), end: today() },
         shardsTotal: 100,

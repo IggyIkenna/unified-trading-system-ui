@@ -17,10 +17,10 @@ import type {
   FinderSelections,
 } from "@/components/shared/finder/types";
 import {
-  DATA_CATEGORY_LABELS,
+  DATA_ASSET_GROUP_LABELS,
   VENUES_BY_ASSET_GROUP,
   FOLDERS_BY_ASSET_GROUP,
-  type DataCategory,
+  type DataAssetGroup,
   type DataFolder,
   type InstrumentEntry,
   type Timeframe,
@@ -65,7 +65,7 @@ function getTimeframeCompletion(venue: string, folder: string, timeframe: Timefr
   return base;
 }
 
-const CATEGORY_BADGE: Record<DataCategory, string> = {
+const CATEGORY_BADGE: Record<DataAssetGroup, string> = {
   cefi: "border-blue-400/30 text-blue-400",
   tradfi: "border-amber-400/30 text-amber-400",
   defi: "border-violet-400/30 text-violet-400",
@@ -83,18 +83,18 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
     minWidthPx: 168,
     getItems: (): FinderItem[] => {
       const stage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "processing");
-      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
-        const stageData = stage?.byCategory?.find((b) => b.category === cat);
+      return (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]).map((cat) => {
+        const stageData = stage?.byAssetGroup?.find((b) => b.assetGroup === cat);
         return {
           id: cat,
-          label: DATA_CATEGORY_LABELS[cat],
+          label: DATA_ASSET_GROUP_LABELS[cat],
           data: { cat, completionPct: stageData?.completionPct ?? 0 },
         };
       });
     },
     renderLabel: (item) => {
       const { cat, completionPct } = item.data as {
-        cat: DataCategory;
+        cat: DataAssetGroup;
         completionPct: number;
       };
       return (
@@ -104,7 +104,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
               {cat.toUpperCase().slice(0, 4)}
             </Badge>
             <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
-              {DATA_CATEGORY_LABELS[cat]}
+              {DATA_ASSET_GROUP_LABELS[cat]}
             </span>
           </div>
           <div className="flex items-center gap-1 ml-0.5">
@@ -134,7 +134,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
     visibleWhen: (sel) => sel["category"] !== null,
     getItems: (sel): FinderItem[] => {
       const { cat } = (sel["category"]?.data ?? {}) as {
-        cat: DataCategory;
+        cat: DataAssetGroup;
         completionPct: number;
       };
       if (!cat) return [];
@@ -154,7 +154,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
     getItems: (sel): FinderItem[] => {
       const { venue, cat } = (sel["venue"]?.data ?? {}) as {
         venue: string;
-        cat: DataCategory;
+        cat: DataAssetGroup;
       };
       if (!venue || !cat) return [];
       return (FOLDERS_BY_ASSET_GROUP[cat] ?? []).map((folder) => ({
@@ -190,7 +190,7 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
       const { venue, folder } = (sel["folder"]?.data ?? {}) as {
         folder: DataFolder;
         venue: string;
-        cat: DataCategory;
+        cat: DataAssetGroup;
       };
       if (!venue || !folder) return [];
       return MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder).map((inst) => ({
@@ -250,9 +250,11 @@ export const PROCESSING_COLUMNS: FinderColumnDef[] = [
 ];
 
 export function getProcessingContextStats(selections: FinderSelections): FinderContextStats {
-  const catData = selections["category"]?.data as { cat: DataCategory; completionPct: number } | undefined;
-  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
-  const folderData = selections["folder"]?.data as { folder: DataFolder; venue: string; cat: DataCategory } | undefined;
+  const catData = selections["category"]?.data as { cat: DataAssetGroup; completionPct: number } | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataAssetGroup } | undefined;
+  const folderData = selections["folder"]?.data as
+    | { folder: DataFolder; venue: string; cat: DataAssetGroup }
+    | undefined;
   const instSelected = selections["instrument"]?.data as InstrumentEntry | undefined;
   const tfData = selections["timeframe"]?.data as
     | {
@@ -335,7 +337,7 @@ export function getProcessingContextStats(selections: FinderSelections): FinderC
 
   if (catData) {
     return {
-      name: DATA_CATEGORY_LABELS[catData.cat],
+      name: DATA_ASSET_GROUP_LABELS[catData.cat],
       metrics: [
         {
           label: "completion",

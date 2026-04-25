@@ -12,9 +12,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ChevronRight, ChevronDown, Search, CheckCircle2, Lock, Plus, Database, Zap, Cloud } from "lucide-react";
-import { VENUES_BY_ASSET_GROUP, DATA_CATEGORY_LABELS, FOLDERS_BY_ASSET_GROUP } from "@/lib/types/data-service";
+import { VENUES_BY_ASSET_GROUP, DATA_ASSET_GROUP_LABELS, FOLDERS_BY_ASSET_GROUP } from "@/lib/types/data-service";
 import type {
-  DataCategory,
+  DataAssetGroup,
   DataFolder,
   DataType,
   OrgMode,
@@ -24,7 +24,7 @@ import type {
 import { MOCK_CATALOGUE, VENUE_DISPLAY } from "@/lib/mocks/fixtures/data-service";
 
 // Category accent colours
-export const CATEGORY_COLORS: Record<DataCategory, string> = {
+export const CATEGORY_COLORS: Record<DataAssetGroup, string> = {
   cefi: "text-sky-400 bg-sky-400/10 border-sky-400/30",
   tradfi: "text-violet-400 bg-violet-400/10 border-violet-400/30",
   defi: "text-emerald-400 bg-emerald-400/10 border-emerald-400/30",
@@ -46,14 +46,14 @@ export function ShardCatalogue({
   onSubscribeClick,
   className,
 }: ShardCatalogueProps) {
-  const [expandedCategories, setExpandedCategories] = React.useState<Set<DataCategory>>(new Set(["cefi"]));
+  const [expandedCategories, setExpandedCategories] = React.useState<Set<DataAssetGroup>>(new Set(["cefi"]));
   const [expandedVenues, setExpandedVenues] = React.useState<Set<string>>(new Set());
   const [search, setSearch] = React.useState("");
-  const [filterCategory, setFilterCategory] = React.useState<DataCategory | "all">("all");
+  const [filterCategory, setFilterCategory] = React.useState<DataAssetGroup | "all">("all");
 
-  const categories = Object.keys(DATA_CATEGORY_LABELS) as DataCategory[];
+  const categories = Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[];
 
-  function toggleCategory(cat: DataCategory) {
+  function toggleCategory(cat: DataAssetGroup) {
     setExpandedCategories((prev) => {
       const next = new Set(prev);
       next.has(cat) ? next.delete(cat) : next.add(cat);
@@ -72,7 +72,7 @@ export function ShardCatalogue({
   function isSubscribed(entry: CatalogueEntry): boolean {
     return activeSubscriptions.some(
       (sub) =>
-        sub.shardFilters.categories.includes(entry.instrument.category) &&
+        sub.shardFilters.assetGroups.includes(entry.instrument.assetGroup) &&
         sub.shardFilters.venues.includes(entry.instrument.venue),
     );
   }
@@ -82,7 +82,7 @@ export function ShardCatalogue({
       search === "" ||
       entry.instrument.symbol.toLowerCase().includes(search.toLowerCase()) ||
       entry.instrument.venue.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = filterCategory === "all" || entry.instrument.category === filterCategory;
+    const matchesCategory = filterCategory === "all" || entry.instrument.assetGroup === filterCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -116,7 +116,7 @@ export function ShardCatalogue({
               onClick={() => setFilterCategory(cat === filterCategory ? "all" : cat)}
               className={cn("h-7 text-xs", filterCategory === cat && CATEGORY_COLORS[cat])}
             >
-              {DATA_CATEGORY_LABELS[cat]}
+              {DATA_ASSET_GROUP_LABELS[cat]}
             </Button>
           ))}
         </div>
@@ -126,7 +126,7 @@ export function ShardCatalogue({
       {categories
         .filter((cat) => filterCategory === "all" || cat === filterCategory)
         .map((cat) => {
-          const catEntries = filteredCatalogue.filter((e) => e.instrument.category === cat);
+          const catEntries = filteredCatalogue.filter((e) => e.instrument.assetGroup === cat);
 
           const allVenues = VENUES_BY_ASSET_GROUP[cat];
           // Filter venues by search — only show venues matching the search term
@@ -160,7 +160,7 @@ export function ShardCatalogue({
                     <ChevronRight className="size-4 text-muted-foreground" />
                   )}
                   <Badge variant="outline" className={cn("text-xs", CATEGORY_COLORS[cat])}>
-                    {DATA_CATEGORY_LABELS[cat]}
+                    {DATA_ASSET_GROUP_LABELS[cat]}
                   </Badge>
                   <span className="text-sm text-muted-foreground">
                     {venueList.length} venues · {catEntries.length || "?"} instruments

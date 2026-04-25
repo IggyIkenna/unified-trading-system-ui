@@ -17,7 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import { MOCK_ALERTS, MOCK_ENHANCED_GAPS } from "@/lib/mocks/fixtures/data-service";
-import { DATA_CATEGORY_LABELS, type DataCategory, type DataGap } from "@/lib/types/data-service";
+import { DATA_ASSET_GROUP_LABELS, type DataAssetGroup, type DataGap } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
 import { Bell, CheckCircle2, Download, Filter, RefreshCw } from "lucide-react";
 import * as React from "react";
@@ -79,18 +79,18 @@ export default function GapsPage() {
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
   const [severityFilter, setSeverityFilter] = React.useState<string>("all");
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
-  const [categoryFilter, setCategoryFilter] = React.useState<DataCategory | "all">("all");
+  const [categoryFilter, setCategoryFilter] = React.useState<DataAssetGroup | "all">("all");
   const { subscribed, locked } = useScopedAssetGroups();
 
-  const categories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
+  const categories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]);
 
   // Scope gaps to subscribed categories
-  const scopedGaps = MOCK_ENHANCED_GAPS.filter((gap) => subscribed.length === 0 || subscribed.includes(gap.category));
+  const scopedGaps = MOCK_ENHANCED_GAPS.filter((gap) => subscribed.length === 0 || subscribed.includes(gap.assetGroup));
 
   const filtered = scopedGaps.filter((gap) => {
     if (severityFilter !== "all" && gap.severity !== severityFilter) return false;
     if (statusFilter !== "all" && gap.status !== statusFilter) return false;
-    if (categoryFilter !== "all" && gap.category !== categoryFilter) return false;
+    if (categoryFilter !== "all" && gap.assetGroup !== categoryFilter) return false;
     return true;
   });
 
@@ -117,14 +117,14 @@ export default function GapsPage() {
     if (selectedGaps.length === 0) return;
 
     // Group gaps by venue+category to batch API calls
-    const groups = new Map<string, { service: string; category: string; dates: string[] }>();
+    const groups = new Map<string, { service: string; assetGroup: DataAssetGroup; dates: string[] }>();
     for (const gap of selectedGaps) {
-      const key = `${gap.venue}:${gap.category}`;
+      const key = `${gap.venue}:${gap.assetGroup}`;
       const existing = groups.get(key);
       if (existing) {
         existing.dates.push(gap.gapStart);
       } else {
-        groups.set(key, { service: gap.venue, category: gap.category, dates: [gap.gapStart] });
+        groups.set(key, { service: gap.venue, assetGroup: gap.assetGroup, dates: [gap.gapStart] });
       }
     }
 
@@ -135,10 +135,10 @@ export default function GapsPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            cluster: group.category.toLowerCase(),
+            cluster: group.assetGroup.toLowerCase(),
             as_of_date: group.dates[0],
             service: group.service,
-            category: group.category,
+            category: group.assetGroup,
           }),
         });
         if (!res.ok) {
@@ -245,7 +245,7 @@ export default function GapsPage() {
               <SelectItem value="wont_fix">{"Won't Fix"}</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as DataCategory | "all")}>
+          <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as DataAssetGroup | "all")}>
             <SelectTrigger className="h-8 w-40 text-xs">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
@@ -253,7 +253,7 @@ export default function GapsPage() {
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
-                  {DATA_CATEGORY_LABELS[cat]}
+                  {DATA_ASSET_GROUP_LABELS[cat]}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -327,8 +327,8 @@ export default function GapsPage() {
                           </Badge>
                         </td>
                         <td className="px-3 py-2">
-                          <Badge variant="outline" className={cn("text-[10px]", CATEGORY_COLORS[gap.category])}>
-                            {DATA_CATEGORY_LABELS[gap.category]}
+                          <Badge variant="outline" className={cn("text-[10px]", CATEGORY_COLORS[gap.assetGroup])}>
+                            {DATA_ASSET_GROUP_LABELS[gap.assetGroup]}
                           </Badge>
                         </td>
                         <td className="px-3 py-2 font-medium capitalize">{gap.venue.replace(/_/g, " ")}</td>

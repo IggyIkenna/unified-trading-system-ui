@@ -71,7 +71,7 @@ function findCell(
   instrumentType: InstrumentTypeV2,
 ): CoverageCell | undefined {
   return coverage.cells.find(
-    (cell) => cell.category === category && cell.instrumentType === instrumentType,
+    (cell) => cell.assetGroup === category && cell.instrumentType === instrumentType,
   );
 }
 

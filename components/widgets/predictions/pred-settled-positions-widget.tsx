@@ -56,7 +56,7 @@ export function PredSettledPositionsWidget(_props: WidgetComponentProps) {
             <div className="flex items-center gap-1.5 mt-1">
               <VenueChip venue={row.venue} />
               <Badge variant="outline" className="text-nano border-zinc-700/50 text-zinc-500">
-                {categoryLabel(row.category)}
+                {categoryLabel(row.assetGroup)}
               </Badge>
             </div>
           </div>

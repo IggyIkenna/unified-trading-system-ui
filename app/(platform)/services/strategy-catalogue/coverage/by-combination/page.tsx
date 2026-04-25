@@ -48,7 +48,7 @@ function matchesCategory(
   pick: LegPick,
 ): boolean {
   if (pick.category === "ANY") return true;
-  return cell.category === pick.category;
+  return cell.assetGroup === pick.category;
 }
 
 function filterByLeg(
@@ -240,7 +240,7 @@ function LegSummary({ title, cell }: { title: string; cell: CoverageCell }) {
         <StatusBadge status={cell.status} />
       </div>
       <div className="mt-1 flex flex-wrap gap-1">
-        <CategoryChip category={cell.category} />
+        <CategoryChip category={cell.assetGroup} />
         <InstrumentTypeChip instrumentType={cell.instrumentType} />
         {cell.rollMode !== "n/a" ? <RollModeBadge rollMode={cell.rollMode} /> : null}
       </div>

@@ -12,8 +12,8 @@ import { FinderBrowser, finderText } from "@/components/shared/finder";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MOCK_ALERTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/mocks/fixtures/data-service";
-import type { DataCategory, InstrumentEntry } from "@/lib/types/data-service";
-import { DATA_CATEGORY_LABELS, FOLDERS_BY_ASSET_GROUP } from "@/lib/types/data-service";
+import type { DataAssetGroup, InstrumentEntry } from "@/lib/types/data-service";
+import { DATA_ASSET_GROUP_LABELS, FOLDERS_BY_ASSET_GROUP } from "@/lib/types/data-service";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/formatters";
 import { Bell, RefreshCw } from "lucide-react";
@@ -22,8 +22,8 @@ import { Bell, RefreshCw } from "lucide-react";
 
 function InstrumentDetail({ selections }: { selections: FinderSelections }) {
   const instItem = selections["instrument"];
-  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
-  const catData = selections["category"]?.data as DataCategory | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataAssetGroup } | undefined;
+  const catData = selections["category"]?.data as DataAssetGroup | undefined;
 
   if (instItem) {
     const inst = instItem.data as InstrumentEntry | null;
@@ -48,7 +48,7 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
           </div>
           <div>
             <p className="text-muted-foreground">Category</p>
-            <p className="font-medium">{DATA_CATEGORY_LABELS[inst.category]}</p>
+            <p className="font-medium">{DATA_ASSET_GROUP_LABELS[inst.assetGroup]}</p>
           </div>
           <div>
             <p className="text-muted-foreground">Type</p>
@@ -129,11 +129,11 @@ function InstrumentDetail({ selections }: { selections: FinderSelections }) {
   }
 
   if (catData) {
-    const venues = Object.entries(MOCK_INSTRUMENT_COUNTS).filter(([, v]) => v.category === catData);
+    const venues = Object.entries(MOCK_INSTRUMENT_COUNTS).filter(([, v]) => v.assetGroup === catData);
     const total = venues.reduce((s, [, v]) => s + v.total, 0);
     return (
       <div className="p-4 space-y-3">
-        <p className="text-sm font-semibold">{DATA_CATEGORY_LABELS[catData]}</p>
+        <p className="text-sm font-semibold">{DATA_ASSET_GROUP_LABELS[catData]}</p>
         <div className="grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-muted-foreground">Total instruments</p>

@@ -410,7 +410,7 @@ interface RowRendererProps {
 
 function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRendererProps): React.ReactElement {
   if (row.type === "category") {
-    const cat = row.category;
+    const cat = row.assetGroup;
     return (
       <button
         type="button"
@@ -461,7 +461,7 @@ function RowRenderer({ row, user, instruments, onToggle, isExpanded }: RowRender
   if (row.type === "cell" && row.archetypeId && row.archetype && row.cellIndex !== undefined) {
     const cell = row.archetype.cells[row.cellIndex];
     if (!cell) return <div />;
-    const slotKey = `${row.archetypeId}@${row.category.toLowerCase()}-${cell.instrument_type}-${cell.venues[0] ?? "unknown"}`;
+    const slotKey = `${row.archetypeId}@${row.assetGroup.toLowerCase()}-${cell.instrument_type}-${cell.venues[0] ?? "unknown"}`;
     const access = resolveSlotAccess(user, slotKey);
     const concrete = instruments.slots[slotKey];
     return (

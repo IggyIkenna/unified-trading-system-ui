@@ -14,15 +14,11 @@ import {
 
 describe("strategy-catalog-data fixtures", () => {
   it("CATEGORY_COLORS covers the 5 categories", () => {
-    expect(Object.keys(CATEGORY_COLORS).sort()).toEqual(
-      ["CEFI", "DEFI", "PREDICTION", "SPORTS", "TRADFI"].sort(),
-    );
+    expect(Object.keys(CATEGORY_COLORS).sort()).toEqual(["CEFI", "DEFI", "PREDICTION", "SPORTS", "TRADFI"].sort());
   });
 
   it("RISK_COLORS covers the 4 risk levels", () => {
-    expect(Object.keys(RISK_COLORS).sort()).toEqual(
-      ["HIGH", "LOW", "MEDIUM", "VERY_HIGH"].sort(),
-    );
+    expect(Object.keys(RISK_COLORS).sort()).toEqual(["HIGH", "LOW", "MEDIUM", "VERY_HIGH"].sort());
   });
 
   it("STATUS_COLORS covers all readiness statuses", () => {
@@ -82,7 +78,7 @@ describe("strategy-catalog-data fixtures", () => {
     const summary = getCatalogSummary();
     expect(summary.total).toBe(STRATEGY_CATALOG.length);
     expect(summary.liveCount).toBeGreaterThanOrEqual(0);
-    const byCategoryTotal = Object.values(summary.byCategory).reduce((a, b) => a + b, 0);
-    expect(byCategoryTotal).toBe(summary.total);
+    const byAssetGroupTotal = Object.values(summary.byAssetGroup).reduce((a, b) => a + b, 0);
+    expect(byAssetGroupTotal).toBe(summary.total);
   });
 });

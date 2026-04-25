@@ -124,12 +124,12 @@ export default function CataloguePage() {
           </CardHeader>
           <CardContent className="space-y-1">
             {searchResults.data.results.map((r) => (
-              <div key={`${r.domain}:${r.category}:${r.key}`} className="flex items-center gap-2 py-1.5 text-sm">
+              <div key={`${r.domain}:${r.assetGroup}:${r.key}`} className="flex items-center gap-2 py-1.5 text-sm">
                 <Badge variant="outline" className="text-xs">
                   {r.domain_label}
                 </Badge>
                 <Badge variant="secondary" className="text-xs">
-                  {r.category_label}
+                  {r.assetGroup_label}
                 </Badge>
                 <span className="font-medium">{r.label}</span>
                 <span className="text-muted-foreground text-xs">{r.description}</span>

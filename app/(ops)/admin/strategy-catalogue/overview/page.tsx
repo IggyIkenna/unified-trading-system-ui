@@ -4,31 +4,15 @@ import * as React from "react";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/shared/page-header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle, Info } from "lucide-react";
-import {
-  STRATEGY_FAMILIES_V2,
-  type StrategyArchetype,
-  type StrategyFamily,
-} from "@/lib/architecture-v2/enums";
+import { STRATEGY_FAMILIES_V2, type StrategyArchetype, type StrategyFamily } from "@/lib/architecture-v2/enums";
 import { FAMILY_METADATA } from "@/lib/architecture-v2/families";
-import {
-  ARCHETYPE_COVERAGE,
-  type CoverageCell,
-} from "@/lib/architecture-v2/coverage";
+import { ARCHETYPE_COVERAGE, type CoverageCell } from "@/lib/architecture-v2/coverage";
 import { useCatalogueTruthiness } from "@/hooks/admin/use-catalogue-truthiness";
-import type {
-  ArchetypeRegistryRow,
-  CatalogueStatus,
-} from "@/lib/admin/truthiness";
+import type { ArchetypeRegistryRow, CatalogueStatus } from "@/lib/admin/truthiness";
 
 /**
  * Admin full-catalogue overview — renders every (family × archetype × cell)
@@ -45,8 +29,7 @@ const STATUS_STYLES: Record<CatalogueStatus, string> = {
   LIVE: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
   IN_DEVELOPMENT: "bg-amber-500/20 text-amber-300 border-amber-500/40",
   RETIRED: "bg-slate-500/20 text-slate-300 border-slate-500/40",
-  PLANNED_NOT_IMPLEMENTED:
-    "bg-rose-500/20 text-rose-300 border-rose-500/40",
+  PLANNED_NOT_IMPLEMENTED: "bg-rose-500/20 text-rose-300 border-rose-500/40",
 };
 
 const STATUS_LABEL: Record<CatalogueStatus, string> = {
@@ -56,13 +39,7 @@ const STATUS_LABEL: Record<CatalogueStatus, string> = {
   PLANNED_NOT_IMPLEMENTED: "Planned",
 };
 
-function StatusBadge({
-  status,
-  source,
-}: {
-  status: CatalogueStatus;
-  source: "live" | "mock";
-}) {
+function StatusBadge({ status, source }: { status: CatalogueStatus; source: "live" | "mock" }) {
   return (
     <Badge
       variant="outline"
@@ -88,9 +65,7 @@ function buildArchetypeCards(
   registryRows: readonly ArchetypeRegistryRow[],
 ): readonly ArchetypeCardData[] {
   const meta = FAMILY_METADATA[family];
-  const registryByArchetype = new Map(
-    registryRows.map((row) => [row.archetype, row]),
-  );
+  const registryByArchetype = new Map(registryRows.map((row) => [row.archetype, row]));
   return meta.archetypes.map((archetype) => {
     const reg = registryByArchetype.get(archetype);
     const coverage = ARCHETYPE_COVERAGE[archetype];
@@ -109,36 +84,26 @@ export default function AdminStrategyCatalogueOverviewPage() {
   const { snapshot, isLoading, error } = useCatalogueTruthiness();
 
   return (
-    <div
-      className="flex flex-col gap-6 p-6"
-      data-testid="admin-strategy-catalogue-overview"
-    >
+    <div className="flex flex-col gap-6 p-6" data-testid="admin-strategy-catalogue-overview">
       <PageHeader
         title="Strategy Catalogue — Admin Overview"
         description="Every family × archetype × cell with representative strategy IDs + representative venues. Admin bypass is active — persona filters do not apply."
       />
 
       {snapshot?.status === "MOCK" ? (
-        <Alert
-          className="border-amber-500/40 bg-amber-500/10"
-          data-testid="catalogue-mock-banner"
-        >
+        <Alert className="border-amber-500/40 bg-amber-500/10" data-testid="catalogue-mock-banner">
           <Info className="h-4 w-4 text-amber-300" />
           <AlertTitle>Mock mode</AlertTitle>
           <AlertDescription>
-            {snapshot.warnings.join(" ")}
-            {" "}Set <code>NEXT_PUBLIC_ADMIN_API_TOKEN</code> and point
-            <code> NEXT_PUBLIC_STRATEGY_SERVICE_URL</code> at a reachable
-            strategy-service instance to see live registry state.
+            {snapshot.warnings.join(" ")} Set <code>NEXT_PUBLIC_ADMIN_API_TOKEN</code> and point
+            <code> NEXT_PUBLIC_STRATEGY_SERVICE_URL</code> at a reachable strategy-service instance to see live registry
+            state.
           </AlertDescription>
         </Alert>
       ) : null}
 
       {snapshot?.status === "AUTH_ERROR" ? (
-        <Alert
-          className="border-rose-500/40 bg-rose-500/10"
-          data-testid="catalogue-auth-error-banner"
-        >
+        <Alert className="border-rose-500/40 bg-rose-500/10" data-testid="catalogue-auth-error-banner">
           <AlertTriangle className="h-4 w-4 text-rose-300" />
           <AlertTitle>Admin token rejected</AlertTitle>
           <AlertDescription>
@@ -149,55 +114,35 @@ export default function AdminStrategyCatalogueOverviewPage() {
       ) : null}
 
       {snapshot?.status === "UNREACHABLE" ? (
-        <Alert
-          className="border-amber-500/40 bg-amber-500/10"
-          data-testid="catalogue-unreachable-banner"
-        >
+        <Alert className="border-amber-500/40 bg-amber-500/10" data-testid="catalogue-unreachable-banner">
           <AlertTriangle className="h-4 w-4 text-amber-300" />
           <AlertTitle>Registry unreachable</AlertTitle>
           <AlertDescription>
-            {snapshot.warnings.join(" ")} Showing mock catalogue data until
-            the strategy-service endpoint recovers.
+            {snapshot.warnings.join(" ")} Showing mock catalogue data until the strategy-service endpoint recovers.
           </AlertDescription>
         </Alert>
       ) : null}
 
       {error ? (
-        <Alert
-          className="border-rose-500/40 bg-rose-500/10"
-          data-testid="catalogue-error-banner"
-        >
+        <Alert className="border-rose-500/40 bg-rose-500/10" data-testid="catalogue-error-banner">
           <AlertTriangle className="h-4 w-4 text-rose-300" />
           <AlertTitle>Registry fetch failed</AlertTitle>
           <AlertDescription>{error.message}</AlertDescription>
         </Alert>
       ) : null}
 
-      {isLoading ? (
-        <p className="text-sm text-muted-foreground">
-          Loading backend registry state…
-        </p>
-      ) : null}
+      {isLoading ? <p className="text-sm text-muted-foreground">Loading backend registry state…</p> : null}
 
       <div className="flex flex-col gap-8">
         {STRATEGY_FAMILIES_V2.map((family) => {
           const meta = FAMILY_METADATA[family];
-          const cards = buildArchetypeCards(
-            family,
-            snapshot?.archetypes ?? [],
-          );
+          const cards = buildArchetypeCards(family, snapshot?.archetypes ?? []);
           return (
-            <section
-              key={family}
-              data-testid={`admin-catalogue-family-${meta.slug}`}
-              className="flex flex-col gap-3"
-            >
+            <section key={family} data-testid={`admin-catalogue-family-${meta.slug}`} className="flex flex-col gap-3">
               <div className="flex items-baseline justify-between border-b border-border/50 pb-2">
                 <div>
                   <h2 className="text-lg font-semibold">{meta.label}</h2>
-                  <p className="text-xs text-muted-foreground max-w-3xl">
-                    {meta.shortDescription}
-                  </p>
+                  <p className="text-xs text-muted-foreground max-w-3xl">{meta.shortDescription}</p>
                 </div>
                 <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
                   {cards.length} archetype{cards.length === 1 ? "" : "s"}
@@ -214,35 +159,28 @@ export default function AdminStrategyCatalogueOverviewPage() {
                     <CardHeader>
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <CardTitle className="text-sm font-mono">
-                            {card.archetype}
-                          </CardTitle>
+                          <CardTitle className="text-sm font-mono">{card.archetype}</CardTitle>
                           <CardDescription>
                             {card.liveStrategyCount} live strateg
                             {card.liveStrategyCount === 1 ? "y" : "ies"}
                           </CardDescription>
                         </div>
-                        <StatusBadge
-                          status={card.status}
-                          source={card.source}
-                        />
+                        <StatusBadge status={card.status} source={card.source} />
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       {card.cells.length === 0 ? (
-                        <p className="text-xs text-muted-foreground">
-                          No non-blocked cells.
-                        </p>
+                        <p className="text-xs text-muted-foreground">No non-blocked cells.</p>
                       ) : (
                         <ul className="space-y-1.5">
                           {card.cells.map((cell) => (
                             <li
-                              key={`${cell.archetype}-${cell.category}-${cell.instrumentType}`}
+                              key={`${cell.archetype}-${cell.assetGroup}-${cell.instrumentType}`}
                               className="flex items-start gap-2 text-xs"
                               data-testid="admin-catalogue-cell"
                             >
                               <span className="font-mono text-muted-foreground w-28 shrink-0">
-                                {cell.category}·{cell.instrumentType}
+                                {cell.assetGroup}·{cell.instrumentType}
                               </span>
                               <span className="flex-1">
                                 {cell.representativeSlotLabels.slice(0, 2).join(", ") ||

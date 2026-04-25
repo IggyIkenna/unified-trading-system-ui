@@ -91,7 +91,7 @@ function deriveLockState(cell: CoverageCell | null, status: CoverageStatus | "NO
   if (!cell) return "NEEDS_BUILD";
   const publicTriple =
     cell.archetype === "STAT_ARB_PAIRS_FIXED" &&
-    cell.category === "CEFI" &&
+    cell.assetGroup === "CEFI" &&
     (cell.instrumentType === "spot" || cell.instrumentType === "perp");
   if (publicTriple && (status === "SUPPORTED" || status === "PARTIAL")) return "PUBLIC";
   return "INVESTMENT_MANAGEMENT_RESERVED";

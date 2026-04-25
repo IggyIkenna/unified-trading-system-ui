@@ -17,16 +17,16 @@ import type {
   FinderSelections,
 } from "@/components/shared/finder/types";
 import {
-  DATA_CATEGORY_LABELS,
+  DATA_ASSET_GROUP_LABELS,
   VENUES_BY_ASSET_GROUP,
   FOLDERS_BY_ASSET_GROUP,
-  type DataCategory,
+  type DataAssetGroup,
   type DataFolder,
   type InstrumentEntry,
 } from "@/lib/types/data-service";
 import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS } from "@/lib/mocks/fixtures/data-service";
 
-const CATEGORY_COLORS: Record<DataCategory, string> = {
+const CATEGORY_COLORS: Record<DataAssetGroup, string> = {
   cefi: "border-blue-400/30 text-blue-400",
   tradfi: "border-amber-400/30 text-amber-400",
   defi: "border-violet-400/30 text-violet-400",
@@ -60,25 +60,25 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     defaultWidthPx: 220,
     minWidthPx: 168,
     getItems: (): FinderItem[] =>
-      (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
+      (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]).map((cat) => {
         const venues = VENUES_BY_ASSET_GROUP[cat] ?? [];
         const total = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0), 0);
         return {
           id: cat,
-          label: DATA_CATEGORY_LABELS[cat],
+          label: DATA_ASSET_GROUP_LABELS[cat],
           count: total,
           data: cat,
         };
       }),
     renderLabel: (item) => {
-      const cat = item.data as DataCategory;
+      const cat = item.data as DataAssetGroup;
       return (
         <div className="flex items-start gap-1.5 flex-1 min-w-0">
           <Badge variant="outline" className={cn(finderText.meta, "px-1 py-0 shrink-0", CATEGORY_COLORS[cat])}>
             {cat.toUpperCase().slice(0, 4)}
           </Badge>
           <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
-            {DATA_CATEGORY_LABELS[cat]}
+            {DATA_ASSET_GROUP_LABELS[cat]}
           </span>
         </div>
       );
@@ -91,7 +91,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     width: "w-[180px]",
     visibleWhen: (sel) => sel["category"] !== null,
     getItems: (sel): FinderItem[] => {
-      const cat = sel["category"]?.data as DataCategory | undefined;
+      const cat = sel["category"]?.data as DataAssetGroup | undefined;
       if (!cat) return [];
       const venues = VENUES_BY_ASSET_GROUP[cat] ?? [];
       return venues.map((venue) => ({
@@ -102,7 +102,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
       }));
     },
     renderLabel: (item) => {
-      const { venue, cat } = item.data as { venue: string; cat: DataCategory };
+      const { venue, cat } = item.data as { venue: string; cat: DataAssetGroup };
       const counts = MOCK_INSTRUMENT_COUNTS[venue];
       const folders = FOLDERS_BY_ASSET_GROUP[cat] ?? [];
       return (
@@ -133,14 +133,14 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
     getItems: (sel): FinderItem[] => {
       const { cat } = (sel["venue"]?.data ?? {}) as {
         venue: string;
-        cat: DataCategory;
+        cat: DataAssetGroup;
       };
       if (!cat) return [];
       const folders = FOLDERS_BY_ASSET_GROUP[cat] ?? [];
       return folders.map((folder) => {
         const instruments = MOCK_INSTRUMENTS.filter(
           (i) =>
-            i.category === cat && i.folder === folder && i.venue === (sel["venue"]?.data as { venue: string })?.venue,
+            i.assetGroup === cat && i.folder === folder && i.venue === (sel["venue"]?.data as { venue: string })?.venue,
         );
         return {
           id: folder,
@@ -151,7 +151,7 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
       });
     },
     renderLabel: (item) => {
-      const { folder } = item.data as { folder: DataFolder; cat: DataCategory };
+      const { folder } = item.data as { folder: DataFolder; cat: DataAssetGroup };
       return (
         <div className="flex items-start gap-1.5 flex-1 min-w-0">
           <Badge
@@ -197,9 +197,9 @@ export const INSTRUMENTS_COLUMNS: FinderColumnDef[] = [
 ];
 
 export function getInstrumentsContextStats(selections: FinderSelections): FinderContextStats {
-  const cat = selections["category"]?.data as DataCategory | undefined;
-  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
-  const folderData = selections["folder"]?.data as { folder: DataFolder; cat: DataCategory } | undefined;
+  const cat = selections["category"]?.data as DataAssetGroup | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataAssetGroup } | undefined;
+  const folderData = selections["folder"]?.data as { folder: DataFolder; cat: DataAssetGroup } | undefined;
   const instItem = selections["instrument"];
 
   if (instItem) {
@@ -216,7 +216,7 @@ export function getInstrumentsContextStats(selections: FinderSelections): Finder
   if (folderData) {
     const { venue, cat: c } = venueData ?? {
       venue: "",
-      cat: "cefi" as DataCategory,
+      cat: "cefi" as DataAssetGroup,
     };
     const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folderData.folder);
     return {
@@ -241,7 +241,7 @@ export function getInstrumentsContextStats(selections: FinderSelections): Finder
     const total = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.total ?? 0), 0);
     const active = venues.reduce((s, v) => s + (MOCK_INSTRUMENT_COUNTS[v]?.active ?? 0), 0);
     return {
-      name: DATA_CATEGORY_LABELS[cat],
+      name: DATA_ASSET_GROUP_LABELS[cat],
       metrics: [
         { label: "instruments", value: total },
         { label: "active", value: active },

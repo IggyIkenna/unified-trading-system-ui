@@ -17,9 +17,9 @@ import { Progress } from "@/components/ui/progress";
 import { useScopedAssetGroups } from "@/hooks/use-scoped-asset-groups";
 import { MOCK_SHARD_AVAILABILITY } from "@/lib/mocks/fixtures/data-service";
 import {
-  DATA_CATEGORY_LABELS,
+  DATA_ASSET_GROUP_LABELS,
   VENUES_BY_ASSET_GROUP,
-  type DataCategory,
+  type DataAssetGroup,
   type JobHistoryEntry,
   type JobInfo,
   type PipelineStageSummary,
@@ -34,13 +34,13 @@ export interface PipelineStageConfig {
   stage: "raw" | "processing" | "features" | "training";
   label: string;
   actionLabel: string;
-  onDeploy?: (venue: string, category: DataCategory) => void;
+  onDeploy?: (venue: string, assetGroup: DataAssetGroup) => void;
   timeframeData?: TimeframeStatus[];
 }
 
 interface VenueRowProps {
   venue: string;
-  category: DataCategory;
+  assetGroup: DataAssetGroup;
   config: PipelineStageConfig;
   job?: JobInfo;
   historyEntry?: JobHistoryEntry;
@@ -52,16 +52,16 @@ function formatMs(ms: number): string {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
-function stableFallbackPct(venue: string, category: DataCategory): number {
+function stableFallbackPct(venue: string, assetGroup: DataAssetGroup): number {
   let h = 0;
   for (let i = 0; i < venue.length; i++) {
     h = (h + venue.charCodeAt(i) * (i + 1)) % 97;
   }
-  h = (h + category.length * 13) % 40;
+  h = (h + assetGroup.length * 13) % 40;
   return 60 + h;
 }
 
-function VenueRow({ venue, category, config, job, historyEntry }: VenueRowProps) {
+function VenueRow({ venue, assetGroup, config, job, historyEntry }: VenueRowProps) {
   const [expanded, setExpanded] = React.useState(false);
 
   const shardData = MOCK_SHARD_AVAILABILITY.find(
@@ -69,7 +69,7 @@ function VenueRow({ venue, category, config, job, historyEntry }: VenueRowProps)
   );
 
   const completionPct =
-    job?.progressPct ?? (historyEntry ? Math.round(historyEntry.successRate) : stableFallbackPct(venue, category));
+    job?.progressPct ?? (historyEntry ? Math.round(historyEntry.successRate) : stableFallbackPct(venue, assetGroup));
   const isActive = job?.status === "running";
   const isFailed = job?.status === "failed";
 
@@ -83,7 +83,7 @@ function VenueRow({ venue, category, config, job, historyEntry }: VenueRowProps)
           ? "bg-yellow-500"
           : "bg-red-500";
 
-  const tfData = config.timeframeData?.filter((t) => t.venue === venue && t.category === category) ?? [];
+  const tfData = config.timeframeData?.filter((t) => t.venue === venue && t.assetGroup === assetGroup) ?? [];
   const timeframes = ["1m", "5m", "15m", "1h", "4h", "1d"] as const;
 
   return (
@@ -132,7 +132,7 @@ function VenueRow({ venue, category, config, job, historyEntry }: VenueRowProps)
             className="h-7 text-xs flex-shrink-0"
             onClick={(e) => {
               e.stopPropagation();
-              config.onDeploy?.(venue, category);
+              config.onDeploy?.(venue, assetGroup);
             }}
           >
             <Play className="size-3 mr-1" />
@@ -201,7 +201,7 @@ function VenueRow({ venue, category, config, job, historyEntry }: VenueRowProps)
               variant="outline"
               size="sm"
               className="h-7 text-xs"
-              onClick={() => config.onDeploy?.(venue, category)}
+              onClick={() => config.onDeploy?.(venue, assetGroup)}
             >
               <Play className="size-3 mr-1" />
               Download Missing
@@ -225,36 +225,39 @@ interface PipelineStatusViewProps {
 }
 
 export function PipelineStatusView({ config, stage, jobs, jobHistory, className }: PipelineStatusViewProps) {
-  const [selectedCategory, setSelectedCategory] = React.useState<DataCategory | "all">("all");
+  const [selectedCategory, setSelectedCategory] = React.useState<DataAssetGroup | "all">("all");
   const { subscribed, locked } = useScopedAssetGroups();
 
   const activeJobs = jobs.filter((j) => j.status === "running" || j.status === "queued");
 
   // Only show venue rows for subscribed categories
-  const visibleCategories = subscribed.length > 0 ? subscribed : (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]);
+  const visibleCategories =
+    subscribed.length > 0 ? subscribed : (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]);
 
   return (
     <div className={cn("space-y-6", className)}>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-        {stage.byCategory
-          .filter((catData) => subscribed.length === 0 || subscribed.includes(catData.category))
+        {stage.byAssetGroup
+          .filter((catData) => subscribed.length === 0 || subscribed.includes(catData.assetGroup))
           .map((catData) => {
             const pct = catData.completionPct;
             return (
               <button
                 type="button"
-                key={catData.category}
-                onClick={() => setSelectedCategory(selectedCategory === catData.category ? "all" : catData.category)}
+                key={catData.assetGroup}
+                onClick={() =>
+                  setSelectedCategory(selectedCategory === catData.assetGroup ? "all" : catData.assetGroup)
+                }
                 className={cn(
                   "text-left p-3 rounded-lg border transition-colors",
-                  selectedCategory === catData.category
+                  selectedCategory === catData.assetGroup
                     ? "border-primary bg-primary/5"
                     : "border-border hover:bg-accent/30",
                 )}
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <Badge variant="outline" className={cn("text-xs", CATEGORY_COLORS[catData.category])}>
-                    {DATA_CATEGORY_LABELS[catData.category]}
+                  <Badge variant="outline" className={cn("text-xs", CATEGORY_COLORS[catData.assetGroup])}>
+                    {DATA_ASSET_GROUP_LABELS[catData.assetGroup]}
                   </Badge>
                   <span
                     className={cn(
@@ -277,7 +280,7 @@ export function PipelineStatusView({ config, stage, jobs, jobHistory, className 
           <div key={cat} className="p-3 rounded-lg border border-border/40 bg-muted/20 opacity-60 relative">
             <div className="flex items-center justify-between mb-1.5">
               <Badge variant="outline" className={cn("text-xs", CATEGORY_COLORS[cat])}>
-                {DATA_CATEGORY_LABELS[cat]}
+                {DATA_ASSET_GROUP_LABELS[cat]}
               </Badge>
               <Lock className="size-3 text-muted-foreground" />
             </div>
@@ -305,7 +308,7 @@ export function PipelineStatusView({ config, stage, jobs, jobHistory, className 
                         job.status === "running" ? "bg-emerald-500 animate-pulse" : "bg-yellow-500",
                       )}
                     />
-                    <span className="capitalize">{DATA_CATEGORY_LABELS[job.category]}</span>
+                    <span className="capitalize">{DATA_ASSET_GROUP_LABELS[job.assetGroup]}</span>
                     <span className="text-muted-foreground">·</span>
                     <span className="capitalize">{job.venue.replace(/_/g, " ")}</span>
                     <span className="text-muted-foreground">
@@ -333,7 +336,7 @@ export function PipelineStatusView({ config, stage, jobs, jobHistory, className 
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm">
-              {selectedCategory === "all" ? "All Venues" : DATA_CATEGORY_LABELS[selectedCategory]}
+              {selectedCategory === "all" ? "All Venues" : DATA_ASSET_GROUP_LABELS[selectedCategory]}
             </CardTitle>
             <Button type="button" variant="ghost" size="sm" className="h-7 text-xs">
               <RefreshCw className="size-3.5 mr-1" />
@@ -347,13 +350,13 @@ export function PipelineStatusView({ config, stage, jobs, jobHistory, className 
             .map((cat) => {
               const venues = VENUES_BY_ASSET_GROUP[cat];
               return venues.map((venue) => {
-                const job = jobs.find((j) => j.venue === venue && j.category === cat);
-                const history = jobHistory.find((h) => h.venue === venue && h.category === cat);
+                const job = jobs.find((j) => j.venue === venue && j.assetGroup === cat);
+                const history = jobHistory.find((h) => h.venue === venue && h.assetGroup === cat);
                 return (
                   <VenueRow
                     key={`${cat}:${venue}`}
                     venue={venue}
-                    category={cat}
+                    assetGroup={cat}
                     config={config}
                     job={job}
                     historyEntry={history}

@@ -239,6 +239,8 @@ export interface DataSubscription {
   label: string;
   shardFilters: {
     assetGroups: DataAssetGroup[];
+    /** @deprecated — mirror of `assetGroups` for older callsites; keep in sync or omit. */
+    categories?: DataAssetGroup[];
     venues: string[];
     folders: DataFolder[];
     dataTypes: DataType[];

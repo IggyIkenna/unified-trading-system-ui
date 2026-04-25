@@ -17,10 +17,10 @@ import type {
   FinderSelections,
 } from "@/components/shared/finder/types";
 import {
-  DATA_CATEGORY_LABELS,
+  DATA_ASSET_GROUP_LABELS,
   VENUES_BY_ASSET_GROUP,
   FOLDERS_BY_ASSET_GROUP,
-  type DataCategory,
+  type DataAssetGroup,
   type DataFolder,
   type DataType,
   type InstrumentEntry,
@@ -29,7 +29,7 @@ import { MOCK_INSTRUMENTS, MOCK_INSTRUMENT_COUNTS, MOCK_PIPELINE_STAGES } from "
 import { formatNumber, formatPercent } from "@/lib/utils/formatters";
 
 // Data types available per folder (derived from instrument data types)
-function getDataTypesForFolderVenue(venue: string, folder: DataFolder, cat: DataCategory): DataType[] {
+function getDataTypesForFolderVenue(venue: string, folder: DataFolder, cat: DataAssetGroup): DataType[] {
   const instruments = MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder);
   if (instruments.length === 0) {
     // Fallback based on folder type
@@ -85,7 +85,7 @@ function getDataTypeCompletion(venue: string, folder: string, dataType: string, 
   return Math.max(0, Math.min(100, base + (seed % 15) - 7));
 }
 
-const CATEGORY_BADGE: Record<DataCategory, string> = {
+const CATEGORY_BADGE: Record<DataAssetGroup, string> = {
   cefi: "border-blue-400/30 text-blue-400",
   tradfi: "border-amber-400/30 text-amber-400",
   defi: "border-violet-400/30 text-violet-400",
@@ -103,11 +103,11 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
     minWidthPx: 168,
     getItems: (): FinderItem[] => {
       const rawStage = MOCK_PIPELINE_STAGES.find((s) => s.stage === "raw");
-      return (Object.keys(DATA_CATEGORY_LABELS) as DataCategory[]).map((cat) => {
-        const stageData = rawStage?.byCategory?.find((b) => b.category === cat);
+      return (Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[]).map((cat) => {
+        const stageData = rawStage?.byAssetGroup?.find((b) => b.assetGroup === cat);
         return {
           id: cat,
-          label: DATA_CATEGORY_LABELS[cat],
+          label: DATA_ASSET_GROUP_LABELS[cat],
           count: stageData?.completedShards ?? 0,
           data: { cat, completionPct: stageData?.completionPct ?? 0 },
         };
@@ -115,7 +115,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
     },
     renderLabel: (item) => {
       const { cat, completionPct } = item.data as {
-        cat: DataCategory;
+        cat: DataAssetGroup;
         completionPct: number;
       };
       return (
@@ -125,7 +125,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
               {cat.toUpperCase().slice(0, 4)}
             </Badge>
             <span className={cn("flex-1 min-w-0 font-medium break-words leading-snug text-left", finderText.body)}>
-              {DATA_CATEGORY_LABELS[cat]}
+              {DATA_ASSET_GROUP_LABELS[cat]}
             </span>
           </div>
           <div className="flex items-center gap-1 ml-0.5">
@@ -155,7 +155,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
     visibleWhen: (sel) => sel["category"] !== null,
     getItems: (sel): FinderItem[] => {
       const { cat } = (sel["category"]?.data ?? {}) as {
-        cat: DataCategory;
+        cat: DataAssetGroup;
         completionPct: number;
       };
       if (!cat) return [];
@@ -179,7 +179,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
     getItems: (sel): FinderItem[] => {
       const { venue, cat } = (sel["venue"]?.data ?? {}) as {
         venue: string;
-        cat: DataCategory;
+        cat: DataAssetGroup;
       };
       if (!venue || !cat) return [];
       const folders = FOLDERS_BY_ASSET_GROUP[cat] ?? [];
@@ -219,7 +219,7 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
       const { venue, folder } = (sel["folder"]?.data ?? {}) as {
         folder: DataFolder;
         venue: string;
-        cat: DataCategory;
+        cat: DataAssetGroup;
       };
       if (!venue || !folder) return [];
       return MOCK_INSTRUMENTS.filter((i) => i.venue === venue && i.folder === folder).map((inst) => ({
@@ -250,7 +250,9 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
       const inst = sel["instrument"]?.data as InstrumentEntry | undefined;
       if (!inst?.venue || !inst.folder) return [];
       const dataTypes =
-        inst.dataTypes.length > 0 ? inst.dataTypes : getDataTypesForFolderVenue(inst.venue, inst.folder, inst.category);
+        inst.dataTypes.length > 0
+          ? inst.dataTypes
+          : getDataTypesForFolderVenue(inst.venue, inst.folder, inst.assetGroup);
       return dataTypes.map((dt) => {
         const pct = getDataTypeCompletion(inst.venue, inst.folder, dt, inst.instrumentKey);
         return {
@@ -290,9 +292,11 @@ export const RAW_DATA_COLUMNS: FinderColumnDef[] = [
 ];
 
 export function getRawDataContextStats(selections: FinderSelections): FinderContextStats {
-  const catData = selections["category"]?.data as { cat: DataCategory; completionPct: number } | undefined;
-  const venueData = selections["venue"]?.data as { venue: string; cat: DataCategory } | undefined;
-  const folderData = selections["folder"]?.data as { folder: DataFolder; venue: string; cat: DataCategory } | undefined;
+  const catData = selections["category"]?.data as { cat: DataAssetGroup; completionPct: number } | undefined;
+  const venueData = selections["venue"]?.data as { venue: string; cat: DataAssetGroup } | undefined;
+  const folderData = selections["folder"]?.data as
+    | { folder: DataFolder; venue: string; cat: DataAssetGroup }
+    | undefined;
   const instSelected = selections["instrument"]?.data as InstrumentEntry | undefined;
   const dtData = selections["datatype"]?.data as
     | {
@@ -320,7 +324,7 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
     const dts =
       instSelected.dataTypes.length > 0
         ? instSelected.dataTypes
-        : getDataTypesForFolderVenue(instSelected.venue, instSelected.folder, instSelected.category);
+        : getDataTypesForFolderVenue(instSelected.venue, instSelected.folder, instSelected.assetGroup);
     const avgPct = Math.round(
       dts.reduce(
         (s, dt) => s + getDataTypeCompletion(instSelected.venue, instSelected.folder, dt, instSelected.instrumentKey),
@@ -376,7 +380,7 @@ export function getRawDataContextStats(selections: FinderSelections): FinderCont
 
   if (catData) {
     return {
-      name: DATA_CATEGORY_LABELS[catData.cat],
+      name: DATA_ASSET_GROUP_LABELS[catData.cat],
       metrics: [
         {
           label: "completion",

@@ -2,10 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import * as api from "@/hooks/deployment/_api-stub";
-import type {
-  CategoryVenuesResponse,
-  StartDatesResponse,
-} from "@/lib/types/deployment";
+import type { CategoryVenuesResponse, StartDatesResponse } from "@/lib/types/deployment";
 
 export function useVenuesByCategory(category: string | null) {
   const [venues, setVenues] = useState<CategoryVenuesResponse | null>(null);
@@ -43,9 +40,7 @@ export function useVenuesByCategory(category: string | null) {
  */
 export function useVenueCountByCategories(categories: string[]) {
   const [totalVenueCount, setTotalVenueCount] = useState(0);
-  const [venuesByCategory, setVenuesByCategory] = useState<
-    Record<string, string[]>
-  >({});
+  const [venuesByCategory, setVenuesByCategory] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(false);
 
   // Stable key to avoid re-fetching when array reference changes but content is same
@@ -64,20 +59,18 @@ export function useVenueCountByCategories(categories: string[]) {
     async function fetchAll() {
       setLoading(true);
       try {
-        const results = await Promise.all(
-          cats.map((cat) => api.getVenuesByCategory(cat).catch(() => null)),
-        );
+        const results = await Promise.all(cats.map((cat) => api.getVenuesByCategory(cat).catch(() => null)));
         if (cancelled) return;
 
         let total = 0;
-        const byCategory: Record<string, string[]> = {};
+        const byAssetGroup: Record<string, string[]> = {};
         for (let i = 0; i < cats.length; i++) {
           const venueList = results[i]?.venues ?? [];
-          byCategory[cats[i]] = venueList;
+          byAssetGroup[cats[i]] = venueList;
           total += venueList.length;
         }
         setTotalVenueCount(total);
-        setVenuesByCategory(byCategory);
+        setVenuesByCategory(byAssetGroup);
       } catch {
         // Fallback: don't crash estimation
       } finally {
@@ -113,9 +106,7 @@ export function useStartDates(serviceName: string | null) {
         setStartDates(response);
         setError(null);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch start dates",
-        );
+        setError(err instanceof Error ? err.message : "Failed to fetch start dates");
       } finally {
         setLoading(false);
       }
@@ -144,11 +135,7 @@ export function useStartDates(serviceName: string | null) {
 
   // Validate a date against venue constraints
   const validateDate = useCallback(
-    (
-      date: string,
-      category: string,
-      venue?: string,
-    ): { valid: boolean; message?: string; earliestDate?: string } => {
+    (date: string, category: string, venue?: string): { valid: boolean; message?: string; earliestDate?: string } => {
       const earliestDate = getVenueStartDate(category, venue);
 
       if (!earliestDate) {

@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  BLOCK_LIST,
-  allCoverageCells,
-  blockListEntryById,
-  blockedCells,
-} from "@/lib/architecture-v2";
+import { BLOCK_LIST, allCoverageCells, blockListEntryById, blockedCells } from "@/lib/architecture-v2";
 
 describe("block-list metadata", () => {
   it("has exactly 10 entries BL-1 through BL-10", () => {
@@ -29,7 +24,7 @@ describe("block-list metadata", () => {
       for (const ref of cell.blockListRefs) {
         expect(
           knownIds.has(ref),
-          `cell ${cell.archetype} × ${cell.category} × ${cell.instrumentType} references unknown ${ref}`,
+          `cell ${cell.archetype} × ${cell.assetGroup} × ${cell.instrumentType} references unknown ${ref}`,
         ).toBe(true);
       }
     }
@@ -43,10 +38,7 @@ describe("block-list metadata", () => {
       }
     }
     for (const entry of BLOCK_LIST) {
-      expect(
-        referencedIds.has(entry.id),
-        `${entry.id} is defined but no coverage cell references it`,
-      ).toBe(true);
+      expect(referencedIds.has(entry.id), `${entry.id} is defined but no coverage cell references it`).toBe(true);
     }
   });
 });

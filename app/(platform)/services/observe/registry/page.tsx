@@ -17,14 +17,35 @@ const uacEnums = referenceData.uac_enums as Record<string, string[]>;
 const DEFI_HIGHLIGHT_ENUMS = new Set(["InstrumentType", "InstructionType", "OperationType"]);
 
 const CHAIN_ID_LABELS: Record<string, string> = {
-  "1": "Ethereum", "10": "Optimism", "56": "BSC", "100": "Gnosis", "130": "Unichain",
-  "137": "Polygon", "300": "zkSync Sepolia", "324": "zkSync", "480": "World Chain",
-  "1101": "Polygon zkEVM", "2741": "Abstract", "8453": "Base", "34443": "Mode",
-  "42161": "Arbitrum", "43113": "Avax Fuji", "43114": "Avalanche", "57073": "Ink",
-  "59141": "Linea Sepolia", "59144": "Linea", "80002": "Polygon Amoy", "81457": "Blast",
-  "84532": "Base Sepolia", "168587773": "Blast Sepolia", "421614": "Arb Sepolia",
-  "534351": "Scroll Sepolia", "534352": "Scroll", "7777777": "Zora",
-  "11155111": "Sepolia", "11155420": "OP Sepolia",
+  "1": "Ethereum",
+  "10": "Optimism",
+  "56": "BSC",
+  "100": "Gnosis",
+  "130": "Unichain",
+  "137": "Polygon",
+  "300": "zkSync Sepolia",
+  "324": "zkSync",
+  "480": "World Chain",
+  "1101": "Polygon zkEVM",
+  "2741": "Abstract",
+  "8453": "Base",
+  "34443": "Mode",
+  "42161": "Arbitrum",
+  "43113": "Avax Fuji",
+  "43114": "Avalanche",
+  "57073": "Ink",
+  "59141": "Linea Sepolia",
+  "59144": "Linea",
+  "80002": "Polygon Amoy",
+  "81457": "Blast",
+  "84532": "Base Sepolia",
+  "168587773": "Blast Sepolia",
+  "421614": "Arb Sepolia",
+  "534351": "Scroll Sepolia",
+  "534352": "Scroll",
+  "7777777": "Zora",
+  "11155111": "Sepolia",
+  "11155420": "OP Sepolia",
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -38,10 +59,16 @@ function useSortable<T>(data: T[], key: keyof T, defaultDir: SortDir = "asc") {
   const [sortKey, setSortKey] = React.useState<keyof T>(key);
   const [sortDir, setSortDir] = React.useState<SortDir>(defaultDir);
 
-  const toggle = React.useCallback((k: keyof T) => {
-    if (k === sortKey) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
-    else { setSortKey(k); setSortDir("asc"); }
-  }, [sortKey]);
+  const toggle = React.useCallback(
+    (k: keyof T) => {
+      if (k === sortKey) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+      else {
+        setSortKey(k);
+        setSortDir("asc");
+      }
+    },
+    [sortKey],
+  );
 
   const sorted = React.useMemo(() => {
     return [...data].sort((a, b) => {
@@ -54,13 +81,24 @@ function useSortable<T>(data: T[], key: keyof T, defaultDir: SortDir = "asc") {
   return { sorted, sortKey, sortDir, toggle };
 }
 
-function SortHeader({ label, field, sortKey, sortDir, onSort }: {
-  label: string; field: string; sortKey: string; sortDir: SortDir; onSort: (f: string) => void;
+function SortHeader({
+  label,
+  field,
+  sortKey,
+  sortDir,
+  onSort,
+}: {
+  label: string;
+  field: string;
+  sortKey: string;
+  sortDir: SortDir;
+  onSort: (f: string) => void;
 }) {
   const arrow = field === sortKey ? (sortDir === "asc" ? " \u2191" : " \u2193") : "";
   return (
     <TableHead className="cursor-pointer select-none whitespace-nowrap" onClick={() => onSort(field)}>
-      {label}{arrow}
+      {label}
+      {arrow}
     </TableHead>
   );
 }
@@ -72,9 +110,14 @@ function DefiProtocolsTab() {
   const categoryMap = registries.venue_category_map as Record<string, string>;
 
   const rows = React.useMemo(() => {
-    return Object.entries(defiMap).map(([venue, info]) => ({
-      venue, protocol: info.protocol, chain: info.chain ?? "-", category: categoryMap[venue] ?? "defi",
-    })).filter((r) => !chainFilter || r.chain.toLowerCase().includes(chainFilter.toLowerCase()));
+    return Object.entries(defiMap)
+      .map(([venue, info]) => ({
+        venue,
+        protocol: info.protocol,
+        chain: info.chain ?? "-",
+        category: categoryMap[venue] ?? "defi",
+      }))
+      .filter((r) => !chainFilter || r.chain.toLowerCase().includes(chainFilter.toLowerCase()));
   }, [chainFilter, defiMap, categoryMap]);
 
   const { sorted, sortKey, sortDir, toggle } = useSortable(rows, "venue");
@@ -82,16 +125,32 @@ function DefiProtocolsTab() {
 
   return (
     <div className="space-y-3">
-      <Input placeholder="Filter by chain..." value={chainFilter} onChange={(e) => setChainFilter(e.target.value)}
-        className="max-w-xs h-8 text-xs" />
+      <Input
+        placeholder="Filter by chain..."
+        value={chainFilter}
+        onChange={(e) => setChainFilter(e.target.value)}
+        className="max-w-xs h-8 text-xs"
+      />
       <div className="border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
               <SortHeader label="Venue ID" field="venue" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
-              <SortHeader label="Protocol" field="protocol" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
+              <SortHeader
+                label="Protocol"
+                field="protocol"
+                sortKey={String(sortKey)}
+                sortDir={sortDir}
+                onSort={onSort}
+              />
               <SortHeader label="Chain" field="chain" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
-              <SortHeader label="Category" field="category" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
+              <SortHeader
+                label="Category"
+                field="category"
+                sortKey={String(sortKey)}
+                sortDir={sortDir}
+                onSort={onSort}
+              />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -99,8 +158,14 @@ function DefiProtocolsTab() {
               <TableRow key={r.venue}>
                 <TableCell className="font-mono text-xs">{r.venue}</TableCell>
                 <TableCell className="text-xs">{r.protocol}</TableCell>
-                <TableCell className="text-xs"><Badge variant="outline" className="text-[10px]">{r.chain}</Badge></TableCell>
-                <TableCell><Badge className={`text-[10px] ${CATEGORY_COLORS[r.category] ?? ""}`}>{r.category}</Badge></TableCell>
+                <TableCell className="text-xs">
+                  <Badge variant="outline" className="text-[10px]">
+                    {r.chain}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge className={`text-[10px] ${CATEGORY_COLORS[r.assetGroup] ?? ""}`}>{r.assetGroup}</Badge>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -115,7 +180,8 @@ function DefiProtocolsTab() {
 function ChainsTab() {
   const chains = registries.chain_rpc_templates as Record<string, string>;
   const rows = Object.entries(chains).map(([id, url]) => ({
-    id, label: CHAIN_ID_LABELS[id] ?? `Chain ${id}`,
+    id,
+    label: CHAIN_ID_LABELS[id] ?? `Chain ${id}`,
     url: url.replace(/\{api_key\}/g, "***"),
   }));
   const { sorted, sortKey, sortDir, toggle } = useSortable(rows, "id");
@@ -155,9 +221,13 @@ function VenuesTab() {
   const instrumentMap = registries.instrument_types_by_venue as Record<string, string[]>;
 
   const rows = React.useMemo(() => {
-    return Object.entries(categoryMap).map(([venue, cat]) => ({
-      venue, category: cat, instruments: (instrumentMap[venue] ?? []).join(", ") || "-",
-    })).filter((r) => !catFilter || r.category === catFilter);
+    return Object.entries(categoryMap)
+      .map(([venue, cat]) => ({
+        venue,
+        category: cat,
+        instruments: (instrumentMap[venue] ?? []).join(", ") || "-",
+      }))
+      .filter((r) => !catFilter || r.assetGroup === catFilter);
   }, [catFilter, categoryMap, instrumentMap]);
 
   const { sorted, sortKey, sortDir, toggle } = useSortable(rows, "venue");
@@ -167,12 +237,22 @@ function VenuesTab() {
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
-        <Badge variant={catFilter === "" ? "default" : "outline"} className="cursor-pointer text-xs"
-          onClick={() => setCatFilter("")}>All</Badge>
+        <Badge
+          variant={catFilter === "" ? "default" : "outline"}
+          className="cursor-pointer text-xs"
+          onClick={() => setCatFilter("")}
+        >
+          All
+        </Badge>
         {categories.map((c) => (
-          <Badge key={c} variant={catFilter === c ? "default" : "outline"}
-            className={`cursor-pointer text-xs ${catFilter !== c ? CATEGORY_COLORS[c] ?? "" : ""}`}
-            onClick={() => setCatFilter(catFilter === c ? "" : c)}>{c}</Badge>
+          <Badge
+            key={c}
+            variant={catFilter === c ? "default" : "outline"}
+            className={`cursor-pointer text-xs ${catFilter !== c ? (CATEGORY_COLORS[c] ?? "") : ""}`}
+            onClick={() => setCatFilter(catFilter === c ? "" : c)}
+          >
+            {c}
+          </Badge>
         ))}
       </div>
       <div className="border rounded-md">
@@ -180,7 +260,13 @@ function VenuesTab() {
           <TableHeader>
             <TableRow>
               <SortHeader label="Venue ID" field="venue" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
-              <SortHeader label="Category" field="category" sortKey={String(sortKey)} sortDir={sortDir} onSort={onSort} />
+              <SortHeader
+                label="Category"
+                field="category"
+                sortKey={String(sortKey)}
+                sortDir={sortDir}
+                onSort={onSort}
+              />
               <TableHead>Instrument Types</TableHead>
             </TableRow>
           </TableHeader>
@@ -188,7 +274,9 @@ function VenuesTab() {
             {sorted.map((r) => (
               <TableRow key={r.venue}>
                 <TableCell className="font-mono text-xs">{r.venue}</TableCell>
-                <TableCell><Badge className={`text-[10px] ${CATEGORY_COLORS[r.category] ?? ""}`}>{r.category}</Badge></TableCell>
+                <TableCell>
+                  <Badge className={`text-[10px] ${CATEGORY_COLORS[r.assetGroup] ?? ""}`}>{r.assetGroup}</Badge>
+                </TableCell>
                 <TableCell className="text-xs text-muted-foreground">{r.instruments}</TableCell>
               </TableRow>
             ))}
@@ -211,8 +299,10 @@ function EnumsTab() {
         const highlighted = DEFI_HIGHLIGHT_ENUMS.has(name);
         return (
           <Collapsible key={name}>
-            <CollapsibleTrigger className={`flex items-center gap-2 w-full px-3 py-2 text-left text-sm rounded-md
-              hover:bg-muted/50 ${highlighted ? "font-semibold text-purple-400" : ""}`}>
+            <CollapsibleTrigger
+              className={`flex items-center gap-2 w-full px-3 py-2 text-left text-sm rounded-md
+              hover:bg-muted/50 ${highlighted ? "font-semibold text-purple-400" : ""}`}
+            >
               <ChevronRight className="h-3 w-3 transition-transform [[data-state=open]>&]:rotate-90" />
               {name}
               <span className="text-xs text-muted-foreground ml-auto">{values.length}</span>
@@ -220,7 +310,9 @@ function EnumsTab() {
             <CollapsibleContent className="px-3 pb-3 pt-1">
               <div className="flex flex-wrap gap-1.5">
                 {values.map((v) => (
-                  <Badge key={v} variant="outline" className="text-[10px] font-mono">{v}</Badge>
+                  <Badge key={v} variant="outline" className="text-[10px] font-mono">
+                    {v}
+                  </Badge>
                 ))}
               </div>
             </CollapsibleContent>
@@ -250,10 +342,18 @@ export default function RegistryBrowserPage() {
           <TabsTrigger value="enums">Enums</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="defi" className="mt-4"><DefiProtocolsTab /></TabsContent>
-        <TabsContent value="chains" className="mt-4"><ChainsTab /></TabsContent>
-        <TabsContent value="venues" className="mt-4"><VenuesTab /></TabsContent>
-        <TabsContent value="enums" className="mt-4"><EnumsTab /></TabsContent>
+        <TabsContent value="defi" className="mt-4">
+          <DefiProtocolsTab />
+        </TabsContent>
+        <TabsContent value="chains" className="mt-4">
+          <ChainsTab />
+        </TabsContent>
+        <TabsContent value="venues" className="mt-4">
+          <VenuesTab />
+        </TabsContent>
+        <TabsContent value="enums" className="mt-4">
+          <EnumsTab />
+        </TabsContent>
       </Tabs>
     </div>
   );

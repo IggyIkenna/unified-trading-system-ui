@@ -14,16 +14,16 @@
  */
 
 import { useAuth } from "@/hooks/use-auth";
-import { CATEGORY_ENTITLEMENT_MAP, type DataCategory } from "@/lib/types/data-service";
+import { ASSET_GROUP_ENTITLEMENT_MAP, type DataAssetGroup } from "@/lib/types/data-service";
 import { useMemo } from "react";
 
-const ALL_DATA_ASSET_GROUPS = Object.keys(CATEGORY_ENTITLEMENT_MAP) as DataCategory[];
+const ALL_DATA_ASSET_GROUPS = Object.keys(ASSET_GROUP_ENTITLEMENT_MAP) as DataAssetGroup[];
 
 export interface ScopedAssetGroups {
   /** Asset groups the current user can access — shown first */
-  subscribed: DataCategory[];
+  subscribed: DataAssetGroup[];
   /** Asset groups the user cannot access — shown below with lock */
-  locked: DataCategory[];
+  locked: DataAssetGroup[];
   /** Whether the current user has wildcard access (internal/admin) */
   isUnrestricted: boolean;
 }
@@ -49,11 +49,11 @@ export function useScopedAssetGroups(): ScopedAssetGroups {
 
     const entitlementSet = new Set(user.entitlements as readonly string[]);
 
-    const subscribed: DataCategory[] = [];
-    const locked: DataCategory[] = [];
+    const subscribed: DataAssetGroup[] = [];
+    const locked: DataAssetGroup[] = [];
 
     for (const assetGroup of ALL_DATA_ASSET_GROUPS) {
-      const required = CATEGORY_ENTITLEMENT_MAP[assetGroup];
+      const required = ASSET_GROUP_ENTITLEMENT_MAP[assetGroup];
 
       if (required === "internal-only") {
         continue;

@@ -2,14 +2,7 @@
 
 import Link from "next/link";
 import { notFound, useParams } from "next/navigation";
-import {
-  ArrowUpRight,
-  Code2,
-  GitBranch,
-  ListChecks,
-  Settings2,
-  Users,
-} from "lucide-react";
+import { ArrowUpRight, Code2, GitBranch, ListChecks, Settings2, Users } from "lucide-react";
 
 import {
   CategoryChip,
@@ -22,17 +15,8 @@ import {
 } from "@/components/architecture-v2";
 import { PageHeader } from "@/components/shared/page-header";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import type {
-  CoverageCell,
-  StrategyArchetype,
-} from "@/lib/architecture-v2";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import type { CoverageCell, StrategyArchetype } from "@/lib/architecture-v2";
 import {
   ARCHETYPE_COVERAGE,
   ARCHETYPE_METADATA,
@@ -72,8 +56,7 @@ interface LiveVsBacktestDelta {
 }
 
 const MOCK_BUILD_LEDGER: Readonly<Record<string, readonly BuildEntry[]>> = {};
-const MOCK_PROMOTION_LEDGER: Readonly<Record<string, readonly PromotionLedgerRow[]>> =
-  {};
+const MOCK_PROMOTION_LEDGER: Readonly<Record<string, readonly PromotionLedgerRow[]>> = {};
 const MOCK_LIVE_DELTA: Readonly<Record<string, LiveVsBacktestDelta>> = {};
 
 function mockBuildsFor(archetype: string): readonly BuildEntry[] {
@@ -93,9 +76,7 @@ function mockBuildsFor(archetype: string): readonly BuildEntry[] {
   );
 }
 
-function mockPromotionLedger(
-  archetype: string,
-): readonly PromotionLedgerRow[] {
+function mockPromotionLedger(archetype: string): readonly PromotionLedgerRow[] {
   return (
     MOCK_PROMOTION_LEDGER[archetype] ?? [
       {
@@ -125,16 +106,9 @@ function mockLiveDelta(slot: string): LiveVsBacktestDelta {
   );
 }
 
-function findCell(
-  archetype: StrategyArchetype,
-  slotLabel: string,
-): CoverageCell | null {
+function findCell(archetype: StrategyArchetype, slotLabel: string): CoverageCell | null {
   const coverage = coverageForArchetype(archetype);
-  return (
-    coverage.cells.find((cell) =>
-      cell.representativeSlotLabels.includes(slotLabel),
-    ) ?? null
-  );
+  return coverage.cells.find((cell) => cell.representativeSlotLabels.includes(slotLabel)) ?? null;
 }
 
 export default function StrategyDetailPage() {
@@ -156,10 +130,7 @@ export default function StrategyDetailPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="platform-page-width space-y-6 p-6">
-        <PageHeader
-          title={meta.label}
-          description={meta.shortDescription}
-        >
+        <PageHeader title={meta.label} description={meta.shortDescription}>
           <Badge variant="outline" className="font-mono text-xs">
             {family?.label ?? getFamilyForArchetype(archetype)}
           </Badge>
@@ -176,26 +147,19 @@ export default function StrategyDetailPage() {
           <Card data-testid="detail-identity">
             <CardHeader className="pb-2">
               <CardDescription>Slot label</CardDescription>
-              <CardTitle className="break-all font-mono text-sm">
-                {slotLabel}
-              </CardTitle>
+              <CardTitle className="break-all font-mono text-sm">{slotLabel}</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              Archetype:{" "}
-              <span className="font-mono text-foreground">{archetype}</span>
+              Archetype: <span className="font-mono text-foreground">{archetype}</span>
               {cell ? (
                 <div className="mt-2 flex flex-wrap gap-1">
-                  <CategoryChip category={cell.category} />
+                  <CategoryChip category={cell.assetGroup} />
                   <InstrumentTypeChip instrumentType={cell.instrumentType} />
                   <StatusBadge status={cell.status} />
-                  {cell.rollMode !== "n/a" ? (
-                    <RollModeBadge rollMode={cell.rollMode} />
-                  ) : null}
+                  {cell.rollMode !== "n/a" ? <RollModeBadge rollMode={cell.rollMode} /> : null}
                 </div>
               ) : (
-                <p className="mt-2 italic">
-                  Slot not found in coverage matrix — showing default availability.
-                </p>
+                <p className="mt-2 italic">Slot not found in coverage matrix — showing default availability.</p>
               )}
             </CardContent>
           </Card>
@@ -214,9 +178,7 @@ export default function StrategyDetailPage() {
                 <div>No explicit admin override recorded.</div>
               )}
               {availability.reason ? <div>Reason: {availability.reason}</div> : null}
-              {availability.exclusiveClientId ? (
-                <div>Exclusive client: {availability.exclusiveClientId}</div>
-              ) : null}
+              {availability.exclusiveClientId ? <div>Exclusive client: {availability.exclusiveClientId}</div> : null}
               {availability.reservingBusinessUnitId ? (
                 <div>Reserving BU: {availability.reservingBusinessUnitId}</div>
               ) : null}
@@ -233,19 +195,14 @@ export default function StrategyDetailPage() {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Live vs. backtest</CardDescription>
-              <CardTitle className="text-base">
-                {Math.abs(delta.pnlShadowBps - delta.pnlProdBps)} bps delta
-              </CardTitle>
+              <CardTitle className="text-base">{Math.abs(delta.pnlShadowBps - delta.pnlProdBps)} bps delta</CardTitle>
             </CardHeader>
             <CardContent className="space-y-0.5 text-xs text-muted-foreground">
               <div>Shadow P&amp;L: {delta.pnlShadowBps} bps</div>
               <div>Prod P&amp;L: {delta.pnlProdBps} bps</div>
               <div>Dispersion: {delta.dispersionBps} bps</div>
               <div>Trades: {delta.tradeCount}</div>
-              <Badge
-                variant="secondary"
-                className="mt-2 font-mono text-[0.6rem]"
-              >
+              <Badge variant="secondary" className="mt-2 font-mono text-[0.6rem]">
                 MOCK
               </Badge>
             </CardContent>
@@ -263,11 +220,7 @@ export default function StrategyDetailPage() {
                   <div className="text-muted-foreground">Representative venues</div>
                   <div className="mt-1 flex flex-wrap gap-1">
                     {cell.representativeVenueIds.map((venue) => (
-                      <Badge
-                        key={venue}
-                        variant="outline"
-                        className="font-mono text-[0.6rem]"
-                      >
+                      <Badge key={venue} variant="outline" className="font-mono text-[0.6rem]">
                         {venue}
                       </Badge>
                     ))}
@@ -301,17 +254,13 @@ export default function StrategyDetailPage() {
                       <Link
                         href={`/services/strategy-catalogue/strategies/${archetype}/${encodeURIComponent(other)}`}
                         className={
-                          other === slotLabel
-                            ? "font-semibold text-foreground"
-                            : "text-primary hover:underline"
+                          other === slotLabel ? "font-semibold text-foreground" : "text-primary hover:underline"
                         }
                       >
                         {other}
                       </Link>
                       {other === slotLabel ? (
-                        <span className="ml-2 text-[0.55rem] uppercase text-muted-foreground">
-                          current
-                        </span>
+                        <span className="ml-2 text-[0.55rem] uppercase text-muted-foreground">current</span>
                       ) : null}
                     </li>
                   ))}
@@ -347,9 +296,7 @@ export default function StrategyDetailPage() {
                           {build.status}
                         </Badge>
                       </td>
-                      <td className="text-muted-foreground">
-                        {build.registeredAtUtc}
-                      </td>
+                      <td className="text-muted-foreground">{build.registeredAtUtc}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -372,12 +319,8 @@ export default function StrategyDetailPage() {
                       <Badge variant="outline" className="font-mono text-[0.6rem]">
                         {row.decision}
                       </Badge>
-                      <span className="font-mono text-muted-foreground">
-                        v{row.buildVersion}
-                      </span>
-                      <span className="text-[0.6rem] text-muted-foreground">
-                        {row.decidedAtUtc}
-                      </span>
+                      <span className="font-mono text-muted-foreground">v{row.buildVersion}</span>
+                      <span className="text-[0.6rem] text-muted-foreground">{row.decidedAtUtc}</span>
                     </div>
                     <p className="text-muted-foreground">{row.rationale}</p>
                   </li>
@@ -419,8 +362,8 @@ export default function StrategyDetailPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              Pending wiring to the strategy-service config API. In the meantime see
-              the archetype codex doc above for the authoritative knob list.
+              Pending wiring to the strategy-service config API. In the meantime see the archetype codex doc above for
+              the authoritative knob list.
             </CardContent>
           </Card>
         </section>
@@ -434,10 +377,9 @@ export default function StrategyDetailPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-muted-foreground">
-              Pending wiring to portfolio-allocator. The fail-loud gate in
-              strategy-service Phase 10.5 enforces lock + maturity on every
-              AllocationDirective — this panel will surface the most recent
-              directive + the clients currently subscribed to this slot.
+              Pending wiring to portfolio-allocator. The fail-loud gate in strategy-service Phase 10.5 enforces lock +
+              maturity on every AllocationDirective — this panel will surface the most recent directive + the clients
+              currently subscribed to this slot.
             </CardContent>
           </Card>
         </section>

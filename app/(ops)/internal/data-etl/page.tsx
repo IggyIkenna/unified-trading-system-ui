@@ -49,9 +49,9 @@ import {
   ETL_SUMMARY,
 } from "@/lib/mocks/fixtures/data-service";
 import {
-  DATA_CATEGORY_LABELS,
+  DATA_ASSET_GROUP_LABELS,
   VENUES_BY_ASSET_GROUP,
-  type DataCategory,
+  type DataAssetGroup,
   type ETLStatus,
   type ETLStage,
 } from "@/lib/types/data-service";
@@ -91,7 +91,7 @@ function etlStageStatusDotStatus(status: ETLStatus): "live" | "warning" | "faile
   return "idle";
 }
 
-const CATEGORY_COLORS: Record<DataCategory, string> = {
+const CATEGORY_COLORS: Record<DataAssetGroup, string> = {
   cefi: "text-sky-400 border-sky-500/30 bg-sky-500/10",
   tradfi: "text-violet-400 border-violet-500/30 bg-violet-500/10",
   defi: "text-emerald-400 border-emerald-500/30 bg-emerald-500/10",
@@ -101,19 +101,19 @@ const CATEGORY_COLORS: Record<DataCategory, string> = {
 };
 
 export default function DataETLDashboard() {
-  const [selectedCategory, setSelectedCategory] = React.useState<DataCategory | "all">("all");
+  const [selectedCategory, setSelectedCategory] = React.useState<DataAssetGroup | "all">("all");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [showOnlyIssues, setShowOnlyIssues] = React.useState(false);
 
   const filteredPipelines = MOCK_ETL_PIPELINES.filter((p) => {
-    if (selectedCategory !== "all" && p.config.category !== selectedCategory) return false;
+    if (selectedCategory !== "all" && p.config.assetGroup !== selectedCategory) return false;
     if (showOnlyIssues && p.overallStatus === "healthy") return false;
     if (searchQuery && !p.config.venue.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
   const filteredVenues = MOCK_VENUE_COVERAGE.filter((v) => {
-    if (selectedCategory !== "all" && v.category !== selectedCategory) return false;
+    if (selectedCategory !== "all" && v.assetGroup !== selectedCategory) return false;
     if (
       searchQuery &&
       !v.venue.toLowerCase().includes(searchQuery.toLowerCase()) &&
@@ -214,17 +214,17 @@ export default function DataETLDashboard() {
               className="pl-9"
             />
           </div>
-          <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as DataCategory | "all")}>
+          <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as DataAssetGroup | "all")}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
-              {(Object.keys(DATA_CATEGORY_LABELS) as DataCategory[])
+              {(Object.keys(DATA_ASSET_GROUP_LABELS) as DataAssetGroup[])
                 .filter((c) => c !== "prediction_market")
                 .map((cat) => (
                   <SelectItem key={cat} value={cat}>
-                    {DATA_CATEGORY_LABELS[cat]}
+                    {DATA_ASSET_GROUP_LABELS[cat]}
                   </SelectItem>
                 ))}
             </SelectContent>
@@ -304,8 +304,8 @@ export default function DataETLDashboard() {
                         <div className="text-xs text-muted-foreground">{gap.instrument || "All instruments"}</div>
                       </td>
                       <td className="p-3">
-                        <Badge variant="outline" className={CATEGORY_COLORS[gap.category]}>
-                          {DATA_CATEGORY_LABELS[gap.category]}
+                        <Badge variant="outline" className={CATEGORY_COLORS[gap.assetGroup]}>
+                          {DATA_ASSET_GROUP_LABELS[gap.assetGroup]}
                         </Badge>
                         <span className="ml-2 text-muted-foreground">
                           {gap.venue} / {gap.folder}
@@ -431,8 +431,8 @@ function PipelineCard({ pipeline }: { pipeline: (typeof MOCK_ETL_PIPELINES)[0] }
             <div>
               <CardTitle className="text-base flex items-center gap-2">
                 {config.venue}
-                <Badge variant="outline" className={CATEGORY_COLORS[config.category]}>
-                  {DATA_CATEGORY_LABELS[config.category]}
+                <Badge variant="outline" className={CATEGORY_COLORS[config.assetGroup]}>
+                  {DATA_ASSET_GROUP_LABELS[config.assetGroup]}
                 </Badge>
                 <Badge variant="secondary" className="text-[10px]">
                   {config.folder}
@@ -548,8 +548,8 @@ function VenueCard({ venue }: { venue: (typeof MOCK_VENUE_COVERAGE)[0] }) {
             {venue.label}
             <StatusIcon className={cn("size-4", STATUS_CONFIG[venue.healthStatus].color)} />
           </CardTitle>
-          <Badge variant="outline" className={CATEGORY_COLORS[venue.category]}>
-            {DATA_CATEGORY_LABELS[venue.category]}
+          <Badge variant="outline" className={CATEGORY_COLORS[venue.assetGroup]}>
+            {DATA_ASSET_GROUP_LABELS[venue.assetGroup]}
           </Badge>
         </div>
         <CardDescription className="text-xs">
@@ -588,14 +588,14 @@ function InstrumentBrowser({
   selectedCategory,
   searchQuery,
 }: {
-  selectedCategory: DataCategory | "all";
+  selectedCategory: DataAssetGroup | "all";
   searchQuery: string;
 }) {
   const [expandedVenue, setExpandedVenue] = React.useState<string | null>(null);
 
   const categories =
     selectedCategory === "all"
-      ? (Object.keys(VENUES_BY_ASSET_GROUP) as DataCategory[]).filter((c) => c !== "prediction_market")
+      ? (Object.keys(VENUES_BY_ASSET_GROUP) as DataAssetGroup[]).filter((c) => c !== "prediction_market")
       : [selectedCategory];
 
   return (
@@ -605,7 +605,7 @@ function InstrumentBrowser({
           <CardHeader className="pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               <Badge variant="outline" className={CATEGORY_COLORS[cat]}>
-                {DATA_CATEGORY_LABELS[cat]}
+                {DATA_ASSET_GROUP_LABELS[cat]}
               </Badge>
               <span className="text-muted-foreground font-normal">{VENUES_BY_ASSET_GROUP[cat].length} venues</span>
             </CardTitle>

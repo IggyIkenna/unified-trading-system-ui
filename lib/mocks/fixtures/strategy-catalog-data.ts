@@ -118,7 +118,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "ML Directional (Continuous) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@binance-btc-usdt-5m-usdt-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@binance-btc-usdt-5m-usdt-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [9.7, 17.7],
       expected_sharpe: 2.13,
@@ -193,7 +194,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "ML Directional (Continuous) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@binance-btc-perp-5m-usdt-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@binance-btc-perp-5m-usdt-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [5.0, 20.5],
       expected_sharpe: 1.2,
@@ -268,7 +270,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "ETH",
     description: "ML Directional (Continuous) strategy on CeFi venue HYPERLIQUID. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@hyperliquid-eth-perp-5m-usdt-v2-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@hyperliquid-eth-perp-5m-usdt-v2-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [8.7, 19.0],
       expected_sharpe: 2.49,
@@ -343,7 +346,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "ML Directional (Continuous) strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@deribit-btc-dated-daily-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@deribit-btc-dated-daily-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [5.8, 15.0],
       expected_sharpe: 1.22,
@@ -418,7 +422,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "ML Directional (Continuous) strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@deribit-btc-atm_call-daily-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@deribit-btc-atm_call-daily-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [9.7, 22.9],
       expected_sharpe: 1.43,
@@ -493,7 +498,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "WETH",
     description: "ML Directional (Continuous) strategy on DeFi venue UNISWAP. Underlying: WETH.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@uniswap-ethereum-weth-usdc-5m-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@uniswap-ethereum-weth-usdc-5m-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [9.5, 18.0],
       expected_sharpe: 1.23,
@@ -568,7 +574,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "ETH",
     description: "ML Directional (Continuous) strategy on DeFi venue GMX. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@gmx-arbitrum-eth-perp-5m-usdc-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@gmx-arbitrum-eth-perp-5m-usdc-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [8.4, 21.1],
       expected_sharpe: 2.36,
@@ -643,7 +650,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "SPY",
     description: "ML Directional (Continuous) strategy on TradFi venue IBKR. Underlying: SPY.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@ibkr-spy-1m-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@ibkr-spy-1m-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [4.0, 16.6],
       expected_sharpe: 2.4,
@@ -718,7 +726,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "ES",
     description: "ML Directional (Continuous) strategy on TradFi venue CME. Underlying: ES.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@cme-es-dated-1m-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@cme-es-dated-1m-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [10.3, 20.0],
       expected_sharpe: 1.48,
@@ -793,7 +802,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "BRENT",
     description: "ML Directional (Continuous) strategy on TradFi venue ICE. Underlying: BRENT.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@ice-brent-dated-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@ice-brent-dated-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [4.1, 20.1],
       expected_sharpe: 1.74,
@@ -868,7 +878,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_CONTINUOUS",
     subcategory: "CBOE",
     description: "ML Directional (Continuous) strategy on TradFi venues IBKR, CBOE. Underlying: CBOE.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@ibkr-cboe-spy-atm_call-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_CONTINUOUS@ibkr-cboe-spy-atm_call-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [8.3, 17.5],
       expected_sharpe: 1.21,
@@ -943,7 +954,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "EPL",
     description: "ML Directional (Event Settled) strategy on Sports venue UNITY. Underlying: EPL.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-epl-1x2-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [6.4, 10.7],
       expected_sharpe: 1.42,
@@ -1018,7 +1030,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "NBA",
     description: "ML Directional (Event Settled) strategy on Sports venue UNITY. Underlying: NBA.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-nba-moneyline-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-nba-moneyline-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [10.9, 21.6],
       expected_sharpe: 2.55,
@@ -1093,7 +1106,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "NFL",
     description: "ML Directional (Event Settled) strategy on Sports venue UNITY. Underlying: NFL.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-nfl-moneyline-value-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-nfl-moneyline-value-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [8.2, 12.6],
       expected_sharpe: 2.16,
@@ -1168,7 +1182,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "MLB",
     description: "ML Directional (Event Settled) strategy on Sports venue UNITY. Underlying: MLB.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-mlb-moneyline-value-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@unity-mlb-moneyline-value-usd-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [7.1, 19.2],
       expected_sharpe: 2.36,
@@ -1243,7 +1258,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "DIRECT",
     description: "ML Directional (Event Settled) strategy on Sports venue BETFAIR. Underlying: DIRECT.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@betfair-direct-epl-1x2-gbp-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@betfair-direct-epl-1x2-gbp-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [7.1, 15.7],
       expected_sharpe: 1.26,
@@ -1318,7 +1334,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ML_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "USDC",
     description: "ML Directional (Event Settled) strategy on Prediction venue POLYMARKET. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@polymarket-us-election-president-usdc-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label ML_DIRECTIONAL_EVENT_SETTLED@polymarket-us-election-president-usdc-prod. Fully productionised cell (SUPPORTED). Family: ML_DIRECTIONAL. Archetype: ML_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [11.2, 19.8],
       expected_sharpe: 2.02,
@@ -1393,7 +1410,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "Rules Directional (Continuous) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@binance-btc-usdt-15m-macd-usdt-prod. Fully productionised cell (SUPPORTED). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@binance-btc-usdt-15m-macd-usdt-prod. Fully productionised cell (SUPPORTED). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [6.4, 11.8],
       expected_sharpe: 1.43,
@@ -1468,7 +1486,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "Rules Directional (Continuous) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@binance-btc-perp-15m-ta-funding-usdt-prod. Fully productionised cell (SUPPORTED). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@binance-btc-perp-15m-ta-funding-usdt-prod. Fully productionised cell (SUPPORTED). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [6.1, 14.0],
       expected_sharpe: 2.14,
@@ -1543,7 +1562,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_CONTINUOUS",
     subcategory: "BTC",
     description: "Rules Directional (Continuous) strategy on CeFi venue HYPERLIQUID. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@hyperliquid-btc-perp-5m-vwap-usdt-prod. Fully productionised cell (SUPPORTED). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@hyperliquid-btc-perp-5m-vwap-usdt-prod. Fully productionised cell (SUPPORTED). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [6.8, 22.8],
       expected_sharpe: 2.15,
@@ -1618,7 +1638,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_CONTINUOUS",
     subcategory: "ETH",
     description: "Rules Directional (Continuous) strategy on DeFi venue GMX. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@gmx-arbitrum-eth-perp-1h-ta-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@gmx-arbitrum-eth-perp-1h-ta-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [7.2, 11.9],
       expected_sharpe: 1.69,
@@ -1693,7 +1714,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_CONTINUOUS",
     subcategory: "SPY",
     description: "Rules Directional (Continuous) strategy on TradFi venue IBKR. Underlying: SPY.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@ibkr-spy-daily-donchian-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@ibkr-spy-daily-donchian-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [11.3, 15.4],
       expected_sharpe: 2.26,
@@ -1768,7 +1790,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_CONTINUOUS",
     subcategory: "ES",
     description: "Rules Directional (Continuous) strategy on TradFi venue CME. Underlying: ES.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@cme-es-dated-1m-ta-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_CONTINUOUS@cme-es-dated-1m-ta-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_CONTINUOUS.",
     performance: {
       target_apy_range: [8.7, 20.0],
       expected_sharpe: 1.54,
@@ -1843,7 +1866,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "EPL",
     description: "Rules Directional (Event Settled) strategy on Sports venue UNITY. Underlying: EPL.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_EVENT_SETTLED@unity-epl-xg-diff-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_EVENT_SETTLED@unity-epl-xg-diff-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [11.8, 18.5],
       expected_sharpe: 1.6,
@@ -1918,7 +1942,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "NBA",
     description: "Rules Directional (Event Settled) strategy on Sports venue UNITY. Underlying: NBA.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_EVENT_SETTLED@unity-nba-rest-days-rule-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_EVENT_SETTLED@unity-nba-rest-days-rule-usd-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [8.5, 20.2],
       expected_sharpe: 2.56,
@@ -1993,7 +2018,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "RULES_DIRECTIONAL_EVENT_SETTLED",
     subcategory: "BTC",
     description: "Rules Directional (Event Settled) strategy on Prediction venue POLYMARKET. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label RULES_DIRECTIONAL_EVENT_SETTLED@polymarket-btc-price-band-rule-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label RULES_DIRECTIONAL_EVENT_SETTLED@polymarket-btc-price-band-rule-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: RULES_DIRECTIONAL. Archetype: RULES_DIRECTIONAL_EVENT_SETTLED.",
     performance: {
       target_apy_range: [4.2, 8.5],
       expected_sharpe: 2.15,
@@ -2068,7 +2094,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_DATED",
     subcategory: "BTC",
     description: "Basis Trade (Dated) strategy on CeFi venues BINANCE, DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_DATED@binance-deribit-btc-dated-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_DATED@binance-deribit-btc-dated-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
     performance: {
       target_apy_range: [10.6, 19.9],
       expected_sharpe: 2.44,
@@ -2143,7 +2170,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_DATED",
     subcategory: "BTC",
     description: "Basis Trade (Dated) strategy on CeFi venues BINANCE, DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_DATED@binance-deribit-btc-fixed-dec25-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_DATED@binance-deribit-btc-fixed-dec25-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
     performance: {
       target_apy_range: [6.6, 16.9],
       expected_sharpe: 1.36,
@@ -2218,7 +2246,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_DATED",
     subcategory: "BTC",
     description: "Basis Trade (Dated) strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_DATED@deribit-btc-parity-synthetic-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_DATED@deribit-btc-parity-synthetic-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
     performance: {
       target_apy_range: [8.6, 15.8],
       expected_sharpe: 1.68,
@@ -2293,7 +2322,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_DATED",
     subcategory: "CME",
     description: "Basis Trade (Dated) strategy on TradFi venues IBKR, CME. Underlying: CME.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_DATED@ibkr-cme-spy-es-dated-usd-prod. Partially-coverage / research cell (PARTIAL). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_DATED@ibkr-cme-spy-es-dated-usd-prod. Partially-coverage / research cell (PARTIAL). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
     performance: {
       target_apy_range: [9.6, 14.0],
       expected_sharpe: 1.75,
@@ -2368,7 +2398,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_DATED",
     subcategory: "ICE",
     description: "Basis Trade (Dated) strategy on TradFi venues IBKR, ICE. Underlying: ICE.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_DATED@ibkr-ice-brent-fixed-feb26-usd-prod. Partially-coverage / research cell (PARTIAL). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_DATED@ibkr-ice-brent-fixed-feb26-usd-prod. Partially-coverage / research cell (PARTIAL). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_DATED.",
     performance: {
       target_apy_range: [4.6, 20.1],
       expected_sharpe: 1.85,
@@ -2443,7 +2474,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_PERP",
     subcategory: "BTC",
     description: "Basis Trade (Perp) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_PERP@binance-btc-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_PERP@binance-btc-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
     performance: {
       target_apy_range: [8.2, 16.1],
       expected_sharpe: 1.56,
@@ -2518,7 +2550,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_PERP",
     subcategory: "BTC",
     description: "Basis Trade (Perp) strategy on CeFi venues BINANCE, BYBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_PERP@binance-bybit-btc-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_PERP@binance-bybit-btc-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
     performance: {
       target_apy_range: [4.3, 12.3],
       expected_sharpe: 2.01,
@@ -2593,7 +2626,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_PERP",
     subcategory: "ETH",
     description: "Basis Trade (Perp) strategy on DeFi venues UNISWAP, HYPERLIQUID. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_PERP@uniswap-hyperliquid-eth-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_PERP@uniswap-hyperliquid-eth-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
     performance: {
       target_apy_range: [7.0, 22.3],
       expected_sharpe: 1.46,
@@ -2668,7 +2702,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_BASIS_PERP",
     subcategory: "USDT",
     description: "Basis Trade (Perp) strategy on DeFi venues LIDO, HYPERLIQUID. Underlying: USDT.",
-    how_it_works: "Derived from UAC slot label CARRY_BASIS_PERP@lido-hyperliquid-steth-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_BASIS_PERP@lido-hyperliquid-steth-usdt-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_BASIS_PERP.",
     performance: {
       target_apy_range: [7.4, 12.8],
       expected_sharpe: 1.6,
@@ -2743,7 +2778,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_STAKED_BASIS",
     subcategory: "ETH",
     description: "Staked Basis strategy on DeFi venues LIDO, AAVE, HYPERLIQUID. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label CARRY_STAKED_BASIS@lido-aave-hyperliquid-eth-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_STAKED_BASIS.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_STAKED_BASIS@lido-aave-hyperliquid-eth-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_STAKED_BASIS.",
     performance: {
       target_apy_range: [8.5, 22.3],
       expected_sharpe: 1.94,
@@ -2818,7 +2854,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_STAKED_BASIS",
     subcategory: "SOL",
     description: "Staked Basis strategy on DeFi venues JITO, KAMINO, DRIFT. Underlying: SOL.",
-    how_it_works: "Derived from UAC slot label CARRY_STAKED_BASIS@jito-kamino-drift-sol-usdc-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_STAKED_BASIS.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_STAKED_BASIS@jito-kamino-drift-sol-usdc-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_STAKED_BASIS.",
     performance: {
       target_apy_range: [11.8, 19.0],
       expected_sharpe: 1.92,
@@ -2893,7 +2930,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_RECURSIVE_STAKED",
     subcategory: "AAVE",
     description: "Recursive Staked Basis strategy on DeFi venues LIDO, AAVE. Underlying: AAVE.",
-    how_it_works: "Derived from UAC slot label CARRY_RECURSIVE_STAKED@lido-aave-steth-ltv70-ethereum-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_RECURSIVE_STAKED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_RECURSIVE_STAKED@lido-aave-steth-ltv70-ethereum-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_RECURSIVE_STAKED.",
     performance: {
       target_apy_range: [7.5, 23.0],
       expected_sharpe: 2.49,
@@ -2968,7 +3006,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "CARRY_RECURSIVE_STAKED",
     subcategory: "KAMINO",
     description: "Recursive Staked Basis strategy on DeFi venues JITO, KAMINO. Underlying: KAMINO.",
-    how_it_works: "Derived from UAC slot label CARRY_RECURSIVE_STAKED@jito-kamino-jitosol-ltv70-solana-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_RECURSIVE_STAKED.",
+    how_it_works:
+      "Derived from UAC slot label CARRY_RECURSIVE_STAKED@jito-kamino-jitosol-ltv70-solana-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: CARRY_RECURSIVE_STAKED.",
     performance: {
       target_apy_range: [7.6, 20.8],
       expected_sharpe: 2.48,
@@ -3043,7 +3082,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "YIELD_ROTATION_LENDING",
     subcategory: "USDC",
     description: "Lending Rotation strategy on DeFi venue AAVE. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label YIELD_ROTATION_LENDING@aave-multichain-usdc-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_ROTATION_LENDING.",
+    how_it_works:
+      "Derived from UAC slot label YIELD_ROTATION_LENDING@aave-multichain-usdc-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_ROTATION_LENDING.",
     performance: {
       target_apy_range: [9.3, 13.6],
       expected_sharpe: 1.98,
@@ -3118,7 +3158,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "YIELD_ROTATION_LENDING",
     subcategory: "USDC",
     description: "Lending Rotation strategy on DeFi venues AAVE, COMPOUND, MORPHO. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label YIELD_ROTATION_LENDING@aave-compound-morpho-usdc-ethereum-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_ROTATION_LENDING.",
+    how_it_works:
+      "Derived from UAC slot label YIELD_ROTATION_LENDING@aave-compound-morpho-usdc-ethereum-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_ROTATION_LENDING.",
     performance: {
       target_apy_range: [6.1, 14.9],
       expected_sharpe: 2.03,
@@ -3193,7 +3234,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "YIELD_ROTATION_LENDING",
     subcategory: "USDC",
     description: "Lending Rotation strategy on DeFi venue KAMINO. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label YIELD_ROTATION_LENDING@kamino-solana-usdc-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_ROTATION_LENDING.",
+    how_it_works:
+      "Derived from UAC slot label YIELD_ROTATION_LENDING@kamino-solana-usdc-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_ROTATION_LENDING.",
     performance: {
       target_apy_range: [6.0, 14.0],
       expected_sharpe: 1.7,
@@ -3268,7 +3310,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "YIELD_STAKING_SIMPLE",
     subcategory: "ETH",
     description: "Simple Staking strategy on DeFi venue LIDO. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_STAKING_SIMPLE.",
+    how_it_works:
+      "Derived from UAC slot label YIELD_STAKING_SIMPLE@lido-steth-ethereum-eth-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_STAKING_SIMPLE.",
     performance: {
       target_apy_range: [8.5, 13.7],
       expected_sharpe: 1.32,
@@ -3343,7 +3386,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "YIELD_STAKING_SIMPLE",
     subcategory: "SOL",
     description: "Simple Staking strategy on DeFi venue JITO. Underlying: SOL.",
-    how_it_works: "Derived from UAC slot label YIELD_STAKING_SIMPLE@jito-jitosol-solana-sol-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_STAKING_SIMPLE.",
+    how_it_works:
+      "Derived from UAC slot label YIELD_STAKING_SIMPLE@jito-jitosol-solana-sol-prod. Fully productionised cell (SUPPORTED). Family: CARRY_AND_YIELD. Archetype: YIELD_STAKING_SIMPLE.",
     performance: {
       target_apy_range: [10.0, 24.7],
       expected_sharpe: 2.56,
@@ -3418,7 +3462,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "BTC",
     description: "Price Dispersion Arbitrage strategy on CeFi venues BINANCE, BYBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-usdt-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-usdt-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [5.5, 18.7],
       expected_sharpe: 1.8,
@@ -3493,7 +3538,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "BTC",
     description: "Price Dispersion Arbitrage strategy on CeFi venues BINANCE, BYBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-perp-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@binance-bybit-btc-perp-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [12.0, 19.1],
       expected_sharpe: 2.56,
@@ -3568,7 +3614,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "BTC",
     description: "Price Dispersion Arbitrage strategy on CeFi venue MULTI-VENUE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@multi-cex-btc-funding-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@multi-cex-btc-funding-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [10.2, 15.3],
       expected_sharpe: 1.53,
@@ -3643,7 +3690,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "BTC",
     description: "Price Dispersion Arbitrage strategy on CeFi venues DERIBIT, OKX. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@deribit-okx-btc-vol-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@deribit-okx-btc-vol-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [8.2, 12.9],
       expected_sharpe: 1.27,
@@ -3718,7 +3766,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "ETH",
     description: "Price Dispersion Arbitrage strategy on DeFi venue MULTI-VENUE. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@multi-dex-eth-usdc-ethereum-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@multi-dex-eth-usdc-ethereum-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [9.3, 23.5],
       expected_sharpe: 1.84,
@@ -3793,7 +3842,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "ETH",
     description: "Price Dispersion Arbitrage strategy on DeFi venues HYPERLIQUID, GMX. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@hyperliquid-gmx-eth-perp-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@hyperliquid-gmx-eth-perp-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [5.4, 17.9],
       expected_sharpe: 2.18,
@@ -3868,7 +3918,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "ETH",
     description: "Price Dispersion Arbitrage strategy on DeFi venue UNISWAP. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@uniswap-flashloan-eth-usdc-ethereum-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@uniswap-flashloan-eth-usdc-ethereum-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [9.2, 16.7],
       expected_sharpe: 1.92,
@@ -3943,7 +3994,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "ES",
     description: "Price Dispersion Arbitrage strategy on TradFi venue CME. Underlying: ES.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@cme-es-nq-dated-ratio-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@cme-es-nq-dated-ratio-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [11.9, 18.5],
       expected_sharpe: 1.99,
@@ -4018,7 +4070,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "ES",
     description: "Price Dispersion Arbitrage strategy on TradFi venue CME. Underlying: ES.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@cme-es-calendar-fixed-dec25-mar26-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@cme-es-calendar-fixed-dec25-mar26-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [7.3, 17.3],
       expected_sharpe: 2.19,
@@ -4093,7 +4146,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "SPY",
     description: "Price Dispersion Arbitrage strategy on TradFi venue CBOE. Underlying: SPY.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@cboe-spy-surface-noarb-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@cboe-spy-surface-noarb-usd-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [9.9, 14.0],
       expected_sharpe: 2.07,
@@ -4168,7 +4222,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "EPL",
     description: "Price Dispersion Arbitrage strategy on Sports venue UNITY. Underlying: EPL.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@unity-epl-1x2-usd-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@unity-epl-1x2-usd-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [8.8, 17.2],
       expected_sharpe: 2.13,
@@ -4243,7 +4298,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "MATCHBOOK",
     description: "Price Dispersion Arbitrage strategy on Sports venues BETFAIR, MATCHBOOK. Underlying: MATCHBOOK.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@betfair-matchbook-epl-1x2-gbp-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@betfair-matchbook-epl-1x2-gbp-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [7.0, 20.4],
       expected_sharpe: 2.48,
@@ -4318,7 +4374,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "ARBITRAGE_PRICE_DISPERSION",
     subcategory: "USDC",
     description: "Price Dispersion Arbitrage strategy on Prediction venues POLYMARKET, UNITY. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@polymarket-unity-elections-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
+    how_it_works:
+      "Derived from UAC slot label ARBITRAGE_PRICE_DISPERSION@polymarket-unity-elections-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: ARBITRAGE_PRICE_DISPERSION.",
     performance: {
       target_apy_range: [8.9, 16.6],
       expected_sharpe: 1.69,
@@ -4393,7 +4450,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "LIQUIDATION_CAPTURE",
     subcategory: "BTC",
     description: "Liquidation Capture strategy on CeFi venue HYPERLIQUID. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label LIQUIDATION_CAPTURE@hyperliquid-btc-perp-bidladder-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
+    how_it_works:
+      "Derived from UAC slot label LIQUIDATION_CAPTURE@hyperliquid-btc-perp-bidladder-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
     performance: {
       target_apy_range: [11.9, 23.8],
       expected_sharpe: 2.05,
@@ -4468,7 +4526,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "LIQUIDATION_CAPTURE",
     subcategory: "ETH",
     description: "Liquidation Capture strategy on DeFi venue AAVE. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label LIQUIDATION_CAPTURE@aave-ethereum-eth-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
+    how_it_works:
+      "Derived from UAC slot label LIQUIDATION_CAPTURE@aave-ethereum-eth-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
     performance: {
       target_apy_range: [7.3, 22.0],
       expected_sharpe: 1.46,
@@ -4543,7 +4602,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "LIQUIDATION_CAPTURE",
     subcategory: "ETH",
     description: "Liquidation Capture strategy on DeFi venue AAVE. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label LIQUIDATION_CAPTURE@aave-arbitrum-eth-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
+    how_it_works:
+      "Derived from UAC slot label LIQUIDATION_CAPTURE@aave-arbitrum-eth-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
     performance: {
       target_apy_range: [5.6, 20.8],
       expected_sharpe: 1.69,
@@ -4618,7 +4678,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "LIQUIDATION_CAPTURE",
     subcategory: "SOL",
     description: "Liquidation Capture strategy on DeFi venue KAMINO. Underlying: SOL.",
-    how_it_works: "Derived from UAC slot label LIQUIDATION_CAPTURE@kamino-solana-sol-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
+    how_it_works:
+      "Derived from UAC slot label LIQUIDATION_CAPTURE@kamino-solana-sol-usdc-prod. Fully productionised cell (SUPPORTED). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
     performance: {
       target_apy_range: [5.2, 13.3],
       expected_sharpe: 2.37,
@@ -4693,7 +4754,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "LIQUIDATION_CAPTURE",
     subcategory: "ETH",
     description: "Liquidation Capture strategy on DeFi venue GMX. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label LIQUIDATION_CAPTURE@gmx-arbitrum-eth-perp-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
+    how_it_works:
+      "Derived from UAC slot label LIQUIDATION_CAPTURE@gmx-arbitrum-eth-perp-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: ARBITRAGE_STRUCTURAL. Archetype: LIQUIDATION_CAPTURE.",
     performance: {
       target_apy_range: [10.5, 21.9],
       expected_sharpe: 1.36,
@@ -4768,7 +4830,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_CONTINUOUS",
     subcategory: "BTC",
     description: "Market Making (Continuous) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@binance-btc-usdt-mm-usdt-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@binance-btc-usdt-mm-usdt-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
     performance: {
       target_apy_range: [6.4, 11.6],
       expected_sharpe: 1.25,
@@ -4843,7 +4906,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_CONTINUOUS",
     subcategory: "ETH",
     description: "Market Making (Continuous) strategy on CeFi venue HYPERLIQUID. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@hyperliquid-eth-perp-mm-usdt-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@hyperliquid-eth-perp-mm-usdt-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
     performance: {
       target_apy_range: [5.8, 12.5],
       expected_sharpe: 1.72,
@@ -4918,7 +4982,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_CONTINUOUS",
     subcategory: "BTC",
     description: "Market Making (Continuous) strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@deribit-btc-option-mm-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@deribit-btc-option-mm-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
     performance: {
       target_apy_range: [11.7, 23.5],
       expected_sharpe: 1.72,
@@ -4993,7 +5058,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_CONTINUOUS",
     subcategory: "WETH",
     description: "Market Making (Continuous) strategy on DeFi venue UNISWAP. Underlying: WETH.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@uniswap-v3-weth-usdc-ethereum-active-usdc-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@uniswap-v3-weth-usdc-ethereum-active-usdc-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
     performance: {
       target_apy_range: [8.9, 16.9],
       expected_sharpe: 1.86,
@@ -5068,7 +5134,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_CONTINUOUS",
     subcategory: "USDC",
     description: "Market Making (Continuous) strategy on DeFi venue CURVE. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@curve-3pool-ethereum-passive-usdc-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@curve-3pool-ethereum-passive-usdc-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
     performance: {
       target_apy_range: [9.6, 24.2],
       expected_sharpe: 2.5,
@@ -5143,7 +5210,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_CONTINUOUS",
     subcategory: "DIRECT",
     description: "Market Making (Continuous) strategy on Sports venue BETFAIR. Underlying: DIRECT.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@betfair-direct-epl-1x2-mm-gbp-prod. Partially-coverage / research cell (PARTIAL). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_CONTINUOUS@betfair-direct-epl-1x2-mm-gbp-prod. Partially-coverage / research cell (PARTIAL). Family: MARKET_MAKING. Archetype: MARKET_MAKING_CONTINUOUS.",
     performance: {
       target_apy_range: [4.0, 8.6],
       expected_sharpe: 1.94,
@@ -5218,7 +5286,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_EVENT_SETTLED",
     subcategory: "DIRECT",
     description: "Market Making (Event Settled) strategy on Sports venue BETFAIR. Underlying: DIRECT.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_EVENT_SETTLED@betfair-direct-epl-1x2-mm-gbp-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_EVENT_SETTLED@betfair-direct-epl-1x2-mm-gbp-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_EVENT_SETTLED.",
     performance: {
       target_apy_range: [6.2, 12.1],
       expected_sharpe: 2.13,
@@ -5293,7 +5362,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_EVENT_SETTLED",
     subcategory: "DIRECT",
     description: "Market Making (Event Settled) strategy on Sports venue BETFAIR. Underlying: DIRECT.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_EVENT_SETTLED@betfair-direct-atp-match-winner-mm-gbp-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_EVENT_SETTLED@betfair-direct-atp-match-winner-mm-gbp-prod. Fully productionised cell (SUPPORTED). Family: MARKET_MAKING. Archetype: MARKET_MAKING_EVENT_SETTLED.",
     performance: {
       target_apy_range: [7.6, 13.3],
       expected_sharpe: 1.68,
@@ -5368,7 +5438,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "MARKET_MAKING_EVENT_SETTLED",
     subcategory: "USDC",
     description: "Market Making (Event Settled) strategy on Prediction venue POLYMARKET. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label MARKET_MAKING_EVENT_SETTLED@polymarket-us-election-mm-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: MARKET_MAKING. Archetype: MARKET_MAKING_EVENT_SETTLED.",
+    how_it_works:
+      "Derived from UAC slot label MARKET_MAKING_EVENT_SETTLED@polymarket-us-election-mm-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: MARKET_MAKING. Archetype: MARKET_MAKING_EVENT_SETTLED.",
     performance: {
       target_apy_range: [4.2, 15.0],
       expected_sharpe: 2.4,
@@ -5443,7 +5514,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "BTC",
     description: "Event Driven strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@binance-btc-usdt-nfp-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@binance-btc-usdt-nfp-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [10.9, 17.3],
       expected_sharpe: 1.49,
@@ -5518,7 +5590,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "BTC",
     description: "Event Driven strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@binance-btc-perp-fomc-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@binance-btc-perp-fomc-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [9.6, 15.3],
       expected_sharpe: 1.48,
@@ -5593,7 +5666,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "BTC",
     description: "Event Driven strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@deribit-btc-option-fomc-straddle-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@deribit-btc-option-fomc-straddle-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [10.6, 20.8],
       expected_sharpe: 1.4,
@@ -5668,7 +5742,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "USDC",
     description: "Event Driven strategy on DeFi venue UNISWAP. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@uniswap-ethereum-arb-token-unlock-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@uniswap-ethereum-arb-token-unlock-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [8.9, 21.9],
       expected_sharpe: 2.21,
@@ -5743,7 +5818,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "USDC",
     description: "Event Driven strategy on DeFi venue AAVE. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@aave-ethereum-governance-rate-update-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@aave-ethereum-governance-rate-update-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [9.3, 18.1],
       expected_sharpe: 1.35,
@@ -5818,7 +5894,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "AAPL",
     description: "Event Driven strategy on TradFi venue IBKR. Underlying: AAPL.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@ibkr-aapl-earnings-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@ibkr-aapl-earnings-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [9.1, 23.0],
       expected_sharpe: 2.41,
@@ -5893,7 +5970,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "ES",
     description: "Event Driven strategy on TradFi venue CME. Underlying: ES.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@cme-es-dated-nfp-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@cme-es-dated-nfp-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [8.1, 21.8],
       expected_sharpe: 2.37,
@@ -5968,7 +6046,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "VIX",
     description: "Event Driven strategy on TradFi venue CBOE. Underlying: VIX.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@cboe-vix-cpi-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@cboe-vix-cpi-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [9.7, 17.2],
       expected_sharpe: 1.62,
@@ -6043,7 +6122,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "EPL",
     description: "Event Driven strategy on Sports venue UNITY. Underlying: EPL.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@unity-epl-lineup-release-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@unity-epl-lineup-release-usd-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [8.5, 22.2],
       expected_sharpe: 2.41,
@@ -6118,7 +6198,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "EVENT_DRIVEN",
     subcategory: "USDC",
     description: "Event Driven strategy on Prediction venue POLYMARKET. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label EVENT_DRIVEN@polymarket-us-election-debate-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
+    how_it_works:
+      "Derived from UAC slot label EVENT_DRIVEN@polymarket-us-election-debate-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: EVENT_DRIVEN. Archetype: EVENT_DRIVEN.",
     performance: {
       target_apy_range: [7.0, 19.1],
       expected_sharpe: 2.48,
@@ -6193,7 +6274,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "VOL_TRADING_OPTIONS",
     subcategory: "BTC",
     description: "Vol Trading (Options) strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label VOL_TRADING_OPTIONS@deribit-btc-vol-usdt-prod. Fully productionised cell (SUPPORTED). Family: VOL_TRADING. Archetype: VOL_TRADING_OPTIONS.",
+    how_it_works:
+      "Derived from UAC slot label VOL_TRADING_OPTIONS@deribit-btc-vol-usdt-prod. Fully productionised cell (SUPPORTED). Family: VOL_TRADING. Archetype: VOL_TRADING_OPTIONS.",
     performance: {
       target_apy_range: [11.3, 27.2],
       expected_sharpe: 2.26,
@@ -6268,7 +6350,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "VOL_TRADING_OPTIONS",
     subcategory: "BTC",
     description: "Vol Trading (Options) strategy on CeFi venue DERIBIT. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label VOL_TRADING_OPTIONS@deribit-btc-skew-usdt-prod. Fully productionised cell (SUPPORTED). Family: VOL_TRADING. Archetype: VOL_TRADING_OPTIONS.",
+    how_it_works:
+      "Derived from UAC slot label VOL_TRADING_OPTIONS@deribit-btc-skew-usdt-prod. Fully productionised cell (SUPPORTED). Family: VOL_TRADING. Archetype: VOL_TRADING_OPTIONS.",
     performance: {
       target_apy_range: [10.8, 24.3],
       expected_sharpe: 1.46,
@@ -6343,7 +6426,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "VOL_TRADING_OPTIONS",
     subcategory: "CBOE",
     description: "Vol Trading (Options) strategy on TradFi venues IBKR, CBOE. Underlying: CBOE.",
-    how_it_works: "Derived from UAC slot label VOL_TRADING_OPTIONS@ibkr-cboe-spy-vol-usd-prod. Partially-coverage / research cell (PARTIAL). Family: VOL_TRADING. Archetype: VOL_TRADING_OPTIONS.",
+    how_it_works:
+      "Derived from UAC slot label VOL_TRADING_OPTIONS@ibkr-cboe-spy-vol-usd-prod. Partially-coverage / research cell (PARTIAL). Family: VOL_TRADING. Archetype: VOL_TRADING_OPTIONS.",
     performance: {
       target_apy_range: [7.0, 12.6],
       expected_sharpe: 1.8,
@@ -6418,7 +6502,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "BTC",
     description: "Stat Arb (Pairs Fixed) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@binance-btc-eth-spot-usdt-prod. Fully productionised cell (SUPPORTED). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@binance-btc-eth-spot-usdt-prod. Fully productionised cell (SUPPORTED). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [6.7, 17.2],
       expected_sharpe: 2.0,
@@ -6493,7 +6578,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "BTC",
     description: "Stat Arb (Pairs Fixed) strategy on CeFi venue BINANCE. Underlying: BTC.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@binance-btc-eth-perp-usdt-prod. Fully productionised cell (SUPPORTED). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@binance-btc-eth-perp-usdt-prod. Fully productionised cell (SUPPORTED). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [6.2, 10.5],
       expected_sharpe: 2.43,
@@ -6568,7 +6654,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "ETH",
     description: "Stat Arb (Pairs Fixed) strategy on DeFi venue UNISWAP. Underlying: ETH.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@uniswap-ethereum-eth-wbtc-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@uniswap-ethereum-eth-wbtc-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [4.7, 19.9],
       expected_sharpe: 1.64,
@@ -6643,7 +6730,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "SOL",
     description: "Stat Arb (Pairs Fixed) strategy on DeFi venue HYPERLIQUID. Underlying: SOL.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@hyperliquid-sol-eth-perp-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@hyperliquid-sol-eth-perp-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [10.1, 19.6],
       expected_sharpe: 1.71,
@@ -6718,7 +6806,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "GOOG",
     description: "Stat Arb (Pairs Fixed) strategy on TradFi venue IBKR. Underlying: GOOG.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ibkr-goog-meta-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [4.1, 18.5],
       expected_sharpe: 1.55,
@@ -6793,7 +6882,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "AAPL",
     description: "Stat Arb (Pairs Fixed) strategy on TradFi venue IBKR. Underlying: AAPL.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ibkr-aapl-msft-1h-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ibkr-aapl-msft-1h-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [5.9, 10.7],
       expected_sharpe: 2.46,
@@ -6868,7 +6958,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "TLT",
     description: "Stat Arb (Pairs Fixed) strategy on TradFi venue IBKR. Underlying: TLT.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ibkr-tlt-ief-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ibkr-tlt-ief-daily-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [5.5, 20.9],
       expected_sharpe: 2.21,
@@ -6943,7 +7034,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "ES",
     description: "Stat Arb (Pairs Fixed) strategy on TradFi venue CME. Underlying: ES.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@cme-es-nq-dated-zscore-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@cme-es-nq-dated-zscore-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [4.7, 13.2],
       expected_sharpe: 2.54,
@@ -7018,7 +7110,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_PAIRS_FIXED",
     subcategory: "BRENT",
     description: "Stat Arb (Pairs Fixed) strategy on TradFi venues ICE, CME. Underlying: BRENT.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ice-brent-cme-wti-dated-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_PAIRS_FIXED@ice-brent-cme-wti-dated-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_PAIRS_FIXED.",
     performance: {
       target_apy_range: [9.5, 16.5],
       expected_sharpe: 1.45,
@@ -7093,7 +7186,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_CROSS_SECTIONAL",
     subcategory: "USDT",
     description: "Stat Arb (Cross Sectional) strategy on CeFi venue BINANCE. Underlying: USDT.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@binance-alt-basket-momentum-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@binance-alt-basket-momentum-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
     performance: {
       target_apy_range: [5.6, 9.6],
       expected_sharpe: 1.27,
@@ -7168,7 +7262,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_CROSS_SECTIONAL",
     subcategory: "USDT",
     description: "Stat Arb (Cross Sectional) strategy on CeFi venue HYPERLIQUID. Underlying: USDT.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@hyperliquid-alt-perp-momentum-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@hyperliquid-alt-perp-momentum-usdt-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
     performance: {
       target_apy_range: [7.4, 18.7],
       expected_sharpe: 1.74,
@@ -7243,7 +7338,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_CROSS_SECTIONAL",
     subcategory: "USDC",
     description: "Stat Arb (Cross Sectional) strategy on DeFi venue HYPERLIQUID. Underlying: USDC.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@hyperliquid-dex-alt-perp-momentum-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@hyperliquid-dex-alt-perp-momentum-usdc-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
     performance: {
       target_apy_range: [8.2, 19.5],
       expected_sharpe: 2.11,
@@ -7318,7 +7414,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_CROSS_SECTIONAL",
     subcategory: "SP500",
     description: "Stat Arb (Cross Sectional) strategy on TradFi venue IBKR. Underlying: SP500.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-momentum-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-momentum-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
     performance: {
       target_apy_range: [8.0, 21.0],
       expected_sharpe: 1.34,
@@ -7393,7 +7490,8 @@ export const STRATEGY_CATALOG: StrategyCatalogEntry[] = [
     archetype: "STAT_ARB_CROSS_SECTIONAL",
     subcategory: "SP500",
     description: "Stat Arb (Cross Sectional) strategy on TradFi venue IBKR. Underlying: SP500.",
-    how_it_works: "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-sector-rotation-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
+    how_it_works:
+      "Derived from UAC slot label STAT_ARB_CROSS_SECTIONAL@ibkr-sp500-sector-rotation-usd-prod. Partially-coverage / research cell (PARTIAL). Family: STAT_ARB_PAIRS. Archetype: STAT_ARB_CROSS_SECTIONAL.",
     performance: {
       target_apy_range: [10.8, 19.3],
       expected_sharpe: 2.12,
@@ -7488,19 +7586,19 @@ export function getStrategyById(strategyId: string): StrategyCatalogEntry | unde
 
 export function getCatalogSummary(): {
   total: number;
-  byCategory: Record<string, number>;
+  byAssetGroup: Record<string, number>;
   byStatus: Record<string, number>;
   byRiskLevel: Record<string, number>;
   liveCount: number;
   totalTargetCapital: number;
 } {
-  const byCategory: Record<string, number> = {};
+  const byAssetGroup: Record<string, number> = {};
   const byStatus: Record<string, number> = {};
   const byRiskLevel: Record<string, number> = {};
   let liveCount = 0;
   let totalTargetCapital = 0;
   for (const s of STRATEGY_CATALOG) {
-    byCategory[s.category] = (byCategory[s.category] || 0) + 1;
+    byAssetGroup[s.category] = (byAssetGroup[s.category] || 0) + 1;
     byStatus[s.readiness.status] = (byStatus[s.readiness.status] || 0) + 1;
     byRiskLevel[s.risk.risk_level] = (byRiskLevel[s.risk.risk_level] || 0) + 1;
     if (s.readiness.status === "LIVE") liveCount++;
@@ -7508,7 +7606,7 @@ export function getCatalogSummary(): {
   }
   return {
     total: STRATEGY_CATALOG.length,
-    byCategory,
+    byAssetGroup,
     byStatus,
     byRiskLevel,
     liveCount,
